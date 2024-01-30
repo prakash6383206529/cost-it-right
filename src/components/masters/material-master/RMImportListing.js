@@ -17,7 +17,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
+import { CheckApprovalApplicableMaster, IsShowFreightAndShearingCostFields, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -30,7 +30,7 @@ import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
-import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import RMSimulation from '../../simulation/components/SimulationPages/RMSimulation';
@@ -654,6 +654,10 @@ function RMImportListing(props) {
 
   const returnExcelColumn = (data = [], TempData) => {
     let excelData = hideCustomerFromExcel(data, "CustomerName")
+
+    if (!IsShowFreightAndShearingCostFields()) {
+      excelData = hideMultipleColumnFromExcel(excelData, ['FreightCost', 'ShearingCost', 'RMFreightCost', 'RMShearingCost', 'RawMaterialFreightCostConversion', 'RawMaterialShearingCostConversion'])
+    }
     let temp = []
     temp = TempData && TempData.map((item) => {
       if (item.CostingHead === true) {

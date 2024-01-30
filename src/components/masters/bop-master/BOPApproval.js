@@ -13,7 +13,7 @@ import SummaryDrawer from '../SummaryDrawer';
 import Toaster from '../../common/Toaster'
 import MasterSendForApproval from '../MasterSendForApproval';
 import { masterFinalLevelUser } from '../actions/Material'
-import { loggedInUserId, userDetails } from '../../../helper'
+import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from '../../../helper'
 import NoContentFound from '../../common/NoContentFound';
 import { PaginationWrapper } from '../../common/commonPagination';
 
@@ -262,9 +262,9 @@ function BOPApproval(props) {
                                     <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
 
-                                    <AgGridColumn width="145" field="BoughtOutPartNumber" headerName='BOP Part No'></AgGridColumn>
-                                    <AgGridColumn width="145" field="BoughtOutPartName" headerName='BOP Part Name'></AgGridColumn>
-                                    <AgGridColumn width="145" field="BoughtOutPartCategory" headerName='BOP Category'></AgGridColumn>
+                                    <AgGridColumn width="145" field="BoughtOutPartNumber" headerName={`${showBopLabel()}  Part No`}></AgGridColumn>
+                                    <AgGridColumn width="145" field="BoughtOutPartName" headerName={`${showBopLabel()}  Part Name`}></AgGridColumn>
+                                    <AgGridColumn width="145" field="BoughtOutPartCategory" headerName={`${showBopLabel()}  Category`}></AgGridColumn>
                                     <AgGridColumn width="150" field="UOM" headerName='UOM'></AgGridColumn>
                                     <AgGridColumn width="140" field="Specification" headerName='Specification'></AgGridColumn>
                                     <AgGridColumn width="140" field="Plants" headerName='Plant'></AgGridColumn>

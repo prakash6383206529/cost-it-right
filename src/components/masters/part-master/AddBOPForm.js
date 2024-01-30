@@ -9,7 +9,7 @@ import { BOUGHTOUTPARTSPACING, DIMENSIONLESS, SPACEBAR } from '../../../config/c
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
-import { onFocus } from '../../../helper';
+import { getConfigurationKey, onFocus, showBopLabel } from '../../../helper';
 
 class AddBOPForm extends Component {
   static contextType = PartEffectiveDate
@@ -207,7 +207,7 @@ class AddBOPForm extends Component {
           <Row>
 
             <Col md="6">
-              <label>{"BOP Part No."}<span className="asterisk-required">*</span></label>
+              <label>{`${showBopLabel()}  Part No.`}<span className="asterisk-required">*</span></label>
               <div className='p-relative'>
                 {this.state.isLoader && <LoaderCustom customClass="input-loader" />}
                 <AsyncSelect
@@ -217,7 +217,7 @@ class AddBOPForm extends Component {
                   cacheOptions
                   loadOptions={promiseOptions}
                   onChange={(e) => this.handleBOPPartChange(e)}
-                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the BOP numbers' : "No results found"}
+                  noOptionsMessage={({ inputValue }) => !inputValue ? `Please enter first few digits to see the ${showBopLabel()}  numbers` : "No results found"}
                   onBlur={() => this.setState({ showErrorOnFocus: true })}
                   onKeyDown={(onKeyDown) => {
                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -228,7 +228,7 @@ class AddBOPForm extends Component {
             </Col>
             <Col md="6">
               <Field
-                label={`BOP Part Name`}
+                label={`${showBopLabel()}  Part Name`}
                 name={"BOPPartName"}
                 type="text"
                 placeholder={""}
@@ -243,7 +243,7 @@ class AddBOPForm extends Component {
 
             <Col md="6">
               <Field
-                label={`BOP Category`}
+                label={`${showBopLabel()}  Category`}
                 name={"BOPCategory"}
                 type="text"
                 placeholder={""}

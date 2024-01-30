@@ -58,3 +58,13 @@ export function showSaLineNumber() {
 export function handleDepartmentHeader() {
   return getConfigurationKey().ManageCompanyOrDepartmentLabel
 }
+//FUNCTION TO HANDLE BOP LABEL 
+export function showBopLabel() {
+  return getConfigurationKey().BOPLabel
+}
+
+/* function to handle freight and shearing cost fields*/
+export function IsShowFreightAndShearingCostFields() {
+  const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
+  return configurationKey.IsShowFreightAndShearingCostFields
+}

@@ -7,7 +7,7 @@ import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREA
 import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getAllSimulationBoughtOutPart, getVerifyBoughtOutPartSimulationList, getverifyCombinedProcessSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel } from '../../../helper';
 import Toaster from '../../common/Toaster';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -462,6 +462,11 @@ function VerifySimulation(props) {
         return isMasterAssociatedWithCosting ? (row?.BoughtOutPartCode ? row?.BoughtOutPartCode : '-') : (row?.BoughtOutPartNumber ? row?.BoughtOutPartNumber : '-')
     }
 
+    const combinedProcessCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    }
+
     const existingBasicFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return isMasterAssociatedWithCosting ? (row?.OldBoughtOutPartRate ? row?.OldBoughtOutPartRate : '-') : (row?.OldBOPRate ? row?.OldBOPRate : '-')
@@ -780,7 +785,8 @@ function VerifySimulation(props) {
         bopNumberFormatter: bopNumberFormatter,
         existingBasicFormatter: existingBasicFormatter,
         newRMBasicRateFormatter: newRMBasicRateFormatter,
-        partTypeFormatter: partTypeFormatter
+        partTypeFormatter: partTypeFormatter,
+        combinedProcessCostFormatter: combinedProcessCostFormatter
     };
 
     return (
@@ -855,8 +861,8 @@ function VerifySimulation(props) {
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" tooltipField="RMGrade" headerName="Grade" ></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={145} field="ProcessName" tooltipField="ProcessName" headerName="Process Name"></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={150} field="MachineNumber" tooltipField="MachineNumber" headerName="Machine Number"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" tooltipField="BoughtOutPartCode" headerName="BOP Number" cellRenderer={"bopNumberFormatter"}></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField="BoughtOutPartName" cellRenderer='BoughtOutPartName' headerName="BOP Name"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" tooltipField="BoughtOutPartCode" headerName={`${showBopLabel()}  Number`} cellRenderer={"bopNumberFormatter"}></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField="BoughtOutPartName" cellRenderer='BoughtOutPartName' headerName={`${showBopLabel()}  Name`}></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" tooltipField="OperationCode" headerName="Operation Code"></AgGridColumn>}
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
@@ -888,10 +894,9 @@ function VerifySimulation(props) {
                                             {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" tooltipField="OldExchangeRate" headerName="Existing Exchange Rate"></AgGridColumn>}
                                             {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" tooltipField="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="Revised Exchange Rate"></AgGridColumn>}
 
-                                            {/* {isCombinedProcess && <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>} */}
-                                            {/* {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName="Revised PO Price" cellRenderer='decimalFormatter'></AgGridColumn>}          						//RE
-                                            {isCombinedProcess && <AgGridColumn width={145} field="OldNetCC" headerName="Existing CC" cellRenderer='decimalFormatter'></AgGridColumn>}          						//RE
-                                            {isCombinedProcess && <AgGridColumn width={150} field="NewNetCC" cellRenderer='newCCFormatter' headerName="Revised CC"></AgGridColumn>}          						//RE */}
+                                            {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName="Revised Net Cost (INR)" cellRenderer='combinedProcessCostFormatter'></AgGridColumn>}
+                                            {isCombinedProcess && <AgGridColumn width={145} field="OldNetCC" headerName="Existing CC" cellRenderer='combinedProcessCostFormatter'></AgGridColumn>}
+                                            {isCombinedProcess && <AgGridColumn width={150} field="NewNetCC" cellRenderer='combinedProcessCostFormatter' headerName="Revised CC" ></AgGridColumn>}
 
                                             {isMultiTechnology && <AgGridColumn width={150} field="Delta" tooltipField="Delta" headerName="Delta"></AgGridColumn>}
                                             {isMultiTechnology && <AgGridColumn width={150} field="DeltaSign" tooltipField="DeltaSign" headerName="DeltaSign"></AgGridColumn>}

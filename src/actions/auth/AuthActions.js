@@ -983,10 +983,11 @@ export function getSimulationLevelDataList(callback) {
  * @method getAllTechnologyAPI
  * @description Used to fetch plant list
  */
-export function getAllTechnologyAPI(callback, data) {
+export function getAllTechnologyAPI(callback, data, manageLevel = false) {
+    const listFor = manageLevel ? data ?? "" : data ?? "users"
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTechnology}?ListFor=${data ?? 'Users'}`, config());
+        const request = axios.get(`${API.getTechnology}?ListFor=${listFor}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

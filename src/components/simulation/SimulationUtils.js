@@ -119,7 +119,7 @@ export const checkForChangeInOverheadProfit3Values = (item) => {
 
 export const impactmasterDownload = (impactedMasterData) => {
     let rmArraySet = [], bopArraySet = []
-    let operationArraySet = [], erArraySet = [], combinedProcessArraySet = [], surfaceTreatmentArraySet = [], machineArraySet = []                  //RE
+    let operationArraySet = [], erArraySet = [], combinedProcessArraySet = [], surfaceTreatmentArraySet = [], machineArraySet = []
 
     impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
         let tempObj = []
@@ -191,17 +191,17 @@ export const impactmasterDownload = (impactedMasterData) => {
         erArraySet.push(tempObj)
         return null
     })
-    // impactedMasterData?.CombinedProcessImpactedMasterDataList && impactedMasterData?.CombinedProcessImpactedMasterDataList.map((item) => {                  //RE
-    //     let tempObj = []
+    impactedMasterData?.CombinedProcessImpactedMasterDataList && impactedMasterData?.CombinedProcessImpactedMasterDataList.map((item) => {
+        let tempObj = []
 
-    //     tempObj.push(item.PartNumber)
-    //     tempObj.push(item.OldPOPrice)
-    //     tempObj.push(item.NewPOPrice)
-    //     tempObj.push(item.OldNetCC)
-    //     tempObj.push(item.NewPOPrice)
-    //     tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
-    //     combinedProcessArraySet.push(tempObj)
-    // })
+        tempObj.push(item.PartNumber)
+        tempObj.push(item.OldPOPrice)
+        tempObj.push(item.NewPOPrice)
+        tempObj.push(item.OldNetCC)
+        tempObj.push(item.NewPOPrice)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
+        combinedProcessArraySet.push(tempObj)
+    })
 
     impactedMasterData?.MachineProcessImpactedMasterDataList && impactedMasterData?.MachineProcessImpactedMasterDataList.map((item) => {
         let tempObj = []
@@ -239,10 +239,10 @@ export const impactmasterDownload = (impactedMasterData) => {
             columns: ERImpactDownloadArray,
             data: erArraySet
         }, {
-            //     ySteps: 5,                  //RE
-            //     columns: CPImpactDownloadArray,
-            //     data: combinedProcessArraySet
-            // }, {
+            ySteps: 5,
+            columns: CPImpactDownloadArray,
+            data: combinedProcessArraySet
+        }, {
             ySteps: 5,
             columns: MachineImpactDownloadArray,
             data: machineArraySet

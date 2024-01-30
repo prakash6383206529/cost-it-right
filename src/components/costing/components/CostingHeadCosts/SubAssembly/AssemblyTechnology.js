@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NetPOPriceContext, costingInfoContext } from '../../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, loggedInUserId, } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, loggedInUserId, showBopLabel, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import EditPartCost from './EditPartCost';
@@ -454,10 +454,10 @@ function AssemblyTechnology(props) {
                                     <button
                                         type="button"
                                         className={'user-btn add-oprn-btn'}
-                                        title={"Add BOP Handling"}
+                                        title={`Add ${showBopLabel()}  Handling`}
                                         onClick={() => { setIsOpenBOPDrawer(true) }}
                                     >
-                                        <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+                                        <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>
                                 </>
                             }
                             <button

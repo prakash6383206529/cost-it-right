@@ -11,7 +11,7 @@ import BulkUpload from "../../massUpload/BulkUpload";
 import { BOP_IMPORT_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import LoaderCustom from "../../common/LoaderCustom";
 import { BopImport, BOP_MASTER_ID } from "../../../config/constants";
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, updateBOPValues, userDepartmetList, } from "../../../helper";
 import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -736,7 +736,9 @@ const BOPImportListing = (props) => {
         : allBopDataList
           ? allBopDataList
           : [];
-    return returnExcelColumn(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr);
+    const bopMasterName = showBopLabel();
+    const { updatedLabels, updatedTempData } = updateBOPValues(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr, bopMasterName);
+    return returnExcelColumn(updatedLabels, updatedTempData)
   };
 
   const returnExcelColumn = (data = [], TempData) => {
@@ -983,30 +985,29 @@ const BOPImportListing = (props) => {
                             <>
                               <Button className={"user-btn mr5"} id={"bopImportingListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
 
-                              <ExcelFile filename={"BOP Import"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-bop-import"} className="p-absolute" />}>
+                              <ExcelFile filename={`${showBopLabel()} Import`} fileExtension={".xls"} element={<Button id={"Excel-Downloads-bop-import"} className="p-absolute" />}>
                                 {onBtExport()}
                               </ExcelFile>
                             </>
                           )}
+
+                          <Button id={"bopImportingListing_refresh"} className={"user-btn mr-1"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                         </>
                       )}
-
-
-                      <Button
-                        id={"bopImportingListing_refresh"} className={"user-btn mr-1"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
-                      {props.isSimulation && props.isFromVerifyPage && (
-                        <button type="button" className={"apply"} onClick={cancel}                        >
-                          <div className={"back-icon"}></div>Back123
-                        </button>
-                        // <Button
-                        //   id={"bopImportingListing_back"}
-                        //   className={"apply"}
-                        //   onClick={cancel}
-                        //   icon={"back-icon"}
-                        //   buttonName={"Back"}
-                        // />
-                      )}
                     </div>
+                    {props.isSimulation && props.isFromVerifyPage && (
+                      <button type="button" className={"apply"} onClick={cancel}                        >
+                        <div className={"back-icon"}></div>Back123
+                      </button>
+                      // <Button
+                      //   id={"bopImportingListing_back"}
+                      //   className={"apply"}
+                      //   onClick={cancel}
+                      //   icon={"back-icon"}
+                      //   buttonName={"Back"}
+                      // />
+                    )}
+
                   </Col>
                 </Row>
               </form>
@@ -1045,9 +1046,9 @@ const BOPImportListing = (props) => {
                       >
                         {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                         <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={"costingHeadFormatter"}></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartNumber" headerName="BOP No."></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} No.`}></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Name`}></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                         <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                         <AgGridColumn field="Specification" headerName="Specification" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                         <AgGridColumn field="Plants" cellRenderer={"hyphenFormatter"} headerName="Plant (Code)"></AgGridColumn>
@@ -1057,7 +1058,7 @@ const BOPImportListing = (props) => {
                         {getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn>}
                         {getConfigurationKey().IsMinimumOrderQuantityVisible && (<AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>)}
                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
-                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>)}
+                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${showBopLabel()}`}></AgGridColumn>)}
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
                         <AgGridColumn field="Currency"></AgGridColumn>
                         <AgGridColumn field="BasicRate" headerName="Basic Rate (Currency)" cellRenderer={"commonCostFormatter"} ></AgGridColumn>
@@ -1132,8 +1133,7 @@ const BOPImportListing = (props) => {
               )}
             </>
           )}
-          {isBulkUpload && (<BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={"BOP Import"} isZBCVBCTemplate={true} messageLabel={"BOP Import"} anchor={"right"} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_IMPORT} />
-          )}
+          {isBulkUpload && (<BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`${showBopLabel()} Import`} isZBCVBCTemplate={true} messageLabel={`${showBopLabel()} Import`} anchor={"right"} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_IMPORT} />)}
 
           {state.analyticsDrawer && (
             <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={2} closeDrawer={closeAnalyticsDrawer} anchor={"right"} importEntry={true} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} import={true} />

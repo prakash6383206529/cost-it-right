@@ -185,8 +185,8 @@ function Simulation(props) {
         dispatch(setSimulationApplicability(''))
         setValue('Applicability', '')
         setShowCustomer(false)
-        if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value)) && checkForNull(value.value) !== ASSEMBLY_TECHNOLOGY_MASTER) {
-
+        setShowCustomer(false)
+        if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value)) && checkForNull(value.value) !== ASSEMBLY_TECHNOLOGY_MASTER && value.value !== COMBINED_PROCESS) {
             setSelectionForListingMasterAPI('Master')
             if (checkForNull(value.value) === Number(EXCHNAGERATE)) {
                 // setShowTokenDropdown(false)
@@ -203,6 +203,10 @@ function Simulation(props) {
                 // vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
             }
             dispatch(getTokenSelectListAPI(obj, () => { }))
+        }
+        if (value.value === COMBINED_PROCESS) {
+            setShowVendor(true)
+            setShowCustomer(true)
         }
         if (checkForNull(value.value) === ASSEMBLY_TECHNOLOGY_MASTER) {
             // SINCE WE ARE IN MASTER HANDLE CHANGE, TO SET VALUE OF ASSEMBLY TECHNOLOGY IN DROPDOWN WE NEED TO GET DYNAMIC VALUE FROM DROPDOWN API'S REDUCER
@@ -259,7 +263,7 @@ function Simulation(props) {
     }
 
     const handleTechnologyChange = (value) => {
-        if (checkForNull(value?.value) === ASSEMBLY && Number(master) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) {
+        if ((checkForNull(value?.value) === ASSEMBLY && Number(master) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS)) {
             setTechnology(value)
             setShowMasterList(false)
             // dispatch(setTechnologyForSimulation(value))                //RE
@@ -580,7 +584,7 @@ function Simulation(props) {
                 case SURFACETREATMENT:
                     return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={SURFACETREATMENT} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' stopAPICall={false} approvalStatus={APPROVED_STATUS} />)
                 case COMBINED_PROCESS:
-                    return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                    return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} customerId={customer.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
 
                 // case BOPIMPORT:
                 //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)

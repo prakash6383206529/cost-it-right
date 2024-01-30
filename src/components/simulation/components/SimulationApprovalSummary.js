@@ -18,7 +18,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, COMBINED_PROCESS, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBC, VBCTypeId, CBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails, getCodeBySplitting, handleDepartmentHeader, showSaLineNumber } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails, getCodeBySplitting, handleDepartmentHeader, showSaLineNumber, showBopLabel } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -306,7 +306,7 @@ function SimulationApprovalSummary(props) {
             impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
-        // && impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0               //RE
+            && impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0
         if (lastRevisionDataAccordian && check) {
             Toaster.warning('There is no data for the Last Revision.')
             setEditWarning(true)
@@ -322,7 +322,7 @@ function SimulationApprovalSummary(props) {
         setShowRMColumn(keysForDownloadSummary?.IsRawMaterialSimulation === true ? true : false)
         setShowExchangeRateColumn(keysForDownloadSummary?.IsExchangeRateSimulation === true ? true : false)
         setShowMachineRateColumn(keysForDownloadSummary?.IsMachineProcessSimulation === true ? true : false)
-        // setShowCombinedProcessColumn(keysForDownloadSummary?.IsCombinedProcessSimulation === true ? true : false)               //RE
+        setShowCombinedProcessColumn(keysForDownloadSummary?.IsCombinedProcessSimulation === true ? true : false)
 
         setTimeout(() => {
 
@@ -349,7 +349,7 @@ function SimulationApprovalSummary(props) {
                         BoughtOutPartImpactedMasterDataList: [],
                         SurfaceTreatmentImpactedMasterDataList: [],
                         MachineProcessImpactedMasterDataList: [],
-                        // CombinedProcessImpactedMasterDataList: []               //RE
+                        CombinedProcessImpactedMasterDataList: []               //RE
                     }
 
                     let masterId
@@ -564,7 +564,6 @@ function SimulationApprovalSummary(props) {
                 listCP = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADCP, ['SANumber', 'LineNumber']);
                 listER = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADER, ['SANumber', 'LineNumber']);
             }
-
             switch (String(SimulationTechnologyId)) {
                 case RMDOMESTIC:
                 case RMIMPORT:
@@ -1334,7 +1333,7 @@ function SimulationApprovalSummary(props) {
                                     toggle={() => tooltipToggle(item.CostingId)}
                                     target={`bop-tooltip${item.CostingId}`}
                                 >
-                                    {"This part is impacted by BOP costing"}
+                                    {`This part is impacted by ${showBopLabel()}  costing`}
                                 </Tooltip>
                             })
                         }
@@ -1448,10 +1447,10 @@ function SimulationApprovalSummary(props) {
 
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BoughtOutPartName" headerName="Bought Out Part Name" cellRenderer='bopNameFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="Bought Out Part Number" cellRenderer='bopNumberFormatter'></AgGridColumn>}
-                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName={`Existing BOP ${isMasterAssociatedWithCosting ? 'Cost' : 'Rate'}`} cellRenderer='oldBOPFormatter' ></AgGridColumn>}
-                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="Revised BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName={`Existing ${showBopLabel()}  ${isMasterAssociatedWithCosting ? 'Cost' : 'Rate'}`} cellRenderer='oldBOPFormatter' ></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName={`Revised ${showBopLabel()}  Cost`} cellRenderer='newBOPFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && !isMasterAssociatedWithCosting && <AgGridColumn width={140} field="PercentageChange" headerName="Percentage" cellRenderer='percentageFormatter'></AgGridColumn>}
-                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="Variance (BOP Cost)" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName={`Variance ({showBopLabel()}  Cost)`} cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="OldNetProcessCost" headerName="Existing Net Process Cost" cellRenderer='processFormatter' ></AgGridColumn>}
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NewNetProcessCost" headerName="Revised Net Process Cost" cellRenderer='processFormatter' ></AgGridColumn>}

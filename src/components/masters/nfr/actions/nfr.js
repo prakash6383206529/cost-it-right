@@ -3,6 +3,7 @@ import axios from 'axios';
 import {
     API,
     API_FAILURE,
+    API_REQUEST,
     NFR_DETAILS_FOR_DISCOUNT,
     SET_OPEN_ALL_TABS,
     config,
@@ -15,7 +16,7 @@ import Toaster from '../../../common/Toaster';
 export function getAllNfrList(callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getAllNfrList}?departmentCode=${userDepartmetList()}`, config());
+        const request = axios.get(API.getAllNfrList, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
@@ -225,10 +226,7 @@ export function saveNFRCostingInfo(data, callback) {
     };
 }
 
-/**
- * @method saveOutsourcingData
- * @description save Outsourcing Data
- */
+
 export function saveOutsourcingData(requestData, callback) {
     return (dispatch) => {
         axios.post(API.saveOutsourcingData, requestData, config())
@@ -327,6 +325,42 @@ export function pushNfrRmBopOnSap(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 callback(error);
+            });
+    };
+}
+
+/**
+ * @method createNFRBOMDetails
+ * @description create NFR BOM Details
+ */
+export function createNFRBOMDetails(requestData, callback) {
+    return (dispatch) => {
+        axios.post(API.createNFRBOMDetails, requestData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method deleteNFRDetailAPI
+ * @description delete NFR Detail API 
+ */
+export function deleteNFRDetailAPI(nfrId, loggedInUserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParams = `nfrId=${nfrId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteNFRDetailAPI}?${queryParams}`, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
             });
     };
 }

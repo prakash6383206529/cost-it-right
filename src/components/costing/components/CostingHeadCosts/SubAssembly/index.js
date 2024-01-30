@@ -4,7 +4,7 @@ import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTw
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
 import { getCostingLabourDetails, getRMCCTabData, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setIsBreakupBoughtOutPartCostingFromAPI, setRMCCData } from '../../../actions/Costing';
-import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, loggedInUserId, } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, loggedInUserId, showBopLabel, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { CostingStatusContext, IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
 import { ASSEMBLYNAME, EMPTY_GUID, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
@@ -318,7 +318,7 @@ function AssemblyPart(props) {
                   type="button"
                   className={'user-btn add-oprn-btn mr-1'}
                   onClick={bopHandlingDrawer}>
-                  <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+                  <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()}  H`}</button>
                 </>
               }
               {

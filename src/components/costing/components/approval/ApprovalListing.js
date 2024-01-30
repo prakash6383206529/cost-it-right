@@ -852,7 +852,7 @@ function ApprovalListing(props) {
           }
         }
         else {
-          setShowFinalLevelButton(!res.data.Data.IsFinalApprover)
+          setShowFinalLevelButton(res.data.Data.IsFinalApprover)
           setApproveDrawer(true)
         }
       }

@@ -62,6 +62,10 @@ function LabourListing(props) {
   const dispatch = useDispatch();
   const { labourDataList, topAndLeftMenuData } = useSelector(state => ({ labourDataList: state.labour.labourDataList, topAndLeftMenuData: state.auth.topAndLeftMenuData, }));
   useEffect(() => {
+    if (!topAndLeftMenuData) {
+      setState(prevState => ({ ...prevState, isLoader: true }));
+      return;
+    }
     if (topAndLeftMenuData !== undefined) {
       applyPermission(topAndLeftMenuData)
       setState((prevState) => ({ ...prevState, isLoader: true }))
@@ -197,6 +201,9 @@ function LabourListing(props) {
     const labour = labourType ? labourType.value : 0
     const machine = machineType ? machineType.value : 0
     getTableListData(ETerms, State, Plant, labour, machine)
+    setTimeout(() => {
+      setState(prevState => ({ ...prevState, isLoader: false }));
+    }, 400);
   }
 
   const formToggle = () => {

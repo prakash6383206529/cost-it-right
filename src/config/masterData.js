@@ -89,7 +89,7 @@ export const RMDomesticZBC = [
     { label: "ShearingCost", value: "ShearingCost" }, //*    // KEEP COMMENTED ON RE						//RE
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
-]
+]/* .filter(item => IsShowFreightAndShearingCostFields() || item.value !== 'FreightCost' && item.value !== 'ShearingCost'); */
 
 export const RMDomesticZBCTempData = [
     {
@@ -2047,7 +2047,7 @@ export const BOP_ZBC_DOMESTIC = [
 
 export const BOP_ZBC_DOMESTIC_TempData = [
     {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2059,7 +2059,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2071,7 +2071,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2108,7 +2108,7 @@ export const BOP_VBC_DOMESTIC = [
 
 export const BOP_VBC_DOMESTIC_TempData = [
     {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2125,7 +2125,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2142,7 +2142,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2179,7 +2179,7 @@ export const BOP_DETAILED_DOMESTIC = [
 
 export const BOP_DETAILED_DOMESTIC_TempData = [
     {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2195,7 +2195,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2211,7 +2211,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2251,7 +2251,7 @@ export const BOP_ZBC_IMPORT = [
 
 export const BOP_ZBC_IMPORT_TempData = [
     {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2267,7 +2267,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2283,7 +2283,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2317,7 +2317,7 @@ export const BOP_CBC_DOMESTIC = [
 
 export const BOP_CBC_DOMESTIC_TempData = [
     {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2330,7 +2330,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2343,7 +2343,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2385,7 +2385,7 @@ export const BOP_DETAILED_IMPORT = [
 
 export const BOP_DETAILED_IMPORT_TempData = [
     {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2404,7 +2404,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2423,7 +2423,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2471,7 +2471,7 @@ export const BOP_VBC_IMPORT = [
 
 export const BOP_VBC_IMPORT_TempData = [
     {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2489,7 +2489,7 @@ export const BOP_VBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2507,7 +2507,7 @@ export const BOP_VBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2546,7 +2546,7 @@ export const BOP_CBC_IMPORT = [
 
 export const BOP_CBC_IMPORT_TempData = [
     {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2562,7 +2562,7 @@ export const BOP_CBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -2578,7 +2578,7 @@ export const BOP_CBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartNumber': 'Part123',
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
@@ -7986,3 +7986,21 @@ export const partTypeDropdownList = [
 
 export const DETAILED_BOP = "Detailed BOP"
 export const DETAILED_BOP_ID = "3"
+
+export const PART_TYPE_LIST_FOR_NFR = [
+    { label: "Component (Customized)", value: 1 },
+    { label: "BOP (Standard)", value: 2 },
+    { label: "Raw Material", value: 3 },
+]
+
+export const NFR_COMPONENT_CUSTOMIZED_ID = 1
+export const NFR_BOP_STANDARD_ID = 2
+export const NFR_RAW_MATERIAL_ID = 3
+
+export const NFR_COMPONENT_CUSTOMIZED_LABEL = 'Component (Customized)'
+export const NFR_BOP_STANDARD_LABEL = 'BOP (Standard)'
+export const NFR_RAW_MATERIAL_LABEL = 'Raw Material'
+
+export const NFR_COMPONENT_CUSTOMIZED_NAME = 'Part'
+export const NFR_BOP_STANDARD_NAME = 'BoughtOutPart'
+export const NFR_RAW_MATERIAL_NAME = 'RawMaterial'

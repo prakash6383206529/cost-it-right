@@ -11,7 +11,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, userDepartmetList, updateBOPValues } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -30,6 +30,8 @@ import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import { ApplyPermission } from ".";
 import { useRef } from 'react';
+
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -140,7 +142,6 @@ const BOPDomesticListing = (props) => {
         setState((prevState) => ({ ...prevState, isLoader: false }))
       }))
     } else {
-
       setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false }))
       if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
         if (props.isSimulation) {
@@ -605,7 +606,9 @@ const BOPDomesticListing = (props) => {
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allBopDataList ? allBopDataList : [])
-    return returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr)
+    const bopMasterName = showBopLabel();
+    const { updatedLabels, updatedTempData } = updateBOPValues(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr, bopMasterName);
+    return returnExcelColumn(updatedLabels, updatedTempData)
   };
 
   const returnExcelColumn = (data = [], TempData) => {
@@ -783,25 +786,17 @@ const BOPDomesticListing = (props) => {
           </Col>
           <Col md="9" lg="9" className="mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
-              {state.shown ? (<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}>
-                <div className="cancel-icon-white"></div></button>
-                // <Button type="button" className="user-btn mr5 filter-btn-top" onClick={handleShown()} icon="cancel-icon-white"/>
-              ) : (<>   </>)}
-
               {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <div className="warning-message d-flex align-items-center"> {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-              </div>
-              }
-
+              </div>}
               {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <Button id="bopDomesticListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
               }
-
               {permissions?.Add && (<Button id="bopDomesticListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />)}
               {permissions?.BulkUpload && (<Button id="bopDomesticListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
               {
                 permissions?.Download &&
                 <>
                   <Button className="mr5" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                  <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
+                  <ExcelFile filename={`${showBopLabel()} Domestic`} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
                     {onBtExport()}
                   </ExcelFile>
                 </>
@@ -839,9 +834,9 @@ const BOPDomesticListing = (props) => {
                 suppressRowClickSelection={true}
                 enableBrowserTooltips={true}  >
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                 <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                 <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
@@ -857,7 +852,7 @@ const BOPDomesticListing = (props) => {
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
 
                 <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
-                {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}
+                {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${showBopLabel()}`}></AgGridColumn>}
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                 {!props?.isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
@@ -878,7 +873,7 @@ const BOPDomesticListing = (props) => {
           </div>
         </Col>
       </Row>
-      {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'BOP Domestic'} isZBCVBCTemplate={true} messageLabel={'BOP Domestic'} anchor={'right'} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_DOMESTIC} />}
+      {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`${showBopLabel()} Domestic`} isZBCVBCTemplate={true} messageLabel={`${showBopLabel()} Domestic`} anchor={'right'} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_DOMESTIC} />}
       {state.analyticsDrawer && <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={2} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} />}
       {state.attachment && (<Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={'right'} gridListing={true} />)}
       {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />}

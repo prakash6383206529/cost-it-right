@@ -861,12 +861,12 @@ function ApprovalSummary(props) {
                       {"Repush"}
                     </button>
                   }
-                  {approvalData.IsNFRPFS2PushedButtonShow &&
+                  {approvalData.IsNFRPFS2PushedButtonShow && !IsRegularized &&
                     <button type={'button'} className="submit-button mr5 save-btn" onClick={pushTonfr} >
                       {'Push To Nfr for PFS2'}
                     </button>
                   }
-                  {approvalData.IsNFRPFS3PushedButtonShow &&
+                  {approvalData.IsNFRPFS3PushedButtonShow && IsRegularized &&
                     <button type={'button'} className="submit-button mr5 save-btn" onClick={pushTonfr} >
                       {'Push To Nfr for PFS3'}
                     </button>

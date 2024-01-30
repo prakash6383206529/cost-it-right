@@ -11,7 +11,7 @@ import {
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, showBopLabel } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
@@ -1285,7 +1285,7 @@ class AddProfit extends Component {
                         {!isHideBOP && (
                           <Col md="3">
                             <Field
-                              label={`Profit on BOP (%)`}
+                              label={`Profit on ${showBopLabel()}  (%)`}
                               name={"ProfitBOPPercentage"}
                               type="text"
                               placeholder={isBOP || isViewMode ? "-" : "Enter"}

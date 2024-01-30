@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -1364,7 +1364,6 @@ const CostingSummaryTable = (props) => {
     if (!(getConfigurationKey().IsShowNpvCost)) {
       delete templateObj.npvCost
     }
-
     if (!(getConfigurationKey().IsBasicRateAndCostingConditionVisible)) {
       delete templateObj.conditionCost
       delete templateObj.BasicRate
@@ -2145,7 +2144,7 @@ const CostingSummaryTable = (props) => {
                             <tr>
                               <td>
                                 <span className={highlighter("", "rm-reducer")}>Part Cost/Pc</span>
-                                <span className={highlighter("", "finish-reducer")}>BOP Cost/Assembly</span>
+                                <span className={highlighter("", "finish-reducer")}>{showBopLabel()} Cost/Assembly</span>
                                 <span className={highlighter("BurningLossWeight")}>Process Cost/Assembly</span>
                                 <span className={highlighter("ScrapWeight")}>Operation Cost/Assembly</span>
                               </td>
@@ -2344,7 +2343,7 @@ const CostingSummaryTable = (props) => {
                               }
                               {
                                 viewCostingData && !viewCostingData[0]?.CostingPartDetails?.IsBreakupBoughtOutPart && <tr className={highlighter("netBOP", "main-row")}>
-                                  <th>Net BOP Cost {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
+                                  <th>Net {showBopLabel()} Cost {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
 
                                   {viewCostingData &&
                                     viewCostingData?.map((data, index) => {

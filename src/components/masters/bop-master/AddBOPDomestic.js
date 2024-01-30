@@ -11,7 +11,7 @@ import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelect
 import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -891,7 +891,7 @@ class AddBOPDomestic extends Component {
         checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
         checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBaseCurrency) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged) {
         this.setState({ isEditBuffer: true })
-        Toaster.warning('Please change data to send BOP for approval')
+        Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
         return false
       }
       //  ELSE: CHANGE
@@ -1057,7 +1057,7 @@ class AddBOPDomestic extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Domestic)
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} {showBopLabel()} (Domestic)
                           <TourWrapper
                             buttonSpecificProp={{ id: "BOP_Domestic_form" }}
                             stepsSpecificProp={{
@@ -1127,12 +1127,12 @@ class AddBOPDomestic extends Component {
                         </Row>
                         <Row>
                           <Col md="12">
-                            <div className="left-border">{"BOP:"}
+                            <div className="left-border">{`${showBopLabel()}:`}
                             </div>
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`BOP Part Name`}
+                              label={`${showBopLabel()} Part Name`}
                               name={"BoughtOutPartName"}
                               id='bop_part_name_form_zero_based'
                               type="text"
@@ -1152,7 +1152,7 @@ class AddBOPDomestic extends Component {
                                 <Field
                                   name="BOPCategory"
                                   type="text"
-                                  label="BOP Category"
+                                  label={`${showBopLabel()} Category`}
                                   component={searchableSelect}
                                   placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("BOPCategory")}
@@ -1177,7 +1177,7 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`BOP Part No`}
+                              label={`${showBopLabel()} Part No`}
                               name={"BoughtOutPartNumber"}
                               id='bop_part_number_form_zero_based'
                               type="text"
@@ -1253,7 +1253,7 @@ class AddBOPDomestic extends Component {
                                   className={`custom-checkbox`}
                                   onChange={this.breakUpHandleChange}
                                 >
-                                  Detailed BOP
+                                  Detailed ${showBopLabel()}
                                   <input
                                     type="checkbox"
                                     checked={isTechnologyVisible}

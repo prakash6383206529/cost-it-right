@@ -52,7 +52,7 @@ function VerifyImpactDrawer(props) {
       impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList?.length <= 0
-    // && impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0                 //RE
+      && impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0
     if (lastRevisionDataAcc && check) {
       Toaster.warning('There is no data for the Last Revision.')
       setEditWarning(true)
@@ -161,7 +161,7 @@ function VerifyImpactDrawer(props) {
                 </Row>
               }
               <Row className="mb-3 pr-0 mx-0">
-                {/* <Col md="12">                 //RE
+                {/* <Col md="12">          
           {fgWiseAcc && <ErrorMessage />}
         </Col> */}
 

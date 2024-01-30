@@ -3,7 +3,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
 import { DatePickerHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, showBopLabel, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../config/constants';
@@ -209,7 +209,7 @@ function ManageSOBDrawer(props) {
     reset()
     dispatch(updateBOPSOBVendors(data, (res) => {
       if (res && res.data && res.data.Result) {
-        Toaster.success('BOP Vendors SOB updated successfully.')
+        Toaster.success(`${showBopLabel()}  Vendors SOB updated successfully.`)
         props.closeDrawer('a', 'submit')
       }
     }))
@@ -331,7 +331,7 @@ function ManageSOBDrawer(props) {
 
                       {
                         GridData && <tr className="sob-background">
-                          <td>{'BOP Cost'}</td>
+                          <td>{`${showBopLabel()}  Cost`}</td>
                           <td>{''}</td>
                           <td>{`Net Cost (Weighted Average):`}</td>
                           <td>{`${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>

@@ -3,7 +3,7 @@ import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForNull, CheckIsCostingDateSelected } from '../../../../helper';
+import { checkForNull, CheckIsCostingDateSelected, getConfigurationKey, showBopLabel } from '../../../../helper';
 import { SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import AddBOPHandling from '../Drawers/AddBOPHandling';
@@ -316,7 +316,7 @@ function TabAssemblyTechnology(props) {
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Part Cost/Pc`}</th>
                           {/* <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Operation Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Process Cost`}</th> */}
-                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`BOP Cost`}</th>
+                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`${showBopLabel()}  Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Part Cost/Assembly`}</th>
                           {/* <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Action`}</th> */}
                           {

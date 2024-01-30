@@ -297,7 +297,6 @@ const AssemblyPartListing = React.memo((props) => {
   const onBtExport = useCallback(() => {
     // Use the selectedRowData for export
     const tempArr = selectedRowData.length > 0 ? selectedRowData : tableData;
-    // 
     return returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr);
   }, [selectedRowData, tableData]);
 

@@ -119,37 +119,39 @@ function RawMaterialCost(props) {
       return null
     })
     setForgingInfoIcon(temp)
-    let obj = {
-      nfrId: nfrDetailsForDiscount?.objectFordisc?.NfrMasterId,
-      partId: costData?.PartId,
-      vendorId: costData?.VendorId,
-      plantId: costData?.DestinationPlantId,
-      costingId: item.CostingId,
-      effectiveDate: CostingEffectiveDate,
-      technologyId: costData?.TechnologyId
-    }
-    dispatch(getRMFromNFR(obj, (res) => {
-      if (res?.data?.Result && res?.status === 200) {
-        let data = res?.data?.DataList
-        if (data?.length > 0) {
-          setDataInNFRAPI(true)
-          let tempList = data && data?.map(item => {
-            let obj = { ...item }
-            let scrapWeight = item.GrossWeight - item.FinishWeight
-            obj.RMRate = (obj.EntryType === 'Domestic') ? obj.NetLandedCost : obj.NetLandedCostConversion
-            obj.RMName = `${obj.RawMaterial} - ${obj.RMGrade}`
-            obj.NetLandedCost = calculateNetLandedCost(item.BasicRatePerUOM, item.GrossWeight, scrapWeight, item.ScrapRate)
-            // obj.FinishWeight = obj.FinishWeight
-            obj.ScrapWeight = scrapWeight
-            obj.dataFromNFRAPI = true
-            return obj
-          })
-          setGridData(tempList)
-        } else {
-          setDataInNFRAPI(false)
-        }
+    if (isNFR) {
+      let obj = {
+        nfrId: nfrDetailsForDiscount?.objectFordisc?.NfrMasterId,
+        partId: costData?.PartId,
+        vendorId: costData?.VendorId,
+        plantId: costData?.DestinationPlantId,
+        costingId: item.CostingId,
+        effectiveDate: CostingEffectiveDate,
+        technologyId: costData?.TechnologyId
       }
-    }))
+      dispatch(getRMFromNFR(obj, (res) => {
+        if (res?.data?.Result && res?.status === 200) {
+          let data = res?.data?.DataList
+          if (data?.length > 0) {
+            setDataInNFRAPI(true)
+            let tempList = data && data?.map(item => {
+              let obj = { ...item }
+              let scrapWeight = item.GrossWeight - item.FinishWeight
+              obj.RMRate = (obj.EntryType === 'Domestic') ? obj.NetLandedCost : obj.NetLandedCostConversion
+              obj.RMName = `${obj.RawMaterial} - ${obj.RMGrade}`
+              obj.NetLandedCost = calculateNetLandedCost(item.BasicRatePerUOM, item.GrossWeight, scrapWeight, item.ScrapRate)
+              // obj.FinishWeight = obj.FinishWeight
+              obj.ScrapWeight = scrapWeight
+              obj.dataFromNFRAPI = true
+              return obj
+            })
+            setGridData(tempList)
+          } else {
+            setDataInNFRAPI(false)
+          }
+        }
+      }))
+    }
     switch (costData.TechnologyName) {
       case 'Sheet Metal':
         return setGridLength(0)
@@ -1278,7 +1280,6 @@ function RawMaterialCost(props) {
       ...prevState,
       steps: Steps(t).RAW_MATERIAL_COST,
     }))
-
   }
 
   const pinHandler = useCallback(() => {

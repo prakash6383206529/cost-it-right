@@ -6,7 +6,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize, CBCTypeId, FORGINGNAME } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting, getAllSimulatedBoughtOutPart, setTechnologyForSimulation } from '../actions/Simulation';
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, showSaLineNumber, userDetails, userTechnologyLevelDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, showSaLineNumber, userDetails, userTechnologyLevelDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -99,7 +99,7 @@ function CostingSimulation(props) {
     const [showSurfaceTreatmentColumn, setShowSurfaceTreatmentColumn] = useState(false);
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
-    const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false);               //RE
+    const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false);
     const [downloadList, setDownloadList] = useState([]);
     const [rejectedList, setRejectedList] = useState([]);
     const [sendInAPIState, setSendInAPIState] = useState([]);
@@ -393,7 +393,6 @@ function CostingSimulation(props) {
                         checkForNull(item.NewExchangeRate).toFixed(TOFIXEDVALUE))
                 }
                 // switch (String(master)) {            //RE
-
                 //     case String(COMBINED_PROCESS):
                 //         item.POVariance = checkForDecimalAndNull(item.OldPOPrice - item.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)
                 //         break;
@@ -519,12 +518,11 @@ function CostingSimulation(props) {
                         setCommonStateForList(res)
                     }))
                     break;
-
-                // case Number(COMBINED_PROCESS):                   //RE
-                //     dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
-                //         setCommonStateForList(res)
-                //     }))
-                //     break;
+                case Number(COMBINED_PROCESS):                   //RE
+                    dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
                 default:
                     break;
             }
@@ -892,7 +890,7 @@ function CostingSimulation(props) {
     const BOPQuantityFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const temp = row.IsMultiBoughtOutPart === true ? 'Multiple BOP' : cell
+        const temp = row.IsMultiBoughtOutPart === true ? `Multiple ${showBopLabel()} ` : cell
         return cell != null ? temp : '-';
     }
 
@@ -1262,7 +1260,7 @@ function CostingSimulation(props) {
         let finalGrid = [], isTokenAPI = false
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
             showExchangeRateColumn === true || showMachineRateColumn === true
-            // || showCombinedProcessColumn === true                    //RE
+            || showCombinedProcessColumn === true
         ) {
             if (showBOPColumn || isBOPDomesticOrImport) {
                 finalGrid = [...finalGrid, ...BOPGridForToken]
@@ -1685,17 +1683,17 @@ function CostingSimulation(props) {
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OperationCostVariance" tooltipField='OperationCostVariance' headerName='Variance (Oper. Cost)' cellRenderer="operVarianceFormatter" ></AgGridColumn>}
 
 
-                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && isSimulationWithCosting && <AgGridColumn width={140} field="BoughtOutPartQuantity" tooltipField='BoughtOutPartQuantity' headerName='BOP Quantity' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
-                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="OldBOPRate" tooltipField='OldBOPRate' headerName='Existing BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
-                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="NewBOPRate" tooltipField='NewBOPRate' headerName='Revised BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
+                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && isSimulationWithCosting && <AgGridColumn width={140} field="BoughtOutPartQuantity" tooltipField='BoughtOutPartQuantity' headerName={`${showBopLabel()}  Quantity`} cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
+                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="OldBOPRate" tooltipField='OldBOPRate' headerName={`Existing ${showBopLabel()}  Rate`} cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
+                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="NewBOPRate" tooltipField='NewBOPRate' headerName={`Revised ${showBopLabel()}  Rate`} cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
 
                                                     {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="OldNetLandedCost" tooltipField='OldNetLandedCost' headerName='Existing Net Landed Cost' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
                                                     {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="NewNetLandedCost" tooltipField='NewNetLandedCost' headerName='Revised Net Landed Cost' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
 
                                                     {!isSimulationWithCosting && <AgGridColumn width={140} field="Variance" tooltipField='Variance' headerName='Variance' cellRenderer='varianceFormatter' ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" tooltipField='OldNetBoughtOutPartCost' headerName='Existing Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" tooltipField='NewNetBoughtOutPartCost' headerName='Revised Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" tooltipField='NetBoughtOutPartCostVariance' headerName='Variance (BOP Cost)' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" tooltipField='OldNetBoughtOutPartCost' headerName={`Existing Net ${showBopLabel()}  Cost`} cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" tooltipField='NewNetBoughtOutPartCost' headerName={`Revised Net ${showBopLabel()}  Cost`} cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" tooltipField='NetBoughtOutPartCostVariance' headerName={`Variance (${showBopLabel()}  Cost)`} cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
 
                                                     {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="OldNetProcessCost" tooltipField='OldNetProcessCost' headerName='Existing Net Process Cost' cellRenderer='processCostFormatter' ></AgGridColumn>}
@@ -1721,9 +1719,9 @@ function CostingSimulation(props) {
                                                     {(isMultiTechnology && hideDataColumn.showChildParts) && <AgGridColumn width={140} field="OldNetChildPartsCostWithQuantity" tooltipField='OldNetChildPartsCostWithQuantity' headerName="Existing Net Child's Part Cost With Quantity" cellRenderer={decimalFormatter}></AgGridColumn>}
                                                     {(isMultiTechnology && hideDataColumn.showChildParts) && <AgGridColumn width={140} field="NewNetChildPartsCostWithQuantity" tooltipField='NewNetChildPartsCostWithQuantity' headerName="Revised Net Child's Part Cost With Quantity" cellRenderer={decimalFormatter}></AgGridColumn>}
                                                     {(isMultiTechnology && hideDataColumn.showChildParts) && <AgGridColumn width={140} field="Variance" tooltipField='Variance' headerName='Variance (w.r.t. Existing)' cellRenderer={decimalFormatter}></AgGridColumn>}
-                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" tooltipField='OldNetBoughtOutPartCost' headerName='Existing Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
-                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" tooltipField='NewNetBoughtOutPartCost' headerName='Revised Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
-                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" tooltipField='NetBoughtOutPartCostVariance' headerName='Variance (BOP Cost)' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
+                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" tooltipField='OldNetBoughtOutPartCost' headerName={`Existing Net ${showBopLabel()}  Cost`} cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
+                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" tooltipField='NewNetBoughtOutPartCost' headerName={`Revised Net ${showBopLabel()}  Cost`} cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
+                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" tooltipField='NetBoughtOutPartCostVariance' headerName={`Variance (${showBopLabel()}  Cost)`} cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
                                                     {/* {showRM && <AgGridColumn width={150} field="RMName" tooltipField="RMName" headerName="RM Name"></AgGridColumn>}
                                                         {showRM && <AgGridColumn width={150} field="RMGrade" tooltipField="RMGrade" headerName="RM Grade"></AgGridColumn>}

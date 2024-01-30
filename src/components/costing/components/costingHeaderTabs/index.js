@@ -62,6 +62,7 @@ function CostingHeaderTabs(props) {
   const CostingEditMode = useContext(EditCostingContext);
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const isPartType = useContext(IsPartType);
+  const isNFR = useContext(IsNFR);
 
   const costingApprovalStatus = useContext(CostingStatusContext);
   const { nfrDetailsForDiscount } = useSelector(state => state.costing)
@@ -293,6 +294,10 @@ function CostingHeaderTabs(props) {
   * @description toggling the tabs
   */
   const toggle = (tab) => {
+    if (isNFR && !CostingViewMode && (CostingDataList[0].NetRMCost === 0 || CostingDataList[0].NetRMCost === null || CostingDataList[0].NetRMCost === undefined) && (tab === '2' || tab === '3' || tab === '4' || tab === '5' || tab === '6')) {
+      Toaster.warning("Please add RM detail before adding the data in this tab.")
+      return false
+    }
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     let tempErrorObjRMCC = { ...ErrorObjRMCC }
     delete tempErrorObjRMCC?.bopGridFields
@@ -368,7 +373,7 @@ function CostingHeaderTabs(props) {
   }
 
   useEffect(() => {
-    if (effectiveDate) {
+    if (isNFR && effectiveDate) {
       let obj = {
         nfrId: nfrDetailsForDiscount?.objectFordisc?.NfrMasterId,
         partId: costData?.PartId,

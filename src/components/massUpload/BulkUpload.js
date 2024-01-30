@@ -18,7 +18,7 @@ import { volumeBulkUpload } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
 import Toaster from '../common/Toaster';
-import { getConfigurationKey, loggedInUserId, userDetails } from "../../helper/auth";
+import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
@@ -228,31 +228,32 @@ class BulkUpload extends Component {
                 if (err) {
 
                 } else {
+
                     fileHeads = resp.rows[0];
                     let checkForFileHead
                     const { fileName } = this.props;
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC, ZBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC, ZBCTypeId), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC, VBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC, VBCTypeId), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), fileHeads, true)
                             }
                             break;
                         case String(RMIMPORTBULKUPLOAD):
 
                             if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMImportZBC), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMImportZBC), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC, VBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC, VBCTypeId), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportCBC, CBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportCBC, CBCTypeId), fileHeads, true)
                             }
                             break;
                         case String(RMSPECIFICATION):
@@ -432,12 +433,12 @@ class BulkUpload extends Component {
                                     fileHeads[i] = 'JaliScrapCost'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapCost') {
                                     fileHeads[i] = 'ScrapRate'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'BOP Domestic' || fileName === 'BOP Import') && fileHeads[i] === 'PlantCode') {
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'PlantCode') {
                                     // } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import') && fileHeads[i] === 'PlantCode') {
                                     fileHeads[i] = 'DestinationPlantCode'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'PlantName') {
                                     fileHeads[i] = 'DestinationPlantName'
-                                } else if ((fileName === 'BOP Domestic' || fileName === 'BOP Import') && fileHeads[i] === 'MinimumOrderQuantity') {
+                                } else if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
                                 }
                                 if (fileHeads[i] === 'InsertPartNumber') {
@@ -464,11 +465,11 @@ class BulkUpload extends Component {
                                     fileHeads[i] = 'JaliScrapCost'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapCost') {
                                     fileHeads[i] = 'ScrapRate'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'BOP Domestic' || fileName === 'BOP Import') && fileHeads[i] === 'PlantCode') {
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'PlantCode') {
                                     fileHeads[i] = 'DestinationPlantCode'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'PlantName') {
                                     fileHeads[i] = 'DestinationPlantName'
-                                } else if ((fileName === 'BOP Domestic' || fileName === 'BOP Import') && fileHeads[i] === 'MinimumOrderQuantity') {
+                                } else if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'Code') {
                                     fileHeads[i] = 'RawMaterialCode'
@@ -499,7 +500,7 @@ class BulkUpload extends Component {
                                 obj[fileHeads[i]] = el;
                                 return null;
                             })
-                            if ((fileName === 'BOP Domestic' || fileName === 'BOP Import') && this.state.costingTypeId === VBCTypeId && this.state.bopType !== DETAILED_BOP) {
+                            if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && this.state.costingTypeId === VBCTypeId && this.state.bopType !== DETAILED_BOP) {
                                 obj.IsBreakupBoughtOutPart = "No"
                             }
                             fileData.push(obj)
@@ -606,7 +607,7 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOP Domestic' || fileName === 'BOP Import') {
+        } else if (fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) {
             // } else if (fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import') {
             masterUploadData.CostingTypeId = (bopType === DETAILED_BOP ? VBCTypeId : masterUploadData.CostingTypeId)
             this.props.bulkUploadBOP(masterUploadData, (res) => {
@@ -798,7 +799,7 @@ class BulkUpload extends Component {
                                                     checked={bopType === DETAILED_BOP ? true : false}
                                                     onClick={() => this.onPressHeads('', DETAILED_BOP)}
                                                 />{' '}
-                                                <span>VBC Detailed BOP</span>
+                                                <span>VBC Detailed {showBopLabel()}</span>
                                             </Label>}
                                             {(reactLocalStorage.getObject('CostingTypePermission').zbc) && isMachineMoreTemplate &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>

@@ -8,6 +8,7 @@ import { PaginationWrapper, onPageSizeChanged } from "../../../common/commonPagi
 import LoaderCustom from "../../../common/LoaderCustom"
 import NoContentFound from "../../../common/NoContentFound"
 import { useSelector } from "react-redux"
+import { getConfigurationKey, showBopLabel } from "../../../../helper"
 
 const gridOptions = {};
 function PipdReportListing(props) {
@@ -268,7 +269,7 @@ function PipdReportListing(props) {
             "Total": "190"
         },
         {
-            "Name": "BOP Cost",
+            "Name": `${showBopLabel()}  Cost`,
             "PriceType": "Price Decrease",
             "1/3/2022": "0",
             "1/4/2022": "0",

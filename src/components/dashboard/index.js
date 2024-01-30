@@ -5,7 +5,7 @@ import { Col, Nav, NavItem, Row, NavLink, TabPane, TabContent } from "reactstrap
 import { reduxForm } from "redux-form";
 import dashboardImg from '../../assests/images/dashboard-img.png';
 import classnames from 'classnames';
-import { CheckApprovalApplicableMaster, getConfigurationKey } from "../../helper";
+import { CheckApprovalApplicableMaster, getConfigurationKey, showBopLabel } from "../../helper";
 import { checkPermission } from "../../helper/util";
 import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
@@ -201,7 +201,7 @@ function Dashboard(props) {
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(BOP_MASTER_ID) && viewMastersObj.BOP) && <NavItem>
                           <NavLink id={`dashboard_BOP_Masters_Approval`} className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
-                            BOP
+                            ${showBopLabel()}
                           </NavLink>
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(OPERATIONS_ID) && viewMastersObj.operation) && <NavItem>

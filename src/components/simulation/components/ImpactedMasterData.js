@@ -30,7 +30,7 @@ export function Impactedmasterdata(props) {
             exchangeRateListing = data?.ExchangeRateImpactedMasterDataList?.length === 0 ? false : true
             bopListing = data?.BoughtOutPartImpactedMasterDataList?.length === 0 || data?.BoughtOutPartImpactedMasterDataList === null ? false : true
             machineListing = data?.MachineProcessImpactedMasterDataList?.length === 0 || data?.MachineProcessImpactedMasterDataList === null ? false : true
-            // combinedProcessListing = (data?.CombinedProcessImpactedMasterDataList?.length > 0) ? true : false                  //RE
+            combinedProcessListing = (data?.CombinedProcessImpactedMasterDataList?.length > 0) ? true : false
         }
         const commonGridColumns = <>
             <AgGridColumn width={140} field="PreviousMinimum" cellRenderer={'nullHandler'} headerName={"Previous Min."} suppressSizeToFit={true}></AgGridColumn>
@@ -56,7 +56,7 @@ export function Impactedmasterdata(props) {
                 {commonGridColumns}
             </BDSimulation>}
             {machineListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.MachineProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} nullHandler={nullHandler}>{commonGridColumns}</MRSimulation>}
-            {/* {combinedProcessListing && <ProcessListingSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.CombinedProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} />}                  //RE */}
+            {combinedProcessListing && <ProcessListingSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.CombinedProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} />}
         </>
         )
 

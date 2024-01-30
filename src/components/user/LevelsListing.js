@@ -60,7 +60,37 @@ const LevelsListing = (props) => {
 	const child = useRef();
 	const searchRef = useRef(null);
 
+	// useEffect(() => {
+	// 	setState(prevState => ({ ...prevState, isLoader: true }));
+
+	// 	if (topAndLeftMenuData !== undefined) {
+	// 		const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+	// 		const accessData = userMenu && userMenu.Pages.find(el => el.PageName === LEVELS)
+	// 		const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions);
+	// 		if (permmisionData !== undefined) {
+	// 			setPermissionData(permmisionData);
+	// 			setState(prevState => ({
+	// 				...prevState,
+	// 				AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+	// 				EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+	// 				DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+	// 			}));
+	// 		}
+	// 	}
+	// 	console.log("beforeisloader", state.isLoader)
+
+	// 	getLevelsListData();
+	// 	dispatch(getUsersByTechnologyAndLevel(() => {
+	// 		console.log("isloader", state.isLoader)
+	// 		setState(prevState => ({ ...prevState, isLoader: false }));
+	// 		console.log("after set loader", state.isLoader)
+
+	// 	}));
+	// 	// eslint-disable-next-line react-hooks/exhaustive-deps
+	// }, []);
 	useEffect(() => {
+		setState(prevState => ({ ...prevState, isLoader: true }));
+
 		if (topAndLeftMenuData !== undefined) {
 			const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
 			const accessData = userMenu && userMenu.Pages.find(el => el.PageName === LEVELS)
@@ -75,10 +105,15 @@ const LevelsListing = (props) => {
 				}));
 			}
 		}
-		getLevelsListData();
-		dispatch(getUsersByTechnologyAndLevel(() => { }));
+
+		// Move the loader state update after the API call
+		dispatch(getUsersByTechnologyAndLevel(() => {
+			setState(prevState => ({ ...prevState, isLoader: false }));
+		}));
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
 
 	const getLevelsListData = () => {
 		setState(prevState => ({ ...prevState, isLoader: true }));
@@ -222,13 +257,13 @@ const LevelsListing = (props) => {
 				<>
 					{state.isLoader && <LoaderCustom />}
 					<form className="levellisting-page">
-						<Row className="pt-4">
-							<ApplyPermission.Provider value={permissionData}>
+						<ApplyPermission.Provider value={permissionData}>
+							<Row className="pt-4">
 								<Col md="12">
 									<LevelTechnologyListing onRef={ref => (child.current = ref)} mappingToggler={mappingToggler} getLevelMappingDetail={getLevelMappingDetail} updateApi={state.updateApi} cancelButton={state.cancelButton} />
 								</Col>
-							</ApplyPermission.Provider>
-						</Row>
+							</Row>
+						</ApplyPermission.Provider>
 						<Row className="pt-4">
 							<Col md="12">
 								<Row>
@@ -251,7 +286,7 @@ const LevelsListing = (props) => {
 											</div>
 											<div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
 												{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-												<AgGridReact
+												{!state.isLoader && <AgGridReact
 													defaultColDef={defaultColDef}
 													floatingFilter={true}
 													domLayout='autoHeight'
@@ -277,7 +312,7 @@ const LevelsListing = (props) => {
 													<AgGridColumn width="65" field="Technology" headerName={`Technology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
 													<AgGridColumn width="35" field="Level" headerName="Level"></AgGridColumn>
 													<AgGridColumn field="Users" tooltipField="Users" headerName="Users"></AgGridColumn>
-												</AgGridReact>
+												</AgGridReact>}
 												{<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} pageSize1={5} pageSize2={15} pageSize3={25} />}
 											</div>
 										</div>

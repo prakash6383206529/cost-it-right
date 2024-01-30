@@ -266,6 +266,7 @@ const SendForApproval = (props) => {
   const handleApprovalTypeChange = (newValue) => {
     setApprovalType(newValue.value)
     setValue('dept', '')
+    setApprover('')
     setValue('approver', '')
     userTechnology(newValue.value, technologyLevelsList)
   }
@@ -286,6 +287,7 @@ const SendForApproval = (props) => {
     const tempDropdownList = []
     if (newValue && newValue !== '') {
       setValue('approver', '')
+      setApprover('')
       setSelectedApprover('')
       setShowValidation(false)
       let requestObject = {
@@ -308,7 +310,7 @@ const SendForApproval = (props) => {
         if (tempDropdownList?.length === 0) {
           setShowValidation(true)
         } else {
-          setApprover(Data.Text)
+          setApprover(Data.Text ? Data.Text : '')
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
         }
         setApprovalDropDown(tempDropdownList)
@@ -1105,41 +1107,40 @@ const SendForApproval = (props) => {
                         }
                       </Col >
 
-                      {
-                        viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
-                          <NumberFieldHookForm
-                            label="Quantity"
-                            name={"Quantity"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={true}
-                            rules={{ required: true }}
-                            defaultValue={""}
-                            className=""
-                            customClassName={"withBorder"}
-                            handleChange={handleChangeQuantity}
-                            errors={errors.Quantity}
-                            disabled={false}
-                          />
+                      {!props?.isRfq && viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
+                        <NumberFieldHookForm
+                          label="Quantity"
+                          name={"Quantity"}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={true}
+                          rules={{ required: true }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          handleChange={handleChangeQuantity}
+                          errors={errors.Quantity}
+                          disabled={false}
+                        />
+                      </Col>
+                        <Col md="6" className="d-flex align-items-center mb-2">
+                          <span className="d-inline-block">
+                            <label
+                              className={`custom-checkbox mb-0`}
+                              onChange={checkboxHandler}>
+                              Regularize
+                              <input
+                                type="checkbox"
+                              />
+                              <span
+                                className=" before-box"
+                                onChange={checkboxHandler}
+                              />
+                            </label>
+                          </span>
                         </Col>
-                          <Col md="6" className="d-flex align-items-center mb-2">
-                            <span className="d-inline-block">
-                              <label
-                                className={`custom-checkbox mb-0`}
-                                onChange={checkboxHandler}>
-                                Regularize
-                                <input
-                                  type="checkbox"
-                                />
-                                <span
-                                  className=" before-box"
-                                  onChange={checkboxHandler}
-                                />
-                              </label>
-                            </span>
-                          </Col>
-                        </>
+                      </>
                       }
 
                       {
