@@ -165,11 +165,12 @@ function Icc(props) {
             }
 
             const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-            const RMBOPCC = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
-            const RMBOP = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
-            const RMCC = NetRawMaterialsCost + ConversionCostForCalculation + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
-            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
+            const RMBOPCC = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
+            const RMBOP = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
+            const RMCC = NetRawMaterialsCost + ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
+            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
             const InterestRatePercentage = getValues('InterestRatePercentage')
+            console.log('InterestRatePercentage: ', InterestRatePercentage);
 
             switch (Text) {
                 case 'RM':
@@ -187,7 +188,7 @@ function Icc(props) {
 
                 case 'BOP':
                     setValue('CostApplicability', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(headerCosts.NetBoughtOutPartCost) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0),
@@ -197,7 +198,7 @@ function Icc(props) {
 
                 case 'CC':
                     setValue('CostApplicability', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((ConversionCostForCalculation + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((checkForNull(ConversionCostForCalculation) + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(ConversionCostForCalculation) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0),
@@ -257,7 +258,7 @@ function Icc(props) {
 
                 case 'Fixed':
                     setValue('CostApplicability', '-')
-                    setValue('NetICCTotal', checkForDecimalAndNull(InterestRatePercentage + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull(checkForNull(InterestRatePercentage) + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: '-',
