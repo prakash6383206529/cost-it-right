@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import {
   getOverheadProfitTabData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
-  saveDiscountOtherCostTab, isOverheadProfitDataChange, openCloseStatus
+  saveDiscountOtherCostTab, isOverheadProfitDataChange, openCloseStatus, setOverheadProfitData
 } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
@@ -98,6 +98,9 @@ function PartOverheadProfit(props) {
           dispatch(setComponentOverheadItemData({}, () => { }))
           InjectDiscountAPICall()
           dispatch(isOverheadProfitDataChange(false))
+          let arrTemp = [...OverheadProfitTabData]
+          arrTemp[0].IsOpen = false
+          dispatch(setOverheadProfitData(arrTemp, () => { }))
         }
       }))
     }
