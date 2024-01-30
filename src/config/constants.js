@@ -1040,17 +1040,19 @@ export const API = {
   getNFRApprovals: `${BASE_URL}/nfr/get-nfr-approvals`,
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
+  createNFRBOMDetails: `${BASE_URL}/nfr/create-nfr-bom-details`,
 
   //MINDA
   // pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
   // getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
   // createPFS2Costing: `${BASE_URL}/nfr/create-pfs2-costing`,
   // getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
-  // saveNFRCostingInfo: `${BASE_URL}/nfr/save-nfr-costing-info`,
-  // saveOutsourcingData: `${BASE_URL}/nfr/save-nfr-costing-outsorcing-details`,
-  // getNFRCostingOutsourcingDetails: `${BASE_URL}/nfr/get-nfr-costing-outsorcing-details`,
-  // getRMFromNFR: `${BASE_URL}/nfr/get-nfr-part-wise-raw-materials`,
+  saveNFRCostingInfo: `${BASE_URL}/nfr/save-nfr-costing-info`,
+  saveOutsourcingData: `${BASE_URL}/nfr/save-nfr-costing-outsorcing-details`,
+  getNFRCostingOutsourcingDetails: `${BASE_URL}/nfr/get-nfr-costing-outsorcing-details`,
+  getRMFromNFR: `${BASE_URL}/nfr/get-nfr-part-wise-raw-materials`,
   // pushNfrRmBopOnSap: `${BASE_URL}/nfr/push-nfr-rm-bop-on-sap`,
+  deleteNFRDetailAPI: `${BASE_URL}/nfr/delete-nfr`,
 
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
   getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
@@ -2810,6 +2812,7 @@ export const LABOUR_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype
 export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_RAW_MATERIAL])
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
+export const PartTypeIDFromAPI = 2
 
 //VERSION 
 export const VERSION = "V2.1.305";

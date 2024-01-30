@@ -7986,3 +7986,21 @@ export const partTypeDropdownList = [
 
 export const DETAILED_BOP = "Detailed BOP"
 export const DETAILED_BOP_ID = "3"
+
+export const PART_TYPE_LIST_FOR_NFR = [
+    { label: "Component (Customized)", value: 1 },
+    { label: "BOP (Standard)", value: 2 },
+    { label: "Raw Material", value: 3 },
+]
+
+export const NFR_COMPONENT_CUSTOMIZED_ID = 1
+export const NFR_BOP_STANDARD_ID = 2
+export const NFR_RAW_MATERIAL_ID = 3
+
+export const NFR_COMPONENT_CUSTOMIZED_LABEL = 'Component (Customized)'
+export const NFR_BOP_STANDARD_LABEL = 'BOP (Standard)'
+export const NFR_RAW_MATERIAL_LABEL = 'Raw Material'
+
+export const NFR_COMPONENT_CUSTOMIZED_NAME = 'Part'
+export const NFR_BOP_STANDARD_NAME = 'BoughtOutPart'
+export const NFR_RAW_MATERIAL_NAME = 'RawMaterial'

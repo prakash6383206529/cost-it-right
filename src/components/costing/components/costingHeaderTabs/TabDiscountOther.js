@@ -979,7 +979,6 @@ function TabDiscountOther(props) {
       }
       otherCostFinalArray.push(data1)
     })
-    console.log('otherCostFinalArray: ', otherCostFinalArray);
 
     let discountArray = [
       {

@@ -55,7 +55,8 @@ export function ProcessListingSimulation(props) {
             }
             let obj = {
                 technologyId: props?.technology,
-                vendorId: props?.vendorId
+                vendorId: props?.vendorId,
+                customerId: props?.customerId
             }
             props?.changeTokenCheckBox(false)
             dispatch(getCombinedProcessList(obj, () => {
@@ -187,7 +188,7 @@ export function ProcessListingSimulation(props) {
     };
 
     const onRowSelect = () => {
-        var selectedRowsList = gridApi.getSelectedRows();
+        var selectedRowsList = gridApi?.getSelectedRows();
         props?.apply(selectedRowsList)
         setSelectedRows(selectedRowsList)
     }
