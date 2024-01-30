@@ -7,6 +7,7 @@ import imgGreencross from '../../assests/images/greenCross.png';
 import DayTime from "../common/DayTimeWrapper";
 import _ from "lodash";
 import { useDispatch, useSelector } from 'react-redux';
+import { getConfigurationKey } from "../../helper";
 export const SimulationUtils = (TempData) => {
 
     TempData && TempData.map(item => {
@@ -290,27 +291,29 @@ export const ErrorMessage = (props) => {
     }
 
     useEffect(() => {
-        const obj = {
-            approvalTokenNumber: approvalNumber
-        }
-        dispatch(getAmmendentStatus(obj, res => {
-            setNoContent(res?.status === 204 ? true : false)
-
-            if (res?.status !== 204) {
-                const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
-                setStatus(RecordInsertStatus)
-                setIsSuccessfullyInsert(IsSuccessfullyInsert)
-                setAmmendmentStatus(AmmendentStatus);
-                setShowButton(RecordInsertStatus?.length > 245 ? true : false)
-                if (IsAmmendentDone) {
-                    setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
-                } else {
-                    setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
-                        } `)
-                }
-                setAmmendmentButton(amendentStatus.length > 245 ? true : false)
+        if (getConfigurationKey()?.IsSAPConfigured) {
+            const obj = {
+                approvalTokenNumber: approvalNumber
             }
-        }))
+            dispatch(getAmmendentStatus(obj, res => {
+                setNoContent(res?.status === 204 ? true : false)
+
+                if (res?.status !== 204) {
+                    const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
+                    setStatus(RecordInsertStatus)
+                    setIsSuccessfullyInsert(IsSuccessfullyInsert)
+                    setAmmendmentStatus(AmmendentStatus);
+                    setShowButton(RecordInsertStatus?.length > 245 ? true : false)
+                    if (IsAmmendentDone) {
+                        setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
+                    } else {
+                        setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
+                            } `)
+                    }
+                    setAmmendmentButton(amendentStatus.length > 245 ? true : false)
+                }
+            }))
+        }
     }, [])
 
 
