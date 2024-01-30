@@ -140,7 +140,7 @@ const BOPDomesticListing = (props) => {
         setState((prevState) => ({ ...prevState, isLoader: false }))
       }))
     } else {
-      console.log("143");
+
       setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false }))
       if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
         if (props.isSimulation) {
@@ -202,7 +202,8 @@ const BOPDomesticListing = (props) => {
             }, 600);
           }
         }))
-
+      } else {
+        setState((prevState) => ({ ...prevState, isLoader: false }))
       }
 
     }
@@ -337,7 +338,7 @@ const BOPDomesticListing = (props) => {
   };
 
   const resetState = () => {
-    setState((prevState) => ({ ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false, }));
+    setState((prevState) => ({ ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false }));
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions?.columnApi?.resetColumnState(null);
@@ -349,16 +350,7 @@ const BOPDomesticListing = (props) => {
     getDataList("", 0, "", "", 0, 10, true, state.floatingFilterData);
     dispatch(setSelectedRowForPagination([]));
     setState((prevState) => ({
-      ...prevState,
-      globalTake: 10,
-      dataCount: 0,
-      pageSize: {
-        ...prevState.pageSize,
-        pageSize10: true,
-        pageSize50: false,
-        pageSize100: false,
-      },
-
+      ...prevState, globalTake: 10, dataCount: 0, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
     }));
     if (searchRef.current) {
       searchRef.current.value = '';
@@ -369,16 +361,12 @@ const BOPDomesticListing = (props) => {
     if (state.currentRowIndex >= 10) {
       const previousNo = state.currentRowIndex - 10;
       const newPageNo = state.pageNo - 1;
-      setState((prevState) => ({
-        ...prevState, pageNo: newPageNo >= 1 ? newPageNo : 1, pageNoNew: newPageNo >= 1 ? newPageNo : 1, currentRowIndex: previousNo,
-      }));
+      setState((prevState) => ({ ...prevState, pageNo: newPageNo >= 1 ? newPageNo : 1, pageNoNew: newPageNo >= 1 ? newPageNo : 1, currentRowIndex: previousNo, }));
       getDataList("", 0, "", "", previousNo, state.globalTake, true, state.floatingFilterData);
     }
   };
   const onBtNext = () => {
-    if (
-      state.pageSize.pageSize50 &&
-      state.pageNo >= Math.ceil(state.totalRecordCount / 50)
+    if (state.pageSize.pageSize50 && state.pageNo >= Math.ceil(state.totalRecordCount / 50)
     ) {
       return false;
     }
@@ -391,12 +379,9 @@ const BOPDomesticListing = (props) => {
     }
 
     if (state.currentRowIndex < state.totalRecordCount - 10) {
-      setState((prevState) => ({
-        ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1,
-      }));
+      setState((prevState) => ({ ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1, }));
       const nextNo = state.currentRowIndex + 10;
-      getDataList(
-        "", 0, "", "", nextNo, state.globalTake, true, state.floatingFilterData);
+      getDataList("", 0, "", "", nextNo, state.globalTake, true, state.floatingFilterData);
       // skip, take, isPagination, floatingFilterData, (res)
       setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
     }
@@ -412,17 +397,7 @@ const BOPDomesticListing = (props) => {
     }
     totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
     getDataList("", 0, "", "", state.currentRowIndex, pageSize, true, state.floatingFilterData);
-    setState((prevState) => ({
-      ...prevState,
-      globalTake: pageSize,
-      pageNo: Math.min(state.pageNo, totalRecordCount), // Ensure pageNo is within bounds
-      pageSize: {
-        pageSize10: pageSize === 10,
-        pageSize50: pageSize === 50,
-        pageSize100: pageSize === 100,
-      },
-    }));
-
+    setState((prevState) => ({ ...prevState, globalTake: pageSize, pageNo: Math.min(state.pageNo, totalRecordCount), pageSize: { pageSize10: pageSize === 10, pageSize50: pageSize === 50, pageSize100: pageSize === 100, }, }));
     state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
@@ -431,11 +406,7 @@ const BOPDomesticListing = (props) => {
   * @description edit material type
   */
   const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
-    let data = {
-      isEditFlag: true, Id: Id, IsVendor: rowData.CostingHead, isViewMode: isViewMode,
-      costingTypeId: rowData.CostingTypeId,
-      showPriceFields: rowData.StatusId !== DRAFTID,
-    }
+    let data = { isEditFlag: true, Id: Id, IsVendor: rowData.CostingHead, isViewMode: isViewMode, costingTypeId: rowData.CostingTypeId, showPriceFields: rowData.StatusId !== DRAFTID, }
     props.getDetails(data, rowData?.IsBOPAssociated);
   }
 
@@ -658,7 +629,6 @@ const BOPDomesticListing = (props) => {
       } if (item.Vendor === '-') {
         item.Vendor = ' '
       }
-
       if (item.EffectiveDate?.includes('T')) {
         item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
       }
@@ -677,9 +647,7 @@ const BOPDomesticListing = (props) => {
   }
   const { isBulkUpload, noData } = state;
   var filterParams = {
-    date: "",
-    inRangeInclusive: true,
-    filterOptions: ['equals', 'inRange'],
+    date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
       var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
@@ -815,28 +783,40 @@ const BOPDomesticListing = (props) => {
           </Col>
           <Col md="9" lg="9" className="mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
-              {state.shown ? (
-                <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}>
-                  <div className="cancel-icon-white"></div></button>
-              ) : (<>  </>)}
-              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <div className="warning-message d-flex align-items-center">  {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>} </div>}
-              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <>
-                <Button id="bopDomesticListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
-                {permissions?.Add && (<Button id="bopDomesticListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />)}
-                {permissions?.BulkUpload && (<Button id="bopDomesticListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
-                {permissions?.Download && <><Button className="mr5" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"}
-                  buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                  <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}> {onBtExport()}  </ExcelFile>
-                </>}
-              </>
+              {state.shown ? (<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}>
+                <div className="cancel-icon-white"></div></button>
+                // <Button type="button" className="user-btn mr5 filter-btn-top" onClick={handleShown()} icon="cancel-icon-white"/>
+              ) : (<>   </>)}
+
+              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <div className="warning-message d-flex align-items-center"> {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+              </div>
+              }
+
+              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <Button id="bopDomesticListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
+              }
+
+              {permissions?.Add && (<Button id="bopDomesticListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />)}
+              {permissions?.BulkUpload && (<Button id="bopDomesticListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+              {
+                permissions?.Download &&
+                <>
+                  <Button className="mr5" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                  <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
+                    {onBtExport()}
+                  </ExcelFile>
+                </>
               }
               <Button id={"bopDomesticListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+
             </div>
           </Col>
         </Row>
+
       </form >
+
       <Row>
         <Col>
+
           <div className={`ag-grid-wrapper ${props?.isDataInMaster && !noData ? 'master-approval-overlay' : ''} ${(bopDomesticList && bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
             <div className={`ag-theme-material p-relative ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found bop-drawer" />}
@@ -872,8 +852,10 @@ const BOPDomesticListing = (props) => {
                 {props?.isMasterSummaryDrawer && getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>}
                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                 <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
+
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
+
                 <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
