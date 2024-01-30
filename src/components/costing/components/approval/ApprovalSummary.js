@@ -907,7 +907,7 @@ function ApprovalSummary(props) {
             vendorCodeForSAP={vendorCodeForSap}
             releaseStrategyDetails={releaseStrategyDetails}
             IsRegularized={IsRegularized}
-            isShowNFRPopUp={!IsRegularized && approvalData.NfrId !== null && showFinalLevelButtons ? true : false}
+            isShowNFRPopUp={!IsRegularized && approvalData.NfrId && showFinalLevelButtons ? true : false}
             showApprovalTypeDropdown={false}
           />
         )
