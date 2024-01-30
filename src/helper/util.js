@@ -1120,11 +1120,17 @@ export const showTitleForActiveToggle = (index) => {
   }, 500);
 }
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
-export const checkForSameFileUpload = (master, fileHeads, isRM = false) => {
+export const checkForSameFileUpload = (master, fileHeads, isBOP = false) => {
   let checkForFileHead, array = []
   let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
   array = _.map(master, 'label')
   bulkUploadArray = [...array]
+  if (isBOP) {
+    bulkUploadArray = bulkUploadArray.map((item) =>
+      item.replace('BoughtOutPart', 'BOP')
+    );
+
+  }
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
@@ -1294,7 +1300,7 @@ export function getValueFromLabel(currency, currencySelectList) {
   return data[0]
 }
 // get updated  dynamic bop labels 
-export function updateBOPValues(bopLabels, bopData, bopReplacement) {
+export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '') {
   const bopRegex = /BOP|BoughtOutPart/gi;
   const updatedLabels = bopLabels.map(label => ({
     ...label,
