@@ -1036,11 +1036,8 @@ function RMImportListing(props) {
                       {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
                       {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMFreightCost" headerName="Freight Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>)}
                       {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMShearingCost" headerName="Shearing Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>)}
-
                       {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RawMaterialFreightCostConversion" headerName={headerNames?.FreightCost} cellRenderer='commonCostFormatter'></AgGridColumn>)}
-
                       {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RawMaterialShearingCostConversion" headerName={headerNames?.ShearingCost} cellRenderer='commonCostFormatter'></AgGridColumn>)}
-
                       {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
                       {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer='commonCostFormatter'></AgGridColumn>}
                       {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
