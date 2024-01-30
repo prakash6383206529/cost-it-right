@@ -36,9 +36,6 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const MyLazyComponent = lazy(() => import('../../massUpload/BulkUpload'));
-console.log('MyLazyComponent: ', MyLazyComponent);
-
-
 
 function RMDomesticListing(props) {
     const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, ListFor, initialConfiguration } = props;

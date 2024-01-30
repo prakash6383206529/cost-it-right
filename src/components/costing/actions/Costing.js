@@ -2748,7 +2748,10 @@ export function getReleaseStrategyApprovalDetails(data, callback) {
       callback(response)
     }).catch((error) => {
       callback(error.response)
-      dispatch({ type: API_FAILURE })
+      if (error.response.status === 412) {
+        Toaster.warning(error?.response?.data?.Message)
+        return false
+      }
       apiErrors(error)
     })
   }

@@ -77,10 +77,10 @@ function AddProcess(props) {
 
   useEffect(() => {
     if (groupMachineId === '') {
-      const filteredData = processDrawerList && processDrawerList.filter(item => item.ProcessName !== COMBINED_PROCESS_NAME);
+      const filteredData = processDrawerList && processDrawerList.filter(item => item);
       setTableDataList(filteredData)
     } else {
-      let filteredData = processDrawerList && processDrawerList.filter(item => item.MachineId === groupMachineId && item.ProcessName !== COMBINED_PROCESS_NAME)
+      let filteredData = processDrawerList && processDrawerList.filter(item => item.MachineId === groupMachineId)
       setTableDataList(filteredData)
     }
   }, [processDrawerList])

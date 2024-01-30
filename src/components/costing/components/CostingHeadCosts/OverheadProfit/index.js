@@ -1307,7 +1307,6 @@ function OverheadProfit(props) {
       })
     }
   }
-  setShowRefreshWarningMessage(false)
 
   const onCRMHeadChangeProfit = (e) => {
     if (e) {

@@ -284,7 +284,6 @@ export const clearCosting = (dispatch) => {
   reactLocalStorage.setObject('surfaceCostingArray', [])
   dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
   dispatch(setComponentItemData({}, () => { }))
-
   dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
   dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
 

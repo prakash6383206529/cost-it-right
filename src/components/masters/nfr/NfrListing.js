@@ -12,16 +12,19 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination'
-import { checkPermission, searchNocontentFilter, userDetails } from '../../../helper';
+import { checkPermission, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import NfrPartsListing from './NfrPartsListing';
-import { fetchNfrDetailFromSap, getAllNfrList, nfrDetailsForDiscountAction } from './actions/nfr';
+import { deleteNFRDetailAPI, fetchNfrDetailFromSap, getAllNfrList, nfrDetailsForDiscountAction } from './actions/nfr';
 import { StatusTooltip, hyphenFormatter } from '../masterUtil';
 import Toaster from '../../common/Toaster';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { useRef } from 'react';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
+import Button from '../../layout/Button';
+import CreateNFRInSystem from './CreateNFRInSystem';
+
 const gridOptions = {};
 
 
@@ -49,21 +52,9 @@ function NfrListing(props) {
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const [addRfq, setAddRfq] = useState(props?.isFromDiscount ? true : false);
     const [isHover, setIsHover] = useState(false)
+    const [showAddNFRDrawer, setShowAddNFRDrawer] = useState(false)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const agGridRef = useRef(null);
-    const handleFilterChange = () => {
-        if (agGridRef.current) {
-            setTimeout(() => {
-                if (!agGridRef.current.rowRenderer.allRowCons.length) {
-                    setNoData(true)
-                    dispatch(getGridHeight({ value: 3, component: 'NFR' }))
-                } else {
-                    setNoData(false)
-                }
-            }, 100);
-
-        }
-    };
 
     const floatingFilterNfr = {
         maxValue: 12,
@@ -71,8 +62,6 @@ function NfrListing(props) {
         component: "NFR",
     }
     useEffect(() => {
-        setloader(true)
-        // getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
 
@@ -83,6 +72,7 @@ function NfrListing(props) {
     }, [statusColumnData])
 
     useEffect(() => {
+        setloader(true)
         getDataList()
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
@@ -153,6 +143,19 @@ function NfrListing(props) {
         setAddRfq(true)
     }
 
+    /**
+    * @method deleteItemDetails
+    * @description delete Item Details
+    */
+    const deleteItemDetails = (rowData = {}) => {
+        dispatch(deleteNFRDetailAPI(rowData?.NfrId, loggedInUserId(), (res) => {
+            if (res?.data?.Result) {
+                getDataList()
+                Toaster.success("NFR deleted successfully.")
+            }
+        }))
+    }
+
 
     const onPopupConfirm = () => {
 
@@ -169,12 +172,11 @@ function NfrListing(props) {
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let status = rowData?.Status
 
         return (
             <>
                 {<button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-
+                {<button title='Delete' className="Delete mr-1" type={'button'} onClick={() => deleteItemDetails(rowData)} />}
             </>
         )
     };
@@ -186,6 +188,13 @@ function NfrListing(props) {
         getDataList()
         setIsEdit(false)
 
+    }
+
+    const closeNFRDrawer = (isSaveAPICalled) => {
+        if (isSaveAPICalled === true) {
+            getDataList()
+        }
+        setShowAddNFRDrawer(false)
     }
 
     const onGridReady = (params) => {
@@ -332,9 +341,13 @@ function NfrListing(props) {
         }))
     }
 
+    const addNFRFunction = () => {
+        setShowAddNFRDrawer(true)
+    }
+
     return (
         <>
-            {!addRfq &&
+            {!addRfq && !showAddNFRDrawer &&
                 <div className={`ag-grid-react report-grid p-relative${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
@@ -346,6 +359,7 @@ function NfrListing(props) {
                                 </Col>
 
                                 <Col md="9" className="mb-3 d-flex justify-content-end">
+                                    {true && (<Button id="nfr_add" className={"mr5"} onClick={addNFRFunction} title={"Add"} icon={"plus"} />)}
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>
@@ -377,7 +391,6 @@ function NfrListing(props) {
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
                                                 gridOptions={gridOptions}
-                                                noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
                                                     title: EMPTY_DATA,
                                                     imagClass: 'imagClass'
@@ -405,51 +418,49 @@ function NfrListing(props) {
                                     </div >
                                 </Col >
                             </Row >
-
                         </>))
                     }
-
-
-                    {
-                        confirmPopup && <PopupMsgWrapper isOpen={confirmPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RFQ_DETAIL_CANCEL_ALERT}`} />
-                    }
-
+                    {confirmPopup && <PopupMsgWrapper isOpen={confirmPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RFQ_DETAIL_CANCEL_ALERT}`} />}
                 </div >
             }
 
-            {
-                addRfq &&
+            {addRfq && <NfrPartsListing
+                data={selectedPartData}
+                //hideForm={hideForm}
+                AddAccessibilityRMANDGRADE={true}
+                EditAccessibilityRMANDGRADE={true}
+                isRMAssociated={true}
+                isOpen={addRfq}
+                anchor={"right"}
+                isEditFlag={isEdit}
+                nfrId={nfrId}
+                closeDrawer={closeDrawer}
+                nfrDataFromAdd={props?.location?.state}
+                isFromDiscount={props?.isFromDiscount}
+                changeIsFromDiscount={props?.changeIsFromDiscount}
+            />}
 
-                <NfrPartsListing
-                    data={selectedPartData}
-                    //hideForm={hideForm}
-                    AddAccessibilityRMANDGRADE={true}
-                    EditAccessibilityRMANDGRADE={true}
-                    isRMAssociated={true}
-                    isOpen={addRfq}
-                    anchor={"right"}
-                    isEditFlag={isEdit}
-                    nfrId={nfrId}
-                    closeDrawer={closeDrawer}
-                    nfrDataFromAdd={props?.location?.state}
-                    isFromDiscount={props?.isFromDiscount}
-                    changeIsFromDiscount={props?.changeIsFromDiscount}
-                />
-
-            }
-            {
-                attachment && (
-                    <Attachament
-                        isOpen={attachment}
-                        index={viewAttachment}
-                        closeDrawer={closeAttachmentDrawer}
-                        anchor={'right'}
-                        gridListing={true}
-                    />
-                )
-            }
-
-
+            {showAddNFRDrawer && <CreateNFRInSystem
+                data={selectedPartData}
+                AddAccessibilityRMANDGRADE={true}
+                EditAccessibilityRMANDGRADE={true}
+                isRMAssociated={true}
+                isOpen={addRfq}
+                anchor={"right"}
+                isEditFlag={isEdit}
+                nfrId={nfrId}
+                closeDrawer={closeNFRDrawer}
+                nfrDataFromAdd={props?.location?.state}
+                isFromDiscount={props?.isFromDiscount}
+                changeIsFromDiscount={props?.changeIsFromDiscount}
+            />}
+            {attachment && <Attachament
+                isOpen={attachment}
+                index={viewAttachment}
+                closeDrawer={closeAttachmentDrawer}
+                anchor={'right'}
+                gridListing={true}
+            />}
         </>
     );
 }

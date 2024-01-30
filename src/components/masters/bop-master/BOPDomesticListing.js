@@ -140,7 +140,6 @@ const BOPDomesticListing = (props) => {
         setState((prevState) => ({ ...prevState, isLoader: false }))
       }))
     } else {
-      console.log("143");
       setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false }))
       if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
         if (props.isSimulation) {

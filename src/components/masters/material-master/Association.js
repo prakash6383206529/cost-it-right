@@ -214,7 +214,7 @@ const Association = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                                                 mandatory={true}
                                                 errors={errors}
                                                 rules={{ required: 'This field is required' }}
-                                                handleChange={(e) => console.log('Handle Change:', e)}
+                                                handleChange={(e) => { }}
                                                 hidden={false}
                                                 isLoading={{ isLoader: false, loaderClass: '' }}
                                                 id="RawMaterialName"

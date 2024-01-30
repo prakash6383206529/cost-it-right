@@ -375,28 +375,11 @@ const RMListing = (props) => {
                 suppressRowClickSelection={true}
               >
                 {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                <AgGridColumn
-                  field="RawMaterial"
-                  headerName="Material"
-                ></AgGridColumn>
+                <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
                 <AgGridColumn field="Density"></AgGridColumn>
-                <AgGridColumn
-                  field="RMName"
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="RMGrade"
-                  headerName="Grade"
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="MaterialId"
-                  cellClass="ag-grid-action-container"
-                  headerName="Action"
-                  type="rightAligned"
-                  floatingFilter={false}
-                  cellRenderer={"totalValueRenderer"}
-                ></AgGridColumn>
+                <AgGridColumn field="RMName" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                <AgGridColumn field="RMGrade" headerName="Grade" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
               {
                 <PaginationWrapper

@@ -110,7 +110,6 @@ function CostingDetailSimulationDrawer(props) {
                                     <Row className="ml-0 pb-3">
                                         {
                                             Number(masterID) === Number(EXCHNAGERATE) ?
-                                                // Number(master) === Number(EXCHNAGERATE) ?              //RE
                                                 <>
                                                     <Col md="3">
                                                         <label>Existing Net Cost(in Currency)</label>
@@ -134,7 +133,6 @@ function CostingDetailSimulationDrawer(props) {
                                         }
                                         {
                                             (Number(masterID) === Number(RMDOMESTIC) || Number(masterID) === Number(RMIMPORT)) &&
-                                            // (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) &&              //RE
                                             <>
                                                 <Col md="3">
                                                     <label>Existing RM Cost ({initialConfiguration?.BaseCurrency})</label>
@@ -173,7 +171,6 @@ function CostingDetailSimulationDrawer(props) {
                                         }
                                         {
                                             Number(masterID) === Number(OPERATIONS) &&
-                                            // Number(master) === Number(OPERATIONS) &&              //RE
                                             <>
                                                 <Col md="3">
                                                     <label>Existing Operation Cost ({initialConfiguration?.BaseCurrency})</label>
@@ -258,7 +255,6 @@ function CostingDetailSimulationDrawer(props) {
                     selectedRowData={selectedRowData}
                     costingArr={costingArr}
                     master={masterID}
-                    // master={master}              //RE
                     closeDrawer={closeShowApproval}
                     isSimulation={true}
                 />
