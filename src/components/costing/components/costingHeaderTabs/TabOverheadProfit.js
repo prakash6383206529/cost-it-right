@@ -10,6 +10,7 @@ import AssemblyOverheadProfit from '../CostingHeadCosts/OverheadProfit/AssemblyO
 import { LEVEL0 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
 import Toaster from '../../../common/Toaster';
+import WarningMessage from '../../../common/WarningMessage';
 
 function TabOverheadProfit(props) {
 
@@ -50,7 +51,7 @@ function TabOverheadProfit(props) {
     }
     if (OverheadProfitTabData && OverheadProfitTabData.length > 0) {
       if (OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithRejection !== null && !isPressedSTRejection) {
-
+        dispatch(setSurfaceCostInOverheadProfitRejection(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithRejection, () => { }))
         setIsIncludeSurfaceTreatmentRejection(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithRejection)
 
       }
@@ -610,7 +611,7 @@ function TabOverheadProfit(props) {
                     <input
                       type="checkbox"
                       checked={IsIncludeSurfaceTreatment}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -627,7 +628,7 @@ function TabOverheadProfit(props) {
                     <input
                       type="checkbox"
                       checked={IsIncludeSurfaceTreatmentRejection}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -645,7 +646,7 @@ function TabOverheadProfit(props) {
                     <input
                       type="checkbox"
                       checked={IsIncludeToolCost}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -663,7 +664,7 @@ function TabOverheadProfit(props) {
                     <input
                       type="checkbox"
                       checked={IncludeOverheadProfitInIcc}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -743,6 +744,7 @@ function TabOverheadProfit(props) {
                   </Col>
                 </Row>
               </form>
+              {OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Please open the accordion first, if you wish to tick/untick the checkboxes.'} />}
             </div >
           </Col >
         </Row >
