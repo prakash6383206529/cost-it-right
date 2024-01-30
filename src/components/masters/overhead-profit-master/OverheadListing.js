@@ -98,31 +98,16 @@ function OverheadListing(props) {
     };
 
 
-    // useEffect(() => {
-    //     setTimeout(() => {
-    //         if (!props.stopApiCallOnCancel) {
-    //             getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
-    //         }
-    //     }, 300);
-    //     dispatch(isResetClick(false, "applicablity"))
-    //     dispatch(agGridStatus("", ""))
-    //     setSelectedRowForPagination([])
-    // }, [])
     useEffect(() => {
-        const timer = setTimeout(() => {
+        setTimeout(() => {
             if (!props.stopApiCallOnCancel) {
-                getDataList(null, null, null, null, 0, 10, true, floatingFilterData);
+                getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
         }, 300);
-
-        dispatch(isResetClick(false, "applicability"));
-        dispatch(agGridStatus("", ""));
-        setSelectedRowForPagination([]);
-
-        // Cleanup function to clear the timeout if the effect is re-run or the component unmounts
-        return () => clearTimeout(timer);
-    }, []);
-
+        dispatch(isResetClick(false, "applicablity"))
+        dispatch(agGridStatus("", ""))
+        setSelectedRowForPagination([])
+    }, [])
 
     useEffect(() => {
         if (overheadProfitList?.length > 0) {

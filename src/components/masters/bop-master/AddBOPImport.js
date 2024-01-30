@@ -1541,18 +1541,19 @@ class AddBOPImport extends Component {
                                   onChange={this.breakUpHandleChange}
                                 >
                                   Detailed ${showBopLabel()}
-                                  <input
+                                  < input
                                     type="checkbox"
                                     checked={isTechnologyVisible}
-                                    disabled={isViewMode || isEditFlag ? true : false}
+                                    disabled={isViewMode || isEditFlag ? true : false
+                                    }
                                   />
-                                  <span
+                                  < span
                                     className=" before-box"
                                     checked={isTechnologyVisible}
                                     onChange={this.breakUpHandleChange}
                                   />
-                                </label>
-                              </Col>
+                                </label >
+                              </Col >
                               {isTechnologyVisible && <Col md="3">
                                 <Field
                                   label="Technology"
@@ -1573,31 +1574,33 @@ class AddBOPImport extends Component {
                               </Col>}
                             </>
                           }
-                          {costingTypeId === CBCTypeId && (
-                            <Col md="3">
-                              <Field
-                                name="clientName"
-                                type="text"
-                                label={"Customer(Code)"}
-                                component={searchableSelect}
-                                placeholder={isEditFlag ? '-' : "Select"}
-                                options={this.renderListing("ClientList")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.client == null ||
-                                    this.state.client.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                required={true}
-                                handleChangeDescription={this.handleClient}
-                                valueDescription={this.state.client}
-                                disabled={isEditFlag ? true : false}
-                              />
-                            </Col>
-                          )}
+                          {
+                            costingTypeId === CBCTypeId && (
+                              <Col md="3">
+                                <Field
+                                  name="clientName"
+                                  type="text"
+                                  label={"Customer(Code)"}
+                                  component={searchableSelect}
+                                  placeholder={isEditFlag ? '-' : "Select"}
+                                  options={this.renderListing("ClientList")}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={
+                                    this.state.client == null ||
+                                      this.state.client.length === 0
+                                      ? [required]
+                                      : []
+                                  }
+                                  required={true}
+                                  handleChangeDescription={this.handleClient}
+                                  valueDescription={this.state.client}
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </Col>
+                            )
+                          }
 
-                        </Row>
+                        </Row >
 
                         <Row>
                           {costingTypeId !== CBCTypeId && (
@@ -1904,24 +1907,26 @@ class AddBOPImport extends Component {
 
 
                         </Row>
-                        {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
-                          <label
-                            className={`custom-checkbox`}
-                            onChange={this.onIsClientVendorBOP}
-                          >
-                            Client Approved Vendor
-                            <input
-                              type="checkbox"
-                              checked={isClientVendorBOP}
-                              disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
-                            />
-                            <span
-                              className=" before-box"
-                              checked={isClientVendorBOP}
+                        {
+                          getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                            <label
+                              className={`custom-checkbox`}
                               onChange={this.onIsClientVendorBOP}
-                            />
-                          </label>
-                        </Col>}
+                            >
+                              Client Approved Vendor
+                              <input
+                                type="checkbox"
+                                checked={isClientVendorBOP}
+                                disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
+                              />
+                              <span
+                                className=" before-box"
+                                checked={isClientVendorBOP}
+                                onChange={this.onIsClientVendorBOP}
+                              />
+                            </label>
+                          </Col>
+                        }
                         <Row>
                           <Col md="12">
                             <div className="left-border">

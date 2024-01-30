@@ -217,8 +217,8 @@ function RMDomesticListing(props) {
 
                 if (res && isPagination === false) {
                     setDisableDownload(false)
-                    dispatch(disabledClass(false))
                     setTimeout(() => {
+                        dispatch(disabledClass(false))
                         let button = document.getElementById('Excel-Downloads-rm-import')
                         button && button.click()
                     }, 500);
@@ -961,9 +961,10 @@ function RMDomesticListing(props) {
 
                     </Row>
                     <Row>
+
                         <Col>
                             <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                                <div className={`ag-theme-material `}>
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                     <AgGridReact
                                         style={{ height: '100%', width: '100%' }}

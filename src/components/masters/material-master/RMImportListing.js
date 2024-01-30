@@ -885,21 +885,40 @@ function RMImportListing(props) {
   };
 
   return (
-    <div>
-      {!editSelectedList && <div className={`ag-grid-react custom-pagination ${isSimulation ? 'simulation-height' : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-        {(loader && !props?.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
-          <>
-            {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-            <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
-              <Col md="3" lg="3">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-              </Col>
-              <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
-                {(!props?.isMasterSummaryDrawer) && <>
+    <div>{!editSelectedList && <div className={`ag-grid-react custom-pagination ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? "" : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+      {(loader && !props?.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
+        <>
+          {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+          <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
+            <Col md="3" lg="3">
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+            </Col>
+            <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
+              {(!props?.isMasterSummaryDrawer) && <>
 
-                  {isSimulation && !isFromVerifyPage &&
-                    <div className="warning-message d-flex align-items-center">
-                      {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                {isSimulation && !isFromVerifyPage &&
+                  <div className="warning-message d-flex align-items-center">
+                    {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+
+                    <Button
+                      id="rmImportListing_filter"
+                      className={"mr5"}
+                      onClick={() => onSearch()}
+                      title={"Filtered data"}
+                      icon={"filter"}
+                      disabled={disableFilter}
+                    />
+
+                  </div>
+                }
+                {!isSimulation &&
+                  <div className="d-flex justify-content-end bd-highlight w100">
+                    <>
+                      {
+                        <div className="warning-message d-flex align-items-center">
+                          {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                        </div>
+                      }
 
                       <Button
                         id="rmImportListing_filter"
@@ -910,227 +929,207 @@ function RMImportListing(props) {
                         disabled={disableFilter}
                       />
 
-                    </div>
-                  }
-                  {!isSimulation &&
-                    <div className="d-flex justify-content-end bd-highlight w100">
-                      <>
-                        {
-                          <div className="warning-message d-flex align-items-center">
-                            {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                          </div>
-                        }
+                      {AddAccessibility && (
 
                         <Button
-                          id="rmImportListing_filter"
+                          id="rmImportListing_add"
                           className={"mr5"}
-                          onClick={() => onSearch()}
-                          title={"Filtered data"}
-                          icon={"filter"}
-                          disabled={disableFilter}
+                          onClick={formToggle}
+                          title={"Add"}
+                          icon={"plus"}
                         />
-
-                        {AddAccessibility && (
-
+                      )}
+                      {BulkUploadAccessibility && (
+                        <Button
+                          id="rmImportListing_add"
+                          className={"mr5"}
+                          onClick={bulkToggle}
+                          title={"Bulk Upload"}
+                          icon={"upload"}
+                        />
+                      )}
+                      {
+                        DownloadAccessibility &&
+                        <>
                           <Button
-                            id="rmImportListing_add"
-                            className={"mr5"}
-                            onClick={formToggle}
-                            title={"Add"}
-                            icon={"plus"}
+                            className="mr5"
+                            id={"rmImportListing_excel_download"}
+                            onClick={onExcelDownload}
+                            title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                            icon={"download mr-1"}
+                            buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                           />
-                        )}
-                        {BulkUploadAccessibility && (
-                          <Button
-                            id="rmImportListing_add"
-                            className={"mr5"}
-                            onClick={bulkToggle}
-                            title={"Bulk Upload"}
-                            icon={"upload"}
-                          />
-                        )}
-                        {
-                          DownloadAccessibility &&
-                          <>
-                            <Button
-                              className="mr5"
-                              id={"rmImportListing_excel_download"}
-                              onClick={onExcelDownload}
-                              title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                              icon={"download mr-1"}
-                              buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                            />
-                            <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
-                              <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />}>
-                              {onBtExport()}
-                            </ExcelFile>
-                          </>
-                        }
-                      </>
-                    </div>
-                  }
-                  <Button
-                    id={"rmImportListing_refresh"}
-                    onClick={() => resetState()}
-                    title={"Reset Grid"}
-                    icon={"refresh"}
-                    className={"mr5"}
-                  />
-                  {isSimulation && isFromVerifyPage && <button type="button" className={"apply"} onClick={cancel}><div className={'back-icon'}></div>Back</button>}
-                </>}
+                          <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                            <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />}>
+                            {onBtExport()}
+                          </ExcelFile>
+                        </>
+                      }
+                    </>
+                  </div>
+                }
+                <Button
+                  id={"rmImportListing_refresh"}
+                  onClick={() => resetState()}
+                  title={"Reset Grid"}
+                  icon={"refresh"}
+                  className={"mr5"}
+                />
+                {isSimulation && isFromVerifyPage && <button type="button" className={"apply"} onClick={cancel}><div className={'back-icon'}></div>Back</button>}
+              </>}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <div className={`ag-grid-wrapper ${(rmImportDataList && rmImportDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                <div className={`ag-theme-material `}>
+                  {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                  <AgGridReact
+                    style={{ height: '100%', width: '100%' }}
+                    defaultColDef={defaultColDef}
+                    floatingFilter={true}
+
+                    domLayout='autoHeight'
+                    rowData={rmImportDataList}
+                    pagination={true}
+                    paginationPageSize={globalTake}
+                    onGridReady={onGridReady}
+                    gridOptions={gridOptions}
+                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                    noRowsOverlayComponentParams={{
+                      title: EMPTY_DATA,
+                      imagClass: 'imagClass'
+                    }}
+                    frameworkComponents={frameworkComponents}
+                    rowSelection={'multiple'}
+                    onFilterModified={onFloatingFilterChanged}
+                    //onSelectionChanged={onRowSelect}
+                    onRowSelected={onRowSelect}
+                    suppressRowClickSelection={true}
+                  >
+                    <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                    <AgGridColumn field="RawMaterialName" headerName='Raw Material' ></AgGridColumn>
+                    <AgGridColumn field="RawMaterialGradeName" headerName='Grade'></AgGridColumn>
+                    <AgGridColumn field="RawMaterialSpecificationName" headerName='Spec'></AgGridColumn>
+                    <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                    <AgGridColumn field="Category"></AgGridColumn>
+                    <AgGridColumn field="MaterialType"></AgGridColumn>
+                    <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
+                    <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
+                    {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
+                    <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
+                    <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
+
+                    <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                    <AgGridColumn field="BasicRatePerUOMConversion" headerName={headerNames?.BasicRate} cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="CalculatedFactor" headerName='Calculated Factor' cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)' cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="ScrapRate" headerName="Scrap Rate (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="ScrapRateInINR" headerName={headerNames?.ScrapRate} cellRenderer='commonCostFormatter'></AgGridColumn>
+                    {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" cellRenderer='commonCostFormatter' headerName='Machining Scrap Cost (Currency)'></AgGridColumn>}
+                    {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRateInINR" cellRenderer='commonCostFormatter' headerName={headerNames?.MachiningScrapCost}></AgGridColumn>}
+                    {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
+                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RawMaterialFreightCostConversion" headerName={headerNames?.FreightCost} cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RawMaterialShearingCostConversion" headerName={headerNames?.ShearingCost} cellRenderer='commonCostFormatter'></AgGridColumn>
+                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
+                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer='commonCostFormatter'></AgGridColumn>}
+                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
+                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCostConversion" headerName={headerNames?.NetConditionCost} cellRenderer='commonCostFormatter'></AgGridColumn>}
+
+                    <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer='costFormatter'></AgGridColumn>
+
+                    <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                    {(!isSimulation && !props?.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                    <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
+
+                    <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                    {props?.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
+                    {props?.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
+                  </AgGridReact >
+                  <div className={`button-wrapper ${props?.isMasterSummaryDrawer ? "dropdown-mt-0" : ""}`}>
+                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                    {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                      <div className="d-flex pagination-button-container">
+                        <p><Button id="rmImportListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
+                        {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                        {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                        {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                        <p><Button id="rmImportListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
+                      </div>
+                    }
+                  </div>
+                </div >
+              </div >
+            </Col >
+          </Row >
+          {
+            props.isSimulation && isFromVerifyPage && <Row>
+              <Col md="12" className="d-flex justify-content-end">
+                <button type="button" className={"apply"} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
               </Col>
             </Row>
-            <Row>
-              <Col>
-                <div className={`ag-grid-wrapper ${(rmImportDataList && rmImportDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                  <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
-                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                    <AgGridReact
-                      style={{ height: '100%', width: '100%' }}
-                      defaultColDef={defaultColDef}
-                      floatingFilter={true}
-
-                      domLayout='autoHeight'
-                      rowData={rmImportDataList}
-                      pagination={true}
-                      paginationPageSize={globalTake}
-                      onGridReady={onGridReady}
-                      gridOptions={gridOptions}
-                      noRowsOverlayComponent={'customNoRowsOverlay'}
-                      noRowsOverlayComponentParams={{
-                        title: EMPTY_DATA,
-                        imagClass: 'imagClass'
-                      }}
-                      frameworkComponents={frameworkComponents}
-                      rowSelection={'multiple'}
-                      onFilterModified={onFloatingFilterChanged}
-                      //onSelectionChanged={onRowSelect}
-                      onRowSelected={onRowSelect}
-                      suppressRowClickSelection={true}
-                    >
-                      <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
-                      <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                      <AgGridColumn field="RawMaterialName" headerName='Raw Material' ></AgGridColumn>
-                      <AgGridColumn field="RawMaterialGradeName" headerName='Grade'></AgGridColumn>
-                      <AgGridColumn field="RawMaterialSpecificationName" headerName='Spec'></AgGridColumn>
-                      <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                      <AgGridColumn field="Category"></AgGridColumn>
-                      <AgGridColumn field="MaterialType"></AgGridColumn>
-                      <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
-                      <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
-                      {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                      {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
-                      <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
-                      <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
-
-                      <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                      <AgGridColumn field="BasicRatePerUOMConversion" headerName={headerNames?.BasicRate} cellRenderer='commonCostFormatter'></AgGridColumn>
-                      <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
-                      <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
-                      <AgGridColumn field="CalculatedFactor" headerName='Calculated Factor' cellRenderer='commonCostFormatter'></AgGridColumn>
-                      <AgGridColumn field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)' cellRenderer='commonCostFormatter'></AgGridColumn>
-                      <AgGridColumn field="ScrapRate" headerName="Scrap Rate (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
-                      <AgGridColumn field="ScrapRateInINR" headerName={headerNames?.ScrapRate} cellRenderer='commonCostFormatter'></AgGridColumn>
-                      {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" cellRenderer='commonCostFormatter' headerName='Machining Scrap Cost (Currency)'></AgGridColumn>}
-                      {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRateInINR" cellRenderer='commonCostFormatter' headerName={headerNames?.MachiningScrapCost}></AgGridColumn>}
-                      {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
-                      {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMFreightCost" headerName="Freight Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>)}
-                      {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMShearingCost" headerName="Shearing Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>)}
-                      {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RawMaterialFreightCostConversion" headerName={headerNames?.FreightCost} cellRenderer='commonCostFormatter'></AgGridColumn>)}
-                      {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RawMaterialShearingCostConversion" headerName={headerNames?.ShearingCost} cellRenderer='commonCostFormatter'></AgGridColumn>)}
-                      {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
-                      {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer='commonCostFormatter'></AgGridColumn>}
-                      {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
-                      {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCostConversion" headerName={headerNames?.NetConditionCost} cellRenderer='commonCostFormatter'></AgGridColumn>}
-
-                      <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
-                      <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer='costFormatter'></AgGridColumn>
-
-                      <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                      {(!isSimulation && !props?.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                      <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
-
-                      <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
-                      {props?.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
-                      {props?.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
-                    </AgGridReact >
-                    <div className='button-wrapper'>
-                      {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
-                      {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                        <div className="d-flex pagination-button-container">
-                          <p><Button id="rmImportListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
-                          {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                          {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                          {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                          <p><Button id="rmImportListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-                        </div>
-                      }
-                    </div>
-                  </div >
-                </div >
-              </Col >
-            </Row >
-            {
-              props.isSimulation && isFromVerifyPage && <Row>
-                <Col md="12" className="d-flex justify-content-end">
-                  <button type="button" className={"apply"} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
-                </Col>
-              </Row>
-            }
-          </>
-        }
-        {
-          isBulkUpload && (
-            <BulkUpload
-              isOpen={isBulkUpload}
-              closeDrawer={closeBulkUploadDrawer}
-              isEditFlag={false}
-              densityAlert={densityAlert}
-              fileName={"RM Import"}
-              isZBCVBCTemplate={true}
-              messageLabel={"RM Import"}
-              anchor={"right"}
-              masterId={RM_MASTER_ID}
-              typeOfEntryId={ENTRY_TYPE_IMPORT}
-            />
-          )
-        }
-
-        {
-          analyticsDrawer &&
-          <AnalyticsDrawer
-            isOpen={analyticsDrawer}
-            ModeId={1}
-            closeDrawer={closeAnalyticsDrawer}
+          }
+        </>
+      }
+      {
+        isBulkUpload && (
+          <BulkUpload
+            isOpen={isBulkUpload}
+            closeDrawer={closeBulkUploadDrawer}
+            isEditFlag={false}
+            densityAlert={densityAlert}
+            fileName={"RM Import"}
+            isZBCVBCTemplate={true}
+            messageLabel={"RM Import"}
             anchor={"right"}
-            isReport={analyticsDrawer}
-            importEntry={true}
-            selectedRowData={selectedRowData}
-            isSimulation={true}
-            //cellValue={cellValue}
-            rowData={selectedRowData}
-            import={true}
+            masterId={RM_MASTER_ID}
+            typeOfEntryId={ENTRY_TYPE_IMPORT}
           />
-        }
-        {
-          attachment && (
-            <Attachament
-              isOpen={attachment}
-              index={viewAttachment}
-              closeDrawer={closeAttachmentDrawer}
-              anchor={'right'}
-              gridListing={true}
-            />
-          )
-        }
-        {
-          showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
-        }
-        {
-          showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`} />
-        }
+        )
+      }
 
-      </div >}
+      {
+        analyticsDrawer &&
+        <AnalyticsDrawer
+          isOpen={analyticsDrawer}
+          ModeId={1}
+          closeDrawer={closeAnalyticsDrawer}
+          anchor={"right"}
+          isReport={analyticsDrawer}
+          importEntry={true}
+          selectedRowData={selectedRowData}
+          isSimulation={true}
+          //cellValue={cellValue}
+          rowData={selectedRowData}
+          import={true}
+        />
+      }
+      {
+        attachment && (
+          <Attachament
+            isOpen={attachment}
+            index={viewAttachment}
+            closeDrawer={closeAttachmentDrawer}
+            anchor={'right'}
+            gridListing={true}
+          />
+        )
+      }
+      {
+        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
+      }
+      {
+        showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`} />
+      }
+
+    </div >}
       {
         editSelectedList &&
         <RMSimulation

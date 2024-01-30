@@ -1135,8 +1135,11 @@ const BOPImportListing = (props) => {
           )}
           {isBulkUpload && (<BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`${showBopLabel()} Import`} isZBCVBCTemplate={true} messageLabel={`${showBopLabel()} Import`} anchor={"right"} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_IMPORT} />)}
 
-          {state.analyticsDrawer && (<AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={2} closeDrawer={closeAnalyticsDrawer} anchor={"right"} importEntry={true} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} import={true} />)}
-          {state.attachment && (<Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={"right"} gridListing={true} />
+          {state.analyticsDrawer && (
+            <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={2} closeDrawer={closeAnalyticsDrawer} anchor={"right"} importEntry={true} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} import={true} />
+          )}
+          {state.attachment && (
+            <Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={"right"} gridListing={true} />
           )}
         </div>
       )}

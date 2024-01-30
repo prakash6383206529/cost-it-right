@@ -47,11 +47,9 @@ const IndivisualProductListing = (props) => {
   const [searchText, setSearchText] = useState("")
 
   const dispatch = useDispatch();
-  console.log(
-    gridColumnApi, selectedRowData
-  );
+
   const permissions = useContext(ApplyPermission);
-  console.log(tableData);
+
   useEffect(() => {
 
     getTableListData();

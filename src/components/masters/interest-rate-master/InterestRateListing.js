@@ -310,10 +310,9 @@ const InterestRateListing = (props) => {
     gridOptions.api.setFilterModel(null);
     dispatch(agGridStatus("", ""))
     dispatch(isResetClick(true, "ICCApplicability"))
-    setState((prevState) => ({ ...prevState, noData: false }))
-    // if (window.screen.width >= 1600) {
-    //   gridApi.sizeColumnsToFit();
-    // }
+    if (window.screen.width >= 1600) {
+      gridApi.sizeColumnsToFit();
+    }
   }
 
 
