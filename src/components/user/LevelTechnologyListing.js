@@ -50,16 +50,12 @@ const LevelTechnologyListing = (props) => {
 	}, []);
 	useEffect(() => {
 		if (props.updateApi) {
-
-			if (props.cancelButton) {
-				return
-			} else {
-				getUpdatedData()
+			if (!props.cancelButton) {
+				getUpdatedData();
 			}
 		}
-
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [props.updateApi]);
+	}, []);
 
 	const getLevelsListData = () => {
 		setState((prevState) => ({ ...prevState, isLoader: true }))

@@ -21,7 +21,7 @@ import DayTime from "../../common/DayTimeWrapper";
 import _ from "lodash";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
-import { searchNocontentFilter } from "../../../helper";
+import { loggedInUserId, searchNocontentFilter } from "../../../helper";
 import { disabledClass } from "../../../actions/Common";
 import { ApplyPermission } from ".";
 
@@ -41,7 +41,7 @@ const IndivisualPartListing = (props) => {
     currentRowIndex: 0,
     pageNoNew: 1,
     globalTake: defaultPageSize,
-    isLoader: false,
+    isLoader: true,
     disableDownload: false,
     noData: false,
     disableFilter: true,
@@ -328,18 +328,20 @@ const IndivisualPartListing = (props) => {
   };
 
   const confirmDeleteItem = (ID) => {
-    dispatch(
-      deletePart(ID, (res) => {
-        if (res.data.Result === true) {
-          Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
-          getTableListData(0, state.globalTake, true);
-          state.gridApi.deselectAll();
-          setState((prevState) => ({ ...prevState, dataCount: 0 }));
-        }
-      })
-    );
-    setState((prevState) => ({ ...prevState, showPopup: false }));
-  };
+
+
+    const loggedInUser = loggedInUserId()
+    dispatch(deletePart(ID, loggedInUser, (res) => {
+      if (res.data.Result === true) {
+        Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
+        //getTableListData();
+        getTableListData(state.currentRowIndex, defaultPageSize, state.floatingFilterData, true)
+        setState((prevState) => ({ ...prevState, dataCount: 0 }))
+      }
+    }));
+    setState((prevState) => ({ ...prevState, showPopup: false }))
+  }
+
 
   const onPopupConfirm = () => {
     confirmDeleteItem(state.deletedId);
@@ -379,7 +381,7 @@ const IndivisualPartListing = (props) => {
             title="Delete"
             className="Delete"
             type={"button"}
-            onClick={() => deleteItem(ID)}
+            onClick={() => deleteItem(ID.partId)}
           />
         )}
       </>
@@ -511,7 +513,7 @@ const IndivisualPartListing = (props) => {
 
 
   const returnExcelColumn = (data = [], TempData) => {
-    console.log('TempData: ', TempData);
+
 
     let temp = [];
     temp = TempData && TempData.map((item) => {

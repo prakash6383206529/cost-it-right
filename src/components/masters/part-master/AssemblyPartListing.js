@@ -333,6 +333,11 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
   const resetState = () => {
+    const searchBox = document.getElementById("filter-text-box");
+    if (searchBox) {
+      searchBox.value = ""; // Reset the input field's value
+    }
+    state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);

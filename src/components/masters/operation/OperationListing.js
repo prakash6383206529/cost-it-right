@@ -283,7 +283,9 @@ const OperationListing = (props) => {
             }
         } else {
             if (
-                value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
+                value.column.colId === "EffectiveDate" ||
+                value.column.colId === "CreatedDate"
+            ) {
                 return false;
             }
             setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, }, }));

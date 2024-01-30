@@ -538,13 +538,13 @@ const VendorListing = () => {
 
   const closeVendorDrawer = (e = "", formdata, type) => {
     setState(
-      (prevState) => ({ ...prevState, isOpenVendor: false, isEditFlag: false, ID: "", }),
-      () => {
-        if (type === "submit") {
-          filterList();
-        }
-      }
+      (prevState) => ({ ...prevState, isOpenVendor: false, isEditFlag: false, ID: "", })
     );
+
+    if (type === "submit") {
+      filterList();
+    }
+
   };
 
   const onGridReady = (params) => {

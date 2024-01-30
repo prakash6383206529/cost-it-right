@@ -201,7 +201,6 @@ const UOMMaster = (props) => {
     gridOptions?.api?.setFilterModel(null);
     gridApi.sizeColumnsToFit();
     gridApi.deselectAll()
-    setNoData(false)
   }
 
 
