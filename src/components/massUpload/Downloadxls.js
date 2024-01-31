@@ -292,7 +292,6 @@ class Downloadxls extends React.Component {
     * @description Used to get excel column names
     */
     returnExcelColumn = (data = [], TempData, isRm = false) => {
-
         const { fileName, failedData, isFailedFlag } = this.props;
         let dataList = [...data]
 
