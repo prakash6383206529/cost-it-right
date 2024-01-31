@@ -61,34 +61,6 @@ const LevelsListing = (props) => {
 	const child = useRef();
 	const searchRef = useRef(null);
 
-	// useEffect(() => {
-	// 	setState(prevState => ({ ...prevState, isLoader: true }));
-
-	// 	if (topAndLeftMenuData !== undefined) {
-	// 		const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
-	// 		const accessData = userMenu && userMenu.Pages.find(el => el.PageName === LEVELS)
-	// 		const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions);
-	// 		if (permmisionData !== undefined) {
-	// 			setPermissionData(permmisionData);
-	// 			setState(prevState => ({
-	// 				...prevState,
-	// 				AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-	// 				EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-	// 				DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-	// 			}));
-	// 		}
-	// 	}
-	// 	console.log("beforeisloader", state.isLoader)
-
-	// 	getLevelsListData();
-	// 	dispatch(getUsersByTechnologyAndLevel(() => {
-	// 		console.log("isloader", state.isLoader)
-	// 		setState(prevState => ({ ...prevState, isLoader: false }));
-	// 		console.log("after set loader", state.isLoader)
-
-	// 	}));
-	// 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	// }, []);
 	useEffect(() => {
 		setState(prevState => ({ ...prevState, isLoader: true }));
 
@@ -142,7 +114,6 @@ const LevelsListing = (props) => {
 	   * @description  used to cancel filter form
 	   */
 	const closeDrawer = (e = '', levelValue = "") => {
-		console.log('levelTypeData: ', levelValue);
 
 		setState(prevState => ({ ...prevState, isOpen: false, isShowMappingForm: false, isShowForm: false, isEditFlag: false, updateApi: !prevState.updateApi, cancelButton: e === 'cancel' ? true : false, levelValue: levelValue }));
 	};

@@ -46,16 +46,17 @@ const LevelTechnologyListing = (props) => {
 		getSimulationDataList();
 		getMasterDataList()
 		props.onRef(this);
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	useEffect(() => {
-		if (props.updateApi) {
-			if (!props.cancelButton) {
-				getUpdatedData();
-			}
+		// if (props.updateApi) {
+		if (!props.cancelButton) {
+			getUpdatedData();
 		}
+		// }
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [props.updateApi]);
+	}, [props.levelValue, props.updateApi]);
 	const getLevelsListData = () => {
 		setState((prevState) => ({ ...prevState, isLoader: true }))
 		dispatch(getAllLevelMappingAPI(res => {
