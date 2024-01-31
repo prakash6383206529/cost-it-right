@@ -22,7 +22,7 @@
     "dotenv": "^8.2.0",
     "flowpoints": "^1.0.18",
     "fontawesome-4.7": "^4.7.0",
-    "i18next": "^23.7.11",
+    "i18next": "^23.8.1",
     "i18next-browser-languagedetector": "^7.2.0",
     "i18next-http-backend": "^2.4.2",
     "intro.js": "^7.2.0",
