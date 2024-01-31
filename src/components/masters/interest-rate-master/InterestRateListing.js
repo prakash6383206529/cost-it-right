@@ -224,12 +224,12 @@ const InterestRateListing = (props) => {
   }
 
   const hideForm = (type) => {
-    setState((prevState) => ({ ...prevState, toggleForm: false, data: { isEditFlag: false, ID: '' } }), () => {
-      if (type === 'submit') {
-        getTableListData();
-      }
-    });
-  };
+    setState((prevState) => ({ ...prevState, toggleForm: false, data: { isEditFlag: false, ID: '' } })
+    );
+    if (type === 'submit') {
+      getTableListData();
+    }
+  }
 
 
   const bulkToggle = () => {

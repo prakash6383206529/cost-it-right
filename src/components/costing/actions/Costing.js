@@ -63,6 +63,7 @@ import {
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 // let config() = config
 
@@ -1725,7 +1726,7 @@ export function storePartNumber(partNo) {
 export function getCostingSummaryByplantIdPartNo(partNo, plantId, callback) {
   return (dispatch) => {
     if (partNo !== '' && plantId !== '') {
-      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}/${false}`, config(),)
+      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}/${false}/${reactLocalStorage.getObject('CostingTypePermission').zbc}/${reactLocalStorage.getObject('CostingTypePermission').vbc}/${reactLocalStorage.getObject('CostingTypePermission').cbc}`, config(),)
       request
         .then((response) => {
           if (response.data.Result || response.status === 204) {

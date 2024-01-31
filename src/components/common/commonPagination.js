@@ -349,6 +349,7 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
     thisReference.state.gridApi.paginationSetPageSize(Number(newPageSize));
 }
 export function PaginationWrapper(props) {
+
     const onPageSizeChangedCommon = (newPageSize) => {
         props.setPage(newPageSize)
     }

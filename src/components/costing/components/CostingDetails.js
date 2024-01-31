@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc, setOtherCostData, setCostingEffectiveDate
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc, setOtherCostData, setCostingEffectiveDate, setSurfaceCostInOverheadProfit, setToolCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -1596,6 +1596,12 @@ function CostingDetails(props) {
       setIsLoader(true)
       dispatch(getBriefCostingById('', (res) => { }))
       dispatch(isDiscountDataChange(false))
+      dispatch(setSurfaceCostInOverheadProfit(false, () => { }))
+      dispatch(setSurfaceCostInOverheadProfitRejection(false, () => { }))
+      dispatch(setToolCostInOverheadProfit(false, () => { }))
+      dispatch(setIncludeOverheadProfitIcc(false, () => { }))
+      dispatch(setOverheadProfitData([], () => { }))
+
     } else {
       setIsLoader(true)
       dispatch(getBriefCostingById('', (res) => { }))
@@ -1659,6 +1665,10 @@ function CostingDetails(props) {
       dispatch(setDiscountErrors({}))
       dispatch(setIncludeOverheadProfitIcc(false, () => { }))
       dispatch(setCostingEffectiveDate(null))
+
+      dispatch(setSurfaceCostInOverheadProfit(false, () => { }))
+      dispatch(setSurfaceCostInOverheadProfitRejection(false, () => { }))
+      dispatch(setToolCostInOverheadProfit(false, () => { }))
     }
   }
 
@@ -2984,6 +2994,8 @@ function CostingDetails(props) {
           zbcPlantGrid={zbcPlantGrid}
           ID={""}
           anchor={"right"}
+          wacPlantGrid={wacPlantGrid}
+          isWAC={isWAC}
         />
       )
       }

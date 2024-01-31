@@ -612,6 +612,8 @@ const BOPDomesticListing = (props) => {
   const returnExcelColumn = (data = [], TempData) => {
     let temp = []
     let tempData = [...data]
+    const bopMasterName = showBopLabel();
+
     tempData = hideCustomerFromExcel(tempData, "CustomerName")
     if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
       tempData = hideColumnFromExcel(tempData, 'Quantity')
@@ -633,6 +635,10 @@ const BOPDomesticListing = (props) => {
       if (item.EffectiveDate?.includes('T')) {
         item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
       }
+      if (item === 'BOP' || item === 'BoughtOutPart') {
+        item.label = bopMasterName;
+      }
+      console.log('item: ', item);
 
       return item
     })

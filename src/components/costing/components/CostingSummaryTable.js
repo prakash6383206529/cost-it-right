@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -31,7 +31,7 @@ import BOMViewer from '../../masters/part-master/BOMViewer';
 import _, { debounce } from 'lodash'
 import ReactExport from 'react-export-excel';
 import ExcelIcon from '../../../assests/images/excel.svg';
-import { DIE_CASTING, IdForMultiTechnology } from '../../../config/masterData'
+import { DIE_CASTING, IdForMultiTechnology, PLASTIC } from '../../../config/masterData'
 import ViewMultipleTechnology from './Drawers/ViewMultipleTechnology'
 import TooltipCustom from '../../common/Tooltip'
 import { Costratiograph } from '../../dashboard/CostRatioGraph'
@@ -101,6 +101,8 @@ const CostingSummaryTable = (props) => {
   const [AddAccessibility, setAddAccessibility] = useState(true)
   const [EditAccessibility, setEditAccessibility] = useState(true)
   const [ViewAccessibility, setViewAccessibility] = useState(true)
+  const [downloadAccessibility, setDownloadAccessibility] = useState(true)
+
   const [iccPaymentData, setIccPaymentData] = useState("")
   const { initialConfiguration, topAndLeftMenuData } = useSelector(state => state.auth)
 
@@ -115,8 +117,18 @@ const CostingSummaryTable = (props) => {
   const [selectedCheckbox, setSelectedCheckbox] = useState('')
   const [showPieChartObj, setShowPieChartObj] = useState([])
   const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
+  const [viewCostingData, setViewCostingData] = useState([])
 
-  const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+  const { viewCostingDetailData, viewRejectedCostingDetailData } = useSelector((state) => state.costing)
+
+  useEffect(() => {
+    if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
+      setViewCostingData(viewCostingDetailData)
+    } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData.length > 0 && props?.isRejectedSummaryTable) {
+      setViewCostingData(viewRejectedCostingDetailData)
+    }
+
+  }, [viewCostingDetailData, viewRejectedCostingDetailData])
 
   const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
 
@@ -377,6 +389,8 @@ const CostingSummaryTable = (props) => {
         setAddAccessibility(permmisionData?.Add ? permmisionData?.Add : false)
         setEditAccessibility(permmisionData?.Edit ? permmisionData?.Edit : false)
         setViewAccessibility(permmisionData?.View ? permmisionData?.View : false)
+        setDownloadAccessibility(permmisionData?.Download ? permmisionData?.Download : false)
+
       }
     }
   }
@@ -1838,12 +1852,12 @@ const CostingSummaryTable = (props) => {
             {<Col md={simulationMode || props.isRfqCosting || isApproval ? "12" : "8"} className="text-right">
               <div className='d-flex justify-content-end'>
                 <div className='d-flex justify-content-end'>
-                  <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
+                  {downloadAccessibility && <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
                     {onBtExport()}
-                  </ExcelFile>
+                  </ExcelFile>}
                   {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                 </div>
-                {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
+                {!simulationMode && !props.isRfqCosting && !props.isRfqCosting && downloadAccessibility &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
                     documentTitle={`${pdfName}-detailed-costing`}
@@ -1854,7 +1868,7 @@ const CostingSummaryTable = (props) => {
                     trigger={reactToPrintTriggerDetail}
                   />
                 }
-                {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && <ReactToPrint
+                {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && downloadAccessibility && <ReactToPrint
                   bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                   documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                   content={reactToPrintContent}
@@ -2237,79 +2251,80 @@ const CostingSummaryTable = (props) => {
                             </tr>
                           </> :
                             <>
-                              {!drawerDetailPDF ? <tr>
-                                <td>
-                                  <span className="d-block small-grey-text">RM-Grade</span>
-                                  <span className={highlighter("rmRate")}>RM Rate</span>
-                                  <span className={highlighter("scrapRate")}>Scrap Rate</span>
-                                  <span className={highlighter("", "rm-reducer")}>Gross Weight</span>
-                                  <span className={highlighter("", "finish-reducer")}>Finish Weight</span>
-                                  {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
-                                  {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
-                                  {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}
-                                  {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss (Loss%)</span>}
-                                  <span className={highlighter("BurningLossWeight")}>Burning Loss Weight</span>
-                                  <span className={highlighter("ScrapWeight")}>Scrap Weight</span>
-                                </td>
-                                {viewCostingData &&
-                                  viewCostingData?.map((data) => {
-                                    return (
-                                      <td className={tableDataClass(data)}>
-                                        <span className="d-block small-grey-text">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : data?.rm : '')}</span>
-                                        <span className={highlighter("rmRate")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
-                                        </span>
-                                        <span className={highlighter("scrapRate")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
-                                        </span>
-                                        <span className={highlighter("", "rm-reducer")}>
-                                          {/* try with component */}
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && reducer(data?.netRMCostView))}>{(data?.netRMCostView && reducer(data?.netRMCostView))}</span> : '')}
-                                        </span>
-                                        <span className={highlighter("", "finish-reducer")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && reducerFinish(data?.netRMCostView))}>{(data?.netRMCostView && reducerFinish(data?.netRMCostView))}</span> : '')}
-                                          {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
-                                        </span>
-                                        {data?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.ForgingScrapWeight && data?.ForgingScrapWeight)}>{(data?.ForgingScrapWeight ? data?.ForgingScrapWeight : "-")}</span> : '-')}
-                                          {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
-                                        </span>}
-                                        {data?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.MachiningScrapWeight && data?.MachiningScrapWeight)}>{(data?.MachiningScrapWeight ? data?.MachiningScrapWeight : '-')}</span> : '-')}
-                                          {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
-                                        </span>}
-                                        {data?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.CastingWeight)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.CastingWeight, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
-                                          {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
-                                        </span>}
-                                        {data?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)} (${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}>{`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)} (${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}</span> : '-')}
-                                          {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
-                                        </span>}
+                              {!drawerDetailPDF ?
+                                <tr>
+                                  <td>
+                                    <span className="d-block small-grey-text">RM-Grade</span>
+                                    <span className={highlighter("rmRate")}>RM Rate</span>
+                                    <span className={highlighter("scrapRate")}>Scrap Rate</span>
+                                    <span className={highlighter("", "rm-reducer")}>Gross Weight</span>
+                                    <span className={highlighter("", "finish-reducer")}>Finish Weight</span>
+                                    {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
+                                    {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
+                                    {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}
+                                    {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss (Loss%)</span>}
+                                    {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && <span className={highlighter("BurningLossWeight")}>Burning Loss Weight </span>}
+                                    <span className={highlighter("ScrapWeight")}>Scrap Weight</span>
+                                  </td>
+                                  {viewCostingData &&
+                                    viewCostingData?.map((data) => {
+                                      return (
+                                        <td className={tableDataClass(data)}>
+                                          <span className="d-block small-grey-text">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : data?.rm : '')}</span>
+                                          <span className={highlighter("rmRate")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                          </span>
+                                          <span className={highlighter("scrapRate")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                          </span>
+                                          <span className={highlighter("", "rm-reducer")}>
+                                            {/* try with component */}
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && reducer(data?.netRMCostView))}>{(data?.netRMCostView && reducer(data?.netRMCostView))}</span> : '')}
+                                          </span>
+                                          <span className={highlighter("", "finish-reducer")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && reducerFinish(data?.netRMCostView))}>{(data?.netRMCostView && reducerFinish(data?.netRMCostView))}</span> : '')}
+                                            {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                          </span>
+                                          {data?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.ForgingScrapWeight && data?.ForgingScrapWeight)}>{(data?.ForgingScrapWeight ? data?.ForgingScrapWeight : "-")}</span> : '-')}
+                                            {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                          </span>}
+                                          {data?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.MachiningScrapWeight && data?.MachiningScrapWeight)}>{(data?.MachiningScrapWeight ? data?.MachiningScrapWeight : '-')}</span> : '-')}
+                                            {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                          </span>}
+                                          {data?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.CastingWeight)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.CastingWeight, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
+                                            {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                          </span>}
+                                          {data?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)} (${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}>{`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)} (${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}</span> : '-')}
+                                            {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                          </span>}
 
-                                        <span className={highlighter("BurningLossWeight")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '')}
-                                          {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
-                                        </span>
-                                        <span className={highlighter("ScrapWeight")}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '')}
-                                        </span>
-                                      </td>
-                                    )
-                                  })}
-                              </tr> : <tr><th colSpan={2} className='py-0'>
-                                <ViewRM
-                                  isOpen={isViewRM}
-                                  viewRMData={viewRMData}
-                                  closeDrawer={closeViewDrawer}
-                                  isAssemblyCosting={isAssemblyCosting}
-                                  anchor={'right'}
-                                  index={index}
-                                  technologyId={technologyId}
-                                  rmMBDetail={rmMBDetail}
-                                  isPDFShow={true}
-                                />
-                              </th></tr>}
+                                          <span className={highlighter("BurningLossWeight")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '')}
+                                            {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                          </span>
+                                          <span className={highlighter("ScrapWeight")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '')}
+                                          </span>
+                                        </td>
+                                      )
+                                    })}
+                                </tr> : <tr><th colSpan={2} className='py-0'>
+                                  <ViewRM
+                                    isOpen={isViewRM}
+                                    viewRMData={viewRMData}
+                                    closeDrawer={closeViewDrawer}
+                                    isAssemblyCosting={isAssemblyCosting}
+                                    anchor={'right'}
+                                    index={index}
+                                    technologyId={technologyId}
+                                    rmMBDetail={rmMBDetail}
+                                    isPDFShow={true}
+                                  />
+                                </th></tr>}
 
                               <tr className={highlighter("netRM", "main-row")}>
                                 <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
@@ -3152,6 +3167,7 @@ const CostingSummaryTable = (props) => {
           simulationDrawer={false}
           // isReportLoader={isReportLoader}
           isRejectedSummaryTable={true}
+          selectedTechnology={props?.selectedTechnology}
         />
       }
       {/* DRAWERS FOR VIEW  */}

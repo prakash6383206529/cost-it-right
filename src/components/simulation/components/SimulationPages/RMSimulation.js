@@ -212,31 +212,39 @@ function RMSimulation(props) {
         let basicRateCount = 0
         let isScrapRateGreaterThanBasiRate = false
         let scrapRateChangeArr = [];
+        let basicRateZeroCount = 0
         list && list.map((li) => {
-
-            if (Number(li.BasicRate) === Number(li.NewBasicRate) || (li?.NewBasicRate === undefined && li?.NewBasicrateFromPercentage === undefined)) {
+            if (Number(li.BasicRatePerUOM) === Number(li.NewBasicRate) || (li?.NewBasicRate === undefined && li?.NewBasicrateFromPercentage === undefined)) {
                 basicRateCount = basicRateCount + 1
             }
 
-            if ((li.NewBasicRate && Number(li.BasicRate) !== Number(li.NewBasicRate)) && (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined)) {
+            if ((li.NewBasicRate && Number(li.BasicRatePerUOM) !== Number(li.NewBasicRate)) && (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined)) {
                 scrapRateChangeArr.push(li)
 
             }
             if (li.NewBasicrateFromPercentage === undefined || li?.NewBasicrateFromPercentage < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
-                if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+                if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRatePerUOM) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                     isScrapRateGreaterThanBasiRate = true
                 }
                 if (isScrapRateGreaterThanBasiRate && !(Number(basicRateCount) === Number(list.length))) {
-                    li.NewBasicRate = li?.BasicRate
+                    li.NewBasicRate = li?.BasicRatePerUOM
                     li.NewScrapRate = li?.ScrapRate
                     Toaster.warning('Scrap Rate should be less than Basic Rate')
                     return false
                 }
             }
+            if (checkForNull(li?.NewBasicRate) === 0) {
+                basicRateZeroCount = basicRateZeroCount + 1
+            }
             return null;
         })
+
         if ((selectedMasterForSimulation?.value === RMDOMESTIC || selectedMasterForSimulation?.value === RMIMPORT) && basicRateCount === list.length) {
             Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
+            return false
+        }
+        if (basicRateZeroCount > 0) {
+            Toaster.warning('Basic Rate should not be zero')
             return false
         }
         if (scrapRateChangeArr.length !== 0) {
@@ -448,10 +456,15 @@ function RMSimulation(props) {
                 return false
             }
             return true
-        } else if (cellValue && !/^[+-]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+        } else if (cellValue && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
             Toaster.warning('Please enter a valid positive numbers.')
             if (type === "Percentage") {
                 row.Percentage = 0
+            }
+            if (type === "basicRate") {
+                row.NewBasicRate = row?.BasicRatePerUOM
+            } else if (type === "scrapRate") {
+                row.NewScrapRate = row?.ScrapRate
             }
             return false
         }

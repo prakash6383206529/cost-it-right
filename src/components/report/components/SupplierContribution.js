@@ -60,7 +60,7 @@ function SupplierContributionReport(props) {
 
     const handleFromEffectiveDateChange = (value) => {
         if (value) {
-            setStartDate(DayTime(value).format('DD/MM/YYYY'))
+            setStartDate(value)
             setMinDate(value)
         }
     }
@@ -68,7 +68,7 @@ function SupplierContributionReport(props) {
 
     const handleToEffectiveDateChange = (value) => {
         if (value) {
-            setEndDate(DayTime(value).format('DD/MM/YYYY'))
+            setEndDate(value)
             setMaxDate(value)
         }
     }
@@ -91,8 +91,8 @@ function SupplierContributionReport(props) {
             let data = {}
             setNoContent(true)
             setGraphListing(false)
-            data.fromDate = startDate
-            data.toDate = endDate
+            data.fromDate = DayTime(startDate).format('MM/DD/YYYY')
+            data.toDate = DayTime(endDate).format('MM/DD/YYYY')
             data.plantId = plant.value ? plant.value : ''
             dispatch(sidebarAndNavbarHide(false))
             setIsLoader(true)
@@ -116,6 +116,8 @@ function SupplierContributionReport(props) {
                             vendorPrice.push(item.VendorBuying)
                             vendorPartCount.push(item.VendorPartCount)
                         })
+                        console.log('vendors: ', vendors);
+                        console.log('vendorPrice: ', vendorPrice);
                         setVendorArray(vendors)
                         setVendorData(vendorPrice)
                         setVendorPartCount(vendorPartCount)
@@ -201,6 +203,7 @@ function SupplierContributionReport(props) {
             },
 
             afterDraw: (chart) => {
+                console.log('chart: ', chart);
                 const { ctx, chartArea: { width, height } } = chart;
                 ctx.restore();
                 var fontSize = (width + 6) / width;
@@ -280,7 +283,7 @@ function SupplierContributionReport(props) {
                     }
                     //DRAW CODE
                     // first line: connect between arc's center point and outside point
-                    let percentage = checkForDecimalAndNull((chart.data.datasets[0].data[i] / totalCost) * 100, 2)
+                    let percentage = checkForDecimalAndNull((chart.data.datasets[0].data[i] / totalCost) * 100, 8)
                     ctx.strokeStyle = color;
                     ctx.beginPath();
                     ctx.moveTo(centerPoint.x, centerPoint.y);

@@ -668,6 +668,9 @@ export const API = {
   getUserSimulationTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,          						//RE
   getUserMasterLevelForCosting: `${BASE_URL}/user-level/get-user-master-levels`,
 
+  //AUDIT API
+
+  getAuditList: `${BASE_URL}/auditlogs/get-user-audit-log`,
 
   //ROLES API
   addRoleAPI: `${BASE_URL}/user-role/create-new`,
@@ -1444,6 +1447,10 @@ export const GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST = 'GET_PAYMENT_TERMS_APP
 export const GET_ICC_APPLICABILITY_SELECTLIST = 'GET_ICC_APPLICABILITY_SELECTLIST'
 export const GET_LAST_SIMULATION_DATA = 'GET_LAST_SIMULATION_DATA'
 
+//AUDIT
+
+export const GET_LOGIN_AUDIT_SUCCESS = 'GET_LOGIN_AUDIT_SUCCESS'
+
 //COSTING
 export const GET_COSTING_TECHNOLOGY_SELECTLIST = 'GET_COSTING_TECHNOLOGY_SELECTLIST';
 export const GET_COSTING_PART_SELECTLIST = 'GET_COSTING_PART_SELECTLIST';
@@ -1935,10 +1942,12 @@ export const CUSTOMER_POAM_IMPACT = "Customer POAM Impact"
 export const OUTSOURCING = "Outsourcing"
 export const INSIGHT_SIMULATION_REPORT = "Simulation Insights Report"
 export const NFR_INSIGHT_DETAILS = 'NFR Insights' //MINDA
+export const lOGIN_AUDIT = 'Login Audit'
+
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
-export const PLASTIC = 'Plastic';
+export const PLASTICNAME = 'Plastic';
 export const WIRING_HARNESS = 'Wiring Harness';
 export const NON_FERROUS_GDC = 'Non Ferrous GDC';
 export const PLATING = 'Plating';
@@ -1957,6 +1966,14 @@ export const FASTNERS = 'Fastners';
 export const RIVETS = 'Rivet';
 export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
 export const ELECTRICAL_PROPRIETARY = 'Electrical Proprieratary';
+export const DIECASTING = 'Die Casting'
+export const LOGISTICS = 'Logistics'
+export const CORRUGATEDBOX = 'Corrugated Box'
+export const FABRICATION = 'Fabrication'
+export const FERROUSCASTING = 'Ferrous Casting'
+export const WIREFORMING = 'Wire Forming'
+export const ELECTRIC = 'Electric'
+export const ELECTRONICSNAME = 'Electronics'
 
 export const COMBINED_PROCESS_NAME = 'Combined Process';          						//RE
 export const ZBC_COSTING = 'Costing - ZBC';
@@ -2532,6 +2549,7 @@ export const InterestMaster = "Interest-rate"
 export const ReportMaster = "Report-rate"
 export const ReportSAPMaster = "SAP-Excel Download"//MINDA
 export const UserListing = "User-Listing"
+export const AuditLisitng = "Audit-Listing"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
@@ -2815,7 +2833,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.1.305";
+export const VERSION = "V2.1.312";
 
 
 

@@ -21,7 +21,7 @@ import Toaster from '../common/Toaster';
 import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
-import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
+import Downloadxls, { checkInterestRateConfigure, checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import cloudImg from '../../assests/images/uploadcloud.png';
 import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
 //MINDA
@@ -38,6 +38,8 @@ import { checkFinalUser } from '../../components/costing/actions/Costing';
 import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../common/CommonFunctions';
 import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
 import DayTime from '../common/DayTimeWrapper';
+import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
+
 class BulkUpload extends Component {
     constructor(props) {
         super(props);
@@ -288,7 +290,7 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(PARTCOMPONENTBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(PartComponent, fileHeads)
+                            checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(PartComponent), fileHeads)
                             break;
                         case String(PRODUCTCOMPONENTBULKUPLOAD):
                             checkForFileHead = checkForSameFileUpload(ProductComponent, fileHeads)
@@ -336,10 +338,11 @@ class BulkUpload extends Component {
                             break;
                         case String(INTERESTRATEBULKUPLOAD):
                             if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(VBCInterestRate, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkInterestRateConfigure(VBCInterestRate), fileHeads)
+
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(CBCInterestRate), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkInterestRateConfigure(CBCInterestRate), fileHeads)
                             }
                             break;
                         case String(ACTUALVOLUMEBULKUPLOAD):
@@ -390,15 +393,21 @@ class BulkUpload extends Component {
 
                     let fileData = [];
                     resp.rows.map((val, index) => {
-                        if (index > 0 && val?.length > 0 && val[0] !== '') {
+
+                        if (index > 0 && val?.length > 0) {
                             // BELOW CODE FOR HANDLE EMPTY CELL VALUE
                             const i = val.findIndex(e => e === undefined);
                             if (i !== -1) {
                                 val[i] = '';
                             }
 
+                            if (val.length === 1) {
+                                return null
+                            }
+
                             let obj = {}
                             val.map((el, i) => {
+
                                 if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string' && el !== '') {
                                     if (isDateFormatter(el)) {
                                         el = el.replaceAll('/', '-')

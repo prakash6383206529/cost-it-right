@@ -24,7 +24,6 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser, getReleaseStrategyApprovalDetails } from '../../costing/actions/Costing'
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../../../actions/Common'
-import { reactLocalStorage } from 'reactjs-localstorage'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
 
 
@@ -139,7 +138,7 @@ function SimulationApprovalListing(props) {
 
     useEffect(() => {
         if (props.activeTab === '2' || isDashboard) {
-            getTableData(0, defaultPageSize, true, floatingFilterData)
+            resetState()
         }
         dispatch(isResetClick(false))
         dispatch(agGridStatus("", ""))
@@ -180,10 +179,6 @@ function SimulationApprovalListing(props) {
             dataObj.DisplayStatus = props.status
         }
 
-        const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission')
-        dataObj.IsCustomerDataShow = cbc
-        dataObj.IsVendorDataShow = vbc
-        dataObj.IsZeroDataShow = zbc
         let filterData = {
             logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
@@ -250,7 +245,7 @@ function SimulationApprovalListing(props) {
 
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
-            if (simualtionApprovalList?.length !== 0 || simualtionApprovalListDraft?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+            if ((isDashboard ? simualtionApprovalList : simualtionApprovalListDraft)?.length !== 0) setNoData(searchNocontentFilter(value, noData))
         }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
@@ -321,7 +316,6 @@ function SimulationApprovalListing(props) {
                 floatingFilterData[prop] = ""
             }
         }
-
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         setPageNo(1)
@@ -518,15 +512,19 @@ function SimulationApprovalListing(props) {
         let tempArrReason = []
         let tempArrTechnology = []
         let tempArrSimulationTechnologyHead = []
+        let costingHeadArray = []
+        let approvalTypeArray = []
 
         selectedRows && selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
-            tempArrDepartmentId.push(item.DepartmentId)
-            tempArrIsFinalLevelButtonShow.push(item.IsFinalLevelButtonShow)
-            tempArrIsPushedButtonShow.push(item.IsPushedButtonShow)
-            tempArrReason.push(item.ReasonId)
-            tempArrTechnology.push(item.TechnologyName)
-            tempArrSimulationTechnologyHead.push(item.SimulationTechnologyHead)
+            tempArrDepartmentId.push(item?.DepartmentId)
+            tempArrIsFinalLevelButtonShow.push(item?.IsFinalLevelButtonShow)
+            tempArrIsPushedButtonShow.push(item?.IsPushedButtonShow)
+            tempArrReason.push(item?.ReasonId)
+            tempArrTechnology.push(item?.TechnologyName)
+            tempArrSimulationTechnologyHead.push(item?.SimulationTechnologyHead)
+            costingHeadArray.push(item?.CostingHead)
+            approvalTypeArray.push(item?.ApprovalTypeId)
             return null
         })
         selectedRows && dispatch(setMasterForSimulation({ label: selectedRows[0]?.SimulationTechnologyHead, value: selectedRows[0]?.SimulationTechnologyId }))
@@ -539,6 +537,14 @@ function SimulationApprovalListing(props) {
             gridApi.deselectAll()
         } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
             Toaster.warning('Level should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        }
+        else if (!allEqual(costingHeadArray)) {
+            Toaster.warning('Costing Head should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        }
+        else if (!allEqual(approvalTypeArray)) {
+            Toaster.warning('Approval Type should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         }
         // ********** IF WE DO MULTI SELECT FOR PUSH THENUNCOMMENT THIS ONLY ************
@@ -768,138 +774,138 @@ function SimulationApprovalListing(props) {
             {
                 !showApprovalSumary &&
                 <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`} id='history-go-to-top'>
-                    < div className={`ag-grid-react custom-pagination`}>
-                        <form onSubmit={handleSubmit(() => { })} noValidate>
-                            {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
-                            {!isDashboard && <ScrollToTop pointProp={"history-go-to-top"} />}
-                            <Row className="pt-4">
+                    {(isLoader) ? <LoaderCustom customClass={isDashboard ? "dashboard-loader" : "loader-center"} /> : <div>
+                        < div className={`ag-grid-react custom-pagination`}>
+                            <form onSubmit={handleSubmit(() => { })} noValidate>
+                                {!isDashboard && <ScrollToTop pointProp={"history-go-to-top"} />}
+                                <Row className="pt-4">
 
 
-                                <Col md="8" lg="6" className="search-user-block mb-3">
-                                    <div className="d-flex justify-content-end bd-highlight w100">
-                                        <div className="warning-message d-flex align-items-center">
-                                            {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                            <button disabled={disableFilter} id="Simulation_Approval_Filter" title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                                        </div >
-                                        <button type="button" id="Simulation_Approval_Reset" className="user-btn  mr5" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div>
-                                        </button>
-                                        {
-                                            !props.hidesendBtn && <button
-                                                class="user-btn approval-btn"
-                                                id="Simulation_Approval_Send"
-                                                onClick={sendForApproval}
-                                                title="Send For Approval"
-                                                disabled={((isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) || isSuperAdmin) ? true : false}
-                                            >
-                                                <div className="send-for-approval"></div>
+                                    <Col md="8" lg="6" className="search-user-block mb-3">
+                                        <div className="d-flex justify-content-end bd-highlight w100">
+                                            <div className="warning-message d-flex align-items-center">
+                                                {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                                <button disabled={disableFilter} id="Simulation_Approval_Filter" title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                            </div >
+                                            <button type="button" id="Simulation_Approval_Reset" className="user-btn  mr5" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
                                             </button>
-                                        }
-                                    </div >
-                                </Col >
+                                            {
+                                                !props.hidesendBtn && <button
+                                                    class="user-btn approval-btn"
+                                                    id="Simulation_Approval_Send"
+                                                    onClick={sendForApproval}
+                                                    title="Send For Approval"
+                                                    disabled={((isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) || isSuperAdmin) ? true : false}
+                                                >
+                                                    <div className="send-for-approval"></div>
+                                                </button>
+                                            }
+                                        </div >
+                                    </Col >
 
-                            </Row >
-                        </form >
+                                </Row >
+                            </form >
 
-                        <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                            </div>
-                            <div className="ag-theme-material">
-                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
-                                <AgGridReact
-                                    style={{ height: '100%', width: '100%', }}
-                                    defaultColDef={defaultColDef}
-                                    floatingFilter={true}
-                                    domLayout='autoHeight'
-                                    // columnDefs={c}
-                                    rowData={isDashboard ? simualtionApprovalList : simualtionApprovalListDraft}
-                                    // columnDefs={colRow}
-                                    pagination={true}
-                                    paginationPageSize={globalTake}
-                                    onGridReady={onGridReady}
-                                    onFilterModified={onFloatingFilterChanged}
-                                    gridOptions={gridOptions}
-                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                    noRowsOverlayComponentParams={{
-                                        title: EMPTY_DATA,
-                                        imagClass: 'imagClass'
-                                    }}
-                                    frameworkComponents={frameworkComponents}
-                                    rowSelection={'multiple'}
-                                    onSelectionChanged={onRowSelect}
-                                    isRowSelectable={isRowSelectable}
-                                    suppressRowClickSelection={true}
-                                    enableBrowserTooltips={true}
-                                >
-
-                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
-                                    <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    {/* // <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>                //RE */}
-                                    {/* THIS FEILD WILL ALWAYS COME BEFORE */}
-                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
-                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' ></AgGridColumn>}
-                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
-
-                                    <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
-                                    <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
-                                    <AgGridColumn width={200} field="VendorName" headerName="Vendor (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
-                                    <AgGridColumn width={200} field="CustomerName" headerName="Customer (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
-                                    <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
-                                    <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
-                                    <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
-                                    <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
-                                    <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
-                                    {/* <AgGridColumn width={140} field="SimulatedOn" headerName='Last Approved On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>                //RE */}
-                                    <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved/Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
-                                    <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
-
-                                    {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' tooltipField="TooltipText" cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
-                                    <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
-
-                                </AgGridReact >
-
-                                <div className='button-wrapper'>
-                                    {!isLoader && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
-                                    <div className="d-flex pagination-button-container">
-                                        <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                                        {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                                        {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                                        {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                        <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
-                                    </div>
+                            <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
+                                <div className="ag-grid-header">
+                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                 </div>
-                                {
-                                    approveDrawer &&
-                                    <SimulationApproveReject
-                                        isOpen={approveDrawer}
-                                        // <ApproveRejectDrawer                //RE
-                                        //     isOpen={isApprovalDrawer}                //RE
-                                        anchor={'right'}
-                                        approvalData={[]}
-                                        type={isPendingForApproval ? 'Approve' : 'Sender'}
-                                        selectedRowData={selectedRowData}
-                                        closeDrawer={closeDrawer}
-                                        isSimulation={true}
-                                        isSimulationApprovalListing={true}
-                                        simulationDetail={simulationDetail}
-                                        IsFinalLevel={showFinalLevelButtons}
-                                        costingTypeId={selectedRowData[0]?.SimulationHeadId}
-                                        approvalTypeIdValue={selectedRowData[0]?.SimulationHeadId}
-                                        showApprovalTypeDropdown={selectedRowData && selectedRowData[0]?.Status === "Draft"}
-                                        releaseStrategyDetails={releaseStrategyDetails}
-                                        technologyId={selectedRowData ? selectedRowData[0]?.SimulationTechnologyId : approvalData?.SimulationTechnologyId}
-                                        IsExchangeRateSimulation={selectedRowData[0]?.IsExchangeRateSimulation}
-                                    />
-                                }
+                                <div className="ag-theme-material">
+                                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
+                                    <AgGridReact
+                                        style={{ height: '100%', width: '100%', }}
+                                        defaultColDef={defaultColDef}
+                                        floatingFilter={true}
+                                        domLayout='autoHeight'
+                                        // columnDefs={c}
+                                        rowData={isDashboard ? simualtionApprovalList : simualtionApprovalListDraft}
+                                        // columnDefs={colRow}
+                                        pagination={true}
+                                        paginationPageSize={globalTake}
+                                        onGridReady={onGridReady}
+                                        onFilterModified={onFloatingFilterChanged}
+                                        gridOptions={gridOptions}
+                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                        noRowsOverlayComponentParams={{
+                                            title: EMPTY_DATA,
+                                            imagClass: 'imagClass'
+                                        }}
+                                        frameworkComponents={frameworkComponents}
+                                        rowSelection={'multiple'}
+                                        onSelectionChanged={onRowSelect}
+                                        isRowSelectable={isRowSelectable}
+                                        suppressRowClickSelection={true}
+                                        enableBrowserTooltips={true}
+                                    >
+
+                                        <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
+                                        <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                        {/* // <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>                //RE */}
+                                        {/* THIS FEILD WILL ALWAYS COME BEFORE */}
+                                        {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
+                                        {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' ></AgGridColumn>}
+                                        {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
+
+                                        <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
+                                        <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
+                                        <AgGridColumn width={200} field="VendorName" headerName="Vendor (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                                        <AgGridColumn width={200} field="CustomerName" headerName="Customer (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                                        <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
+                                        <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
+                                        <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
+                                        <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                        <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
+                                        {/* <AgGridColumn width={140} field="SimulatedOn" headerName='Last Approved On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>                //RE */}
+                                        <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved/Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                        <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
+
+                                        {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' tooltipField="TooltipText" cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
+                                        <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
+
+                                    </AgGridReact >
+
+                                    <div className='button-wrapper'>
+                                        {!isLoader && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                                        <div className="d-flex pagination-button-container">
+                                            <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                            {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                                            {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                                            {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                                            <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                                        </div>
+                                    </div>
+                                    {
+                                        approveDrawer &&
+                                        <SimulationApproveReject
+                                            isOpen={approveDrawer}
+                                            // <ApproveRejectDrawer                //RE
+                                            //     isOpen={isApprovalDrawer}                //RE
+                                            anchor={'right'}
+                                            approvalData={[]}
+                                            type={isPendingForApproval ? 'Approve' : 'Sender'}
+                                            selectedRowData={selectedRowData}
+                                            closeDrawer={closeDrawer}
+                                            isSimulation={true}
+                                            isSimulationApprovalListing={true}
+                                            simulationDetail={simulationDetail}
+                                            IsFinalLevel={showFinalLevelButtons}
+                                            costingTypeId={selectedRowData[0]?.SimulationHeadId}
+                                            approvalTypeIdValue={selectedRowData[0]?.SimulationHeadId}
+                                            showApprovalTypeDropdown={selectedRowData && selectedRowData[0]?.Status === "Draft"}
+                                            releaseStrategyDetails={releaseStrategyDetails}
+                                            technologyId={selectedRowData ? selectedRowData[0]?.SimulationTechnologyId : approvalData?.SimulationTechnologyId}
+                                            IsExchangeRateSimulation={selectedRowData[0]?.IsExchangeRateSimulation}
+                                        />
+                                    }
+                                </div >
                             </div >
                         </div >
-                    </div >
-                    <div className="text-right pb-3">
-                        <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
-                    </div>
+                        <div className="text-right pb-3">
+                            <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+                        </div>
+                    </div >}
                 </div >
-
             }
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`} />

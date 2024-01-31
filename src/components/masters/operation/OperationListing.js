@@ -293,7 +293,7 @@ const OperationListing = (props) => {
     };
 
     const onSearch = () => {
-        setState((prevState) => ({ ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
+        setState((prevState) => ({ ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, noData: false, }));
         getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     };
 
@@ -874,7 +874,7 @@ const OperationListing = (props) => {
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout='autoHeight'
-                            rowData={operationList}
+                            rowData={state.tableData}
                             pagination={true}
 
                             paginationPageSize={state.globalTake}
@@ -893,6 +893,8 @@ const OperationListing = (props) => {
                             onFilterModified={onFloatingFilterChanged}
                             enableBrowserTooltips={true}
                         >
+                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+
                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                             {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>}
                             <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>

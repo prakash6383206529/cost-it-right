@@ -6,12 +6,12 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId, DIECASTING, MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, LOGISTICS, CORRUGATEDBOX, FABRICATION, FERROUSCASTING, WIREFORMING, ELECTRONICSNAME, ELECTRIC, Assembly, ASSEMBLYNAME, PLASTICNAME,
 } from '../config/constants'
 import { IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
-import { FORGING, RMDomesticZBC, SHEETMETAL } from '../config/masterData';
+import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING } from '../config/masterData';
 /**
  * @method  apiErrors
  * @desc Response error handler.
@@ -882,8 +882,8 @@ export function getTechnologyPermission(technology) {
   switch (technology) {
     case SHEET_METAL:
       return SHEET_METAL;
-    case PLASTIC:
-      return PLASTIC;
+    case PLASTICNAME:
+      return PLASTICNAME;
     case WIRING_HARNESS:
       return WIRING_HARNESS;
     case NON_FERROUS_GDC:
@@ -894,8 +894,6 @@ export function getTechnologyPermission(technology) {
       return SPRINGS;
     case HARDWARE:
       return HARDWARE;
-    case NON_FERROUS_LPDDC:
-      return NON_FERROUS_LPDDC;
     case MACHINING:
       return MACHINING;
     case ELECTRONICS:
@@ -908,6 +906,31 @@ export function getTechnologyPermission(technology) {
       return RUBBER;
     case FORGINGNAME:
       return FORGINGNAME;
+    case DIECASTING:
+      return DIECASTING
+    case MECHANICAL_PROPRIETARY:
+      return MECHANICAL_PROPRIETARY;
+    case ELECTRICAL_PROPRIETARY:
+      return ELECTRICAL_PROPRIETARY;
+    case LOGISTICS:
+      return LOGISTICS;
+    case CORRUGATEDBOX:
+      return CORRUGATEDBOX;
+    case FABRICATION:
+      return FABRICATION;
+    case FERROUSCASTING:
+      return FERROUSCASTING;
+    case WIREFORMING:
+      return WIREFORMING
+    case ELECTRIC:
+      return ELECTRIC;
+    case ELECTRONICSNAME:
+      return ELECTRONICSNAME
+    case FASTNERS:
+      return FASTNERS
+    case ASSEMBLYNAME:
+      return ASSEMBLYNAME
+
     default:
       break;
   }
@@ -1120,7 +1143,7 @@ export const showTitleForActiveToggle = (index) => {
   }, 500);
 }
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
-export const checkForSameFileUpload = (master, fileHeads, isBOP = false) => {
+export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = false) => {
   let checkForFileHead, array = []
   let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
   const bopMasterName = showBopLabel()
@@ -1131,6 +1154,18 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false) => {
       item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
     );
   }
+  if (isRm) {
+    const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
+    if (hasNote) {
+      fileHeads = fileHeads.filter(header => header !== 'Note');
+      bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
+
+    }
+  }
+
+  // if (isRm && !fileHeads.includes('Note')) {
+  //   fileHeads.unshift('Note');
+  // }
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }

@@ -1,12 +1,25 @@
 import React from "react";
 import ReactExport from 'react-export-excel';
 import { BOMUpload, BOMUploadTempData } from '../../config/masterData';
+import { getConfigurationKey } from "../../helper";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
+export const checkSAPCodeinExcel = (excelData) => {
+  return excelData.filter((el) => {
+    if (getConfigurationKey().IsSAPCodeRequired === false) {
+      if (el.value === 'SAPCode') return false;
+    }
+    return true;
+  })
+}
+
 class DownloadUploadBOMxls extends React.Component {
+
+
+
 
   /**
   * @method renderSwitch
@@ -16,7 +29,7 @@ class DownloadUploadBOMxls extends React.Component {
 
     switch (master) {
       case 'BOM':
-        return this.returnExcelColumn(BOMUpload, BOMUploadTempData);
+        return this.returnExcelColumn(checkSAPCodeinExcel(BOMUpload), checkSAPCodeinExcel(BOMUploadTempData));
       default:
         return 'foo';
     }

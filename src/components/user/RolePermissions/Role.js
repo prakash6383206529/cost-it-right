@@ -241,7 +241,6 @@ const Role = (props) => {
 													register={register}
 													name={"RoleName"}
 													defaultValue={""}
-													customClassName={'withBorder'}
 													mandatory
 													errors={errors.RoleName}
 													rules={{}}

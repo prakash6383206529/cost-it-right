@@ -14,7 +14,7 @@ import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
   saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange, isOverheadProfitDataChange,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange, isOverheadProfitDataChange, setOverheadProfitData,
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
 import { LEVEL1, WACTypeId } from '../../../../config/constants';
@@ -40,7 +40,7 @@ function CostingHeaderTabs(props) {
   const { t } = useTranslation("Costing");
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange, ActualCostingDataList, IsIncludedSurfaceInRejection, IsIncludedToolCost, openAllTabs } = useSelector(state => state.costing)
+    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange, ActualCostingDataList, IsIncludedSurfaceInRejection, IsIncludedToolCost, includeOverHeadProfitIcc } = useSelector(state => state.costing)
   const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount, costingOpenCloseStatus } = useSelector(state => state.costing)
 
   const [activeTab, setActiveTab] = useState('1');
@@ -143,6 +143,7 @@ function CostingHeaderTabs(props) {
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": IsIncludedSurfaceInOverheadProfit,
         "IsIncludeSurfaceTreatmentWithRejection": IsIncludedSurfaceInRejection,
         "IsIncludeToolCostWithOverheadAndProfit": IsIncludedToolCost,
+        "IsIncludeOverheadAndProfitInICC": includeOverHeadProfitIcc,
         "LoggedInUserId": loggedInUserId(),
         "IsSurfaceTreatmentApplicable": true,
         "IsApplicableForChildParts": false,
@@ -170,12 +171,18 @@ function CostingHeaderTabs(props) {
           dispatch(setComponentOverheadItemData({}, () => { }))
           InjectDiscountAPICall()
           dispatch(isOverheadProfitDataChange(false))
+          let arrTemp = [...OverheadProfitTabData]
+          arrTemp[0].IsOpen = false
+          dispatch(setOverheadProfitData(arrTemp, () => { }))
         }))
       } else {
         dispatch(saveComponentOverheadProfitTab(reqData, res => {
           callAssemblyAPi(3)
           dispatch(setComponentOverheadItemData({}, () => { }))
           InjectDiscountAPICall()
+          let arrTemp = [...OverheadProfitTabData]
+          arrTemp[0].IsOpen = false
+          dispatch(setOverheadProfitData(arrTemp, () => { }))
         }))
       }
 

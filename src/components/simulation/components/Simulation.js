@@ -369,6 +369,9 @@ function Simulation(props) {
     const backToSimulation = (value) => {
         setShowEditTable(false)
         setShowMasterList(true)
+        setEditWarning(false)
+        setTableData([])
+        setIsBulkUpload(false)
     }
 
     const handleTokenChange = (value) => {

@@ -990,18 +990,17 @@ export const OverheadTempData = [
 */
 export const ZBCOperation = [
 
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'OperationName', value: 'OperationName' },
     { label: 'Description', value: 'Description' },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
+    { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
     { label: 'Technology', value: 'Technology' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
-    { label: 'DetailedEntry', value: 'DetailedEntry' },
     { label: 'VendorPlant', value: 'VendorPlant' },
     { label: 'ForType', value: 'ForType' },
-    { label: 'MaterialGasCRMHead/NiScrapCrmHead ', value: 'MaterialGasCRMHead' },
+    { label: 'MaterialGasCRMHead/NiScrapCrmHead', value: 'MaterialGasCRMHead' },
     { label: 'MaterialGasRate/NiScrapRate', value: 'MaterialGasRate' },
     { label: 'MaterialGasConsumption/NiScrapRateConsumption', value: 'MaterialGasConsumption' },
     { label: 'MaterialWireCRMHead/NiRateCrmHead', value: 'MaterialWireCRMHead' },
@@ -1055,7 +1054,6 @@ export const ZBCOperationSmallForm = [
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
     { label: 'Description', value: 'Description', },
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'Rate', value: 'Rate', }, //*
@@ -1073,7 +1071,6 @@ export const ZBCOperationTempData = [
         'OperationName': 'Crushing',
         'OperationCode': '101',
         'Description': 'Description Text',
-        'Plant': 'Manesar',
         'PlantCode': 'Systematix01',
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'Rate': 50,
@@ -1081,7 +1078,6 @@ export const ZBCOperationTempData = [
         "SurfaceTreatmentOperation": "Yes or No",
         'LabourRate': 5,
         'Remark': 'Remark Text',
-        "DestinationPlant": "Plant A",
         "DestinationPlantCode": "PLT-A",
         "LabourRatePerUOM": "0.5",
         "VendorPlant": "Plant B",
@@ -1129,16 +1125,13 @@ export const ZBCOperationTempData = [
         "ProfitCRMPercentage": "10",
         "OtherCostCRMHead": "Other Costs",
         "OtherCost": "20",
-        "DetailedEntry": "Yes or No",
         "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1500'
 
     },
     {
-        "DestinationPlant": "Houston",
         "DestinationPlantCode": "HOU-123",
-        'Plant': 'Manesar',
         'PlantCode': 'Systematix01',
         "OperationName": "Assembly",
         'OperationCode': '101',
@@ -1196,17 +1189,14 @@ export const ZBCOperationTempData = [
         "ProfitCRMPercentage": "10",
         "OtherCostCRMHead": "Miscellaneous",
         "OtherCost": "50.00",
-        "DetailedEntry": "Yes or No",
         "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1600'
     },
 
     {
-        "DestinationPlant": "Plant B",
         "DestinationPlantCode": "PLT-B",
         'PlantCode': 'Systematix01',
-        'Plant': 'Manesar',
         "OperationName": "Molding",
         'OperationCode': '101',
         "Description": "Injection molding process",
@@ -1263,7 +1253,6 @@ export const ZBCOperationTempData = [
         "ProfitCRMPercentage": "12",
         "OtherCostCRMHead": "Other Costs",
         "OtherCost": "35",
-        "DetailedEntry": "Yes or No",
         "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1700'
@@ -1275,9 +1264,7 @@ export const ZBCOperationTempData = [
 */
 export const VBCOperation = [
 
-    { label: 'VendorName', value: 'VendorName', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'OperationName', value: 'OperationName' },
     { label: "OperationCode", value: "OperationCode" },
@@ -1291,11 +1278,10 @@ export const VBCOperation = [
     { label: 'Remark', value: 'Remark' },
     { label: 'Plant', value: 'Plant' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
-    { label: 'DetailedEntry', value: 'DetailedEntry' },
     { label: 'VendorPlant', value: 'VendorPlant' },
     { label: 'CustomerId', value: 'CustomerId' },
     { label: 'ForType', value: 'ForType' },
-    { label: 'MaterialGasCRMHead/NiScrapCrmHead ', value: 'MaterialGasCRMHead' },
+    { label: 'MaterialGasCRMHead/NiScrapCrmHead', value: 'MaterialGasCRMHead' },
     { label: 'MaterialGasRate/NiScrapRate', value: 'MaterialGasRate' },
     { label: 'MaterialGasConsumption/NiScrapRateConsumption', value: 'MaterialGasConsumption' },
     { label: 'MaterialWireCRMHead/NiRateCrmHead', value: 'MaterialWireCRMHead' },
@@ -1350,9 +1336,7 @@ export const VBCOperationSmallForm = [
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
     { label: 'Description', value: 'Description', },
-    { label: 'VendorName', value: 'VendorName', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'Rate', value: 'Rate', }, //
@@ -1369,9 +1353,7 @@ export const VBCOperationTempData = [
         'OperationName': 'Crushing',
         'OperationCode': '101',
         'Description': 'Description Text',
-        'VendorName': 'Tata Steel',
         'VendorCode': 'Vendor123',
-        'DestinationPlant': 'Manesar',
         'DestinationPlantCode': "1032",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'Rate': 50,
@@ -1428,7 +1410,6 @@ export const VBCOperationTempData = [
         "OtherCostCRMHead": "Maintenance",
         "OtherCostDescription": "Monthly maintenance cost for machinery",
         "OtherCost": '5000',
-        "DetailedEntry": "Yes or No",
         "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1500',
@@ -1439,9 +1420,7 @@ export const VBCOperationTempData = [
         'OperationName': 'Drilling',
         'OperationCode': '102',
         'Description': 'Description Text',
-        'VendorName': 'ABC Manufacturing',
         'VendorCode': 'Vendor456',
-        'DestinationPlant': 'Chennai',
         'DestinationPlantCode': "1234",
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
         'Rate': 30,
@@ -1498,7 +1477,6 @@ export const VBCOperationTempData = [
         "OtherCostCRMHead": "Maintenance",
         "OtherCostDescription": "Yearly maintenance cost for machinery",
         "OtherCost": '10000',
-        "DetailedEntry": "Yes or No",
         "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1200',
@@ -1509,9 +1487,7 @@ export const VBCOperationTempData = [
         'OperationName': 'Trimming',
         'OperationCode': '103',
         'Description': 'Description Text',
-        'VendorName': 'ABC Plastic Industries',
         'VendorCode': 'Vendor456',
-        'DestinationPlant': 'Pune',
         'DestinationPlantCode': '1010',
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
         'Rate': 35,
@@ -1568,7 +1544,6 @@ export const VBCOperationTempData = [
         'OtherCostCRMHead': 'Maintenance',
         'OtherCostDescription': 'Monthly maintenance cost for machinery',
         'OtherCost': '3500',
-        'DetailedEntry': "Yes or No",
         'IsIncludeInterestRateAndDepriciationInRejectionAndProfit': "Yes or No",
         'InterestAndDepriciationCRMHead': 'Interest',
         "InterestAndDepriciationCost": '1200',
@@ -1580,9 +1555,7 @@ export const VBCOperationTempData = [
 */
 export const CBCOperation = [
 
-    { label: 'CustomerName', value: 'CustomerName' },
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'OperationName', value: 'OperationName' },
     { label: "OperationCode", value: "OperationCode" },
@@ -1596,9 +1569,8 @@ export const CBCOperation = [
     { label: 'Remark', value: 'Remark' },
     { label: 'Plant', value: 'Plant' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
-    { label: 'DetailedEntry', value: 'DetailedEntry' },
     { label: 'ForType', value: 'ForType' },
-    { label: 'MaterialGasCRMHead/NiScrapCrmHead ', value: 'MaterialGasCRMHead' },
+    { label: 'MaterialGasCRMHead/NiScrapCrmHead', value: 'MaterialGasCRMHead' },
     { label: 'MaterialGasRate/NiScrapRate', value: 'MaterialGasRate' },
     { label: 'MaterialGasConsumption/NiScrapRateConsumption', value: 'MaterialGasConsumption' },
     { label: 'MaterialWireCRMHead/NiRateCrmHead', value: 'MaterialWireCRMHead' },
@@ -1653,9 +1625,7 @@ export const CBCOperationSmallForm = [
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
     { label: 'Description', value: 'Description', },
-    { label: 'CustomerName', value: 'CustomerName' },
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'Rate', value: 'Rate', }, //
@@ -1672,9 +1642,7 @@ export const CBCOperationTempData = [
         'OperationName': 'Crushing',
         "OperationCode": "10001",
         'Description': 'Description Text',
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
-        'DestinationPlant': 'Manesar',
         'DestinationPlantCode': "1032",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'Rate': 50,
@@ -1729,7 +1697,6 @@ export const CBCOperationTempData = [
         "OtherCostCRMHead": "Maintenance",
         "OtherCostDescription": "Monthly maintenance cost for machinery",
         "OtherCost": '5000',
-        "DetailedEntry": "Yes or No",
         "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1500',
@@ -1742,9 +1709,7 @@ export const CBCOperationTempData = [
         'OperationName': 'Molding',
         'OperationCode': '10002',
         'Description': 'Description Text 2',
-        'CustomerName': 'Toyota',
         'CustomerCode': 'C-10009',
-        'DestinationPlant': 'Bangalore',
         'DestinationPlantCode': '1042',
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
         'Rate': 70,
@@ -1799,7 +1764,6 @@ export const CBCOperationTempData = [
         'OtherCostCRMHead': 'Maintenance',
         'OtherCostDescription': 'Quarterly maintenance cost for machinery',
         'OtherCost': '3000',
-        'DetailedEntry': "Yes or No",
         'IsIncludeInterestRateAndDepriciationInRejectionAndProfit': "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1500',
@@ -1809,9 +1773,7 @@ export const CBCOperationTempData = [
         'OperationName': 'Sintering',
         'OperationCode': '10003',
         'Description': 'Description Text 3',
-        'CustomerName': 'Samsung',
         'CustomerCode': 'C-10010',
-        'DestinationPlant': 'Seoul',
         'DestinationPlantCode': '2031',
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
         'Rate': 90,
@@ -1866,7 +1828,6 @@ export const CBCOperationTempData = [
         'OtherCostCRMHead': 'Transportation',
         'OtherCostDescription': 'Transportation cost for raw materials',
         'OtherCost': '4000',
-        'DetailedEntry': "Yes or No",
         'IsIncludeInterestRateAndDepriciationInRejectionAndProfit': "Yes or No",
         "InterestAndDepriciationCRMHead": "Interest",
         "InterestAndDepriciationCost": '1900',
@@ -1963,7 +1924,7 @@ export const Volume = [
     { label: 'PlantCode', value: 'PlantCode', },
     { label: 'VendorCode', value: 'VendorCode', },
     { label: 'ActualVolumeDate', value: 'ActualVolumeDate', },
-    { label: 'ActualQauntity', value: 'ActualQauntity', },
+    { label: 'ActualQuantity', value: 'ActualQuantity', },
 ]
 export const VolumeTempData = [
     {
@@ -1973,7 +1934,7 @@ export const VolumeTempData = [
         'PlantCode': '911',
         'VendorCode': '1517',
         'ActualVolumeDate': '16-12-2022',
-        'ActualQauntity': '15',
+        'ActualQuantity': '15',
     },
     {
         'ActualVolumeDetailId': '2',
@@ -1982,7 +1943,7 @@ export const VolumeTempData = [
         'PlantCode': '1569',
         'VendorCode': '1569',
         'ActualVolumeDate': '14-12-2022',
-        'ActualQauntity': '100',
+        'ActualQuantity': '100',
     }
 ]
 /**
@@ -3877,6 +3838,7 @@ export const BOMUpload = [
 ]
 
 export const BOMUploadTempData = [
+    // ASSEMBLY
     {
         "BOMNo": "BOM123",
         "AssemblyPartNo": "APart1",
@@ -3897,6 +3859,7 @@ export const BOMUploadTempData = [
         "Remark": 'Remark',
         "ProductGroupCode": "VB"
     },
+    // COMPONENT
     {
         "BOMNo": "BOM123",
         "AssemblyPartNo": "APart1",
@@ -3917,6 +3880,7 @@ export const BOMUploadTempData = [
         "Remark": 'Remark',
         "ProductGroupCode": "VB"
     },
+    // BOP
     {
         "BOMNo": "BOM123",
         "AssemblyPartNo": "APart1",
@@ -3924,19 +3888,61 @@ export const BOMUploadTempData = [
         "PartNo": "BOP_Cap",
         "PartName": "Cap",
         "Description": "Description Text",
-        "PartType": "BoughtOutPart",
+        "PartType": "Bought Out Part",
         "GroupCode": "GC1",
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
         "SAPCode": "sap-1003",
-        "IsAssembly": "YES",
+        "IsAssembly": "NO",
         "BOMLevel": 1,
         "Quantity": 4,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB"
-    }
+    },
+    // SUB ASSEMBLY
+    {
+        "BOMNo": "BOM123",
+        "AssemblyPartNo": "APart1",
+        "AssemblyPartName": "Screw Jack",
+        "PartNo": "SubAsm1",
+        "PartName": "SubAsm1",
+        "Description": "Description Text",
+        "PartType": "Assembly",
+        "GroupCode": "GC1",
+        "ECNNumber": 1,
+        "RevisionNo": 1,
+        "DrawingNo": 1,
+        "SAPCode": "sap-1004",
+        "IsAssembly": "YES",
+        "BOMLevel": 1,
+        "Quantity": 2,
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": 'Remark',
+        "ProductGroupCode": "VB"
+    },
+    // COMPONENT
+    {
+        "BOMNo": "BOM123",
+        "AssemblyPartNo": "SubAsm1",
+        "AssemblyPartName": "SubAsm1",
+        "PartNo": "Comp_Nut2",
+        "PartName": "Nut2",
+        "Description": "Description Text",
+        "PartType": "Component",
+        "GroupCode": "GC1",
+        "ECNNumber": 1,
+        "RevisionNo": 1,
+        "DrawingNo": 1,
+        "SAPCode": "sap-1005",
+        "IsAssembly": "NO",
+        "BOMLevel": 2,
+        "Quantity": 3,
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": 'Remark',
+        "ProductGroupCode": "VB"
+    },
 ]
 export const EAccessType = [
     { label: '--Select EAccess Type--', value: '', },
@@ -5933,6 +5939,15 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Department", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
     { label: "Status", value: "status", }
+
+]
+
+export const AUDIT_LISTING_DOWNLOAD_EXCEl = [
+    { label: "User Name", value: "UserName", },
+    { label: "IP Address", value: "IPAddress", },
+    { label: "User Agent", value: "UserAgent", },
+    { label: "Login Date - Login Time", value: "LoginTime", },
+
 
 ]
 

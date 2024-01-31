@@ -51,22 +51,69 @@ export function loginUserAPI(requestData, callback) {
 }
 
 
+const parseUserAgent = (userAgent) => {
+    // Define an array of browser regex patterns.
+    const browserPatterns = [
+        { brand: 'Edge', regex: /Edg\/([\d\.]+)/i },
+        { brand: 'Chrome', regex: /Chrome\/([\d\.]+)/i },
+        { brand: 'Firefox', regex: /Firefox\/([\d\.]+)/i },
+        { brand: 'Safari', regex: /Version\/([\d\.]+).*Safari\//i },
+        { brand: 'Opera', regex: /OPR\/([\d\.]+)/i },
+        { brand: 'IE', regex: /MSIE\s([\d\.]+);|Trident\/.*rv:([\d\.]+)/i }
+    ];
+
+    let brandInfo = { brand: 'Unknown', version: 'Unknown' };
+
+    // Iterate through each pattern and return the brand and version if found.
+    for (let pattern of browserPatterns) {
+        const match = userAgent.match(pattern.regex);
+        if (match) {
+            brandInfo = {
+                brand: pattern.brand,
+                version: match[1] || match[2]
+            };
+            break;
+        }
+    }
+
+    return brandInfo;
+};
+
 export function TokenAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        let queryParams = '';
-        if (requestData.IsRefreshToken) {
-            queryParams = `refresh_token=${requestData.refresh_token}&ClientId=${requestData.ClientId}&grant_type=${requestData.grant_type}`;
-        } else {
-            queryParams = `userName=${requestData.username}&password=${requestData.password}&grant_type=${requestData.grant_type}`;
-        }
-        axios.post(API.login, queryParams, CustomHeader)
-            .then((response) => {
-                if (response && response.status === 200) {
-                    callback(response);
-                }
-            }).catch((error) => {
-                dispatch(getFailure(error));
+
+        // Parse the User-Agent string.
+        const { brand: browserName, version: browserVersion } = parseUserAgent(window.navigator.userAgent);
+
+        // Include the User-Agent details in the requestData object.
+        const body = {
+            UserName: requestData.username,
+            Password: requestData.password,
+            RememberMe: requestData.rememberMe || false,
+            IPAddress: '', // This will be populated from the response of ipify.
+            MacAddress: '', // Populate this field if you have the MAC address, otherwise remove it.
+            UserAgent: `${browserName} ${browserVersion}`
+        };
+
+
+        // Fetch the public IP from a service (if necessary).
+        axios.get('https://api.ipify.org?format=json')
+            .then(response => {
+                body.IPAddress = response.data.ip; // Include the IP address.
+
+                // Proceed with the original request now including the IP and User-Agent.
+                axios.post(API.login, body, config()) // Make sure you send a JSON body.
+                    .then((res) => {
+                        if (res && res.status === 200) {
+                            callback(res);
+                        }
+                    }).catch((error) => {
+                        dispatch(getFailure(error));
+                        apiErrors(error);
+                        callback(error);
+                    });
+            }).catch(error => {
                 apiErrors(error);
                 callback(error);
             });
@@ -748,6 +795,7 @@ export function getUserLevelAPI(LevelId, callback) {
  * @description set empty level detail in reducer
  */
 export function setEmptyLevelAPI(LevelId, callback) {
+
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (LevelId === '') {

@@ -238,6 +238,7 @@ function ReportListing(props) {
                     let dataFromAPI = res.data.Data
                     setIsReportLoader(false)
                     const tempObj = formViewData(dataFromAPI)
+
                     dispatch(setCostingViewData(tempObj))
                 }
             },
@@ -1133,6 +1134,7 @@ function ReportListing(props) {
                     // simulationMode={false}    //RE
                     simulationDrawer={false}
                     isReportLoader={isReportLoader}
+                    selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0]?.technology}
                 />
             }
             {

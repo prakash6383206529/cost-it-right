@@ -22,6 +22,7 @@ import ClientReducer from './reducers/Client';
 import ExchangeRateReducer from './reducers/ExchangeRate';
 import TaxReducer from './reducers/Tax';
 import OutsourcingReducer from './reducers/Outsourcing';
+import AuditReducer from '../audit/reducers/AuditLisitng';
 
 const mainReducer = {
   part: partReducer,
@@ -47,6 +48,7 @@ const mainReducer = {
   client: ClientReducer,
   exchangeRate: ExchangeRateReducer,
   tax: TaxReducer,
-  outsourcing: OutsourcingReducer
+  outsourcing: OutsourcingReducer,
+  audit: AuditReducer
 }
 export default mainReducer;

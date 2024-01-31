@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../../helper';
-import { getOverheadProfitTabData, gridDataAdded, isOverheadProfitDataChange, saveAssemblyOverheadProfitTab, saveAssemblyPartRowCostingCalculation, saveDiscountOtherCostTab, setComponentOverheadItemData } from '../../../actions/Costing';
+import { getOverheadProfitTabData, gridDataAdded, isOverheadProfitDataChange, saveAssemblyOverheadProfitTab, saveAssemblyPartRowCostingCalculation, saveDiscountOtherCostTab, setComponentOverheadItemData, setOverheadProfitData } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
 import Toaster from '../../../../common/Toaster';
@@ -162,7 +162,9 @@ function AssemblyOverheadProfit(props) {
           dispatch(isOverheadProfitDataChange(false))
           dispatch(setComponentOverheadItemData({}, () => { }))
           InjectDiscountAPICall()
-
+          let arrTemp = [...OverheadProfitTabData]
+          arrTemp[0].IsOpen = false
+          dispatch(setOverheadProfitData(arrTemp, () => { }))
         }
       }))
     }
