@@ -55,8 +55,7 @@ const LevelTechnologyListing = (props) => {
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
+	}, [props.updateApi]);
 	const getLevelsListData = () => {
 		setState((prevState) => ({ ...prevState, isLoader: true }))
 		dispatch(getAllLevelMappingAPI(res => {
@@ -91,9 +90,26 @@ const LevelTechnologyListing = (props) => {
 	  * @description get updated data after updatesuccess
 	  */
 	const getUpdatedData = () => {
-		getLevelsListData()
-		getSimulationDataList()
-		getMasterDataList()
+
+		// getLevelsListData()
+		// getSimulationDataList()
+		// getMasterDataList()
+		switch (props.levelValue) {
+			case 'Costing':
+				getLevelsListData(); // Already defined in your code
+				break;
+			case 'Simulation':
+				getSimulationDataList(); // Already defined in your code
+				break;
+			case 'Master':
+				getMasterDataList(); // Already defined in your code
+				break;
+			default:
+				getLevelsListData()
+				getSimulationDataList()
+				getMasterDataList()
+				break;
+		}
 	}
 
 	/**
