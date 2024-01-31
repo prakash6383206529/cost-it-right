@@ -53,7 +53,7 @@ class Level extends Component {
       this.getLevelMappingDetails()
     } else {
       if (this.state.levelType === 'Costing') {
-        this.props.getAllTechnologyAPI("", "", true, () => { })
+        this.props.getAllTechnologyAPI(() => { }, '', true)
       } else if (this.state.levelType === 'Simulation') {
         this.props.getSimulationTechnologySelectList(() => { })
       }
@@ -316,7 +316,8 @@ class Level extends Component {
     })
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, levelTypeData) => {
+
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
@@ -327,9 +328,13 @@ class Level extends Component {
 
     this.props.setEmptyLevelAPI('', () => { })
     if (event === 'cancel') {
-      this.props.closeDrawer('cancel')
+
+      this.props.closeDrawer('cancel', "")
     } else {
-      this.props.closeDrawer('')
+
+
+      this.props.closeDrawer('', levelTypeData)
+
     }
 
   };
@@ -413,7 +418,7 @@ class Level extends Component {
                 technology: [],
                 level: [],
               })
-              this.toggleDrawer('')
+              this.toggleDrawer('', this.state.levelType)
             }
           })
         }
@@ -436,7 +441,7 @@ class Level extends Component {
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
             }
-            this.toggleDrawer('')
+            this.toggleDrawer('', this.state.levelType)
             reset();
 
           })
@@ -452,14 +457,14 @@ class Level extends Component {
             ApprovalTypeId: approvalTypeObject?.value
           }
           if (this.state.dataToCheck.label === formReq.Level) {
-            this.toggleDrawer('')
+            this.toggleDrawer('', this.state.levelType)
             return false
           }
           this.props.updateMasterLevel(formReq, (res) => {
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
             }
-            this.toggleDrawer('')
+            this.toggleDrawer('', this.state.levelType)
             reset();
           })
         }
@@ -484,7 +489,7 @@ class Level extends Component {
               technology: [],
               level: [],
             })
-            this.toggleDrawer('')
+            this.toggleDrawer('', this.state.levelType)
           })
         }
 
@@ -500,7 +505,7 @@ class Level extends Component {
               technology: [],
               level: [],
             })
-            this.toggleDrawer('')
+            this.toggleDrawer('', this.state.levelType)
           })
         }
         if (this.state.levelType === 'Master') {
@@ -521,7 +526,7 @@ class Level extends Component {
               technology: [],
               level: [],
             })
-            this.toggleDrawer('')
+            this.toggleDrawer('', this.state.levelType)
           })
         }
 
