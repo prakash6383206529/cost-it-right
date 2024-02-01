@@ -1253,7 +1253,7 @@ class AddBOPDomestic extends Component {
                                   className={`custom-checkbox`}
                                   onChange={this.breakUpHandleChange}
                                 >
-                                  Detailed ${showBopLabel()}
+                                  Detailed {showBopLabel()}
                                   <input
                                     type="checkbox"
                                     checked={isTechnologyVisible}

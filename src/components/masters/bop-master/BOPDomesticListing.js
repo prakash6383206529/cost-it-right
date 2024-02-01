@@ -131,7 +131,8 @@ const BOPDomesticListing = (props) => {
     }
     let statusString = [props?.approvalStatus].join(",")
     const filterData = {
-      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props.ListFor, IsBOPAssociated: props?.isBOPAssociated
+      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props.ListFor, IsBOPAssociated: props?.isBOPAssociated,
+      StatusId: statusString
     }
     const { isMasterSummaryDrawer } = props
 
