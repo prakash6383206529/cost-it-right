@@ -595,7 +595,7 @@ class AddZBCPlant extends Component {
                     {!isViewMode &&
                       <button
                         type="button"
-                        onClick={this.checkCompanyChange}
+                        onClick={isEditFlag ? this.checkCompanyChange : this.onSubmit}
                         className="user-btn save-btn"
                         disabled={isViewMode || setDisable}
                       >
