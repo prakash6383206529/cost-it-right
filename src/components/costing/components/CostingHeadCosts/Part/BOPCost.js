@@ -680,7 +680,7 @@ function BOPCost(props) {
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyBOPCharges}
                   >
-                    Apply Insert Handling Charges
+                    Apply {showBopLabel()} Handling Charges
                     <input
                       type="checkbox"
                       checked={IsApplyBOPHandlingCharges}

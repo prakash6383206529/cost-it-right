@@ -1418,7 +1418,7 @@ class AddBOPImport extends Component {
 
                         <Row>
                           <Col md="12">
-                            <div className="left-border">{"Insert:"}</div>
+                            <div className="left-border">{`${showBopLabel()}:`}</div>
                           </Col>
                           <Col md="3">
                             <Field
@@ -1441,7 +1441,7 @@ class AddBOPImport extends Component {
                                 <Field
                                   name="BOPCategory"
                                   type="text"
-                                  label="Insert Category"
+                                  label={`${showBopLabel()} Category`}
                                   component={searchableSelect}
                                   placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("BOPCategory")}
