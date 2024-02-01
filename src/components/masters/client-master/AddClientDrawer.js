@@ -56,7 +56,9 @@ class AddClientDrawer extends Component {
             this.props.fetchCountryDataAPI(() => { })
         }
         this.getDetail()
-        this.props.getPoamStatusSelectList(() => { })
+        if (getConfigurationKey().IsShowPOSeriesInCustomerMaster) {
+            this.props.getPoamStatusSelectList(() => { })
+        }
     }
 
     getAllCityData = () => {
