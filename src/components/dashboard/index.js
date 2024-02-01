@@ -201,7 +201,7 @@ function Dashboard(props) {
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(BOP_MASTER_ID) && viewMastersObj.BOP) && <NavItem>
                           <NavLink id={`dashboard_BOP_Masters_Approval`} className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
-                            ${showBopLabel()}
+                            {showBopLabel()}
                           </NavLink>
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(OPERATIONS_ID) && viewMastersObj.operation) && <NavItem>
