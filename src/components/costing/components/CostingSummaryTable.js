@@ -1382,6 +1382,9 @@ const CostingSummaryTable = (props) => {
       delete templateObj.conditionCost
       delete templateObj.BasicRate
     }
+    if (Number(viewCostingData[0]?.technologyId) !== PLASTIC) {
+      delete templateObj.BurningLossWeight
+    }
 
     if (getConfigurationKey().IsBoughtOutPartCostingConfigured && viewCostingData[0]?.CostingPartDetails?.IsBreakupBoughtOutPart) {
       delete templateObj.netBOP
@@ -2302,10 +2305,10 @@ const CostingSummaryTable = (props) => {
                                             {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                           </span>}
 
-                                          <span className={highlighter("BurningLossWeight")}>
+                                          {viewCostingData && viewCostingData[0]?.technologyId === PLASTIC && <span className={highlighter("BurningLossWeight")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '')}
                                             {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
-                                          </span>
+                                          </span>}
                                           <span className={highlighter("ScrapWeight")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '')}
                                           </span>

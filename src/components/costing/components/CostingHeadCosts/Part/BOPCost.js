@@ -774,6 +774,7 @@ function BOPCost(props) {
 
               {IsApplyBOPHandlingCharges &&
                 <Col md="2">
+                  {BOPHandlingType !== 'Fixed' && <TooltipCustom disabledIcon={true} id={'bop-handling-charges'} tooltipText="Handling Charges = Net BOP Cost * Percentage / 100" />}
                   <TextFieldHookForm
                     label="Handling Charges"
                     name={'BOPHandlingCharges'}
@@ -785,6 +786,7 @@ function BOPCost(props) {
                     handleChange={() => { }}
                     defaultValue={""}
                     className=""
+                    id={'bop-handling-charges'}
                     customClassName={'withBorder'}
                     errors={errors.BOPHandlingCharges}
                     disabled={true}
