@@ -131,7 +131,8 @@ const BOPDomesticListing = (props) => {
     }
     let statusString = [props?.approvalStatus].join(",")
     const filterData = {
-      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props.ListFor, IsBOPAssociated: props?.isBOPAssociated
+      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props.ListFor, IsBOPAssociated: props?.isBOPAssociated,
+      StatusId: statusString
     }
     const { isMasterSummaryDrawer } = props
 
@@ -612,6 +613,8 @@ const BOPDomesticListing = (props) => {
   const returnExcelColumn = (data = [], TempData) => {
     let temp = []
     let tempData = [...data]
+    const bopMasterName = showBopLabel();
+
     tempData = hideCustomerFromExcel(tempData, "CustomerName")
     if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
       tempData = hideColumnFromExcel(tempData, 'Quantity')
@@ -633,6 +636,10 @@ const BOPDomesticListing = (props) => {
       if (item.EffectiveDate?.includes('T')) {
         item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
       }
+      if (item === 'BOP' || item === 'BoughtOutPart') {
+        item.label = bopMasterName;
+      }
+      console.log('item: ', item);
 
       return item
     })

@@ -746,25 +746,6 @@ class AddInterestRate extends Component {
                           </div>
                         </Col>
                       )}
-                      {
-                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
-                        <Col md="3">
-                          <Field
-                            label={'Plant (Code)'}
-                            name="DestinationPlant"
-                            placeholder={"Select"}
-                            options={this.renderListing("singlePlant")}
-                            handleChangeDescription={this.handleSinglePlant}
-                            validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
-                            required={true}
-                            component={searchableSelect}
-                            valueDescription={this.state.singlePlantSelected}
-                            mendatory={true}
-                            className="multiselect-with-border"
-                            disabled={isEditFlag || isViewMode}
-                          />
-                        </Col>
-                      }
                       {costingTypeId === CBCTypeId && (
                         <Col md="3">
                           <Field
@@ -788,31 +769,6 @@ class AddInterestRate extends Component {
                           />
                         </Col>
                       )}
-
-                      {costingTypeId === VBCTypeId && (
-                        <Col md="3" className='mb-4'>
-
-                          <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                          <div className='p-relative'>
-                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                            <AsyncSelect
-                              name="vendorName"
-                              ref={this.myRef}
-                              key={this.state.updateAsyncDropdown}
-                              loadOptions={filterList}
-                              onChange={(e) => this.handleVendorName(e)}
-                              noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                              value={this.state.vendorName} isDisabled={(isEditFlag) ? true : false}
-                              onKeyDown={(onKeyDown) => {
-                                if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                              }}
-                              onFocus={() => onFocus(this)}
-                            />
-                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                          </div>
-                        </Col>
-                      )
-                      }
                       {
                         ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                         <Col md="3">
@@ -831,31 +787,6 @@ class AddInterestRate extends Component {
                             disabled={isEditFlag || isViewMode}
                           />
                         </Col>
-                      }
-                      {
-                        costingTypeId === CBCTypeId && (
-                          <Col md="3">
-                            <Field
-                              name="clientName"
-                              type="text"
-                              label={"Customer (Code)"}
-                              component={searchableSelect}
-                              placeholder={isEditFlag ? '-' : "Select"}
-                              options={this.renderListing("ClientList")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.client == null ||
-                                  this.state.client.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={this.handleClient}
-                              valueDescription={this.state.client}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>
-                        )
                       }
                     </Row >
 

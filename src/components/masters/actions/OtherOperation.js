@@ -17,14 +17,13 @@ import {
     config,
     GET_OPERATION_COMBINED_DATA_LIST,
     GET_ALL_OPERATION_COMBINED_DATA_LIST,
-    GET_OPERATION_APPROVAL_LIST,
     SET_OPERATION_DATA,
     GET_OPERATION_SELECTLIST,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import { loggedInUserId, userDetails } from '../../../helper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 // const config() = config
 
@@ -250,13 +249,13 @@ export function deleteCEDotherOperationAPI(Id, callback) {
  * @description get all operation list
  */
 export function getOperationsDataList(filterData, skip, take, isPagination, obj, callback) {
-
+    const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission')
     return (dispatch) => {
 
         let payload
         //dispatch({ type: API_REQUEST });
         const QueryParams = `operation_for=${filterData.operation_for}&technology_id=${filterData.technology_id}&ListFor=${filterData.ListFor ? filterData.ListFor : ''}&StatusId=${filterData.StatusId ? filterData.StatusId : ''}&OperationType=${filterData.OperationType}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
-        const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&UOM=${obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : ""}&Rate=${obj.Rate !== undefined ? obj.Rate : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&IsVendorDataShow=${obj?.IsVendorDataShow}&IsZeroDataShow=${obj?.IsZeroDataShow}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
+        const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&UOM=${obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : ""}&Rate=${obj.Rate !== undefined ? obj.Rate : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
         axios.get(`${API.getOperationsDataList}?${QueryParams}&${queryParamsSecond}`, config())
 
             .then((response) => {

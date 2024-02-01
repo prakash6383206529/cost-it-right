@@ -795,6 +795,7 @@ export function getUserLevelAPI(LevelId, callback) {
  * @description set empty level detail in reducer
  */
 export function setEmptyLevelAPI(LevelId, callback) {
+
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (LevelId === '') {

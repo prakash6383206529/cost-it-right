@@ -8,6 +8,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddAssemblyForm from './AddAssemblyForm';
 import AddComponentForm from './AddComponentForm';
 import AddBOPForm from './AddBOPForm';
+import { showBopLabel } from '../../../helper';
 
 class AddChildDrawer extends Component {
     constructor(props) {
@@ -42,7 +43,7 @@ class AddChildDrawer extends Component {
     }
 
     toggleDrawer = (event, childData = {}) => {
-        
+
 
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
@@ -123,7 +124,7 @@ class AddChildDrawer extends Component {
                                                 checked={childType === BOUGHTOUTPARTSPACING ? true : false}
                                                 onClick={() => this.checkRadio(BOUGHTOUTPARTSPACING)}
                                             />{' '}
-                                            <span>Insert</span>
+                                            <span>{showBopLabel()}</span>
                                         </Label>
                                     </Col>
                                 </Row>

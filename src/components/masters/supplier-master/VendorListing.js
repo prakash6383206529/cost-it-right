@@ -117,9 +117,9 @@ const VendorListing = () => {
     applyPermission(topAndLeftMenuData);
     setTimeout(() => {
       if (statusColumnData?.data) {
-        setState((prevState) => ({ ...prevState, disableFilter: false, warningMessage: true, floatingFilterData: { ...prevState.floatingFilterData, VendorType: statusColumnData.data, }, }));
+        setState((prevState) => ({ ...prevState, warningMessage: true, floatingFilterData: { ...prevState.floatingFilterData, VendorType: statusColumnData.data, }, }));
       } else {
-        setState((prevState) => ({ ...prevState, warningMessage: false, disableFilter: false, floatingFilterData: { ...prevState.floatingFilterData, VendorType: "", }, }));
+        setState((prevState) => ({ ...prevState, warningMessage: false, floatingFilterData: { ...prevState.floatingFilterData, VendorType: "", }, }));
       }
     }, 500);
   }, [topAndLeftMenuData, statusColumnData]);
@@ -507,21 +507,19 @@ const VendorListing = () => {
    */
   const closeBulkUploadDrawer = (event, type) => {
     setState(
-      (prevState) => ({ ...prevState, isBulkUpload: false, }),
-      () => {
-        if (type !== "cancel") {
-          setTimeout(() => {
-            getTableListData(
-              state.currentRowIndex,
-              state.floatingFilterData,
-              100,
-              true
-            );
-          }, 200);
-        }
-      }
-    );
-  };
+      (prevState) => ({ ...prevState, isBulkUpload: false, }))
+
+    if (type !== "cancel") {
+      setTimeout(() => {
+        getTableListData(
+          state.currentRowIndex,
+          state.floatingFilterData,
+          100,
+          true
+        );
+      }, 200);
+    }
+  }
 
   /**
    * @method filterList
