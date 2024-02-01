@@ -142,6 +142,7 @@ class Downloadxls extends React.Component {
     * @description Switch case for different xls file head according to master
     */
     renderSwitch = (master) => {
+
         switch (master) {
             case 'RM Specification':
                 return this.returnExcelColumn(RMSpecification, RMSpecificationXLTempData);
@@ -305,31 +306,28 @@ class Downloadxls extends React.Component {
         }
         // Replace labels based on the file name containing "BOP domestic" or "BOP import"
 
+        if (isRm && failedData) {
+            const notesInTemp = TempData.some(item => item.Note)
+            const notesInFailed = failedData.some(item => item.Note);
+            if (notesInTemp && !notesInFailed) {
+                // Add Notes from TempData to failedData
+                for (let i = 0; i < failedData.length && i < TempData.length; i++) {
+                    failedData[i].Note = TempData[i].Note || failedData[i].Note;
+                }
+            }
+        }
         if (fileName.includes('BOP Domestic') || fileName.includes('BOP Import')) {
             const bopMasterName = showBopLabel();
             // for downloading rm with rotes on upload
-            if (isRm && failedData) {
-                const notesInTemp = TempData.some(item => item.Note)
-                const notesInFailed = failedData.some(item => item.Note);
-                if (notesInTemp && !notesInFailed) {
-                    // Add Notes from TempData to failedData
-                    for (let i = 0; i < failedData.length && i < TempData.length; i++) {
-                        failedData[i].Note = TempData[i].Note || failedData[i].Note;
-                    }
-                }
-            }
-
             dataList = dataList.map((ele) => {
-                console.log('dataList: ', dataList);
-
                 // Assuming 'label' is the property you want to check for replacement
                 const updatedLabel = ele.label.replace('BoughtOutPart', bopMasterName).replace('BOP', bopMasterName);
                 return { ...ele, label: updatedLabel };
             });
 
-
         }
         return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
+
             {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }

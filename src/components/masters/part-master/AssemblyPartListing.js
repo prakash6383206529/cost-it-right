@@ -154,7 +154,7 @@ const AssemblyPartListing = React.memo((props) => {
       partsListing.length !== 0 &&
         setState((prevState) => ({
           ...prevState,
-          tableData: searchNocontentFilter(partsListing, value),
+          noData: searchNocontentFilter(value, state.noData),
         }));
     }, 500);
   };
@@ -315,15 +315,14 @@ const AssemblyPartListing = React.memo((props) => {
       });
     return (
       <ExcelSheet data={temp} name={AssemblyPart}>
-        {data &&
-          data.map((ele, index) => (
-            <ExcelColumn
-              key={index}
-              label={ele.label}
-              value={ele.value}
-              style={ele.style}
-            />
-          ))}
+        {data && data.map((ele, index) => (
+          <ExcelColumn
+            key={index} // index as key is generally an anti-pattern, use unique identifiers from `ele` if available
+            label={ele.label}
+            value={ele.value}
+            style={ele.style}
+          />
+        ))}
       </ExcelSheet>
     );
   };
