@@ -521,7 +521,7 @@ function ApprovalSummary(props) {
         showListing === false &&
         <>
           {isLoader && <LoaderCustom />}
-          <ErrorMessage approvalNumber={approvalNumber} isCosting={true} />
+          {getConfigurationKey()?.IsSAPConfigured && <ErrorMessage approvalNumber={approvalNumber} isCosting={true} />}
           <div className="container-fluid approval-summary-page">
             <h2 className="heading-main">Approval Summary</h2>
             <Row>

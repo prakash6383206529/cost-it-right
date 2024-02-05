@@ -116,8 +116,6 @@ function SupplierContributionReport(props) {
                             vendorPrice.push(item.VendorBuying)
                             vendorPartCount.push(item.VendorPartCount)
                         })
-                        console.log('vendors: ', vendors);
-                        console.log('vendorPrice: ', vendorPrice);
                         setVendorArray(vendors)
                         setVendorData(vendorPrice)
                         setVendorPartCount(vendorPartCount)
@@ -203,7 +201,6 @@ function SupplierContributionReport(props) {
             },
 
             afterDraw: (chart) => {
-                console.log('chart: ', chart);
                 const { ctx, chartArea: { width, height } } = chart;
                 ctx.restore();
                 var fontSize = (width + 6) / width;

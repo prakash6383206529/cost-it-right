@@ -1540,7 +1540,7 @@ class AddBOPImport extends Component {
                                   className={`custom-checkbox`}
                                   onChange={this.breakUpHandleChange}
                                 >
-                                  Detailed ${showBopLabel()}
+                                  Detailed {showBopLabel()}
                                   < input
                                     type="checkbox"
                                     checked={isTechnologyVisible}
@@ -1841,7 +1841,8 @@ class AddBOPImport extends Component {
                                 required={false}
                                 className=""
                                 customClassName=" withBorder"
-                                disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                                disabled={true}
+                                isViewFlag={true}
                               />
                             </Col>
                             <Col md="3">

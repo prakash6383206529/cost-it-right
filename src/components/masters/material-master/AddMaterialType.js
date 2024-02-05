@@ -96,7 +96,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
 
   const onSubmit = debounce(values => {
     if (isEditFlag) {
-      if (materialTypeData.MaterialType === values.CalculatedDensityValue && materialTypeData.Density === values.MaterialType) {
+      if (Number(materialTypeData?.materialTypeData?.Density) === Number(values.CalculatedDensityValue) && materialTypeData?.materialTypeData?.MaterialType === values.MaterialType) {
         cancel('cancel');
         return false;
       }
@@ -190,12 +190,14 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                     control={control}
                     register={register}
                     placeholder={""}
-                    mandatory
+                    mandatory={true}
                     handleChange={e => { }}
                     customClassName={"withBorder"}
-                    rules={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, hashValidation]}
-                    required={true}
-                    errors={errors.Type}
+                    rules={{
+                      required: true,
+                      validate: { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, hashValidation },
+                    }}
+                    errors={errors.MaterialType}
                   />
                 </Col>
                 <Col md="12">
@@ -204,15 +206,16 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                     name={"CalculatedDensityValue"}
                     type="text"
                     placeholder={""}
-                    rules={[required, positiveAndDecimalNumber, decimalLengthFour]}
-
-                    required={true}
+                    rules={{
+                      required: true,
+                      validate: { required, positiveAndDecimalNumber, decimalLengthFour },
+                    }}
                     Controller={Controller}
                     customClassName={"withBorder"}
-                    mandatory
+                    mandatory={true}
                     handleChange={e => { }}
                     control={control}
-                    errors={errors.Type}
+                    errors={errors.CalculatedDensityValue}
                     register={register}
                   />
                 </Col>

@@ -15,25 +15,26 @@ import TooltipCustom from '../../../../common/Tooltip'
 function HotForging(props) {
   const { rmRowData, CostingViewMode, item } = props
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const defaultValues = {
-    finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? WeightCalculatorRequest.FinishWeight : '',
-    forgedWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight !== undefined ? WeightCalculatorRequest.ForgedWeight : '',
-    BilletDiameter: WeightCalculatorRequest && WeightCalculatorRequest.BilletDiameter !== undefined ? WeightCalculatorRequest.BilletDiameter : '',
-    BilletLength: WeightCalculatorRequest && WeightCalculatorRequest.BilletLength !== undefined ? WeightCalculatorRequest.BilletLength : '',
-    InputLength: WeightCalculatorRequest && WeightCalculatorRequest.InputLength !== undefined ? WeightCalculatorRequest.InputLength : '',
-    NoOfPartsPerLength: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPartsPerLength !== undefined ? WeightCalculatorRequest.NoOfPartsPerLength : '',
-    EndBitLength: WeightCalculatorRequest && WeightCalculatorRequest.EndBitLength !== undefined ? WeightCalculatorRequest.EndBitLength : '',
-    EndBitLoss: WeightCalculatorRequest && WeightCalculatorRequest.EndBitLoss !== undefined ? WeightCalculatorRequest.EndBitLoss : '',
-    TotalInputWeight: WeightCalculatorRequest && WeightCalculatorRequest.TotalInputWeight !== undefined ? WeightCalculatorRequest.TotalInputWeight : '',
-    ScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
-    ScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
-    NetRMCostComponent: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? WeightCalculatorRequest.RawMaterialCost : '',
-    forgingScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapWeight !== undefined ? WeightCalculatorRequest.ForgingScrapWeight : '',
-    machiningScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapWeight !== undefined ? WeightCalculatorRequest.MachiningScrapWeight : '',
-    forgingScrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapRecoveryPercentage !== undefined ? WeightCalculatorRequest.ForgingScrapRecoveryPercentage : '',
-    machiningScrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapRecoveryPercentage !== undefined ? WeightCalculatorRequest.MachiningScrapRecoveryPercentage : '',
-    forgingScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapCost !== undefined ? WeightCalculatorRequest.ForgingScrapCost : '',
-    machiningScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapCost !== undefined ? WeightCalculatorRequest.MachiningScrapCost : '',
+    finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    forgedWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgedWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    BilletDiameter: WeightCalculatorRequest && WeightCalculatorRequest.BilletDiameter !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BilletDiameter, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    BilletLength: WeightCalculatorRequest && WeightCalculatorRequest.BilletLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BilletLength, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    InputLength: WeightCalculatorRequest && WeightCalculatorRequest.InputLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.InputLength, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    NoOfPartsPerLength: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPartsPerLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfPartsPerLength, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    EndBitLength: WeightCalculatorRequest && WeightCalculatorRequest.EndBitLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.EndBitLength, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    EndBitLoss: WeightCalculatorRequest && WeightCalculatorRequest.EndBitLoss !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.EndBitLoss, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    TotalInputWeight: WeightCalculatorRequest && WeightCalculatorRequest.TotalInputWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalInputWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    ScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    ScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    NetRMCostComponent: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    forgingScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgingScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    machiningScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.MachiningScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    forgingScrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapRecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgingScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    machiningScrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapRecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.MachiningScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
+    forgingScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ForgingScrapCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    machiningScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.MachiningScrapCost, initialConfiguration.NoOfDecimalForPrice) : '',
   }
 
   const {
@@ -61,7 +62,6 @@ function HotForging(props) {
   const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
   const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
   const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgingStockDetails !== null ? WeightCalculatorRequest.ForgingStockDetails : [])
-  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [dataSend, setDataSend] = useState({})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
   const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 && WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)

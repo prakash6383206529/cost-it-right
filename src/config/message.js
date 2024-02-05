@@ -27,6 +27,7 @@ export const MESSAGES = {
   BOM_DELETE_ALERT: 'Are you sure you want to delete this assembly part?',
   DELETE_BOM_SUCCESS: 'Assembly Part deleted successfully',
   UPDATE_BOM_SUCCESS: 'Assembly Part updated successfully',
+  PART_DELETE_SUCCESSFULLY: 'Assembly Part deleted successfully',
 
   //UOM
   UOM_ADD_SUCCESS: 'Unit of measurement added successfully',

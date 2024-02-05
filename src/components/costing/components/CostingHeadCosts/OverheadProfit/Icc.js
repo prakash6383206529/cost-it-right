@@ -170,7 +170,6 @@ function Icc(props) {
             const RMCC = NetRawMaterialsCost + ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
             const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
             const InterestRatePercentage = getValues('InterestRatePercentage')
-            console.log('InterestRatePercentage: ', InterestRatePercentage);
 
             switch (Text) {
                 case 'RM':

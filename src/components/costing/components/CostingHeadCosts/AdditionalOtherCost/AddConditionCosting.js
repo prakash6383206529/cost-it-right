@@ -292,6 +292,7 @@ function AddConditionCosting(props) {
             setTotalCostBase('');
             setType('');
             setEditIndex('');
+            setIsEditMode(false)
             reset({
                 Condition: '',
                 Type: '',
@@ -587,14 +588,14 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode}
                                         >
                                             {isEditMode ? "" : <div className={"plus"}></div>} {isEditMode ? "UPDATE" : 'ADD'}
-                                        </button >
+                                        </button>
                                         <button
                                             type="button"
                                             className={"reset-btn pull-left mt-1 ml5"}
                                             onClick={() => resetData("reset")}
                                             disabled={props.ViewMode}
                                         >
-                                            Reset
+                                            {isEditMode ? "CANCEL" : 'RESET'}
                                         </button>
                                     </Col >
                                 </Row >

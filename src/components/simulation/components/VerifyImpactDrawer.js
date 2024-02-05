@@ -162,7 +162,7 @@ function VerifyImpactDrawer(props) {
               }
               <Row className="mb-3 pr-0 mx-0">
                 {/* <Col md="12">          
-          {fgWiseAcc && <ErrorMessage />}
+          {fgWiseAcc && getConfigurationKey()?.IsSAPConfigured &&<ErrorMessage />}
         </Col> */}
 
                 <Col md="6"> <HeaderTitle title={'FG wise Impact:'} /></Col>
