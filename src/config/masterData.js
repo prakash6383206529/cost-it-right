@@ -3888,7 +3888,7 @@ export const BOMUploadTempData = [
         "PartNo": "BOP_Cap",
         "PartName": "Cap",
         "Description": "Description Text",
-        "PartType": "Bought Out Part",
+        "PartType": "BoughtOutPart",
         "GroupCode": "GC1",
         "ECNNumber": 1,
         "RevisionNo": 1,

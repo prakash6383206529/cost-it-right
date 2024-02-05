@@ -118,9 +118,13 @@ const AssemblyPartListing = React.memo((props) => {
       deletedId: "",
     }));
     dispatch(
-      deleteAssemblyPart(ID, loggedInUserId, (res) => getTableListData())
+      deleteAssemblyPart(ID, loggedInUserId(), (res) => {
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.PART_DELETE_SUCCESSFULLY);
+          getTableListData()
+        }
+      })
     );
-    Toaster.success(MESSAGES.DELETE_SUCCESSFULLY);
   };
 
   const onPopupConfirm = () => {

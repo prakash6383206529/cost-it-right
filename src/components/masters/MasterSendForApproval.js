@@ -513,7 +513,7 @@ function MasterSendForApproval(props) {
                     <>
                         <div className="input-group form-group col-md-6">
                             <Col>
-                                <TooltipCustom id="bop-basic-price-currency" tooltipText={props?.toolTipTextObject?.basicPriceCurrency} />
+                                <TooltipCustom id="bop-basic-price-currency" tooltipText={props?.toolTipTextObject?.basicPriceSelectedCurrency} />
                                 <TextFieldHookForm
                                     label={`Basic Price/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
                                     name={'BasicPrice'}

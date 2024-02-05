@@ -117,7 +117,7 @@ class AddAssemblyPart extends Component {
           const Data = res.data.Data;
           let productArray = []
           Data && Data.GroupCodeList.map((item) => {
-            productArray.push({ Text: item.GroupCode, Value: item.GroupCode, })
+            productArray.push({ Text: item.GroupCode, Value: item.ProductId })
             return productArray
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
@@ -228,7 +228,7 @@ class AddAssemblyPart extends Component {
           let productArray = []
 
           Data && Data.GroupCodeList.map((item) => {
-            productArray.push({ Text: item.GroupCode, Value: item.GroupCode, })
+            productArray.push({ Text: item.GroupCode, Value: item.ProductId })
             return productArray
           })
           this.setState({ DataToCheck: Data, convertPartToAssemblyPartId: newValue.value })
