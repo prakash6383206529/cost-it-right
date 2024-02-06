@@ -525,7 +525,7 @@ const AssemblyPartListing = React.memo((props) => {
                 cellRenderer={"hyphenFormatter"}
               ></AgGridColumn>
               <AgGridColumn
-                field="EffectiveDate"
+                field="EffectiveDateNew"
                 headerName="Effective Date"
                 cellRenderer={"effectiveDateFormatter"}
                 filter="agDateColumnFilter"

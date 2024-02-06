@@ -75,6 +75,7 @@ const InterestRateListing = (props) => {
 
   }, []);
   useEffect(() => {
+
     if (statusColumnData) {
       state.gridApi?.setQuickFilter(statusColumnData.data);
     }
@@ -210,6 +211,7 @@ const InterestRateListing = (props) => {
       interestRateDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
     }, 500);
   }
+
   /**
     * @method hyphenFormatter
     */
@@ -310,9 +312,7 @@ const InterestRateListing = (props) => {
     gridOptions.api.setFilterModel(null);
     dispatch(agGridStatus("", ""))
     dispatch(isResetClick(true, "ICCApplicability"))
-    if (window.screen.width >= 1600) {
-      gridApi.sizeColumnsToFit();
-    }
+
   }
 
 

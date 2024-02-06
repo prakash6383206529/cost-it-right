@@ -134,8 +134,7 @@ function LabourListing(props) {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_LABOUR_SUCCESS)
         setState((prevState) => ({ ...prevState, dataCount: 0 }))
-        getTableListData(null, null, null, null)
-        filterList()
+        getTableListData();
       }
 
     }))
@@ -150,15 +149,17 @@ function LabourListing(props) {
   }
 
   const buttonFormatter = (props) => {
-
+    const labourDetailsId = props.data.LabourDetailsId;
     const cellValue = props?.value;
+
+
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
 
     return (
       <>
         {ViewAccessibility && (<Button id={`labourListing_View${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />)}
         {EditAccessibility && (<Button id={`labourListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />)}
-        {DeleteAccessibility && (<Button id={`labourListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
+        {DeleteAccessibility && (<Button id={`labourListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(labourDetailsId)} title={"Delete"} />
         )}
       </>
     );

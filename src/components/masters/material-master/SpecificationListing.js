@@ -87,14 +87,12 @@ const SpecificationListing = (props) => {
     []
   );
 
-  const closeDrawer = useCallback((e = "", data, type) => {
-    setState(
-      (prev) => ({
-        ...prev, isOpen: false, dataCount: 0,
-      })
-    );
-    if (type === "submit") getSpecificationListData("", "");
-  },
+  const closeDrawer = useCallback(
+    (e = "", data, type) => {
+      setState((prev) => ({ ...prev, isOpen: false, dataCount: 0, }))
+      if (type === "submit") getSpecificationListData("", "");
+
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
@@ -294,9 +292,11 @@ const SpecificationListing = (props) => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState(null);
     state.gridApi.setFilterModel(null);
+    setState((prevState) => ({ ...prevState, noData: false }));
     if (searchRef.current) {
       searchRef.current.value = '';
     }
+
   };
 
   const hyphenFormatter = (props) => {

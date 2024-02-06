@@ -993,13 +993,13 @@ const BOPImportListing = (props) => {
                             </>
                           )}
 
-                          <Button id={"bopImportingListing_refresh"} className={"user-btn mr-1"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                         </>
                       )}
+                      <Button id={"bopImportingListing_refresh"} className={"user-btn mr-1"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                     </div>
                     {props.isSimulation && props.isFromVerifyPage && (
                       <button type="button" className={"apply"} onClick={cancel}                        >
-                        <div className={"back-icon"}></div>Back123
+                        <div className={"back-icon"}></div>Back
                       </button>
                       // <Button
                       //   id={"bopImportingListing_back"}

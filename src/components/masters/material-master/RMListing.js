@@ -267,6 +267,8 @@ const RMListing = (props) => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
+    setState((prevState) => ({ ...prevState, noData: false }));
+
 
   };
   const { isOpen, isEditFlag, ID, noData } = state;
