@@ -72,7 +72,7 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NetConditionCostConversion: "", NetConditionCost: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", RawMaterialShearingCostConversion: "", RawMaterialFreightCostConversion: "", MachiningScrapRateInINR: "", MachiningScrapRate: "", BasicRatePerUOMConversion: "", Currency: "" })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", NetLandedCostConversion: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NetConditionCostConversion: "", NetConditionCost: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", RawMaterialShearingCostConversion: "", RawMaterialFreightCostConversion: "", MachiningScrapRateInINR: "", MachiningScrapRate: "", BasicRatePerUOMConversion: "", Currency: "" })
   const [noData, setNoData] = useState(false)
   const [dataCount, setDataCount] = useState(0)
   const [inRangeDate, setinRangeDate] = useState([])
@@ -94,25 +94,19 @@ function RMImportListing(props) {
     NetCost: `Net Cost (${getConfigurationKey()?.BaseCurrency})`,
   }
   var filterParams = {
+    date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
       var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
-      let temp = inRangeDate
-      temp.push(newDate)
-      setinRangeDate(temp)
-      if (props?.benchMark) {
-        props?.handleDate(inRangeDate)
+      handleDate(newDate)// FOR COSTING BENCHMARK BOP REPORT
+      let date = document.getElementsByClassName('ag-input-field-input')
+      for (let i = 0; i < date.length; i++) {
+        if (date[i].type == 'radio') {
+          date[i].click()
+        }
       }
-      let unique = temp.filter((item, i, ar) => ar.indexOf(item) === i);
-      setDateArray(unique)
-      setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate, dateArray: unique })
-      setTimeout(() => {
 
-        var y = document.getElementsByClassName('ag-radio-button-input');
-        var radioBtn = y[0];
-        radioBtn?.click()
-
-      }, 300);
+      setDate(newDate)
       if (dateAsString == null) return -1;
       var dateParts = dateAsString.split('/');
       var cellDate = new Date(
@@ -130,8 +124,10 @@ function RMImportListing(props) {
         return 1;
       }
     },
+
     browserDatePicker: true,
     minValidYear: 2000,
+
   };
 
 
@@ -282,7 +278,25 @@ function RMImportListing(props) {
     }
   }
 
+  var setDate = (date) => {
+    setFloatingFilterData((prevState) => ({ ...prevState, EffectiveDate: date }));
+    // setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, newDate: date }, }));
+  };
 
+  var handleDate = (newDate) => {
+    let temp = inRangeDate
+    temp.push(newDate)
+    setinRangeDate(temp)        // setState((prevState) => ({ ...prevState, inRangeDate: temp }))
+    if (props?.benchMark) {
+      props?.handleDate(inRangeDate)
+    }
+    setTimeout(() => {
+      var y = document.getElementsByClassName('ag-radio-button-input');
+      var radioBtn = y[0];
+      radioBtn?.click()
+
+    }, 300);
+  }
 
   const onFloatingFilterChanged = (value) => {
     setDisableFilter(false)
@@ -517,6 +531,7 @@ function RMImportListing(props) {
 
 
   const costFormatter = (props) => {
+    console.log('props: ', props);
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
     return cellValue !== INR ? cellValue : '';
   }
@@ -1033,10 +1048,10 @@ function RMImportListing(props) {
                     {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" cellRenderer='commonCostFormatter' headerName='Machining Scrap Cost (Currency)'></AgGridColumn>}
                     {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRateInINR" cellRenderer='commonCostFormatter' headerName={headerNames?.MachiningScrapCost}></AgGridColumn>}
                     {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
-                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
-                    <AgGridColumn field="RawMaterialFreightCostConversion" headerName={headerNames?.FreightCost} cellRenderer='commonCostFormatter'></AgGridColumn>
-                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
-                    <AgGridColumn field="RawMaterialShearingCostConversion" headerName={headerNames?.ShearingCost} cellRenderer='commonCostFormatter'></AgGridColumn>
+                    {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMFreightCost" headerName="Freight Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>)}
+                    {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RawMaterialFreightCostConversion" headerName={headerNames?.FreightCost} cellRenderer='commonCostFormatter'></AgGridColumn>)}
+                    {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMShearingCost" headerName="Shearing Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>)}
+                    {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RawMaterialShearingCostConversion" headerName={headerNames?.ShearingCost} cellRenderer='commonCostFormatter'></AgGridColumn>)}
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer='commonCostFormatter'></AgGridColumn>}
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}

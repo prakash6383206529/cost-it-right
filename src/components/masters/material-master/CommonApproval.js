@@ -952,9 +952,9 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartNumber" headerName={`${showBopLabel()}  Part No`}></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartName" headerName={`${showBopLabel()}  Part Name`}></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartCategory" headerName={`${showBopLabel()}  Category`}></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No`}></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="UOM" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Specification" cellRenderer={"hyphenFormatter"} headerName='Specification'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn field="Vendor" headerName='Vendor (Code)'></AgGridColumn>}

@@ -11,7 +11,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, userDepartmetList } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, updateBOPValues, userDepartmetList } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -603,11 +603,14 @@ const BOPDomesticListing = (props) => {
   }
 
   const onBtExport = () => {
+    const bopMasterName = showBopLabel();
     let tempArr = []
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allBopDataList ? allBopDataList : [])
-    return returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr)
+    const { updatedLabels, updatedTempData } = updateBOPValues(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr, bopMasterName)
+
+    return returnExcelColumn(updatedLabels, updatedTempData)
   };
 
   const returnExcelColumn = (data = [], TempData) => {
@@ -790,23 +793,34 @@ const BOPDomesticListing = (props) => {
           </Col>
           <Col md="9" lg="9" className="mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
-              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <div className="warning-message d-flex align-items-center"> {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-              </div>}
-              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <Button id="bopDomesticListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
-              }
-              {permissions?.Add && (<Button id="bopDomesticListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />)}
-              {permissions?.BulkUpload && (<Button id="bopDomesticListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
-              {
-                permissions?.Download &&
+              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && (
                 <>
-                  <Button className="mr5" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                  <ExcelFile filename={`${showBopLabel()} Domestic`} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
-                    {onBtExport()}
-                  </ExcelFile>
+                  <div className="warning-message d-flex align-items-center">
+                    {state.warningMessage && !state.disableDownload && (
+                      <>
+                        <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />
+                        <div className='right-hand-arrow mr-2'></div>
+                      </>
+                    )}
+                  </div>
+                  <Button id="bopDomesticListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
+                  {permissions?.Add && (
+                    <Button id="bopDomesticListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
+                  )}
+                  {permissions?.BulkUpload && (
+                    <Button id="bopDomesticListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
+                  )}
+                  {permissions?.Download && (
+                    <>
+                      <Button className="mr5" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <ExcelFile filename={`${showBopLabel()} Domestic`} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
+                        {onBtExport()}
+                      </ExcelFile>
+                    </>
+                  )}
                 </>
-              }
+              )}
               <Button id={"bopDomesticListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
-
             </div>
           </Col>
         </Row>
