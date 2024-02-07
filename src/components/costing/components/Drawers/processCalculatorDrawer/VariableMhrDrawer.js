@@ -59,9 +59,20 @@ function VariableMhrDrawer(props) {
   }
 
   const getProcessComponent = (process) => {
-
     if (technology === MACHINING) {
       if (calculatorData.UOMType === TIME) {
+        if (process.toLowerCase().includes('extrusion')) {
+          return (
+            <SheetMetalBaicDrawer
+              CostingViewMode={props.CostingViewMode}
+              calculateMachineTime={calculateMachineTime}
+              tonnage={tonnage}
+              item={item}
+              rmFinishWeight={props.rmFinishWeight}
+              calculatorData={calculatorData}
+            />
+          );
+        }
         switch (process) {
 
           case BROACHING:
