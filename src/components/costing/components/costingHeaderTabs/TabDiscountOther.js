@@ -203,32 +203,35 @@ function TabDiscountOther(props) {
   const costingConditionUI = useMemo(() => {
     const sum = conditionTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
     setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
-    return <div className='d-flex align-items-center'>
-      <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Condition Cost = Sum of condition cost added in condition drawer"} />
-      <TextFieldHookForm
-        label="Condition"
-        name={'ConditionCosting'}
-        Controller={Controller}
-        id="costingCondition"
-        control={control}
-        register={register}
-        mandatory={false}
-        rules={{}}
-        handleChange={() => { }}
-        defaultValue={sum}
-        className=""
-        customClassName={'withBorder w-100'}
-        errors={errors.ConditionCosting}
-        disabled={true}
-      />
-      <Button
-        id="tabDiscount_condition"
-        onClick={() => openAndCloseAddConditionCosting('Open')}
-        className={"right mt15"}
-        variant={viewAddButtonIcon(conditionTableData, "className")}
-        title={viewAddButtonIcon(conditionTableData, "title")}
-      />
-    </div>
+
+    return <Col md="3">
+      <div className='d-flex align-items-center'>
+        <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Condition Cost = Sum of condition cost added in condition drawer"} />
+        <TextFieldHookForm
+          label="Condition"
+          name={'ConditionCosting'}
+          Controller={Controller}
+          id="costingCondition"
+          control={control}
+          register={register}
+          mandatory={false}
+          rules={{}}
+          handleChange={() => { }}
+          defaultValue={sum}
+          className=""
+          customClassName={'withBorder w-100'}
+          errors={errors.ConditionCosting}
+          disabled={true}
+        />
+        <Button
+          id="tabDiscount_condition"
+          onClick={() => openAndCloseAddConditionCosting('Open')}
+          className={"right mt15"}
+          variant={viewAddButtonIcon(conditionTableData, "className")}
+          title={viewAddButtonIcon(conditionTableData, "title")}
+        />
+      </div>
+    </Col>
   }, [conditionTableData])
 
 

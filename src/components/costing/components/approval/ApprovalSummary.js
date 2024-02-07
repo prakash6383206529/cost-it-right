@@ -674,7 +674,7 @@ function ApprovalSummary(props) {
                         {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
                       </td>
                       {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <td>
-                        {approvalDetails.BasicRate ? approvalDetails.BasicRate : '-'}
+                        {approvalDetails.BasicRate ? checkForDecimalAndNull(approvalDetails.BasicRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>}
                       {/* <td>
                           {approvalDetails.ECNNumber !== null ? approvalDetails.ECNNumber : '-'}

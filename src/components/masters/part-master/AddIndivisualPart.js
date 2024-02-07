@@ -81,7 +81,7 @@ class AddIndivisualPart extends Component {
           const Data = res.data.Data;
           let productArray = []
           Data && Data.GroupCodeList.map((item) => {
-            productArray.push({ Text: item.GroupCode, Value: "", })
+            productArray.push({ Text: item.GroupCode, Value: item.ProductId })
             return productArray
           })
           this.setState({ DataToCheck: Data })
@@ -330,7 +330,7 @@ class AddIndivisualPart extends Component {
     const { PartId, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
     let isStructureChanges
-    let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
+    let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text, ProductId: item.Value })) : [{ GroupCode: values.GroupCode }]
 
     if (isEditFlag) {
       let isGroupCodeChange
@@ -345,10 +345,10 @@ class AddIndivisualPart extends Component {
       }
       //THIS CONDITION TO CHECK IF ALL VALUES ARE SAME (IF YES, THEN NO NEED TO CALL UPDATE API JUST SEND IT TO LISTING PAGE)
       if (DropdownChanged && String(DataToCheck.PartName) === String(values.PartName) && String(DataToCheck.Description) === String(values.Description) &&
-        JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(values.GroupCode) && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
+        String(DataToCheck.ECNNumber) === String(values.ECNNumber) && JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(productArray) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber)
-        && String(DataToCheck.Remark) === String(values.Remark) && String(DataToCheck.SAPCode) === String(values.SAPCode) && !isGroupCodeChange && uploadAttachements) {
-        this.cancel('submit')
+        && String(DataToCheck.Remark) === String(values.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values.SAPCode) : true) && !isGroupCodeChange && uploadAttachements) {
+        this.cancel('cancel')
         return false;
       }
 
