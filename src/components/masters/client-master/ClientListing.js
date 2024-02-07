@@ -292,6 +292,7 @@ const ClientListing = React.memo(() => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
+    setState((prevState) => ({ ...prevState, noData: false }));
   };
   const { isOpenVendor, noData } = state;
   const isFirstColumn = (params) => {
