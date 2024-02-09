@@ -1917,3 +1917,17 @@ export function getUnassociatedPartNumber(partNumber, technologyId, nfrId, partT
         return Promise.reject(error)
     });
 }
+
+export function checkHighestApprovalLevelForHeadsAndApprovalType(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.post(`${API.checkHighestApprovalLevelForHeadsAndApprovalType}`, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}

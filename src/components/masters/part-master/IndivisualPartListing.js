@@ -24,13 +24,14 @@ import { setSelectedRowForPagination } from "../../simulation/actions/Simulation
 import { loggedInUserId, searchNocontentFilter } from "../../../helper";
 import { disabledClass } from "../../../actions/Common";
 import { ApplyPermission } from ".";
-
+import Button from "../../layout/Button";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const IndivisualPartListing = (props) => {
   const dispatch = useDispatch();
+
   const [state, setState] = useState({
     pageNo: 1,
     gridApi: null,
@@ -56,12 +57,9 @@ const IndivisualPartListing = (props) => {
     deletedId: "",
   });
   const [searchText, setSearchText] = useState('');
-
-  const { partsListing, initialConfiguration, selectedRowForPagination, } = useSelector((state) => ({
-    partsListing: state.part.partsListing,
-    initialConfiguration: state.auth.initialConfiguration,
-    selectedRowForPagination: state.simulation.selectedRowForPagination,
-  }));
+  const { newPartsListing, allNewPartsListing } = useSelector((state) => state.part);
+  const { initialConfiguration } = useSelector((state) => state.auth);
+  const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const permissions = useContext(ApplyPermission);
   useEffect(() => {
     getTableListData(0, defaultPageSize, state.floatingFilterData, true);
@@ -77,12 +75,12 @@ const IndivisualPartListing = (props) => {
     }, 200);
   }, []);
   useEffect(() => {
-    if (partsListing?.length > 0) {
-      setState((prevState) => ({ ...prevState, totalRecordCount: partsListing?.length }));
+    if (newPartsListing?.length > 0) {
+      setState((prevState) => ({ ...prevState, totalRecordCount: newPartsListing?.length }));
     } else {
       setState((prevState) => ({ ...prevState, noData: 0 }));
     }
-  }, [partsListing]);
+  }, [newPartsListing]);
 
   const getTableListData = (skip, take, obj, isPagination) => {
     setState((prevState) => ({ ...prevState, isLoader: true }));
@@ -93,19 +91,20 @@ const IndivisualPartListing = (props) => {
         setTimeout(() => {
           setState((prevState) => ({ ...prevState, isLoader: false }));
         }, 300);
+        setState((prevState) => ({ ...prevState, noData: false }));
 
         if (res.status === 202) {
           setState((prevState) => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }));
         } else if (res.status === 204 && (!res.data || res.data === "")) {
-          setState((prevState) => ({ ...prevState, noData: true, tableData: [], pageNo: 0, totalRecordCount: 0 }))
+          setState((prevState) => ({ ...prevState, /* noData: true, */ tableData: [], pageNo: 0, totalRecordCount: 0, isFilterButtonClicked: false }))
 
         } else if (res.status === 200 && res.data && res.data.DataList) {
           let Data = res.data.DataList;
-          setState((prevState) => ({ ...prevState, noData: false, tableData: Data, totalRecordCount: Data[0].TotalRecordCount }));
+          setState((prevState) => ({ ...prevState, /* noData: false, */ tableData: Data, totalRecordCount: Data[0].TotalRecordCount, isFilterButtonClicked: false }));
         }
 
         if (isPagination === false) {
-          setState((prevState) => ({ ...prevState, disableFilter: false, disableDownload: false }));
+          setState((prevState) => ({ ...prevState, disableDownload: false }));
           dispatch(disabledClass(false));
           setTimeout(() => {
             let button = document.getElementById(
@@ -124,13 +123,23 @@ const IndivisualPartListing = (props) => {
               }
             }
             isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+            setTimeout(() => {
+              setState((prevState) => ({ ...prevState, warningMessage: false }));
+            }, 23);
           }, 300);
         }
+
         setState((prevState) => ({
           ...prevState,
           totalRecordCount: res.data && res.data.DataList[0].TotalRecordCount || 0,
-          tableData: res.data.DataList || [], noData: !res.data.DataList || res.data.DataList.length === 0, isFilterButtonClicked: false
+          tableData: res.data.DataList || [],
+          isFilterButtonClicked: false
         }))
+        setTimeout(() => {
+          setState((prevState) => ({
+            ...prevState, isFilterButtonClicked: false,
+          }));
+        }, 600);
       })
     );
   };
@@ -140,26 +149,19 @@ const IndivisualPartListing = (props) => {
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {  // <-- this may introduce asynchronous behavior
-      if (partsListing?.length !== 0) {
-        setState((prevState) => ({
-          ...prevState, noData
-            : searchNocontentFilter(value, state.noData), disableFilter: false
-        }));
+      if (newPartsListing?.length !== 0) {
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), disableFilter: false }));
       }
     }, 500);
+    setState((prevState) => ({ ...prevState, disableFilter: false }));
 
 
     const model = gridOptions?.api?.getFilterModel();
 
-    setState((prevState) => ({
-      ...prevState,
-      filterModel: model,
-    }))
+    setState((prevState) => ({ ...prevState, filterModel: model, }))
     if (!state.isFilterButtonClicked) {
-      setState((prevState) => ({
-        ...prevState,
-        warningMessage: true
-      }))
+
+      setState((prevState) => ({ ...prevState, warningMessage: true }))
     }
     if (
       value?.filterInstance?.appliedModel === null ||
@@ -213,9 +215,10 @@ const IndivisualPartListing = (props) => {
 
 
   const onSearch = () => {
-    setState((prevState) => ({ ...prevState, warningMessage: false, isFilterButtonClicked: true, pageNo: 1, pageNoNew: 1, currentRowIndex: 0 }));
+    setState((prevState) => ({ ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0 }));
     getTableListData(0, state.globalTake, state.floatingFilterData, true);
   };
+
 
   const resetState = () => {
     setState((prevState) => ({
@@ -394,8 +397,8 @@ const IndivisualPartListing = (props) => {
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
 
-    if (props.selectedCostingListSimulation?.length > 0) {
-      props.selectedCostingListSimulation.map((item) => {
+    if (selectedRowForPagination?.length > 0) {
+      selectedRowForPagination.map((item) => {
         if (item.PartId === props.node.data.PartId) {
           props.node.setSelected(true);
         }
@@ -469,11 +472,7 @@ const IndivisualPartListing = (props) => {
   };
 
   const onGridReady = (params) => {
-    setState((prevState) => ({
-      ...prevState,
-      gridApi: params.api,
-      gridColumnApi: params.columnApi,
-    }))
+    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }))
     params.api.paginationGoToPage(0);
   };
 
@@ -481,19 +480,17 @@ const IndivisualPartListing = (props) => {
     setState((prevState) => ({ ...prevState, disableDownload: true }));
     dispatch(disabledClass(true));
 
-    let tempArr = selectedRowForPagination; // Assuming `selectedCostingListSimulation` is an array
+    let tempArr = selectedRowForPagination; // Assuming `selectedRowForPagination` is an array
+
 
     // let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
 
     if (tempArr?.length > 0) {
       setTimeout(() => {
-        setState((prevState) => ({ ...prevState, disableDownload: false }));
+        setState((prevState) => { return { ...prevState, disableDownload: false }; });
         dispatch(disabledClass(false));
-
-        const button = document.getElementById(
-          "Excel-Downloads-Component-part"
-        );
-        button?.click();
+        let button = document.getElementById("Excel-Downloads-component-part");
+        button && button.click();
       }, 500);
     } else {
       getTableListData(0, defaultPageSize, state.floatingFilterData, false); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
@@ -506,17 +503,20 @@ const IndivisualPartListing = (props) => {
     let tempArr = [];
     //tempArr = gridApi && gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination;
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (partsListing ? partsListing : [])
-
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : allNewPartsListing ? allNewPartsListing : []
     return returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr);
+
+
   };
 
 
   const returnExcelColumn = (data = [], TempData) => {
 
+    let excelData = [...data];
 
     let temp = [];
     temp = TempData && TempData.map((item) => {
+
       if (item.ECNNumber === null) {
         item.ECNNumber = " ";
       } else if (item.RevisionNumber === null) {
@@ -525,15 +525,24 @@ const IndivisualPartListing = (props) => {
         item.DrawingNumber = " ";
       } else if (item.Technology === "-") {
         item.Technology = " ";
+      } else if (item.EffectiveDate !== "") {
+
+        item.EffectiveDate = DayTime(item.EffectiveDate).format("DD/MM/YYYY");
       }
 
+      else if (item.EffectiveDateNew !== "") {
+
+        item.EffectiveDateNew = DayTime(item.EffectiveDateNew).format("DD/MM/YYYY");
+      }
       return item;
     });
-    return (
-      <ExcelSheet data={temp} name={ComponentPart}>
 
-        {data &&
-          data.map((ele, index) => (
+    return (
+
+      <ExcelSheet data={temp} name={ComponentPart}>
+        {excelData &&
+          excelData.map((ele, index) => (
+
             <ExcelColumn
               key={index}
               label={ele.label}
@@ -593,35 +602,35 @@ const IndivisualPartListing = (props) => {
 
   const onRowSelected = (event) => {
 
+    var selectedRows = state.gridApi.getSelectedRows();
+    if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
+      selectedRows = selectedRowForPagination
+    } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
 
-    var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
-    if (selectedRows === undefined || selectedRows === null) {
-      selectedRows = selectedRowForPagination;
+      let finalData = []
+      if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-    } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {
-
-      let finalData = [];
-      if (event.node.isSelected() === false) {
         for (let i = 0; i < selectedRowForPagination.length; i++) {
-          if (selectedRowForPagination[i].PartId === event.data.PartId
-          ) {
+          if (selectedRowForPagination[i].PartId === event.data.PartId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
           }
-          finalData.push(selectedRowForPagination[i]);
+          finalData.push(selectedRowForPagination[i])
         }
+
       } else {
-        finalData = selectedRowForPagination;
+        finalData = selectedRowForPagination
       }
-      selectedRows = [...selectedRows, ...finalData];
+      selectedRows = [...selectedRows, ...finalData]
     }
 
-    let uniqeArrayPartId = _.uniqBy(selectedRows, (v) =>
-      [v.PartId, v.PartId].join()
-    );
-    setState((prevState) => ({ ...prevState, dataCount: uniqeArrayPartId.length }));
-    dispatch(setSelectedRowForPagination(uniqeArrayPartId)); //SETTING CHECKBOX STATE DATA IN REDUCER
-  };
 
+    let uniqeArray = _.uniqBy(selectedRows, "PartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+    dispatch(setSelectedRowForPagination(uniqeArray))                     //SETTING CHECKBOX STATE DATA IN REDUCER
+    setState((prevState) => ({ ...prevState, dataCount: uniqeArray.length }));
+    setState((prevState) => ({ ...prevState, selectedRowData: selectedRows }))
+
+
+  }
   const defaultColDef = {
     resizable: true,
     filter: true,
@@ -668,7 +677,7 @@ const IndivisualPartListing = (props) => {
                   title="Filtered data"
                   type="button"
                   className="user-btn mr5"
-                  onClick={() => onSearch(this)}
+                  onClick={() => onSearch()}
                   disabled={state.disableFilter}
                 >
                   <div className="filter mr-0"></div>
@@ -695,13 +704,9 @@ const IndivisualPartListing = (props) => {
                 )}
                 {permissions.Download && (
                   <>
-                    <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
-                      {/* DOWNLOAD */}
-                      {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                    </button>
-                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
-                      <button id={'Excel-Downloads-component-part'} className="p-absolute" type="button" >
-                      </button>}>
+                    <Button className="mr5" id={"individualPartListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                    />
+                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-component-part"} className="p-absolute" />}>
                       {onBtExport()}
                     </ExcelFile>
                   </>
@@ -721,7 +726,7 @@ const IndivisualPartListing = (props) => {
           </Col>
         </Row>
         <div
-          className={`ag-grid-wrapper height-width-wrapper ${(partsListing && partsListing?.length <= 0) || state.noData
+          className={`ag-grid-wrapper height-width-wrapper ${(newPartsListing && newPartsListing?.length <= 0) || state.noData
             ? "overlay-contain"
             : ""
             }`}
@@ -751,7 +756,7 @@ const IndivisualPartListing = (props) => {
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout="autoHeight"
-                rowData={state.tableData}
+                rowData={newPartsListing}
                 pagination={true}
                 paginationPageSize={state.globalTake}
                 onGridReady={onGridReady}
@@ -812,8 +817,8 @@ const IndivisualPartListing = (props) => {
                   cellClass="ag-grid-action-container"
                   headerName="Action"
                   width={160}
-                  pinned="right"
-                  type="rightAligned"
+/*                   pinned="right"
+ */                  type="rightAligned"
                   floatingFilter={false}
                   cellRenderer={"totalValueRenderer"}
                 ></AgGridColumn>
@@ -871,15 +876,7 @@ const IndivisualPartListing = (props) => {
         </div>
 
         {state.isBulkUpload && (
-          <BulkUpload
-            isOpen={state.isBulkUpload}
-            closeDrawer={closeBulkUploadDrawer}
-            isEditFlag={false}
-            fileName={"Part Component"}
-            isZBCVBCTemplate={false}
-            messageLabel={"Part"}
-            anchor={"right"}
-          />
+          <BulkUpload isOpen={state.isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={"Part Component"} isZBCVBCTemplate={false} messageLabel={"Part"} anchor={"right"} />
         )}
         {state.showPopup && (
           <PopupMsgWrapper

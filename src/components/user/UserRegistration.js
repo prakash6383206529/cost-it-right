@@ -10,7 +10,7 @@ import {
 import { langs } from "../../config/localization";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
-  getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser
+  getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser, getAllLevelAPI, checkHighestApprovalLevelForHeadsAndApprovalType
 } from "../../actions/auth/AuthActions";
 import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
@@ -28,6 +28,7 @@ import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, transformA
 import _ from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
+import { apiErrors } from "../../helper";
 
 var CryptoJS = require('crypto-js')
 const gridOptionsTechnology = {}
@@ -120,6 +121,7 @@ function UserRegistration(props) {
   const registerUserData = useSelector(state => state.auth.registerUserData)
   const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
+  const levelList = useSelector(state => state.auth.levelList)
 
   const [maxLength, setMaxLength] = useState(maxLength11);
 
@@ -219,6 +221,7 @@ function UserRegistration(props) {
       dispatch(getReporterList(() => { }))
     }
     dispatch(getApprovalTypeSelectList(() => { }))
+    dispatch(getAllLevelAPI(() => { }))
     return () => {
       reactLocalStorage?.setObject('vendorData', [])
     }
@@ -351,7 +354,8 @@ function UserRegistration(props) {
     }
 
     if (label === 'level') {
-      levelSelectList && levelSelectList.map(item => {
+      const approvalList = (getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? levelList : levelSelectList
+      approvalList && approvalList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -360,7 +364,8 @@ function UserRegistration(props) {
     }
 
     if (label === 'simualtionLevel') {
-      simulationLevelSelectList && simulationLevelSelectList.map(item => {
+      const approvalList = (getConfigurationKey().IsAllowMultiSelectApprovalType && !isSimulationEditIndex) ? levelList : simulationLevelSelectList
+      approvalList && approvalList.map(item => {
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -369,7 +374,8 @@ function UserRegistration(props) {
     }
 
     if (label === 'masterLevel') {
-      masterLevelSelectList && masterLevelSelectList.map(item => {
+      const approvalList = (getConfigurationKey().IsAllowMultiSelectApprovalType && !isMasterEditIndex) ? levelList : masterLevelSelectList
+      approvalList && approvalList.map(item => {
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -830,9 +836,10 @@ function UserRegistration(props) {
     }
   };
 
-  const checkDuplicacy = (dataList, currentIndex, keyName, technology_master_id, approvalTypeIDValue, messageHead, levelId) => {
+  const checkDuplicacy = (dataList, currentIndex, keyName, technology_master_id, approvalTypeIDValue, messageHead, levelId, isMulti = false) => {
 
     let stop = false
+
     const checkExists = dataList.some((el, index) => {
       return (
         (Number(el?.TechnologyId) === Number(technology_master_id) || Number(el?.MasterId) === Number(technology_master_id)) &&
@@ -847,11 +854,16 @@ function UserRegistration(props) {
 
     if (checkExists) {
       stop = true
-      Toaster.warning('Record already exists.')
+      if (!isMulti) {
+        Toaster.warning('Record already exists.')
+      }
     } else if (isExistTechnology !== -1) {
       stop = true
-      Toaster.warning(`${messageHead} cannot have multiple level for same Approval Type.`)
+      if (!isMulti) {
+        Toaster.warning(`${messageHead} cannot have multiple level for same Approval Type.`)
+      }
     }
+    console.log('stop: ', stop);
     return stop
   }
 
@@ -859,25 +871,82 @@ function UserRegistration(props) {
   * @method setTechnologyLevel
   * @description Used to handle setTechnologyLevel
   */
-  const setTechnologyLevel = () => {
-    const tempArray = [];
+  const setTechnologyLevel = async () => {
+    let tempArray = [];
 
     if (technology.length === 0 || level.length === 0 || Object.keys(costingApprovalType).length === 0) {
       Toaster.warning('Please select Technology, Approval Type and Level')
       return false;
     }
 
-    let obj = {
-      Technology: technology.label,
-      TechnologyId: technology.value,
-      Level: level.label,
-      LevelId: level.value,
-      ApprovalType: costingApprovalType?.label,
-      ApprovalTypeId: costingApprovalType?.value,
+    if (getConfigurationKey().IsAllowMultiSelectApprovalType) {
+      let tempMultiApprovalArray = []
+      let duplicateErrorArray = []
+      let multiSelectObject = {}
+      multiSelectObject.ApprovalHeadIdList = technology && technology.map((tech) => {
+        return {
+
+          ApprovalHeadId: tech.value,
+          ApprovalHeadName: tech.label
+        }
+      })
+      multiSelectObject.ApprovalTypeIdList = costingApprovalType && costingApprovalType.map((approval) => {
+        return {
+
+          ApprovalTypeId: approval.value,
+          ApprovalTypeName: approval.label
+        }
+      })
+      multiSelectObject.LevelId = level.value
+      multiSelectObject.LevelName = level.label
+      multiSelectObject.ApprovalModuleName = "Costing"
+      try {
+        let data = await checkHighestApprovalLevelForHeadsAndApprovalTypes(multiSelectObject)
+        if (data.length === 0) {
+          return false
+        }
+        data && data.map(approvalData => {
+          let approvalObj = {
+            Technology: approvalData?.ApprovalHeadName,
+            TechnologyId: approvalData?.ApprovalHeadId,
+            Level: approvalData?.LevelName,
+            LevelId: approvalData?.LevelId,
+            ApprovalType: approvalData?.ApprovalType,
+            ApprovalTypeId: approvalData?.ApprovalTypeId,
+          }
+          if (!checkDuplicacy(TechnologyLevelGrid, approvalObj, 'TechnologyId', approvalData?.ApprovalHeadId, approvalData?.ApprovalTypeId, 'Technology', approvalData?.LevelId, true)) {
+            tempMultiApprovalArray.push(approvalObj)
+          } else {
+            duplicateErrorArray.push(approvalObj)
+            return false
+          }
+        })
+        tempArray = [...TechnologyLevelGrid, ...tempMultiApprovalArray]
+        if (duplicateErrorArray.length > 0) {
+          const formattedStrings = duplicateErrorArray.map(item => `(${item.Technology} - ${item.ApprovalType} - ${item.Level})`);
+          const FinalformattedString = formattedStrings.join(',');
+          Toaster.warning(`Same record cannot exist for multiple or same approval types: ${FinalformattedString}`)
+        }
+
+      } catch (error) {
+        apiErrors(error)
+      }
+    } else {
+
+      let obj = {
+        Technology: technology.label,
+        TechnologyId: technology.value,
+        Level: level.label,
+        LevelId: level.value,
+        ApprovalType: costingApprovalType?.label,
+        ApprovalTypeId: costingApprovalType?.value,
+      }
+
+      if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
+      tempArray.push(...TechnologyLevelGrid, obj)
     }
 
-    if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
-    tempArray.push(...TechnologyLevelGrid, obj)
+    if (tempArray.length === 0) return false
     setTechnologyLevelGrid(tempArray)
     setLevel([])
     setTechnology([])
@@ -893,7 +962,7 @@ function UserRegistration(props) {
   const updateTechnologyLevel = () => {
     let tempArray = [];
 
-    if (technology.length === 0 || level.length === 0) {
+    if (technology.length === 0 || level.length === 0 || costingApprovalType.length === 0) {
       Toaster.warning('Please select technology and level')
       return false;
     }
@@ -945,25 +1014,81 @@ function UserRegistration(props) {
    * @method setSimualtionHeadLevel
    * @description Used to handle setTechnologyLevel
    */
-  const setSimualtionHeadLevel = () => {
-    const tempArray = [];
+  const setSimualtionHeadLevel = async () => {
+    let tempArray = [];
 
-    if (simulationHeads.length === 0 || simualtionLevel.length === 0) {
+    if (simulationHeads.length === 0 || simualtionLevel.length === 0 || simulationApprovalType.length === 0) {
       Toaster.warning('Please select Technology, Approval Type and Level')
       return false;
     }
 
-    let obj = {
-      Technology: simulationHeads.label,
-      TechnologyId: simulationHeads.value,
-      Level: simualtionLevel.label,
-      LevelId: simualtionLevel.value,
-      ApprovalType: simulationApprovalType?.label,
-      ApprovalTypeId: simulationApprovalType?.value,
+
+    if (getConfigurationKey().IsAllowMultiSelectApprovalType) {
+      let tempMultiApprovalArray = []
+      let duplicateErrorArray = []
+      let multiSelectObject = {}
+      multiSelectObject.ApprovalHeadIdList = simulationHeads && simulationHeads.map((simHead) => {
+        return {
+
+          ApprovalHeadId: simHead?.value,
+          ApprovalHeadName: simHead?.label
+        }
+      })
+      multiSelectObject.ApprovalTypeIdList = simulationApprovalType && simulationApprovalType.map((approval) => {
+        return {
+
+          ApprovalTypeId: approval?.value,
+          ApprovalTypeName: approval?.label
+        }
+      })
+      multiSelectObject.LevelId = simualtionLevel.value
+      multiSelectObject.LevelName = simualtionLevel.label
+      multiSelectObject.ApprovalModuleName = "Simulation"
+      try {
+        let data = await checkHighestApprovalLevelForHeadsAndApprovalTypes(multiSelectObject)
+        if (data.length === 0) {
+          return false
+        }
+        data && data.map(approvalData => {
+          let approvalObj = {
+            Technology: approvalData?.ApprovalHeadName,
+            TechnologyId: approvalData?.ApprovalHeadId,
+            Level: approvalData?.LevelName,
+            LevelId: approvalData?.LevelId,
+            ApprovalType: approvalData?.ApprovalType,
+            ApprovalTypeId: approvalData?.ApprovalTypeId,
+          }
+          if (!checkDuplicacy(HeadLevelGrid, approvalObj, 'TechnologyId', approvalData?.ApprovalHeadId, approvalData?.ApprovalTypeId, 'Simulation Head', approvalData?.LevelId)) {
+            tempMultiApprovalArray.push(approvalObj)
+          } else {
+            duplicateErrorArray.push(approvalObj)
+          }
+        })
+        if (duplicateErrorArray.length > 0) {
+          const formattedStrings = duplicateErrorArray.map(item => `(${item.Technology} - ${item.ApprovalType} - ${item.Level})`);
+          const FinalformattedString = formattedStrings.join(',');
+          Toaster.warning(`Same record cannot exist for multiple or same approval types: ${FinalformattedString}`)
+        }
+        tempArray = [...HeadLevelGrid, ...tempMultiApprovalArray]
+      } catch (error) {
+        apiErrors(error)
+      }
+    } else {
+      let obj = {
+        Technology: simulationHeads.label,
+        TechnologyId: simulationHeads.value,
+        Level: simualtionLevel.label,
+        LevelId: simualtionLevel.value,
+        ApprovalType: simulationApprovalType?.label,
+        ApprovalTypeId: simulationApprovalType?.value,
+      }
+
+      if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
+      tempArray.push(...HeadLevelGrid, obj)
+
     }
 
-    if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
-    tempArray.push(...HeadLevelGrid, obj)
+    if (tempArray.length === 0) return false
     setHeadLevelGrid(tempArray)
     setSimualtionLevel([])
     setSimulationHeads([])
@@ -982,7 +1107,7 @@ function UserRegistration(props) {
 
     let tempArray = [];
 
-    if (simulationHeads.length === 0 || simualtionLevel.length === 0) {
+    if (simulationHeads.length === 0 || simualtionLevel.length === 0 || simulationApprovalType.length === 0) {
       Toaster.warning('Please select technology and level')
       return false;
     }
@@ -1037,6 +1162,7 @@ function UserRegistration(props) {
   */
   const editItemDetails = (rowData, index) => {
     const tempData = rowData[index];
+    console.log('tempData: ', tempData);
     dispatch(getLevelByTechnology(true, tempData.TechnologyId, tempData.ApprovalTypeId, res => { }))
 
     setTechnologyLevelEditIndex(index)
@@ -1114,26 +1240,80 @@ function UserRegistration(props) {
    * @method setMasterLevel
    * @description Used to handle master level
    */
-  const setMasterLevel = () => {
-    const tempArray = [];
+  const setMasterLevel = async () => {
+    let tempArray = [];
 
-    if (master.length === 0 || masterLevel.length === 0) {
+    if (master.length === 0 || masterLevel.length === 0 || masterApprovalType.length === 0) {
       Toaster.warning('Please select Master, Approval Type and Level')
       return false;
     }
 
-    let obj = {
-      Master: master.label,
-      MasterId: master.value,
-      Level: masterLevel.label,
-      LevelId: masterLevel.value,
-      ApprovalType: masterApprovalType?.label,
-      ApprovalTypeId: masterApprovalType?.value,
+    if (getConfigurationKey().IsAllowMultiSelectApprovalType) {
+      let tempMultiApprovalArray = []
+      let duplicateErrorArray = []
+      let multiSelectObject = {}
+      multiSelectObject.ApprovalHeadIdList = master && master.map((master) => {
+        return {
+
+          ApprovalHeadId: master?.value,
+          ApprovalHeadName: master?.label
+        }
+      })
+      multiSelectObject.ApprovalTypeIdList = masterApprovalType && masterApprovalType.map((approval) => {
+        return {
+
+          ApprovalTypeId: approval?.value,
+          ApprovalTypeName: approval?.label
+        }
+      })
+      multiSelectObject.LevelId = masterLevel?.value
+      multiSelectObject.LevelName = masterLevel?.label
+      multiSelectObject.ApprovalModuleName = "Master"
+      try {
+        let data = await checkHighestApprovalLevelForHeadsAndApprovalTypes(multiSelectObject)
+        if (data.length === 0) {
+          return false
+        }
+        data && data.map(approvalData => {
+          let approvalObj = {
+            Master: approvalData?.ApprovalHeadName,
+            MasterId: approvalData?.ApprovalHeadId,
+            Level: approvalData?.LevelName,
+            LevelId: approvalData?.LevelId,
+            ApprovalType: approvalData?.ApprovalType,
+            ApprovalTypeId: approvalData?.ApprovalTypeId,
+          }
+          if (!checkDuplicacy(masterLevelGrid, approvalObj, 'MasterId', approvalData?.ApprovalHeadId, approvalData?.ApprovalTypeId, 'Master', approvalData?.LevelId)) {
+            tempMultiApprovalArray.push(approvalObj)
+          } else {
+            duplicateErrorArray.push(approvalObj)
+          }
+        })
+        if (duplicateErrorArray.length > 0) {
+          const formattedStrings = duplicateErrorArray.map(item => `(${item.Technology} - ${item.ApprovalType} - ${item.Level})`);
+          const FinalformattedString = formattedStrings.join(',');
+          Toaster.warning(`Same record cannot exist for multiple or same approval types: ${FinalformattedString}`)
+        }
+        tempArray = [...masterLevelGrid, ...tempMultiApprovalArray]
+      } catch (error) {
+        apiErrors(error)
+      }
+    } else {
+
+      let obj = {
+        Master: master.label,
+        MasterId: master.value,
+        Level: masterLevel.label,
+        LevelId: masterLevel.value,
+        ApprovalType: masterApprovalType?.label,
+        ApprovalTypeId: masterApprovalType?.value,
+      }
+
+      if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false
+
+      tempArray.push(...masterLevelGrid, obj)
     }
-
-    if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false
-
-    tempArray.push(...masterLevelGrid, obj)
+    if (tempArray.length === 0) return false
     setMasterLevelGrid(tempArray)
     setMasterLevels([])
     setMaster([])
@@ -1149,7 +1329,7 @@ function UserRegistration(props) {
   const updateMasterLevel = () => {
     let tempArray = [];
 
-    if (master.length === 0 || masterLevel.length === 0) {
+    if (master.length === 0 || masterLevel.length === 0 || masterApprovalType.length === 0) {
       Toaster.warning('Please select Master, Approval Type and Level')
       return false;
     }
@@ -1686,6 +1866,40 @@ function UserRegistration(props) {
     options.columnApi?.resetColumnState(null);
     options.api?.setFilterModel(null);
   }
+
+  const checkHighestApprovalLevelForHeadsAndApprovalTypes = (data) => {
+    // dispatch(checkHighestApprovalLevelForHeadsAndApprovalType(data, res => {
+    //   const message = res?.data?.Message
+    //   const approvalData = res?.data?.Data
+    //   if (message !== '' && message !== null && message !== undefined) {
+    //     Toaster.warning(message)
+    //   }
+    //   if (approvalData?.length > 0) {
+    //     console.log("COMING IN IF", approvalData);
+    //     return approvalData
+    //   } else {
+    //     return false
+    //   }
+    // }))
+    return new Promise((resolve, reject) => {
+      dispatch(checkHighestApprovalLevelForHeadsAndApprovalType(data, res => {
+        const message = res?.data?.Message;
+        const approvalData = res?.data?.Data;
+        if (message !== '' && message !== null && message !== undefined) {
+          Toaster.warning(message);
+        }
+        if (approvalData?.length > 0) {
+          resolve(approvalData);
+        } else {
+          return []
+        }
+      }));
+    });
+  }
+
+
+
+
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -2254,17 +2468,16 @@ function UserRegistration(props) {
                                 name="TechnologyId"
                                 type="text"
                                 label="Technology"
-
                                 errors={errors.TechnologyId}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
                                 mandatory={true}
-
-
                                 options={searchableSelectType('technology')}
                                 handleChange={technologyHandler}
                                 defaultValue={technology}
+                                isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? true : false}
+                              // isClearable={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? true : false}
                               />
                             </div>
                             <div className="col-md-3">
@@ -2281,6 +2494,8 @@ function UserRegistration(props) {
                                 handleChange={costingApprovalTypeHandler}
                                 defaultValue={costingApprovalType}
                                 errors={errors.ApprovalType}
+                                isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? true : false}
+                              // isClearable={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? true : false}
                               />
                             </div>
                             <div className="col-md-3">
@@ -2402,7 +2617,6 @@ function UserRegistration(props) {
                                 name="Head"
                                 type="text"
                                 label="Head"
-
                                 errors={errors.Head}
                                 Controller={Controller}
                                 control={control}
@@ -2411,6 +2625,8 @@ function UserRegistration(props) {
                                 options={searchableSelectType('heads')}
                                 handleChange={headHandler}
                                 valueDescription={simulationHeads}
+                                isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isSimulationEditIndex) ? true : false}
+                                isClearable={true}
                               />
                             </div>
                             <div className="col-md-3">
@@ -2427,6 +2643,8 @@ function UserRegistration(props) {
                                 handleChange={simulationApprovalTypeHandler}
                                 defaultValue={simulationApprovalType}
                                 errors={errors.ApprovalType}
+                                isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isSimulationEditIndex) ? true : false}
+                                isClearable={true}
                               />
                             </div>
                             <div className="col-md-3">
@@ -2434,8 +2652,6 @@ function UserRegistration(props) {
                                 name="simualtionLevel"
                                 type="text"
                                 label="Level"
-
-
                                 errors={errors.simualtionLevel}
                                 Controller={Controller}
                                 control={control}
@@ -2550,8 +2766,9 @@ function UserRegistration(props) {
                                     mandatory={true}
                                     handleChange={masterHandler}
                                     options={searchableSelectType('masters')}
-
                                     valueDescription={master}
+                                    isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isMasterEditIndex) ? true : false}
+
                                   />
                                 </div>
                                 <div className="col-md-3">
@@ -2568,6 +2785,8 @@ function UserRegistration(props) {
                                     handleChange={masterApprovalTypeHandler}
                                     defaultValue={masterApprovalType}
                                     errors={errors.ApprovalType}
+                                    isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isMasterEditIndex) ? true : false}
+
                                   />
                                 </div>
                                 <div className="col-md-3">
@@ -2575,9 +2794,6 @@ function UserRegistration(props) {
                                     name="masterLevel"
                                     type="text"
                                     label="Level"
-
-
-
                                     errors={errors.Master}
                                     Controller={Controller}
                                     control={control}
@@ -2585,7 +2801,6 @@ function UserRegistration(props) {
                                     mandatory={true}
                                     handleChange={masterLevelHandler}
                                     options={searchableSelectType('masterLevel')}
-
                                     valueDescription={masterLevel}
                                   />
                                 </div>

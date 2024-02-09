@@ -134,16 +134,11 @@ const SOBListing = (props) => {
   * @description Filter listing
   */
   const closeDrawer = (e = '', type) => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpen: false,
-      isEditFlag: false,
-      ID: '',
-    }), () => {
-      if (type === 'submit') {
-        getDataList();
-      }
-    });
+    setState((prevState) => ({ ...prevState, isOpen: false, isEditFlag: false, ID: '', }))
+    if (type === 'submit') {
+      getDataList();
+    }
+
   };
 
 
@@ -242,6 +237,7 @@ const SOBListing = (props) => {
     if (searchRef.current) {
       searchRef.current.value = '';
     }
+    setState((prevState) => ({ ...prevState, noData: false }))
   }
   const handleShown = () => {
     setState((prevState) => ({ ...prevState, shown: !state.shown }))
