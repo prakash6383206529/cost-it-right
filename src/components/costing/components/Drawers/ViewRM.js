@@ -3,13 +3,13 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import Toaster from '../../../common/Toaster';
-import { checkForDecimalAndNull, getConfigurationKey, checkForNull } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, isRMDivisorApplicable } from '../../../../helper';
 import NoContentFound from '../../../common/NoContentFound';
 import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, getTechnology } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
 import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, } from '../../actions/CostWorking'
-import { Container, Row, Col, Table } from 'reactstrap'
+import { Row, Col, Table } from 'reactstrap'
 import TooltipCustom from '../../../common/Tooltip';
 
 function ViewRM(props) {
@@ -24,7 +24,7 @@ function ViewRM(props) {
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const [calciData, setCalciData] = useState({})
   const masterBatchList = viewCostingData[props.index].CostingMasterBatchRawMaterialCostResponse
-
+  const RMDivisor = (viewCostingData[props?.index]?.CostingPartDetails?.RMDivisor !== null) ? viewCostingData[props?.index]?.CostingPartDetails?.RMDivisor : 0;
   useEffect(() => {
     setViewRM(viewRMData)
   }, [])
@@ -196,7 +196,7 @@ function ViewRM(props) {
               <th>{`Burning Loss Weight`}</th>
               {viewCostingData[0].technologyId === DIE_CASTING && <th>Casting Weight</th>}
               {viewCostingData[0].technologyId === DIE_CASTING && <th>Melting Loss (Loss%)</th>}
-              <th >{`Net RM Cost/Pc`}</th>
+              <th >{`Net RM Cost ${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''}`}</th>
               {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
               <th className="costing-border-right">{`Remark`}</th>
 
