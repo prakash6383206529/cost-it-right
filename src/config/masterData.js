@@ -3069,9 +3069,6 @@ export const MHRMoreZBC = [
     { label: "ProcessName", value: "ProcessName", },
     { label: "ProcessCode", value: "ProcessCode", },
     { label: "UOM", value: "UOM", },
-    { label: "PowerCostPerUnit", value: "PowerCostPerUnit", },
-    { label: "TotalPowerCostAnnum", value: "TotalPowerCostAnnum", },
-    { label: "TotalPowerCostHour", value: "TotalPowerCostHour", },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', },
 ]
