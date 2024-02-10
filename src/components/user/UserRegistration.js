@@ -24,8 +24,8 @@ import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, transformApprovalItem } from "../common/CommonFunctions";
-import _ from "lodash";
+import { autoCompleteDropdown, transformApprovalItem } from "../common/CommonFunctions";
+import _, { debounce } from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
 import { apiErrors } from "../../helper";
@@ -106,6 +106,11 @@ function UserRegistration(props) {
   const [gridColumnApiSimulation, setgridColumnApiSimulation] = useState(null);
   const [gridApiMaster, setgridApiMaster] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApiMaster, setgridColumnApiMaster] = useState(null);
+  const [isUpdateResponded, setIsUpdateResponded] = useState(false)
+  const [costingTableChanged, setCostingTableChanged] = useState(false)
+  const [simulationTableChanged, setSimulationTableChanged] = useState(false)
+  const [masterTableChanged, setMasterTableChanged] = useState(false)
+  const [isDepartmentUpdated, setIsDepartmentUpdated] = useState(false)
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -863,7 +868,6 @@ function UserRegistration(props) {
         Toaster.warning(`${messageHead} cannot have multiple level for same Approval Type.`)
       }
     }
-    console.log('stop: ', stop);
     return stop
   }
 
@@ -1162,7 +1166,6 @@ function UserRegistration(props) {
   */
   const editItemDetails = (rowData, index) => {
     const tempData = rowData[index];
-    console.log('tempData: ', tempData);
     dispatch(getLevelByTechnology(true, tempData.TechnologyId, tempData.ApprovalTypeId, res => { }))
 
     setTechnologyLevelEditIndex(index)
@@ -1485,7 +1488,7 @@ function UserRegistration(props) {
    * @desc Submit the signup form values.
    * @returns {{}}
    */
-  const onSubmit = (values) => {
+  const onSubmit = debounce(handleSubmit((values) => {
 
     let forcefulUpdate = false
     if (isEditFlag && !isForcefulUpdate) {
@@ -1569,6 +1572,28 @@ function UserRegistration(props) {
       multiDeptArr.push({ DepartmentId: item.value, DepartmentName: item.label })
     ))
 
+    let isDepartmentUpdate = registerUserData?.Departments?.every(
+      (item) => department?.some((deptValue) => item?.DepartmentId !== deptValue?.value)
+    ) && department?.length !== registerUserData?.Departments.length;
+    let isForcefulUpdatedForMaster = false;
+    let isForcefulUpdatedForCosting = false;
+    let isForcefulUpdatedForSimulation = false;
+
+    if (JSON.stringify(masterLevelGrid) !== JSON.stringify(oldMasterLevelGrid)) {
+      isForcefulUpdatedForMaster = true;
+    } if (JSON.stringify(HeadLevelGrid) !== JSON.stringify(oldHeadLevelGrid)) {
+      isForcefulUpdatedForSimulation = true;
+    } if (JSON.stringify(TechnologyLevelGrid) !== JSON.stringify(oldTechnologyLevelGrid)) {
+      isForcefulUpdatedForCosting = true;
+    } if (isDepartmentUpdate) {
+      isForcefulUpdatedForMaster = true;
+      isForcefulUpdatedForSimulation = true;
+      isForcefulUpdatedForCosting = true;
+    }
+    setIsDepartmentUpdated(isDepartmentUpdate);
+    setCostingTableChanged(isForcefulUpdatedForCosting);
+    setMasterTableChanged(isForcefulUpdatedForMaster);
+    setSimulationTableChanged(isForcefulUpdatedForSimulation);
 
     if (isEditFlag) {
       let updatedData = {
@@ -1625,29 +1650,12 @@ function UserRegistration(props) {
         updatedData.MasterLevels = tempMasterLevelArray
         updatedData.Departments = multiDeptArr
         updatedData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
-      }
-      let isDepartmentUpdate = registerUserData?.Departments?.every(
-        (item) => department?.some((deptValue) => item?.DepartmentId !== deptValue?.value)
-      ) && department?.length !== registerUserData?.Departments.length;
-
-      const isRoleUpdate = (registerUserData.RoleId !== role.value) ? true : false;
-      let isPermissionUpdate = false;
-      let isUpdateApiCall = false;
-
-
-      if (JSON.stringify(Modules) === JSON.stringify(oldModules)) {
-        isPermissionUpdate = false;
-      } else {
-        isPermissionUpdate = true;
+        updatedData.IsForcefulUpdatedForCosting = isForcefulUpdatedForCosting
+        updatedData.IsForcefulUpdatedForMaster = isForcefulUpdatedForMaster
+        updatedData.IsForcefulUpdatedForSimulation = isForcefulUpdatedForSimulation
       }
 
-      if (JSON.stringify(masterLevelGrid) !== JSON.stringify(oldMasterLevelGrid) || JSON.stringify(HeadLevelGrid) !== JSON.stringify(oldHeadLevelGrid) || JSON.stringify(TechnologyLevelGrid) !== JSON.stringify(oldTechnologyLevelGrid)) {
-        isUpdateApiCall = true;
-      } else {
-        isUpdateApiCall = false;
-      }
-
-      if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isUpdateApiCall) {
+      if (isDepartmentUpdate || isForcefulUpdatedForCosting || isForcefulUpdatedForMaster || isForcefulUpdatedForSimulation) {
         setShowPopup(true)
         setUpdatedObj(updatedData)
 
@@ -1672,9 +1680,11 @@ function UserRegistration(props) {
           })
 
           if (isDataChanged) {
+            setIsUpdateResponded(true)
             dispatch(updateUserAPI(updatedData, (res) => {
               if (res?.data?.Result) {
                 Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+                setIsUpdateResponded(false)
                 cancel();
               }
               setIsLoader(false)
@@ -1748,7 +1758,7 @@ function UserRegistration(props) {
         }))
       }
     }
-  }
+  }), 500)
 
   const onPopupConfirm = () => {
     confirmUpdateUser(updatedObj, true)
@@ -1897,9 +1907,28 @@ function UserRegistration(props) {
     });
   }
 
+  const message = () => {
+    if (isDepartmentUpdated) {
+      return `costing, simulation, and master`;
+    } else {
+      const messages = [];
 
-
-
+      if (costingTableChanged) {
+        messages.push(`costing`);
+      }
+      if (simulationTableChanged) {
+        messages.push(`simulation=`);
+      }
+      if (masterTableChanged) {
+        messages.push(`master`);
+      }
+      if (costingTableChanged && simulationTableChanged && masterTableChanged) {
+        return `costing, simulation, and master`;
+      }
+      // Join the messages based on the state values
+      return messages.join(' and ');
+    }
+  };
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -1918,7 +1947,7 @@ function UserRegistration(props) {
                   <Button className={'user-btn'} onClick={() => setIsShowPwdField(!isShowPwdField)} >Change Password</Button>
                 </div>}
               </div>
-              <form onSubmit={handleSubmit(onSubmit)} noValidate className="manageuser form" onKeyDown={(e) => { handleKeyDown(e, onSubmit); }}>
+              <form noValidate className="manageuser form" onKeyDown={(e) => { handleKeyDown(e, onSubmit); }}>
                 <div className="add-min-height">
                   <HeaderTitle
                     title={'Personal Details:'}
@@ -2892,13 +2921,15 @@ function UserRegistration(props) {
                       onClick={cancel}
                       type="submit"
                       value="CANCEL"
+                      disabled={isUpdateResponded}
                       className="mr15 cancel-btn">
                       <div className={"cancel-icon"}></div>
                       CANCEL
                     </button>
 
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={onSubmit}
                       disabled={isSubmitted ? true : false}
                       className="user-btn save-btn">
                       <div className={"save-icon"}></div>
@@ -2913,7 +2944,7 @@ function UserRegistration(props) {
         </div >
       </div >
       {
-        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
+        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`All ${message()}'s approval which are pending & awaited in approval status will become draft. Do you want to continue?`} />
       }
     </div >
   );

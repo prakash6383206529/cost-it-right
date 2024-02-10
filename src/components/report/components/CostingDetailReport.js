@@ -15,7 +15,7 @@ import { ReportMaster, ReportSAPMaster, EMPTY_DATA, defaultPageSize } from '../.
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber, handleDepartmentHeader, showBopLabel } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber, handleDepartmentHeader, showBopLabel, getConfigurationKey } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingHeadsAPI } from '../../../actions/Common'
@@ -380,7 +380,7 @@ function ReportListing(props) {
                 <div
                     onClick={() => viewMultipleRMDetails(costingID)}
                     className={'link'}
-                > {cellValue}</div> : <div>{cellValue}</div>} </> : '-';
+                > {checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)}</div> : <div>{checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)}</div>} </> : '-';
     }
     const partCostFormatter = (props) => {
         const cellValue = props?.value;

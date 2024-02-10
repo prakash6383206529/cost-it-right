@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
-  maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
+  maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3, decimalNumberLimit,
   maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue, hashValidation, getNameBySplitting
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
@@ -3891,7 +3891,7 @@ class AddMoreDetails extends Component {
                                   name={"PowerRatingPerKW"}
                                   type="text"
                                   placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
+                                  validate={[number, checkWhiteSpaces, decimalNumberLimit]}
                                   component={renderText}
                                   //required={true}
                                   disabled={disableAllForm ? true : false}
