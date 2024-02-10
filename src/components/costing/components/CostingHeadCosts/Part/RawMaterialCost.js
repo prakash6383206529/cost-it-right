@@ -939,6 +939,7 @@ function RawMaterialCost(props) {
       item.FinishWeight = 0
       item.GrossWeight = 0
       item.ScrapWeight = 0
+      item.Percentage = 0
       item.WeightCalculatorRequest = {}
       setValue(`${rmGridFields}.${index}.GrossWeight`, '')     //COMMENT
       setValue(`${rmGridFields}.${index}.FinishWeight`, '')

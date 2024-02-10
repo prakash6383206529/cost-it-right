@@ -1,7 +1,7 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch, } from 'react-redux'
+import { useDispatch, useSelector, } from 'react-redux'
 import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
@@ -11,6 +11,7 @@ import { setPlasticArray } from '../../actions/Costing'
 import { setForgingCalculatorMachiningStockSection } from '../../actions/Costing'
 import TooltipCustom from '../../../common/Tooltip'
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
+import { FORGING } from '../../../../config/masterData'
 function LossStandardTable(props) {
   const { rmRowData, isLossStandard, isNonFerrous, NonFerrousErrors, disableAll, ferrousErrors, isFerrous } = props
   const trimValue = getConfigurationKey()
@@ -24,6 +25,7 @@ function LossStandardTable(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
+  const { ComponentItemData, costingData, CostingDataList } = useSelector(state => state.costing)
 
   const fieldValues = useWatch({
     control,
@@ -32,7 +34,9 @@ function LossStandardTable(props) {
 
   useEffect(() => {
     calculateLossWeight()
-    calculateForgeLossWeight()
+    if (Number(costingData?.TechnologyId) === FORGING) {
+      calculateForgeLossWeight()
+    }
     if (isNonFerrous === true) {
       props.LossDropDown()
     }
@@ -194,7 +198,7 @@ function LossStandardTable(props) {
       }
     }
 
-
+    // props.weightValue
     const forgeWeight = props.forgeValue
     let LossWeight = 0;
     switch (LossOfType?.label) {

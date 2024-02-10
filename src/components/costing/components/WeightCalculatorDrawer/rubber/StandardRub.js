@@ -145,7 +145,7 @@ function StandardRub(props) {
 
             let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
             setDataToSend(prevState => ({ ...prevState, NetRmCost: NetRmCost }))
-            setValue('NetRmCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue('NetRmCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
         }
 
     }

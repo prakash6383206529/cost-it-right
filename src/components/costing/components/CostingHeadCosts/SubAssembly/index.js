@@ -80,13 +80,24 @@ function AssemblyPart(props) {
           }
           // let tempArr = setArrayForCosting
           let array = [];
-          array = reactLocalStorage.getObject('costingArray')
-          Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
-            array.push(item)
-            return null
-          })
-          let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
-          reactLocalStorage.setObject('costingArray', uniqueArary);
+          let obj = reactLocalStorage.getObject('costingArray')?.filter(element => element.PartType === 'Assembly' && PartNumber === element?.PartNumber)
+
+          if (obj?.length > 0) {
+            array = [Data]
+            Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
+              array.push(item)
+              return null
+            })
+            reactLocalStorage.setObject('costingArray', array);
+          } else {
+            array = reactLocalStorage.getObject('costingArray')
+            Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
+              array.push(item)
+              return null
+            })
+            let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
+            reactLocalStorage.setObject('costingArray', uniqueArary);
+          }
           props.toggleAssembly(BOMLevel, PartNumber, Data)
 
         }
