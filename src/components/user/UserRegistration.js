@@ -1578,7 +1578,7 @@ function UserRegistration(props) {
         LevelId: registerUserData?.LevelId,
         LevelName: registerUserData?.LevelName,
         // DepartmentName: department.label,
-        DepartmentName: getConfigurationKey().IsMultipleDepartmentAllowed ? '' : department.label,    //RE   COMMENTED
+        DepartmentName: '',
         TechnologyId: '',
         TechnologyName: '',
         PlantName: '',
@@ -1592,7 +1592,6 @@ function UserRegistration(props) {
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         // DepartmentId: department.value,
         DepartmentId: '',
-        DepartmentId: getConfigurationKey().IsMultipleDepartmentAllowed ? EMPTY_GUID : department.value,                 //RE   COMMENTED
         loggedInUserId: loggedInUserId(),
         CompanyId: department.CompanyId ? department.CompanyId : '',
         EmailAddress: values.EmailAddress ? values.EmailAddress.trim() : '',
@@ -1624,7 +1623,7 @@ function UserRegistration(props) {
         updatedData.AdditionalPermission = IsShowAdditionalPermission ? 'YES' : 'NO'
         updatedData.SimulationTechnologyLevels = tempHeadLevelArray
         updatedData.MasterLevels = tempMasterLevelArray
-        updatedData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []    //RE   COMMENTED
+        updatedData.Departments = multiDeptArr
         updatedData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
       let isDepartmentUpdate = registerUserData?.Departments?.every(
@@ -1719,7 +1718,7 @@ function UserRegistration(props) {
         userData.AdditionalPermission = IsShowAdditionalPermission ? 'YES' : 'NO'
         userData.SimulationTechnologyLevels = tempHeadLevelArray
         userData.MasterLevels = tempMasterLevelArray
-        userData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []    //RE   COMMENTED
+        userData.Departments = multiDeptArr
         userData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
 

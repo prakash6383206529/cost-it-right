@@ -327,7 +327,7 @@ const RMListing = (props) => {
         <Col>
           <div
             className={`ag-grid-wrapper height-width-wrapper ${(rawMaterialTypeDataList &&
-              props.rawMaterialTypeDataList?.length <= 0) ||
+              rawMaterialTypeDataList?.length <= 0) ||
               noData
               ? "overlay-contain"
               : ""
