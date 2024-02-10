@@ -18,6 +18,7 @@ import TooltipCustom from '../../../../common/Tooltip'
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
     const { rmRowData, item, CostingViewMode } = props
+    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -42,13 +43,13 @@ function Coil(props) {
     }
 
     const defaultValues = {
-        StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',
-        Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? WeightCalculatorRequest.Thickness : '',
-        Pitch: WeightCalculatorRequest && WeightCalculatorRequest.Pitch !== null ? WeightCalculatorRequest.Pitch : '',
-        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? WeightCalculatorRequest.Cavity : 1,
-        NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? WeightCalculatorRequest.NetSurfaceArea : '',
-        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '',
+        StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? checkForDecimalAndNull(WeightCalculatorRequest.StripWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
+        Pitch: WeightCalculatorRequest && WeightCalculatorRequest.Pitch !== null ? checkForDecimalAndNull(WeightCalculatorRequest.Pitch, localStorage.NoOfDecimalForInputOutput) : '',
+        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Cavity, localStorage.NoOfDecimalForInputOutput) : 1,
+        NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
     }
 
     const {
@@ -59,7 +60,6 @@ function Coil(props) {
         })
 
 
-    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
     const [UOMDimension, setUOMDimension] = useState(
         WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
             ? { label: WeightCalculatorRequest.UOMForDimension, value: WeightCalculatorRequest.UOMForDimensionId, }

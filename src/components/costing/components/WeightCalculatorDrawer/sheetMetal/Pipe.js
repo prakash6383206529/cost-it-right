@@ -52,24 +52,24 @@ function Pipe(props) {
         break;
     }
   }
-
+  const localStorage = reactLocalStorage.getObject('InitialConfiguration');
   const { rmRowData, item, CostingViewMode } = props
 
   const defaultValues = {
 
-    OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== null ? WeightCalculatorRequest.OuterDiameter : '',
-    Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? WeightCalculatorRequest.Thickness : '',
-    InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.InnerDiameter !== null ? WeightCalculatorRequest.InnerDiameter : '',
-    SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== null ? WeightCalculatorRequest.LengthOfSheet : '',
-    PartLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfPart !== null ? WeightCalculatorRequest.LengthOfPart : '',
-    NumberOfPartsPerSheet: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== null ? WeightCalculatorRequest.NumberOfPartsPerSheet : '',
-    ScrapLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfScrap !== null ? WeightCalculatorRequest.LengthOfScrap : '',
-    WeightofSheet: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== null ? WeightCalculatorRequest.WeightOfSheetInUOM : '',
-    WeightofPart: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfPartInUOM !== null ? WeightCalculatorRequest.WeightOfPartInUOM : '',
-    WeightofScrap: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfScrapInUOM !== null ? WeightCalculatorRequest.WeightOfScrapInUOM : '',
-    NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? WeightCalculatorRequest.NetSurfaceArea : '',
-    GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-    FinishWeightOfSheet: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '',
+    OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== null ? checkForDecimalAndNull(WeightCalculatorRequest.OuterDiameter, localStorage.NoOfDecimalForInputOutput) : '',
+    Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
+    InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.InnerDiameter !== null ? checkForDecimalAndNull(WeightCalculatorRequest.InnerDiameter, localStorage.NoOfDecimalForInputOutput) : '',
+    SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfSheet, localStorage.NoOfDecimalForInputOutput) : '',
+    PartLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfPart !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfPart, localStorage.NoOfDecimalForInputOutput) : '',
+    NumberOfPartsPerSheet: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfPartsPerSheet, localStorage.NoOfDecimalForInputOutput) : '',
+    ScrapLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfScrap !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfScrap, localStorage.NoOfDecimalForInputOutput) : '',
+    WeightofSheet: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfSheetInUOM, localStorage.NoOfDecimalForInputOutput) : '',
+    WeightofPart: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfPartInUOM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfPartInUOM, localStorage.NoOfDecimalForInputOutput) : '',
+    WeightofScrap: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfScrapInUOM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfScrapInUOM, localStorage.NoOfDecimalForInputOutput) : '',
+    NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
+    GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
+    FinishWeightOfSheet: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
   }
 
   const {
@@ -80,7 +80,7 @@ function Pipe(props) {
     })
 
 
-  const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+
 
   const [isOneSide, setIsOneSide] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsOneSide ? WeightCalculatorRequest.IsOneSide : false)
   const [UOMDimension, setUOMDimension] = useState(
