@@ -501,8 +501,8 @@ function EditPartCost(props) {
                                             }
                                             <th>Costing Number</th>
                                             <th>Settled Price</th>
-                                            <th>SOB%</th>
                                             {(costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <th>Delta</th>}
+                                            <th>SOB%</th>
                                             <th>Net Cost</th>
                                             <th>Action</th>
                                         </tr >
@@ -520,31 +520,6 @@ function EditPartCost(props) {
                                                         }
                                                         <td>{item?.label}</td>
                                                         <td>{checkForDecimalAndNull(item?.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                                        <td>
-                                                            <NumberFieldHookForm
-                                                                name={`${PartCostFields}.${index}.SOBPercentage`}
-                                                                Controller={Controller}
-                                                                control={control}
-                                                                register={register}
-                                                                mandatory={false}
-                                                                rules={{
-                                                                    required: false,
-                                                                    pattern: {
-                                                                        value: /^\d*\.?\d*$/,
-                                                                        message: 'Invalid Number.'
-                                                                    },
-                                                                    max: {
-                                                                        value: 100,
-                                                                        message: 'Percentage cannot be greater than 100'
-                                                                    },
-                                                                }}
-                                                                handleChange={(e) => handleSOBPercentage(e.target.value, index)}
-                                                                defaultValue={''}
-                                                                className=""
-                                                                customClassName={'withBorder'}
-                                                                disabled={(CostingViewMode || props.costingSummary || costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? true : false}
-                                                            />
-                                                        </td>
 
                                                         {
                                                             (costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <td >
@@ -587,6 +562,31 @@ function EditPartCost(props) {
                                                                 </div>
                                                             </td>
                                                         }
+                                                        <td>
+                                                            <NumberFieldHookForm
+                                                                name={`${PartCostFields}.${index}.SOBPercentage`}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                    pattern: {
+                                                                        value: /^\d*\.?\d*$/,
+                                                                        message: 'Invalid Number.'
+                                                                    },
+                                                                    max: {
+                                                                        value: 100,
+                                                                        message: 'Percentage cannot be greater than 100'
+                                                                    },
+                                                                }}
+                                                                handleChange={(e) => handleSOBPercentage(e.target.value, index)}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                disabled={(CostingViewMode || props.costingSummary || costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? true : false}
+                                                            />
+                                                        </td>
                                                         <td >
                                                             <NumberFieldHookForm
                                                                 name={`${PartCostFields}.${index}.NetCost`}

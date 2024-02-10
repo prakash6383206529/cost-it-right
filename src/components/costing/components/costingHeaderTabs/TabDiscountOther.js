@@ -340,7 +340,7 @@ function TabDiscountOther(props) {
         "Type": 'Discount',
         "ApplicabilityType": discountCostApplicability?.label,
         "ApplicabilityIdRef": discountCostApplicability?.value,
-        "Description": '',
+        "Description": getValues('discountDescriptionRemark'),
         "NetCost": DiscountCostData?.HundiOrDiscountValue,
         "Value": getValues('HundiOrDiscountPercentage'),
         "CRMHead": getValues('crmHeadDiscount') ? getValues('crmHeadDiscount').label : '',
@@ -1105,7 +1105,7 @@ function TabDiscountOther(props) {
         setDiscountCostApplicability(value)
         setDiscountObj({
           ...discountObj,
-          DiscountCostType: value.value !== 'Fixed' ? 'Percentage' : value.value,
+          DiscountCostType: value.label,
           DiscountApplicability: value.label,
           HundiOrDiscountPercentage: 0,
         })
