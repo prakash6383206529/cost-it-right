@@ -15,6 +15,7 @@ import { useEffect } from 'react';
 import { useRef } from 'react';
 import { WACTypeId } from '../../../../config/constants';
 import { IsPartType } from '../CostingDetails';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
@@ -120,12 +121,19 @@ function AddAssemblyOperation(props) {
       // operData.OperationDetailId = item
       return item1
     })
-
+    let isTopRowAssemblyClicked = false
+    let arr = reactLocalStorage.getObject('costingArray')?.filter(element => element?.PartType === 'Assembly')
+    let arrST = reactLocalStorage.getObject('surfaceCostingArray')?.filter(element => element?.PartType === 'Assembly')
+    if (arr[0]?.PartType === 'Assembly') {
+      isTopRowAssemblyClicked = true
+    }
     let basicRate = 0
     if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY && !isAssemblyTechnology) {
-      basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
-        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
-        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+      basicRate = checkForNull(arr[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(arrST[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
+      if (isTopRowAssemblyClicked) {
+        basicRate = checkForNull(basicRate) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost)
+          + checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+      }
     } else if (isAssemblyTechnology) {
       basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
@@ -135,7 +143,10 @@ function AddAssemblyOperation(props) {
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     }
-    let totalCostSaveAPI = checkForNull(basicRate) + checkForNull(DiscountCostData?.totalConditionCost)
+    let totalCostSaveAPI = checkForNull(basicRate)
+    if (isTopRowAssemblyClicked) {
+      totalCostSaveAPI = checkForNull(totalCostSaveAPI) + checkForNull(DiscountCostData?.totalConditionCost)
+    }
 
     let requestData = {
       "CostingId": item.CostingId,
@@ -164,7 +175,7 @@ function AddAssemblyOperation(props) {
       "TotalProcessCost": item?.CostingPartDetails?.TotalProcessCost,
       "TotalOperationCost": operationCostAssemblyTechnology,
       "NetTotalRMBOPCC": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
-      "TotalCost": isAssemblyTechnology ? totalCostSaveAPI : (stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity),
+      "TotalCost": totalCostSaveAPI,
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
 

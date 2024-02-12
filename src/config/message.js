@@ -231,7 +231,6 @@ export const MESSAGES = {
   USER_ACTIVE_ALERT: 'Are you sure you want to activate this user?',
   USER_DELETE_ALERT: 'Are you sure you want to delete this User?',
   UPDATE_USER_SUCCESSFULLY: 'User updated successfully',
-  COSTING_REJECT_ALERT: "All costing's which are pending for approval and whose approval are awaited will get rejected. Do you want to continue?",
 
   //ROLE
   ADD_ROLE_SUCCESSFULLY: 'Role added successfully',

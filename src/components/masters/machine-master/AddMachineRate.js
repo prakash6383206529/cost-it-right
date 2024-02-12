@@ -1137,7 +1137,7 @@ class AddMachineRate extends Component {
           LoggedInUserId: loggedInUserId(),
           MachineProcessRates: processGrid,
           Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-          Plant: costingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
+          Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
           Remark: remarks,
           Attachements: updatedFiles,
           IsForcefulUpdated: true,
@@ -1145,7 +1145,7 @@ class AddMachineRate extends Component {
           MachineProcessGroup: this.props.processGroupApiData,
           VendorPlant: [],
           CustomerId: client.value,
-          DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsMachine.Plants[0].PlantId,
+          DestinationPlantId: '',
         }
 
         if (IsFinancialDataChanged) {
@@ -1216,8 +1216,8 @@ class AddMachineRate extends Component {
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-        Plant: costingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
-        DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsMachine.Plants[0].PlantId,
+        Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+        DestinationPlantId: '',
         Remark: remarks,
         Attachements: files,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),

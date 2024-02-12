@@ -372,15 +372,6 @@ function TabAssemblyTechnology(props) {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    <button
-                      type={'button'}
-                      className="submit-button mr5 save-btn"
-                      onClick={saveCosting}
-                      disabled={checkIsDataChange || (DayTime(CostingEffectiveDate).isValid() === false) ? true : false}
-                    >
-                      <div className={'save-icon'}></div>
-                      {'Save'}
-                    </button>
                   </div>}
               </form>
             </div>

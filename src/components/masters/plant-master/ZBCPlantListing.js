@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { activeInactiveStatus, deletePlantAPI, getFilteredPlantList } from '../actions/Plant';
@@ -19,7 +19,6 @@ import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { searchNocontentFilter } from '../../../helper';
-
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -30,6 +29,8 @@ const ZBCPlantListing = (props) => {
     const dispatch = useDispatch();
     const plantDataList = useSelector((state) => state.plant.plantDataList);
     const { AddAccessibility, DownloadAccessibility, EditAccessibility, DeleteAccessibility, ViewAccessibility, ActivateAccessibility } = props;
+
+
 
     const [state, setState] = useState({
         isEditFlag: false,
@@ -51,6 +52,7 @@ const ZBCPlantListing = (props) => {
         noData: false,
         dataCount: 0,
         type: '',
+
     });
 
     useEffect(() => {
@@ -163,6 +165,7 @@ const ZBCPlantListing = (props) => {
     * @method statusButtonFormatter
     * @description Renders buttons
     */
+
     const statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -207,6 +210,7 @@ const ZBCPlantListing = (props) => {
                 setState(prevState => ({ ...prevState, tableData: [], isLoader: false }));
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
+
                 setState(prevState => ({ ...prevState, tableData: Data, isLoader: false }));
             }
         }));
@@ -301,6 +305,7 @@ const ZBCPlantListing = (props) => {
         if (window.screen.width >= 1600) {
             state.gridApi.sizeColumnsToFit();
         }
+        setState(prevState => ({ ...prevState, noData: false }));
     };
 
 
@@ -336,11 +341,6 @@ const ZBCPlantListing = (props) => {
                     <Col md="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
-                                {state.shown ? (
-                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setState(prevState => ({ ...prevState, shown: !prevState.shown }))}>
-                                        <div className="cancel-icon-white"></div>
-                                    </button>
-                                ) : null}
                                 {AddAccessibility && (
                                     <button
                                         type="button"
@@ -377,64 +377,49 @@ const ZBCPlantListing = (props) => {
                 <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                 </div>
-                {!state.isLoader && < div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+                < div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
                     {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                    <AgGridReact
-                        defaultColDef={defaultColDef}
-                        floatingFilter={true}
-                        domLayout='autoHeight'
-                        // columnDefs={c}
-                        rowData={plantDataList}
-                        pagination={true}
-                        paginationPageSize={defaultPageSize}
-                        onGridReady={onGridReady}
-                        gridOptions={gridOptions}
-                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                        noRowsOverlayComponentParams={{
-                            title: EMPTY_DATA,
-                            imagClass: 'imagClass'
-                        }}
-                        rowSelection={'multiple'}
-                        suppressRowClickSelection={true}
-                        onSelectionChanged={onRowSelect}
-                        onFilterModified={onFloatingFilterChanged}
-                        frameworkComponents={frameworkComponents}
-                    >
-                        <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
-                        <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
-                        {/* THIS IS COMMENTED IN //RE  */}
-                        {/* <AgGridColumn field="Purchase Group" headerName="Company Name"></AgGridColumn> */}
-                        <AgGridColumn field="CompanyName" headerName={`${handleDepartmentHeader()} Name`}></AgGridColumn>
-                        <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
-                        <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
-                        <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                        <AgGridColumn field="PlantId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                        <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                    </AgGridReact>
+                    {state.isLoader ? <LoaderCustom customClass="loader-center" /> :
+                        <AgGridReact
+                            defaultColDef={defaultColDef}
+                            floatingFilter={true}
+                            domLayout='autoHeight'
+                            // columnDefs={c}
+                            rowData={plantDataList}
+                            pagination={true}
+                            paginationPageSize={defaultPageSize}
+                            onGridReady={onGridReady}
+                            gridOptions={gridOptions}
+                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                            noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
+                            rowSelection={'multiple'}
+                            suppressRowClickSelection={true}
+                            onSelectionChanged={onRowSelect}
+                            onFilterModified={onFloatingFilterChanged}
+                            frameworkComponents={frameworkComponents}
+                        >
+                            <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
+                            <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
+                            {/* THIS IS COMMENTED IN //RE  */}
+                            {/* <AgGridColumn field="Purchase Group" headerName="Company Name"></AgGridColumn> */}
+                            <AgGridColumn field="CompanyName" headerName={`${handleDepartmentHeader()} Name`}></AgGridColumn>
+                            <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
+                            <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
+                            <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
+                            <AgGridColumn field="PlantId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                        </AgGridReact>
+                    }
+
                     {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
-                </div>}
+                </div>
             </div>
 
-            {
-                state.isOpenVendor && (
-                    <AddZBCPlant
-                        isOpen={state.isOpenVendor}
-                        closeDrawer={closeVendorDrawer}
-                        isEditFlag={state.isEditFlag}
-                        isViewMode={state.isViewMode}
-                        ID={state.ID}
-                        anchor={"right"}
-                    />
-                )
+            {state.isOpenVendor && (<AddZBCPlant isOpen={state.isOpenVendor} closeDrawer={closeVendorDrawer} isEditFlag={state.isEditFlag} isViewMode={state.isViewMode} ID={state.ID} anchor={"right"} />)
             }
-            {
-                state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`} />
-
-
+            {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`} />
             }
-            {
-                state.showPopupToggle && <PopupMsgWrapper isOpen={state.showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`} />
-            }
+            {state.showPopupToggle && <PopupMsgWrapper isOpen={state.showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`} />}
         </div >
     );
 
