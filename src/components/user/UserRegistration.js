@@ -1917,7 +1917,7 @@ function UserRegistration(props) {
         messages.push(`costing`);
       }
       if (simulationTableChanged) {
-        messages.push(`simulation=`);
+        messages.push(`simulation`);
       }
       if (masterTableChanged) {
         messages.push(`master`);
