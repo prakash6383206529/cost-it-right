@@ -35,10 +35,10 @@ function StandardRub(props) {
     const [reRender, setRerender] = useState(false)
 
     const defaultValues = {
-        shotWeight: WeightCalculatorRequest && WeightCalculatorRequest.ShotWeight !== null ? WeightCalculatorRequest.ShotWeight : '',
-        noOfCavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? WeightCalculatorRequest.Cavity : 1,
-        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-        finishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '',
+        shotWeight: WeightCalculatorRequest && WeightCalculatorRequest.ShotWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ShotWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        noOfCavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Cavity, getConfigurationKey().NoOfDecimalForInputOutput) : 1,
+        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        finishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     }
 
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
@@ -145,7 +145,7 @@ function StandardRub(props) {
 
             let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
             setDataToSend(prevState => ({ ...prevState, NetRmCost: NetRmCost }))
-            setValue('NetRmCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue('NetRmCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForPrice))
         }
 
     }

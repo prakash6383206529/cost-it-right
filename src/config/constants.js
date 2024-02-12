@@ -667,6 +667,7 @@ export const API = {
   getUserSimulationTechnologyLevel: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,
   getUserSimulationTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,          						//RE
   getUserMasterLevelForCosting: `${BASE_URL}/user-level/get-user-master-levels`,
+  checkHighestApprovalLevelForHeadsAndApprovalType: `${BASE_URL}/user-level/check-valid-approval-levels`,
 
   //AUDIT API
 
@@ -2833,7 +2834,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.1.312";
+export const VERSION = "V2.1.313";
 
 
 

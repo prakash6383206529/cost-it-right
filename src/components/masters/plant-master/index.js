@@ -21,6 +21,7 @@ class PlantMaster extends Component {
             BulkUploadAccessibility: false,
             ActivateAccessibility: false,
             DownloadAccessibility: false,
+            stateUpdated: false,
         }
     }
 
@@ -45,6 +46,7 @@ class PlantMaster extends Component {
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
             if (permmisionData !== undefined) {
+
                 this.setState({
                     ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                     AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -53,7 +55,13 @@ class PlantMaster extends Component {
                     BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
                     ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
                     DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                })
+                }, () => {
+                    this.setState({
+                        stateUpdated: true
+
+                    })
+
+                });
             }
         }
     }
@@ -95,32 +103,41 @@ class PlantMaster extends Component {
                                 </NavLink>
                             </NavItem>}
                         </Nav>
+
+
                         <TabContent activeTab={this.state.activeTab}>
                             {this.state.activeTab === '1' &&
                                 <TabPane tabId="1">
-                                    <ZBCPlantListing
-                                        AddAccessibility={this.state.AddAccessibility}
-                                        EditAccessibility={this.state.EditAccessibility}
-                                        DeleteAccessibility={this.state.DeleteAccessibility}
-                                        BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                        ActivateAccessibility={this.state.ActivateAccessibility}
-                                        DownloadAccessibility={this.state.DownloadAccessibility}
-                                        ViewAccessibility={this.state.ViewAccessibility}
-                                    />
+                                    {this.state.stateUpdated &&
+                                        <ZBCPlantListing
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            ActivateAccessibility={this.state.ActivateAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
+
+                                        />
+                                    }
                                 </TabPane>}
                             {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.activeTab === '2' &&
                                 <TabPane tabId="2">
-                                    <VBCPlantListing
-                                        AddAccessibility={this.state.AddAccessibility}
-                                        EditAccessibility={this.state.EditAccessibility}
-                                        DeleteAccessibility={this.state.DeleteAccessibility}
-                                        BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                        ActivateAccessibility={this.state.ActivateAccessibility}
-                                        DownloadAccessibility={this.state.DownloadAccessibility}
-                                        ViewAccessibility={this.state.ViewAccessibility}
-                                    />
+                                    {this.state.stateUpdated &&
+                                        <VBCPlantListing
+                                            AddAccessibility={this.state.AddAccessibility}
+                                            EditAccessibility={this.state.EditAccessibility}
+                                            DeleteAccessibility={this.state.DeleteAccessibility}
+                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            ActivateAccessibility={this.state.ActivateAccessibility}
+                                            DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
+                                        />
+                                    }
                                 </TabPane>}
                         </TabContent>
+
+
                     </Col>
 
                 </Container >

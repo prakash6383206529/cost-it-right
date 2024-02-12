@@ -229,8 +229,12 @@ function LoginAudit(props) {
         }
     };
     const formatToDateString = (dateObject) => {
-        return dateObject.toISOString(); // Use your desired string format
-    }
+        const year = dateObject.getFullYear().toString();
+        const month = (dateObject.getMonth() + 1).toString().padStart(2, '0');
+        const day = dateObject.getDate().toString().padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    };
 
     const filterData = () => {
         let filtered = auditDataList; // Start with all data
@@ -409,6 +413,7 @@ function LoginAudit(props) {
         // Create an updated filter object including fromDate and toDate
         const filterDataObj = {
             ...state.floatingFilterData,
+            // LoginTime: loginTime ? formatToDateString(loginTime) : '',
             fromDate: fromDate ? formatToDateString(fromDate) : '',
             toDate: toDate ? formatToDateString(toDate) : ''
         };
@@ -506,15 +511,26 @@ function LoginAudit(props) {
 
         return returnExcelColumn(AUDIT_LISTING_DOWNLOAD_EXCEl, tempArr)
     };
-    const returnExcelColumn = (data = [], TempData) => {
+    const excelDateFormatter = (value) => {
+        if (!value) return '-'; // Or any placeholder you prefer for empty values
+        const moment = require('moment'); // Assuming you're using the moment.js library for date formatting.
+        return moment(value).format('DD/MM/YYYY hh:mm:ss '); // Specify your format
+    };
+    const returnExcelColumn = (data = [], tempData) => {
+        // Map through TempData to format the LoginTime for each item
+        const formattedData = tempData.map(item => ({
+            ...item,
+            LoginTime: excelDateFormatter(item.LoginTime),
+        }));
 
+        // Now export formattedData instead of tempData
         return (
-            <ExcelSheet data={TempData} name={AuditLisitng}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+            <ExcelSheet data={formattedData} name={AuditLisitng}>
+                {data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>
+        );
+    };
 
-
-    }
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';

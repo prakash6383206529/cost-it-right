@@ -3,13 +3,13 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import Toaster from '../../../common/Toaster';
-import { checkForDecimalAndNull, getConfigurationKey, checkForNull } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, isRMDivisorApplicable } from '../../../../helper';
 import NoContentFound from '../../../common/NoContentFound';
 import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, getTechnology } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
 import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, } from '../../actions/CostWorking'
-import { Container, Row, Col, Table } from 'reactstrap'
+import { Row, Col, Table } from 'reactstrap'
 import TooltipCustom from '../../../common/Tooltip';
 
 function ViewRM(props) {
@@ -24,7 +24,7 @@ function ViewRM(props) {
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const [calciData, setCalciData] = useState({})
   const masterBatchList = viewCostingData[props.index].CostingMasterBatchRawMaterialCostResponse
-
+  const RMDivisor = (viewCostingData[props?.index]?.CostingPartDetails?.RMDivisor !== null) ? viewCostingData[props?.index]?.CostingPartDetails?.RMDivisor : 0;
   useEffect(() => {
     setViewRM(viewRMData)
   }, [])
@@ -193,10 +193,10 @@ function ViewRM(props) {
               {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && viewCostingData[props.index].technologyId !== RUBBER && (getTechnology.includes(viewCostingData[props.index].technologyId)) && < th > {`Calculator`}</th>}
               <th>{`Freight Cost`}</th>
               <th>{`Shearing Cost`}</th>
-              <th>{`Burning Loss Weight`}</th>
+              {viewCostingData[0].technologyId === PLASTIC && <th>{`Burning Loss Weight`}</th>}
               {viewCostingData[0].technologyId === DIE_CASTING && <th>Casting Weight</th>}
               {viewCostingData[0].technologyId === DIE_CASTING && <th>Melting Loss (Loss%)</th>}
-              <th >{`Net RM Cost/Pc`}</th>
+              <th >{`Net RM Cost ${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''}`}</th>
               {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
               <th className="costing-border-right">{`Remark`}</th>
 
@@ -224,7 +224,7 @@ function ViewRM(props) {
                       /> : '-'}</td>}
                   <td>{item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                   <td>{item.ShearingCost ? checkForDecimalAndNull(item.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                  <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
+                  {viewCostingData[0].technologyId === PLASTIC && <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
                   {viewCostingData[0].technologyId === DIE_CASTING && <td>{item.CastingWeight ? checkForDecimalAndNull(item.CastingWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
                   {viewCostingData[0].technologyId === DIE_CASTING && <td>{item.MeltingLoss ? `${checkForDecimalAndNull(item.MeltingLoss, initialConfiguration.NoOfDecimalForInputOutput)}(${item.LossPercentage}%)` : '-'}</td>}
                   <td> <div className='w-fit d-flex'><div id={`net-rm-cost${index}`}>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}{<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(viewCostingData[props.index]?.technologyId === MACHINING && item?.IsCalculatorAvailable === true) ? 'Net RM Cost = RM/Pc - ScrapCost' : 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)'} />}</div>{item.RawMaterialCalculatorId === null && item.GrossWeight !== null && viewCostingData[props.index].technologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}</div></td>

@@ -10,7 +10,7 @@ import {
 import { langs } from "../../config/localization";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
-  getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser
+  getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser, getAllLevelAPI, checkHighestApprovalLevelForHeadsAndApprovalType
 } from "../../actions/auth/AuthActions";
 import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
@@ -24,10 +24,11 @@ import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, transformApprovalItem } from "../common/CommonFunctions";
-import _ from "lodash";
+import { autoCompleteDropdown, transformApprovalItem } from "../common/CommonFunctions";
+import _, { debounce } from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
+import { apiErrors } from "../../helper";
 
 var CryptoJS = require('crypto-js')
 const gridOptionsTechnology = {}
@@ -105,6 +106,11 @@ function UserRegistration(props) {
   const [gridColumnApiSimulation, setgridColumnApiSimulation] = useState(null);
   const [gridApiMaster, setgridApiMaster] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApiMaster, setgridColumnApiMaster] = useState(null);
+  const [isUpdateResponded, setIsUpdateResponded] = useState(false)
+  const [costingTableChanged, setCostingTableChanged] = useState(false)
+  const [simulationTableChanged, setSimulationTableChanged] = useState(false)
+  const [masterTableChanged, setMasterTableChanged] = useState(false)
+  const [isDepartmentUpdated, setIsDepartmentUpdated] = useState(false)
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -120,6 +126,7 @@ function UserRegistration(props) {
   const registerUserData = useSelector(state => state.auth.registerUserData)
   const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
+  const levelList = useSelector(state => state.auth.levelList)
 
   const [maxLength, setMaxLength] = useState(maxLength11);
 
@@ -219,6 +226,7 @@ function UserRegistration(props) {
       dispatch(getReporterList(() => { }))
     }
     dispatch(getApprovalTypeSelectList(() => { }))
+    dispatch(getAllLevelAPI(() => { }))
     return () => {
       reactLocalStorage?.setObject('vendorData', [])
     }
@@ -351,7 +359,8 @@ function UserRegistration(props) {
     }
 
     if (label === 'level') {
-      levelSelectList && levelSelectList.map(item => {
+      const approvalList = (getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? levelList : levelSelectList
+      approvalList && approvalList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -360,7 +369,8 @@ function UserRegistration(props) {
     }
 
     if (label === 'simualtionLevel') {
-      simulationLevelSelectList && simulationLevelSelectList.map(item => {
+      const approvalList = (getConfigurationKey().IsAllowMultiSelectApprovalType && !isSimulationEditIndex) ? levelList : simulationLevelSelectList
+      approvalList && approvalList.map(item => {
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -369,7 +379,8 @@ function UserRegistration(props) {
     }
 
     if (label === 'masterLevel') {
-      masterLevelSelectList && masterLevelSelectList.map(item => {
+      const approvalList = (getConfigurationKey().IsAllowMultiSelectApprovalType && !isMasterEditIndex) ? levelList : masterLevelSelectList
+      approvalList && approvalList.map(item => {
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -830,9 +841,10 @@ function UserRegistration(props) {
     }
   };
 
-  const checkDuplicacy = (dataList, currentIndex, keyName, technology_master_id, approvalTypeIDValue, messageHead, levelId) => {
+  const checkDuplicacy = (dataList, currentIndex, keyName, technology_master_id, approvalTypeIDValue, messageHead, levelId, isMulti = false) => {
 
     let stop = false
+
     const checkExists = dataList.some((el, index) => {
       return (
         (Number(el?.TechnologyId) === Number(technology_master_id) || Number(el?.MasterId) === Number(technology_master_id)) &&
@@ -847,10 +859,14 @@ function UserRegistration(props) {
 
     if (checkExists) {
       stop = true
-      Toaster.warning('Record already exists.')
+      if (!isMulti) {
+        Toaster.warning('Record already exists.')
+      }
     } else if (isExistTechnology !== -1) {
       stop = true
-      Toaster.warning(`${messageHead} cannot have multiple level for same Approval Type.`)
+      if (!isMulti) {
+        Toaster.warning(`${messageHead} cannot have multiple level for same Approval Type.`)
+      }
     }
     return stop
   }
@@ -859,25 +875,82 @@ function UserRegistration(props) {
   * @method setTechnologyLevel
   * @description Used to handle setTechnologyLevel
   */
-  const setTechnologyLevel = () => {
-    const tempArray = [];
+  const setTechnologyLevel = async () => {
+    let tempArray = [];
 
     if (technology.length === 0 || level.length === 0 || Object.keys(costingApprovalType).length === 0) {
       Toaster.warning('Please select Technology, Approval Type and Level')
       return false;
     }
 
-    let obj = {
-      Technology: technology.label,
-      TechnologyId: technology.value,
-      Level: level.label,
-      LevelId: level.value,
-      ApprovalType: costingApprovalType?.label,
-      ApprovalTypeId: costingApprovalType?.value,
+    if (getConfigurationKey().IsAllowMultiSelectApprovalType) {
+      let tempMultiApprovalArray = []
+      let duplicateErrorArray = []
+      let multiSelectObject = {}
+      multiSelectObject.ApprovalHeadIdList = technology && technology.map((tech) => {
+        return {
+
+          ApprovalHeadId: tech.value,
+          ApprovalHeadName: tech.label
+        }
+      })
+      multiSelectObject.ApprovalTypeIdList = costingApprovalType && costingApprovalType.map((approval) => {
+        return {
+
+          ApprovalTypeId: approval.value,
+          ApprovalTypeName: approval.label
+        }
+      })
+      multiSelectObject.LevelId = level.value
+      multiSelectObject.LevelName = level.label
+      multiSelectObject.ApprovalModuleName = "Costing"
+      try {
+        let data = await checkHighestApprovalLevelForHeadsAndApprovalTypes(multiSelectObject)
+        if (data.length === 0) {
+          return false
+        }
+        data && data.map(approvalData => {
+          let approvalObj = {
+            Technology: approvalData?.ApprovalHeadName,
+            TechnologyId: approvalData?.ApprovalHeadId,
+            Level: approvalData?.LevelName,
+            LevelId: approvalData?.LevelId,
+            ApprovalType: approvalData?.ApprovalType,
+            ApprovalTypeId: approvalData?.ApprovalTypeId,
+          }
+          if (!checkDuplicacy(TechnologyLevelGrid, approvalObj, 'TechnologyId', approvalData?.ApprovalHeadId, approvalData?.ApprovalTypeId, 'Technology', approvalData?.LevelId, true)) {
+            tempMultiApprovalArray.push(approvalObj)
+          } else {
+            duplicateErrorArray.push(approvalObj)
+            return false
+          }
+        })
+        tempArray = [...TechnologyLevelGrid, ...tempMultiApprovalArray]
+        if (duplicateErrorArray.length > 0) {
+          const formattedStrings = duplicateErrorArray.map(item => `(${item.Technology} - ${item.ApprovalType} - ${item.Level})`);
+          const FinalformattedString = formattedStrings.join(',');
+          Toaster.warning(`Same record cannot exist for multiple or same approval types: ${FinalformattedString}`)
+        }
+
+      } catch (error) {
+        apiErrors(error)
+      }
+    } else {
+
+      let obj = {
+        Technology: technology.label,
+        TechnologyId: technology.value,
+        Level: level.label,
+        LevelId: level.value,
+        ApprovalType: costingApprovalType?.label,
+        ApprovalTypeId: costingApprovalType?.value,
+      }
+
+      if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
+      tempArray.push(...TechnologyLevelGrid, obj)
     }
 
-    if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
-    tempArray.push(...TechnologyLevelGrid, obj)
+    if (tempArray.length === 0) return false
     setTechnologyLevelGrid(tempArray)
     setLevel([])
     setTechnology([])
@@ -893,7 +966,7 @@ function UserRegistration(props) {
   const updateTechnologyLevel = () => {
     let tempArray = [];
 
-    if (technology.length === 0 || level.length === 0) {
+    if (technology.length === 0 || level.length === 0 || costingApprovalType.length === 0) {
       Toaster.warning('Please select technology and level')
       return false;
     }
@@ -945,25 +1018,81 @@ function UserRegistration(props) {
    * @method setSimualtionHeadLevel
    * @description Used to handle setTechnologyLevel
    */
-  const setSimualtionHeadLevel = () => {
-    const tempArray = [];
+  const setSimualtionHeadLevel = async () => {
+    let tempArray = [];
 
-    if (simulationHeads.length === 0 || simualtionLevel.length === 0) {
+    if (simulationHeads.length === 0 || simualtionLevel.length === 0 || simulationApprovalType.length === 0) {
       Toaster.warning('Please select Technology, Approval Type and Level')
       return false;
     }
 
-    let obj = {
-      Technology: simulationHeads.label,
-      TechnologyId: simulationHeads.value,
-      Level: simualtionLevel.label,
-      LevelId: simualtionLevel.value,
-      ApprovalType: simulationApprovalType?.label,
-      ApprovalTypeId: simulationApprovalType?.value,
+
+    if (getConfigurationKey().IsAllowMultiSelectApprovalType) {
+      let tempMultiApprovalArray = []
+      let duplicateErrorArray = []
+      let multiSelectObject = {}
+      multiSelectObject.ApprovalHeadIdList = simulationHeads && simulationHeads.map((simHead) => {
+        return {
+
+          ApprovalHeadId: simHead?.value,
+          ApprovalHeadName: simHead?.label
+        }
+      })
+      multiSelectObject.ApprovalTypeIdList = simulationApprovalType && simulationApprovalType.map((approval) => {
+        return {
+
+          ApprovalTypeId: approval?.value,
+          ApprovalTypeName: approval?.label
+        }
+      })
+      multiSelectObject.LevelId = simualtionLevel.value
+      multiSelectObject.LevelName = simualtionLevel.label
+      multiSelectObject.ApprovalModuleName = "Simulation"
+      try {
+        let data = await checkHighestApprovalLevelForHeadsAndApprovalTypes(multiSelectObject)
+        if (data.length === 0) {
+          return false
+        }
+        data && data.map(approvalData => {
+          let approvalObj = {
+            Technology: approvalData?.ApprovalHeadName,
+            TechnologyId: approvalData?.ApprovalHeadId,
+            Level: approvalData?.LevelName,
+            LevelId: approvalData?.LevelId,
+            ApprovalType: approvalData?.ApprovalType,
+            ApprovalTypeId: approvalData?.ApprovalTypeId,
+          }
+          if (!checkDuplicacy(HeadLevelGrid, approvalObj, 'TechnologyId', approvalData?.ApprovalHeadId, approvalData?.ApprovalTypeId, 'Simulation Head', approvalData?.LevelId)) {
+            tempMultiApprovalArray.push(approvalObj)
+          } else {
+            duplicateErrorArray.push(approvalObj)
+          }
+        })
+        if (duplicateErrorArray.length > 0) {
+          const formattedStrings = duplicateErrorArray.map(item => `(${item.Technology} - ${item.ApprovalType} - ${item.Level})`);
+          const FinalformattedString = formattedStrings.join(',');
+          Toaster.warning(`Same record cannot exist for multiple or same approval types: ${FinalformattedString}`)
+        }
+        tempArray = [...HeadLevelGrid, ...tempMultiApprovalArray]
+      } catch (error) {
+        apiErrors(error)
+      }
+    } else {
+      let obj = {
+        Technology: simulationHeads.label,
+        TechnologyId: simulationHeads.value,
+        Level: simualtionLevel.label,
+        LevelId: simualtionLevel.value,
+        ApprovalType: simulationApprovalType?.label,
+        ApprovalTypeId: simulationApprovalType?.value,
+      }
+
+      if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
+      tempArray.push(...HeadLevelGrid, obj)
+
     }
 
-    if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
-    tempArray.push(...HeadLevelGrid, obj)
+    if (tempArray.length === 0) return false
     setHeadLevelGrid(tempArray)
     setSimualtionLevel([])
     setSimulationHeads([])
@@ -982,7 +1111,7 @@ function UserRegistration(props) {
 
     let tempArray = [];
 
-    if (simulationHeads.length === 0 || simualtionLevel.length === 0) {
+    if (simulationHeads.length === 0 || simualtionLevel.length === 0 || simulationApprovalType.length === 0) {
       Toaster.warning('Please select technology and level')
       return false;
     }
@@ -1114,26 +1243,80 @@ function UserRegistration(props) {
    * @method setMasterLevel
    * @description Used to handle master level
    */
-  const setMasterLevel = () => {
-    const tempArray = [];
+  const setMasterLevel = async () => {
+    let tempArray = [];
 
-    if (master.length === 0 || masterLevel.length === 0) {
+    if (master.length === 0 || masterLevel.length === 0 || masterApprovalType.length === 0) {
       Toaster.warning('Please select Master, Approval Type and Level')
       return false;
     }
 
-    let obj = {
-      Master: master.label,
-      MasterId: master.value,
-      Level: masterLevel.label,
-      LevelId: masterLevel.value,
-      ApprovalType: masterApprovalType?.label,
-      ApprovalTypeId: masterApprovalType?.value,
+    if (getConfigurationKey().IsAllowMultiSelectApprovalType) {
+      let tempMultiApprovalArray = []
+      let duplicateErrorArray = []
+      let multiSelectObject = {}
+      multiSelectObject.ApprovalHeadIdList = master && master.map((master) => {
+        return {
+
+          ApprovalHeadId: master?.value,
+          ApprovalHeadName: master?.label
+        }
+      })
+      multiSelectObject.ApprovalTypeIdList = masterApprovalType && masterApprovalType.map((approval) => {
+        return {
+
+          ApprovalTypeId: approval?.value,
+          ApprovalTypeName: approval?.label
+        }
+      })
+      multiSelectObject.LevelId = masterLevel?.value
+      multiSelectObject.LevelName = masterLevel?.label
+      multiSelectObject.ApprovalModuleName = "Master"
+      try {
+        let data = await checkHighestApprovalLevelForHeadsAndApprovalTypes(multiSelectObject)
+        if (data.length === 0) {
+          return false
+        }
+        data && data.map(approvalData => {
+          let approvalObj = {
+            Master: approvalData?.ApprovalHeadName,
+            MasterId: approvalData?.ApprovalHeadId,
+            Level: approvalData?.LevelName,
+            LevelId: approvalData?.LevelId,
+            ApprovalType: approvalData?.ApprovalType,
+            ApprovalTypeId: approvalData?.ApprovalTypeId,
+          }
+          if (!checkDuplicacy(masterLevelGrid, approvalObj, 'MasterId', approvalData?.ApprovalHeadId, approvalData?.ApprovalTypeId, 'Master', approvalData?.LevelId)) {
+            tempMultiApprovalArray.push(approvalObj)
+          } else {
+            duplicateErrorArray.push(approvalObj)
+          }
+        })
+        if (duplicateErrorArray.length > 0) {
+          const formattedStrings = duplicateErrorArray.map(item => `(${item.Technology} - ${item.ApprovalType} - ${item.Level})`);
+          const FinalformattedString = formattedStrings.join(',');
+          Toaster.warning(`Same record cannot exist for multiple or same approval types: ${FinalformattedString}`)
+        }
+        tempArray = [...masterLevelGrid, ...tempMultiApprovalArray]
+      } catch (error) {
+        apiErrors(error)
+      }
+    } else {
+
+      let obj = {
+        Master: master.label,
+        MasterId: master.value,
+        Level: masterLevel.label,
+        LevelId: masterLevel.value,
+        ApprovalType: masterApprovalType?.label,
+        ApprovalTypeId: masterApprovalType?.value,
+      }
+
+      if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false
+
+      tempArray.push(...masterLevelGrid, obj)
     }
-
-    if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false
-
-    tempArray.push(...masterLevelGrid, obj)
+    if (tempArray.length === 0) return false
     setMasterLevelGrid(tempArray)
     setMasterLevels([])
     setMaster([])
@@ -1149,7 +1332,7 @@ function UserRegistration(props) {
   const updateMasterLevel = () => {
     let tempArray = [];
 
-    if (master.length === 0 || masterLevel.length === 0) {
+    if (master.length === 0 || masterLevel.length === 0 || masterApprovalType.length === 0) {
       Toaster.warning('Please select Master, Approval Type and Level')
       return false;
     }
@@ -1305,7 +1488,7 @@ function UserRegistration(props) {
    * @desc Submit the signup form values.
    * @returns {{}}
    */
-  const onSubmit = (values) => {
+  const onSubmit = debounce(handleSubmit((values) => {
 
     let forcefulUpdate = false
     if (isEditFlag && !isForcefulUpdate) {
@@ -1389,6 +1572,28 @@ function UserRegistration(props) {
       multiDeptArr.push({ DepartmentId: item.value, DepartmentName: item.label })
     ))
 
+    let isDepartmentUpdate = registerUserData?.Departments?.every(
+      (item) => department?.some((deptValue) => item?.DepartmentId !== deptValue?.value)
+    ) && department?.length !== registerUserData?.Departments.length;
+    let isForcefulUpdatedForMaster = false;
+    let isForcefulUpdatedForCosting = false;
+    let isForcefulUpdatedForSimulation = false;
+
+    if (JSON.stringify(masterLevelGrid) !== JSON.stringify(oldMasterLevelGrid)) {
+      isForcefulUpdatedForMaster = true;
+    } if (JSON.stringify(HeadLevelGrid) !== JSON.stringify(oldHeadLevelGrid)) {
+      isForcefulUpdatedForSimulation = true;
+    } if (JSON.stringify(TechnologyLevelGrid) !== JSON.stringify(oldTechnologyLevelGrid)) {
+      isForcefulUpdatedForCosting = true;
+    } if (isDepartmentUpdate) {
+      isForcefulUpdatedForMaster = true;
+      isForcefulUpdatedForSimulation = true;
+      isForcefulUpdatedForCosting = true;
+    }
+    setIsDepartmentUpdated(isDepartmentUpdate);
+    setCostingTableChanged(isForcefulUpdatedForCosting);
+    setMasterTableChanged(isForcefulUpdatedForMaster);
+    setSimulationTableChanged(isForcefulUpdatedForSimulation);
 
     if (isEditFlag) {
       let updatedData = {
@@ -1398,7 +1603,7 @@ function UserRegistration(props) {
         LevelId: registerUserData?.LevelId,
         LevelName: registerUserData?.LevelName,
         // DepartmentName: department.label,
-        DepartmentName: getConfigurationKey().IsMultipleDepartmentAllowed ? '' : department.label,    //RE   COMMENTED
+        DepartmentName: '',
         TechnologyId: '',
         TechnologyName: '',
         PlantName: '',
@@ -1412,7 +1617,6 @@ function UserRegistration(props) {
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         // DepartmentId: department.value,
         DepartmentId: '',
-        DepartmentId: getConfigurationKey().IsMultipleDepartmentAllowed ? EMPTY_GUID : department.value,                 //RE   COMMENTED
         loggedInUserId: loggedInUserId(),
         CompanyId: department.CompanyId ? department.CompanyId : '',
         EmailAddress: values.EmailAddress ? values.EmailAddress.trim() : '',
@@ -1444,31 +1648,14 @@ function UserRegistration(props) {
         updatedData.AdditionalPermission = IsShowAdditionalPermission ? 'YES' : 'NO'
         updatedData.SimulationTechnologyLevels = tempHeadLevelArray
         updatedData.MasterLevels = tempMasterLevelArray
-        updatedData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []    //RE   COMMENTED
+        updatedData.Departments = multiDeptArr
         updatedData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
-      }
-      let isDepartmentUpdate = registerUserData?.Departments?.every(
-        (item) => department?.some((deptValue) => item?.DepartmentId !== deptValue?.value)
-      ) && department?.length !== registerUserData?.Departments.length;
-
-      const isRoleUpdate = (registerUserData.RoleId !== role.value) ? true : false;
-      let isPermissionUpdate = false;
-      let isUpdateApiCall = false;
-
-
-      if (JSON.stringify(Modules) === JSON.stringify(oldModules)) {
-        isPermissionUpdate = false;
-      } else {
-        isPermissionUpdate = true;
+        updatedData.IsForcefulUpdatedForCosting = isForcefulUpdatedForCosting
+        updatedData.IsForcefulUpdatedForMaster = isForcefulUpdatedForMaster
+        updatedData.IsForcefulUpdatedForSimulation = isForcefulUpdatedForSimulation
       }
 
-      if (JSON.stringify(masterLevelGrid) !== JSON.stringify(oldMasterLevelGrid) || JSON.stringify(HeadLevelGrid) !== JSON.stringify(oldHeadLevelGrid) || JSON.stringify(TechnologyLevelGrid) !== JSON.stringify(oldTechnologyLevelGrid)) {
-        isUpdateApiCall = true;
-      } else {
-        isUpdateApiCall = false;
-      }
-
-      if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isUpdateApiCall) {
+      if (isDepartmentUpdate || isForcefulUpdatedForCosting || isForcefulUpdatedForMaster || isForcefulUpdatedForSimulation) {
         setShowPopup(true)
         setUpdatedObj(updatedData)
 
@@ -1493,9 +1680,11 @@ function UserRegistration(props) {
           })
 
           if (isDataChanged) {
+            setIsUpdateResponded(true)
             dispatch(updateUserAPI(updatedData, (res) => {
               if (res?.data?.Result) {
                 Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+                setIsUpdateResponded(false)
                 cancel();
               }
               setIsLoader(false)
@@ -1539,7 +1728,7 @@ function UserRegistration(props) {
         userData.AdditionalPermission = IsShowAdditionalPermission ? 'YES' : 'NO'
         userData.SimulationTechnologyLevels = tempHeadLevelArray
         userData.MasterLevels = tempMasterLevelArray
-        userData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []    //RE   COMMENTED
+        userData.Departments = multiDeptArr
         userData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
 
@@ -1569,7 +1758,7 @@ function UserRegistration(props) {
         }))
       }
     }
-  }
+  }), 500)
 
   const onPopupConfirm = () => {
     confirmUpdateUser(updatedObj, true)
@@ -1687,6 +1876,59 @@ function UserRegistration(props) {
     options.columnApi?.resetColumnState(null);
     options.api?.setFilterModel(null);
   }
+
+  const checkHighestApprovalLevelForHeadsAndApprovalTypes = (data) => {
+    // dispatch(checkHighestApprovalLevelForHeadsAndApprovalType(data, res => {
+    //   const message = res?.data?.Message
+    //   const approvalData = res?.data?.Data
+    //   if (message !== '' && message !== null && message !== undefined) {
+    //     Toaster.warning(message)
+    //   }
+    //   if (approvalData?.length > 0) {
+    //     console.log("COMING IN IF", approvalData);
+    //     return approvalData
+    //   } else {
+    //     return false
+    //   }
+    // }))
+    return new Promise((resolve, reject) => {
+      dispatch(checkHighestApprovalLevelForHeadsAndApprovalType(data, res => {
+        const message = res?.data?.Message;
+        const approvalData = res?.data?.Data;
+        if (message !== '' && message !== null && message !== undefined) {
+          Toaster.warning(message);
+        }
+        if (approvalData?.length > 0) {
+          resolve(approvalData);
+        } else {
+          return []
+        }
+      }));
+    });
+  }
+
+  const message = () => {
+    if (isDepartmentUpdated) {
+      return `costing, simulation, and master`;
+    } else {
+      const messages = [];
+
+      if (costingTableChanged) {
+        messages.push(`costing`);
+      }
+      if (simulationTableChanged) {
+        messages.push(`simulation=`);
+      }
+      if (masterTableChanged) {
+        messages.push(`master`);
+      }
+      if (costingTableChanged && simulationTableChanged && masterTableChanged) {
+        return `costing, simulation, and master`;
+      }
+      // Join the messages based on the state values
+      return messages.join(' and ');
+    }
+  };
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -1705,7 +1947,7 @@ function UserRegistration(props) {
                   <Button className={'user-btn'} onClick={() => setIsShowPwdField(!isShowPwdField)} >Change Password</Button>
                 </div>}
               </div>
-              <form onSubmit={handleSubmit(onSubmit)} noValidate className="manageuser form" onKeyDown={(e) => { handleKeyDown(e, onSubmit); }}>
+              <form noValidate className="manageuser form" onKeyDown={(e) => { handleKeyDown(e, onSubmit); }}>
                 <div className="add-min-height">
                   <HeaderTitle
                     title={'Personal Details:'}
@@ -2255,17 +2497,16 @@ function UserRegistration(props) {
                                 name="TechnologyId"
                                 type="text"
                                 label="Technology"
-
                                 errors={errors.TechnologyId}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
                                 mandatory={true}
-
-
                                 options={searchableSelectType('technology')}
                                 handleChange={technologyHandler}
                                 defaultValue={technology}
+                                isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? true : false}
+                              // isClearable={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? true : false}
                               />
                             </div>
                             <div className="col-md-3">
@@ -2282,6 +2523,8 @@ function UserRegistration(props) {
                                 handleChange={costingApprovalTypeHandler}
                                 defaultValue={costingApprovalType}
                                 errors={errors.ApprovalType}
+                                isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? true : false}
+                              // isClearable={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? true : false}
                               />
                             </div>
                             <div className="col-md-3">
@@ -2403,7 +2646,6 @@ function UserRegistration(props) {
                                 name="Head"
                                 type="text"
                                 label="Head"
-
                                 errors={errors.Head}
                                 Controller={Controller}
                                 control={control}
@@ -2412,6 +2654,8 @@ function UserRegistration(props) {
                                 options={searchableSelectType('heads')}
                                 handleChange={headHandler}
                                 valueDescription={simulationHeads}
+                                isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isSimulationEditIndex) ? true : false}
+                                isClearable={true}
                               />
                             </div>
                             <div className="col-md-3">
@@ -2428,6 +2672,8 @@ function UserRegistration(props) {
                                 handleChange={simulationApprovalTypeHandler}
                                 defaultValue={simulationApprovalType}
                                 errors={errors.ApprovalType}
+                                isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isSimulationEditIndex) ? true : false}
+                                isClearable={true}
                               />
                             </div>
                             <div className="col-md-3">
@@ -2435,8 +2681,6 @@ function UserRegistration(props) {
                                 name="simualtionLevel"
                                 type="text"
                                 label="Level"
-
-
                                 errors={errors.simualtionLevel}
                                 Controller={Controller}
                                 control={control}
@@ -2551,8 +2795,9 @@ function UserRegistration(props) {
                                     mandatory={true}
                                     handleChange={masterHandler}
                                     options={searchableSelectType('masters')}
-
                                     valueDescription={master}
+                                    isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isMasterEditIndex) ? true : false}
+
                                   />
                                 </div>
                                 <div className="col-md-3">
@@ -2569,6 +2814,8 @@ function UserRegistration(props) {
                                     handleChange={masterApprovalTypeHandler}
                                     defaultValue={masterApprovalType}
                                     errors={errors.ApprovalType}
+                                    isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isMasterEditIndex) ? true : false}
+
                                   />
                                 </div>
                                 <div className="col-md-3">
@@ -2576,9 +2823,6 @@ function UserRegistration(props) {
                                     name="masterLevel"
                                     type="text"
                                     label="Level"
-
-
-
                                     errors={errors.Master}
                                     Controller={Controller}
                                     control={control}
@@ -2586,7 +2830,6 @@ function UserRegistration(props) {
                                     mandatory={true}
                                     handleChange={masterLevelHandler}
                                     options={searchableSelectType('masterLevel')}
-
                                     valueDescription={masterLevel}
                                   />
                                 </div>
@@ -2678,13 +2921,15 @@ function UserRegistration(props) {
                       onClick={cancel}
                       type="submit"
                       value="CANCEL"
+                      disabled={isUpdateResponded}
                       className="mr15 cancel-btn">
                       <div className={"cancel-icon"}></div>
                       CANCEL
                     </button>
 
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={onSubmit}
                       disabled={isSubmitted ? true : false}
                       className="user-btn save-btn">
                       <div className={"save-icon"}></div>
@@ -2699,7 +2944,7 @@ function UserRegistration(props) {
         </div >
       </div >
       {
-        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
+        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`All ${message()}'s approval which are pending & awaited in approval status will become draft. Do you want to continue?`} />
       }
     </div >
   );
