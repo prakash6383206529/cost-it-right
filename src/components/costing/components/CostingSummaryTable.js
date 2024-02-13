@@ -637,7 +637,7 @@ const CostingSummaryTable = (props) => {
       CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
       Customer: type === CBCTypeId ? tempData.Customer : ''
     }
-    if (IdForMultiTechnology.includes(props?.technology?.value) || (type === WACTypeId)) {
+    if (IdForMultiTechnology.includes(String(props?.technology?.value)) || (type === WACTypeId)) {
       Data.Technology = props?.technology.label
       Data.CostingHead = "string"
       Data.IsVendor = true
