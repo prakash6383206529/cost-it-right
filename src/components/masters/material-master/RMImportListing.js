@@ -531,7 +531,6 @@ function RMImportListing(props) {
 
 
   const costFormatter = (props) => {
-    console.log('props: ', props);
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
     return cellValue !== INR ? cellValue : '';
   }
