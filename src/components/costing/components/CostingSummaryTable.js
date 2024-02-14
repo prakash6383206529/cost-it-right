@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
   setCostingViewData, setCostingApprovalData, getBriefCostingById,
-  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData, updateSOBDetail, setCostingMode, getReleaseStrategyApprovalDetails
+  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData, updateSOBDetail, setCostingMode, getReleaseStrategyApprovalDetails, createMultiTechnologyCosting
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -151,7 +151,7 @@ const CostingSummaryTable = (props) => {
     process: false,
     operation: false
   })
-  const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+  const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId) || String(viewCostingData[0]?.technologyId) === WACTypeId)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -637,17 +637,45 @@ const CostingSummaryTable = (props) => {
       CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
       Customer: type === CBCTypeId ? tempData.Customer : ''
     }
-    dispatch(createCosting(Data, (res) => {
-      if (res.data?.Result) {
-        dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
-          setPartInfo(res.data?.Data)
-          dispatch(setCostingMode({ editMode: false, viewMode: false }))
-          showDetail(res.data?.Data, { costingId: res.data?.Data?.CostingId, type })
-          history.push('/costing')
-        }))
-      }
-    }),
-    )
+    if (IdForMultiTechnology.includes(String(props?.technology?.value)) || (type === WACTypeId)) {
+      Data.Technology = props?.technology.label
+      Data.CostingHead = "string"
+      Data.IsVendor = true
+      Data.GroupCode = "string"
+      Data.WeightedSOB = 0
+
+    } else {
+      Data.ZBCId = userDetail.ZBCSupplierInfo.VendorId
+      Data.PlantCode = (type === ZBCTypeId || type === WACTypeId) ? tempData.PlantCode : ''
+      Data.CustomerCode = type === CBCTypeId ? tempData.CustomerCode : ''
+    }
+
+    if (type === WACTypeId) {
+      Data.PlantCode = tempData.PlantCode
+    }
+    if (IdForMultiTechnology.includes(String(props?.technology?.value)) || (type === WACTypeId)) {
+      dispatch(createMultiTechnologyCosting(Data, (res) => {
+        if (res.data?.Result) {
+          dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
+            setPartInfo(res.data?.Data)
+            dispatch(setCostingMode({ editMode: false, viewMode: false }))
+            showDetail(res.data?.Data, { costingId: res.data?.Data?.CostingId, type })
+            history.push('/costing')
+          }))
+        }
+      }))
+    } else {
+      dispatch(createCosting(Data, (res) => {
+        if (res.data?.Result) {
+          dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
+            setPartInfo(res.data?.Data)
+            dispatch(setCostingMode({ editMode: false, viewMode: false }))
+            showDetail(res.data?.Data, { costingId: res.data?.Data?.CostingId, type })
+            history.push('/costing')
+          }))
+        }
+      }))
+    }
 
   }
   /**

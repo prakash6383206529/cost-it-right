@@ -1108,7 +1108,7 @@ function CostingDetails(props) {
             data.PlantCode = tempData.PlantCode
           }
 
-          if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
+          if (IdForMultiTechnology.includes(String(technology?.value)) || (type === WACTypeId)) {
             dispatch(createMultiTechnologyCosting(data, (res) => {
               if (res.data.Result) {
                 dispatch(getBriefCostingById(res.data.Data.CostingId, () => {

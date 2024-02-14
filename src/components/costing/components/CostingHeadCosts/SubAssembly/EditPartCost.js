@@ -460,7 +460,7 @@ function EditPartCost(props) {
                                 <Table className='table cr-brdr-main mb-0 rmcc-main-headings'>
                                     <thead>
                                         <tr className="cr-bg-tbl" width='100%'>
-                                            <th>Parent Assembly Number: {`${props?.costingSummary ? props?.tabAssemblyIndividualPartDetail?.CostingNumber : props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber}`}</th>
+                                            <th>{props?.costingSummary ? 'Parent Assembly Costing Number' : 'Parent Assembly Number'}: {`${props?.costingSummary ? props?.tabAssemblyIndividualPartDetail?.CostingNumber : props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber}`}</th>
                                             <th>Part Number:  {`${props?.tabAssemblyIndividualPartDetail?.PartNumber}`}</th>
                                             <th>Part Name:  {`${props?.tabAssemblyIndividualPartDetail?.PartName}`}</th>
                                             <th colSpan={2}>Weighted Cost: {checkForDecimalAndNull(weightedCost, initialConfiguration.NoOfDecimalForPrice)}</th>

@@ -1885,7 +1885,6 @@ function UserRegistration(props) {
     //     Toaster.warning(message)
     //   }
     //   if (approvalData?.length > 0) {
-    //     console.log("COMING IN IF", approvalData);
     //     return approvalData
     //   } else {
     //     return false
