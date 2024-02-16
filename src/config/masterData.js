@@ -5934,6 +5934,10 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Phone No", value: "PhoneNumber", },
     { label: "Department", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
+    { label: "Created By", value: "CreatedBy", },
+    { label: "Created Date (Created Time)", value: "CreatedDateExcel", },
+    { label: "Modified Date (Modified Time)", value: "ModifiedDateExcel", },
+    { label: "Modified By", value: "ModifiedBy", },
     { label: "Status", value: "status", }
 
 ]
