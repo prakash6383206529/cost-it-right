@@ -558,7 +558,7 @@ class Level extends Component {
                         </div>
                         :
                         <div className={'header-wrapper left'}>
-                          <h3>{isEditFlag ? 'Update Level Mapping' : 'Add Level Mapping'}</h3>
+                          <h3>{isEditFlag ? 'Update Maximum Approval Level' : 'Add Maximum Approval Level'}</h3>
                         </div>
                     }
 
@@ -638,7 +638,7 @@ class Level extends Component {
                               onClick={() => this.onPressRadioLevel('Costing')}
                               disabled={this.props.isEditFlag}
                             />{' '}
-                            <span>Costing Level</span>
+                            <span>Costing</span>
                           </Label>
                           <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
                             <input
@@ -648,7 +648,7 @@ class Level extends Component {
                               onClick={() => this.onPressRadioLevel('Simulation')}
                               disabled={this.props.isEditFlag}
                             />{' '}
-                            <span>Simulation Level</span>
+                            <span>Simulation</span>
                           </Label>
 
                           {getConfigurationKey().IsMasterApprovalAppliedConfigure &&
@@ -660,7 +660,7 @@ class Level extends Component {
                                 onClick={() => this.onPressRadioLevel('Master')}
                                 disabled={this.props.isEditFlag}
                               />{' '}
-                              <span>Master Level</span>
+                              <span>Master</span>
                             </Label>
                           }
                         </Col>

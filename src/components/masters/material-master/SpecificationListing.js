@@ -154,7 +154,7 @@ const SpecificationListing = (props) => {
       const rowData = props?.data;
       return (
         <>
-          {permissions.Edit && (
+          {permissions.Edit && !rowData?.IsAssociated && (
             <Button
               id={`rmSpecification_edit${props.rowIndex}`}
               className={"mr-1"}
@@ -163,7 +163,7 @@ const SpecificationListing = (props) => {
               title={"Edit"}
             />
           )}
-          {permissions.Delete && (
+          {permissions.Delete && !rowData?.IsAssociated && (
             <Button
               id={`rmSpecification_delete${props.rowIndex}`}
               className={"mr-1"}

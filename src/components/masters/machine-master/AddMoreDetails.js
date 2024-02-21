@@ -5,9 +5,9 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3, decimalNumberLimit,
-  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue, hashValidation, getNameBySplitting
+  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, percentageLimitValidation, maxPercentValue, hashValidation, maxValue24, getNameBySplitting
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, renderNumberInputField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
@@ -17,7 +17,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads, GUIDE_BUTTON_SHOW } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads, GUIDE_BUTTON_SHOW, LOGISTICS } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -402,6 +402,9 @@ class AddMoreDetails extends Component {
             }
             this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
           }
+          if (Data && Data.Plant[0]?.PlantId) {
+            this.props.getFuelByPlant(Data?.Plant[0]?.PlantId, () => { })
+          }
           setTimeout(() => {
             const { machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList, fuelDataByPlant } = this.props;
             const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
@@ -524,7 +527,7 @@ class AddMoreDetails extends Component {
     const temp = [];
     if (label === 'technology') {
       technologySelectList && technologySelectList.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || (item.Value === String(LOGISTICS))) return false;
         temp.push({ Text: item.Text, Value: item.Value })
         return null;
       });
@@ -2085,9 +2088,9 @@ class AddMoreDetails extends Component {
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
       Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-      Plant: this.state.CostingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
+      Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
       selectedPlants: selectedPlants,
-      DestinationPlantId: this.state.CostingTypeId !== ZBCTypeId ? selectedPlants.value : null,
+      DestinationPlantId: '',
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
@@ -2096,7 +2099,6 @@ class AddMoreDetails extends Component {
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
       PowerEntryId: powerIdFromAPI,
-      selectedPlants: selectedPlants, //RE
       CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
       CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
       selectedCustomer: this.state.selectedCustomer,
@@ -2554,12 +2556,31 @@ class AddMoreDetails extends Component {
       this.setState({ tourContainer: { [stateName]: false } })
     }
   }
+  machineRateTooltip = () => {
+    const { UOM, IsIncludeMachineRateDepreciation } = this.state
+    let formula;
+    if (IsIncludeMachineRateDepreciation) {
+      formula = `(Total Cost(INR) + Interest Value + Depreciation Amount(INR) + Total Machine Cost/Annum(INR) + Total Power Cost/Annum(INR) + Total Labour Cost/Annum(INR) )/No. of Working Hrs/Annum`;
+    } else {
+      formula = `(Interest Value + Depreciation Amount(INR) + Total Machine Cost/Annum(INR) + Total Power Cost/Annum(INR) + Total Labour Cost/Annum(INR) )/No. of Working Hrs/Annum`;
+    }
 
+    switch (UOM.uom) {
+      case "Hours":
+        return formula;
+      case "Minutes":
+        return `${formula} / 60`;
+      case "Seconds":
+        return `${formula} / 3600`;
+      default:
+        return "Invalid UOM";
+    }
+  }
 
 
   /**
-  * @method render
-  * @description Renders the component
+   * @method render
+   * @description Renders the component
   */
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated, t } = this.props;
@@ -3143,11 +3164,11 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Working Hr/Shift`}
+                                label={`Working Hrs/Shift`}
                                 name={"WorkingHoursPerShift"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[hashValidation, decimalAndNumberValidation]}
+                                validate={[hashValidation, maxValue24]}
                                 component={renderText}
                                 required={false}
                                 disabled={disableAllForm}
@@ -3194,7 +3215,7 @@ class AddMoreDetails extends Component {
                               </div>
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} id="NumberOfWorkingHoursPerYear" width={'340px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hr/Shift * No. of Working days/Annum * (Availability %)'} />
+                              <TooltipCustom disabledIcon={true} id="NumberOfWorkingHoursPerYear" width={'340px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hrs/Shift * No. of Working days/Annum * (Availability %)'} />
                               <Field
                                 label={`No. of Working Hrs/Annum`}
                                 name={this.props.fieldsObj.NumberOfWorkingHoursPerYear === 0 ? '-' : "NumberOfWorkingHoursPerYear"}
@@ -4274,6 +4295,7 @@ class AddMoreDetails extends Component {
                             } */}
 
                             <Col className="d-flex col-auto UOM-label-container p-relative">
+                              {this.state.UOM.type === TIME && <TooltipCustom disabledIcon={true} id="machineRate" tooltipClass={'machine-rate'} tooltipText={this.machineRateTooltip()} />}
                               <div className="machine-rate-filed pr-3">
                                 <Field
                                   label={this.DisplayMachineRateLabel()}
@@ -4286,6 +4308,7 @@ class AddMoreDetails extends Component {
                                   disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                                   className=" "
                                   customClassName=" withBorder"
+                                  id="machineRate"
                                   placeholder={this.state.UOM.type === TIME ? '-' : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : "Enter"}
                                 />
                                 {this.state.errorObj.processMachineRate && (this.props.fieldsObj.MachineRate === undefined || this.state.UOM.type === TIME ? true : Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}

@@ -145,7 +145,7 @@ function ViewOtherCostDrawer(props) {
                             <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
                         </tr> :
                             <tr className='table-footer'>
-                                <td className='text-right' colSpan={3}>Total Other Cost:</td>
+                                <td className='text-right' colSpan={3}>Total Other Cost (INR):</td>
                                 <td colSpan={2}>{checkForDecimalAndNull(totalOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             </tr>}
                     </tbody>

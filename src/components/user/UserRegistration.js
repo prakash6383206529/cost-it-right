@@ -182,7 +182,7 @@ function UserRegistration(props) {
       } : '')
       let tempArray = []
       registerUserData && registerUserData?.Departments?.map((item) => {
-        tempArray.push({ label: item?.DepartmentName, value: (item?.DepartmentId).toString() })
+        tempArray.push({ label: item?.DepartmentName, value: (item?.DepartmentId)?.toString() })
         return null;
       })
       setValue('DepartmentId', registerUserData && registerUserData.Departments !== undefined ? tempArray : '')
@@ -1022,7 +1022,7 @@ function UserRegistration(props) {
     let tempArray = [];
 
     if (simulationHeads.length === 0 || simualtionLevel.length === 0 || simulationApprovalType.length === 0) {
-      Toaster.warning('Please select Technology, Approval Type and Level')
+      Toaster.warning('Please select Head, Approval Type and Level')
       return false;
     }
 
@@ -1062,7 +1062,7 @@ function UserRegistration(props) {
             ApprovalType: approvalData?.ApprovalType,
             ApprovalTypeId: approvalData?.ApprovalTypeId,
           }
-          if (!checkDuplicacy(HeadLevelGrid, approvalObj, 'TechnologyId', approvalData?.ApprovalHeadId, approvalData?.ApprovalTypeId, 'Simulation Head', approvalData?.LevelId)) {
+          if (!checkDuplicacy(HeadLevelGrid, approvalObj, 'TechnologyId', approvalData?.ApprovalHeadId, approvalData?.ApprovalTypeId, 'Simulation Head', approvalData?.LevelId, true)) {
             tempMultiApprovalArray.push(approvalObj)
           } else {
             duplicateErrorArray.push(approvalObj)
@@ -1286,14 +1286,14 @@ function UserRegistration(props) {
             ApprovalType: approvalData?.ApprovalType,
             ApprovalTypeId: approvalData?.ApprovalTypeId,
           }
-          if (!checkDuplicacy(masterLevelGrid, approvalObj, 'MasterId', approvalData?.ApprovalHeadId, approvalData?.ApprovalTypeId, 'Master', approvalData?.LevelId)) {
+          if (!checkDuplicacy(masterLevelGrid, approvalObj, 'MasterId', approvalData?.ApprovalHeadId, approvalData?.ApprovalTypeId, 'Master', approvalData?.LevelId, true)) {
             tempMultiApprovalArray.push(approvalObj)
           } else {
             duplicateErrorArray.push(approvalObj)
           }
         })
         if (duplicateErrorArray.length > 0) {
-          const formattedStrings = duplicateErrorArray.map(item => `(${item.Technology} - ${item.ApprovalType} - ${item.Level})`);
+          const formattedStrings = duplicateErrorArray.map(item => `(${item.Master} - ${item.ApprovalType} - ${item.Level})`);
           const FinalformattedString = formattedStrings.join(',');
           Toaster.warning(`Same record cannot exist for multiple or same approval types: ${FinalformattedString}`)
         }
@@ -1682,9 +1682,9 @@ function UserRegistration(props) {
           if (isDataChanged) {
             setIsUpdateResponded(true)
             dispatch(updateUserAPI(updatedData, (res) => {
+              setIsUpdateResponded(false)
               if (res?.data?.Result) {
                 Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
-                setIsUpdateResponded(false)
                 cancel();
               }
               setIsLoader(false)
@@ -2929,7 +2929,7 @@ function UserRegistration(props) {
                     <button
                       type="button"
                       onClick={onSubmit}
-                      disabled={isSubmitted ? true : false}
+                      disabled={isSubmitted || isUpdateResponded ? true : false}
                       className="user-btn save-btn">
                       <div className={"save-icon"}></div>
                       {isEditFlag ? 'UPDATE' : 'SAVE'}
