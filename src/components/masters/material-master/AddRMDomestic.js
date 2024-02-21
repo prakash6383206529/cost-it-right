@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, getCodeBySplitting, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number, hashValidation, maxLength10 } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
-import { ASSEMBLY, AcceptableRMUOM } from '../../../config/masterData'
+import { ASSEMBLY, AcceptableRMUOM, LOGISTICS } from '../../../config/masterData'
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getUOMSelectList, fetchSupplierCityDataAPI,
@@ -221,25 +221,25 @@ class AddRMDomestic extends Component {
     if (showScrapKeys?.showCircleJali) {
       obj = {
         ...obj,
-        toolTipTextCircleScrapCostBaseCurrency: `Circle Scrap Cost (${initialConfiguration?.BaseCurrency}) = Circle Scrap Cost (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
-        toolTipTextJaliScrapCostBaseCurrency: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) = Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
-        toolTipTextJaliScrapCostSelectedCurrency: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Jali Scrap Cost (${initialConfiguration?.BaseCurrency})`,
-        toolTipTextJaliScrapCostBaseCurrencyPerOldUOM: <>{labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Jali Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)}</>,
+        toolTipTextCircleScrapCostBaseCurrency: `Circle Scrap Rate (${initialConfiguration?.BaseCurrency}) = Circle Scrap Rate (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
+        toolTipTextJaliScrapCostBaseCurrency: `Jali Scrap Rate (${initialConfiguration?.BaseCurrency}) = Jali Scrap Rate (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
+        toolTipTextJaliScrapCostSelectedCurrency: `Jali Scrap Rate (${initialConfiguration?.BaseCurrency}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Jali Scrap Rate (${initialConfiguration?.BaseCurrency})`,
+        toolTipTextJaliScrapCostBaseCurrencyPerOldUOM: <>{labelWithUOMAndCurrency("Jali Scrap Rate", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)}</>,
       }
     } else if (showScrapKeys?.showForging) {
       obj = {
         ...obj,
-        toolTipTextForgingScrapCostBaseCurrency: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}) = Forging Scrap Cost (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
-        toolTipTextMachiningScrapCostBaseCurrency: `Machining Scrap Cost (${initialConfiguration?.BaseCurrency}) = Machining Scrap Cost (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
-        toolTipTextMachiningScrapCostSelectedCurrency: `Machining Scrap Cost (${initialConfiguration?.BaseCurrency}) = Calculated Factor () * Machining Scrap Cost ()`,
-        toolTipTextForgingScrapCostBaseCurrencyPerOldUOM: <>{labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Forging Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)}</>,
+        toolTipTextForgingScrapCostBaseCurrency: `Forging Scrap Rate (${initialConfiguration?.BaseCurrency}) = Forging Scrap Rate (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
+        toolTipTextMachiningScrapCostBaseCurrency: `Machining Scrap Rate (${initialConfiguration?.BaseCurrency}) = Machining Scrap Rate (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
+        toolTipTextMachiningScrapCostSelectedCurrency: `Machining Scrap Rate (${initialConfiguration?.BaseCurrency}) = Calculated Factor () * Machining Scrap Rate ()`,
+        toolTipTextForgingScrapCostBaseCurrencyPerOldUOM: <>{labelWithUOMAndCurrency("Forging Scrap Rate", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)}</>,
       }
     } else if (showScrapKeys?.showScrap) {
       obj = {
         ...obj,
         toolTipTextScrapCostBaseCurrency: `Scrap Rate (${initialConfiguration?.BaseCurrency}) = Scrap Rate (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
-        toolTipTextScrapCostSelectedCurrency: `Scrap Cost (${initialConfiguration?.BaseCurrency}) = Calculated Factor () * Scrap Cost ()`,
-        toolTipTextScrapCostBaseCurrencyPerOldUOM: <>{labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)}</>,
+        toolTipTextScrapCostSelectedCurrency: `Scrap Rate (${initialConfiguration?.BaseCurrency}) = Calculated Factor () * Scrap Rate ()`,
+        toolTipTextScrapCostBaseCurrencyPerOldUOM: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)}</>,
       }
     }
     if (setData) {
@@ -1051,7 +1051,7 @@ class AddRMDomestic extends Component {
       costingSpecifiTechnology &&
         costingSpecifiTechnology.map((item) => {
           if (item.Value === '0') return false
-          if (item.Value === String(ASSEMBLY)) return false
+          if (item.Value === String(ASSEMBLY) || item.Value === String(LOGISTICS)) return false
           temp.push({ label: item.Text, value: item.Value })
           return null
         })
@@ -1577,9 +1577,9 @@ class AddRMDomestic extends Component {
     const labelForScrapRate = () => {
       let label = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
       if (showScrapKeys?.showCircleJali) {
-        label = labelWithUOMAndCurrency("Jali Scarp Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
+        label = labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
       } else if (showScrapKeys?.showForging) {
-        label = labelWithUOMAndCurrency("Forging Scarp Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
+        label = labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
       } else if (showScrapKeys?.showScrap) {
         label = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
       }
@@ -2125,7 +2125,7 @@ class AddRMDomestic extends Component {
                                 <Col md="3">
                                   {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="forging-scrap-cost-base-currency" width={'450px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrencyPerOldUOM} />}
                                   <Field
-                                    label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
+                                    label={labelWithUOMAndCurrency("Forging Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                     name={"ForgingScrap"}
                                     type="text"
                                     id="forging-scrap-cost-base-currency"
@@ -2141,7 +2141,7 @@ class AddRMDomestic extends Component {
                                 </Col>
                                 <Col md="3">
                                   <Field
-                                    label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
+                                    label={labelWithUOMAndCurrency("Machining Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                     name={"MachiningScrap"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
@@ -2161,7 +2161,7 @@ class AddRMDomestic extends Component {
                                 <Col md="3">
                                   {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />}
                                   <Field
-                                    label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
+                                    label={labelWithUOMAndCurrency("Jali Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                     name={"JaliScrapCost"}
                                     type="text"
                                     id="jali-scrap-cost-base-currency"
@@ -2176,7 +2176,7 @@ class AddRMDomestic extends Component {
                                 </Col>
                                 <Col md="3">
                                   <Field
-                                    label={labelWithUOMAndCurrency("Circle Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
+                                    label={labelWithUOMAndCurrency("Circle Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                     name={"CircleScrapCost"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}

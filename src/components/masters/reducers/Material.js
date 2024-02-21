@@ -396,6 +396,12 @@ export default function materialReducer(state = initialState, action) {
                     item.BasicRate = checkForDecimalAndNull(item.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice)
                     item.IncoTermDescriptionAndInfoTerm = `${item.IncoTermDescription ? `${item.IncoTermDescription}` : ''} ${item.IncoTerm ? `(${item.IncoTerm})` : '-'}`
                     item.PaymentTermDescriptionAndPaymentTerm = `${item.PaymentTermDescription ? `${item.PaymentTermDescription}` : ''} ${item.PaymentTerm ? `(${item.PaymentTerm})` : '-'}`
+                    item.NetCostWithoutConditionCost = checkForDecimalAndNull(item.NetCostWithoutConditionCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.NetConditionCost = checkForDecimalAndNull(item.NetConditionCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.BasicRateConversion = checkForDecimalAndNull(item.BasicRateConversion, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.NetCostWithoutConditionCostConversion = checkForDecimalAndNull(item.NetCostWithoutConditionCostConversion, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.NetConditionCostConversion = checkForDecimalAndNull(item.NetConditionCostConversion, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.NetLandedCostConversion = checkForDecimalAndNull(item.NetLandedCostConversion, getConfigurationKey()?.NoOfDecimalForPrice)
                     return item
                 })
             }

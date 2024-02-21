@@ -29,7 +29,8 @@ class AddAssemblyForm extends Component {
             issubAssembyNoNotSelected: false,
             showErrorOnFocus: false,
             partName: '',
-            selectedParts: []
+            selectedParts: [],
+            mainLoader: false
         }
     }
 
@@ -75,10 +76,11 @@ class AddAssemblyForm extends Component {
     */
     handleAssemblyPartChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ assemblyPart: newValue, issubAssembyNoNotSelected: false }, () => {
+            this.setState({ assemblyPart: newValue, issubAssembyNoNotSelected: false, mainLoader: true }, () => {
                 const { assemblyPart } = this.state;
                 this.props.getDrawerAssemblyPartDetail(assemblyPart.value, res => {
                     let Data = res.data.Data
+                    this.setState({ mainLoader: false })
                     this.props.change("ECNNumber", Data.ECNNumber)
                     this.props.change('DrawingNumber', Data.DrawingNumber)
                     this.props.change('RevisionNumber', Data.RevisionNumber)
@@ -176,7 +178,7 @@ class AddAssemblyForm extends Component {
         this.props.getDrawerAssemblyPartDetail('', res => { })
 
         if (isAddMore) {
-            const allInputFieldsName = ['AssemblyPartName', 'Quantity']
+            const allInputFieldsName = ['AssemblyPartName', 'Quantity', 'RevisionNumber', 'ECNNumber', 'DrawingNumber', 'PartDescription', 'GroupCode'];
             allInputFieldsName.forEach(fieldName => {
                 this.props.dispatch(clearFields('AddAssemblyForm', false, false, fieldName));
             });
@@ -240,13 +242,13 @@ class AddAssemblyForm extends Component {
 
         return (
             <>
-
                 <form
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                     onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
+                    {this.state.mainLoader && <LoaderCustom />}
                     <Row>
 
                         <Col md='6'>

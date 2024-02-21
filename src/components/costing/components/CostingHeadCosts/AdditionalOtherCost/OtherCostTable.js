@@ -63,7 +63,7 @@ const OtherCostTable = (props) => {
                     ) : (
                         <tr className='table-footer'>
                             <td colSpan={initialConfiguration.IsShowCRMHead ? 4 : 3} className='text-right'>
-                                Total Other Cost:
+                                Total Other Cost (INR):
                             </td>
                             <td colSpan={3}>
                                 {checkForDecimalAndNull(otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}

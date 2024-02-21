@@ -662,9 +662,9 @@ function RubberWeightCalculator(props) {
                                     </Col>
 
                                     <Col md="3">
-                                        <TooltipCustom disabledIcon={true} width={"230px"} id={'applicablityAdditional'} tooltipText={`Applicablity Cost = Gross RM Rate`} />
+                                        <TooltipCustom disabledIcon={true} width={"230px"} id={'applicablityAdditional'} tooltipText={`Applicability Cost = Gross RM Rate`} />
                                         <TextFieldHookForm
-                                            label={`Applicablity Cost`}
+                                            label={`Applicability Cost`}
                                             id={'applicablityAdditional'}
                                             name={'applicablityAdditional'}
                                             Controller={Controller}
@@ -681,7 +681,7 @@ function RubberWeightCalculator(props) {
                                     </Col>
 
                                     <Col md="3">
-                                        <TooltipCustom disabledIcon={true} id={'netCostAdditional'} tooltipText={`Net Cost = Value${additionalCostType.label === 'Fixed' ? "" : " * Applicablity Cost / 100"}`} />
+                                        <TooltipCustom disabledIcon={true} id={'netCostAdditional'} tooltipText={`Net Cost = Value${additionalCostType.label === 'Fixed' ? "" : " * Applicability Cost / 100"}`} />
                                         <TextFieldHookForm
                                             label={`Net Cost`}
                                             id={'netCostAdditional'}

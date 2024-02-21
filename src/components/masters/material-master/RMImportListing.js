@@ -86,7 +86,7 @@ function RMImportListing(props) {
   const headerNames = {
     BasicRate: `Basic Rate (${getConfigurationKey()?.BaseCurrency})`,
     ScrapRate: `Scrap Rate (${getConfigurationKey()?.BaseCurrency})`,
-    MachiningScrapCost: `Machining Scrap Cost (${getConfigurationKey()?.BaseCurrency})`,
+    MachiningScrapCost: `Machining Scrap Rate (${getConfigurationKey()?.BaseCurrency})`,
     FreightCost: `Freight Cost (${getConfigurationKey()?.BaseCurrency})`,
     ShearingCost: `Shearing Cost (${getConfigurationKey()?.BaseCurrency})`,
     BasicPrice: `Basic Price (${getConfigurationKey()?.BaseCurrency})`,
@@ -1044,7 +1044,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)' cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapRate" headerName="Scrap Rate (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapRateInINR" headerName={headerNames?.ScrapRate} cellRenderer='commonCostFormatter'></AgGridColumn>
-                    {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" cellRenderer='commonCostFormatter' headerName='Machining Scrap Cost (Currency)'></AgGridColumn>}
+                    {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" cellRenderer='commonCostFormatter' headerName='Machining Scrap Rate (Currency)'></AgGridColumn>}
                     {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRateInINR" cellRenderer='commonCostFormatter' headerName={headerNames?.MachiningScrapCost}></AgGridColumn>}
                     {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
                     {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMFreightCost" headerName="Freight Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>)}

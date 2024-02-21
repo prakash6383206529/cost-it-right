@@ -14,6 +14,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import ReactExport from 'react-export-excel';
 import { NFR_INSIGHT_REPORT } from '../../../../config/masterData';
 import NFRInsightStatusDetailsDrawer from './NFRInsightStatusDetailsDrawer';
+import { agGridStatus, isResetClick } from '../../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -42,7 +43,7 @@ function NFRInsightsReport(props) {
      */
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
-            reasonDataList.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+            reasonDataList?.length !== 0 && setNoData(searchNocontentFilter(value, noData))
         }, 500);
     }
     /**
@@ -81,12 +82,17 @@ function NFRInsightsReport(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
-
     const resetState = () => {
+        const searchBox = document.getElementById("filter-text-box");
+        if (searchBox) {
+            searchBox.value = ""; // Reset the input field's value
+        }
+        gridApi.setQuickFilter(null)
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
         gridApi.deselectAll()
+        dispatch(agGridStatus("", ""))
+        setNoData(false)
     }
 
     const callAPI = (props) => {
@@ -263,7 +269,7 @@ function NFRInsightsReport(props) {
                             <AgGridColumn field="OEQA4ErrorCount" headerName="OEQA4 Error Count"></AgGridColumn>
                             <AgGridColumn field="OEQA4PushedCount" headerName="OEQA4 Pushed Count"></AgGridColumn>
                             <AgGridColumn field="OEQA4ExternalRejectCount" headerName="OEQA4 External Reject Count"></AgGridColumn>
-                            <AgGridColumn field="PFS1DraftCount" headerName="PFS1DraftCount"></AgGridColumn>
+                            <AgGridColumn field="PFS1DraftCount" headerName="PFS1 Draft Count"></AgGridColumn>
                             <AgGridColumn field="PFS1PendingForApprovalCount" headerName="PFS1 Pending For Approval Count"></AgGridColumn>
                             <AgGridColumn field="PFS1ApprovedCount" headerName="PFS1 Approved Count"></AgGridColumn>
                             <AgGridColumn field="PFS1RejectedCount" headerName="PFS1 Rejected Count"></AgGridColumn>

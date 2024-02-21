@@ -941,7 +941,7 @@ class AddVendorDrawer extends Component {
                                             className={`custom-checkbox`}
                                             onChange={this.criticalityHandleChange}
                                         >
-                                            Criticality
+                                            Potentiality
                                             <input
                                                 type="checkbox"
                                                 checked={isCriticalVendor}

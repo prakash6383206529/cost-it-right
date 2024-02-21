@@ -275,6 +275,7 @@ function RawMaterialCost(props) {
             IsScrapUOMApply: el.IsScrapUOMApply,
             ScrapUnitOfMeasurement: el.ScrapUnitOfMeasurement,
             Currency: el.Currency,
+            UOMSymbol: el.UOMSymbol,
           }
         })
 
@@ -304,6 +305,7 @@ function RawMaterialCost(props) {
           ScrapRatePerScrapUOM: rowData.ScrapRatePerScrapUOM,
           ScrapRatePerScrapUOMConversion: rowData.ScrapRatePerScrapUOMConversion,
           Currency: rowData.Currency,
+          UOMSymbol: rowData.UOMSymbol,
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]

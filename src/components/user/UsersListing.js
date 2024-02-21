@@ -417,8 +417,8 @@ const UsersListing = (props) => {
 							{/* //RE    */}
 							{props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Points of Contact"></AgGridColumn>}
 							<AgGridColumn field="CreatedBy" headerName="Created By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-							<AgGridColumn field="CreatedDate" headerName="Created Date" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-							<AgGridColumn field="ModifiedDate" headerName="Modified Date" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+							<AgGridColumn field="CreatedDate" width={props?.RFQUser ? 220 : ''} headerName="Created Date (Created Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+							<AgGridColumn field="ModifiedDate" width={props?.RFQUser ? 220 : ''} headerName="Modified Date (Modified Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 							<AgGridColumn field="ModifiedBy" headerName="Modified By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
 							<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 							<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>

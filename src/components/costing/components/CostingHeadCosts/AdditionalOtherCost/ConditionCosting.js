@@ -6,7 +6,7 @@ import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../..
 import { useSelector } from 'react-redux'
 
 function ConditionCosting(props) {
-    const { isFromImport, currency } = props
+    const { isFromImport, currency, isFromMaster } = props
     const [totalCostBase, setTotalCostBase] = useState(0)
     const [totalCostCurrency, setTotalCostCurrency] = useState(0)
     const editDeleteData = (indexValue, operation) => {
@@ -70,8 +70,9 @@ function ConditionCosting(props) {
                                 </tr>
                             )}
                             <tr className='table-footer'>
-                                <td colSpan={4} className="text-right font-weight-600 fw-bold">{`Total Cost :`}</td>
-                                <td colSpan={isFromImport ? 1 : 3}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {`(${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}</div></td>
+
+                                <td colSpan={4} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Cost:' : 'Total Cost (INR):'}`}</td>
+                                <td colSpan={isFromImport ? 1 : 3}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {isFromMaster ? `(${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})` : ''}</div></td>
                                 {isFromImport && <>
                                     <td colSpan={4} className="text-left"> {checkForDecimalAndNull(totalCostBase, initialConfiguration.NoOfDecimalForPrice)} ({initialConfiguration?.BaseCurrency})</td>
                                 </>}

@@ -2046,6 +2046,7 @@ const CostingSummaryTable = (props) => {
                               <span className={`d-block mt-${props.isFromViewRFQ ? 4 : 2}`}>Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
                               {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">Customer (Code)</span>}
+                              <span className="d-block">Part Type</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Revision Number</span>
@@ -2104,6 +2105,7 @@ const CostingSummaryTable = (props) => {
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? data?.vendor : ''}</span>
                                     {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.costingTypeId === CBCTypeId ? data?.customer : '-'}</span>}
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partType}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
