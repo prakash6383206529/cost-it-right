@@ -38,6 +38,7 @@ function VerifySimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [noData, setNoData] = useState(false);
+    const [minimumPoPrice, setMinimumPoPrice] = useState('');
     // const [showAssemblyPage, setShowAssemblyPage] = useState(false);   // REJECTED ASSEMBLY
     const { filteredRMData } = useSelector(state => state.material)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
@@ -70,6 +71,13 @@ function VerifySimulation(props) {
         }
 
     }, [token])
+
+    useEffect(() => {
+        const minimalPOPrice = selectedRowData.reduce((minPOPrice, currentItem) => {
+            return currentItem.POPrice < minPOPrice ? currentItem.POPrice : minPOPrice;
+        }, Infinity);
+        setMinimumPoPrice(minimalPOPrice)
+    }, [selectedRowData])
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
         const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
@@ -956,6 +964,7 @@ function VerifySimulation(props) {
                     masterId={selectedMasterForSimulation.value}
                     technology={props.technology}
                     token={props?.token}
+                    minimumPoPrice={minimumPoPrice}
                 />
             }
             {/* {   // REJECTED ASSEMBLY
