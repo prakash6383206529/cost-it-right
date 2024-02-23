@@ -36,7 +36,6 @@ function SimulationApproveReject(props) {
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [openPushButton, setOpenPushButton] = useState(false)
   const [linkingTokenDropDown, setLinkingTokenDropDown] = useState('')
-  const [showError, setShowError] = useState(false)
   const [tokenDropdown, setTokenDropdown] = useState(true)
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
@@ -349,24 +348,6 @@ function SimulationApproveReject(props) {
     const reason = dataInFields?.Reason
     const dept = dataInFields?.Department
     const approver = dataInFields?.Approver
-    if (type === 'Reject') {
-      if (remark) {
-        setShowError(false)
-      } else {
-        setShowError(true)
-        return false
-      }
-    }
-
-    if (type === 'Sender') {
-      if (remark) {
-        setShowError(false)
-      } else {
-        setShowError(true)
-        return false
-      }
-      if (!reason) return false
-    }
     setIsDisable(true)
 
     /****************************THIS IS FOR SIMUALTION (SAVE,SEND FOR APPROVAL,APPROVE AND REJECT CONDITION)******************************** */
