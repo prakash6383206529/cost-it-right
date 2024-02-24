@@ -51,7 +51,7 @@ function TabRMCC(props) {
         let tempArr = [];
         tempArr.push(res?.data?.DataList[0]);
         tempArr.push(...res?.data?.DataList[0]?.CostingChildPartDetails);
-        reactLocalStorage.setObject('costingArray', tempArr);
+        sessionStorage.setItem('costingArray', JSON.stringify(tempArr));
 
       }))
     }
@@ -452,7 +452,7 @@ function TabRMCC(props) {
     let stCostingData = findSurfaceTreatmentData(ComponentItemData)
     const mapArray = (data) => data.map(item => {
       let newItem = item
-      let updatedArr = reactLocalStorage.getObject('costingArray')
+      let updatedArr = JSON.parse(sessionStorage.getItem('costingArray'))
       let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
       newItem.CostingPartDetails.TotalRawMaterialsCost = checkForNull(obj?.CostingPartDetails?.TotalRawMaterialsCost)
       newItem.CostingPartDetails.RawMaterialCostWithCutOff = checkForNull(obj?.CostingPartDetails?.RawMaterialCostWithCutOff)
@@ -551,7 +551,7 @@ function TabRMCC(props) {
         const level = params.BOMLevel
         const useLevel = level.split('L')[1]
         //GETTING LASTEST COSTING OF ASSEMBLY,SUBASSEMBLY AND PART FROM LOCAL STORAGE
-        let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+        let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
         //CALCULATION FOR PART/COMPONENT AND SUBASSEMBLY COSTING (RM COST)
         tempArrForCosting = calculateValue(useLevel, item, tempArrForCosting)
 
@@ -595,8 +595,8 @@ function TabRMCC(props) {
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
         }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        reactLocalStorage.setObject('costingArray', [])
-        reactLocalStorage.setObject('costingArray', tempArrForCosting)
+        sessionStorage.setItem('costingArray', JSON.stringify([]))
+        sessionStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
 
         return i;
       });
@@ -677,7 +677,7 @@ function TabRMCC(props) {
         const level = params.BOMLevel
         const useLevel = level.split('L')[1]
         //GETTING LASTEST COSTING OF ASSEMBLY,SUBASSEMBLY AND PART FROM LOCAL STORAGE
-        let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+        let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
         //CALCULATION FOR PART/COMPONENT AND SUBASSEMBLY COSTING (BOP COST)
         tempArrForCosting = calculateValue(useLevel, item, tempArrForCosting)
 
@@ -700,8 +700,8 @@ function TabRMCC(props) {
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
         }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        reactLocalStorage.setObject('costingArray', [])
-        reactLocalStorage.setObject('costingArray', tempArrForCosting)
+        sessionStorage.setItem('costingArray', JSON.stringify([]))
+        sessionStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
         return i;
       });
       // CALLING THIS FUNCTION TO UPDATE THE COSTING VALUE ON UI (RMMCCTABDATA REDUCER)
@@ -792,7 +792,7 @@ function TabRMCC(props) {
         const useLevel = level.split('L')[1]
 
         //GETTING LASTEST COSTING OF ASSEMBLY,SUBASSEMBLY AND PART FROM LOCAL STORAGE
-        let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+        let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
         //CALCULATION FOR PART/COMPONENT AND SUBASSEMBLY COSTING (PROCESS/OPERATION,OTHEROPEARTION COST)
         tempArrForCosting = calculateValue(useLevel, item, tempArrForCosting)
         // THIS ARRAY IS FOR FINDING THE SUBASSEMBLIES  WHICH  HAVE SAME PART ON WHICH WE ARE DOING COSTING
@@ -818,8 +818,8 @@ function TabRMCC(props) {
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
         }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-        reactLocalStorage.setObject('costingArray', [])
-        reactLocalStorage.setObject('costingArray', tempArrForCosting)
+        sessionStorage.setItem('costingArray', JSON.stringify([]))
+        sessionStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
 
         return i;
       });
@@ -879,7 +879,7 @@ function TabRMCC(props) {
     delete tempErrorObjRMCC?.bopGridFields
     if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit)) return false;
 
-    let updatedArr = reactLocalStorage.getObject('costingArray')
+    let updatedArr = JSON.parse(sessionStorage.getItem('costingArray'))
     let tempPartNumber = []
     updatedArr && updatedArr.map((item) => {
       if (item.IsCostingLocked === true) {
@@ -908,7 +908,7 @@ function TabRMCC(props) {
         i.CostingPartDetails = Children?.CostingPartDetails;
         i.IsAssemblyPart = true;
         i.IsOpen = !i.IsOpen;
-        let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+        let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
         if (params.BOMLevel !== LEVEL0) {
           let childArray = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === params.PartNumber)
           let subbAssemblyIndex = tempArrForCosting && tempArrForCosting.findIndex(item => item.PartNumber === params.PartNumber)
@@ -979,11 +979,11 @@ function TabRMCC(props) {
 
 
         tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
-        reactLocalStorage.setObject('costingArray', [])
-        reactLocalStorage.setObject('costingArray', tempArrForCosting)
+        sessionStorage.setItem('costingArray', JSON.stringify([]))
+        sessionStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
         const mapArray = (data) => data.map(item => {
           let newItem = item
-          let updatedArr1 = reactLocalStorage.getObject('costingArray')
+          let updatedArr1 = JSON.parse(sessionStorage.getItem('costingArray'))
           let obj = updatedArr1 && updatedArr1.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
           newItem.CostingPartDetails.Quantity = obj?.CostingPartDetails?.Quantity
           newItem.CostingPartDetails.IsOpen = obj?.CostingPartDetails?.IsOpen
@@ -1061,7 +1061,7 @@ function TabRMCC(props) {
     try {
       tempArr = RMCCTabData && RMCCTabData.map(i => {
         const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
-        let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+        let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
 
         if (i.IsAssemblyPart === true) {
           i.CostingPartDetails = { ...i?.CostingPartDetails };
@@ -1086,8 +1086,8 @@ function TabRMCC(props) {
 
 
 
-            reactLocalStorage.setObject('costingArray', [])
-            reactLocalStorage.setObject('costingArray', tempArrForCosting)
+            sessionStorage.setItem('costingArray', JSON.stringify([]))
+            sessionStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
 
 
 
@@ -1120,7 +1120,7 @@ function TabRMCC(props) {
 
 
   const setAssemblyLabourCost = (data) => {
-    let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+    let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
 
     tempArrForCosting[0].CostingPartDetails.NetLabourCRMHead = data.NetLabourCRMHead ? data.NetLabourCRMHead : ''
     tempArrForCosting[0].CostingPartDetails.IndirectLabourCRMHead = data.IndirectLabourCRMHead ? data.IndirectLabourCRMHead : ''
@@ -1133,12 +1133,12 @@ function TabRMCC(props) {
     tempArrForCosting[0].CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(tempArrForCosting[0]?.CostingPartDetails?.TotalOperationCostComponent) + checkForNull(tempArrForCosting[0]?.CostingPartDetails?.TotalOperationCostSubAssembly) + checkForNull(tempArrForCosting[0]?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(data.IndirectLaborCost) + checkForNull(data.StaffCost) + checkForNull(data.NetLabourCost)
 
     // tempArrForCosting[0].CostingChildPartDetails.oldTotalLabourCost = Number(data.NetLabourCost) + Number(data.StaffCost) + Number(data.IndirectLaborCost)
-    reactLocalStorage.setObject('costingArray', [])
-    reactLocalStorage.setObject('costingArray', tempArrForCosting)
+    sessionStorage.setItem('costingArray', JSON.stringify([]))
+    sessionStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
 
     const mapArray = (data) => data.map(item => {
       let newItem = item
-      let updatedArr = reactLocalStorage.getObject('costingArray')
+      let updatedArr = JSON.parse(sessionStorage.getItem('costingArray'))
       let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
 
       if (obj && Object.keys(obj).length > 0) {
@@ -1203,7 +1203,7 @@ function TabRMCC(props) {
           const useLevel = level.split('L')[1]
           let initialPartNo = ''
           let quant = ''
-          let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+          let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
 
           for (let i = useLevel; i >= 0; i--) {
 
@@ -1308,15 +1308,15 @@ function TabRMCC(props) {
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(assemblyObj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostWithQuantity)
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostWithQuantity) * assemblyObj?.CostingPartDetails?.Quantity
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
-          reactLocalStorage.setObject('costingArray', [])
-          reactLocalStorage.setObject('costingArray', tempArrForCosting)
+          sessionStorage.setItem('costingArray', JSON.stringify([]))
+          sessionStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
           return i;
         }
         return null
       });
       const mapArray = (data) => data.map(item => {
         let newItem = item
-        let updatedArr = reactLocalStorage.getObject('costingArray')
+        let updatedArr = JSON.parse(sessionStorage.getItem('costingArray'))
         let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
         if (obj && Object.keys(obj).length > 0) {
           newItem.CostingPartDetails.IsApplyBOPHandlingCharges = obj?.CostingPartDetails?.IsApplyBOPHandlingCharges;
@@ -1530,7 +1530,7 @@ function TabRMCC(props) {
    * @description FOR APPLYING BOP HANDLING CHARGE TO ASSEMBLY (ONLY FOR ASSEMBLY)
   */
   const setBOPCostWithAsssembly = (obj, item) => {
-    let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+    let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
     const calculateBOPHandlingForSubAssemblies = (useLevel, item, tempArrForCosting) => {
       let initialPartNo = ''
       let quant = ''
@@ -1597,8 +1597,8 @@ function TabRMCC(props) {
     assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostAssembly(subAssemblyArray) + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges)
     assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostWithQuantity)
     tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
-    reactLocalStorage.setObject('costingArray', [])
-    reactLocalStorage.setObject('costingArray', tempArrForCosting)
+    sessionStorage.setItem('costingArray', JSON.stringify([]))
+    sessionStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
     updateCostingValuesInStructure()
 
     const tabData = RMCCTabData[0]

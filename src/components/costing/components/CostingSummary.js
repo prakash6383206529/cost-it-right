@@ -88,8 +88,8 @@ function CostingSummary(props) {
       dispatch(getSelectListPartType((res) => {
         setPartTypeList(res?.data?.SelectList)
       }))
-      reactLocalStorage.setObject('costingArray', [])
-      reactLocalStorage.setObject('surfaceCostingArray', [])
+      sessionStorage.setItem('costingArray', JSON.stringify([]))
+      sessionStorage.setItem('surfaceCostingArray', JSON.stringify([]))
     }
     return () => {
       reactLocalStorage.setObject('PartData', [])

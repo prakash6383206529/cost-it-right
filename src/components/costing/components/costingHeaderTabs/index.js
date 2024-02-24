@@ -253,7 +253,7 @@ function CostingHeaderTabs(props) {
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
-      let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+      let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
       const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
@@ -263,7 +263,7 @@ function CostingHeaderTabs(props) {
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
-      let surfaceArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
+      let surfaceArrForCosting = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
       const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
       const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
       if (surfaceData !== undefined || surfaceLockedData !== undefined) {

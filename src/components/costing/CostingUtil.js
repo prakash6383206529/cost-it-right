@@ -10,8 +10,8 @@ import { PART_TYPE_ASSEMBLY } from "../../config/masterData";
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false, basicRateForST = '', isPartType = {}) => {
 
-  let Arr = reactLocalStorage.getObject('costingArray')
-  let surfaceTreatmentArr = reactLocalStorage.getObject('surfaceCostingArray')
+  let Arr = JSON.parse(sessionStorage.getItem('costingArray'))
+  let surfaceTreatmentArr = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
   let assemblyWorkingRow = []
 
   if (tabId === 1) {
@@ -165,14 +165,14 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
 
 //TO FIND SURFACE TREATMENT OBJECT HAVING SAME PART NO AS RMCC TAB PART NO
 export const findSurfaceTreatmentData = (rmCCData) => {
-  let surfaceTreatmentArr = reactLocalStorage.getObject('surfaceCostingArray')
+  let surfaceTreatmentArr = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
   let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === rmCCData.PartNumber && surfaceItem.AssemblyPartNumber === rmCCData.AssemblyPartNumber)
   return sTSubAssembly
 }
 
 // TO FIND RMCC OBJECT HAVING SAME PART NO AS SURFACE TREATMENT PART NO
 export const findrmCctData = (surfaceData) => {
-  let costingArr = reactLocalStorage.getObject('costingArray')
+  let costingArr = JSON.parse(sessionStorage.getItem('costingArray'))
   let rmCcSubAssembly = costingArr && costingArr.find(costingItem => costingItem.PartNumber === surfaceData.PartNumber && costingItem.AssemblyPartNumber === surfaceData.AssemblyPartNumber)
   return rmCcSubAssembly
 }
@@ -280,8 +280,8 @@ export const formatCostingApprovalObj = (costingObj) => {
 
 export const clearCosting = (dispatch) => {
   dispatch(getBriefCostingById('', (res) => { }))
-  reactLocalStorage.setObject('costingArray', [])
-  reactLocalStorage.setObject('surfaceCostingArray', [])
+  sessionStorage.setItem('costingArray', JSON.stringify([]))
+  sessionStorage.setItem('surfaceCostingArray', JSON.stringify([]))
   dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
   dispatch(setComponentItemData({}, () => { }))
   dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
