@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull } from "../../../../../helper/validation";
 import Toaster from '../../../../common/Toaster'
@@ -134,6 +134,28 @@ function AddLabourCost(props) {
         }
     }
 
+    const fieldValues = useWatch({
+        control,
+        name: ['labourRate', 'workingHours', 'efficiency'],
+
+    })
+
+    useEffect(() => {
+        calculateLabourCost()
+    }, [fieldValues])
+
+    const calculateLabourCost = () => {
+        let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
+        let absentism = Number(checkForNull(getValues('absentism'))) / 100
+        let labourRate = Number(getValues('labourRate'))
+        let workingHours = Number(getValues('workingHours'))
+        let efficiency = Number(getValues('efficiency'))
+        efficiency = efficiency / 100
+        let cycleTime = Number(checkForNull(getValues('cycleTime')))
+        const labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
+        setTotalCost(labourCost)
+        setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
+    }
 
     const handleCycleTime = (e) => {
         if (e?.target?.value) {
@@ -146,7 +168,7 @@ function AddLabourCost(props) {
             let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
             let cycleTime = Number(e?.target?.value)
-            labourCost = noOfLabour * absentism * labourRate / (workingHours * (efficiency / cycleTime))
+            labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
             setTotalCost(labourCost)
             setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
         }
@@ -162,7 +184,7 @@ function AddLabourCost(props) {
         let efficiency = Number(getValues('efficiency'))
         efficiency = efficiency / 100
         let cycleTime = Number(checkForNull(getValues('cycleTime')))
-        labourCost = noOfLabour * absentism * labourRate / (workingHours * (efficiency / cycleTime))
+        labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
         setTotalCost(labourCost)
         setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
     }
@@ -177,7 +199,7 @@ function AddLabourCost(props) {
             let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
             let cycleTime = Number(checkForNull(getValues('cycleTime')))
-            labourCost = noOfLabour * absentism * labourRate / (workingHours * (efficiency / cycleTime))
+            labourCost = totalLabourCost(absentism, checkForNull(noOfLabour * labourRate / (workingHours * (efficiency / cycleTime))))
             setTotalCost(labourCost)
             setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
         } else {
@@ -386,6 +408,11 @@ function AddLabourCost(props) {
         }
     }
 
+    const totalLabourCost = (absentism, labourCost) => {
+        const absenteeismCost = checkForNull(labourCost * absentism)
+        return checkForNull(absenteeismCost + labourCost)
+    }
+
     return (
 
         <div>
@@ -556,7 +583,7 @@ function AddLabourCost(props) {
                                     </Col>
 
                                     <Col md="3" className='px-1'>
-                                        <TooltipCustom disabledIcon={true} id={`labour-cost`} tooltipClass='weight-of-sheet' tooltipText={"Labour Cost = Labour Rate / (Working Time * (Effeciency %) / Cycle Time)"} />
+                                        <TooltipCustom disabledIcon={true} id={`labour-cost`} tooltipClass='weight-of-sheet' width={'300px'} tooltipText={"Labour Cost = (Labour Rate * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time))+(Labour Rate * No. Of Labour / (Working Time * (Efficiency %) / Cycle Time)*Absenteeism %)"} />
                                         <NumberFieldHookForm
                                             label={`Labour Cost Rs/Pcs`}
                                             name={'labourCost'}

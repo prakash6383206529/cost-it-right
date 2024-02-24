@@ -20,7 +20,7 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import DayTime from '../../common/DayTimeWrapper'
-import { ASSEMBLY, AcceptableBOPUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
+import { ASSEMBLY, AcceptableBOPUOM, FORGING, LOGISTICS, SHEETMETAL } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
@@ -458,7 +458,7 @@ class AddBOPDomestic extends Component {
       costingSpecifiTechnology &&
         costingSpecifiTechnology.map((item) => {
           if (item.Value === '0') return false
-          if (item.Value === String(ASSEMBLY)) return false
+          if (item.Value === String(ASSEMBLY) || item.Value === String(LOGISTICS)) return false
           temp.push({ label: item.Text, value: item.Value })
           return null
         })

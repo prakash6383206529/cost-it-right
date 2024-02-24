@@ -34,6 +34,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
+import { LOGISTICS } from '../../../config/masterData';
 
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
@@ -396,8 +397,7 @@ class AddAssemblyPart extends Component {
     if (label === 'technology') {
       costingSpecifiTechnology &&
         costingSpecifiTechnology.map((item) => {
-
-          if (item.Value === '0') return false
+          if (item.Value === '0' || (item.Value === String(LOGISTICS))) return false;
           temp.push({ label: item.Text, value: item.Value })
           return null
         })

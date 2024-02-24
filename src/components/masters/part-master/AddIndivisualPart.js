@@ -19,7 +19,7 @@ import _, { debounce } from 'lodash';
 import { showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
-import { ASSEMBLY } from '../../../config/masterData';
+import { ASSEMBLY, LOGISTICS } from '../../../config/masterData';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -189,8 +189,7 @@ class AddIndivisualPart extends Component {
     if (label === 'technology') {
       costingSpecifiTechnology &&
         costingSpecifiTechnology.map((item) => {
-
-          if (item.Value === '0' || Number(item.Value) === Number(ASSEMBLY)) return false
+          if (item.Value === '0' || Number(item.Value) === Number(ASSEMBLY) || item.Value === String(LOGISTICS)) return false
           temp.push({ label: item.Text, value: item.Value })
           return null
         })
@@ -347,7 +346,7 @@ class AddIndivisualPart extends Component {
       if (DropdownChanged && String(DataToCheck.PartName) === String(values.PartName) && String(DataToCheck.Description) === String(values.Description) &&
         String(DataToCheck.ECNNumber) === String(values.ECNNumber) && JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(productArray) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber)
-        && String(DataToCheck.Remark) === String(values.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values.SAPCode) : true) && !isGroupCodeChange && uploadAttachements) {
+        && String(DataToCheck.Remark) === String(values.Remark) && (initialConfiguration?.IsSAPCodeRequired ? String(DataToCheck.SAPCode) === String(values.SAPCode) : true) && !isGroupCodeChange && uploadAttachements && JSON.stringify(DataToCheck.Attachements) === JSON.stringify(files)) {
         this.cancel('cancel')
         return false;
       }

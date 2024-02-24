@@ -14,7 +14,7 @@ import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE, GUIDE_BUTTON_SHOW } from '../../../config/constants';
-import { AcceptableOperationUOM } from '../../../config/masterData'
+import { AcceptableOperationUOM, LOGISTICS } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
@@ -184,7 +184,7 @@ class AddOperation extends Component {
 
     if (label === 'technology') {
       costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || (item.Value === String(LOGISTICS))) return false;
         temp.push({ Text: item.Text, Value: item.Value })
         return null;
       });
@@ -719,6 +719,7 @@ class AddOperation extends Component {
       VendorPlant: [],
       CustomerId: costingTypeId === CBCTypeId ? client.value : '',
       IsDetailedEntry: false,
+      ForType: this.state.operationType?.label,
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 

@@ -135,162 +135,164 @@ function ApprovalSummary(props) {
     setIsLoader(true)
     dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
 
-      const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
-        ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, NfrId, NfrGroupIdForPFS2, NfrGroupIdForPFS3, IsNFRPFS2PushedButtonShow, IsNFRPFS3PushedButtonShow } = res?.data?.Data?.Costings[0];
-      setApprovalTypeId(ApprovalTypeId)
+      if (res?.data?.Data?.Costings?.length > 0) {
+        const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
+          ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
+          CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, NfrId, NfrGroupIdForPFS2, NfrGroupIdForPFS3, IsNFRPFS2PushedButtonShow, IsNFRPFS3PushedButtonShow } = res?.data?.Data?.Costings[0];
+        setApprovalTypeId(ApprovalTypeId)
 
-      dispatch(setQuotationIdForRFQ(QuotationId))
-      // let BestCostAndShouldCostDetails = {
-      //   ShouldCostings: [{ CostingId: "aae83b68-128d-4ade-b446-cd2407d6c1c2" }],
-      //   CostingIdList: [{ CostingId: "4a3dc510-ae1c-478a-969a-3fa7c1820d62" }, { CostingId: "2d49ced2-dc50-4e63-b2b9-ed74dd44fb24" }],
-      //   BestCostId: "24f21230-003d-4c1d-92d2-5d4fb48de80e"
-      // }
-      setisRFQ(BestCostAndShouldCostDetails?.BestCostId ? true : false)
-      if (BestCostAndShouldCostDetails?.BestCostId) {
-        let temp = []
-        let tempObj = {}
-        let list = _.map([...BestCostAndShouldCostDetails?.CostingIdList], 'CostingId')
+        dispatch(setQuotationIdForRFQ(QuotationId))
+        // let BestCostAndShouldCostDetails = {
+        //   ShouldCostings: [{ CostingId: "aae83b68-128d-4ade-b446-cd2407d6c1c2" }],
+        //   CostingIdList: [{ CostingId: "4a3dc510-ae1c-478a-969a-3fa7c1820d62" }, { CostingId: "2d49ced2-dc50-4e63-b2b9-ed74dd44fb24" }],
+        //   BestCostId: "24f21230-003d-4c1d-92d2-5d4fb48de80e"
+        // }
+        setisRFQ(BestCostAndShouldCostDetails?.BestCostId ? true : false)
+        if (BestCostAndShouldCostDetails?.BestCostId) {
+          let temp = []
+          let tempObj = {}
+          let list = _.map([...BestCostAndShouldCostDetails?.CostingIdList], 'CostingId')
 
-        setCostingIdList(list)
-        const filteredArray = list.filter((id) => id !== CostingId);
-        setNotSelectedCostingId(filteredArray)
+          setCostingIdList(list)
+          const filteredArray = list.filter((id) => id !== CostingId);
+          setNotSelectedCostingId(filteredArray)
 
 
-        setUniqueShouldCostingId(_.map(BestCostAndShouldCostDetails?.ShouldCostings, 'CostingId'))
-        let costing = [...BestCostAndShouldCostDetails?.ShouldCostings, ...BestCostAndShouldCostDetails?.CostingIdList, { CostingId: CostingId }]
+          setUniqueShouldCostingId(_.map(BestCostAndShouldCostDetails?.ShouldCostings, 'CostingId'))
+          let costing = [...BestCostAndShouldCostDetails?.ShouldCostings, ...BestCostAndShouldCostDetails?.CostingIdList, { CostingId: CostingId }]
 
-        dispatch(getMultipleCostingDetails(costing, (res) => {
-          if (res) {
-            res.map((item) => {
-              tempObj = formViewData(item?.data?.Data)
-              temp.push(tempObj[0])
-              return null
-            })
-            dispatch(rfqGetBestCostingDetails(BestCostAndShouldCostDetails?.BestCostId, (res) => {
-              tempObj = formViewData(res?.data?.Data, '', true)
-              tempObj[0].bestCost = true
-              temp.push(tempObj[0])
-              let dat = [...temp]
+          dispatch(getMultipleCostingDetails(costing, (res) => {
+            if (res) {
+              res.map((item) => {
+                tempObj = formViewData(item?.data?.Data)
+                temp.push(tempObj[0])
+                return null
+              })
+              dispatch(rfqGetBestCostingDetails(BestCostAndShouldCostDetails?.BestCostId, (res) => {
+                tempObj = formViewData(res?.data?.Data, '', true)
+                tempObj[0].bestCost = true
+                temp.push(tempObj[0])
+                let dat = [...temp]
 
-              let tempArrToSend = _.uniqBy(dat, 'costingId')
+                let tempArrToSend = _.uniqBy(dat, 'costingId')
 
-              dispatch(setCostingViewData([...tempArrToSend]))
-            }))
+                dispatch(setCostingViewData([...tempArrToSend]))
+              }))
+            }
+          }))
+        }
+        setCostingTypeId(ApprovalTypeId)
+        setNccPartQuantity(NCCPartQuantity)
+        setIsRegularized(IsRegularized)
+        setCostingHead(CostingHead)
+        const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
+        const Data = res?.data?.Data?.Costings[0].ApprovalDetails[0]
+        setIsRegularizationLimit(IsRegularizationLimitCrossed ? IsRegularizationLimitCrossed : false)
+        setIsLoader(false)
+        dispatch(storePartNumber({ partId: PartId, partNumber: PartNumber }))
+        setPartDetail(PartDetails)
+        setApprovalDetails(ApprovalDetails[0])
+        setApprovalLevelStep(ApprovalLevelStep)
+        setIsApprovalDone(IsSent)
+        setShowFinalLevelButton(!IsFinalLevelButtonShow)
+        setShowPushButton(IsPushedButtonShow)
+        setApprovalData({
+          DepartmentId: DepartmentId,
+          Technology: Technology,
+          TechnologyId: technologyId,
+          ApprovalProcessId: ApprovalProcessId,
+          ApprovalProcessSummaryId: ApprovalProcessSummaryId,
+          ApprovalNumber: ApprovalNumber,
+          CostingId: CostingId,
+          ReasonId: ApprovalDetails[0].ReasonId,
+          DecimalOption: DecimalOption,
+          LastCostingId: LastCostingId,
+          PartNumber: PartNumber,
+          VendorCode: Data.VendorCode,
+          VendorName: Data.VendorName,
+          Plant: Data.TypeOfCosting === 'VBC' ? Data.DestinationPlantCode : Data.PlantCode,
+          DepartmentCode: DepartmentCode,
+          NewPOPrice: Data.NewPOPrice,
+          EffectiveDate: ApprovalDetails[0].EffectiveDate,
+          VendorId: VendorId
+        })
+        let requestArray = []
+        let requestObject = {}
+
+        requestArray.push(CostingId)
+        requestObject.IsCreate = false
+        requestObject.CostingId = requestArray
+        setCostingIdArray(requestObject)
+
+        //MINDA
+        if (initialConfiguration?.IsReleaseStrategyConfigured) {
+          let requestObject = {
+            "RequestFor": "COSTING",
+            "TechnologyId": technologyId,
+            "LoggedInUserId": loggedInUserId(),
+            "ReleaseStrategyApprovalDetails": [{ CostingId: CostingId }]
           }
+          dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+            setReleaseStrategyDetails(res?.data?.Data)
+            if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+              setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
+            } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+              let obj = {
+                DepartmentId: DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: technologyId,
+                Mode: 'costing',
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
+              }
+              dispatch(checkFinalUser(obj, res => {
+                if (res && res.data && res.data.Result) {
+                  setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+                }
+              }))
+            } else if (res?.data?.Data?.IsFinalApprover) {
+              setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
+              return false
+            } else if (res?.data?.Result === false) {
+            } else {
+            }
+          }))
+        } else {
+          let obj = {
+            DepartmentId: DepartmentId,
+            UserId: loggedInUserId(),
+            TechnologyId: technologyId,
+            Mode: 'costing',
+            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
+          }
+          dispatch(checkFinalUser(obj, res => {
+            if (res && res.data && res.data.Result) {
+              setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+            }
+          }))
+        }
+
+        dispatch(getSingleCostingDetails(CostingId, res => {
+          let responseData = res?.data?.Data
+          setVendorCodeForSap(responseData.VendorCode)
+          let conditionArr = []
+          responseData.CostingPartDetails.CostingConditionResponse.forEach((item, index) => {
+            let obj = {
+              Lifnr: responseData.VendorCode,
+              Matnr: responseData.PartNumber,
+              Kschl: item.CostingConditionNumber,
+              Datab: DayTime(responseData.EffectiveDate).format('YYYY-MM-DD'),
+              Datbi: DayTime('9999-12-31').format('YYYY-MM-DD'),
+              Kbetr: item.ConditionType === "Percentage" ? item?.Percentage : item?.ConditionCost,
+              Konwa: INR,
+              Kpein: item?.ConditionQuantity ? String(item?.ConditionQuantity) : "1",
+              Kmein: "NO",
+            }
+            conditionArr.push(obj)
+          })
+
+          setConditionInfo(conditionArr)
         }))
       }
-      setCostingTypeId(ApprovalTypeId)
-      setNccPartQuantity(NCCPartQuantity)
-      setIsRegularized(IsRegularized)
-      setCostingHead(CostingHead)
-      const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
-      const Data = res?.data?.Data?.Costings[0].ApprovalDetails[0]
-      setIsRegularizationLimit(IsRegularizationLimitCrossed ? IsRegularizationLimitCrossed : false)
-      setIsLoader(false)
-      dispatch(storePartNumber({ partId: PartId, partNumber: PartNumber }))
-      setPartDetail(PartDetails)
-      setApprovalDetails(ApprovalDetails[0])
-      setApprovalLevelStep(ApprovalLevelStep)
-      setIsApprovalDone(IsSent)
-      setShowFinalLevelButton(!IsFinalLevelButtonShow)
-      setShowPushButton(IsPushedButtonShow)
-      setApprovalData({
-        DepartmentId: DepartmentId,
-        Technology: Technology,
-        TechnologyId: technologyId,
-        ApprovalProcessId: ApprovalProcessId,
-        ApprovalProcessSummaryId: ApprovalProcessSummaryId,
-        ApprovalNumber: ApprovalNumber,
-        CostingId: CostingId,
-        ReasonId: ApprovalDetails[0].ReasonId,
-        DecimalOption: DecimalOption,
-        LastCostingId: LastCostingId,
-        PartNumber: PartNumber,
-        VendorCode: Data.VendorCode,
-        VendorName: Data.VendorName,
-        Plant: Data.TypeOfCosting === 'VBC' ? Data.DestinationPlantCode : Data.PlantCode,
-        DepartmentCode: DepartmentCode,
-        NewPOPrice: Data.NewPOPrice,
-        EffectiveDate: ApprovalDetails[0].EffectiveDate,
-        VendorId: VendorId
-      })
-      let requestArray = []
-      let requestObject = {}
-
-      requestArray.push(CostingId)
-      requestObject.IsCreate = false
-      requestObject.CostingId = requestArray
-      setCostingIdArray(requestObject)
-
-      //MINDA
-      // if (initialConfiguration.IsReleaseStrategyConfigured) {
-      //   let requestObject = {
-      //     "RequestFor": "COSTING",
-      //     "TechnologyId": technologyId,
-      //     "LoggedInUserId": loggedInUserId(),
-      //     "ReleaseStrategyApprovalDetails": [{ CostingId: CostingId }]
-      //   }
-      //   dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-      //     setReleaseStrategyDetails(res?.data?.Data)
-      //     if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
-      //       setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
-      //     } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-      //       let obj = {
-      //         DepartmentId: DepartmentId,
-      //         UserId: loggedInUserId(),
-      //         TechnologyId: technologyId,
-      //         Mode: 'costing',
-      //         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
-      //       }
-      //       dispatch(checkFinalUser(obj, res => {
-      //         if (res && res.data && res.data.Result) {
-      //           setShowFinalLevelButton(res.data.Data.IsFinalApprover)
-      //         }
-      //       }))
-      //     } else if (res?.data?.Data?.IsFinalApprover) {
-      //       setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
-      //       return false
-      //     } else if (res?.data?.Result === false) {
-      //     } else {
-      //     }
-      //   }))
-      // } else {
-      let obj = {
-        DepartmentId: DepartmentId,
-        UserId: loggedInUserId(),
-        TechnologyId: technologyId,
-        Mode: 'costing',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
-      }
-      dispatch(checkFinalUser(obj, res => {
-        if (res && res.data && res.data.Result) {
-          setShowFinalLevelButton(res.data.Data.IsFinalApprover)
-        }
-      }))
-      // }
-
-      dispatch(getSingleCostingDetails(CostingId, res => {
-        let responseData = res?.data?.Data
-        setVendorCodeForSap(responseData.VendorCode)
-        let conditionArr = []
-        responseData.CostingPartDetails.CostingConditionResponse.forEach((item, index) => {
-          let obj = {
-            Lifnr: responseData.VendorCode,
-            Matnr: responseData.PartNumber,
-            Kschl: item.CostingConditionNumber,
-            Datab: DayTime(responseData.EffectiveDate).format('YYYY-MM-DD'),
-            Datbi: DayTime('9999-12-31').format('YYYY-MM-DD'),
-            Kbetr: item.ConditionType === "Percentage" ? item?.Percentage : item?.ConditionCost,
-            Konwa: INR,
-            Kpein: item?.ConditionQuantity ? String(item?.ConditionQuantity) : "1",
-            Kmein: "NO",
-          }
-          conditionArr.push(obj)
-        })
-
-        setConditionInfo(conditionArr)
-      }))
     }),
 
     )

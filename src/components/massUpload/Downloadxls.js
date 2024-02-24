@@ -187,9 +187,9 @@ class Downloadxls extends React.Component {
             case VBCADDMORE:
             case CBCADDMORE:
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(MHRMoreZBC), MHRMoreZBCTempData);
-            case 'BOP Domestic':
+            case `${showBopLabel()} Domestic`:
                 return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_DOMESTIC, '', true), BOP_ZBC_DOMESTIC_TempData);
-            case 'BOP Import':
+            case `${showBopLabel()} Import`:
                 return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_IMPORT, '', true), BOP_ZBC_IMPORT_TempData);
             case 'Actual Volume':
                 return this.returnExcelColumn(VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA);
@@ -304,7 +304,6 @@ class Downloadxls extends React.Component {
                 dataList.push(addObj)
             }
         }
-        // Replace labels based on the file name containing "BOP domestic" or "BOP import"
 
         if (isRm && failedData) {
             const notesInTemp = TempData.some(item => item.Note)
@@ -316,6 +315,7 @@ class Downloadxls extends React.Component {
                 }
             }
         }
+        // Replace labels based on the file name containing "BOP domestic" or "BOP import"
         if (fileName.includes('BOP Domestic') || fileName.includes('BOP Import')) {
             const bopMasterName = showBopLabel();
             // for downloading rm with rotes on upload
@@ -337,7 +337,7 @@ class Downloadxls extends React.Component {
 
         // DOWNLOAD FILE:- CALLED WHEN ZBC FILE FAILED   hideElement={true}
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
-        if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()}  Domestic` || fileName === `${showBopLabel()}  Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
+        if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
 
             return (
                 <ExcelFile hideElement={true} filename={`${fileName} ZBC`} fileExtension={'.xls'} >
@@ -355,7 +355,7 @@ class Downloadxls extends React.Component {
         }
 
         // DOWNLOAD FILE:- CALLED WHEN VBC FILE FAILED
-        if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION || bopType === DETAILED_BOP) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()}  Domestic` || fileName === `${showBopLabel()}  Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
+        if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION || bopType === DETAILED_BOP) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
 
             return (
                 <ExcelFile hideElement={true} filename={`${fileName}VBC`} fileExtension={'.xls'} >
@@ -364,7 +364,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN CBC FILE FAILED
-        if (isFailedFlag && (costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()}  Domestic` || fileName === `${showBopLabel()}  Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
+        if (isFailedFlag && (costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
 
             return (
                 <ExcelFile hideElement={true} filename={`${fileName} CBC`} fileExtension={'.xls'} >

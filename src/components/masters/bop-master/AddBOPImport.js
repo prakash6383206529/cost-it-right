@@ -23,7 +23,7 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import DayTime from '../../common/DayTimeWrapper'
-import { ASSEMBLY, AcceptableBOPUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
+import { ASSEMBLY, AcceptableBOPUOM, FORGING, LOGISTICS, SHEETMETAL } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
@@ -407,6 +407,17 @@ class AddBOPImport extends Component {
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ client: newValue });
+      const { costingTypeId, currency, effectiveDate, vendorName } = this.state;
+      if (newValue && newValue?.length !== 0 && this.state.currency && this.state.currency.length !== 0 && effectiveDate) {
+        this.props.getExchangeRateByCurrency(currency.label, (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID, newValue.value, false, res => {
+          if (Object.keys(res.data.Data).length === 0) {
+            this.setState({ showWarning: true })
+          } else {
+            this.setState({ showWarning: false })
+          }
+          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }, () => { this.handleCalculation() });
+        });
+      }
     } else {
       this.setState({ client: [] })
     }
@@ -656,7 +667,7 @@ class AddBOPImport extends Component {
       costingSpecifiTechnology &&
         costingSpecifiTechnology.map((item) => {
           if (item.Value === '0') return false
-          if (item.Value === String(ASSEMBLY)) return false
+          if (item.Value === String(ASSEMBLY) || item.Value === String(LOGISTICS)) return false
           temp.push({ label: item.Text, value: item.Value })
           return null
         })
@@ -735,6 +746,17 @@ class AddBOPImport extends Component {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false, }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
+        const { costingTypeId, currency, effectiveDate, client } = this.state;
+        if (newValue && newValue?.length !== 0 && this.state.currency && this.state.currency.length !== 0 && effectiveDate) {
+          this.props.getExchangeRateByCurrency(currency.label, (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? newValue.value : EMPTY_GUID, client.value, false, res => {
+            if (Object.keys(res.data.Data).length === 0) {
+              this.setState({ showWarning: true })
+            } else {
+              this.setState({ showWarning: false })
+            }
+            this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }, () => { this.handleCalculation() });
+          });
+        }
       });
     } else {
       this.setState({ vendorName: [], })
@@ -812,8 +834,8 @@ class AddBOPImport extends Component {
   handleCurrency = (newValue) => {
     const { effectiveDate } = this.state
     if (newValue && newValue !== '') {
-      if (newValue && newValue.length !== 0 && effectiveDate) {
-        const { costingTypeId, vendorName, client } = this.state;
+      const { costingTypeId, vendorName, client } = this.state;
+      if (newValue && newValue.length !== 0 && effectiveDate && (vendorName?.length !== 0 || client?.length !== 0)) {
         this.props.getExchangeRateByCurrency(newValue.label, (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID, client.value, false, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true });
@@ -936,8 +958,8 @@ class AddBOPImport extends Component {
   handleEffectiveDateChange = (date) => {
     const { currency, effectiveDate } = this.state
     if (date !== effectiveDate) {
-      if (currency && currency.length !== 0 && date) {
-        const { costingTypeId, vendorName, client } = this.state;
+      const { costingTypeId, vendorName, client } = this.state;
+      if (currency && currency.length !== 0 && date && (vendorName?.length !== 0 || client?.length !== 0)) {
         this.props.getExchangeRateByCurrency(currency.label, (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId, DayTime(date).format('YYYY-MM-DD'), (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID, client.value, false, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true });
