@@ -50,7 +50,7 @@ function TabAssemblyTechnology(props) {
         // dispatch(setAllCostingInArray(res.data.DataList,false))
         let tempArr = [];
         tempArr = [res?.data?.DataList[0], ...res?.data?.DataList[0]?.CostingChildPartDetails]
-        reactLocalStorage.setObject('costingArray', tempArr);
+        sessionStorage.setItem('costingArray', JSON.stringify(tempArr));
 
       }))
     }

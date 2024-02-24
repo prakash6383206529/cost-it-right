@@ -59,7 +59,7 @@ function AddBOPHandling(props) {
       setBOPCost(BOPTotalCost)
       setBOPHandlingType(subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingChargeType)
     } else {
-      const childPartDetail = reactLocalStorage.getObject('costingArray')
+      const childPartDetail = JSON.parse(sessionStorage.getItem('costingArray'))
       let BOPSum = 0
       childPartDetail && childPartDetail.map((el) => {
         if (el.PartType === 'BOP' && el.AssemblyPartNumber === item?.PartNumber) {
