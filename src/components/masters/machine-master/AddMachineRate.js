@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, isDirty, clearFields } from "redux
 import { Row, Col, Table, Label } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
-  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation, getNameBySplitting
+  checkWhiteSpaces, maxLength80, maxLength10, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation, getNameBySplitting, number
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList } from '../../../actions/Common';
@@ -23,7 +23,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { AcceptableMachineUOM } from '../../../config/masterData'
+import { AcceptableMachineUOM, LOGISTICS } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import attachClose from '../../../assests/images/red-cross.png'
@@ -530,7 +530,7 @@ class AddMachineRate extends Component {
     const temp = [];
     if (label === 'technology') {
       costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || (item.Value === String(LOGISTICS))) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -1768,9 +1768,9 @@ class AddMachineRate extends Component {
                           <Field
                             label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}
-                            type="number"
+                            type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, hashValidation]}
+                            validate={[number, maxLength10, decimalLengthsix, hashValidation]}
                             component={renderText}
                             onChange={this.handleMachineRate}
                             required={true}

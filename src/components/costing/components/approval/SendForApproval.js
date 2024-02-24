@@ -18,7 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 // import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBC, VBCTypeId, ZBC, ZBCTypeId, RELEASESTRATEGYTYPEID6 } from "../../../../config/constants";
+import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBC, VBCTypeId, ZBC, ZBCTypeId, RELEASESTRATEGYTYPEID6, ReleaseStrategyB6 } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import PushSection from '../../../common/PushSection'
@@ -29,8 +29,6 @@ import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { transformApprovalItem } from '../../../common/CommonFunctions'
-import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
-
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -121,7 +119,7 @@ const SendForApproval = (props) => {
         DepartmentId: departObj[0]?.Value,
         TechnologyId: technologyId,
         ReasonId: 0, // key only for minda
-        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(ApprovalTypeId),
+        ApprovalTypeId: ApprovalTypeId,
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
@@ -250,13 +248,13 @@ const SendForApproval = (props) => {
       return tempDropdownList
     }
 
-    if (label === 'ApprovalType') {
-      approvalTypeSelectList && approvalTypeSelectList.map((item) => {
-        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4)) tempDropdownList.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return tempDropdownList
-    }
+    // if (label === 'ApprovalType') {
+    //   approvalTypeSelectList && approvalTypeSelectList.map((item) => {
+    //     if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4)) tempDropdownList.push({ label: item.Text, value: item.Value })
+    //     return null
+    //   })
+    //   return tempDropdownList
+    // }
   }
 
   /**
@@ -265,7 +263,6 @@ const SendForApproval = (props) => {
    */
   const handleApprovalTypeChange = (newValue) => {
     setApprovalType(newValue.value)
-    setValue('dept', '')
     setApprover('')
     setValue('approver', '')
     userTechnology(newValue.value, technologyLevelsList)
@@ -294,7 +291,7 @@ const SendForApproval = (props) => {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: newValue.value,
         TechnologyId: props.technologyId,
-        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(approvalType),
+        ApprovalTypeId: approvalType,
       }
       let Data = []
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
@@ -548,7 +545,7 @@ const SendForApproval = (props) => {
         SenderId: userData.LoggedInUserId,
         SenderRemark: data.remarks,
         LoggedInUserId: userData.LoggedInUserId,
-        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0].costingTypeId),
+        ApprovalTypeId: viewApprovalData[0].costingTypeId,
         IsTentativeSaleRate: tentativeCost
         // Quantity: getValues('Quantity'),
         // Attachment: files,

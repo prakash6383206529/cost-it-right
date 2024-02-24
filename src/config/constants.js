@@ -2051,6 +2051,7 @@ export const VIEW_COSTING_DATA = {
   // costingName: '',
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'Net Cost (Effective from)',
+  partType: 'Part Type',
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
@@ -2160,6 +2161,10 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
   {
     label: 'Net Cost (Effective from)',
     value: 'PoPriceWithDate'
+  },
+  {
+    label: 'Part Type',
+    value: 'partType'
   },
   {
     label: 'Part Number',
@@ -2286,42 +2291,80 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'overHeadApplicablity'
   },
   {
+    label: 'Overhead %',
+    value: 'overHeadPercent'
+  },
+  {
     label: 'Overhead Value',
     value: 'overHeadApplicablityValue'
+  },
+  {
+    label: 'Overhead Remark',
+    value: 'OverHeadRemark'
   },
   {
     label: 'Profit Applicability',
     value: 'ProfitApplicablity'
   },
   {
+    label: 'Profit %',
+    value: 'profitPercent'
+  },
+  {
     label: 'Profit Value',
     value: 'ProfitApplicablityValue'
-
-
+  },
+  {
+    label: 'Profit Remark',
+    value: 'ProfitRemark'
   },
   {
     label: 'Rejection Applicability',
     value: 'rejectionApplicablity'
   },
   {
+    label: 'Rejection %',
+    value: 'rejectionPercent'
+  },
+  {
     label: 'Rejection Value',
     value: 'rejectionApplicablityValue'
+  },
+  {
+    label: 'Rejection Remark',
+    value: 'RejectionRemark'
   },
   {
     label: 'ICC Applicability',
     value: 'iccApplicablity'
   },
   {
+    label: 'ICC %',
+    value: 'iccPercent'
+  },
+  {
     label: 'ICC Value',
     value: 'iccApplicablityValue'
+  },
+  {
+    label: 'ICC Remark',
+    value: 'ICCRemark'
   },
   {
     label: 'Payment Applicability',
     value: 'paymentApplicablity'
   },
   {
+    label: 'Payment %',
+    value: 'paymentPercent'
+  },
+  {
     label: 'Payment Value',
     value: 'paymentcApplicablityValue'
+  },
+  {
+    label: 'Payment Remark',
+    value: 'PaymentTermRemark'
   },
   {
     label: 'Net Overhead Profits',
@@ -2834,7 +2877,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.1.313";
+export const VERSION = "V2.1.314";
 
 
 

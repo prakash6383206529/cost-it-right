@@ -104,7 +104,7 @@ function SurfaceTreatmentCost(props) {
           LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
-          SurfaceTreatmentCost: el.Rate * 1,
+          SurfaceTreatmentCost: (checkForNull(el.Rate) * checkForNull(el?.Quantity)) + (checkForNull(el?.LabourRate) * checkForNull(el?.LabourQuantity)),
           SurfaceTreatmentDetailsId: '',
         }
       })

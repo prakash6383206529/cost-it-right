@@ -121,6 +121,7 @@ function AssemblySimulationListing(props) {
     const cancelVerifyPage = () => {
         setShowVerifyPage(false)
         setSelectedRowData([])
+        setToken('')
         props?.showHide()
     }
 

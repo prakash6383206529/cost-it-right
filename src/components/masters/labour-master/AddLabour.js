@@ -728,7 +728,7 @@ class AddLabour extends Component {
         LabourId: LabourId,
         IsContractBase: IsEmployeContractual,
         IsVendor: IsVendor,
-        VendorId: IsEmployeContractual ? vendorName.value : '',
+        VendorId: (IsEmployeContractual && (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId)) ? vendorName.value : '',
         StateId: StateName.value,
         LoggedInUserId: loggedInUserId(),
         LabourDetails: gridTable,
@@ -756,7 +756,7 @@ class AddLabour extends Component {
         ProductId: product.value,
         IsContractBase: IsEmployeContractual,
         IsVendor: IsVendor,
-        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
+        VendorId: (IsEmployeContractual && (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId)) ? vendorName.value : '',
         StateId: StateName.value,
         LabourDetails: gridTable,
         Plants: [
@@ -1189,6 +1189,7 @@ class AddLabour extends Component {
                                 type="button"
                                 className={"reset-btn pull-left ml5"}
                                 onClick={this.resetGridData}
+                                disabled={isViewMode}
                               >
                                 Reset
                               </button>

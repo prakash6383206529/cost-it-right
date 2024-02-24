@@ -1367,72 +1367,70 @@ export function getListingForSimulationCombined(requestData, master, callback) {
         }
         const request = axios.post(`${API.getListingForSimulationCombined}`, requestData, config());
         request.then((response) => {
-            if (response.data.Result) {
-                switch (master) {
-                    case RMDOMESTIC:
-                        dispatch({
-                            type: GET_RM_DOMESTIC_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case RMIMPORT:
-                        dispatch({
-                            type: GET_RM_IMPORT_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case BOPDOMESTIC:
-                        dispatch({
-                            type: GET_BOP_DOMESTIC_DATA_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case BOPIMPORT:
-                        dispatch({
-                            type: GET_BOP_IMPORT_DATA_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case OPERATIONS:
-                    case SURFACETREATMENT:
-                        dispatch({
-                            type: GET_OPERATION_COMBINED_DATA_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case MACHINERATE:
-                        dispatch({
-                            type: GET_MACHINE_DATALIST_SUCCESS,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case EXCHNAGERATE:
-                        dispatch({
-                            type: EXCHANGE_RATE_DATALIST,
-                            payload: response.data.Data
-                        })
-                        break;
-                    case COMBINED_PROCESS:
-                        dispatch({
-                            type: GET_COMBINED_PROCESS_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    //ADD CASE FOR COMBINED PROCESS IN RE (REMINDER)
-
-                    default:
-                        break;
-                }
-
-            }
             callback(response)
+            switch (master) {
+                case RMDOMESTIC:
+                    dispatch({
+                        type: GET_RM_DOMESTIC_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case RMIMPORT:
+                    dispatch({
+                        type: GET_RM_IMPORT_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case BOPDOMESTIC:
+                    dispatch({
+                        type: GET_BOP_DOMESTIC_DATA_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case BOPIMPORT:
+                    dispatch({
+                        type: GET_BOP_IMPORT_DATA_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case OPERATIONS:
+                case SURFACETREATMENT:
+                    dispatch({
+                        type: GET_OPERATION_COMBINED_DATA_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case MACHINERATE:
+
+                    dispatch({
+                        type: GET_MACHINE_DATALIST_SUCCESS,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case EXCHNAGERATE:
+                    dispatch({
+                        type: EXCHANGE_RATE_DATALIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+                case COMBINED_PROCESS:
+                    dispatch({
+                        type: GET_COMBINED_PROCESS_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                //ADD CASE FOR COMBINED PROCESS IN RE (REMINDER)
+
+                default:
+                    break;
+            }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);

@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
 import { autoCompleteDropdown } from "../../common/CommonFunctions";
 import { getClientSelectList } from "../actions/Client";
-import { AcceptableOperationUOM } from "../../../config/masterData";
+import { AcceptableOperationUOM, LOGISTICS } from "../../../config/masterData";
 import { getUOMSelectList, getVendorNameByVendorSelectList } from "../../../actions/Common";
 import DayTime from "../../common/DayTimeWrapper";
 import { createOperationsAPI, fileUploadOperation, getOperationPartSelectList, updateOperationAPI } from "../actions/OtherOperation";
@@ -371,7 +371,7 @@ function AddMoreOperation(props) {
     const onSubmit = (values) => {
 
         let technologyArray = []
-        let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: '', }]
+        let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: ' ', }]
 
         values && values.technology && values.technology.map((item, index) => {
             let obj = {}
@@ -524,7 +524,7 @@ function AddMoreOperation(props) {
 
         if (label === 'technology') {
             costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
-                if (item.Value === '0') return false;
+                if (item.Value === '0' || (item.Value === String(LOGISTICS))) return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });

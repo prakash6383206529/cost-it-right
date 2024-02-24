@@ -25,7 +25,7 @@ import { MESSAGES } from '../../../config/message';
 import LoaderCustom from '../../common/LoaderCustom';
 
 function RunSimulationDrawer(props) {
-    const { objs, masterId, date } = props
+    const { objs, masterId, date, simulationTechnologyId } = props
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { register, control, formState: { errors }, handleSubmit, getValues, setValue } = useForm({
@@ -177,22 +177,51 @@ function RunSimulationDrawer(props) {
         if (elementObj.Text === "Additional Other Cost") {
             setInputOtherCost(!inputOtherCost)
             setDisableDiscountAndOtherCostSecond(!disableDiscountAndOtherCostSecond)
-            //sethideDiscountAndOtherCost(!hideDiscountAndOtherCost)
+            setValue('OtherCost', "")
+            errors.OtherCost = {}
+            setValue('otherCostApplicability', "")
+            setValue('OtherCostPercent', "")
+            errors.OtherCostPercent = {}
+            setOtherCostApplicability([])
         }
 
         if (elementObj.Text === "Additional Discount") {
             setinputAdditionalDiscount(!inputAdditionalDiscount)
             setDisableDiscountAndOtherCost(!disableDiscountAndOtherCost)
+            setValue('Discount', "")
+            errors.Discount = {}
+            setValue('DiscountCostApplicability', "")
+            setValue('DiscountPercent', "")
+            errors.DiscountPercent = {}
+            setDiscountCostApplicability([])
         }
 
         if (elementObj.Text === "Tool") {
             setDisableAdditionalTool(!disableAdditionalTool)
+            setValue('Tool', "")
+            errors.Tool = {}
+            setValue('ToolCostApplicability', "")
+            setValue('ToolPercent', "")
+            errors.ToolPercent = {}
+            setToolCostApplicablity([])
         }
         if (elementObj.Text === "Freight") {
             setDisableAdditionalFreight(!disableAdditionalFreight)
+            setValue('Freight', "")
+            errors.Freight = {}
+            setValue('FreightCostApplicability', "")
+            setValue('FreightPercent', "")
+            errors.FreightPercent = {}
+            setFreightCostApplicablity([])
         }
         if (elementObj.Text === "Packaging") {
             setDisableAdditionalPackaging(!disableAdditionalPackaging)
+            setValue('Packaging', "")
+            errors.Packaging = {}
+            setValue('PackagingCostApplicability', "")
+            setValue('PackagingPercent', "")
+            errors.PackagingPercent = {}
+            setPackagingCostApplicablity([])
         }
 
     }
@@ -417,25 +446,52 @@ function RunSimulationDrawer(props) {
 
     const onChange = () => {
         setToggleSwitchAdditionalOtherCOst(!toggleSwitchAdditionalOtherCOst)
-
+        setValue('OtherCost', "")
+        errors.OtherCost = {}
+        setValue('otherCostApplicability', "")
+        setValue('OtherCostPercent', "")
+        errors.OtherCostPercent = {}
+        setOtherCostApplicability([])
     }
 
     const onChangeAdditionalDiscount = () => {
         setToggleSwitchAdditionalDiscount(!toggleSwitchAdditionalDiscount)
-
+        setValue('Discount', "")
+        errors.Discount = {}
+        setValue('DiscountCostApplicability', "")
+        setValue('DiscountPercent', "")
+        errors.DiscountPercent = {}
+        setDiscountCostApplicability([])
     }
 
     const onChangeAdditionalTool = () => {
         setToggleSwitchAdditionalTool(!toggleSwitchAdditionalTool)
+        setValue('Tool', "")
+        errors.Tool = {}
+        setValue('ToolCostApplicability', "")
+        setValue('ToolPercent', "")
+        errors.ToolPercent = {}
+        setToolCostApplicablity([])
     }
 
     const onChangeAdditionalPackaging = () => {
         setToggleSwitchAdditionalPackaging(!toggleSwitchAdditionalPackaging)
+        setValue('Packaging', "")
+        errors.Packaging = {}
+        setValue('PackagingCostApplicability', "")
+        setValue('PackagingPercent', "")
+        errors.PackagingPercent = {}
+        setPackagingCostApplicablity([])
     }
 
     const onChangeAdditionalFreight = () => {
         setToggleSwitchAdditionalFreight(!toggleSwitchAdditionalFreight)
-
+        setValue('Freight', "")
+        errors.Freight = {}
+        setValue('FreightCostApplicability', "")
+        setValue('FreightPercent', "")
+        errors.FreightPercent = {}
+        setFreightCostApplicablity([])
     }
 
     /**
@@ -449,8 +505,14 @@ function RunSimulationDrawer(props) {
         if (label === 'Applicability') {
             costingHead && costingHead.map(item => {
                 if (item.Value === '0' || item.Value === '8') return false;
-                if (!item.Text.includes('Part')) {
-                    temp.push({ label: item.Text, value: item.Value })
+                if (Number(simulationTechnologyId) === ASSEMBLY_TECHNOLOGY_MASTER) {
+                    if (!item.Text.includes('RM')) {
+                        temp.push({ label: item.Text, value: item.Value })
+                    }
+                } else {
+                    if (!item.Text.includes('Part')) {
+                        temp.push({ label: item.Text, value: item.Value })
+                    }
                 }
                 return null;
             });
@@ -724,6 +786,10 @@ function RunSimulationDrawer(props) {
                                                                                                     message: 'Invalid Number.'
                                                                                                 },
                                                                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                                                                max: {
+                                                                                                    value: props?.minimumPoPrice,
+                                                                                                    message: `Discount value should be less than selected costing's PO Price. Maximum value of discount should be (${props?.minimumPoPrice})`
+                                                                                                }
                                                                                             }}
                                                                                             handleChange={() => { }}
                                                                                             defaultValue={""}

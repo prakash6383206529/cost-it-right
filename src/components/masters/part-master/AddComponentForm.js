@@ -27,7 +27,8 @@ class AddComponentForm extends Component {
       isPartNoNotSelected: false,
       isLoader: false,
       showErrorOnFocus: false,
-      partName: ''
+      partName: '',
+      mainLoader: false
     }
   }
 
@@ -78,10 +79,11 @@ class AddComponentForm extends Component {
   */
   handlePartChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ part: newValue, isPartNoNotSelected: false }, () => {
+      this.setState({ part: newValue, isPartNoNotSelected: false, mainLoader: true }, () => {
         const { part } = this.state;
         this.props.getDrawerComponentPartData(part.value, res => {
           let Data = res.data.Data
+          this.setState({ mainLoader: false })
           this.props.change("ECNNumber", Data.ECNNumber)
           this.props.change('DrawingNumber', Data.DrawingNumber)
           this.props.change('RevisionNumber', Data.RevisionNumber)
@@ -258,6 +260,7 @@ class AddComponentForm extends Component {
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
+          {this.state.mainLoader && <LoaderCustom />}
           <Row>
             <Col md="6">
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
