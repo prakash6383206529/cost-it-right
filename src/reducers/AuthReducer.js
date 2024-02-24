@@ -41,6 +41,7 @@ import {
     GET_USERS_MASTER_LEVEL_API,
     GET_RFQ_USER_DATA_SUCCESS,
 } from '../../src/config/constants'
+import DayTime from '../components/common/DayTimeWrapper'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
 
@@ -192,11 +193,18 @@ export default function authReducer(state = initialState, action) {
                 userList: action.payload
             };
         case GET_USER_DATA_SUCCESS:
+            let arr = [];
+            arr = action.payload && action.payload.filter((item) => {
+                item.CreatedDateExcel = item.CreatedDate ? DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss') : ""
+                item.ModifiedDateExcel = item.ModifiedDate ? DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss') : ""
+                return item
+            }
+            )
             return {
                 ...state,
                 loading: false,
                 error: true,
-                userDataList: commonUserFunction(action.payload)
+                userDataList: commonUserFunction(arr)
             };
         case GET_RFQ_USER_DATA_SUCCESS:
             return {

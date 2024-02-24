@@ -348,7 +348,8 @@ const UsersListing = (props) => {
 		customNoRowsOverlay: NoContentFound,
 		statusButtonFormatter: statusButtonFormatter,
 		hyphenFormatter: hyphenFormatter,
-		linkableFormatter: linkableFormatter
+		linkableFormatter: linkableFormatter,
+		dateRenderer: dateRenderer
 	};
 
 	return (

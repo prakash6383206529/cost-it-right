@@ -44,13 +44,13 @@ function AssemblySurfaceTreatment(props) {
           let Data = res.data.DataList[0];
           // props.toggleAssembly(Params, Data)
           let array = [];
-          array = reactLocalStorage.getObject('surfaceCostingArray')
+          array = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
             array.push(item)
             return null
           })
           let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
-          reactLocalStorage.setObject('surfaceCostingArray', uniqueArary);
+          sessionStorage.setItem('surfaceCostingArray', JSON.stringify(uniqueArary));
           props.toggleAssembly(Params, Data)
 
           if (IsCollapse === false) {
