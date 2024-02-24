@@ -422,8 +422,8 @@ function CostingDetails(props) {
           if (response.data.Result) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
-              reactLocalStorage.setObject('costingArray', [])
-              reactLocalStorage.setObject('surfaceCostingArray', [])
+              sessionStorage.setItem('costingArray', JSON.stringify([]))
+              sessionStorage.setItem('surfaceCostingArray', JSON.stringify([]))
               setValue('PartName', Data?.PartName ? Data.PartName : '')
               setValue('Description', Data?.Description ? Data.Description : '')
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
@@ -562,8 +562,8 @@ function CostingDetails(props) {
       //   }
       // })))
 
-      // reactLocalStorage.setObject('costingArray', [])
-      // reactLocalStorage.setObject('surfaceCostingArray', [])
+      // sessionStorage.setItem('costingArray',JSON.stringify( [])
+      // sessionStorage.setItem('surfaceCostingArray', JSON.stringify([]))
       setIsOpenVendorSOBDetails(true)
 
     } else {
@@ -1608,8 +1608,8 @@ function CostingDetails(props) {
       dispatch(isDiscountDataChange(false))
       dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
 
-      reactLocalStorage.setObject('costingArray', [])
-      reactLocalStorage.setObject('surfaceCostingArray', [])
+      sessionStorage.setItem('costingArray', JSON.stringify([]))
+      sessionStorage.setItem('surfaceCostingArray', JSON.stringify([]))
       dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
       dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
       dispatch(setComponentItemData({}, () => { }))

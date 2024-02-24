@@ -388,7 +388,6 @@ class AddMachineRate extends Component {
           this.props.change('Specification', Data.Specification)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
-            let plantObj;
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
               return {
                 processName: el.ProcessName,
@@ -399,11 +398,6 @@ class AddMachineRate extends Component {
               }
             })
 
-            if ((getConfigurationKey().IsDestinationPlantConfigure && (Data.CostingTypeId === VBCTypeId)) || Data.CostingTypeId === CBCTypeId) {
-              plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
-            } else {
-              plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
-            }
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -412,7 +406,7 @@ class AddMachineRate extends Component {
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
               selectedTechnology: Data.Technology[0].Technology !== undefined ? { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId } : [],
-              selectedPlants: plantObj,
+              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               machineType: Data.MachineType !== undefined ? { label: Data.MachineType, value: Data.MachineTypeId } : [],
               processGrid: MachineProcessArray,

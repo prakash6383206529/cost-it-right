@@ -392,12 +392,15 @@ class AddMoreDetails extends Component {
 
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.props.change('TotalFuelCostPerYear', Data.TotalFuelCostPerYear ? Data.TotalFuelCostPerYear : '')
+          this.props.change('ConsumptionPerYear', Data.ConsumptionPerYear ? Data.ConsumptionPerYear : '')
+          this.props.change('FuelCostPerUnit', Data.FuelCostPerUnit ? Data.FuelCostPerUnit : '')
           this.setState({ minDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           const { machineType, effectiveDate } = this.state;
           if (machineType.value) {
             const data = {
               machineTypeId: machineType?.value,
-              plantId: Data.costingTypeId !== ZBCTypeId ? Data.DestinationPlantId : Data.Plant[0].PlantId,
+              plantId: Data.Plant[0].PlantId,
               effectiveDate: effectiveDate
             }
             this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
@@ -412,12 +415,6 @@ class AddMoreDetails extends Component {
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
             const fuelObj = fuelDataByPlant && fuelDataByPlant.find(item => String(item.Value) === String(Data.FuleId))
-            let plantObj;
-            if ((getConfigurationKey().IsDestinationPlantConfigure && (Data.CostingTypeId === VBCTypeId)) || Data.CostingTypeId === CBCTypeId) {
-              plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
-            } else {
-              plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
-            }
             let LabourArray = Data && Data.MachineLabourRates?.map(el => {
               return {
                 labourTypeName: el.LabourTypeName,
@@ -463,15 +460,14 @@ class AddMoreDetails extends Component {
               isLoader: false,
               IsPurchased: Data.OwnershipIsPurchased,
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
-              // selectedPlants: { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId },  //RE
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
-              selectedPlants: plantObj,
+              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
               DateOfPurchase: DayTime(Data.DateOfPurchase).isValid() === true ? new Date(DayTime(Data.DateOfPurchase)) : '',
-              IsAnnualMaintenanceFixed: Data.IsMaintanceFixed,
-              IsAnnualConsumableFixed: Data.IsConsumableFixed,
-              IsInsuranceFixed: Data.IsInsuranceFixed,
+              IsAnnualMaintenanceFixed: Data.IsMaintanceFixed === true ? false : true,
+              IsAnnualConsumableFixed: Data.IsConsumableFixed === true ? false : true,
+              IsInsuranceFixed: Data.IsInsuranceFixed === true ? false : true,
               IsUsesFuel: Data.IsUsesFuel,
               IsUsesSolarPower: Data.IsUsesSolarPower,
               fuelType: fuelObj && fuelObj !== undefined ? { value: fuelObj.Value } : [],
@@ -488,7 +484,9 @@ class AddMoreDetails extends Component {
               machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit },
               crmHeads: crmHeadObj,
               updateCrmHeadObj: crmHeadObj,
-              IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost
+              IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost,
+              // selectedPlants: Data?.Plant ? { label: Data?.Plant[0]?.PlantName, value: Data?.Plant[0]?.PlantId } : null
+
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
             this.props.change('NumberOfWorkingHoursPerYear', Data.NumberOfWorkingHoursPerYear ? Data.NumberOfWorkingHoursPerYear : '')
           }, 2000)
@@ -1305,7 +1303,7 @@ class AddMoreDetails extends Component {
       const ConsumptionPerYear = checkForNull(fieldsObj?.ConsumptionPerYear)
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
-      this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(fieldsObj.FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
     } else {
 
       // if (IsUsesSolarPower) {
@@ -2045,13 +2043,13 @@ class AddMoreDetails extends Component {
       EquityValue: machineFullValue.EquityValue,
       RateOfInterestPercentage: values.RateOfInterestPercentage,
       RateOfInterestValue: machineFullValue.RateOfInterestValue,
-      IsMaintanceFixed: IsAnnualMaintenanceFixed,
+      IsMaintanceFixed: IsAnnualMaintenanceFixed === true ? false : true,
       AnnualMaintancePercentage: values.AnnualMaintancePercentage,
       AnnualMaintanceAmount: IsAnnualMaintenanceFixed ? machineFullValue.MaintananceCost : values.AnnualMaintanceAmount,
-      IsConsumableFixed: IsAnnualConsumableFixed,
+      IsConsumableFixed: IsAnnualConsumableFixed === true ? false : true,
       AnnualConsumablePercentage: values.AnnualConsumablePercentage,
       AnnualConsumableAmount: IsAnnualConsumableFixed ? machineFullValue.ConsumableCost : values.AnnualConsumableAmount,
-      IsInsuranceFixed: IsInsuranceFixed,
+      IsInsuranceFixed: IsInsuranceFixed === true ? false : true,
       AnnualInsurancePercentage: values.AnnualInsurancePercentage,
       AnnualInsuranceAmount: IsInsuranceFixed ? machineFullValue.InsuranceCost : values.AnnualInsuranceAmount,
       BuildingCostPerSquareFeet: values.BuildingCostPerSquareFeet,
@@ -2176,7 +2174,6 @@ class AddMoreDetails extends Component {
       } else {
         this.setState({ IsSendForApproval: false })
       }
-
       const formData = {
         IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
         CostingTypeId: this.state.CostingTypeId,
@@ -2206,13 +2203,13 @@ class AddMoreDetails extends Component {
         EquityValue: machineFullValue.EquityValue,
         RateOfInterestPercentage: values.RateOfInterestPercentage,
         RateOfInterestValue: machineFullValue.RateOfInterestValue,
-        IsMaintanceFixed: IsAnnualMaintenanceFixed,
+        IsMaintanceFixed: IsAnnualMaintenanceFixed === true ? false : true,
         AnnualMaintancePercentage: values.AnnualMaintancePercentage,
         AnnualMaintanceAmount: IsAnnualMaintenanceFixed ? machineFullValue.MaintananceCost : values.AnnualMaintanceAmount,
-        IsConsumableFixed: IsAnnualConsumableFixed,
+        IsConsumableFixed: IsAnnualConsumableFixed === true ? false : true,
         AnnualConsumablePercentage: values.AnnualConsumablePercentage,
         AnnualConsumableAmount: IsAnnualConsumableFixed ? machineFullValue.ConsumableCost : values.AnnualConsumableAmount,
-        IsInsuranceFixed: IsInsuranceFixed,
+        IsInsuranceFixed: IsInsuranceFixed === true ? false : true,
         AnnualInsurancePercentage: values.AnnualInsurancePercentage,
         AnnualInsuranceAmount: IsInsuranceFixed ? machineFullValue.InsuranceCost : values.AnnualInsuranceAmount,
         BuildingCostPerSquareFeet: values.BuildingCostPerSquareFeet,
@@ -2248,9 +2245,9 @@ class AddMoreDetails extends Component {
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-        Plant: this.state.CostingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
+        Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         selectedPlants: selectedPlants,
-        DestinationPlantId: this.state.CostingTypeId !== ZBCTypeId ? selectedPlants.value : null,
+        DestinationPlantId: '',
         Attachements: files,
         VendorPlant: [],
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -2285,7 +2282,6 @@ class AddMoreDetails extends Component {
         MachineId: MachineID,
         IsVendor: false,
       }
-
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
         if (IsFinancialDataChanged && isEditFlag) {
 
@@ -3862,7 +3858,7 @@ class AddMoreDetails extends Component {
                               <Col md="3">
                                 <Field
                                   label={`Total Power Cost/Annum(INR)`}
-                                  name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalFuelCostPerYear"}
+                                  name={"TotalFuelCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
                                   validate={[number]}
@@ -4629,7 +4625,7 @@ function mapStateToProps(state) {
     'AnnualInsurancePercentage', 'AnnualInsuranceAmount',
     'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
     'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear', 'TotalPowerCostPerHour',
-    'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
+    'FuelCostPerUnit', 'ConsumptionPerYear',
     'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification', 'LoanCRMHead',
     'InterestCRMHead', 'WorkingShiftCRMHead', 'DepreciationCRMHead', 'AnnualMaintanceCRMHead', 'AnnualConsumableCRMHead', 'AnnualInsuranceCRMHead', 'BuildingCRMHead',
     'MachineFloorCRMHead', 'OtherYearlyCRMHead', 'PowerCRMHead', 'FuelCRMHead');

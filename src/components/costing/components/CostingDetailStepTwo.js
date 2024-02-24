@@ -399,7 +399,7 @@ function CostingDetailStepTwo(props) {
       setNfrListing(true)
     } else {
       if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false && !partType) {
-        let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+        let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
         const data = _.find(tempArrForCosting, ['IsPartLocked', true])
         const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
         const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
@@ -411,7 +411,7 @@ function CostingDetailStepTwo(props) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
-        let surfaceArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
+        let surfaceArrForCosting = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
         const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
         const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
         if (surfaceData !== undefined || surfaceLockedData !== undefined) {

@@ -58,6 +58,9 @@ class AddExchangeRate extends Component {
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getCurrencySelectList(() => { })
     }
+    if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
     this.getDetail()
   }
 
