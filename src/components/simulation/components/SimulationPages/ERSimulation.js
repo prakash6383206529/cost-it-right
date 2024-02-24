@@ -25,6 +25,7 @@ import BOPImportListing from '../../../masters/bop-master/BOPImportListing';
 import WarningMessage from '../../../common/WarningMessage';
 import DatePicker from "react-datepicker";
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
+import TooltipCustom from '../../../common/Tooltip';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -166,20 +167,11 @@ function ERSimulation(props) {
         setShowRunSimulationDrawer(false)
 
     }
-    const isFirstColumn = (params) => {
-        if (isImpactedMaster) return false
-        var displayedColumns = params.columnApi.getAllDisplayedColumns();
-        var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-        return thisIsFirstColumn;
-    }
 
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: false,
-        headerCheckboxSelection: isFirstColumn,
-        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
@@ -282,24 +274,27 @@ function ERSimulation(props) {
         setIsDisable(true)
         setShowTooltip(false)
 
-        dispatch(createMultipleExchangeRate(list, currencySelectList, effectiveDate, res => {
+        dispatch(createMultipleExchangeRate(listData, currencySelectList, effectiveDate, res => {
+            if (res?.length === listData?.length) {
+                let obj = {}
+                obj.SimulationTechnologyId = selectedMasterForSimulation.value
+                obj.LoggedInUserId = loggedInUserId()
+                obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+                obj.SimulationIds = tokenForMultiSimulation
+                obj.SimulationHeadId = list[0]?.CostingHeadId
+                obj.SimulationExchangeRates = res
+                obj.IsExchangeRateSimulation = true
 
-            let obj = {}
-            obj.SimulationTechnologyId = selectedMasterForSimulation.value
-            obj.LoggedInUserId = loggedInUserId()
-            obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-            obj.SimulationIds = tokenForMultiSimulation
-            obj.SimulationHeadId = list[0]?.CostingHeadId
-            obj.SimulationExchangeRates = res
-            obj.IsExchangeRateSimulation = true
-
-            dispatch(runVerifyExchangeRateSimulation(obj, res => {
+                dispatch(runVerifyExchangeRateSimulation(obj, res => {
+                    setIsDisable(false)
+                    if (res?.data?.Result) {
+                        setToken(res.data.Identity)
+                        setShowVerifyPage(true)
+                    }
+                }))
+            } else {
                 setIsDisable(false)
-                if (res?.data?.Result) {
-                    setToken(res.data.Identity)
-                    setShowVerifyPage(true)
-                }
-            }))
+            }
         }))
     }, 500)
 
@@ -316,7 +311,7 @@ function ERSimulation(props) {
         setShowTooltip(false)
 
         if (count === 0) {
-            Toaster.warning("Please change the basic rate and proceed to the next page to select Raw Materials.")
+            Toaster.warning(`Please change the basic rate and proceed to the next page to select ${simulationApplicability?.label}`)
             return false
         }
         dispatch(setExchangeRateListBeforeDraft(listData))
@@ -463,11 +458,14 @@ function ERSimulation(props) {
                                                     {"Verify"}
                                                 </button>
                                             </> :
-                                            <button onClick={selectRM} type="button" className="user-btn mr5 save-btn" disabled={isDisable}>
-                                                <div>
-                                                </div>{" "}
-                                                {`Select ${simulationApplicability?.label}`}
-                                            </button>}
+                                            <>
+                                                <TooltipCustom id={"next-button"} disabledIcon={true} tooltipText={`Select the ${simulationApplicability?.label} on next page.`} />
+                                                <button onClick={selectRM} type="button" className="user-btn mr5 next-icon" disabled={isDisable} id={"next-button"}>
+                                                    <div>
+                                                    </div>{" "}
+                                                    Next
+                                                </button></>
+                                        }
                                     </div>
                                     {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn">
                                 <div className={"Run"}>
