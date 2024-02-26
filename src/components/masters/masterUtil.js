@@ -242,7 +242,7 @@ export const ProcessGroup = (props) => {
                     </Col>
                     <Col className="col-md-3 process-container">
                         <SearchableSelectHookForm
-                            label={"Process"}
+                            label={"Process (Code)"}
                             name={"process"}
                             placeholder={props.isViewFlag ? '-' : "Select"}
                             Controller={Controller}
@@ -309,7 +309,7 @@ export const ProcessGroup = (props) => {
                     <thead>
                         <tr>
                             <th>Group Name</th>
-                            <th>Process Name</th>
+                            <th>Process (Code)</th>
                             <th style={{ textAlign: 'right' }}>Action</th>
                         </tr>
                     </thead>
@@ -350,8 +350,8 @@ export const rmQueryParms = (isPagination, skip, take, obj) => {
 }
 
 export const bopQueryParms = (isPagination, skip, take, obj) => {
-    let queryParamsSecond = `EntryType=${obj.EntryType !== undefined ? obj.EntryType : EMPTY_GUID}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&Specification=${obj.Specification !== undefined ? obj.Specification : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.Vendor !== undefined ? obj.Vendor : ""}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&BasicRateConversion=${obj.BasicRateConversion!== undefined ? obj.BasicRateConversion: ""}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm!== undefined ?obj.IncoTermDescriptionAndInfoTerm:""
-    }&NetConditionCost=${obj.NetConditionCost !== undefined ? obj.NetConditionCost : ""}&NetConditionCostConversion=${obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : ""}&NetCostWithoutConditionCost=${obj.NetCostWithoutConditionCost !== undefined ? obj.NetCostWithoutConditionCost : ""}&NetCostWithoutConditionCostConversion=${obj.NetCostWithoutConditionCostConversion !== undefined ? obj.NetCostWithoutConditionCostConversion : ""}&EffectiveDate=${obj.newDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.newDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&NumberOfPieces=${obj.NumberOfPieces !== undefined ? obj.NumberOfPieces : ""}&VendorId=${obj?.VendorId !== undefined ? obj?.VendorId : ""}&CustomerId=${obj?.CustomerId !== undefined ? obj?.CustomerId : ""}`
+    let queryParamsSecond = `EntryType=${obj.EntryType !== undefined ? obj.EntryType : EMPTY_GUID}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&Specification=${obj.Specification !== undefined ? obj.Specification : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.Vendor !== undefined ? obj.Vendor : ""}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&BasicRateConversion=${obj.BasicRateConversion !== undefined ? obj.BasicRateConversion : ""}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm !== undefined ? obj.IncoTermDescriptionAndInfoTerm : ""
+        }&NetConditionCost=${obj.NetConditionCost !== undefined ? obj.NetConditionCost : ""}&NetConditionCostConversion=${obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : ""}&NetCostWithoutConditionCost=${obj.NetCostWithoutConditionCost !== undefined ? obj.NetCostWithoutConditionCost : ""}&NetCostWithoutConditionCostConversion=${obj.NetCostWithoutConditionCostConversion !== undefined ? obj.NetCostWithoutConditionCostConversion : ""}&EffectiveDate=${obj.newDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.newDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&NumberOfPieces=${obj.NumberOfPieces !== undefined ? obj.NumberOfPieces : ""}&VendorId=${obj?.VendorId !== undefined ? obj?.VendorId : ""}&CustomerId=${obj?.CustomerId !== undefined ? obj?.CustomerId : ""}`
     return queryParamsSecond
 
 }

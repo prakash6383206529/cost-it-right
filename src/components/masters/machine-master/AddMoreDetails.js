@@ -163,6 +163,7 @@ class AddMoreDetails extends Component {
         processTour: false,
         processGroupTour: false
       },
+      UniqueProcessId: [],
     }
     this.dropzone = React.createRef();
   }
@@ -4215,7 +4216,7 @@ class AddMoreDetails extends Component {
                                   <Field
                                     name="ProcessName"
                                     type="text"
-                                    label="Process Name"
+                                    label="Process (Code)"
                                     component={searchableSelect}
                                     placeholder={this.state.isViewMode ? '-' : 'Select'}
                                     options={this.renderListing('ProcessNameList')}
@@ -4347,7 +4348,7 @@ class AddMoreDetails extends Component {
                               <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
-                                    <th>{`Process Name`}</th>
+                                    <th>{`Process (Code)`}</th>
                                     <th>{`UOM`}</th>
                                     {/* <th>{`Output/Hr`}</th>     COMMENTED FOR NOW MAY BE USED LATER
                                     <th>{`Output/Annum`}</th> */}
