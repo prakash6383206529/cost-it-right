@@ -1084,7 +1084,7 @@ function AddBudget(props) {
 
                                                     <Col md="12">
                                                         <div className={`ag-grid-wrapper budgeting-table  ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
-                                                            {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"cost-tooltip"} >{"Net cost's rows are editable. Double-click to fill data"}</Tooltip>}
+                                                            {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"cost-tooltip"} >{"Net cost's rows are editable. Double click to edit data"}</Tooltip>}
                                                             <div className="ag-theme-material" >
                                                                 <AgGridReact
                                                                     style={{ height: '100%', width: '100%' }}
