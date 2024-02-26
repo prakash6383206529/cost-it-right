@@ -1722,7 +1722,7 @@ class AddMachineRate extends Component {
                               <Field
                                 name="ProcessName"
                                 type="text"
-                                label="Process Name"
+                                label="Process (Code)"
                                 component={searchableSelect}
                                 placeholder={isEditFlag ? '-' : 'Select'}
                                 options={this.renderListing('ProcessNameList')}
@@ -1815,7 +1815,7 @@ class AddMachineRate extends Component {
                           <Table className="table border" size="sm" >
                             <thead>
                               <tr>
-                                <th>{`Process Name`}</th>
+                                <th>{`Process (Code)`}</th>
                                 <th>{`UOM`}</th>
                                 <th>{`Machine Rate (INR)`}</th>
                                 <th>{`Action`}</th>

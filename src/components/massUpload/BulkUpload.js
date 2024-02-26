@@ -478,6 +478,9 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'ClientApprovedVendor') {
                                     fileHeads[i] = 'IsClientVendorBOP'
                                 }
+                                if (fileHeads[i] === 'Efficiency (%)') {
+                                    fileHeads[i] = 'UtilizingFactor'
+                                }
                                 obj[fileHeads[i]] = el;
                                 return null;
                             })
