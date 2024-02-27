@@ -58,7 +58,7 @@ const MachineRateListing = (props) => {
     isOpenProcessGroupDrawer: false,
     analyticsDrawer: false,
     selectedRowData: [],
-    floatingFilterData: { CostingHead: "", Technology: "", VendorName: "", Plant: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", UOM: "" },
+    floatingFilterData: { CostingHead: "", Technology: "", VendorName: "", Plant: "", MachineNumber: "", MachineName: "", MachineTypeName: "", TonnageCapacity: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", UOM: "" },
     warningMessage: false,
     filterModel: {},
     pageNo: 1,
@@ -486,20 +486,16 @@ const MachineRateListing = (props) => {
     temp = TempData && TempData.map((item) => {
       if (item.MachineTonnage === null) {
         item.MachineTonnage = ' '
-      } else if (item.EffectiveDate === null) {
-        item.EffectiveDate = ' '
-      }
-      else if (item.Plants === '-') {
+      } else if (item.Plants === '-') {
         item.Plants = ' '
       } else if (item.MachineTypeName === '-') {
         item.MachineTypeName = ' '
       } else if (item.VendorName === '-') {
         item.VendorName = ' '
       }
-      if (item.EffectiveDate !== null) {
-        item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+      if (item?.EffectiveDateNew?.includes('T')) {
+        item.EffectiveDateNew = DayTime(item.EffectiveDateNew).format('DD/MM/YYYY')
       }
-
       return item
     })
 
@@ -751,7 +747,7 @@ const MachineRateListing = (props) => {
                 <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
+                <AgGridColumn field="TonnageCapacity" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
                 <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                 <AgGridColumn field="UOM" headerName='UOM'></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
