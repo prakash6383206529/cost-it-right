@@ -76,10 +76,10 @@ const DepartmentsListing = () => {
 
   const closeDrawer = (e = '', type) => {
     setState((prevState) => ({ ...prevState, isOpen: false }), () => {
-      if (type === 'submit') {
-        getDepartmentListData();
-      }
     });
+    if (type === 'submit') {
+      getDepartmentListData();
+    }
   };
   /**
    * @method openModel

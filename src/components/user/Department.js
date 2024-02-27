@@ -3,15 +3,17 @@ import { Field, reduxForm } from "redux-form";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, checkSpacesInString, excludeOnlySpecialCharacter, maxLength50, hashValidation, maxLength75 } from "../../helper/validation";
-import { focusOnError, renderText } from "../layout/FormInputs";
+import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, checkSpacesInString, excludeOnlySpecialCharacter, maxLength50, hashValidation, maxLength75, getNameBySplitting, getCodeBySplitting } from "../../helper/validation";
+import { focusOnError, renderText, renderMultiSelectField } from "../layout/FormInputs";
 
 import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI, updateCompanyAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import DayTime from "../common/DayTimeWrapper"
-import { handleDepartmentHeader, loggedInUserId } from "../../helper";
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper";
+import { ZBC } from "../../config/constants";
+import { getPlantSelectListByType } from "../../actions/Common";
 
 
 class Department extends Component {
@@ -22,6 +24,8 @@ class Department extends Component {
 			isLoader: false,
 			isSubmitted: false,
 			isEditFlag: false,
+			selectedPlants: [],
+			plantSelectAll: [],
 		};
 	}
 
@@ -31,9 +35,27 @@ class Department extends Component {
 	*/
 	componentDidMount() {
 		const { DepartmentId, isEditFlag } = this.props;
+		this.props.getPlantSelectListByType(ZBC, "MASTER", '', (res) => {
+			let list = res?.data?.DataList?.filter(element => element?.Value !== '0')
+			let temp = []
+			list?.forEach((item) => {
+				if (item?.PlantId === '0') return false
+				temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+				return temp
+			})
+			this.setState({ plantSelectAll: temp })
+		})
 		if (isEditFlag) {
 			this.props.getDepartmentAPI(DepartmentId, (res) => {
+				let plantArray = []
+				res?.data?.Data?.PlantList && res?.data?.Data?.PlantList?.map((item) => {
+					plantArray.push({ Text: `${item.PlantName} (${item.PlantCode})`, Value: (item?.PlantId)?.toString() })
+					return null;
+				})
 				this.setState({ DataToChange: res?.data?.Data })
+				this.setState({ selectedPlants: plantArray })
+				this.props.change("plant", plantArray)
+
 			})
 		} else {
 			this.props.setEmptyDepartmentAPI('', () => { })
@@ -79,11 +101,20 @@ class Department extends Component {
 	onSubmit(values) {
 		const { isEditFlag, DepartmentId, departmentDetail } = this.props;
 		const { reset } = this.props;
-		const { DataToChange } = this.state;
+		const { DataToChange, selectedPlants } = this.state;
 		this.setState({ isLoader: true })
 
+		let plantArray = []
+		selectedPlants && selectedPlants.map(item => {
+			let obj = {
+				PlantId: item?.Value,
+				PlantName: getNameBySplitting(item?.Text),
+				PlantCode: getCodeBySplitting(item?.Text),
+			}
+			plantArray.push(obj)
+		})
 		if (isEditFlag) {
-			if (DataToChange?.DepartmentName === values?.DepartmentName && DataToChange?.DepartmentCode === values?.DepartmentCode) {
+			if (DataToChange?.DepartmentName === values?.DepartmentName && DataToChange?.DepartmentCode === values?.DepartmentCode && (JSON.stringify(selectedPlants) === JSON.stringify(DataToChange?.PlantList))) {
 				this.toggleDrawer('', 'cancel')
 				return false
 			}
@@ -94,7 +125,8 @@ class Department extends Component {
 				CreatedDate: DayTime(new Date()).format('YYYY/MM/dd HH:mm:ss'),
 				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
 				DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : '',
-				CompanyId: departmentDetail.CompanyId ? departmentDetail.CompanyId : ''
+				CompanyId: departmentDetail.CompanyId ? departmentDetail.CompanyId : '',
+				PlantList: plantArray,
 			}
 			this.setState({ isLoader: true })
 			this.props.updateDepartmentAPI(formReq, (res) => {
@@ -113,7 +145,8 @@ class Department extends Component {
 				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
 				DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : ``,
 				CompanyId: '',
-				LoggedInUserId: loggedInUserId()
+				LoggedInUserId: loggedInUserId(),
+				PlantList: plantArray,
 			}
 			this.props.addDepartmentAPI(depObj, (res) => {
 				if (res && res.data && res.data.Result) {
@@ -124,11 +157,45 @@ class Department extends Component {
 			})
 		}
 	}
+	/**
+   * @method renderListing
+   * @description Used to show type of listing
+   */
+	renderListing = (label, isScrapRateUOM) => {
+		const { plantSelectList } = this.props
+		const temp = []
+		if (label === 'plant') {
 
+			plantSelectList?.forEach((item) => {
+				if (item?.PlantId === '0') {
+					temp.push({ Text: "Select All", Value: item?.PlantId });
+				} else {
+					temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+				}
+			});
+
+			const isSelectAllOnly = temp.length === 1 && temp[0]?.Text === "Select All" && temp[0]?.Value === "0";
+
+			if (isSelectAllOnly) {
+				return [];
+			} else {
+				return temp;
+			}
+		}
+
+	}
+
+	handlePlant = (newValue) => {
+		const { plantSelectAll } = this.state
+		if (newValue?.filter(element => element?.Value === '0')?.length > 0) {
+			this.setState({ selectedPlants: plantSelectAll })
+		} else {
+			this.setState({ selectedPlants: newValue })
+		}
+	}
 	render() {
 		const { handleSubmit, isEditFlag } = this.props;
 		const { isSubmitted } = this.state;
-
 		return (
 			<div>
 				{this.props.loading && <Loader />}
@@ -177,7 +244,24 @@ class Department extends Component {
 												customClassName={'withBorder'}
 											/>
 										</div>}
-
+										{getConfigurationKey().IsPlantsAllowedForDepartment && <div className="input-group col-md-12 input-withouticon">
+											<Field
+												label="Plant (Code)"
+												name="plant"
+												placeholder={"Select"}
+												selection={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+												options={this.renderListing("plant")}
+												selectionChanged={this.handlePlant}
+												validate={
+													this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+												required={true}
+												optionValue={(option) => option.Value}
+												optionLabel={(option) => option.Text}
+												component={renderMultiSelectField}
+												mendatory={true}
+												className="multiselect-with-border"
+											/>
+										</div>}
 
 										<div className="col-md-12">
 											<div className="text-right mt-0">
@@ -229,10 +313,11 @@ class Department extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-const mapStateToProps = ({ auth }) => {
+const mapStateToProps = (state) => {
+	const { comman, auth } = state
 	const { departmentDetail } = auth;
 	let initialValues = {};
-
+	const { plantSelectList } = comman
 	if (departmentDetail && departmentDetail !== undefined) {
 		initialValues = {
 			DepartmentName: departmentDetail.DepartmentName,
@@ -241,7 +326,7 @@ const mapStateToProps = ({ auth }) => {
 		}
 	}
 
-	return { initialValues, departmentDetail };
+	return { initialValues, departmentDetail, plantSelectList };
 };
 
 /**
@@ -256,7 +341,8 @@ export default connect(mapStateToProps, {
 	updateDepartmentAPI,
 	setEmptyDepartmentAPI,
 	addCompanyAPI,
-	updateCompanyAPI
+	updateCompanyAPI,
+	getPlantSelectListByType
 })(reduxForm({
 	form: 'Department',
 	enableReinitialize: true,
