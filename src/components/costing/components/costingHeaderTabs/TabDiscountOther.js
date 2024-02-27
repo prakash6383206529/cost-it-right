@@ -1244,7 +1244,7 @@ function TabDiscountOther(props) {
 
     tempListCondition && tempListCondition?.map((item) => {
       let finalValue = 0
-      if (item?.ConditionType === "Fixed") {
+      if (item?.ConditionType === "Fixed" || item?.ConditionType === "Quantity") {
         finalValue = item?.ConditionCost
       } else if (item?.ConditionType === "Percentage") {
         finalValue = checkForNull((item?.Percentage) / 100) * checkForNull(getValues('BasicRateINR'))
