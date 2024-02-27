@@ -5515,7 +5515,7 @@ export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Plant (Code)", value: "Plant", },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "Machine Rate", value: "MachineRate", },
-    { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Effective Date", value: "EffectiveDateNew", },
 ]
 
 export const PROCESSLISTING_DOWNLOAD_EXCEl = [
