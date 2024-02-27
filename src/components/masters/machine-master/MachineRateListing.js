@@ -486,20 +486,16 @@ const MachineRateListing = (props) => {
     temp = TempData && TempData.map((item) => {
       if (item.MachineTonnage === null) {
         item.MachineTonnage = ' '
-      } else if (item.EffectiveDate === null) {
-        item.EffectiveDate = ' '
-      }
-      else if (item.Plants === '-') {
+      } else if (item.Plants === '-') {
         item.Plants = ' '
       } else if (item.MachineTypeName === '-') {
         item.MachineTypeName = ' '
       } else if (item.VendorName === '-') {
         item.VendorName = ' '
       }
-      if (item.EffectiveDate !== null) {
-        item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+      if (item?.EffectiveDateNew?.includes('T')) {
+        item.EffectiveDateNew = DayTime(item.EffectiveDateNew).format('DD/MM/YYYY')
       }
-
       return item
     })
 
