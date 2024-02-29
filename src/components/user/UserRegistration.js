@@ -331,33 +331,60 @@ function UserRegistration(props) {
       });
       return temp;
     }
-
     if (label === 'technology') {
-      technologyList && technologyList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
+      const temp = [];
+      technologyList && technologyList?.forEach(item => {
+        if (item?.Value === '0' && !isEditIndex) {
+          temp.push({ label: "Select All", value: item?.Value });
+        } else if (item?.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value });
+        }
       });
-      return temp;
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.Text === "Select All" && temp[0]?.Value === "0";
+
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
+      }
     }
+
 
     if (label === 'heads') {
-      simulationTechnologyList && simulationTechnologyList.map(item => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
+      const temp = [];
+      simulationTechnologyList && simulationTechnologyList.forEach(item => {
+
+        if (item?.Value === '0' && !isSimulationEditIndex) {
+          temp.push({ label: "Select All", value: item?.Value });
+        } else if (item?.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value })
+        }
       });
-      return temp;
-    }
-    if (label === 'masters') {
-      masterList && masterList.map(item => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.Text === "Select All" && temp[0]?.Value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      }
       return temp;
     }
 
+    if (label === 'masters') {
+      const temp = [];
+
+      masterList && masterList.forEach(item => {
+        if (item?.Value === '0' && !isMasterEditIndex) {
+          temp.push({ label: "Select All", value: item?.Value });
+        } else if (item?.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value })
+
+        }
+      });
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.Text === "Select All" && temp[0]?.Value === "0";
+      if (isSelectAllOnly) {
+        return [];
+
+      }
+      return temp;
+    }
     if (label === 'level') {
       const approvalList = (getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? levelList : levelSelectList
       approvalList && approvalList.map(item => {
@@ -408,6 +435,9 @@ function UserRegistration(props) {
     }
     if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster') {
       // if (label === 'approvalType') {                 //RE
+      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false) {
+        temp.push({ label: 'Select All', value: '0' });
+      }
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId) || Number(item.Value) === Number(NFRAPPROVALTYPEID)) && label === 'approvalTypeSimulation') return false
@@ -704,45 +734,74 @@ function UserRegistration(props) {
    * @method technologyHandler
    * @description Used to handle 
    */
-  const technologyHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      setTechnology(newValue)
-      setLevel([])
+  const technologyHandler = (newValue) => {
+    const selectedOptions = technologyList
+      .filter((option) => option?.Value !== '0')
+      .map(({ Text, Value }) => ({ label: Text, value: Value }));
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      setTechnology(selectedOptions);
+      setTimeout(() => {
+        setValue('TechnologyId', selectedOptions)
+      }, 100);
+      setLevel([]);
       setValue('LevelId', '')
       setValue('CostingApprovalType', "")
-      emptyLevelDropdown()
+      emptyLevelDropdown();
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+      setTechnology(newValue)
     } else {
       setTechnology([])
+      setValue('TechnologyId', '')
     }
-  };
+  }
 
   /**
    * @method costingApprovalTypeHandler
    * @description Used to handle 
    */
   const costingApprovalTypeHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      const selectedOptions = approvalTypeSelectList
+        .filter((option) => option?.Value !== '0')
+        .map(({ Text, Value }) => ({ label: Text, value: Value }));
+      setCostingApprovalType(selectedOptions);
+      setTimeout(() => {
+        setValue('CostingApprovalType', selectedOptions)
+      }, 100);
+      setLevel([]);
+      setValue('LevelId', '');
+      dispatch(getLevelByTechnology(true, technology.value, newValue.value, res => { }));
+    } else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
       setCostingApprovalType(newValue)
-      setLevel([])
-      setValue('LevelId', '')
-      dispatch(getLevelByTechnology(true, technology.value, newValue.value, res => { }))
     } else {
       setCostingApprovalType([])
+      setValue('CostingApprovalType', '')
     }
   };
-
   /**
    * @method simulationApprovalTypeHandler
    * @description Used to handle 
    */
   const simulationApprovalTypeHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      const selectedOptions = approvalTypeSelectList
+        .filter((option) => option?.Value !== '0')
+        .map(({ Text, Value }) => ({ label: Text, value: Value }));
+      setSimulationApprovalType(selectedOptions);
+      setTimeout(() => {
+        setValue('SimulationApprovalType', selectedOptions)
+      }, 100);
+      setSimualtionLevel([]);
+      setValue('SimualtionLevel', '');
+      dispatch(getSimualationLevelByTechnology(true, simulationHeads.value, newValue.value, res => { }));
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
       setSimulationApprovalType(newValue)
-      setSimualtionLevel([])
-      setValue('simualtionLevel', '')
-      dispatch(getSimualationLevelByTechnology(true, simulationHeads.value, newValue.value, res => { }))
-    } else {
+    }
+    else {
       setSimulationApprovalType([])
+      setValue('SimulationApprovalType', '')
     }
   };
 
@@ -751,49 +810,87 @@ function UserRegistration(props) {
    * @description Used to handle 
    */
   const masterApprovalTypeHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      const selectedOptions = approvalTypeSelectList
+        .filter((option) => option?.Value !== '0')
+        .map(({ Text, Value }) => ({ label: Text, value: Value }));
+      setMasterApprovalType(selectedOptions);
+      setTimeout(() => {
+        setValue('MasterApprovalType', selectedOptions)
+      }, 100);
+      setMasterLevels([]);
+      setValue('MasterLevel', '');
+      dispatch(getMasterLevelByMasterId(true, master.value, newValue.value, res => { }));
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
       setMasterApprovalType(newValue)
-      setMasterLevels([])
-      setValue('masterLevel', '')
-      dispatch(getMasterLevelByMasterId(true, master.value, newValue.value, res => { }))
-    } else {
+    }
+    else {
       setMasterApprovalType([])
+      setValue('MasterApprovalType', '')
     }
   };
-
 
   /**
    * @method headHandler
    * @description USED TO HANLE SIMULATION HEAD AND CALL HEAD LEVEL API
   */
 
-  const headHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      setSimulationHeads(newValue)
-      setValue('SimulationApprovalType', "")
-      setSimulationApprovalType([])
-      setSimualtionLevel([])
-      setValue('simualtionLevel', '')
-      emptyLevelDropdown()
+  const headHandler = (newValue) => {
+
+    const selectedOptions = simulationTechnologyList
+      .filter((option) => option?.Value !== '0')
+      .map(({ Text, Value }) => ({ label: Text, value: Value }));
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      // Filter out the "Select All" option
+
+      setSimulationHeads(selectedOptions);
+      setTimeout(() => {
+        setValue('Head', selectedOptions);
+      }, 100);
+      setLevel([]);
+      emptyLevelDropdown();
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+      // Set selected options directly
+      setSimulationHeads(newValue);
     } else {
       setSimulationHeads([])
+      // Clear form value when no option is selected
+      setValue('Head', '');
     }
-  };
+  }
 
   /**
    * @method masterHandler
    * @description USED TO HANLE MASTER AND CALL MASTER LEVEL API
   */
   const masterHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      setMaster(newValue)
-      setMasterLevels([])
-      setValue('masterLevel', '')
-      setMasterApprovalType([])
-      setValue('MasterApprovalType', "")
-      emptyLevelDropdown()
+    const selectedOptions = masterList
+      .filter((option) => option?.Value !== '0')
+      .map(({ Text, Value }) => ({ label: Text, value: Value }));
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      // Filter out the "Select All" option
+
+
+      setMaster(selectedOptions);
+      setTimeout(() => {
+        // Set selected options in the form value
+        setValue('Master', selectedOptions);
+      }, 100);
+      setMasterLevels([]);
+      setValue('masterLevel', '');
+      setMasterApprovalType([]);
+      setValue('MasterApprovalType', '');
+      emptyLevelDropdown();
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+      // Set selected options directly
+      setMaster(newValue);
     } else {
-      setSimulationHeads([])
+      setMaster([])
+      // Clear form value when no option is selected
+      setValue('Master', '');
     }
   };
 
