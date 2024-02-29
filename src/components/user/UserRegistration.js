@@ -508,21 +508,15 @@ function UserRegistration(props) {
           let Data = res.data.Data;
 
           setTimeout(() => {
-            let DepartmentObj = {}
             const depatArr = []
             const RoleObj = roleList && roleList.find(item => item.RoleId === Data.RoleId)
-            if (Data.IsMultipleDepartmentAllowed) {
-              Data.Departments && Data.Departments.map(item => (depatArr.push({ label: item.DepartmentName, value: item.DepartmentId })))
-            } else {
-              DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
-            }
+            Data.Departments && Data.Departments.map(item => (depatArr.push({ label: item.DepartmentName, value: item.DepartmentId })))
             // const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
             setPrimaryContact(Data.IsPrimaryContact)
             setIsEditFlag(true)
             setIsLoader(false)
             setIsShowAdditionalPermission(Data.IsAdditionalAccess)
             setGrantUserWisePermission(Data.IsAdditionalAccess)
-            // setDepartment((getConfigurationKey().IsMultipleDepartmentAllowed && Data.IsMultipleDepartmentAllowed) ? depatArr : (getConfigurationKey().IsMultipleDepartmentAllowed && !Data.IsMultipleDepartmentAllowed) ? [{ label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId }] : DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [])
             setDepartment(depatArr)
             setOldDepartment(depatArr)
             setRole(RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [])
@@ -1572,9 +1566,9 @@ function UserRegistration(props) {
       multiDeptArr.push({ DepartmentId: item.value, DepartmentName: item.label })
     ))
 
-    let isDepartmentUpdate = registerUserData?.Departments?.every(
-      (item) => department?.some((deptValue) => item?.DepartmentId !== deptValue?.value)
-    ) && department?.length !== registerUserData?.Departments.length;
+    let isDepartmentUpdate = registerUserData?.Departments?.some(
+      (item) => !department?.some((deptValue) => item?.DepartmentId === deptValue?.value)
+    ) || department?.some((deptValue) => !registerUserData?.Departments?.some((item) => item?.DepartmentId === deptValue?.value));
     let isForcefulUpdatedForMaster = false;
     let isForcefulUpdatedForCosting = false;
     let isForcefulUpdatedForSimulation = false;
@@ -1654,14 +1648,15 @@ function UserRegistration(props) {
         updatedData.IsForcefulUpdatedForMaster = isForcefulUpdatedForMaster
         updatedData.IsForcefulUpdatedForSimulation = isForcefulUpdatedForSimulation
       }
-
       if (isDepartmentUpdate || isForcefulUpdatedForCosting || isForcefulUpdatedForMaster || isForcefulUpdatedForSimulation) {
         setShowPopup(true)
         setUpdatedObj(updatedData)
 
       } else {
         if (props?.RFQUser || isRfqUser) {
+          setIsLoader(true)
           dispatch(updateRfqUser(updatedData, (res) => {
+            setIsLoader(false)
             if (res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
             }
@@ -1680,9 +1675,11 @@ function UserRegistration(props) {
           })
 
           if (isDataChanged) {
+            setIsLoader(true)
             setIsUpdateResponded(true)
             dispatch(updateUserAPI(updatedData, (res) => {
               setIsUpdateResponded(false)
+              setIsLoader(false)
               if (res?.data?.Result) {
                 Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
                 cancel();
