@@ -18,12 +18,13 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.120:81/api/v1`;
-// const BASE_URL = `http://10.10.1.100:1002/api/v1`;
+const BASE_URL = `http://10.10.8.117:81/api/v1`;
+// const BASE_URL = `http://10.10.1.100:10152/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`;
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -668,6 +669,8 @@ export const API = {
   getUserSimulationTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,          						//RE
   getUserMasterLevelForCosting: `${BASE_URL}/user-level/get-user-master-levels`,
   checkHighestApprovalLevelForHeadsAndApprovalType: `${BASE_URL}/user-level/check-valid-approval-levels`,
+  getOnboardingLevelById: `${BASE_URL}/configuration/select-list-get-level-by-onboarding`,
+  getUsersOnboardingLevelAPI: `${BASE_URL}/user-level/get-user-onboarding-levels`,
 
   //AUDIT API
 
@@ -689,6 +692,7 @@ export const API = {
   updateDepartmentAPI: `${BASE_URL}/user-department/update`,
   deleteDepartmentAPI: `${BASE_URL}/user-department/delete`,
   addCompanyAPI: `${BASE_URL}/company/create`,
+  getPlantSelectListForDepartment: `${BASE_URL}/user-department/get-all-plants-list-Associated-with-departments`,
 
   //LEVEL'S API
   assignUserLevelAPI: `${BASE_URL}/user-level/assign-user-level-for-costing`,
@@ -708,6 +712,14 @@ export const API = {
   getMasterLevel: `${BASE_URL}/costing-old/approval-level-for-master/get`,
   updateMasterLevel: `${BASE_URL}/costing-old/approval-level-for-master/update`,
 
+  //ONBOARDING LEVEL'S API
+  addOnboardingLevel: `${BASE_URL}/costing-old/approval-level-for-onboarding/create`,
+  updateOnboardingLevel: `${BASE_URL}/costing-old/approval-level-for-onboarding/update`,
+  getOnboardingLevel: `${BASE_URL}/costing-old/approval-level-for-onboarding/get`,
+  getOnboardingLevelDataList: `${BASE_URL}/costing-old/approval-level-for-onboarding/get-all`,
+
+
+
   //SET LEVEL FOR TECHNOLOGY
   setApprovalLevelForTechnology: `${BASE_URL}/costing-old/approval-level-for-technology/create`,
   getLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/get`,
@@ -715,7 +727,6 @@ export const API = {
   updateLevelMappingAPI: `${BASE_URL}/costing-old/approval-level-for-technology/update`,
   getSimulationLevelDataList: `${BASE_URL}/costing-old/approval-level-for-simulation-technology/get-all`,
   getMasterLevelDataList: `${BASE_URL}/costing-old/approval-level-for-master/get-all`,
-
 
 
   //Common API for Plant by supplier
@@ -1623,6 +1634,7 @@ export const GET_MASTER_LEVEL_BY_MASTERID = 'GET_MASTER_LEVEL_BY_MASTERID'
 export const COSTINGS_APPROVAL_DASHBOARD = 'COSTINGS_APPROVAL_DASHBOARD'
 export const AMENDMENTS_APPROVAL_DASHBOARD = 'AMENDMENTS_APPROVAL_DASHBOARD'
 export const GRANT_USER_WISE_DATA = 'GRANT_USER_WISE_DATA'
+export const GET_ONBOARDING_LEVEL_BY_ID = 'GET_ONBOARDING_LEVEL_BY_ID'
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
 export const GET_UNIT_ROLE_DATA_SUCCESS = 'GET_UNIT_ROLE_DATA_SUCCESS'
@@ -1635,12 +1647,15 @@ export const LEVEL_MAPPING_API = 'LEVEL_MAPPING_API'
 export const SIMULATION_LEVEL_DATALIST_API = 'SIMULATION_LEVEL_DATALIST_API'
 export const GET_MASTER_SELECT_LIST = 'GET_MASTER_SELECT_LIST'
 export const MASTER_LEVEL_DATALIST_API = 'MASTER_LEVEL_DATALIST_API'
+export const ONBOARDING_LEVEL_DATALIST_API = 'ONBOARDING_LEVEL_DATALIST_API'
+export const ONBOARDING_LEVEL_API = 'ONBOARDING_LEVEL_API'
 
 //DEPARTMENT
 export const GET_DEPARTMENT_SUCCESS = 'GET_DEPARTMENT_SUCCESS'
 export const GET_UNIT_DEPARTMENT_DATA_SUCCESS = 'GET_UNIT_DEPARTMENT_DATA_SUCCESS'
 export const GET_TECHNOLOGY_DATA_LIST_SUCCESS = 'GET_TECHNOLOGY_DATA_LIST_SUCCESS'
 export const GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS = 'GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS'
+export const GET_PLANT_SELECT_LIST_FOR_DEPARTMENT = 'GET_PLANT_SELECT_LIST_FOR_DEPARTMENT'
 
 //Common to get plants by supplier
 export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER'
@@ -1880,6 +1895,7 @@ export const REPORTS_AND_ANALYTICS = 'Reports And Analytics'
 export const USERS = 'Users'
 export const AUDIT = 'Audit'
 export const RFQ = 'RFQ'
+export const ONBOARDING = 'Onboarding'
 
 //PAGE NAMES
 export const DASHBOARD = 'Dashboard'
@@ -2011,6 +2027,7 @@ export const ReleaseStrategyB2 = 'RSB2'
 export const ReleaseStrategyB3 = 'RSB3'
 export const ReleaseStrategyB4 = 'RSB4'
 export const ReleaseStrategyB6 = 'RSB6'
+export const VendorNeedForm = 'VNF'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -2828,6 +2845,7 @@ export const RELEASESTRATEGYTYPEID2 = Number(reactLocalStorage.getObject('Approv
 export const RELEASESTRATEGYTYPEID3 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB3])
 export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB4])
 export const RELEASESTRATEGYTYPEID6 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB6])
+export const VENDORNEEDFORMID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VendorNeedForm])
 
 //CONSTANTS FOR MASTER APPROVAL TYPE 
 export const RMTYPE = Number(reactLocalStorage.getObject('masterType')[RAW_MATERIAL])

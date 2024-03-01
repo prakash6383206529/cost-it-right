@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Table } from 'reactstrap';
-import { getUserDataAPI, getPermissionByUser, getActionHeadsSelectList, getUsersTechnologyLevelAPI, getUsersSimulationTechnologyLevelAPI, getUsersMasterLevelAPI } from "../../actions/auth/AuthActions";
+import { Container, Row, Col } from 'reactstrap';
+import { getUserDataAPI, getPermissionByUser, getActionHeadsSelectList, getUsersTechnologyLevelAPI, getUsersSimulationTechnologyLevelAPI, getUsersMasterLevelAPI, getUsersOnboardingLevelAPI } from "../../actions/auth/AuthActions";
 import { Loader } from '../common/Loader';
-import { EMPTY_DATA } from '../../config/constants'
+import { EMPTY_DATA, ONBOARDING } from '../../config/constants'
 import NoContentFound from '../common/NoContentFound';
 import Drawer from '@material-ui/core/Drawer';
 import HeaderTitle from '../common/HeaderTitle';
@@ -17,11 +17,13 @@ import { PaginationWrapper } from '../common/commonPagination';
 const gridOptionsTechnology = {}
 const gridOptionsSimulation = {}
 const gridOptionsMaster = {}
+const gridOptionsOnboarding = {}
 
 const gridOptions = {
   gridOptionsTechnology: gridOptionsTechnology,
   gridOptionsSimulation: gridOptionsSimulation,
-  gridOptionsMaster: gridOptionsMaster
+  gridOptionsMaster: gridOptionsMaster,
+  gridOptionsOnboarding: gridOptionsOnboarding,
 };
 class ViewUserDetails extends Component {
   constructor(props) {
@@ -44,6 +46,8 @@ class ViewUserDetails extends Component {
       gridColumnApiSimulation: null,
       gridApiMaster: null,
       gridColumnApiMaster: null,
+      OnboardingLevelGrid: [],
+      isOnboardingOpen: false
     }
   }
 
@@ -64,6 +68,7 @@ class ViewUserDetails extends Component {
     this.getUsersTechnologyLevelData(this.props.UserId)
     this.getUsersSimulationTechnologyLevelData(this.props.UserId)
     getConfigurationKey().IsMasterApprovalAppliedConfigure && this.getUsersMasterLevelData(this.props.UserId)
+    this.getOnboardingUserData(this.props.UserId)
   }
 
   changeDepartment() {
@@ -132,6 +137,18 @@ class ViewUserDetails extends Component {
       }
     })
   }
+  getOnboardingUserData = (UserId) => {
+    this.props.getUsersOnboardingLevelAPI(UserId, (res) => {
+      if (res && res.data && res.data.Data) {
+        let Data = res.data.Data;
+        let onboardingLevel = Data.OnboardingLevels;
+        this.setState({
+          OnboardingLevelGrid: onboardingLevel,
+        })
+      }
+    })
+  }
+
   /**
   * @method renderAction
   * @description used to render row of actions
@@ -195,7 +212,7 @@ class ViewUserDetails extends Component {
    * @description used to render row of actions
    */
   technologyToggle = (value) => {
-    const { isTechnologyOpen, isSimulationOpen, isMasterOpen } = this.state;
+    const { isTechnologyOpen, isSimulationOpen, isMasterOpen, isOnboardingOpen } = this.state;
     switch (value) {
       case COSTING:
         this.setState({ isTechnologyOpen: !this.state.isTechnologyOpen })
@@ -216,6 +233,14 @@ class ViewUserDetails extends Component {
       case MASTERS:
         this.setState({ isMasterOpen: !this.state.isMasterOpen })
         if (isMasterOpen === false) {
+          this.setState({ isPermissionOpen: true })
+        } else {
+          this.setState({ isPermissionOpen: false })
+        }
+        break;
+      case ONBOARDING:
+        this.setState({ isOnboardingOpen: !this.state.isOnboardingOpen })
+        if (isOnboardingOpen === false) {
           this.setState({ isPermissionOpen: true })
         } else {
           this.setState({ isPermissionOpen: false })
@@ -260,7 +285,7 @@ class ViewUserDetails extends Component {
   */
   render() {
     const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure } = this.props;
-    const { isTechnologyOpen, department, isMasterOpen, isSimulationOpen, SimulationLevelGrid, MasterLevelGrid, gridApiTechnology, gridApiSimulation, gridApiMaster } = this.state;
+    const { isTechnologyOpen, department, isMasterOpen, isSimulationOpen, SimulationLevelGrid, MasterLevelGrid, gridApiTechnology, gridApiSimulation, gridApiMaster, OnboardingLevelGrid, gridApiOnboarding, isOnboardingOpen } = this.state;
 
     const departmentName = department ? department.join(", ") : '-';
     const defaultColDef = {
@@ -593,6 +618,49 @@ class ViewUserDetails extends Component {
                         </Col>}
 
                       </Row>}
+                    {isOnboardingOpen && <Col md="12">
+                      <Row>
+                        <Col md="12" className="mb-2">
+                          <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState('gridOptionsOnboarding')}>
+                            <div className="refresh mr-0"></div>
+                          </button>
+                        </Col>
+                        <Col md="12">
+
+                          <div className="ag-grid-react">
+                            <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${OnboardingLevelGrid.length <= 0 ? 'overlay-contain' : ''}`}>
+                              <div className="ag-theme-material">
+                                <AgGridReact
+                                  defaultColDef={defaultColDef}
+                                  floatingFilter={true}
+                                  pagination={true}
+                                  paginationPageSize={10}
+                                  domLayout='autoHeight'
+                                  onGridReady={params => this.onGridReady(params, "onboarding")}
+                                  gridOptions={gridOptionsOnboarding}
+                                  noRowsOverlayComponent="customNoRowsOverlay"
+                                  noRowsOverlayComponentParams={{
+                                    title: EMPTY_DATA,
+                                    imagClass: 'imagClass'
+                                  }}
+                                  rowData={OnboardingLevelGrid}
+                                  frameworkComponents={{
+                                    ...frameworkComponents,
+                                  }}
+                                >
+                                  <AgGridColumn field="ApprovalType" headerName="Approval Type" />
+                                  <AgGridColumn field="Level" headerName="Level" />
+                                </AgGridReact>
+                                <PaginationWrapper
+                                  gridApi={gridApiOnboarding}
+                                  setPage={newPageSize => this.onPageSizeChanged(gridApiOnboarding, newPageSize)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </Col>
+                      </Row>
+                    </Col>}
 
                   </>
                 }
@@ -627,6 +695,7 @@ export default connect(mapStateToProps,
     getActionHeadsSelectList,
     getUsersTechnologyLevelAPI,
     getUsersSimulationTechnologyLevelAPI,
-    getUsersMasterLevelAPI
+    getUsersMasterLevelAPI,
+    getUsersOnboardingLevelAPI
   })(ViewUserDetails);
 
