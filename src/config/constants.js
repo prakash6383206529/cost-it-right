@@ -670,7 +670,7 @@ export const API = {
   getUserMasterLevelForCosting: `${BASE_URL}/user-level/get-user-master-levels`,
   checkHighestApprovalLevelForHeadsAndApprovalType: `${BASE_URL}/user-level/check-valid-approval-levels`,
   getOnboardingLevelById: `${BASE_URL}/configuration/select-list-get-level-by-onboarding`,
-  getUsersOnboardingLevelAPI: `${BASE_URL}/user-level/get-user-onboarding-levels`,
+  getUserOnboardingLevel: `${BASE_URL}/user-level/get-user-onboarding-levels`,
 
   //AUDIT API
 

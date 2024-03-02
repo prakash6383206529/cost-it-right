@@ -2077,7 +2077,7 @@ export function getPlantSelectListForDepartment(data, callback) {
 export function getUsersOnboardingLevelAPI(UserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}`, config());
+        const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}/1`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {

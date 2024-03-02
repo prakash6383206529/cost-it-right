@@ -141,7 +141,7 @@ class ViewUserDetails extends Component {
     this.props.getUsersOnboardingLevelAPI(UserId, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
-        let onboardingLevel = Data.OnboardingLevels;
+        let onboardingLevel = Data.OnboardingApprovalLevels;
         this.setState({
           OnboardingLevelGrid: onboardingLevel,
         })

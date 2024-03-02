@@ -404,7 +404,15 @@ function UserRegistration(props) {
       return temp;
     }
 
-
+    if (label === 'onboardingLevel') {
+      const approvalList = (getConfigurationKey().IsAllowMultiSelectApprovalType && !isOnboardingEditIndex) ? levelList : OnboardingLevelSelectList
+      approvalList && approvalList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp;
+    }
     if (label === 'multiDepartment') {
       departmentList && departmentList.map((item) => {
         if (item.Value === '0') return false
@@ -652,10 +660,10 @@ function UserRegistration(props) {
   * @description used to get users Onboarding level listing
   */
   const getOnboardingUserData = (UserId) => {
-    dispatch(getUsersOnboardingLevelAPI(UserId, 0, (res) => {
+    dispatch(getUsersOnboardingLevelAPI(UserId, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
-        let onboardingLevel = Data.OnboardingLevels;
+        let onboardingLevel = Data.OnboardingApprovalLevels;
         setOnboardingLevelGrid(onboardingLevel)
         setOldOnboardingLevelGrid(onboardingLevel)
       }
@@ -1575,9 +1583,10 @@ function UserRegistration(props) {
     }
     if (tempArray.length === 0) return false
     setOnboardingLevelGrid(tempArray)
-    setOnboardingLevel([])
+    setOnboardingLevels([])
+    setOnboardingApprovalType([])
     setValue('onboardingLevel', '')
-    setValue('onboardingApprovalType', "")
+    setValue('OnboardingApprovalType', "")
   };
   /**
    * @method updateOnboardingLevel
@@ -1586,11 +1595,10 @@ function UserRegistration(props) {
   const updateOnboardingLevel = () => {
     let tempArray = [];
 
-    if (master.length === 0 || masterLevel.length === 0 || masterApprovalType.length === 0) {
-      Toaster.warning('Please select Master, Approval Type and Level')
+    if (onboardingLevel.length === 0 || OnboardingApprovalType.length === 0) {
+      Toaster.warning('Please select Approval Type and Level')
       return false;
     }
-
 
     let tempData = onboardingLevelGrid[onboardingLevelEditIndex];
     tempData = {
@@ -1604,12 +1612,12 @@ function UserRegistration(props) {
 
     tempArray = Object.assign([...onboardingLevelGrid], { [onboardingLevelEditIndex]: tempData })
     setOnboardingLevelGrid(tempArray)
-    setOnboardingLevel([])
+    setOnboardingLevels([])
     setOnboardingLevelEditIndex('')
     setIsOnboardingEditIndex(false)
     setOnboardingApprovalType([])
     setValue('onboardingLevel', '')
-    setValue('onboardingApprovalType', '')
+    setValue('OnboardingApprovalType', '')
   };
 
 
@@ -1619,12 +1627,12 @@ function UserRegistration(props) {
   */
   const resetOnboardingLevel = () => {
 
-    setOnboardingLevel([])
+    setOnboardingLevels([])
     setOnboardingLevelEditIndex('')
     setIsOnboardingEditIndex(false)
     setOnboardingApprovalType([])
     setValue('onboardingLevel', '')
-    setValue('onboardingApprovalType', '')
+    setValue('OnboardingApprovalType', '')
     emptyLevelDropdown()
   };
 
@@ -1642,9 +1650,9 @@ function UserRegistration(props) {
     setOnboardingLevelEditIndex(index)
     setIsOnboardingEditIndex(true)
     setOnboardingApprovalType({ label: tempData.ApprovalType, value: tempData.ApprovalTypeId })
-    setOnboardingLevel({ label: tempData.Level, value: tempData.LevelId })
+    setOnboardingLevels({ label: tempData.Level, value: tempData.LevelId })
     setValue('onboardingLevel', { label: tempData.Level, value: tempData.LevelId })
-    setValue('onboardingApprovalType', { label: tempData.ApprovalType, value: tempData.ApprovalTypeId })
+    setValue('OnboardingApprovalType', { label: tempData.ApprovalType, value: tempData.ApprovalTypeId })
   }
 
 
@@ -1660,9 +1668,9 @@ function UserRegistration(props) {
       return true;
     });
     setOnboardingLevelGrid(tempData)
-    setOnboardingLevel([])
+    setOnboardingLevels([])
     setValue('onboardingLevel', '')
-    setValue('onboardingApprovalType', '')
+    setValue('OnboardingApprovalType', '')
     emptyLevelDropdown()
   }
   /**
@@ -1810,8 +1818,8 @@ function UserRegistration(props) {
     let tempOnboardingLevelArray = []
     onboardingLevelGrid && onboardingLevelGrid.map((item, index) => {
       tempOnboardingLevelArray.push({
-        OnboardingApprovalId: item.OnboardingId,
-        OnboardingApprovalName: item.OnboardingName,
+        OnboardingApprovalId: 1,
+        OnboardingApprovalName: 'Onboarding',
         LevelId: item.LevelId,
         Level: item.Level,
         ApprovalTypeId: item.ApprovalTypeId,
@@ -3280,7 +3288,7 @@ function UserRegistration(props) {
                                 register={register}
                                 mandatory={true}
                                 handleChange={onboardingLevelHandler}
-                                options={searchableSelectType('masterLevel')}
+                                options={searchableSelectType('onboardingLevel')}
                                 valueDescription={onboardingLevel}
                                 errors={errors.onboardingLevel}
                               />
@@ -3339,7 +3347,7 @@ function UserRegistration(props) {
                                     >
                                       <AgGridColumn field="ApprovalType" headerName="Approval Type" />
                                       <AgGridColumn field="Level" headerName="Level" />
-                                      <AgGridColumn field="Technology" headerName='Actions' type="rightAligned" cellRenderer={'onAction'} ></AgGridColumn>
+                                      <AgGridColumn field="Action" headerName='Actions' type="rightAligned" cellRenderer={'onAction'} ></AgGridColumn>
                                     </AgGridReact>
                                     <PaginationWrapper
                                       gridApi={gridApiOnboarding}
