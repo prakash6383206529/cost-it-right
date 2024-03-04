@@ -5,18 +5,17 @@ import Toaster from "../common/Toaster";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength10, maxLength12, required, email, minLength6, minLength7, maxLength18, maxLength11,
-  maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number, maxLength50
+  maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number, maxLength50, getNameBySplitting, getCodeBySplitting
 } from "../../helper/validation";
-import { langs } from "../../config/localization";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
-  getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser, getAllLevelAPI, checkHighestApprovalLevelForHeadsAndApprovalType
+  getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser, getAllLevelAPI, checkHighestApprovalLevelForHeadsAndApprovalType, getOnboardingLevelById, getPlantSelectListForDepartment, getUsersOnboardingLevelAPI
 } from "../../actions/auth/AuthActions";
 import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
-import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONALAPPROVALTYPEID, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, WACAPPROVALTYPEID, searchCount } from "../../config/constants";
+import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, NCCTypeId, NFRAPPROVALTYPEID, ONBOARDINGID, ONBOARDINGNAME, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -34,11 +33,13 @@ var CryptoJS = require('crypto-js')
 const gridOptionsTechnology = {}
 const gridOptionsSimulation = {}
 const gridOptionsMaster = {}
+const gridOptionsOnboarding = {}
 
 const gridOptions = {
   gridOptionsTechnology: gridOptionsTechnology,
   gridOptionsSimulation: gridOptionsSimulation,
-  gridOptionsMaster: gridOptionsMaster
+  gridOptionsMaster: gridOptionsMaster,
+  gridOptionsOnboarding: gridOptionsOnboarding
 };
 function UserRegistration(props) {
 
@@ -67,6 +68,7 @@ function UserRegistration(props) {
   const [acc1, setAcc1] = useState(false);
   const [acc2, setAcc2] = useState(false);
   const [acc3, setAcc3] = useState(false);
+  const [acc4, setAcc4] = useState(false);
   const [IsShowAdditionalPermission, setIsShowAdditionalPermission] = useState(false);
   const [isForcefulUpdate, setIsForcefulUpdate] = useState(false);
   const [Modules, setModules] = useState([]);
@@ -90,6 +92,11 @@ function UserRegistration(props) {
   const [oldMasterLevelGrid, setOldMasterLevelGrid] = useState([]);
   const [masterLevelEditIndex, setMasterLevelEditIndex] = useState('');
   const [isMasterEditIndex, setIsMasterEditIndex] = useState(false);
+  const [onboardingLevel, setOnboardingLevels] = useState([]);
+  const [onboardingLevelGrid, setOnboardingLevelGrid] = useState([]);
+  const [oldOnboardingLevelGrid, setOldOnboardingLevelGrid] = useState([]);
+  const [onboardingLevelEditIndex, setOnboardingLevelEditIndex] = useState('');
+  const [isOnboardingEditIndex, setIsOnboardingEditIndex] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [updatedObj, setUpdatedObj] = useState({});
   const [RoleId, setRoleId] = useState("");
@@ -99,6 +106,7 @@ function UserRegistration(props) {
   const [costingApprovalType, setCostingApprovalType] = useState([]);
   const [simulationApprovalType, setSimulationApprovalType] = useState([]);
   const [masterApprovalType, setMasterApprovalType] = useState([]);
+  const [OnboardingApprovalType, setOnboardingApprovalType] = useState([]);
   const [grantUserWisePermission, setGrantUserWisePermission] = useState(false);
   const [gridApiTechnology, setgridApiTechnology] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApiTechnology, setgridColumnApiTechnology] = useState(null);
@@ -106,11 +114,15 @@ function UserRegistration(props) {
   const [gridColumnApiSimulation, setgridColumnApiSimulation] = useState(null);
   const [gridApiMaster, setgridApiMaster] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApiMaster, setgridColumnApiMaster] = useState(null);
+  const [gridApiOnboarding, setgridApiOnboarding] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
+  const [gridColumnApiOnboarding, setgridColumnApiOnboarding] = useState(null);
   const [isUpdateResponded, setIsUpdateResponded] = useState(false)
   const [costingTableChanged, setCostingTableChanged] = useState(false)
   const [simulationTableChanged, setSimulationTableChanged] = useState(false)
   const [masterTableChanged, setMasterTableChanged] = useState(false)
+  const [onboardingTableChanged, setOnboardingTableChanged] = useState(false)
   const [isDepartmentUpdated, setIsDepartmentUpdated] = useState(false)
+  const [selectedPlants, setSelectedPlants] = useState([])
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -127,6 +139,8 @@ function UserRegistration(props) {
   const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
   const levelList = useSelector(state => state.auth.levelList)
+  const OnboardingLevelSelectList = useSelector(state => state.auth.OnboardingLevelSelectList)
+  const plantSelectListForDepartment = useSelector(state => state.auth.plantSelectListForDepartment);
 
   const [maxLength, setMaxLength] = useState(maxLength11);
 
@@ -144,6 +158,7 @@ function UserRegistration(props) {
     ZipCode: props?.data?.isEditFlag && registerUserData && registerUserData.ZipCode !== undefined ? registerUserData.ZipCode : '',
     PhoneNumber: props?.data?.isEditFlag && registerUserData && registerUserData.PhoneNumber !== undefined ? registerUserData.PhoneNumber : '',
     Extension: props?.data?.isEditFlag && registerUserData && registerUserData.Extension !== undefined ? registerUserData.Extension : '',
+    plant: ''
   }
 
 
@@ -203,6 +218,7 @@ function UserRegistration(props) {
         , value: registerUserData?.ReporterId
       })
     }
+
 
   }, [registerUserData])
 
@@ -388,7 +404,15 @@ function UserRegistration(props) {
       return temp;
     }
 
-
+    if (label === 'onboardingLevel') {
+      const approvalList = (getConfigurationKey().IsAllowMultiSelectApprovalType && !isOnboardingEditIndex) ? levelList : OnboardingLevelSelectList
+      approvalList && approvalList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp;
+    }
     if (label === 'multiDepartment') {
       departmentList && departmentList.map((item) => {
         if (item.Value === '0') return false
@@ -406,18 +430,35 @@ function UserRegistration(props) {
       })
       return temp;
     }
-    if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster') {
+    if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster' || label === 'approvalTypeOnboarding') {
       // if (label === 'approvalType') {                 //RE
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId) || Number(item.Value) === Number(NFRAPPROVALTYPEID)) && label === 'approvalTypeSimulation') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && label === 'approvalTypeMaster') return false
         if ((Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || (!initialConfiguration.IsNFRConfigured && Number(item.Value) === Number(NFRAPPROVALTYPEID))) && label === 'approvalTypeCosting') return false
+        if (label === 'approvalTypeOnboarding' && Number(item.Value) !== VENDORNEEDFORMID) return false;
+        if ((label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster') && Number(item.Value) === VENDORNEEDFORMID) return false;
         const transformedText = transformApprovalItem(item);
         temp.push({ label: transformedText, value: item.Value })
         return null
       })
       return temp;
+    }
+    if (label === 'plant') {
+      plantSelectListForDepartment?.forEach((item) => {
+        if (item?.PlantId === '0') {
+          temp.push({ label: "Select All", value: '0' });
+        } else {
+          temp.push({ label: item.PlantNameCode, value: item.PlantId })
+        }
+      });
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
+      }
     }
   }
 
@@ -430,6 +471,7 @@ function UserRegistration(props) {
       setDepartment(newValue)
     } else {
       setDepartment([newValue])
+      dispatch(getPlantSelectListForDepartment(newValue.value, res => { }))
     }
     if (JSON.stringify(newValue) !== JSON.stringify(oldDepartment)) {
       setIsForcefulUpdate(true)
@@ -506,12 +548,20 @@ function UserRegistration(props) {
         if (res && res.data && res.data.Data) {
 
           let Data = res.data.Data;
-
+          if (!getConfigurationKey().IsMultipleDepartmentAllowed) {
+            dispatch(getPlantSelectListForDepartment(Data.Departments[0].DepartmentId, res => { }))
+          }
           setTimeout(() => {
+            let plantArray = []
+            Data && Data?.DepartmentsPlantsIdLists?.map((item) => {
+              plantArray.push({ label: `${item.PlantName} (${item.PlantCode})`, value: (item?.PlantId)?.toString() })
+              return null;
+            })
+            setSelectedPlants(plantArray)
+            setValue('plant', plantArray)
             const depatArr = []
             const RoleObj = roleList && roleList.find(item => item.RoleId === Data.RoleId)
             Data.Departments && Data.Departments.map(item => (depatArr.push({ label: item.DepartmentName, value: item.DepartmentId })))
-            // const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
             setPrimaryContact(Data.IsPrimaryContact)
             setIsEditFlag(true)
             setIsLoader(false)
@@ -536,6 +586,7 @@ function UserRegistration(props) {
           getUsersTechnologyLevelData(data.UserId)
           getUsersSimulationTechnologyLevelData(data.UserId)
           getUsersMasterLevelData(data.UserId)
+          getOnboardingUserData(data.UserId)
           if (data.passwordFlag) {
           }
         }
@@ -600,14 +651,24 @@ function UserRegistration(props) {
         let Data = res.data.Data;
         let masterSimulationLevel = Data.MasterLevels;
         setMasterLevelGrid(masterSimulationLevel)
-
-        setMasterLevelGrid(masterSimulationLevel)
         setOldMasterLevelGrid(masterSimulationLevel)
       }
     }))
   }
-
-
+  /**
+  * @method getOnboardingUserData
+  * @description used to get users Onboarding level listing
+  */
+  const getOnboardingUserData = (UserId) => {
+    dispatch(getUsersOnboardingLevelAPI(UserId, (res) => {
+      if (res && res.data && res.data.Data) {
+        let Data = res.data.Data;
+        let onboardingLevel = Data.OnboardingApprovalLevels;
+        setOnboardingLevelGrid(onboardingLevel)
+        setOldOnboardingLevelGrid(onboardingLevel)
+      }
+    }))
+  }
 
   //Below code for Table rendering...... 
 
@@ -725,7 +786,9 @@ function UserRegistration(props) {
       setCostingApprovalType(newValue)
       setLevel([])
       setValue('LevelId', '')
-      dispatch(getLevelByTechnology(true, technology.value, newValue.value, res => { }))
+      if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isEditIndex) {
+        dispatch(getLevelByTechnology(true, technology.value, newValue.value, res => { }))
+      }
     } else {
       setCostingApprovalType([])
     }
@@ -740,7 +803,9 @@ function UserRegistration(props) {
       setSimulationApprovalType(newValue)
       setSimualtionLevel([])
       setValue('simualtionLevel', '')
-      dispatch(getSimualationLevelByTechnology(true, simulationHeads.value, newValue.value, res => { }))
+      if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isSimulationEditIndex) {
+        dispatch(getSimualationLevelByTechnology(true, simulationHeads.value, newValue.value, res => { }))
+      }
     } else {
       setSimulationApprovalType([])
     }
@@ -755,13 +820,30 @@ function UserRegistration(props) {
       setMasterApprovalType(newValue)
       setMasterLevels([])
       setValue('masterLevel', '')
-      dispatch(getMasterLevelByMasterId(true, master.value, newValue.value, res => { }))
+      if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isMasterEditIndex) {
+        dispatch(getMasterLevelByMasterId(true, master.value, newValue.value, res => { }))
+      }
     } else {
       setMasterApprovalType([])
     }
   };
 
-
+  /**
+   * @method onboardingApprovalTypeHandler
+   * @description Used to handle onboarding ApprovalType Handler
+   */
+  const onboardingApprovalTypeHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      setOnboardingApprovalType(newValue)
+      setOnboardingLevels([])
+      setValue('onboardingLevel', '')
+      if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isOnboardingEditIndex) {
+        dispatch(getOnboardingLevelById(true, newValue.value, res => { }))
+      }
+    } else {
+      setOnboardingApprovalType([])
+    }
+  };
   /**
    * @method headHandler
    * @description USED TO HANLE SIMULATION HEAD AND CALL HEAD LEVEL API
@@ -835,21 +917,52 @@ function UserRegistration(props) {
     }
   };
 
+  /**
+* @method onboardingLevelHandler
+* @description Used to handle onboarding level
+*/
+  const onboardingLevelHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      setMasterLevels(newValue)
+      setOnboardingLevels(newValue)
+    } else {
+      setOnboardingLevels([])
+    }
+  };
+
   const checkDuplicacy = (dataList, currentIndex, keyName, technology_master_id, approvalTypeIDValue, messageHead, levelId, isMulti = false) => {
 
     let stop = false
-
-    const checkExists = dataList.some((el, index) => {
-      return (
-        (Number(el?.TechnologyId) === Number(technology_master_id) || Number(el?.MasterId) === Number(technology_master_id)) &&
-        (el.LevelId) === (levelId) &&
-        Number(el.ApprovalTypeId) === Number(approvalTypeIDValue) &&
-        index !== currentIndex
-      )
-    })
-    const isExistTechnology = dataList && dataList.findIndex((el, index) => {
-      return (Number(el[keyName]) === Number(technology_master_id)) && (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue)) && index !== currentIndex
-    })
+    let checkExists = false
+    let isExistTechnology = false
+    if (messageHead !== 'Onboarding') {
+      checkExists = dataList.some((el, index) => {
+        return (
+          (Number(el?.TechnologyId) === Number(technology_master_id) || Number(el?.MasterId) === Number(technology_master_id)) &&
+          (el.LevelId) === (levelId) &&
+          Number(el.ApprovalTypeId) === Number(approvalTypeIDValue) &&
+          index !== currentIndex
+        )
+      })
+    } else {
+      checkExists = dataList.some((el, index) => {
+        return (
+          Number(el.ApprovalTypeId) === Number(approvalTypeIDValue) &&
+          (el.LevelId) === (levelId) &&
+          index !== currentIndex
+        )
+      })
+    }
+    if (messageHead !== 'Onboarding') {
+      isExistTechnology = dataList && dataList.findIndex((el, index) => {
+        return (Number(el[keyName]) === Number(technology_master_id)) && (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue)) && index !== currentIndex
+      })
+    } else {
+      isExistTechnology = dataList && dataList.findIndex((el, index) => {
+        return (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue)) &&
+          (el.LevelId) !== (levelId) && index !== currentIndex
+      })
+    }
 
     if (checkExists) {
       stop = true
@@ -1194,9 +1307,9 @@ function UserRegistration(props) {
   }
 
   /**
- * @method editSimulationItemDetails
- * @description used to edit simulation head and level
- */
+  * @method editSimulationItemDetails
+  * @description used to edit simulation head and level
+  */
   const editSimulationItemDetails = (rowData, index) => {
 
     const tempData = rowData[index];
@@ -1377,9 +1490,9 @@ function UserRegistration(props) {
 
 
   /**
- * @method editMasterItem
- * @description used to edit master detail form
- */
+  * @method editMasterItem
+  * @description used to edit master detail form
+  */
   const editMasterItem = (rowData, index) => {
 
     const tempData = rowData[index];
@@ -1415,8 +1528,170 @@ function UserRegistration(props) {
     setValue('MasterApprovalType', "")
     emptyLevelDropdown()
   }
+  /***********ONBOARDING LEVEL STARTS HERE**************/
+  /**
+   * @method setOnboardingLevel
+   * @description Used to handle onboarding level
+   */
+  const setOnboardingLevel = async () => {
+    let tempArray = [];
+
+    if (onboardingLevel.length === 0 || OnboardingApprovalType.length === 0) {
+      Toaster.warning('Please select Approval Type and Level')
+      return false;
+    }
+
+    if (getConfigurationKey().IsAllowMultiSelectApprovalType) {
+      let tempMultiApprovalArray = []
+      let duplicateErrorArray = []
+      let multiSelectObject = {}
+      multiSelectObject.ApprovalHeadIdList = [
+        {
+          ApprovalHeadId: ONBOARDINGID,
+          ApprovalHeadName: ONBOARDINGNAME
+        }
+      ]
+      multiSelectObject.ApprovalTypeIdList = OnboardingApprovalType && OnboardingApprovalType.map((approval) => {
+        return {
+          ApprovalTypeId: approval?.value,
+          ApprovalTypeName: approval?.label
+        }
+      })
+      multiSelectObject.LevelId = onboardingLevel?.value
+      multiSelectObject.LevelName = onboardingLevel?.label
+      multiSelectObject.ApprovalModuleName = "Onboarding"
+      try {
+        let data = await checkHighestApprovalLevelForHeadsAndApprovalTypes(multiSelectObject)
+        if (data.length === 0) {
+          return false
+        }
+        data && data.map(approvalData => {
+          let approvalObj = {
+            Level: approvalData?.LevelName,
+            LevelId: approvalData?.LevelId,
+            ApprovalType: approvalData?.ApprovalType,
+            ApprovalTypeId: approvalData?.ApprovalTypeId,
+          }
+          if (!checkDuplicacy(onboardingLevelGrid, approvalObj, 'OnboardingId', '', approvalData?.ApprovalTypeId, 'Onboarding', approvalData?.LevelId, true)) {
+            tempMultiApprovalArray.push(approvalObj)
+          } else {
+            duplicateErrorArray.push(approvalObj)
+          }
+        })
+        if (duplicateErrorArray.length > 0) {
+          const formattedStrings = duplicateErrorArray.map(item => `(${item.ApprovalType} - ${item.Level})`);
+          const FinalformattedString = formattedStrings.join(',');
+          Toaster.warning(`Same record cannot exist for multiple or same approval types: ${FinalformattedString}`)
+        }
+        tempArray = [...onboardingLevelGrid, ...tempMultiApprovalArray]
+      } catch (error) {
+        apiErrors(error)
+      }
+    } else {
+
+      let obj = {
+        Level: onboardingLevel.label,
+        LevelId: onboardingLevel.value,
+        ApprovalType: OnboardingApprovalType?.label,
+        ApprovalTypeId: OnboardingApprovalType?.value,
+      }
+
+      if (checkDuplicacy(onboardingLevelGrid, obj, 'OnboardingId', '', OnboardingApprovalType.value, 'Onboarding', onboardingLevel.value)) return false
+
+      tempArray.push(...onboardingLevelGrid, obj)
+    }
+    if (tempArray.length === 0) return false
+    setOnboardingLevelGrid(tempArray)
+    setOnboardingLevels([])
+    setOnboardingApprovalType([])
+    setValue('onboardingLevel', '')
+    setValue('OnboardingApprovalType', "")
+  };
+  /**
+   * @method updateOnboardingLevel
+   * @description Used to handle update Onboarding and it's level
+   */
+  const updateOnboardingLevel = () => {
+    let tempArray = [];
+
+    if (onboardingLevel.length === 0 || OnboardingApprovalType.length === 0) {
+      Toaster.warning('Please select Approval Type and Level')
+      return false;
+    }
+
+    let tempData = onboardingLevelGrid[onboardingLevelEditIndex];
+    tempData = {
+      Level: onboardingLevel.label,
+      LevelId: onboardingLevel.value,
+      ApprovalType: OnboardingApprovalType?.label,
+      ApprovalTypeId: OnboardingApprovalType?.value,
+    }
+
+    if (checkDuplicacy(onboardingLevelGrid, onboardingLevelEditIndex, 'OnboardingId', '', OnboardingApprovalType.value, 'Onboarding', onboardingLevel.value)) return false
+
+    tempArray = Object.assign([...onboardingLevelGrid], { [onboardingLevelEditIndex]: tempData })
+    setOnboardingLevelGrid(tempArray)
+    setOnboardingLevels([])
+    setOnboardingLevelEditIndex('')
+    setIsOnboardingEditIndex(false)
+    setOnboardingApprovalType([])
+    setValue('onboardingLevel', '')
+    setValue('OnboardingApprovalType', '')
+  };
 
 
+  /**
+  * @method resetOnboardingLevel
+  * @description Used to reset onboarding data
+  */
+  const resetOnboardingLevel = () => {
+
+    setOnboardingLevels([])
+    setOnboardingLevelEditIndex('')
+    setIsOnboardingEditIndex(false)
+    setOnboardingApprovalType([])
+    setValue('onboardingLevel', '')
+    setValue('OnboardingApprovalType', '')
+    emptyLevelDropdown()
+  };
+
+
+
+  /**
+  * @method editOnboardingItem
+  * @description used to edit onboarding detail form
+  */
+  const editOnboardingItem = (rowData, index) => {
+
+    const tempData = rowData[index];
+    dispatch(getOnboardingLevelById(true, tempData.ApprovalTypeId, res => { }))
+
+    setOnboardingLevelEditIndex(index)
+    setIsOnboardingEditIndex(true)
+    setOnboardingApprovalType({ label: tempData.ApprovalType, value: tempData.ApprovalTypeId })
+    setOnboardingLevels({ label: tempData.Level, value: tempData.LevelId })
+    setValue('onboardingLevel', { label: tempData.Level, value: tempData.LevelId })
+    setValue('OnboardingApprovalType', { label: tempData.ApprovalType, value: tempData.ApprovalTypeId })
+  }
+
+
+  /**
+  * @method deleteItem
+  * @description used to delete onboarding item 
+  */
+  const deleteOnboardingItem = (rowData, index) => {
+    let tempData = rowData.filter((item, i) => {
+      if (i === index) {
+        return false;
+      }
+      return true;
+    });
+    setOnboardingLevelGrid(tempData)
+    setOnboardingLevels([])
+    setValue('onboardingLevel', '')
+    setValue('OnboardingApprovalType', '')
+    emptyLevelDropdown()
+  }
   /**
   * @method cancel
   * @description used to Reset form
@@ -1559,6 +1834,17 @@ function UserRegistration(props) {
       })
       return null
     })
+    let tempOnboardingLevelArray = []
+    onboardingLevelGrid && onboardingLevelGrid.map((item, index) => {
+      tempOnboardingLevelArray.push({
+        OnboardingApprovalId: ONBOARDINGID,
+        OnboardingApprovalName: ONBOARDINGNAME,
+        LevelId: item.LevelId,
+        Level: item.Level,
+        ApprovalTypeId: item.ApprovalTypeId,
+        ApprovalType: item.ApprovalType,
+      })
+    })
 
     let multiDeptArr = []
 
@@ -1569,6 +1855,13 @@ function UserRegistration(props) {
     let isDepartmentUpdate = registerUserData?.Departments?.some(
       (item) => !department?.some((deptValue) => item?.DepartmentId === deptValue?.value)
     ) || department?.some((deptValue) => !registerUserData?.Departments?.some((item) => item?.DepartmentId === deptValue?.value));
+
+    let isPlantUpdate = registerUserData.DepartmentsPlantsIdLists?.some(
+      (userDataItem) => !selectedPlants?.some((selectedPlant) => userDataItem.PlantId === selectedPlant.value)
+    ) || selectedPlants?.some(
+      (selectedPlant) => !registerUserData.DepartmentsPlantsIdLists?.some((userDataItem) => userDataItem.PlantId === selectedPlant.value)
+    );
+
     let isForcefulUpdatedForMaster = false;
     let isForcefulUpdatedForCosting = false;
     let isForcefulUpdatedForSimulation = false;
@@ -1579,15 +1872,24 @@ function UserRegistration(props) {
       isForcefulUpdatedForSimulation = true;
     } if (JSON.stringify(TechnologyLevelGrid) !== JSON.stringify(oldTechnologyLevelGrid)) {
       isForcefulUpdatedForCosting = true;
-    } if (isDepartmentUpdate) {
+    } if (isDepartmentUpdate || isPlantUpdate) {
       isForcefulUpdatedForMaster = true;
       isForcefulUpdatedForSimulation = true;
       isForcefulUpdatedForCosting = true;
     }
-    setIsDepartmentUpdated(isDepartmentUpdate);
+    setIsDepartmentUpdated(isDepartmentUpdate || isPlantUpdate);
     setCostingTableChanged(isForcefulUpdatedForCosting);
     setMasterTableChanged(isForcefulUpdatedForMaster);
     setSimulationTableChanged(isForcefulUpdatedForSimulation);
+    let plantArray = []
+    selectedPlants && selectedPlants.map(item => {
+      let obj = {
+        PlantId: item.value,
+        PlantName: getNameBySplitting(item.label),
+        PlantCode: getCodeBySplitting(item.label),
+      }
+      plantArray.push(obj)
+    })
 
     if (isEditFlag) {
       let updatedData = {
@@ -1630,6 +1932,8 @@ function UserRegistration(props) {
         IsRemoveCosting: false,
         CostingCount: registerUserData.CostingCount,
         IsAdditionalAccess: IsShowAdditionalPermission,
+        DepartmentsPlantsIdLists: plantArray,
+        OnboardingApprovalLevels: []
       }
 
       if (isRfqUser) {
@@ -1642,13 +1946,14 @@ function UserRegistration(props) {
         updatedData.AdditionalPermission = IsShowAdditionalPermission ? 'YES' : 'NO'
         updatedData.SimulationTechnologyLevels = tempHeadLevelArray
         updatedData.MasterLevels = tempMasterLevelArray
+        updatedData.OnboardingApprovalLevels = tempOnboardingLevelArray
         updatedData.Departments = multiDeptArr
         updatedData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
         updatedData.IsForcefulUpdatedForCosting = isForcefulUpdatedForCosting
         updatedData.IsForcefulUpdatedForMaster = isForcefulUpdatedForMaster
         updatedData.IsForcefulUpdatedForSimulation = isForcefulUpdatedForSimulation
       }
-      if (isDepartmentUpdate || isForcefulUpdatedForCosting || isForcefulUpdatedForMaster || isForcefulUpdatedForSimulation) {
+      if (isDepartmentUpdate || isForcefulUpdatedForCosting || isForcefulUpdatedForMaster || isForcefulUpdatedForSimulation || isPlantUpdate) {
         setShowPopup(true)
         setUpdatedObj(updatedData)
 
@@ -1713,6 +2018,8 @@ function UserRegistration(props) {
         PhoneNumber: values.PhoneNumber,
         Extension: values.Extension,
         CityId: city.value,
+        DepartmentsPlantsIdLists: plantArray,
+        OnboardingApprovalLevels: []
       }
 
       if (props?.RFQUser) {
@@ -1725,6 +2032,7 @@ function UserRegistration(props) {
         userData.AdditionalPermission = IsShowAdditionalPermission ? 'YES' : 'NO'
         userData.SimulationTechnologyLevels = tempHeadLevelArray
         userData.MasterLevels = tempMasterLevelArray
+        userData.OnboardingApprovalLevels = tempOnboardingLevelArray
         userData.Departments = multiDeptArr
         userData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
@@ -1862,6 +2170,26 @@ function UserRegistration(props) {
       </div>
     )
   }
+
+  const onActionOnboarding = (props) => {
+    const RowData = props?.agGridReact?.gridOptions.rowData
+    return (
+      <div className="text-right">
+        <button
+          title="Edit"
+          className="Edit mr-2"
+          type="button"
+          onClick={() => editOnboardingItem(RowData, props?.rowIndex)}
+        />
+        <button
+          title="Delete"
+          className="Delete"
+          type="button"
+          onClick={() => deleteOnboardingItem(RowData, props.rowIndex)}
+        />
+      </div>
+    )
+  }
   const onPageSizeChanged = (gridApi, newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
   };
@@ -1875,18 +2203,6 @@ function UserRegistration(props) {
   }
 
   const checkHighestApprovalLevelForHeadsAndApprovalTypes = (data) => {
-    // dispatch(checkHighestApprovalLevelForHeadsAndApprovalType(data, res => {
-    //   const message = res?.data?.Message
-    //   const approvalData = res?.data?.Data
-    //   if (message !== '' && message !== null && message !== undefined) {
-    //     Toaster.warning(message)
-    //   }
-    //   if (approvalData?.length > 0) {
-    //     return approvalData
-    //   } else {
-    //     return false
-    //   }
-    // }))
     return new Promise((resolve, reject) => {
       dispatch(checkHighestApprovalLevelForHeadsAndApprovalType(data, res => {
         const message = res?.data?.Message;
@@ -1925,6 +2241,25 @@ function UserRegistration(props) {
       return messages.join(' and ');
     }
   };
+  const handlePlant = (newValue) => {
+    if (newValue && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      // Select All option is chosen
+      const allPlantsExceptZero = plantSelectListForDepartment
+        .filter(item => item.PlantId !== '0')
+        .map(item => ({ label: item?.PlantNameCode, value: item?.PlantId }));
+      setSelectedPlants(allPlantsExceptZero);
+      setTimeout(() => {
+        setValue('plant', allPlantsExceptZero);
+      }, 50);
+    } else if (newValue && newValue?.length > 0) {
+      // Other options are chosen
+      setSelectedPlants(newValue);
+    } else {
+      // No option is chosen
+      setSelectedPlants([]);
+      setValue('plant', '');  // Assuming you want to clear the form value when nothing is selected
+    }
+  }
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -2405,7 +2740,6 @@ function UserRegistration(props) {
                                 name="DepartmentId"
                                 type="text"
                                 label={`${handleDepartmentHeader()}`}
-
                                 errors={errors.DepartmentId}
                                 Controller={Controller}
                                 control={control}
@@ -2426,6 +2760,29 @@ function UserRegistration(props) {
                               />
                             </div>
                         }
+                        {getConfigurationKey().IsPlantsAllowedForDepartment && <div className="col-md-3">
+                          <SearchableSelectHookForm
+                            label="Plant (Code)"
+                            name="plant"
+                            placeholder={"Select"}
+                            type="text"
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            options={searchableSelectType("plant")}
+                            handleChange={handlePlant}
+                            rules={{
+                              required: true,
+                            }}
+                            required={true}
+                            defaultValue={selectedPlants}
+                            errors={errors.plant}
+                            className="multiselect-with-border"
+                            isMulti={true}
+                            selected={selectedPlants == null || selectedPlants.length === 0 ? [] : selectedPlants}
+                          // value={selectedPlants}
+                          />
+                        </div>}
                       </div>
 
 
@@ -2900,14 +3257,137 @@ function UserRegistration(props) {
                         </>
 
                       }
-                    </>
-                  }
-
-                  {/* ////////////////////////////////////////////////////
+                      {/* ////////////////////////////////////////////////////
                       ////////////////////////////////////////////////////
                       /////////////// User's MASTER level END ////////
                       ////////////////////////////////////////////////////
                       ///////////////////////////////////////////////// */}
+                      {getConfigurationKey().IsShowOnboarding &&
+                        <>
+                          <Row>
+                            <Col md="8">
+                              <HeaderTitle title={'Onboarding Approval Level:'} customClass={''} />
+                            </Col>
+                            <Col md="4" className="text-right">
+                              <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
+
+                                {acc4 ? (
+                                  <i className="fa fa-minus" ></i>
+                                ) : (
+                                  <i className="fa fa-plus"></i>
+                                )}
+                              </button>
+                            </Col>
+                          </Row>
+                          {acc4 &&
+                            <>
+                              <div className="row form-group">
+                                <div className="col-md-3">
+                                  <SearchableSelectHookForm
+                                    name="OnboardingApprovalType"
+                                    type="text"
+                                    label="Approval Type"
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    options={searchableSelectType('approvalTypeOnboarding')}
+                                    handleChange={onboardingApprovalTypeHandler}
+                                    defaultValue={OnboardingApprovalType}
+                                    errors={errors.OnboardingApprovalType}
+                                    isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isOnboardingEditIndex) ? true : false}
+
+                                  />
+                                </div>
+                                <div className="col-md-3">
+                                  <SearchableSelectHookForm
+                                    name="onboardingLevel"
+                                    type="text"
+                                    label="Level"
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    handleChange={onboardingLevelHandler}
+                                    options={searchableSelectType('onboardingLevel')}
+                                    valueDescription={onboardingLevel}
+                                    errors={errors.onboardingLevel}
+                                  />
+                                </div>
+                                <div className="col-md-3 btn-mr-rate d-flex">
+                                  {isOnboardingEditIndex ?
+                                    <>
+                                      <button
+                                        type="button"
+                                        className={'btn btn-primary add-button-big'}
+                                        onClick={updateOnboardingLevel}
+                                      >Update</button>
+
+                                      <button
+                                        type="button"
+                                        className={'reset-btn ml-2'}
+                                        onClick={resetOnboardingLevel}
+                                      >Cancel</button>
+                                    </>
+                                    :
+                                    <button
+                                      type="button"
+                                      className={'user-btn add-button-big ml-2'}
+                                      onClick={setOnboardingLevel}
+                                    ><div className={'plus'}></div>ADD</button>}
+                                </div>
+                              </div>
+                              <Row>
+                                <Col md="12" className="mb-2">
+                                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState('gridOptionsOnboarding')}>
+                                    <div className="refresh mr-0"></div>
+                                  </button>
+                                </Col>
+                                <Col md="12">
+                                  <div className="ag-grid-react">
+                                    <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${onboardingLevelGrid?.length <= 0 ? 'overlay-contain' : ''}`}>
+                                      <div className="ag-theme-material">
+                                        <AgGridReact
+                                          defaultColDef={defaultColDef}
+                                          floatingFilter={true}
+                                          pagination={true}
+                                          paginationPageSize={10}
+                                          domLayout='autoHeight'
+                                          onGridReady={params => onGridReady(params, setgridApiOnboarding, setgridColumnApiOnboarding)}
+                                          gridOptions={gridOptionsOnboarding}
+                                          noRowsOverlayComponent="customNoRowsOverlay"
+                                          noRowsOverlayComponentParams={{
+                                            title: EMPTY_DATA,
+                                            imagClass: 'imagClass'
+                                          }}
+                                          rowData={onboardingLevelGrid}
+                                          frameworkComponents={{
+                                            ...frameworkComponents,
+                                            onAction: onActionOnboarding,
+                                          }}
+                                        >
+                                          <AgGridColumn field="ApprovalType" headerName="Approval Type" />
+                                          <AgGridColumn field="Level" headerName="Level" />
+                                          <AgGridColumn field="Action" headerName='Actions' type="rightAligned" cellRenderer={'onAction'} ></AgGridColumn>
+                                        </AgGridReact>
+                                        <PaginationWrapper
+                                          gridApi={gridApiOnboarding}
+                                          setPage={newPageSize => onPageSizeChanged(gridApiOnboarding, newPageSize)}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Col>
+                              </Row>
+                            </>
+                          }
+                        </>
+                      }
+                    </>
+
+                  }
+
+
 
                 </div>
                 <div className="sf-btn-footer no-gutters justify-content-between bottom-footer">

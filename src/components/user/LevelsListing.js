@@ -20,6 +20,7 @@ import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../common/commonPagination';
 import ScrollToTop from '../common/ScrollToTop';
 import Button from '../layout/Button';
+import ManageLevelTabs from './LevelListingIndex';
 
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
@@ -115,7 +116,15 @@ const LevelsListing = (props) => {
 	   */
 	const closeDrawer = (e = '', levelValue = "") => {
 
-		setState(prevState => ({ ...prevState, isOpen: false, isShowMappingForm: false, isShowForm: false, isEditFlag: false, updateApi: !prevState.updateApi, cancelButton: e === 'cancel' ? true : false, levelValue: levelValue }));
+		setState(prevState => ({
+			...prevState, isOpen: false,
+			isShowMappingForm: false,
+			isShowForm: false,
+			isEditFlag: false,
+			updateApi: !prevState.updateApi,
+			cancelButton: e === 'cancel' ? true : false,
+			levelValue: levelValue
+		}));
 	};
 
 	/**
@@ -234,7 +243,8 @@ const LevelsListing = (props) => {
 						<ApplyPermission.Provider value={permissionData}>
 							<Row className="pt-4">
 								<Col md="12">
-									<LevelTechnologyListing onRef={ref => (child.current = ref)} mappingToggler={mappingToggler} getLevelMappingDetail={getLevelMappingDetail} updateApi={state.updateApi} cancelButton={state.cancelButton} levelValue={state.levelValue} />
+									{/* <LevelTechnologyListing onRef={ref => (child.current = ref)} mappingToggler={mappingToggler} getLevelMappingDetail={getLevelMappingDetail} updateApi={state.updateApi} cancelButton={state.cancelButton} levelValue={state.levelValue} /> */}
+									<ManageLevelTabs onRef={ref => (child.current = ref)} mappingToggler={mappingToggler} getLevelMappingDetail={getLevelMappingDetail} cancelButton={state.cancelButton} levelValue={state.levelValue} permissionData={permissionData} />
 								</Col>
 							</Row>
 						</ApplyPermission.Provider>
@@ -298,7 +308,7 @@ const LevelsListing = (props) => {
 
 						</Row>
 
-						{isOpen && (<Level isOpen={isOpen} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} levelValue={state.level} />)}
+						{/* {isOpen && (<Level isOpen={isOpen} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} levelValue={state.level} />)} */}
 						{showImpact && (<ImpactDrawer isOpen={showImpact} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeImpactDrawer} anchor={'right'} />)}
 					</form>
 				</>
