@@ -31,6 +31,11 @@ class App extends Component {
         let approvalTypeList = Data.ApprovalTypeList
         let approvalTypeListArray = approvalTypeList.split(",")
 
+        let onboardingName = Data.ApprovalOnboardingList.split("=")[0]
+        let onboardingId = Data.ApprovalOnboardingList.split("=")[1]
+        reactLocalStorage.setObject('onboardingName', onboardingName)
+        reactLocalStorage.setObject('onboardingId', onboardingId)
+
         let objShort = {};
         costingHeadsListArray && costingHeadsListArray.map(item => {
           let shortFormList = objShort[item.split("=")[0]] = item.match(/\d+/g)[item.match(/\d+/g)?.length - 1]
