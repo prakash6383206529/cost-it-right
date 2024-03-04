@@ -15,7 +15,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, Label, } from 'reactstrap';
 import LoaderCustom from "../common/LoaderCustom";
 import { getApprovalTypeSelectList } from '../../actions/Common'
-import { CUSTOMER_BASED, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONAL, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, WACAPPROVALTYPEID, NEW_COMPONENT, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B4, VENDORNEEDFORMID } from "../../config/constants";
+import { CUSTOMER_BASED, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONAL, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, WACAPPROVALTYPEID, NEW_COMPONENT, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B4, VENDORNEEDFORMID, ONBOARDINGNAME } from "../../config/constants";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { transformApprovalItem } from "../common/CommonFunctions";
 
@@ -496,7 +496,7 @@ class Level extends Component {
             ApprovalTypeId: approvalTypeObject?.value,
             ApprovalType: approvalTypeObject?.label,
             OnboardingApprovalId: 1,
-            OnboardingApprovalName: 'Onboarding',
+            OnboardingApprovalName: ONBOARDINGNAME,
           }
           if (this.state.dataToCheck.label === formReq.Level) {
             this.toggleDrawer('', this.state.levelType)

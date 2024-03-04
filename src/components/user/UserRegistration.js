@@ -15,7 +15,7 @@ import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectLis
 import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
-import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
+import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, NCCTypeId, NFRAPPROVALTYPEID, ONBOARDINGID, ONBOARDINGNAME, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -1547,8 +1547,8 @@ function UserRegistration(props) {
       let multiSelectObject = {}
       multiSelectObject.ApprovalHeadIdList = [
         {
-          ApprovalHeadId: 1,
-          ApprovalHeadName: 'Onboarding'
+          ApprovalHeadId: ONBOARDINGID,
+          ApprovalHeadName: ONBOARDINGNAME
         }
       ]
       multiSelectObject.ApprovalTypeIdList = OnboardingApprovalType && OnboardingApprovalType.map((approval) => {
@@ -1837,8 +1837,8 @@ function UserRegistration(props) {
     let tempOnboardingLevelArray = []
     onboardingLevelGrid && onboardingLevelGrid.map((item, index) => {
       tempOnboardingLevelArray.push({
-        OnboardingApprovalId: 1,
-        OnboardingApprovalName: 'Onboarding',
+        OnboardingApprovalId: ONBOARDINGID,
+        OnboardingApprovalName: ONBOARDINGNAME,
         LevelId: item.LevelId,
         Level: item.Level,
         ApprovalTypeId: item.ApprovalTypeId,

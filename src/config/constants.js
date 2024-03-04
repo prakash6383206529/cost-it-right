@@ -2854,6 +2854,10 @@ export const MACHINETYPE = Number(reactLocalStorage.getObject('masterType')[MACH
 export const OPERATIONTYPE = Number(reactLocalStorage.getObject('masterType')[OPERATION])
 export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGETING])
 
+//CONSTANTS FOR ONBOARDING
+export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
+export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+
 //AUTOCOMPLETE IN PART AND VENDOR
 export const searchCount = 3
 export const dropdownLimit = 100
