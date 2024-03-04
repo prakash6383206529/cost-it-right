@@ -786,7 +786,7 @@ function UserRegistration(props) {
       setCostingApprovalType(newValue)
       setLevel([])
       setValue('LevelId', '')
-      if (isEditIndex) {
+      if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isEditIndex) {
         dispatch(getLevelByTechnology(true, technology.value, newValue.value, res => { }))
       }
     } else {
@@ -803,7 +803,7 @@ function UserRegistration(props) {
       setSimulationApprovalType(newValue)
       setSimualtionLevel([])
       setValue('simualtionLevel', '')
-      if (isSimulationEditIndex) {
+      if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isSimulationEditIndex) {
         dispatch(getSimualationLevelByTechnology(true, simulationHeads.value, newValue.value, res => { }))
       }
     } else {
@@ -820,7 +820,7 @@ function UserRegistration(props) {
       setMasterApprovalType(newValue)
       setMasterLevels([])
       setValue('masterLevel', '')
-      if (isMasterEditIndex) {
+      if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isMasterEditIndex) {
         dispatch(getMasterLevelByMasterId(true, master.value, newValue.value, res => { }))
       }
     } else {
@@ -837,8 +837,9 @@ function UserRegistration(props) {
       setOnboardingApprovalType(newValue)
       setOnboardingLevels([])
       setValue('onboardingLevel', '')
-
-      dispatch(getOnboardingLevelById(true, newValue.value, res => { }))
+      if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isOnboardingEditIndex) {
+        dispatch(getOnboardingLevelById(true, newValue.value, res => { }))
+      }
     } else {
       setOnboardingApprovalType([])
     }
@@ -932,18 +933,36 @@ function UserRegistration(props) {
   const checkDuplicacy = (dataList, currentIndex, keyName, technology_master_id, approvalTypeIDValue, messageHead, levelId, isMulti = false) => {
 
     let stop = false
-
-    const checkExists = dataList.some((el, index) => {
-      return (
-        (Number(el?.TechnologyId) === Number(technology_master_id) || Number(el?.MasterId) === Number(technology_master_id)) &&
-        (el.LevelId) === (levelId) &&
-        Number(el.ApprovalTypeId) === Number(approvalTypeIDValue) &&
-        index !== currentIndex
-      )
-    })
-    const isExistTechnology = dataList && dataList.findIndex((el, index) => {
-      return (Number(el[keyName]) === Number(technology_master_id)) && (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue)) && index !== currentIndex
-    })
+    let checkExists = false
+    let isExistTechnology = false
+    if (messageHead !== 'Onboarding') {
+      checkExists = dataList.some((el, index) => {
+        return (
+          (Number(el?.TechnologyId) === Number(technology_master_id) || Number(el?.MasterId) === Number(technology_master_id)) &&
+          (el.LevelId) === (levelId) &&
+          Number(el.ApprovalTypeId) === Number(approvalTypeIDValue) &&
+          index !== currentIndex
+        )
+      })
+    } else {
+      checkExists = dataList.some((el, index) => {
+        return (
+          Number(el.ApprovalTypeId) === Number(approvalTypeIDValue) &&
+          (el.LevelId) === (levelId) &&
+          index !== currentIndex
+        )
+      })
+    }
+    if (messageHead !== 'Onboarding') {
+      isExistTechnology = dataList && dataList.findIndex((el, index) => {
+        return (Number(el[keyName]) === Number(technology_master_id)) && (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue)) && index !== currentIndex
+      })
+    } else {
+      isExistTechnology = dataList && dataList.findIndex((el, index) => {
+        return (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue)) &&
+          (el.LevelId) !== (levelId) && index !== currentIndex
+      })
+    }
 
     if (checkExists) {
       stop = true
@@ -1288,9 +1307,9 @@ function UserRegistration(props) {
   }
 
   /**
- * @method editSimulationItemDetails
- * @description used to edit simulation head and level
- */
+  * @method editSimulationItemDetails
+  * @description used to edit simulation head and level
+  */
   const editSimulationItemDetails = (rowData, index) => {
 
     const tempData = rowData[index];
@@ -1471,9 +1490,9 @@ function UserRegistration(props) {
 
 
   /**
- * @method editMasterItem
- * @description used to edit master detail form
- */
+  * @method editMasterItem
+  * @description used to edit master detail form
+  */
   const editMasterItem = (rowData, index) => {
 
     const tempData = rowData[index];
@@ -1560,7 +1579,7 @@ function UserRegistration(props) {
           }
         })
         if (duplicateErrorArray.length > 0) {
-          const formattedStrings = duplicateErrorArray.map(item => `(${item.Master} - ${item.ApprovalType} - ${item.Level})`);
+          const formattedStrings = duplicateErrorArray.map(item => `(${item.ApprovalType} - ${item.Level})`);
           const FinalformattedString = formattedStrings.join(',');
           Toaster.warning(`Same record cannot exist for multiple or same approval types: ${FinalformattedString}`)
         }
