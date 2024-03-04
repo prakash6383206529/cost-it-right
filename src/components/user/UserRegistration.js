@@ -3262,121 +3262,125 @@ function UserRegistration(props) {
                       /////////////// User's MASTER level END ////////
                       ////////////////////////////////////////////////////
                       ///////////////////////////////////////////////// */}
-                      <Row>
-                        <Col md="8">
-                          <HeaderTitle title={'Onboarding Approval Level:'} customClass={''} />
-                        </Col>
-                        <Col md="4" className="text-right">
-                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
-
-                            {acc4 ? (
-                              <i className="fa fa-minus" ></i>
-                            ) : (
-                              <i className="fa fa-plus"></i>
-                            )}
-                          </button>
-                        </Col>
-                      </Row>
-                      {acc4 &&
+                      {getConfigurationKey().IsShowOnboarding &&
                         <>
-                          <div className="row form-group">
-                            <div className="col-md-3">
-                              <SearchableSelectHookForm
-                                name="OnboardingApprovalType"
-                                type="text"
-                                label="Approval Type"
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={true}
-                                options={searchableSelectType('approvalTypeOnboarding')}
-                                handleChange={onboardingApprovalTypeHandler}
-                                defaultValue={OnboardingApprovalType}
-                                errors={errors.OnboardingApprovalType}
-                                isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isOnboardingEditIndex) ? true : false}
-
-                              />
-                            </div>
-                            <div className="col-md-3">
-                              <SearchableSelectHookForm
-                                name="onboardingLevel"
-                                type="text"
-                                label="Level"
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={true}
-                                handleChange={onboardingLevelHandler}
-                                options={searchableSelectType('onboardingLevel')}
-                                valueDescription={onboardingLevel}
-                                errors={errors.onboardingLevel}
-                              />
-                            </div>
-                            <div className="col-md-3 btn-mr-rate d-flex">
-                              {isOnboardingEditIndex ?
-                                <>
-                                  <button
-                                    type="button"
-                                    className={'btn btn-primary add-button-big'}
-                                    onClick={updateOnboardingLevel}
-                                  >Update</button>
-
-                                  <button
-                                    type="button"
-                                    className={'reset-btn ml-2'}
-                                    onClick={resetOnboardingLevel}
-                                  >Cancel</button>
-                                </>
-                                :
-                                <button
-                                  type="button"
-                                  className={'user-btn add-button-big ml-2'}
-                                  onClick={setOnboardingLevel}
-                                ><div className={'plus'}></div>ADD</button>}
-                            </div>
-                          </div>
                           <Row>
-                            <Col md="12" className="mb-2">
-                              <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState('gridOptionsOnboarding')}>
-                                <div className="refresh mr-0"></div>
+                            <Col md="8">
+                              <HeaderTitle title={'Onboarding Approval Level:'} customClass={''} />
+                            </Col>
+                            <Col md="4" className="text-right">
+                              <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
+
+                                {acc4 ? (
+                                  <i className="fa fa-minus" ></i>
+                                ) : (
+                                  <i className="fa fa-plus"></i>
+                                )}
                               </button>
                             </Col>
-                            <Col md="12">
-                              <div className="ag-grid-react">
-                                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${onboardingLevelGrid?.length <= 0 ? 'overlay-contain' : ''}`}>
-                                  <div className="ag-theme-material">
-                                    <AgGridReact
-                                      defaultColDef={defaultColDef}
-                                      floatingFilter={true}
-                                      pagination={true}
-                                      paginationPageSize={10}
-                                      domLayout='autoHeight'
-                                      onGridReady={params => onGridReady(params, setgridApiOnboarding, setgridColumnApiOnboarding)}
-                                      gridOptions={gridOptionsOnboarding}
-                                      noRowsOverlayComponent="customNoRowsOverlay"
-                                      noRowsOverlayComponentParams={{
-                                        title: EMPTY_DATA,
-                                        imagClass: 'imagClass'
-                                      }}
-                                      rowData={onboardingLevelGrid}
-                                      frameworkComponents={{
-                                        ...frameworkComponents,
-                                        onAction: onActionOnboarding,
-                                      }}
-                                    >
-                                      <AgGridColumn field="ApprovalType" headerName="Approval Type" />
-                                      <AgGridColumn field="Level" headerName="Level" />
-                                      <AgGridColumn field="Action" headerName='Actions' type="rightAligned" cellRenderer={'onAction'} ></AgGridColumn>
-                                    </AgGridReact>
-                                    <PaginationWrapper
-                                      gridApi={gridApiOnboarding}
-                                      setPage={newPageSize => onPageSizeChanged(gridApiOnboarding, newPageSize)}
-                                    />
-                                  </div>
+                          </Row>
+                          {acc4 &&
+                            <>
+                              <div className="row form-group">
+                                <div className="col-md-3">
+                                  <SearchableSelectHookForm
+                                    name="OnboardingApprovalType"
+                                    type="text"
+                                    label="Approval Type"
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    options={searchableSelectType('approvalTypeOnboarding')}
+                                    handleChange={onboardingApprovalTypeHandler}
+                                    defaultValue={OnboardingApprovalType}
+                                    errors={errors.OnboardingApprovalType}
+                                    isMulti={(getConfigurationKey().IsAllowMultiSelectApprovalType && !isOnboardingEditIndex) ? true : false}
+
+                                  />
+                                </div>
+                                <div className="col-md-3">
+                                  <SearchableSelectHookForm
+                                    name="onboardingLevel"
+                                    type="text"
+                                    label="Level"
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    handleChange={onboardingLevelHandler}
+                                    options={searchableSelectType('onboardingLevel')}
+                                    valueDescription={onboardingLevel}
+                                    errors={errors.onboardingLevel}
+                                  />
+                                </div>
+                                <div className="col-md-3 btn-mr-rate d-flex">
+                                  {isOnboardingEditIndex ?
+                                    <>
+                                      <button
+                                        type="button"
+                                        className={'btn btn-primary add-button-big'}
+                                        onClick={updateOnboardingLevel}
+                                      >Update</button>
+
+                                      <button
+                                        type="button"
+                                        className={'reset-btn ml-2'}
+                                        onClick={resetOnboardingLevel}
+                                      >Cancel</button>
+                                    </>
+                                    :
+                                    <button
+                                      type="button"
+                                      className={'user-btn add-button-big ml-2'}
+                                      onClick={setOnboardingLevel}
+                                    ><div className={'plus'}></div>ADD</button>}
                                 </div>
                               </div>
-                            </Col>
-                          </Row>
+                              <Row>
+                                <Col md="12" className="mb-2">
+                                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState('gridOptionsOnboarding')}>
+                                    <div className="refresh mr-0"></div>
+                                  </button>
+                                </Col>
+                                <Col md="12">
+                                  <div className="ag-grid-react">
+                                    <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${onboardingLevelGrid?.length <= 0 ? 'overlay-contain' : ''}`}>
+                                      <div className="ag-theme-material">
+                                        <AgGridReact
+                                          defaultColDef={defaultColDef}
+                                          floatingFilter={true}
+                                          pagination={true}
+                                          paginationPageSize={10}
+                                          domLayout='autoHeight'
+                                          onGridReady={params => onGridReady(params, setgridApiOnboarding, setgridColumnApiOnboarding)}
+                                          gridOptions={gridOptionsOnboarding}
+                                          noRowsOverlayComponent="customNoRowsOverlay"
+                                          noRowsOverlayComponentParams={{
+                                            title: EMPTY_DATA,
+                                            imagClass: 'imagClass'
+                                          }}
+                                          rowData={onboardingLevelGrid}
+                                          frameworkComponents={{
+                                            ...frameworkComponents,
+                                            onAction: onActionOnboarding,
+                                          }}
+                                        >
+                                          <AgGridColumn field="ApprovalType" headerName="Approval Type" />
+                                          <AgGridColumn field="Level" headerName="Level" />
+                                          <AgGridColumn field="Action" headerName='Actions' type="rightAligned" cellRenderer={'onAction'} ></AgGridColumn>
+                                        </AgGridReact>
+                                        <PaginationWrapper
+                                          gridApi={gridApiOnboarding}
+                                          setPage={newPageSize => onPageSizeChanged(gridApiOnboarding, newPageSize)}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Col>
+                              </Row>
+                            </>
+                          }
                         </>
                       }
                     </>

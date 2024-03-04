@@ -724,7 +724,7 @@ class Level extends Component {
                               <span>Master</span>
                             </Label>
                           }
-                          <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block w-auto'} check>
+                          {getConfigurationKey().IsShowOnboarding && <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block w-auto'} check>
                             <input
                               type="radio"
                               name="levelType"
@@ -733,7 +733,7 @@ class Level extends Component {
                               disabled={this.props.isEditFlag}
                             />{' '}
                             <span>Onboarding</span>
-                          </Label>
+                          </Label>}
                         </Col>
                       </Row >
                       <div className="row pr-0">

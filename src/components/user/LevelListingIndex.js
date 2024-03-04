@@ -16,6 +16,7 @@ import MasterLevelListing from './MasterLevel'
 import Level from './Level';
 import OnboardingLevelListing from './OnboardingLevel';
 import { Loader } from '../common/Loader';
+import { getConfigurationKey } from '../../helper';
 
 function ManageLevelTabs(props) {
     const { onRef, permissionData } = props
@@ -108,7 +109,7 @@ function ManageLevelTabs(props) {
                                 Simulation
                             </NavLink>
                         </NavItem>
-                        <NavItem>
+                        {getConfigurationKey().IsMasterApprovalAppliedConfigure && <NavItem>
                             <NavLink
                                 className={classnames({ active: activeTab === '3' })}
                                 onClick={() => {
@@ -117,8 +118,8 @@ function ManageLevelTabs(props) {
                             >
                                 Master
                             </NavLink>
-                        </NavItem>
-                        <NavItem>
+                        </NavItem>}
+                        {getConfigurationKey().IsShowOnboarding && <NavItem>
                             <NavLink
                                 className={classnames({ active: activeTab === '4' })}
                                 onClick={() => {
@@ -127,7 +128,7 @@ function ManageLevelTabs(props) {
                             >
                                 Onboarding
                             </NavLink>
-                        </NavItem>
+                        </NavItem>}
                     </Nav>
                     {isOpen && (<Level isOpen={isOpen} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} levelValue={state.level} />)}
                     <TabContent activeTab={activeTab}>
