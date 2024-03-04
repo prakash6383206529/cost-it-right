@@ -618,50 +618,67 @@ class ViewUserDetails extends Component {
                         </Col>}
 
                       </Row>}
-                    {isOnboardingOpen && <Col md="12">
-                      <Row>
-                        <Col md="12" className="mb-2">
-                          <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState('gridOptionsOnboarding')}>
-                            <div className="refresh mr-0"></div>
-                          </button>
-                        </Col>
-                        <Col md="12">
+                    {getConfigurationKey().IsShowOnboarding && <Row className="pt-3 ">
+                      <Col md="12">
+                        <Row>
+                          <Col md="10">
+                            <HeaderTitle
+                              title={'Onboarding Approval Level:'}
+                              customClass={'technology-level-details'} />
+                          </Col>
+                          <Col md="2" className='text-right'>
+                            <button onClick={() => this.technologyToggle(ONBOARDING)} className={`btn btn-small-primary-circle ml-1`}>{isOnboardingOpen ? (
+                              <i className="fa fa-minus" ></i>
+                            ) : (
+                              <i className="fa fa-plus"></i>
+                            )}</button>
+                          </Col>
+                        </Row>
+                      </Col>
+                      {isOnboardingOpen && <Col md="12">
+                        <Row>
+                          <Col md="12" className="mb-2">
+                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState('gridOptionsOnboarding')}>
+                              <div className="refresh mr-0"></div>
+                            </button>
+                          </Col>
+                          <Col md="12">
 
-                          <div className="ag-grid-react">
-                            <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${OnboardingLevelGrid.length <= 0 ? 'overlay-contain' : ''}`}>
-                              <div className="ag-theme-material">
-                                <AgGridReact
-                                  defaultColDef={defaultColDef}
-                                  floatingFilter={true}
-                                  pagination={true}
-                                  paginationPageSize={10}
-                                  domLayout='autoHeight'
-                                  onGridReady={params => this.onGridReady(params, "onboarding")}
-                                  gridOptions={gridOptionsOnboarding}
-                                  noRowsOverlayComponent="customNoRowsOverlay"
-                                  noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                    imagClass: 'imagClass'
-                                  }}
-                                  rowData={OnboardingLevelGrid}
-                                  frameworkComponents={{
-                                    ...frameworkComponents,
-                                  }}
-                                >
-                                  <AgGridColumn field="ApprovalType" headerName="Approval Type" />
-                                  <AgGridColumn field="Level" headerName="Level" />
-                                </AgGridReact>
-                                <PaginationWrapper
-                                  gridApi={gridApiOnboarding}
-                                  setPage={newPageSize => this.onPageSizeChanged(gridApiOnboarding, newPageSize)}
-                                />
+                            <div className="ag-grid-react">
+                              <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${OnboardingLevelGrid.length <= 0 ? 'overlay-contain' : ''}`}>
+                                <div className="ag-theme-material">
+                                  <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    floatingFilter={true}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    domLayout='autoHeight'
+                                    onGridReady={params => this.onGridReady(params, "onboarding")}
+                                    gridOptions={gridOptionsOnboarding}
+                                    noRowsOverlayComponent="customNoRowsOverlay"
+                                    noRowsOverlayComponentParams={{
+                                      title: EMPTY_DATA,
+                                      imagClass: 'imagClass'
+                                    }}
+                                    rowData={OnboardingLevelGrid}
+                                    frameworkComponents={{
+                                      ...frameworkComponents,
+                                    }}
+                                  >
+                                    <AgGridColumn field="ApprovalType" headerName="Approval Type" />
+                                    <AgGridColumn field="Level" headerName="Level" />
+                                  </AgGridReact>
+                                  <PaginationWrapper
+                                    gridApi={gridApiOnboarding}
+                                    setPage={newPageSize => this.onPageSizeChanged(gridApiOnboarding, newPageSize)}
+                                  />
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </Col>
-                      </Row>
-                    </Col>}
-
+                          </Col>
+                        </Row>
+                      </Col>}
+                    </Row>}
                   </>
                 }
                 {/* <Row className="pt-3 drawer-table-sm">
