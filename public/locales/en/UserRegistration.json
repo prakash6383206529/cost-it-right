@@ -1,0 +1,70 @@
+{
+  "userManagement": {
+    "AddUser_FirstName": "Please enter the user's first name.",
+    "AddUser_LastName": "Please enter the user's last name.",
+    "AddUser_Mobile": "Enter the user's mobile number.",
+    "AddUser_PhoneNumber": "Enter the user's phone number.",
+    "AddUser_Extension": "Enter the extension (if applicable).",
+    "AddUser_Email": "Enter the user's email address.",
+    "AddUser_UserName": "Choose a unique username for the user.",
+    "AddUser_Password": "Set a secure password for the user.",
+    "AddUser_ConfirmPassword": "Confirm the entered password.",
+    "AddUser_Address1": "Enter the first line of the user's address.",
+    "AddUser_Address2": "Enter the second line of the user's address.",
+    "AddUser_City": "Select the user's city.",
+    "AddUser_ZipCode": "Enter the user's zip code.",
+    "AddUser_Role": "Select the user's role.",
+    "AddUser_Company": "Enter the user's company name.",
+    "AddUser_Checkbox": "Check the box to grant permission.",
+    "AddUser_Permissions_Costing": "Click '+' to add user-specific permissions for costing.",
+    "AddUser_Technology": "Select the user's preferred technology.",
+    "AddUser_ApprovalType": "Select the approval type for the user.",
+    "AddUser_Level": "Select the user's level.",
+    "AddUser_AddCosting": "Add Costing",
+    "AddUser_Permissions_Simulation": "Click '+' to add user-specific permissions for simulation.",
+    "AddUser_Head": "Select the user's preferred heads.",
+    "AddUser_AddSimulation": "Add Simulation",
+    "AddUser_Permissions_Master": "Click '+' to add user-specific permissions for master approval.",
+    "AddUser_Master": "Select the master for user approval.",
+    "AddUser_AddMaster": "Add Master",
+    "AddUser_Cancel": "Cancel the form",
+    "AddUser_Save": "Save the form"
+  },
+  "addCompany": {
+    "AddCompany_Name": "Enter the company name",
+    "AddCompany_Code": "Enter the company code",
+    "AddCompany_Cancel": "Click here to cancel and go back to the listing page",
+    "AddCompany_Save": "Click here to save"
+  },
+  "addRole": {
+    "AddRole_Name": "Enter role name",
+    "AddRole_Checkbox": "Check the box to grant permission.",
+    "dashboard": "Click on this dashboard to change or update permissions",
+    "masters": "Click on this masters to change or update permissions",
+    "additionalMasters": "Click on this additional Masters to change or update permissions",
+    "costing": "Click on this costing to change or update permissions",
+    "simulation": "Click on this simulation to change or update permissions",
+    "reports": "Click on this report to change or update permissions",
+    "users": "Click on this users to change or update permissions",
+    "RFQ": "Click on this RFQ to change or update permissions",
+    "NFR": "Click on this NFR to change or update permissions",
+    "audit": "Click on this audit to change or update permissions",
+    "AddRole_Cancel": "Click here to cancel and go back to the listing page",
+    "AddRole_Save": "Click here to save"
+  },
+  "approvalForm": {
+    "AddApproval_CostingLevel": "Select costing level",
+    "AddApproval_SimulationLevel": "Select simulation level",
+    "AddApproval_MasterLevel": "Select master level",
+    "AddApproval_ApprovalType_Required": "Select approval type.",
+    "AddApproval_TechnologyHeads": "Select technology/heads",
+    "AddApproval_HighestApprovalLevel": "Select highest approval level",
+    "AddApproval_Cancel": "Click here to cancel the form",
+    "AddApproval_Save": "Click here to save"
+  },
+  "addRoleComponent": {
+    "select_all": "Click the checkbox to select all permissions for all modules.",
+    "specific_select": "Click the checkbox to select permissions for a specific role.",
+    "action": "Toggle this switch to allow or disallow action permissions."
+  }
+}

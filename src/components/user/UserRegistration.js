@@ -28,6 +28,10 @@ import _, { debounce } from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
 import { apiErrors } from "../../helper";
+import TourWrapper from "../common/Tour/TourWrapper";
+import { useTranslation } from "react-i18next";
+import { Steps } from "./TourMessages";
+
 
 var CryptoJS = require('crypto-js')
 const gridOptionsTechnology = {}
@@ -44,7 +48,7 @@ const gridOptions = {
 function UserRegistration(props) {
 
   let child = React.createRef();
-
+  const { t } = useTranslation("UserRegistration")
   const [token, setToken] = useState("");
   const [countryCode, setCountryCode] = useState(false);
   const [lowerCaseCheck, setLowerCaseCheck] = useState(false);
@@ -2376,7 +2380,13 @@ function UserRegistration(props) {
               <div className="row">
                 <div className="col-md-6">
                   <div className="form-heading mb-0">
-                    <h2>{isEditFlag ? 'Update' : 'Add'} {props?.RFQUser ? 'RFQ ' : ''}User</h2>
+                    <h2>{isEditFlag ? 'Update' : 'Add'} {props?.RFQUser ? 'RFQ ' : ''}User <TourWrapper
+                      buttonSpecificProp={{ id: "Add_User_form" }}
+                      stepsSpecificProp={{
+                        steps: Steps(t, {
+                          costingField: acc1, simulationField: acc2, masterField: acc3
+                        }).USER_MANAGEMENT
+                      }} /></h2>
                   </div>
                 </div>
                 {isEditFlag && !isShowPwdField && <div className="col-md-6">
@@ -2651,7 +2661,7 @@ function UserRegistration(props) {
                             customClassName={'withBorderPWD'}
                           />
                         </div>
-                        <div className="input-group col-md-3 password-wrapper">
+                        <div id="AddUser_PasswordConfirm" className="input-group col-md-3 password-wrapper">
                           <PasswordFieldHookForm
                             name="passwordConfirm"
                             label="Confirm Password"
@@ -2900,7 +2910,7 @@ function UserRegistration(props) {
 
                       <div className=" row mb-4">
                         <div className={'col-md-4'}>
-                          <label
+                          <label id="AddUser_Checkbox"
                             className="custom-checkbox"
                             onChange={onPressUserPermission}
                           >
@@ -2937,7 +2947,7 @@ function UserRegistration(props) {
                           <HeaderTitle title={'Costing Approval Level:'} customClass={''} />
                         </Col>
                         <Col md="4" className="text-right">
-                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
+                          <button id="AddUser_Permissions_Costing" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
 
                             {acc1 ? (
                               <i className="fa fa-minus" ></i>
@@ -3019,6 +3029,7 @@ function UserRegistration(props) {
                                 :
                                 <button
                                   type="button"
+                                  id="AddUser_AddCosting"
                                   className={'user-btn add-button-big ml-2'}
                                   onClick={setTechnologyLevel}
                                 ><div className={'plus'}></div>ADD</button>}
@@ -3086,7 +3097,7 @@ function UserRegistration(props) {
                           <HeaderTitle title={'Simulation Approval Level:'} customClass={''} />
                         </Col>
                         <Col md="4" className="text-right">
-                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
+                          <button id="AddUser_Permissions_Simulation" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
 
                             {acc2 ? (
                               <i className="fa fa-minus" ></i>
@@ -3168,6 +3179,7 @@ function UserRegistration(props) {
                                 :
                                 <button
                                   type="button"
+                                  id="AddUser_AddSimulation"
                                   className={'user-btn add-button-big ml-2'}
                                   onClick={setSimualtionHeadLevel}
                                 ><div className={'plus'}></div>ADD</button>}
@@ -3227,7 +3239,7 @@ function UserRegistration(props) {
                               <HeaderTitle title={'Master Approval Level:'} customClass={''} />
                             </Col>
                             <Col md="4" className="text-right">
-                              <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
+                              <button id="AddUser_Permissions_Master" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
 
                                 {acc3 ? (
                                   <i className="fa fa-minus" ></i>
@@ -3309,6 +3321,7 @@ function UserRegistration(props) {
                                     :
                                     <button
                                       type="button"
+                                      id="AddUser_AddMaster"
                                       className={'user-btn add-button-big ml-2'}
                                       onClick={setMasterLevel}
                                     ><div className={'plus'}></div>ADD</button>}
@@ -3500,6 +3513,7 @@ function UserRegistration(props) {
 
                     <button
                       onClick={cancel}
+                      id="AddUser_Cancel"
                       type="submit"
                       value="CANCEL"
                       disabled={isUpdateResponded}
@@ -3510,6 +3524,7 @@ function UserRegistration(props) {
 
                     <button
                       type="button"
+                      id="AddUser_Save"
                       onClick={onSubmit}
                       disabled={isSubmitted || isUpdateResponded ? true : false}
                       className="user-btn save-btn">
