@@ -1166,6 +1166,7 @@ function ApprovalListing(props) {
           anchor={'right'}
           isApprovalisting={true}
           technologyId={selectedRowData[0].TechnologyId}
+          callSapCheckAPI={false}
         />
       }
       {

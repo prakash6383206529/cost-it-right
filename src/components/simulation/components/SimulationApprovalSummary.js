@@ -152,12 +152,8 @@ function SimulationApprovalSummary(props) {
     const headers = {
         NetCost: `Net Cost (${initialConfiguration?.BaseCurrency})`,
     }
-    //MINDA
-    const [toggleSeeData1, setToggleSeeData1] = useState(true)
-    const [toggleSeeData2, setToggleSeeData2] = useState(true)
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false)
-    const [showErrorMessage, setShowErrorMessage] = useState(false)
-    //MINDA
+
+    const [costingIdArray, setCostingIdArray] = useState({})
 
     const userLoggedIn = loggedInUserId()
 
@@ -204,6 +200,11 @@ function SimulationApprovalSummary(props) {
                 , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
                 , PartType: PartType, ApprovalTypeId: ApprovalTypeId
             })
+            let requestObject = {}
+
+            requestObject.IsCreate = true
+            requestObject.CostingId = []
+            setCostingIdArray(requestObject)
             setFiles(Attachements)
             // dispatch(setAttachmentFileData(Attachements, () => { }))               //RE
             setIsApprovalDone(IsSent)
@@ -1102,54 +1103,22 @@ function SimulationApprovalSummary(props) {
             setIsOpen(!IsOpen)
         }
     }
-    //MINDA
-    // const callPushAPI = debounce(() => {
-    //     // setIsDisabled(true)
-    //     let temp = []
-    //     let uniqueArr = _.uniqBy(costingList, function (o) {
-    //         return o.CostingId;
-    //     });
-
-    //     uniqueArr && uniqueArr.map(item => {
-
-    //         temp.push({
-    //             CostingId: item?.CostingId,
-    //             BoughtOutPartId: item?.BoughtOutPartId,
-    //             effectiveDate: DayTime(simulationDetail?.EffectiveDate).format('YYYY-MM-DD'),
-    //             vendorCode: getCodeBySplitting(item.VendorName),
-    //             materialNumber: item?.PartNo,
-    //             netPrice: item?.NewBasicRate,
-    //             plant: item?.PlantCode ? item?.PlantCode : null,
-    //             currencyKey: INR,
-    //             basicUOM: 'NO',
-    //             purchasingOrg: item?.DepartmentCode,
-    //             purchasingGroup: '',
-    //             materialGroup: '',
-    //             taxCode: 'YW',
-    //             TokenNumber: simulationDetail?.Token,
-    //             DecimalOption: simulationDetail?.DecimalOption,
-    //             IsRequestForCosting: false,
-    //             InfoToConditions: [],
-    //             IsRequestForBoughtOutPartMaster: false
-    //         })
-    //     })
-
-
-
-    //     let simObj = {
-    //         LoggedInUserId: loggedInUserId(),
-    //         Request: temp
-    //     }
-    //     dispatch(approvalPushedOnSap(simObj, res => {
-    //         // setIsDisabled(false)
-    //         if (res && res.status && (res.status === 200 || res.status === 204)) {
-    //             Toaster.success('Approval pushed successfully.')
-    //         }
-    //     }))
-    //     setShowListing(true)
-    // }, 500)
-
-    //MINDA
+    const callPushAPI = debounce(() => {
+        let obj = {
+            "BaseCositngId": null,
+            "LoggedInUserId": loggedInUserId(),
+            "SimulationId": simulationDetail?.SimulationId,
+            "BoughtOutPartId": null,
+        }
+        dispatch(approvalPushedOnSap(obj, res => {
+            if (res?.data?.DataList && res?.data?.DataList[0]?.IsPushed === false) {
+                Toaster.error(res?.data?.DataList[0]?.Message)
+            } else if (res?.data?.Result) {
+                Toaster.success('Approval pushed successfully.')
+            }
+            setShowListing(true)
+        }))
+    }, 500)
 
     const header = {
         RevisedNetCost: `Revised Net Cost ${initialConfiguration?.BaseCurrency}`
@@ -1162,11 +1131,7 @@ function SimulationApprovalSummary(props) {
                     <CalculatorWrapper />
                     {!loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${!loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
-                        {/* <ErrorMessage approvalNumber={approvalNumber} /> */}
-                        {/* <ErrorMessage approvalNumber={approvalNumber} />               //RE */}
-
-                        {/* //MINDA */}
-                        {/* <ErrorMessage approvalNumber={approvalNumber} isCosting={false} /> */}
+                        {getConfigurationKey()?.IsSAPConfigured && costingList[0]?.CostingId && <ErrorMessage isCosting={false} approvalNumber={approvalNumber} />}
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
                         <Row>
@@ -1307,6 +1272,7 @@ function SimulationApprovalSummary(props) {
                                     tooltipEffectiveDate={DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}
                                     fgWiseAccDisable={fgWiseAccDisable}
                                     isSimulation={true}
+                                    costingIdArray={costingIdArray}
                                 />
                             }
                         </>}
@@ -1763,22 +1729,19 @@ function SimulationApprovalSummary(props) {
                         </Row>
                     }
                     {/* WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS                //RE OPEN IN RE*/}
-                    {/* {
+                    {initialConfiguration?.IsSAPConfigured &&
                         showPushButton &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
-                                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
-                                        <div className={"save-icon"}></div>{" "}
-                                        {"Push"}
-                                    <button type="submit" className="submit-button mr5 save-btn" disabled={isDisabled} onClick={() => rePush()}>
+                                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
                                         <div className={"save-icon"}></div>{" "}
                                         {"RePush"}
                                     </button>
                                 </Fragment>
                             </div>
                         </Row>
-                    } */}
+                    }
                 </>
                 // :
                 // <SimulationApprovalListing />

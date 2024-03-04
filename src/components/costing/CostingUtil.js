@@ -146,6 +146,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       // "SurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
       // "TransportationCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TransportationCost,
       // "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+      "NetOtherOperationCost": 0,               // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
     },
     "WorkingRows": assemblyWorkingRow,
     "BOPHandlingCharges": {
@@ -376,6 +377,8 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "StaffCostPercentage": tabData?.StaffCostPercentage,
       "IndirectLaborCostPercentage": tabData?.IndirectLaborCostPercentage,
       "BasicRate": basicRate,
+      "RawMaterialCostWithCutOff": tabData?.CostingPartDetails?.NetChildPartsCost,
+      "NetOtherOperationCost": 0,               // SET AS 0 BECAUSE ASSEMBLY TECHNOLOGY DOES NOT HAVE OTHER OPERATION OPTION
     },
     "WorkingRows": assemblyWorkingRow,
     "LoggedInUserId": loggedInUserId()

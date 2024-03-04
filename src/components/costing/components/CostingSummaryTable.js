@@ -962,7 +962,11 @@ const CostingSummaryTable = (props) => {
     if (dataSelected?.length === 0) {
       Toaster.warning("Please select at least one costing to send for approval")
       return false
-
+    }
+    let arr = dataSelected?.filter(element => element.IsApprovalLocked === true)
+    if (arr?.length > 0) {
+      Toaster.warning(arr[0]?.getApprovalLockedMessage ? arr[0]?.getApprovalLockedMessage : 'Costing cannot be send for approval.')
+      return false
     }
     let list = [...dataSelected]
     let vendorArray = []
@@ -980,116 +984,116 @@ const CostingSummaryTable = (props) => {
       return false
     }
     //MINDA
-    // if (initialConfiguration.IsReleaseStrategyConfigured) {
-    //   let dataList = costingIdObj(dataSelected)
-    //   let requestObject = {
-    //     "RequestFor": "COSTING",
-    //     "TechnologyId": technologyId,
-    //     "LoggedInUserId": loggedInUserId(),
-    //     "ReleaseStrategyApprovalDetails": dataList
-    //   }
-    //   dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+    if (initialConfiguration.IsReleaseStrategyConfigured) {
+      let dataList = costingIdObj(dataSelected)
+      let requestObject = {
+        "RequestFor": "COSTING",
+        "TechnologyId": technologyId,
+        "LoggedInUserId": loggedInUserId(),
+        "ReleaseStrategyApprovalDetails": dataList
+      }
+      dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
 
-    //     setReleaseStrategyDetails(res?.data?.Data)
-    //     if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover === false) {
-    //       if (list?.length === 0) {
-    //         Toaster.warning('Please select at least one costing to send for approval')
-    //         return
-    //       } else if (!allEqual(vendorArray)) {
-    //         Toaster.warning('Vendor should be same for sending multiple costing for approval')
-    //         return
-    //       } else if (!allEqual(effectiveDateArray)) {
-    //         Toaster.warning('Effective Date should be same for sending multiple costing for approval')
-    //       } else if (!allEqual(plantArray)) {
-    //         Toaster.warning('Plant should be same for sending multiple costing for approval')
-    //       } else {
-    //         sendForApprovalData(multipleCostings)
-    //         setShowApproval(true)
-    //       }
-    //     } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-    //       if (!isFinalCommonApproval) {
-    //         if (list?.length === 0) {
-    //           Toaster.warning('Please select at least one costing to send for approval')
-    //           return
-    //         } else if (!allEqual(vendorArray)) {
-    //           Toaster.warning('Vendor should be same for sending multiple costing for approval')
-    //           return
-    //         } else if (!allEqual(effectiveDateArray)) {
-    //           Toaster.warning('Effective Date should be same for sending multiple costing for approval')
-    //         } else if (!allEqual(plantArray)) {
-    //           Toaster.warning('Plant should be same for sending multiple costing for approval')
-    //         } else {
-    //           dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
-    //             if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
-    //               setShowApproval(false)
-    //               Toaster.warning('User is not in the approval flow')
-    //             } else {
-    //               sendForApprovalData(multipleCostings)
-    //               setShowApproval(true)
-    //             }
-    //           }))
-    //         }
-    //       } else {
-    //         Toaster.warning('This is final level user')
-    //         return false
-    //       }
-    //     } else if (res?.data?.Data?.IsFinalApprover === true) {
-    //       Toaster.warning('This is final level user')
-    //       return false
-    //     } else if (res?.data?.Result === false) {
-    //       Toaster.warning(res?.data?.Message)
-    //       return false
-    //     } else {
-    //       Toaster.warning('This user is not in approval cycle')
-    //       return false
-    //     }
-    //   }))
-    // } else {
-
-    if (list?.length === 0) {
-      Toaster.warning('Please select at least one costing to send for approval')
-      return
-    } else if (!allEqual(vendorArray)) {
-      Toaster.warning('Vendor should be same for sending multiple costing for approval')
-      return
-    } else if (!allEqual(effectiveDateArray)) {
-      Toaster.warning('Effective Date should be same for sending multiple costing for approval')
-    } else if (!allEqual(plantArray)) {
-      Toaster.warning('Plant should be same for sending multiple costing for approval')
-    } else {
-      dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
-        if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
-          setShowApproval(false)
-          Toaster.warning('User is not in the approval flow')
-        } else {
-          let levelDetailsTemp
-          levelDetailsTemp = userTechnologyLevelDetails(viewCostingData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
-          if (levelDetailsTemp?.length === 0) {
-            Toaster.warning("You don't have permission to send costing for approval.")
+        setReleaseStrategyDetails(res?.data?.Data)
+        if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover === false) {
+          if (list?.length === 0) {
+            Toaster.warning('Please select at least one costing to send for approval')
+            return
+          } else if (!allEqual(vendorArray)) {
+            Toaster.warning('Vendor should be same for sending multiple costing for approval')
+            return
+          } else if (!allEqual(effectiveDateArray)) {
+            Toaster.warning('Effective Date should be same for sending multiple costing for approval')
+          } else if (!allEqual(plantArray)) {
+            Toaster.warning('Plant should be same for sending multiple costing for approval')
           } else {
-            let obj = {}
-            obj.DepartmentId = userDetails().DepartmentId
-            obj.UserId = loggedInUserId()
-            obj.TechnologyId = partInfo.TechnologyId
-            obj.Mode = 'costing'
-            obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
-            dispatch(checkFinalUser(obj, res => {
-              if (res?.data?.Result) {
-                setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
-                if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+            sendForApprovalData(multipleCostings)
+            setShowApproval(true)
+          }
+        } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+          if (!isFinalCommonApproval) {
+            if (list?.length === 0) {
+              Toaster.warning('Please select at least one costing to send for approval')
+              return
+            } else if (!allEqual(vendorArray)) {
+              Toaster.warning('Vendor should be same for sending multiple costing for approval')
+              return
+            } else if (!allEqual(effectiveDateArray)) {
+              Toaster.warning('Effective Date should be same for sending multiple costing for approval')
+            } else if (!allEqual(plantArray)) {
+              Toaster.warning('Plant should be same for sending multiple costing for approval')
+            } else {
+              dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+                if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
+                  setShowApproval(false)
+                  Toaster.warning('User is not in the approval flow')
+                } else {
                   sendForApprovalData(multipleCostings)
                   setShowApproval(true)
-                } else if (res?.data?.Data?.IsFinalApprover === true) {
-                  Toaster.warning("Final level user cannot send costing for approval.")
-                } else {
-                  Toaster.warning("User does not have permission to send costing for approval.")
                 }
-              }
-            }))
+              }))
+            }
+          } else {
+            Toaster.warning('This is final level user')
+            return false
           }
+        } else if (res?.data?.Data?.IsFinalApprover === true) {
+          Toaster.warning('This is final level user')
+          return false
+        } else if (res?.data?.Result === false) {
+          Toaster.warning(res?.data?.Message)
+          return false
+        } else {
+          Toaster.warning('This user is not in approval cycle')
+          return false
         }
       }))
-      // }
+    } else {
+
+      if (list?.length === 0) {
+        Toaster.warning('Please select at least one costing to send for approval')
+        return
+      } else if (!allEqual(vendorArray)) {
+        Toaster.warning('Vendor should be same for sending multiple costing for approval')
+        return
+      } else if (!allEqual(effectiveDateArray)) {
+        Toaster.warning('Effective Date should be same for sending multiple costing for approval')
+      } else if (!allEqual(plantArray)) {
+        Toaster.warning('Plant should be same for sending multiple costing for approval')
+      } else {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+          if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
+            setShowApproval(false)
+            Toaster.warning('User is not in the approval flow')
+          } else {
+            let levelDetailsTemp
+            levelDetailsTemp = userTechnologyLevelDetails(viewCostingData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+            if (levelDetailsTemp?.length === 0) {
+              Toaster.warning("You don't have permission to send costing for approval.")
+            } else {
+              let obj = {}
+              obj.DepartmentId = userDetails().DepartmentId
+              obj.UserId = loggedInUserId()
+              obj.TechnologyId = partInfo.TechnologyId
+              obj.Mode = 'costing'
+              obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+              dispatch(checkFinalUser(obj, res => {
+                if (res?.data?.Result) {
+                  setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                  if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                    sendForApprovalData(multipleCostings)
+                    setShowApproval(true)
+                  } else if (res?.data?.Data?.IsFinalApprover === true) {
+                    Toaster.warning("Final level user cannot send costing for approval.")
+                  } else {
+                    Toaster.warning("User does not have permission to send costing for approval.")
+                  }
+                }
+              }))
+            }
+          }
+        }))
+      }
     }
 
   }
@@ -3333,6 +3337,7 @@ const CostingSummaryTable = (props) => {
             anchor={'right'}
             technologyId={technologyId}
             dataSelected={dataSelected}
+            callSapCheckAPI={true}
           />
         )
       }
