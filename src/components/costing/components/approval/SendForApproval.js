@@ -217,7 +217,7 @@ const SendForApproval = (props) => {
   }, [])
 
   useEffect(() => {
-    if (viewApprovalData && viewApprovalData?.length === 1 && count === 0 && callSapCheckAPI === true) {//&& !isSimulationApprovalListing
+    if (initialConfiguration?.IsSAPConfigured && viewApprovalData && viewApprovalData?.length === 1 && count === 0 && callSapCheckAPI === true) {//&& !isSimulationApprovalListing
       setIsLoader(true)
       dispatch(checkSAPPoPrice('', viewApprovalData[0]?.costingId, res => {
         setCount(count + 1)

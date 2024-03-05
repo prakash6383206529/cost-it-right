@@ -119,7 +119,7 @@ function SimulationApproveReject(props) {
 
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
-    if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
+    if (initialConfiguration?.IsSAPConfigured && type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
       let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
 
       //THIS CONDITION IS FOR SAVE SIMULATION
