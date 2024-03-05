@@ -2781,7 +2781,7 @@ function UserRegistration(props) {
                             rules={{
                               required: true,
                             }}
-                            required={true}
+                            mandatory={true}
                             defaultValue={selectedPlants}
                             errors={errors.plant}
                             className="multiselect-with-border"
