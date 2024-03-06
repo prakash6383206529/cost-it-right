@@ -1762,7 +1762,7 @@ function UserRegistration(props) {
     let forcefulUpdate = false
     let onboaringUpdate = false
     if (isEditFlag && !isForcefulUpdate) {
-      if (JSON.stringify(Modules) !== JSON.stringify(oldModules) || JSON.stringify(oldHeadLevelGrid) !== JSON.stringify(HeadLevelGrid) || JSON.stringify(oldMasterLevelGrid) !== JSON.stringify(masterLevelGrid) || JSON.stringify(oldTechnologyLevelGrid) !== JSON.stringify(TechnologyLevelGrid) || JSON.stringify(oldOnboardingLevelGrid) !== JSON.stringify(onboardingLevelGrid)) {
+      if (JSON.stringify(Modules) !== JSON.stringify(oldModules) || JSON.stringify(oldHeadLevelGrid) !== JSON.stringify(HeadLevelGrid) || JSON.stringify(oldMasterLevelGrid) !== JSON.stringify(masterLevelGrid) || JSON.stringify(oldTechnologyLevelGrid) !== JSON.stringify(TechnologyLevelGrid)) {
         setIsForcefulUpdate(true)
         forcefulUpdate = true
       }
