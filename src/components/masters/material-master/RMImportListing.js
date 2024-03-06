@@ -610,7 +610,9 @@ function RMImportListing(props) {
   }
 
   const bulkToggle = () => {
-    setisBulkUpload(true);
+    if (checkMasterCreateByCostingPermission(true)) {
+      setisBulkUpload(true);
+    }
   }
 
   const closeBulkUploadDrawer = (event, type) => {

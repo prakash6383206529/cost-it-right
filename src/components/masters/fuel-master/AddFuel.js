@@ -22,7 +22,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AsyncSelect from 'react-select/async';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { onFocus } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
@@ -81,6 +81,7 @@ class AddFuel extends Component {
    */
   componentDidMount() {
     const { data } = this.props;
+    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     if (!this.state.isViewMode) {
       this.props.fetchCountryDataAPI(() => { })
       this.props.fetchStateDataAPI(0, () => { })
@@ -762,7 +763,6 @@ class AddFuel extends Component {
   render() {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable, isGridEdit, costingTypeId } = this.state;
-
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)

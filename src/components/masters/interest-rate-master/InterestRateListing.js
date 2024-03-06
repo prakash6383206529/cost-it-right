@@ -235,7 +235,9 @@ const InterestRateListing = (props) => {
 
 
   const bulkToggle = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: true }))
+    if (checkMasterCreateByCostingPermission(true)) {
+      setState((prevState) => ({ ...prevState, isBulkUpload: true }))
+    }
   }
 
   const closeBulkUploadDrawer = (event, type) => {

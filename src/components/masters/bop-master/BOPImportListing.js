@@ -24,7 +24,7 @@ import _ from "lodash";
 import AnalyticsDrawer from "../material-master/AnalyticsDrawer";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { ApplyPermission } from ".";
-import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel, } from "../../common/CommonFunctions";
+import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel, checkMasterCreateByCostingPermission, } from "../../common/CommonFunctions";
 import Attachament from "../../costing/components/Drawers/Attachament";
 import Button from "../../layout/Button";
 import BDSimulation from "../../simulation/components/SimulationPages/BDSimulation";
@@ -514,7 +514,9 @@ const BOPImportListing = (props) => {
     setState((prevState) => ({ ...prevState, showPopup: false }));
   };
   const bulkToggle = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: true }));
+    if (checkMasterCreateByCostingPermission(true)) {
+      setState((prevState) => ({ ...prevState, isBulkUpload: true }));
+    }
   };
   const closeBulkUploadDrawer = (event, type) => {
     setState((prevState) => ({ ...prevState, isBulkUpload: false }));
@@ -683,7 +685,9 @@ const BOPImportListing = (props) => {
     );
   };
   const formToggle = () => {
-    props.displayForm();
+    if (checkMasterCreateByCostingPermission()) {
+      props.displayForm();
+    }
   };
 
 

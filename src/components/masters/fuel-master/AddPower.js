@@ -24,7 +24,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getClientSelectList, } from '../actions/Client';
 import TooltipCustom from '../../common/Tooltip';
@@ -108,6 +108,7 @@ class AddPower extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     if (!this.state.isViewMode) {
       this.props.getPowerTypeSelectList(() => { })
       this.props.getUOMSelectList(() => { })

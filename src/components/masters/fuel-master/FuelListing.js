@@ -23,6 +23,7 @@ import Toaster from "../../common/Toaster";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { ApplyPermission } from ".";
 import Button from "../../layout/Button";
+import { checkMasterCreateByCostingPermission } from "../../common/CommonFunctions";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -128,11 +129,15 @@ const FuelListing = (props) => {
   };
 
   const formToggle = () => {
-    props.formToggle();
+    if (checkMasterCreateByCostingPermission()) {
+      props.formToggle();
+    }
   };
 
   const bulkToggle = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: true }));
+    if (checkMasterCreateByCostingPermission(true)) {
+      setState((prevState) => ({ ...prevState, isBulkUpload: true }));
+    }
   };
 
   const closeBulkUploadDrawer = () => {
