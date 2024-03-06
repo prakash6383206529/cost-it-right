@@ -773,8 +773,11 @@ class AddOperation extends Component {
           return false
         }
         this.setState({ IsSendForApproval: true })
+        formData.IsSendForApproval = true;
+
       } else {
         this.setState({ IsSendForApproval: false })
+        formData.IsSendForApproval = false;
       }
 
       this.setState({ setDisable: true })
