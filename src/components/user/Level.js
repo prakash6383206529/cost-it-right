@@ -234,6 +234,7 @@ class Level extends Component {
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && this.state.levelType === 'Master') return false
         if (item.Text === CUSTOMER_BASED && !(reactLocalStorage.getObject('CostingTypePermission').cbc)) return false
         if (this.state.levelType === 'Onboarding' && Number(item.Value) !== VENDORNEEDFORMID) return false;
+        if ((this.state.levelType === 'Simulation' || this.state.levelType === 'Master' || this.state.levelType === 'Costing') && Number(item.Value) === VENDORNEEDFORMID) return true
         const transformedText = transformApprovalItem(item);
         temp.push({ label: transformedText, value: item.Value });
 
@@ -811,14 +812,6 @@ class Level extends Component {
 
               </form >
             </div >
-            {/* <LevelsListing
-                    onRef={ref => (this.child = ref)}
-                    getLevelDetail={this.getLevelDetail} />
-
-                <LevelTechnologyListing
-                    onRef={ref => (this.childMapping = ref)}
-                    getLevelMappingDetails={this.getLevelMappingDetails}
-                /> */}
           </Container >
         </Drawer >
       </div >

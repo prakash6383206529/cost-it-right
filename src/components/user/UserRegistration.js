@@ -1760,6 +1760,7 @@ function UserRegistration(props) {
   const onSubmit = debounce(handleSubmit((values) => {
 
     let forcefulUpdate = false
+    let onboaringUpdate = false
     if (isEditFlag && !isForcefulUpdate) {
       if (JSON.stringify(Modules) !== JSON.stringify(oldModules) || JSON.stringify(oldHeadLevelGrid) !== JSON.stringify(HeadLevelGrid) || JSON.stringify(oldMasterLevelGrid) !== JSON.stringify(masterLevelGrid) || JSON.stringify(oldTechnologyLevelGrid) !== JSON.stringify(TechnologyLevelGrid)) {
         setIsForcefulUpdate(true)
@@ -1769,6 +1770,11 @@ function UserRegistration(props) {
         forcefulUpdate = false
         setIsForcefulUpdate(false)
       }
+    }
+    if (JSON.stringify(oldOnboardingLevelGrid) !== JSON.stringify(onboardingLevelGrid)) {
+      onboaringUpdate = true
+    } else {
+      onboaringUpdate = false
     }
     const userDetails = JSON.parse(localStorage.getItem('userDetail'))
     var key;
@@ -1952,6 +1958,7 @@ function UserRegistration(props) {
         updatedData.IsForcefulUpdatedForCosting = isForcefulUpdatedForCosting
         updatedData.IsForcefulUpdatedForMaster = isForcefulUpdatedForMaster
         updatedData.IsForcefulUpdatedForSimulation = isForcefulUpdatedForSimulation
+        updatedData.IsUpdateOnboarding = onboaringUpdate
       }
       if (isDepartmentUpdate || isForcefulUpdatedForCosting || isForcefulUpdatedForMaster || isForcefulUpdatedForSimulation || isPlantUpdate) {
         setShowPopup(true)
@@ -2774,7 +2781,7 @@ function UserRegistration(props) {
                             rules={{
                               required: true,
                             }}
-                            required={true}
+                            mandatory={true}
                             defaultValue={selectedPlants}
                             errors={errors.plant}
                             className="multiselect-with-border"

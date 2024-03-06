@@ -2484,7 +2484,7 @@ class AddMoreDetails extends Component {
   */
 
   DisplayMachineRateLabel = () => {
-    return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
+    return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} ({this.props.initialConfiguration?.BaseCurrency})</>
   }
 
   handleChangeIncludeMachineRateDepreciation = (value) => {
@@ -2555,11 +2555,12 @@ class AddMoreDetails extends Component {
   }
   machineRateTooltip = () => {
     const { UOM, IsIncludeMachineRateDepreciation } = this.state
+    const { initialConfiguration } = this.props
     let formula;
     if (IsIncludeMachineRateDepreciation) {
-      formula = `(Total Cost(INR) + Interest Value + Depreciation Amount(INR) + Total Machine Cost/Annum(INR) + Total Power Cost/Annum(INR) + Total Labour Cost/Annum(INR) )/No. of Working Hrs/Annum`;
+      formula = `(Total Cost(${initialConfiguration?.BaseCurrency}) + Interest Value + Depreciation Amount(${initialConfiguration?.BaseCurrency}) + Total Machine Cost/Annum(${initialConfiguration?.BaseCurrency}) + Total Power Cost/Annum(${initialConfiguration?.BaseCurrency}) + Total Labour Cost/Annum(${initialConfiguration?.BaseCurrency}) )/No. of Working Hrs/Annum`;
     } else {
-      formula = `(Interest Value + Depreciation Amount(INR) + Total Machine Cost/Annum(INR) + Total Power Cost/Annum(INR) + Total Labour Cost/Annum(INR) )/No. of Working Hrs/Annum`;
+      formula = `(Interest Value + Depreciation Amount(${initialConfiguration?.BaseCurrency}) + Total Machine Cost/Annum(${initialConfiguration?.BaseCurrency}) + Total Power Cost/Annum(${initialConfiguration?.BaseCurrency}) + Total Labour Cost/Annum(${initialConfiguration?.BaseCurrency}) )/No. of Working Hrs/Annum`;
     }
 
     switch (UOM.uom) {
@@ -2844,7 +2845,7 @@ class AddMoreDetails extends Component {
 
                         <Col md="3">
                           <Field
-                            label={`Machine Cost(INR)`}
+                            label={`Machine Cost (${initialConfiguration?.BaseCurrency})`}
                             name={"MachineCost"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
@@ -2858,7 +2859,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Accessories Cost(INR)`}
+                            label={`Accessories Cost (${initialConfiguration?.BaseCurrency})`}
                             name={"AccessoriesCost"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
@@ -2872,7 +2873,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Installation Charges(INR)`}
+                            label={`Installation Charges (${initialConfiguration?.BaseCurrency})`}
                             name={"InstallationCharges"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
@@ -2886,7 +2887,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3"> <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = (Machine Cost + Accessories Cost + Installation Charges)"} />
                           <Field
-                            label={`Total Cost(INR)`}
+                            label={`Total Cost (${initialConfiguration?.BaseCurrency})`}
                             name={this.props.fieldsObj.TotalCost === 0 ? '' : "TotalCost"}
                             type="text"
                             id="total-cost"
@@ -3046,7 +3047,7 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="4">
-                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="LoanValue" tooltipText={"Loan Value = (Loan %) * Total Cost"} />
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="LoanValue" tooltipText={"Loan Value = (Loan %) / 100 * Total Cost"} />
                               <Field
                                 label={`Loan Value`}
                                 name={this.props.fieldsObj.LoanValue === 0 ? '-' : "LoanValue"}
@@ -3062,7 +3063,7 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="4">
-                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="EquityValue" tooltipText={"Equity Value = (Equity %) * Total Cost"} />
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="EquityValue" tooltipText={"Equity Value = (Equity %) / 100 * Total Cost"} />
                               <Field
                                 label={`Equity Value`}
                                 name={this.props.fieldsObj.EquityValue === 0 ? '-' : "EquityValue"}
@@ -3080,7 +3081,7 @@ class AddMoreDetails extends Component {
 
 
                             <Col md="4">
-                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="RateOfInterestValue" width={'250px'} tooltipText={"Interest Value = (Loan %) * Total Cost * (Rate of Interest %)"} />
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="RateOfInterestValue" width={'250px'} tooltipText={"Interest Value = (Loan %) / 100 * Total Cost * (Rate of Interest %) / 100"} />
                               <Field
                                 label={`Interest Value`}
                                 name={this.props.fieldsObj.RateOfInterestValue === 0 ? '-' : "RateOfInterestValue"}
@@ -3212,7 +3213,7 @@ class AddMoreDetails extends Component {
                               </div>
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} id="NumberOfWorkingHoursPerYear" width={'340px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hrs/Shift * No. of Working days/Annum * (Availability %)'} />
+                              <TooltipCustom disabledIcon={true} id="NumberOfWorkingHoursPerYear" width={'340px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hrs/Shift * No. of Working days/Annum * (Availability %) / 100'} />
                               <Field
                                 label={`No. of Working Hrs/Annum`}
                                 name={this.props.fieldsObj.NumberOfWorkingHoursPerYear === 0 ? '-' : "NumberOfWorkingHoursPerYear"}
@@ -3327,7 +3328,7 @@ class AddMoreDetails extends Component {
                               </Col>}
                             <Col md="3">
                               <Field
-                                label={`Cost of Scrap(INR)`}
+                                label={`Cost of Scrap (${initialConfiguration?.BaseCurrency})`}
                                 name={"CastOfScrap"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3369,7 +3370,7 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               <TooltipCustom disabledIcon={true} id="DepreciationAmount" width={'340px'} tooltipText={`Depreciation Amount = Total Cost - Cost of Scrap / ${this.state.depreciationType && this.state.depreciationType.value === SLM ? 'Life of Asset(Years)' : '(Depreciation Rate %) * Day of Purchase / 365'}`} />
                               <Field
-                                label={`Depreciation Amount(INR)`}
+                                label={`Depreciation Amount (${initialConfiguration?.BaseCurrency})`}
                                 name={this.props.fieldsObj.DepreciationAmount === 0 ? '-' : "DepreciationAmount"}
                                 type="text"
                                 id="DepreciationAmount"
@@ -3466,9 +3467,9 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>}
                             <Col md="3">
-                              {this.state.IsAnnualMaintenanceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualMaintanceAmount" tooltipText={`Annual Maintenance Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
+                              {this.state.IsAnnualMaintenanceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualMaintanceAmount" tooltipText={`Annual Maintenance Amount = ((Machine Cost + Accessories Cost) * Annual Maintenance Percentage / 100)`} />}
                               <Field
-                                label={`Annual Maintenance Amount(INR)`}
+                                label={`Annual Maintenance Amount (${initialConfiguration?.BaseCurrency})`}
                                 name={"AnnualMaintanceAmount"}
                                 id="AnnualMaintanceAmount"
                                 type="text"
@@ -3536,7 +3537,7 @@ class AddMoreDetails extends Component {
                               {this.state.IsAnnualConsumableFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualConsumableAmount" tooltipText={`Annual Consumable Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
 
                               <Field
-                                label={`Annual Consumable Amount(INR)`}
+                                label={`Annual Consumable Amount (${initialConfiguration?.BaseCurrency})`}
                                 name={"AnnualConsumableAmount"}
                                 id="AnnualConsumableAmount"
                                 type="text"
@@ -3604,7 +3605,7 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               {this.state.IsInsuranceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualInsuranceAmount" tooltipText={`Insurance Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
                               <Field
-                                label={`Insurance Amount(INR)`}
+                                label={`Insurance Amount (${initialConfiguration?.BaseCurrency})`}
                                 name={"AnnualInsuranceAmount"}
                                 id="AnnualInsuranceAmount"
                                 type="text"
@@ -3681,7 +3682,7 @@ class AddMoreDetails extends Component {
                               <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualAreaCost" tooltipText={`Annual Area Cost = Building Cost * Machine Floor Area`} />
 
                               <Field
-                                label={`Annual Area Cost(INR)`}
+                                label={`Annual Area Cost (${initialConfiguration?.BaseCurrency})`}
                                 name={this.props.fieldsObj.AnnualAreaCost === 0 ? '-' : "AnnualAreaCost"}
                                 type="text"
                                 id="AnnualAreaCost"
@@ -3712,7 +3713,7 @@ class AddMoreDetails extends Component {
 
                             <Col md="3">
                               <Field
-                                label={`Other Yearly Cost(INR)`}
+                                label={`Other Yearly Cost (${initialConfiguration?.BaseCurrency})`}
                                 name={"OtherYearlyCost"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3725,10 +3726,10 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} width={"300px"} id="TotalMachineCostPerAnnum" tooltipText={`Total Machine Cost = Annual Maintenance Amount + Annual Consumable Amount + Annual Insurance Amount + Other Yearly Cost`} />
+                              <TooltipCustom disabledIcon={true} width={"300px"} id="TotalMachineCostPerAnnum" tooltipText={`Total Machine Cost (${initialConfiguration?.BaseCurrency}) = Annual Maintenance Amount (${initialConfiguration?.BaseCurrency}) + Annual Consumable Amount (${initialConfiguration?.BaseCurrency}) + Annual Insurance Amount (${initialConfiguration?.BaseCurrency}) + Annual Area Cost (${initialConfiguration?.BaseCurrency}) + Other Yearly Cost (${initialConfiguration?.BaseCurrency})`} />
 
                               <Field
-                                label={`Total Machine Cost/Annum(INR)`}
+                                label={`Total Machine Cost/Annum (${initialConfiguration?.BaseCurrency})`}
                                 name={this.props.fieldsObj.TotalMachineCostPerAnnum === 0 ? '-' : "TotalMachineCostPerAnnum"}
                                 type="text"
                                 id="TotalMachineCostPerAnnum"
@@ -3857,10 +3858,12 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>
                               <Col md="3">
+                                <TooltipCustom disabledIcon={true} width={"300px"} id="TotalFuelCostPerYear" tooltipText={`Total Power Cost/Annum (INR) = Fuel Cost (${initialConfiguration?.BaseCurrency}/${UOMName}) * Consumption/Annum (${initialConfiguration?.BaseCurrency})`} />
                                 <Field
-                                  label={`Total Power Cost/Annum(INR)`}
+                                  label={`Total Power Cost/Annum (${initialConfiguration?.BaseCurrency})`}
                                   name={"TotalFuelCostPerYear"}
                                   type="text"
+                                  id={'TotalFuelCostPerYear'}
                                   placeholder={'-'}
                                   validate={[number]}
                                   component={renderText}
@@ -3956,7 +3959,7 @@ class AddMoreDetails extends Component {
                                 <TooltipCustom disabledIcon={true} id="TotalPowerCostPerHour" width={"240px"} tooltipText={'Power Cost/Hour = (Efficiency %) * Power Rating * Cost/Unit'} />
 
                                 <Field
-                                  label={`Power Cost/Hour(INR)`}
+                                  label={`Power Cost/Hour (${initialConfiguration?.BaseCurrency})`}
                                   name={this.props.fieldsObj.TotalPowerCostPerHour === 0 ? '-' : "TotalPowerCostPerHour"}
                                   type="text"
                                   placeholder={'-'}
@@ -3971,7 +3974,7 @@ class AddMoreDetails extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={`Power Cost/Annum(INR)`}
+                                  label={`Power Cost/Annum (${initialConfiguration?.BaseCurrency})`}
                                   name={this.props.fieldsObj.TotalPowerCostPerYear === 0 ? '-' : "TotalPowerCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
@@ -4052,7 +4055,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
-                                label={`Cost/Annum(INR)`}
+                                label={`Cost/Annum (${initialConfiguration?.BaseCurrency})`}
                                 name={"LabourCostPerAnnum"}
                                 type="text"
                                 placeholder={'-'}
@@ -4085,7 +4088,7 @@ class AddMoreDetails extends Component {
                             <Col md="2">
                               <TooltipCustom disabledIcon={true} id="LabourCost" tooltipText={`Total Cost = Cost/Annum * No. of People`} />
                               <Field
-                                label={`Total Cost(INR)`}
+                                label={`Total Cost (${initialConfiguration?.BaseCurrency})`}
                                 name={this.props.fieldsObj.LabourCost === 0 ? '-' : "LabourCost"}
                                 type="text"
                                 id="LabourCost"
@@ -4136,9 +4139,9 @@ class AddMoreDetails extends Component {
                                   <tr>
                                     {getConfigurationKey().IsShowCRMHead && <th>{`CRM Head`}</th>}
                                     <th>{`Labour Type`}</th>
-                                    <th>{`Cost/Annum(INR)`}</th>
+                                    <th>{`Cost/Annum (${initialConfiguration?.BaseCurrency})`}</th>
                                     <th>{`No. of People`}</th>
-                                    <th>{`Total Cost (INR)`}</th>
+                                    <th>{`Total Cost (${initialConfiguration?.BaseCurrency})`}</th>
                                     <th>{`Action`}</th>
                                   </tr>
                                 </thead>
@@ -4171,7 +4174,7 @@ class AddMoreDetails extends Component {
                                 {this.state.labourGrid?.length > 0 &&
                                   <tfoot>
                                     <tr className="bluefooter-butn">
-                                      <td colSpan={"3"} className="text-right">{'Total Labour Cost/Annum(INR):'}</td>
+                                      <td colSpan={"3"} className="text-right">{`Total Labour Cost/Annum (${initialConfiguration?.BaseCurrency}):`}</td>
                                       <td colSpan={"2"}>{this.calculateTotalLabourCost()}</td>
                                     </tr>
                                   </tfoot>}
@@ -4352,7 +4355,7 @@ class AddMoreDetails extends Component {
                                     <th>{`UOM`}</th>
                                     {/* <th>{`Output/Hr`}</th>     COMMENTED FOR NOW MAY BE USED LATER
                                     <th>{`Output/Annum`}</th> */}
-                                    <th>{`Machine Rate(INR)`}</th>
+                                    <th>{`Machine Rate (${initialConfiguration?.BaseCurrency})`}</th>
                                     <th>{`Action`}</th>
                                   </tr>
                                 </thead>
