@@ -8,7 +8,7 @@ import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/Hook
 import { formatRMSimulationObject, getCodeBySplitting, getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { APPROVER, EMPTY_GUID, FILE_URL, REASON_ID, INR } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, sapPushedInitialMoment, setAttachmentFileData, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, setAttachmentFileData, uploadSimulationAttachment, checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
@@ -200,40 +200,6 @@ function ApproveRejectDrawer(props) {
 
     // DO IT AFTER GETTING DATA
   }, [])
-
-  // useEffect(() => {                     //RE
-  //   //THIS OBJ IS FOR SAVE SIMULATION
-  //   if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-  //     let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
-
-  //     //THIS CONDITION IS FOR SAVE SIMULATION
-  //     dispatch(saveSimulationForRawMaterial(simObj, res => {
-  //       if (res?.data?.Result) {
-  //         Toaster.success('Simulation has been saved successfully')
-  //         setLoader(true)
-  //         dispatch(sapPushedInitialMoment(simulationDetail.SimulationId, res => {
-  //           let status = 200
-  //           if ('response' in res) {
-
-  //             status = res && res?.response?.status
-  //           }
-
-  //           if (status !== undefined && status === 200) {
-  //             setIsDisableSubmit(false)
-  //           } else {
-  //             setIsDisableSubmit(true)
-  //           }
-  //           // if (status !== undefined && (status === 400 || status === 412 || status === 500)) {
-  //           //   setIsDisable(true)
-  //           // } else {
-  //           //   setIsDisable(false)
-  //           // }
-  //           setLoader(false)
-  //         }))
-  //       }
-  //     }))
-  //   }
-  // }, [simulationDetail])
 
 
   const getApproversList = (departObj, departmentName, levelDetailsTemp) => {

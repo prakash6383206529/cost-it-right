@@ -2435,6 +2435,7 @@ const RejectedCostingSummaryTable = (props) => {
             closeDrawer={closeShowApproval}
             anchor={'right'}
             technologyId={technologyId}
+            callSapCheckAPI={false}
           />
         )
       }

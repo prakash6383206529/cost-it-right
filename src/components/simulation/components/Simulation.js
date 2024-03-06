@@ -827,8 +827,8 @@ function Simulation(props) {
         if (length === 0 || length === undefined || length === null) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
-        switch (master.value) {
-            case RMDOMESTIC:
+        switch (String(master.value)) {
+            case String(RMDOMESTIC):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -873,7 +873,7 @@ function Simulation(props) {
                 //     setEditWarning(true)
                 // }
                 break;
-            case RMIMPORT:
+            case String(RMIMPORT):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -881,26 +881,25 @@ function Simulation(props) {
                 Data && Data.forEach((element, index) => {
 
                     if (index !== 0) {
-                        if (element?.CostingHead !== Data[index - 1]?.CostingHead) {
+                        if (element.CostingHead !== Data[index - 1].CostingHead) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
                         }
+                        // if (userDetails().Role !== 'Group Category Head') { //MINDA
+                        if (element.VendorName !== Data[index - 1].VendorName) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+                            setEditWarning(true);
+                            vendorFlag = false
+                        }
+                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlantId !== Data[index - 1].DestinationPlantId) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+                            setEditWarning(true);
+                            plantFlag = false
+                        }
                     }
-                    // if (userDetails().Role !== 'Group Category Head') { //MINDA
-                    if (element?.VendorName !== Data[index - 1]?.VendorName) {
-                        (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                        setEditWarning(true);
-                        vendorFlag = false
-                    }
-
-                    if (element?.PlantId !== Data[index - 1]?.PlantId) {
-                        (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
-                        setEditWarning(true);
-                        plantFlag = false
-                    }
-                }
-                )
+                });
+                // if (userDetails().Role !== 'Group Category Head') { //MINDA
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
@@ -913,7 +912,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
-            // case BOPIMPORT:
+            // case String(BOPIMPORT):
             //     if (Data.length === 0) {
             //         setEditWarning(true)
             //         return false
@@ -950,7 +949,7 @@ function Simulation(props) {
             //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
             //     }
             //     break;
-            // case BOPIMPORT:
+            // case String(BOPIMPORT):
             //     if (Data.length === 0) {
             //         setEditWarning(true)
             //         return false
@@ -987,7 +986,7 @@ function Simulation(props) {
             //     }
             //     break;
 
-            case SURFACETREATMENT:
+            case String(SURFACETREATMENT):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1023,7 +1022,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
-            case OPERATIONS:
+            case String(OPERATIONS):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1059,7 +1058,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
-            case MACHINERATE:
+            case String(MACHINERATE):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1095,7 +1094,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
-            case BOPDOMESTIC:
+            case String(BOPDOMESTIC):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1131,7 +1130,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
-            case BOPIMPORT:
+            case String(BOPIMPORT):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1168,7 +1167,7 @@ function Simulation(props) {
                 }
                 break;
 
-            case EXCHNAGERATE:
+            case String(EXCHNAGERATE):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1204,7 +1203,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Customer')
                 }
                 break;
-            // case BOPIMPORT:
+            // case String(BOPIMPORT):
             //     if (Data.length === 0) {
             //         setEditWarning(true)
             //         return false
@@ -1241,7 +1240,7 @@ function Simulation(props) {
             //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
             //     }
             //     break;
-            // case BOPIMPORT:
+            // case String(BOPIMPORT):
             //     if (Data.length === 0) {
             //         setEditWarning(true)
             //         return false
@@ -1277,7 +1276,7 @@ function Simulation(props) {
             //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Overhead Applicability')
             //     }
             //     break;
-            case COMBINED_PROCESS:                //RE
+            case String(COMBINED_PROCESS):                //RE
                 if (Data && Data.length === 0) {
                     setEditWarning(true)
                 } else {
