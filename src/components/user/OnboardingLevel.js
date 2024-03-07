@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col } from 'reactstrap';
-import { deleteUserLevelAPI, getOnboardingLevelDataList } from '../../actions/auth/AuthActions';
+import { deleteUserLevelAPI, getOnboardingLevelDataList, manageLevelTabApi } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
 import { EMPTY_DATA, } from '../../config/constants';
@@ -36,24 +36,25 @@ const OnboardingLevelListing = (props) => {
     });
     const permissions = useContext(ApplyPermission);
     const dispatch = useDispatch();
-    const { onboardingLevelDataList } = useSelector((state) => state.auth)
-    useEffect(() => {
+    const { onboardingLevelDataList, isCallApi } = useSelector((state) => state.auth)
 
+    useEffect(() => {
         getOnboardingDataList()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
     useEffect(() => {
-        if (props.updateApi) {
-            // if (!props.cancelButton) {
-            getOnboardingDataList()
-            // }
-        }
+        if (isCallApi === true)
+            setTimeout(() => {
+                getOnboardingDataList();
+            }, 100);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.isEditFlag]);
+    }, [isCallApi]);
 
     const getOnboardingDataList = () => {
         setState((prevState) => ({ ...prevState, isLoader: true }))
         dispatch(getOnboardingLevelDataList(res => {
+            dispatch(manageLevelTabApi(false))
             setState((prevState) => ({ ...prevState, isLoader: false }))
         }))
     }
@@ -95,8 +96,7 @@ const OnboardingLevelListing = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {permissions.Edit && <Button id={`levelTechnologyListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, 'Onboarding', rowData)} title={"Edit"} />
-                }
+                {permissions.Edit && <Button id={`levelTechnologyListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, 'Onboarding', rowData)} title={"Edit"} />}
             </>
         )
     }
@@ -162,7 +162,7 @@ const OnboardingLevelListing = (props) => {
                                     floatingFilter={true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={onboardingLevelDataList}
+                                    rowData={onboardingLevelDataList ?? []}
                                     pagination={true}
                                     ref={agGrid3}
                                     paginationPageSize={defaultPageSize}
@@ -173,9 +173,11 @@ const OnboardingLevelListing = (props) => {
                                     noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                                     frameworkComponents={frameworkComponents}
                                     onFilterModified={(e) => {
-                                        setTimeout(() => {
-                                            setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
-                                        }, 500);
+                                        if (onboardingLevelDataList.length !== 0) {
+                                            setTimeout(() => {
+                                                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
+                                            }, 500);
+                                        }
                                     }}
                                 >
                                     <AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col } from 'reactstrap';
-import { getAllLevelMappingAPI, getSimulationLevelDataList, getMasterLevelDataList } from '../../actions/auth/AuthActions';
+import { getSimulationLevelDataList, manageLevelTabApi } from '../../actions/auth/AuthActions';
 import { EMPTY_DATA, } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import LoaderCustom from '../common/LoaderCustom';
@@ -12,6 +12,7 @@ import { PaginationWrapper } from '../common/commonPagination';
 import { ApplyPermission } from './LevelsListing';
 import { useContext } from 'react';
 import Button from '../layout/Button';
+import { searchNocontentFilter } from '../../helper';
 const gridOptions = {};
 const defaultPageSize = 5;
 const SimulationLevelListing = (props) => {
@@ -28,29 +29,38 @@ const SimulationLevelListing = (props) => {
         showPopup: false,
         deletedId: '',
         isLoader: false,
-
+        noData: false,
     });
     const permissions = useContext(ApplyPermission);
     const dispatch = useDispatch();
-    const { simulationLevelDataList } = useSelector((state) => state.auth)
+    const { simulationLevelDataList, isCallApi } = useSelector((state) => state.auth)
+
     useEffect(() => {
         getSimulationDataList();
-        props.onRef(this);
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
-        if (props.updateApi) {
-            getSimulationDataList();
-        }
+        if (isCallApi === true)
+            setTimeout(() => {
+                getSimulationDataList();
+            }, 100);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.levelValue, props.updateApi]);
+    }, [isCallApi]);
 
     const getSimulationDataList = () => {
         setState((prevState) => ({ ...prevState, isLoader: true }))
         dispatch(getSimulationLevelDataList(res => {
             setState((prevState) => ({ ...prevState, isLoader: false }))
-        }))
+            if (res.status === 204 && res.data === '') {
+                setState((prevState) => ({ ...prevState, tableData: [], }))
+            } else if (res && res.data && res.data.DataList) {
+                dispatch(manageLevelTabApi(false))
+                let Data = res.data.DataList;
+                setState((prevState) => ({
+                    ...prevState, tableData: Data,
+                }))
+            }
+        }));
     }
 
     /**
@@ -125,17 +135,18 @@ const SimulationLevelListing = (props) => {
 
                 <Row className="levellisting-page">
                     <Col className="level-table" md="12 ">
-                        <div className={`ag-grid-wrapper height-width-wrapper ${simulationLevelDataList && simulationLevelDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${state.tableData && state.tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header mt-3 mb-2 d-flex">
                                 <input ref={simulationFilter} type="text" className="form-control table-search" id="filter-text-box-simulation" placeholder="Search" autoComplete={'off'} onChange={(e) => simulationFilterHandler(e)} />
                             </div>
                             <div className={`ag-theme-material`}>
+                                {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 {<AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={simulationLevelDataList}
+                                    rowData={state.tableData ?? []}
                                     pagination={true}
                                     paginationPageSize={defaultPageSize}
                                     ref={agGrid2}
@@ -145,6 +156,13 @@ const SimulationLevelListing = (props) => {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                                     frameworkComponents={frameworkComponents}
+                                    onFilterModified={(e) => {
+                                        if (state.tableData.length !== 0) {
+                                            setTimeout(() => {
+                                                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
+                                            }, 50);
+                                        }
+                                    }}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>

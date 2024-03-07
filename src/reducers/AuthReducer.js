@@ -42,7 +42,8 @@ import {
     GET_RFQ_USER_DATA_SUCCESS,
     ONBOARDING_LEVEL_DATALIST_API,
     GET_ONBOARDING_LEVEL_BY_ID,
-    GET_PLANT_SELECT_LIST_FOR_DEPARTMENT
+    GET_PLANT_SELECT_LIST_FOR_DEPARTMENT,
+    MANAGE_LEVEL_TAB_API
 } from '../../src/config/constants'
 import DayTime from '../components/common/DayTimeWrapper'
 
@@ -398,6 +399,11 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 plantSelectListForDepartment: action.payload
+            }
+        case MANAGE_LEVEL_TAB_API:
+            return {
+                ...state,
+                isCallApi: action.payload
             }
         default:
             return state;
