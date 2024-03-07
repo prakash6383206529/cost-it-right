@@ -792,10 +792,10 @@ const BOPImportListing = (props) => {
   const { isBulkUpload, noData, editSelectedList } = state;
   const ExcelFile = ReactExport.ExcelFile;
   const headerNames = {
-    BasicRate: `Basic Rate (${initialConfiguration?.BaseCurrency})`,
-    BasicPrice: `Basic Price (${initialConfiguration?.BaseCurrency})`,
-    NetConditionCost: `Net Condition Cost (${initialConfiguration?.BaseCurrency})`,
-    NetCost: `Net Cost (${initialConfiguration?.BaseCurrency})`,
+    BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
+    BasicPrice: `Basic Price (${reactLocalStorage.getObject("baseCurrency")})`,
+    NetConditionCost: `Net Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+    NetCost: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   };
 
   var filterParams = {

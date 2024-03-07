@@ -15,6 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import _ from 'lodash';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const gridOptions = {};
 
 function AddBOP(props) {
@@ -76,7 +77,7 @@ function AddBOP(props) {
 
   const currencyFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue !== '-' ? cellValue : 'INR'
+    return cellValue !== '-' ? cellValue : reactLocalStorage.getObject("baseCurrency")
   }
 
   const specificationFormat = (props) => {
@@ -267,7 +268,7 @@ function AddBOP(props) {
                         {costData && costData.VendorType === ZBC && <AgGridColumn field="Vendor"></AgGridColumn>}
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field='UOM' ></AgGridColumn>
-                        <AgGridColumn field="NetLandedCostCombine" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostCombine" headerName={`Net Cost ${reactLocalStorage.getObject("baseCurrency")}/UOM`} cellRenderer={'netLandedFormat'}></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCurrency" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
                       </AgGridReact >

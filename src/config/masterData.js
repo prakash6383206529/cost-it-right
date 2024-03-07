@@ -4997,7 +4997,7 @@ export const COMBINEDPROCESSSIMULATION = [          			//RE
     { label: "Revised Net CC", value: "NewNetCC" },
     { label: "Variance", value: "CPVariance" },
 
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: `Impact for Quarter (${reactLocalStorage.getObject("baseCurrency")})`, value: "ImpactPerQuarter" },
 
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "RevisedOverheadCost", value: "NewOverheadCost" },
@@ -5295,7 +5295,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [         // KEEP COMMENTED O
     { label: "Existing CC", value: "OldNetCC" },
     { label: "Revised CC", value: "NewNetCC" },
     { label: "CC Variance", value: "Variance" },
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: `Impact for Quarter (${reactLocalStorage.getObject("baseCurrency")})`, value: "ImpactPerQuarter" },
 
 ]
 
@@ -5429,7 +5429,7 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "No. of Vendors", value: "NoOfVendors", },
     { label: "Plant (Code)", value: "Plant", },
     { label: "Total SOB (%)", value: "ShareOfBusinessPercentage", },
-    { label: "Weighted Net Cost (INR)", value: "WeightedNetLandedCost", },
+    { label: `Weighted Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "WeightedNetLandedCost", },
     { label: "Effective Date", value: "EffectiveDate", }
 ]
 
@@ -5438,10 +5438,10 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: "Vendor (Code)", value: "vendorWithCode", },
     { label: "Customer (Code)", value: "customerWithCode", },
     { label: "Currency", value: "Currency", },
-    { label: "Exchange Rate (INR)", value: "CurrencyExchangeRate", },
-    { label: "Bank Rate (INR)", value: "BankRate", },
+    { label: `Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "CurrencyExchangeRate", },
+    { label: `Bank Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "BankRate", },
     { label: "Bank Commission (%)", value: "BankCommissionPercentage", },
-    { label: "Custom Rate (INR)", value: "CustomRate", },
+    { label: `Custom Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "CustomRate", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: "Date of Modification", value: "DateOfModification", },
 ]
@@ -5459,7 +5459,7 @@ export const FUELLISTING_DOWNLOAD_EXCEl = [
     { label: "Fuel", value: "FuelName", },
     { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "State", value: "StateName", },
-    { label: "Rate (INR)", value: "Rate", },
+    { label: `Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "Rate", },
     { label: "Plant (Code)", value: "PlantWithCode", },
     { label: "Vendor (Code)", value: "VendorWithCode", },
     { label: "Customer (Code)", value: "CustomerWithCode", },
@@ -5855,7 +5855,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Is Regularized", value: "IsRegularized", },
     { label: "Basic Price", value: "BasicRate", },
     { label: "Net Cost Other Currency", value: "NetPOPriceOtherCurrency", },
-    { label: "Net Cost (INR)", value: "NetPOPriceINR", },
+    { label: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
     //MINDA
     { label: 'Status', value: 'Status' }
@@ -5981,8 +5981,8 @@ export const RM_IMPACT_DOWNLOAD_EXCEl_IMPORT = [
     { label: "Shearing Cost", value: "RMShearingCost", },
     { label: "Existing Net Cost (Currency)", value: "OldNetLandedCost" },
     { label: "Revised Net Cost (Currency)", value: "NewNetLandedCost" },
-    { label: "Existing Net Cost (INR)", value: "OldRMNetLandedCostConversion" },
-    { label: "Revised Net Cost (INR)", value: "NewRMNetLandedCostConversion" },
+    { label: `Existing Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "OldRMNetLandedCostConversion" },
+    { label: `Revised Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "NewRMNetLandedCostConversion" },
     { label: "Previous Min.", value: "PreviousMinimum", },
     { label: "Previous Max.", value: "PreviousMaximum", },
     { label: "Previous Avg.", value: "PreviousAverage", },
@@ -6018,8 +6018,8 @@ export const BOP_IMPACT_DOWNLOAD_EXCEl_IMPORT = [
     { label: "Currency", value: "Currency" },
     { label: "Existing Net Cost", value: "OldNetBoughtOutPartCost", },
     { label: "Revised Net Cost", value: "NewNetBoughtOutPartCost", },
-    { label: "Existing Net Cost (INR)", value: "OldBoughtOutPartNetLandedCostConversion" },
-    { label: "Revised Net Cost (INR)", value: "NewBoughtOutPartNetLandedCostConversion" },
+    { label: `Existing Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "OldBoughtOutPartNetLandedCostConversion" },
+    { label: `Revised Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "NewBoughtOutPartNetLandedCostConversion" },
     { label: "Previous Min.", value: "PreviousMinimum", },
     { label: "Previous Max.", value: "PreviousMaximum", },
     { label: "Previous Avg.", value: "PreviousAverage", },
@@ -6060,11 +6060,11 @@ export const OPERATION_IMPACT_DOWNLOAD_EXCEl = [
 
 export const EXCHANGE_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Currency", value: "Currency", },
-    { label: "Bank Rate(INR)", value: "BankRate", },
+    { label: `Bank Rate(${reactLocalStorage.getObject("baseCurrency")})`, value: "BankRate", },
     { label: "Bank Commission %", value: "BankCommissionPercentage", },
-    { label: "Custom Rate(INR)", value: "CustomRate", },
-    { label: "Existing Exchange Rate(INR)", value: "OldExchangeRate", },
-    { label: "Revised Exchange Rate(INR)", value: "NewExchangeRate", },
+    { label: `Custom Rate(${reactLocalStorage.getObject("baseCurrency")})`, value: "CustomRate", },
+    { label: `Existing Exchange Rate(${reactLocalStorage.getObject("baseCurrency")})`, value: "OldExchangeRate", },
+    { label: `Revised Exchange Rate(${reactLocalStorage.getObject("baseCurrency")})`, value: "NewExchangeRate", },
     { label: "Previous Min.", value: "PreviousMinimum", },
     { label: "Previous Max.", value: "PreviousMaximum", },
     { label: "Previous Avg.", value: "PreviousAverage", },

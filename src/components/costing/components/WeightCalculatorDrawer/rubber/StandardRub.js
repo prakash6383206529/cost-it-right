@@ -12,6 +12,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
 import LoaderCustom from '../../../../common/LoaderCustom';
 import TooltipCustom from '../../../../common/Tooltip'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 
 
@@ -452,9 +453,9 @@ function StandardRub(props) {
                                             <div className="d-inline-block "><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowDataState.RMName}>{`${rmRowDataState.RMName !== undefined ? rmRowDataState.RMName : ''}`}</span></div>
                                             <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowDataState.MaterialType !== undefined ? rmRowDataState.MaterialType : ''}`}</span></div>
                                             <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}:</span><span className="text-dark-blue">{`${rmRowDataState.Density !== undefined ? rmRowDataState.Density : ''}`}</span></div>
-                                            <div className="d-inline-block "><span className="grey-text d-block">RM Rate(INR):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? rmRowDataState.RMRate : ''}`}</span></div>
+                                            <div className="d-inline-block "><span className="grey-text d-block">RM Rate ({reactLocalStorage.getObject("baseCurrency")}):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? rmRowDataState.RMRate : ''}`}</span></div>
                                             {props?.appyMasterBatch && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? checkForDecimalAndNull(5, getConfigurationKey().NoOfDecimalForInputOutput) : ''}`}</span></div>}
-                                            <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate(INR):</span><span className="text-dark-blue">{`${rmRowDataState.ScrapRate !== undefined ? rmRowDataState.ScrapRate : ''}`}</span></div>
+                                            <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate ({reactLocalStorage.getObject("baseCurrency")}):</span><span className="text-dark-blue">{`${rmRowDataState.ScrapRate !== undefined ? rmRowDataState.ScrapRate : ''}`}</span></div>
                                             <div className="d-inline-block"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowDataState.RawMaterialCategory !== undefined ? rmRowDataState.RawMaterialCategory : ''}`}</span></div>
 
                                         </Col>

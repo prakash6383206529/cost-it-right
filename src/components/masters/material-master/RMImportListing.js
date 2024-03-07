@@ -81,17 +81,17 @@ function RMImportListing(props) {
   const [viewAttachment, setViewAttachment] = useState([])
   const [editSelectedList, setEditSelectedList] = useState(false)
   const [tempList, setTempList] = useState([])
-  const netCostHeader = `Net Cost (${getConfigurationKey()?.BaseCurrency})`
+  const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
   const { tokenForSimulation } = useSelector(state => state.simulation)
   const headerNames = {
-    BasicRate: `Basic Rate (${getConfigurationKey()?.BaseCurrency})`,
-    ScrapRate: `Scrap Rate (${getConfigurationKey()?.BaseCurrency})`,
-    MachiningScrapCost: `Machining Scrap Rate (${getConfigurationKey()?.BaseCurrency})`,
-    FreightCost: `Freight Cost (${getConfigurationKey()?.BaseCurrency})`,
-    ShearingCost: `Shearing Cost (${getConfigurationKey()?.BaseCurrency})`,
-    BasicPrice: `Basic Price (${getConfigurationKey()?.BaseCurrency})`,
-    NetConditionCost: `Net Condition Cost (${getConfigurationKey()?.BaseCurrency})`,
-    NetCost: `Net Cost (${getConfigurationKey()?.BaseCurrency})`,
+    BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
+    ScrapRate: `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
+    MachiningScrapCost: `Machining Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
+    FreightCost: `Freight Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+    ShearingCost: `Shearing Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+    BasicPrice: `Basic Price (${reactLocalStorage.getObject("baseCurrency")})`,
+    NetConditionCost: `Net Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+    NetCost: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   }
   var filterParams = {
     date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],

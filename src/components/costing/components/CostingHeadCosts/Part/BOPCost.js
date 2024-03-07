@@ -19,6 +19,7 @@ import Button from '../../../../layout/Button';
 import TourWrapper from '../../../../common/Tour/TourWrapper';
 import { Steps } from '../../TourMessages';
 import { useTranslation } from 'react-i18next';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 let counter = 0;
 function BOPCost(props) {
@@ -525,7 +526,7 @@ function BOPCost(props) {
                       <th>{`${showBopLabel()} Part No.`}</th>
                       <th>{`${showBopLabel()} Part Name`}</th>
                       <th>{`UOM`}</th>
-                      <th>{`${showBopLabel()} Cost (INR)`}</th>
+                      <th>{`${showBopLabel()} Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                       <th>{`Quantity`}</th>
                       <th>{`Net ${showBopLabel()} Cost`}</th>
                       {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}

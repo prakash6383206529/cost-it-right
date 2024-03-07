@@ -23,6 +23,7 @@ import { debounce } from 'lodash';
 import { approvalPushedOnSap } from '../costing/actions/Approval';
 import Toaster from '../common/Toaster';
 import DayTime from '../common/DayTimeWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
@@ -78,7 +79,7 @@ function SummaryDrawer(props) {
                 CostingTypeId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
-                if (Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                if (Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
                     setShowImport(false)
                 } else {
                     setShowImport(true)
@@ -87,7 +88,7 @@ function SummaryDrawer(props) {
                 CostingTypeId = Data.ImpactedMasterDataList.BOPListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.BOPListResponse[0].Attachements)
                 setBopDataResponse(Data.ImpactedMasterDataList.BOPListResponse)
-                if (Data.ImpactedMasterDataList.BOPListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                if (Data.ImpactedMasterDataList.BOPListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
                     setShowImport(false)
                 } else {
                     setShowImport(true)
