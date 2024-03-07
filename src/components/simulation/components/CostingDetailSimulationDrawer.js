@@ -11,6 +11,7 @@ import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABIL
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, COMBINED_PROCESS } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import RejectedCostingSummaryTable from '../../costing/components/RejectedCostingSummaryTable';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 
 
@@ -121,11 +122,11 @@ function CostingDetailSimulationDrawer(props) {
                                                 </> :
                                                 <>
                                                     <Col md="3">
-                                                        <label>Existing Net Cost ({initialConfiguration?.BaseCurrency})</label>
+                                                        <label>Existing Net Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                         <label className={`${pricesDetail?.OldPOPrice > pricesDetail?.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                     </Col >
                                                     <Col md="3">
-                                                        <label>Revised Net Cost ({initialConfiguration?.BaseCurrency})</label>
+                                                        <label>Revised Net Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                         <label className={`${pricesDetail?.OldPOPrice > pricesDetail?.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                     </Col>
                                                 </>
@@ -134,11 +135,11 @@ function CostingDetailSimulationDrawer(props) {
                                             (Number(masterID) === Number(RMDOMESTIC) || Number(masterID) === Number(RMIMPORT)) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Existing RM Cost ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Existing RM Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldRMPrice > pricesDetail?.NewRMPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldRMPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>Revised RM Cost ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Revised RM Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldRMPrice > pricesDetail?.NewRMPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
@@ -159,11 +160,11 @@ function CostingDetailSimulationDrawer(props) {
                                             Number(masterID) === Number(SURFACETREATMENT) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Existing Surface Treatment ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Existing Surface Treatment ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldNetSurfaceTreatmentCost > pricesDetail?.NewNetSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldNetSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>Revised Surface Treatment ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Revised Surface Treatment ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldNetSurfaceTreatmentCost > pricesDetail?.NewNetSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewNetSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
@@ -172,11 +173,11 @@ function CostingDetailSimulationDrawer(props) {
                                             Number(masterID) === Number(OPERATIONS) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Existing Operation Cost ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Existing Operation Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldOperationCost > pricesDetail?.NewOperationCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldOperationCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>Revised Operation Cost ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Revised Operation Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldOperationCost > pricesDetail?.NewOperationCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewOperationCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
@@ -198,11 +199,11 @@ function CostingDetailSimulationDrawer(props) {
                                             (Number(masterID) === Number(BOPDOMESTIC) || Number(masterID) === Number(BOPIMPORT)) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Existing {showBopLabel()}  Cost ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Existing {showBopLabel()}  Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldBOPCost > pricesDetail?.NewBOPCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldBOPCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>Revised {showBopLabel()}  Cost ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Revised {showBopLabel()}  Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldBOPCost > pricesDetail?.NewBOPCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewBOPCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
@@ -211,11 +212,11 @@ function CostingDetailSimulationDrawer(props) {
                                             (Number(masterID) === Number(MACHINERATE)) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Existing Machine Rate ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Existing Machine Rate ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldMachineRate > pricesDetail?.NewMachineRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldMachineRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>Revised Machine Rate ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Revised Machine Rate ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldMachineRate > pricesDetail?.NewMachineRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewMachineRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
@@ -224,11 +225,11 @@ function CostingDetailSimulationDrawer(props) {
                                             showExchangeRate &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Existing Exchange Rate ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Existing Exchange Rate ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldExchangeRate > pricesDetail?.NewExchangeRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldExchangeRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>Revised Exchange Rate ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Revised Exchange Rate ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldExchangeRate > pricesDetail?.NewExchangeRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>

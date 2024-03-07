@@ -11,6 +11,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import CustomerPoamImpact from './CustomerPoamImpact';
 import ReactExport from 'react-export-excel';
 import { CUSTOMER_POAM_EXCEL_TEMPLATE } from '../../ExcelTemplate';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -280,15 +281,15 @@ function CustomerPoamListing(props) {
                                                 {<AgGridColumn field="LastQuarterQuantity" width="130" headerName="Status of last Quarter II" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="TotalDispatchQuantity" headerName="Sale Parts Quantity (No.)" floatingFilter={true} width="130" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="TotalPOAMReceivedQuantity" headerName="Poam Received Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalPOAMReceivedCost" headerName="Poam Received Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalPOAMReceivedCost" headerName={`Poam Received Cost (${reactLocalStorage.getObject("baseCurrency")})`} width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="TotalTentitivePOQuantity" headerName="Tentative Po Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalTentitivePOCost" headerName="Tentative Po Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalTentitivePOCost" headerName={`Tentative Po Cost (${reactLocalStorage.getObject("baseCurrency")})`} width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="TotalNoDispatchQuantity" headerName="No Dispatch Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalNoDispatchCost" headerName="No Dispatch Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalNoDispatchCost" headerName={`No Dispatch Cost (${reactLocalStorage.getObject("baseCurrency")})`} width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="TotalOneTimeQuantity" headerName="One Time Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalOneTimeCost" headerName="One Time Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalOneTimeCost" headerName={`One Time Cost (${reactLocalStorage.getObject("baseCurrency")})`} width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="TotalAmendmentAwaitedQuantity" headerName="Amendmend Awaited Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalImpact" headerName="Impact Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalImpact" headerName={`Impact Cost (${reactLocalStorage.getObject("baseCurrency")})`} width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="Remark" headerName="Remark" width="130" floatingFilter={true}></AgGridColumn>}
                                                 <AgGridColumn width={160} field="TotalImpact" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                             </AgGridReact>

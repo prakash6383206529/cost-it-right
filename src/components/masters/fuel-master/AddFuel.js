@@ -1070,7 +1070,7 @@ class AddFuel extends Component {
                           <Col md="3">
                             <div className='p-relative'>
                               <Field
-                                label={`Rate (INR)`}
+                                label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"Rate"}
                                 type="text"
                                 placeholder={isViewMode ? '-' : 'Enter'}
@@ -1153,7 +1153,7 @@ class AddFuel extends Component {
                                   <th>{`Country`}</th>
                                   <th>{`City`}</th>
                                   <th>{`State`}</th>
-                                  <th>{`Rate (INR)`}</th>
+                                  <th>{`Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                   <th>{`Effective From`}</th>
                                   <th>{`Action`}</th>
                                 </tr>

@@ -13,6 +13,7 @@ import { ViewCostingContext } from './CostingDetails';
 import redCross from "../../../assests/images/red-cross.png"
 import Toaster from '../../common/Toaster';
 import LoaderCustom from '../../common/LoaderCustom';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 export function Clientbasedcostingdrawer(props) {
     const toggleDrawer = () => {
@@ -489,7 +490,7 @@ export function Clientbasedcostingdrawer(props) {
                                 </Col>
                                 <Col md="3">
                                     <Field
-                                        label={`Net Cost (INR)`}
+                                        label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                         type="text"
                                         placeholder={"Auto Calculated"}
                                         component={renderText}

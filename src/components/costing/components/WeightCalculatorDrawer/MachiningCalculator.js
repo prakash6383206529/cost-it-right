@@ -9,6 +9,7 @@ import Toaster from '../../../common/Toaster'
 import { debounce } from 'lodash'
 import { checkForDecimalAndNull, decimalNumberLimit, positiveAndDecimalNumber, number, nonZero } from '../../../../helper/validation'
 import TooltipCustom from '../../../common/Tooltip'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 function Machining(props) {
     const { item, rmRowData, CostingViewMode } = props
@@ -385,7 +386,7 @@ function Machining(props) {
                                 </Col>
                                 <Col md="3" >
                                     <TextFieldHookForm
-                                        label={`RM Rate(INR)`}
+                                        label={`RM Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                                         name={'rmRate'}
                                         Controller={Controller}
                                         control={control}
@@ -400,7 +401,7 @@ function Machining(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'rm-per-piece'} tooltipText={'RM/Pc = RM Rate(INR)/(Pc/meter)'} />
+                                    <TooltipCustom disabledIcon={true} id={'rm-per-piece'} tooltipText={`RM/Pc = RM Rate (${reactLocalStorage.getObject("baseCurrency")})/(Pc/meter)`} />
                                     <TextFieldHookForm
                                         label={`RM/Pc`}
                                         name={'rmPerPiece'}
@@ -482,7 +483,7 @@ function Machining(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Scrap Rate(INR/Kg)`}
+                                        label={`Scrap Rate (${reactLocalStorage.getObject("baseCurrency")}/Kg)`}
                                         name={'ScrapRate'}
                                         Controller={Controller}
                                         control={control}
@@ -502,7 +503,7 @@ function Machining(props) {
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'Scrap-Cost'} tooltipText={"Scrap Cost =  Scrap Weight * Scrap Rate"} />
                                     <TextFieldHookForm
-                                        label={`Scrap Cost(INR)`}
+                                        label={`Scrap Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                         name={'ScrapCost'}
                                         Controller={Controller}
                                         control={control}

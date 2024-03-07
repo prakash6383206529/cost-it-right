@@ -2150,7 +2150,7 @@ export const VIEW_COSTING_DATA = {
   BasicRate: 'Basic Price',
   npvCost: 'Net NPV Cost',
   conditionCost: 'Net Costing Condition',
-  nPOPrice: 'Net Cost (INR)',
+  nPOPrice: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   currencyTitle: 'Currency',
   // currencyRate: 'Currency Rate',
   nPoPriceCurrency: 'Net Cost (In Currency)',
@@ -2450,7 +2450,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'conditionCost'
   },
   {
-    label: 'Net Cost (INR)',
+    label: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
     value: 'nPOPrice'
   },
   {
@@ -2489,7 +2489,7 @@ export const VIEW_COSTING_DATA_LOGISTICS = {
   RevisionNumber: 'Revision Number',
   plantExcel: 'Plant (Code)',
   nPackagingAndFreight: 'Net Freight',
-  nPOPrice: 'Net Cost (INR)',
+  nPOPrice: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   currencyTitle: 'Currency',
   nPoPriceCurrency: 'Net Cost (In Currency)',
   remark: 'Remarks',
@@ -2896,7 +2896,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.1.322";
+export const VERSION = "V2.1.323";
 
 
 

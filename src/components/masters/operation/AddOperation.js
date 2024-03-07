@@ -1179,7 +1179,7 @@ class AddOperation extends Component {
                       </Col>
                       <Col md="3">
                         <Field
-                          label={`Rate (INR)`}
+                          label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={"Rate"}
                           type="text"
                           placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Select"}

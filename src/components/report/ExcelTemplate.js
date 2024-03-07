@@ -1,3 +1,4 @@
+import { reactLocalStorage } from "reactjs-localstorage"
 export const SALES_PROVISION_EXCEL_TEMPLATE = [
 
     { label: 'Plant (Code)', value: 'PlantName', },
@@ -9,8 +10,8 @@ export const SALES_PROVISION_EXCEL_TEMPLATE = [
     { label: 'Period From', value: 'FromDate', },
     { label: 'Period To', value: 'ToDate', },
     { label: 'UOM', value: 'UnitOfMeasurement', },
-    { label: 'Existing Net Cost (INR)', value: 'OldRate', },
-    { label: 'Revised Net Cost (INR)', value: 'NewRate', },
+    { label: `Existing Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: 'OldRate', },
+    { label: `Revised Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: 'NewRate', },
     { label: 'Variance (w.r.t. Existing)', value: 'Difference', },
     { label: 'Supply Quantity (No.)', value: 'SupplyQuantity', },
     { label: 'Impact', value: 'Impact', }
@@ -24,15 +25,15 @@ export const CUSTOMER_POAM_EXCEL_TEMPLATE = [
     { label: 'Status of last Quarter II', value: 'LastQuarterQuantity', },
     { label: 'Sale Parts Quantity (No.)', value: 'TotalDispatchQuantity', },
     { label: 'Poam Received Quantity (No.)', value: 'TotalPOAMReceivedQuantity', },
-    { label: 'Poam Received Cost (INR)', value: 'TotalPOAMReceivedCost', },
-    { label: 'Tentative Po Quantity (No.)', value: 'TotalTentitivePOQuantity', },
-    { label: 'Tentative Po Cost (INR)', value: 'TotalTentitivePOCost', },
+    { label: `Poam Received Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: 'TotalPOAMReceivedCost', },
+    { label: `Tentative Po Quantity (No.)`, value: 'TotalTentitivePOQuantity', },
+    { label: `Tentative Po Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: 'TotalTentitivePOCost', },
     { label: 'No Dispatch Quantity (No.)', value: 'TotalNoDispatchQuantity', },
-    { label: 'No Dispatch Cost (INR)', value: 'TotalNoDispatchCost', },
+    { label: `No Dispatch Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: 'TotalNoDispatchCost', },
     { label: 'One Time Quantity (No.)', value: 'TotalOneTimeQuantity', },
-    { label: 'One Time Cost (INR)', value: 'TotalOneTimeCost', },
+    { label: `One Time Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: 'TotalOneTimeCost', },
     { label: 'Amendmend Awaited Quantity (No.)', value: 'TotalAmendmentAwaitedQuantity', },
-    { label: 'Impact Cost (INR)', value: 'TotalImpact', },
+    { label: `Impact Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: 'TotalImpact', },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -54,7 +55,7 @@ export const RM_IMPORT_TEMPLATE = [
     { label: 'Shearing Cost', value: 'RMShearingCost', },
     { label: 'UOM', value: 'UnitOfMeasurement', },
     { label: 'Net Landed (Currency)', value: 'NetLandedCost', },
-    { label: 'Net Landed Total (INR)', value: 'NetLandedCostCurrency', },
+    { label: `Net Landed Total (${reactLocalStorage.getObject("baseCurrency")})`, value: 'NetLandedCostCurrency', },
     { label: 'Effective Date', value: 'EffectiveDate', }
 ]
 export const BOP_DOMESTIC_TEMPLATE = [
@@ -69,7 +70,7 @@ export const BOP_IMPORT_TEMPLATE = [
     { label: 'Basic Rate', value: 'BasicRatePerUOM', },
     { label: 'UOM', value: 'UnitOfMeasurement', },
     { label: 'Net Landed (Currency)', value: 'NetLandedCost', },
-    { label: 'Net Landed Total (INR)', value: 'NetLandedCostCurrency', },
+    { label: `Net Landed Total (${reactLocalStorage.getObject("baseCurrency")})`, value: 'NetLandedCostCurrency', },
     { label: 'Effective Date', value: 'EffectiveDate', }
 ]
 export const MACHINE_TEMPLATE = [
@@ -167,8 +168,8 @@ export const CUSTOMER_POAM_IMPACT_EXCEL_TEMPLATE = [
     { label: 'Dispatch Quantity (No.)', value: 'DispatchQuantity', },
     { label: 'Old Effective Date', value: 'FromDate', },
     { label: 'New Effective Date', value: 'ToDate', },
-    { label: 'Old Rate (INR)', value: 'OldRate', },
-    { label: 'New Rate (INR)', value: 'NewRate', },
+    { label: `Old Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: 'OldRate', },
+    { label: `New Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: 'NewRate', },
     { label: 'Variance', value: 'Variance', },
     { label: 'Impact', value: 'Impact', },
 ]

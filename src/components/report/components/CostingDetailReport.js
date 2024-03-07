@@ -22,7 +22,6 @@ import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingH
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 import { MESSAGES } from '../../../config/message'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
-import SelectRowWrapper from '../../common/SelectRowWrapper'
 import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { hideMultipleColumnFromExcel } from '../../common/CommonFunctions'
@@ -1100,7 +1099,7 @@ function ReportListing(props) {
                             <AgGridColumn field='IsRegularized' headerName='Is Regularized' cellRenderer='hyphenFormatter'></AgGridColumn>
                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field='BasicRate' headerName='Basic Price' cellRenderer='decimalPriceFormatter'></AgGridColumn>}
                             <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net Cost Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                            <AgGridColumn field='NetPOPriceINR' headerName='Net Cost (INR)' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                            <AgGridColumn field='NetPOPriceINR' headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
                             {showSaLineNumber() && <AgGridColumn field="SANumber" headerName="SANumber" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             {showSaLineNumber() && <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>}

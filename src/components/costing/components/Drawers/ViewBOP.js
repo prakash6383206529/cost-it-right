@@ -5,6 +5,7 @@ import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 function ViewBOP(props) {
   const { viewBOPData, isPDFShow } = props
@@ -43,7 +44,7 @@ function ViewBOP(props) {
                 <th>{`${showBopLabel()} Part No.`}</th>
                 <th>{`${showBopLabel()} Part Name`}</th>
                 <th>{`Currency`}</th>
-                <th>{`Landed Cost (INR)`}</th>
+                <th>{`Landed Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                 <th>{`Quantity`}</th>
                 <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Net ${showBopLabel()} Cost`}</th>
                 {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
