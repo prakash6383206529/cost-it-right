@@ -2485,7 +2485,7 @@ class AddMoreDetails extends Component {
   */
 
   DisplayMachineRateLabel = () => {
-    return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} ({this.props.reactLocalStorage.getObject("baseCurrency")})</>
+    return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} ({reactLocalStorage.getObject("baseCurrency")})</>
   }
 
   handleChangeIncludeMachineRateDepreciation = (value) => {
