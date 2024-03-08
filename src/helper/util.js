@@ -1075,6 +1075,8 @@ export const getCurrencySymbol = (value) => {
       return "₹"
     case "THB":
       return "฿"
+    case "SEK":
+      return "kr"
     default:
       return "₹"
   }
