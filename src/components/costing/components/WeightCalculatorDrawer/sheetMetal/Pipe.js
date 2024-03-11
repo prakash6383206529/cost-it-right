@@ -174,7 +174,7 @@ function Pipe(props) {
     const grossWeight = checkForNull(getValues('GrossWeight'))
     if (e.target.value > grossWeight) {
       setTimeout(() => {
-        setValue('FinishWeightOfSheet', 0)
+        setValue('FinishWeightOfSheet', '')
       }, 200);
 
       Toaster.warning('Finish Weight should not be greater than gross weight')
@@ -425,6 +425,11 @@ function Pipe(props) {
 
     if (Number(getValues('InnerDiameter') < 0)) {
       Toaster.warning('Inner diameter cannot be negative')
+      setIsDisable(false)
+      return false
+    }
+    if (Number(getValues('NumberOfPartsPerSheet') < 0)) {
+      Toaster.warning('Number of parts per sheet cannot be negative')
       setIsDisable(false)
       return false
     }

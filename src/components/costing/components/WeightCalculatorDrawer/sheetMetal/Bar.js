@@ -183,7 +183,7 @@ function Pipe(props) {
         const grossWeight = checkForNull(getValues('GrossWeight'))
         if (e.target.value > grossWeight) {
             setTimeout(() => {
-                setValue('FinishWeightOfSheet', 0)
+                setValue('FinishWeightOfSheet', '')
             }, 200);
 
             Toaster.warning('Finish Weight should not be greater than gross weight')
@@ -242,11 +242,9 @@ function Pipe(props) {
         } else {
             const EndPieceAllowance = Number(getValues('endPieceAllowance'))
             const NumberParts = checkForNull((fieldValues.SheetLength - EndPieceAllowance) / fieldValues.PartLength)
-            // Check if NumberParts is negative and set NumberOfPartsPerSheet accordingly
-            const NumberOfPartsPerSheet = parseInt(NumberParts) < 0 ? 0 : parseInt(NumberParts);
-            setValue('NumberOfPartsPerSheet', NumberOfPartsPerSheet)
+            setValue('NumberOfPartsPerSheet', parseInt(NumberParts))
             const updatedValue = dataToSend
-            updatedValue.NumberOfPartsPerSheet = NumberOfPartsPerSheet
+            updatedValue.NumberOfPartsPerSheet = parseInt(NumberParts)
             setDataToSend(updatedValue)
         }
     }
@@ -445,6 +443,11 @@ function Pipe(props) {
             setIsDisable(false)
             return false
         }
+        if (Number(getValues('NumberOfPartsPerSheet') < 0)) {
+            Toaster.warning('Number of parts per sheet cannot be negative')
+            setIsDisable(false)
+            return false
+        }
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
             if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== getValues('FinishWeightOfSheet') || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
                 setIsChangeApplied(true)
@@ -540,9 +543,11 @@ function Pipe(props) {
      * @description Renders the component
      */
     const tooltipMessageForSheetWeight = (value) => {
-        return <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter<sup>2</sup>'}) * Length of {value})/1000</div>
+        return (
+            <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}) * Length of {value})/1000</div>
+        );
     }
-    const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part) + {isOneSide ? `(π ${isSolidBar ? '' : ' * Inner Diameter'} * Length of Part) +` : ''} (π / 2 * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter<sup>2</sup>'}))</div>
+    const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part) + {isOneSide ? `(π ${isSolidBar ? '' : ' * Inner Diameter'} * Length of Part) +` : ''} (π / 2 * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}))</div>
     return (
         <>
             <div className="user-page p-0">
