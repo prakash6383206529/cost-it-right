@@ -1015,8 +1015,8 @@ export function getFilteredData(arr, id) {
 
 }
 
-export function calculateScrapWeight(grossWeight, finishWeight) {
-  const scrapWeight = checkForNull(grossWeight - finishWeight)
+export function calculateScrapWeight(grossWeight, finishWeight, ScrapRecoveryPercentage = 100) {
+  const scrapWeight = checkForNull(grossWeight - finishWeight) * checkForNull(ScrapRecoveryPercentage / 100)
   return scrapWeight
 }
 
