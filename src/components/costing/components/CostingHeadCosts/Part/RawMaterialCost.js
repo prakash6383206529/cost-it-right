@@ -777,6 +777,7 @@ function RawMaterialCost(props) {
     let grossWeight
     let finishWeight
     let netLandedCost
+    let ScrapWeight
 
     // GROSS WEIGHT WILL ALWAYS BE KG ON THIS TAB, SO CONVERTING OTHER UNIT INTO KG
     if (Object.keys(weightData).length > 0) {
@@ -784,26 +785,31 @@ function RawMaterialCost(props) {
         grossWeight = weightData.GrossWeight / 1000
         finishWeight = weightData.FinishWeight / 1000
         netLandedCost = weightData.RawMaterialCost / 1000
+        ScrapWeight = weightData.ScrapWeight / 1000
+
       } else if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_KG) {
         grossWeight = weightData.GrossWeight
         finishWeight = weightData.FinishWeight
         netLandedCost = weightData.RawMaterialCost
+        ScrapWeight = weightData.ScrapWeight
 
       } else if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_MG) {
         grossWeight = weightData.GrossWeight / 1000000
         finishWeight = weightData.FinishWeight / 1000000
         netLandedCost = weightData.RawMaterialCost / 1000000
+        ScrapWeight = weightData.ScrapWeight / 1000000
 
       } else {
         grossWeight = weightData.GrossWeight
         finishWeight = weightData.FinishWeight
         netLandedCost = weightData.RawMaterialCost
+        ScrapWeight = weightData.ScrapWeight
       }
 
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
       const RecoveryPercentage = weightData.RecoveryPercentage
-      const scrapWeight = weightData.ScrapWeight ? weightData.ScrapWeight : checkForNull(GrossWeight - FinishWeight)
+      const scrapWeight = weightData.ScrapWeight ? ScrapWeight : checkForNull(GrossWeight - FinishWeight)
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
       tempData = {

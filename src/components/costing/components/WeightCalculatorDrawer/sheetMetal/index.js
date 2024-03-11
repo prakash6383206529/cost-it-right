@@ -7,6 +7,7 @@ import SectionC from './SectionC'
 import SectionZ from './SectionZ'
 import Coil from './Coil'
 import Sheet from './Sheet'
+import Bar from './Bar'
 
 function WeightCalculator(props) {
 
@@ -22,6 +23,8 @@ function WeightCalculator(props) {
         return '2'
       case 'Sheet':
         return '3'
+      case 'Bar':
+        return '4'
       default:
         break;
     }
@@ -98,6 +101,17 @@ function WeightCalculator(props) {
                 Sheet
               </NavLink>
             </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === '4' })}
+                onClick={() => {
+                  toggle('4')
+                }}
+                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '4' ? true : false}
+              >
+                Bar
+              </NavLink>
+            </NavItem>
           </Nav>
           <TabContent activeTab={activeTab}>
             {activeTab === '1' && (
@@ -118,6 +132,11 @@ function WeightCalculator(props) {
             )}
             {activeTab === '4' && (
               <TabPane tabId="4">
+                <Bar rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} CostingViewMode={props.CostingViewMode} />
+              </TabPane>
+            )}
+            {/* {activeTab === '4' && (
+              <TabPane tabId="4">
                 <SectionL />
               </TabPane>
             )}
@@ -130,7 +149,7 @@ function WeightCalculator(props) {
               <TabPane tabId="6">
                 <SectionZ />
               </TabPane>
-            )}
+            )} */}
           </TabContent>
         </Col>
       </Row>

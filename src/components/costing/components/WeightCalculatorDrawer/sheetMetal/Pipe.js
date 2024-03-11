@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
-  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation
+  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, calculateScrapWeight, percentageLimitValidation
 } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -21,7 +21,7 @@ import { nonZero } from '../../../../../helper/validation'
 function IsolateReRender(control) {
   const values = useWatch({
     control,
-    name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
+    name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength', 'endPieceAllowance'],
   });
 
   return values;
@@ -109,6 +109,18 @@ function Pipe(props) {
   }
 
   const dispatch = useDispatch()
+
+  const values = useWatch({
+    control,
+    name: ['scrapRecoveryPercent', 'grossWeight', 'FinishWeightOfSheet', 'cuttingAllowance', 'PartLength'],
+  })
+
+  useEffect(() => {
+    if (!CostingViewMode) {
+      scrapWeightCalculation()
+      calculateLengthOfPart()
+    }
+  }, [values])
 
   useEffect(() => {
     //UNIT TYPE ID OF DIMENSIONS
@@ -219,7 +231,8 @@ function Pipe(props) {
       updatedValue.NumberOfPartsPerSheet = 1
       setDataToSend(updatedValue)
     } else {
-      const NumberParts = checkForNull(fieldValues.SheetLength / fieldValues.PartLength)
+      const EndPieceAllowance = Number(getValues('endPieceAllowance'))
+      const NumberParts = checkForNull((fieldValues.SheetLength - EndPieceAllowance) / fieldValues.PartLength)
       setValue('NumberOfPartsPerSheet', parseInt(NumberParts))
       const updatedValue = dataToSend
       updatedValue.NumberOfPartsPerSheet = parseInt(NumberParts)
@@ -344,6 +357,9 @@ function Pipe(props) {
    */
   const setGrossWeight = () => {
     let WeightofPart
+    let WeightofSheet
+    let NumberOfPartsPerSheet
+    let grossWeight
     const updatedValue = dataToSend
     if (rmRowData.RawMaterialCategory === STD) {
       WeightofPart = setValueAccToUOM(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
@@ -352,13 +368,16 @@ function Pipe(props) {
       updatedValue.newGrossWeight = WeightofPart
       setDataToSend(updatedValue)
     } else {
-      WeightofPart = setValueAccToUOM(dataToSend.WeightofPart, UOMDimension.label)
-      setGrossWeights(dataToSend.WeightofPart)
-      updatedValue.GrossWeight = WeightofPart
-      updatedValue.newGrossWeight = WeightofPart
+      // WeightofPart = setValueAccToUOM(dataToSend.WeightofPart, UOMDimension.label)
+      WeightofSheet = setValueAccToUOM(dataToSend.WeightofSheet, UOMDimension.label)
+      NumberOfPartsPerSheet = Number(getValues('NumberOfPartsPerSheet'))
+      grossWeight = checkForNull(WeightofSheet / NumberOfPartsPerSheet)
+      setGrossWeights(grossWeight)
+      updatedValue.GrossWeight = grossWeight
+      updatedValue.newGrossWeight = grossWeight
       setDataToSend(updatedValue)
     }
-    setValue('GrossWeight', checkForDecimalAndNull(WeightofPart, localStorage.NoOfDecimalForInputOutput))
+    setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
   }
 
   /**
@@ -448,6 +467,11 @@ function Pipe(props) {
       NetSurfaceArea: dataToSend.NetSurfaceArea,
       GrossWeight: grossWeight,
       FinishWeight: getValues('FinishWeightOfSheet'),
+      RecoveryPercentage: getValues('scrapRecoveryPercent'),
+      ScrapWeight: getValues('scrapWeight'),
+      CuttingAllowance: getValues('cuttingAllowance'),
+      PartLengthWithAllowance: getValues('partLengthWithAllowance'),
+      EndPieceAllowance: getValues('endPieceAllowance'),
     }
 
     dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
@@ -480,7 +504,19 @@ function Pipe(props) {
       e.preventDefault();
     }
   };
-
+  const scrapWeightCalculation = () => {
+    const scrapRecoveryPercent = Number((getValues('scrapRecoveryPercent')))
+    const grossWeight = getValues('GrossWeight')
+    const finishWeight = getValues('FinishWeightOfSheet')
+    const scrapWeight = calculateScrapWeight(grossWeight, finishWeight, scrapRecoveryPercent)
+    setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
+  }
+  const calculateLengthOfPart = () => {
+    const LengthOfPart = Number(getValues('PartLength'))
+    const CuttingAllowance = Number(getValues('cuttingAllowance'))
+    const PartLengthWithAllowance = checkForNull(LengthOfPart + CuttingAllowance)
+    setValue('partLengthWithAllowance', checkForDecimalAndNull(PartLengthWithAllowance, localStorage.NoOfDecimalForInputOutput))
+  }
   /**
    * @method render
    * @description Renders the component
@@ -607,7 +643,65 @@ function Pipe(props) {
                   />
                 </Col >
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = (Length(Sheet) / Length(Part))" />
+                  <TextFieldHookForm
+                    label={`Cutting Allowance`}
+                    name={'cuttingAllowance'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={true}
+                    rules={{
+                      required: true,
+                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.cuttingAllowance}
+                    disabled={CostingViewMode ? true : false}
+                  />
+                </Col >
+                <Col md="3">
+                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part-with-allowance'} tooltipText="Length of Part inculding  allowance = (Length of Part + Cutting Allowance)" />
+                  <TextFieldHookForm
+                    label={`Length of Part inculding  allowance(mm)`}
+                    name={'partLengthWithAllowance'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    id={'length-of-part-with-allowance'}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.partLengthWithAllowance}
+                    disabled={true}
+                  />
+                </Col >
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`End Piece Allowance (mm)`}
+                    name={'endPieceAllowance'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={true}
+                    rules={{
+                      required: true,
+                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.endPieceAllowance}
+                    disabled={CostingViewMode ? true : false}
+                  />
+                </Col >
+                <Col md="3">
+                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = ((Length(Sheet)-End Piece Allowance) / Length(Part))" />
                   <TextFieldHookForm
                     label="No. of Parts/Sheet"
                     name={'NumberOfPartsPerSheet'}
@@ -626,7 +720,6 @@ function Pipe(props) {
                 </Col >
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = Remainder of no. of parts/Sheet" />
-
                   <TextFieldHookForm
                     label={`Length of Scrap(mm)`}
                     name={'ScrapLength'}
@@ -774,7 +867,7 @@ function Pipe(props) {
 
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Weight of Part"} />
+                  <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Gross Weight = Weight of sheet / No. of Parts"} />
                   <TextFieldHookForm
                     label={`Gross Weight(${UOMDimension.label})`}
                     name={'GrossWeight'}
@@ -816,6 +909,48 @@ function Pipe(props) {
                     customClassName={'withBorder'}
                     errors={errors.FinishWeightOfSheet}
                     disabled={CostingViewMode ? true : false}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Scrap Recovery (%)`}
+                    name={'scrapRecoveryPercent'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    rules={{
+                      required: false,
+                      validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                      max: {
+                        value: 100,
+                        message: 'Percentage cannot be greater than 100'
+                      },
+                    }}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.scrapRecoveryPercent}
+                    disabled={props.CostingViewMode ? true : false}
+                  />
+                </Col>
+                <Col md="3">
+                  <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Weight = (Gross Weight - Finish Weight )* Scrap Recovery (%)/100'} />
+                  <TextFieldHookForm
+                    label={`Scrap Weight(${UOMDimension.label})`}
+                    name={'scrapWeight'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    id={'scrap-weight'}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.scrapWeight}
+                    disabled={true}
                   />
                 </Col>
               </Row >
