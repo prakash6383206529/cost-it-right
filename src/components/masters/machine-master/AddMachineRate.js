@@ -1363,7 +1363,7 @@ class AddMachineRate extends Component {
   */
 
   DisplayMachineRateLabel = () => {
-    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
+    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} ({reactLocalStorage.getObject("baseCurrency")})</>
   }
 
   checksFinancialDataChanged = (data) => {
@@ -1818,7 +1818,7 @@ class AddMachineRate extends Component {
                               <tr>
                                 <th>{`Process (Code)`}</th>
                                 <th>{`UOM`}</th>
-                                <th>{`Machine Rate (INR)`}</th>
+                                <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                 <th>{`Action`}</th>
                               </tr>
                             </thead>

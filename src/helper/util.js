@@ -542,7 +542,7 @@ export function getWeightOfScrap(data) {
  * @returns {number}
  */
 export function getNetSurfaceArea(data) {
-  const value = Math.PI * data.OuterDiameter * data.PartLength + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
+  const value = Math.PI * data.OuterDiameter * data.PartLengthWithAllowance + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
   return checkForNull(value)
 }
 
@@ -551,7 +551,7 @@ export function getNetSurfaceArea(data) {
  * @returns {number}
  */
 export function getNetSurfaceAreaBothSide(data) {
-  const value = Math.PI * data.OuterDiameter * data.PartLength + Math.PI * data.InnerDiameter * data.PartLength + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
+  const value = Math.PI * data.OuterDiameter * data.PartLengthWithAllowance + Math.PI * data.InnerDiameter * data.PartLengthWithAllowance + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
   return checkForNull(value)
 }
 
@@ -1015,8 +1015,8 @@ export function getFilteredData(arr, id) {
 
 }
 
-export function calculateScrapWeight(grossWeight, finishWeight) {
-  const scrapWeight = checkForNull(grossWeight - finishWeight)
+export function calculateScrapWeight(grossWeight, finishWeight, ScrapRecoveryPercentage = 100) {
+  const scrapWeight = checkForNull(grossWeight - finishWeight) * checkForNull(ScrapRecoveryPercentage / 100)
   return scrapWeight
 }
 
@@ -1075,6 +1075,8 @@ export const getCurrencySymbol = (value) => {
       return "₹"
     case "THB":
       return "฿"
+    case "SEK":
+      return "kr"
     default:
       return "₹"
   }
@@ -1302,10 +1304,10 @@ export const OverheadAndProfitTooltip = (id, object, arr, conditon, NoOfDecimalF
     return (arr && arr[0]?.IsRMCutOffApplicable) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
 
   } else if (id.includes("BOP")) {
-    text = conditon && <p>${getConfigurationKey().BOPMasterName} cost is not included for ${getConfigurationKey().BOPMasterName} part type</p>;
+    text = conditon && <p>{showBopLabel()} cost is not included for {showBopLabel()} part type</p>;
     return conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
   } else if (id.includes("Combined")) {
-    text = <>{arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon && <p>{getConfigurationKey().BOPMasterName} cost is not included for ${getConfigurationKey().BOPMasterName} part type</p>}</>;
+    text = <>{arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon && <p>{showBopLabel()} cost is not included for {showBopLabel()} part type</p>}</>;
     return (arr[0]?.IsRMCutOffApplicable === true) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
   }
 }

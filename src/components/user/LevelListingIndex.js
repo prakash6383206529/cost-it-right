@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import {
     Row,
     Col,
@@ -15,12 +15,10 @@ import SimulationLevelListing from './SimulationLevel'
 import MasterLevelListing from './MasterLevel'
 import Level from './Level';
 import OnboardingLevelListing from './OnboardingLevel';
-import { Loader } from '../common/Loader';
 import { getConfigurationKey } from '../../helper';
 
 function ManageLevelTabs(props) {
     const { onRef, permissionData } = props
-
     const [activeTab, setActiveTab] = useState('1')
     const [state, setState] = useState({
         isEditFlag: false,
@@ -31,10 +29,10 @@ function ManageLevelTabs(props) {
         updateApi: false,
         cancelButton: false,
         approvalTypeId: '',
-        levelValue: ""
+        levelValue: "",
+        render: false
     });
-    const { isEditFlag, isShowForm, isShowMappingForm, isOpen, TechnologyId,
-        showImpact, noData } = state;
+    const { isEditFlag, isShowForm, isShowMappingForm, isOpen, TechnologyId } = state;
     /**
      * @method toggle
      * @description toggling the tabs
@@ -130,7 +128,7 @@ function ManageLevelTabs(props) {
                             </NavLink>
                         </NavItem>}
                     </Nav>
-                    {isOpen && (<Level isOpen={isOpen} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} levelValue={state.level} />)}
+                    {isOpen && (<Level isOpen={isOpen} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} levelValue={state.level} activeTab={activeTab} />)}
                     <TabContent activeTab={activeTab}>
                         {activeTab === '1' && (
                             <TabPane tabId="1">
@@ -141,6 +139,7 @@ function ManageLevelTabs(props) {
                                     mappingToggler={mappingToggler}
                                     updateApi={state.updateApi}
                                     cancelButton={state.cancelButton}
+                                    activeTab={activeTab}
                                 />
                             </TabPane>
                         )}

@@ -36,6 +36,9 @@ class App extends Component {
         reactLocalStorage.setObject('onboardingName', onboardingName)
         reactLocalStorage.setObject('onboardingId', onboardingId)
 
+        let baseCurrency = Data.BaseCurrency
+        reactLocalStorage.setObject('baseCurrency', baseCurrency)
+
         let objShort = {};
         costingHeadsListArray && costingHeadsListArray.map(item => {
           let shortFormList = objShort[item.split("=")[0]] = item.match(/\d+/g)[item.match(/\d+/g)?.length - 1]

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col } from 'reactstrap';
-import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList, getMasterLevelDataList } from '../../actions/auth/AuthActions';
+import { deleteUserLevelAPI, getMasterLevelDataList, manageLevelTabApi } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
 import { EMPTY_DATA, } from '../../config/constants';
@@ -37,25 +37,34 @@ const MasterLevelListing = (props) => {
     });
     const permissions = useContext(ApplyPermission);
     const dispatch = useDispatch();
-    const { masterLevelDataList } = useSelector((state) => state.auth)
+    const { masterLevelDataList, isCallApi } = useSelector((state) => state.auth)
     useEffect(() => {
         getMasterDataList()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
     useEffect(() => {
-        if (props.updateApi) {
-            // if (!props.cancelButton) {
-            getMasterDataList()
-            // }
-        }
+        if (isCallApi === true)
+            setTimeout(() => {
+                getMasterDataList();
+            }, 100);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.updateApi]);
+    }, [isCallApi]);
 
     const getMasterDataList = () => {
         setState((prevState) => ({ ...prevState, isLoader: true }))
         dispatch(getMasterLevelDataList(res => {
             setState((prevState) => ({ ...prevState, isLoader: false }))
-        }))
+            if (res.status === 204 && res.data === '') {
+                setState((prevState) => ({ ...prevState, tableData: [], }))
+            } else {
+                let Data = res.data.DataList;
+                dispatch(manageLevelTabApi(false))
+                setState((prevState) => ({
+                    ...prevState, tableData: Data,
+                }))
+            }
+        }));
     }
 
     /**
@@ -64,7 +73,6 @@ const MasterLevelListing = (props) => {
      */
     const editItemDetails = (Id, levelType, rowData = []) => {
         props.getLevelMappingDetail(Id, levelType, rowData?.ApprovalTypeId)
-        props.closeDrawer('', 'Master', false)
     }
     /**
         * @method confirmDeleteItem
@@ -154,7 +162,7 @@ const MasterLevelListing = (props) => {
 
                         <Row className="levellisting-page">
                             <Col className="level-table" md="12 ">
-                                <div className={`ag-grid-wrapper height-width-wrapper ${(masterLevelDataList && masterLevelDataList?.length <= 0) || state.noData ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0) || state.noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header mt-3 mb-2 d-flex">
                                         <input ref={masterFilter} type="text" className="form-control table-search" id="filter-text-box-master" placeholder="Search" autoComplete={'off'} onChange={(e) => masterFilterHandler(e)} />
                                     </div>
@@ -165,20 +173,22 @@ const MasterLevelListing = (props) => {
                                             floatingFilter={true}
                                             domLayout='autoHeight'
                                             // columnDefs={c}
-                                            rowData={masterLevelDataList}
+                                            rowData={state.tableData ?? []}
                                             pagination={true}
                                             ref={agGrid3}
                                             paginationPageSize={defaultPageSize}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
-                                            // loadingOverlayComponent={'customLoadingOverlay'}
-                                            // noRowsOverlayComponent={'customNoRowsOverlay'}
+                                            loadingOverlayComponent={'customLoadingOverlay'}
+                                            noRowsOverlayComponent={'customNoRowsOverlay'}
                                             noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                                             frameworkComponents={frameworkComponents}
                                             onFilterModified={(e) => {
-                                                setTimeout(() => {
-                                                    setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
-                                                }, 500);
+                                                if (state.tableData.length !== 0) {
+                                                    setTimeout(() => {
+                                                        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
+                                                    }, 500);
+                                                }
                                             }}
                                         >
                                             {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}

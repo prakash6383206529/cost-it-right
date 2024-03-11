@@ -134,17 +134,17 @@ class AddBOPDomestic extends Component {
     let basicPriceText = ''
     if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
-        basicPriceText = `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
+        basicPriceText = `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) / Minimum Order Quantity`
       } else {
-        basicPriceText = `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
+        basicPriceText = `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
       }
-      netCostText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})`
+      netCostText = `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Price (${reactLocalStorage.getObject("baseCurrency")}) + Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`
       this.setState({ toolTipTextNetCost: netCostText, toolTipTextBasicPrice: basicPriceText })
     } else if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
-      netCostText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
+      netCostText = `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) / Minimum Order Quantity`
       this.setState({ toolTipTextNetCost: netCostText })
     } else {
-      netCostText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
+      netCostText = `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
       this.setState({ toolTipTextNetCost: netCostText })
     }
     const obj = { ...this.state.toolTipTextObject, netCostCurrency: netCostText, basicPriceSelectedCurrency: basicPriceText }
@@ -946,7 +946,7 @@ class AddBOPDomestic extends Component {
   labelWithUOM = (value) => {
     const { initialConfiguration } = this.props
     return <div>
-      <span className='d-flex'>Basic Rate/{displayUOM(value)} ({initialConfiguration?.BaseCurrency})</span>
+      <span className='d-flex'>Basic Rate/{displayUOM(value)} ({reactLocalStorage.getObject("baseCurrency")})</span>
     </div>
   }
   onIsClientVendorBOP = () => {
@@ -1454,7 +1454,7 @@ class AddBOPDomestic extends Component {
                             <Col md="3">
                               <TooltipCustom id="bop-basic-price" tooltipText={this.state.toolTipTextObject?.basicPriceSelectedCurrency} />
                               <Field
-                                label={`Basic Price/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                                label={`Basic Price/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"BasicPriceBase"}
                                 type="text"
                                 placeholder={"-"}
@@ -1470,7 +1470,7 @@ class AddBOPDomestic extends Component {
                               <div className='d-flex align-items-center'>
                                 <div className="w-100">
                                   <Field
-                                    label={`Condition Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                                    label={`Condition Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"ConditionCost"}
                                     type="text"
                                     placeholder={"-"}
@@ -1496,7 +1496,7 @@ class AddBOPDomestic extends Component {
                           {(!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <Col md="3">
                             <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
                             <Field
-                              label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                              label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
                               name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCostBase"}`}
                               type="text"
                               placeholder={"-"}
@@ -1745,7 +1745,7 @@ class AddBOPDomestic extends Component {
                 costingTypeId={this.state.costingTypeId}
                 levelDetails={this.state.levelDetails}
                 isFromImport={false}
-                currency={{ label: initialConfiguration?.BaseCurrency, value: initialConfiguration?.BaseCurrency }}
+                currency={{ label: reactLocalStorage.getObject("baseCurrency"), value: reactLocalStorage.getObject("baseCurrency") }}
                 toolTipTextObject={this.state.toolTipTextObject}
               />
             )

@@ -152,7 +152,7 @@ function SimulationApprovalSummary(props) {
     const [plantId, setPlantId] = useState(null)
     const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
     const headers = {
-        NetCost: `Net Cost (${initialConfiguration?.BaseCurrency})`,
+        NetCost: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
     }
 
     const [costingIdArray, setCostingIdArray] = useState({})
@@ -1133,7 +1133,7 @@ function SimulationApprovalSummary(props) {
     }, 500)
 
     const header = {
-        RevisedNetCost: `Revised Net Cost ${initialConfiguration?.BaseCurrency}`
+        RevisedNetCost: `Revised Net Cost ${reactLocalStorage.getObject("baseCurrency")}`
     }
 
     return (

@@ -1552,7 +1552,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                 if (response.data.Result) {
 
                     if (Number(masterId) === RM_MASTER_ID) {
-                        if (response.data.Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                        if (response.data.Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
                             dispatch({
                                 type: GET_RM_DOMESTIC_LIST,
                                 payload: response.data.Data.ImpactedMasterDataList.RawMaterialListResponse,
@@ -1566,7 +1566,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                         callback(response)
                     }
                     else if (Number(masterId) === BOP_MASTER_ID) {
-                        if (response.data.Data.ImpactedMasterDataList.BOPListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                        if (response.data.Data.ImpactedMasterDataList.BOPListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
                             dispatch({
                                 type: GET_BOP_DOMESTIC_DATA_LIST,
                                 payload: response.data.Data.ImpactedMasterDataList.BOPListResponse,

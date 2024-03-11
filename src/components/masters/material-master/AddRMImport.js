@@ -195,7 +195,7 @@ class AddRMImport extends Component {
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       let obj = {
         toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) + Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency})  + Condition Cost (${initialConfiguration?.BaseCurrency})`
+        toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Price (${reactLocalStorage.getObject("baseCurrency")})  + Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`
       }
       return obj
 
@@ -203,7 +203,7 @@ class AddRMImport extends Component {
 
       let obj = {
         toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) + Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+        toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) + Freight Cost (${reactLocalStorage.getObject("baseCurrency")}) + Shearing Cost (${reactLocalStorage.getObject("baseCurrency")})`
       }
       return obj
     }
@@ -215,7 +215,7 @@ class AddRMImport extends Component {
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       let obj = {
         toolTipTextBasicPriceSelectedCurrency: `Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) + Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
-        toolTipTextBasicPriceBaseCurrency: `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+        toolTipTextBasicPriceBaseCurrency: `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) + Freight Cost (${reactLocalStorage.getObject("baseCurrency")}) + Shearing Cost (${reactLocalStorage.getObject("baseCurrency")})`
       }
       return obj
 
@@ -226,43 +226,43 @@ class AddRMImport extends Component {
     const { initialConfiguration } = this.props
     const { currency, showScrapKeys, currencyValue, toolTipTextObject } = this.state
     let obj = {
-      toolTipTextCutOffBaseCurrency: `Cut Off Price (${initialConfiguration?.BaseCurrency}) = Cut Off Price (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
-      toolTipTextBasicRateBaseCurrency: `Basic Rate (${initialConfiguration?.BaseCurrency}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
-      toolTipTextFreightCostBaseCurrency: `Freight Cost (${initialConfiguration?.BaseCurrency}) = Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
-      toolTipTextShearingCostBaseCurrency: `Shearing Cost (${initialConfiguration?.BaseCurrency}) = Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
-      toolTipTextConditionCostBaseCurrency: `Condition Cost (${initialConfiguration?.BaseCurrency}) = Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextCutOffBaseCurrency: `Cut Off Price (${reactLocalStorage.getObject("baseCurrency")}) = Cut Off Price (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextBasicRateBaseCurrency: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextFreightCostBaseCurrency: `Freight Cost (${reactLocalStorage.getObject("baseCurrency")}) = Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextShearingCostBaseCurrency: `Shearing Cost (${reactLocalStorage.getObject("baseCurrency")}) = Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextConditionCostBaseCurrency: `Condition Cost (${reactLocalStorage.getObject("baseCurrency")}) = Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
       toolTipTextCalculatedFactor: <>{labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} = 1 / {labelWithUOMAndUOM("Calculated Ratio", this.state.ScrapRateUOM?.label, this.state.UOM?.label)}</>,
     }
     if (showScrapKeys?.showCircleJali) {
       obj = {
         ...obj,
-        toolTipTextCircleScrapCostBaseCurrency: `Circle Scrap Rate (${initialConfiguration?.BaseCurrency}) = Circle Scrap Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
-        toolTipTextJaliScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Jali Scrap Rate", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Jali Scrap Rate", this.state.UOM?.label, currency?.label)}* Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
+        toolTipTextCircleScrapCostBaseCurrency: `Circle Scrap Rate (${reactLocalStorage.getObject("baseCurrency")}) = Circle Scrap Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+        toolTipTextJaliScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Jali Scrap Rate", this.state.UOM?.label, reactLocalStorage.getObject("baseCurrency"))} = {labelWithUOMAndCurrency("Jali Scrap Rate", this.state.UOM?.label, currency?.label)}* Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
         toolTipTextJaliScrapCostSelectedCurrency: <>{labelWithUOMAndCurrency("Jali Scrap Rate", this.state.UOM?.label, this.state.currency?.label)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)}* {labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label, this.state.currency?.label)}</>,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)}* Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label, reactLocalStorage.getObject("baseCurrency"))} = {labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)}* Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
         toolTipTextJaliScrapCostBaseCurrencyPerOldUOM: `Jali Scrap Rate (${currency?.label ? currency?.label : 'Currency'}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Jali Scrap Rate (${currency?.label ? currency?.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`,
       }
     } else if (showScrapKeys?.showForging) {
       obj = {
         ...obj,
-        toolTipTextForgingScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Forging Scrap Rate", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Forging Scrap Rate", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
-        toolTipTextMachiningScrapCostBaseCurrency: `Machining Scrap Rate (${initialConfiguration?.BaseCurrency}) = Machining Scrap Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+        toolTipTextForgingScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Forging Scrap Rate", this.state.UOM?.label, reactLocalStorage.getObject("baseCurrency"))} = {labelWithUOMAndCurrency("Forging Scrap Rate", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
+        toolTipTextMachiningScrapCostBaseCurrency: `Machining Scrap Rate (${reactLocalStorage.getObject("baseCurrency")}) = Machining Scrap Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
         toolTipTextForgingScrapCostSelectedCurrency: <>{labelWithUOMAndCurrency("Forging Scrap Rate", this.state.UOM?.label, currency.label)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)}</>,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label, reactLocalStorage.getObject("baseCurrency"))} = {labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
       }
     } else if (showScrapKeys?.showScrap) {
       obj = {
         ...obj,
-        toolTipTextScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
+        toolTipTextScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, reactLocalStorage.getObject("baseCurrency"))} = {labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
         toolTipTextScrapCostSelectedCurrency: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, currency.label)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)}</>,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)} *  Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, reactLocalStorage.getObject("baseCurrency"))} = {labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)} *  Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
       }
     } else {
       obj = {
         ...obj,
-        toolTipTextScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
-        toolTipTextScrapCostSelectedCurrency: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)}</>,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
+        toolTipTextScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, reactLocalStorage.getObject("baseCurrency"))} = {labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
+        toolTipTextScrapCostSelectedCurrency: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label, reactLocalStorage.getObject("baseCurrency"))} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)}</>,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, reactLocalStorage.getObject("baseCurrency"))} = {labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label, currency.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
       }
     }
     if (setData) {
@@ -628,7 +628,7 @@ class AddRMImport extends Component {
   handleCurrency = (newValue) => {
     const { effectiveDate } = this.state
     if (newValue && newValue !== '') {
-      if (newValue.label === INR) {
+      if (newValue.label === getConfigurationKey().BaseCurrency) {
         this.setState({ currencyValue: 1, showCurrency: false, })
       } else {
         const { costingTypeId, vendorName, client } = this.state;
@@ -664,7 +664,7 @@ class AddRMImport extends Component {
   handleEffectiveDateChange = (date) => {
     const { currency, effectiveDate } = this.state
     if (date !== effectiveDate) {
-      if (currency.label === INR) {
+      if (currency.label === getConfigurationKey().BaseCurrency) {
         this.setState({ currencyValue: 1, showCurrency: false, })
       } else {
         const { costingTypeId, vendorName, client } = this.state;
@@ -1818,16 +1818,16 @@ class AddRMImport extends Component {
 
     const labelForScrapRate = () => {
       let labelSelectedCurrency = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (this.state.currency?.label ? this.state.currency?.label : 'Currency'))
-      let labelBaseCurrency = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
+      let labelBaseCurrency = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
       if (showScrapKeys?.showCircleJali) {
         labelSelectedCurrency = labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (this.state.currency?.label ? this.state.currency?.label : 'Currency'))
-        labelBaseCurrency = labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
+        labelBaseCurrency = labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
       } else if (showScrapKeys?.showForging) {
         labelSelectedCurrency = labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (this.state.currency?.label ? this.state.currency?.label : 'Currency'))
-        labelBaseCurrency = labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
+        labelBaseCurrency = labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
       } else if (showScrapKeys?.showScrap) {
         labelSelectedCurrency = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (this.state.currency?.label ? this.state.currency?.label : 'Currency'))
-        labelBaseCurrency = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
+        labelBaseCurrency = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
       }
       return { labelSelectedCurrency: labelSelectedCurrency, labelBaseCurrency: labelBaseCurrency }
     }
@@ -2281,7 +2281,7 @@ class AddRMImport extends Component {
                             <Col md="3">
                               <TooltipCustom disabledIcon={true} id="rm-cut-off-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCutOffBaseCurrency} />
                               <Field
-                                label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"cutOffPriceBaseCurrency"}
                                 type="text"
                                 id="rm-cut-off-base-currency"
@@ -2312,7 +2312,7 @@ class AddRMImport extends Component {
                             <Col md="3">
                               <TooltipCustom disabledIcon={true} id="rm-basic-rate-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextBasicRateBaseCurrency} />
                               <Field
-                                label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"BasicRateBaseCurrency"}
                                 id="rm-basic-rate-base-currency"
                                 type="text"
@@ -2453,7 +2453,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <TooltipCustom disabledIcon={true} id="rm-scrap-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrency} />
                                   <Field
-                                    label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                    label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, reactLocalStorage.getObject("baseCurrency"))}
                                     name={"ScrapRateBaseCurrency"}
                                     type="text"
                                     id="rm-scrap-cost-base-currency"
@@ -2493,7 +2493,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <TooltipCustom disabledIcon={true} id="rm-forging-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrency} />
                                   <Field
-                                    label={labelWithUOMAndCurrency("Forging Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                    label={labelWithUOMAndCurrency("Forging Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, reactLocalStorage.getObject("baseCurrency"))}
                                     name={"ForgingScrapBaseCurrency"}
                                     id="rm-forging-base-currency"
                                     type="text"
@@ -2528,7 +2528,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <TooltipCustom disabledIcon={true} id="rm-machining-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextMachiningScrapCostBaseCurrency} />
                                   <Field
-                                    label={labelWithUOMAndCurrency("Machining Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                    label={labelWithUOMAndCurrency("Machining Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, reactLocalStorage.getObject("baseCurrency"))}
                                     name={"MachiningScrapBaseCurrency"}
                                     id="rm-machining-base-currency"
                                     type="text"
@@ -2564,7 +2564,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <TooltipCustom disabledIcon={true} id="rm-circle-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCircleScrapCostBaseCurrency} />
                                   <Field
-                                    label={labelWithUOMAndCurrency("Circle Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                    label={labelWithUOMAndCurrency("Circle Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, reactLocalStorage.getObject("baseCurrency"))}
                                     name={"CircleScrapCostBaseCurrency"}
                                     id="rm-circle-base-currency"
                                     type="text"
@@ -2599,7 +2599,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <TooltipCustom disabledIcon={true} id="rm-jali-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrency} />
                                   <Field
-                                    label={labelWithUOMAndCurrency("Jali Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                    label={labelWithUOMAndCurrency("Jali Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, reactLocalStorage.getObject("baseCurrency"))}
                                     name={"JaliScrapCostBaseCurrency"}
                                     type="text"
                                     id="rm-jali-base-currency"
@@ -2636,7 +2636,7 @@ class AddRMImport extends Component {
                                 <Col md="3">{/* //RE */}
                                   <TooltipCustom disabledIcon={true} id="rm-freight-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextFreightCostBaseCurrency} />
                                   <Field
-                                    label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                    label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, reactLocalStorage.getObject("baseCurrency"))}
                                     name={"FreightChargeBaseCurrency"}
                                     id="rm-freight-base-currency"
                                     type="text"
@@ -2671,7 +2671,7 @@ class AddRMImport extends Component {
                                 <Col md="3">{/* //RE */}
                                   <TooltipCustom disabledIcon={true} id="rm-shearing-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextShearingCostBaseCurrency} />
                                   <Field
-                                    label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                    label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, reactLocalStorage.getObject("baseCurrency"))}
                                     name={"ShearingCostBaseCurrency"}
                                     id="rm-shearing-base-currency"
                                     type="text"
@@ -2711,7 +2711,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <TooltipCustom disabledIcon={true} id="rm-basic-price-base" width={'350px'} tooltipText={this.basicPriceTitle()?.toolTipTextBasicPriceBaseCurrency} />
                                   <Field
-                                    label={`Basic Price (${initialConfiguration?.BaseCurrency})`}
+                                    label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"BasicPriceBaseCurrency"}
                                     id="rm-basic-price-base"
                                     type="text"
@@ -2747,7 +2747,7 @@ class AddRMImport extends Component {
                                     <div className='w-100'>
                                       <TooltipCustom disabledIcon={true} id="rm-condition-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextConditionCostBaseCurrency} />
                                       <Field
-                                        label={`Condition Cost (${initialConfiguration?.BaseCurrency})`}
+                                        label={`Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                         name={"FinalConditionCostBaseCurrency"}
                                         id="rm-condition-cost-base-currency"
                                         type="text"
@@ -2796,7 +2796,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <TooltipCustom disabledIcon={true} id="rm-net-cost-base" tooltipText={this.netCostTitle()?.toolTipTextNetCostBaseCurrency} />
                                   <Field
-                                    label={`Net Cost (${initialConfiguration?.BaseCurrency})`}
+                                    label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
                                     type="text"
                                     id="rm-net-cost-base"

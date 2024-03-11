@@ -15,6 +15,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { getConfigurationKey, getCurrencySymbol, showBopLabel } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { BOP_DOMESTIC_TEMPLATE, BOP_IMPORT_TEMPLATE, MACHINE_TEMPLATE, OPERATION_TEMPLATE, RM_DOMESTIC_TEMPLATE, RM_IMPORT_TEMPLATE } from '../../report/ExcelTemplate';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -328,7 +329,7 @@ function AnalyticsDrawer(props) {
                                                             {ModeId === 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                             {<AgGridColumn field="NetLandedCost" headerName={props.import ? "Net Landed (Currency)" : "Net Landed (Total)"} cellRenderer={hyphenFormatter} ></AgGridColumn>}
-                                                            {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Net Landed Total (INR)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                            {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName={`Net Landed Total (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>}
 
                                                         </AgGridReact>

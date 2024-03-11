@@ -1576,7 +1576,7 @@ function CostingSimulation(props) {
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
 
-    const headers = { netCostHeadder: `Net Cost (${getConfigurationKey()?.BaseCurrency})` }
+    const headers = { netCostHeadder: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})` }
 
     return (
         <>

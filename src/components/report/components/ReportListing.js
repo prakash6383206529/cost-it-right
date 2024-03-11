@@ -17,6 +17,7 @@ import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants
 import LoaderCustom from '../common/LoaderCustom';
 import WarningMessage from '../common/WarningMessage'
 import { handleDepartmentHeader, showBopLabel } from '../../../helper'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 
 
@@ -553,7 +554,7 @@ function ReportListing(props) {
                         <AgGridColumn field="TotalCost" headerName="Total Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetDiscountsCost" headerName="Hundi/Other Discount" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="AnyOtherCost" headerName="Any Other Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="NetPOPrice" headerName="Net PO Price (INR)"></AgGridColumn>
+                        <AgGridColumn field="NetPOPrice" headerName={`Net PO Price (${reactLocalStorage.getObject("baseCurrency")})`}></AgGridColumn>
                         <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                         <AgGridColumn field="NetPOPriceInCurrency" headerName="Net PO Price Currency"></AgGridColumn>
                         <AgGridColumn field="Remark" headerName="Remark" cellRenderer={'hyphenFormatter'}></AgGridColumn>

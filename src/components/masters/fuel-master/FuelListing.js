@@ -9,7 +9,7 @@ import "react-input-range/lib/css/index.css";
 import DayTime from "../../common/DayTimeWrapper";
 import BulkUpload from "../../massUpload/BulkUpload";
 import LoaderCustom from "../../common/LoaderCustom";
-import { loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter } from "../../../helper";
 import { FuelMaster } from "../../../config/constants";
 import { FUELLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import ReactExport from "react-export-excel";
@@ -298,7 +298,7 @@ const FuelListing = (props) => {
                 <AgGridColumn field="FuelName" headerName="Fuel" width={250} cellRenderer={"costingHeadFormatter"}></AgGridColumn>
                 <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
-                <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={"commonCostFormatter"}></AgGridColumn>
+                <AgGridColumn field="Rate" headerName={`Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
                 <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>
                 <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (<AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}

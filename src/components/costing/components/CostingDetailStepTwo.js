@@ -513,7 +513,7 @@ function CostingDetailStepTwo(props) {
                           <th style={{ width: '160px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`Discounts`}</span></th>
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <th style={{ width: '100px' }}><span className="font-weight-500">{`Basic Price`}</span></th>}
-                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Net Cost(INR)`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}</span></th>
                         </tr>
                       </thead>}
                       <tbody>
@@ -539,7 +539,7 @@ function CostingDetailStepTwo(props) {
                                   </> : <>
                                     <td className="pr-0 pl-2"><span>Part Number: </span><span className="cr-prt-nm fs1 font-weight-500" title={item.PartNumber}>{item.PartNumber}</span></td>
                                     <td><span className="dark-blue fs1 font-weight-500"><span>Freight Cost: </span>{checkForDecimalAndNull(item.NetPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                    <td><span className="dark-blue fs1 font-weight-500"><span>Net Cost(INR): </span>{checkForDecimalAndNull(item.TotalCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500"><span>Net Cost ({reactLocalStorage.getObject("baseCurrency")}): </span>{checkForDecimalAndNull(item.TotalCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   </>
                                 }
                                 </>
