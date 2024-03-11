@@ -546,7 +546,7 @@ function Pipe(props) {
      */
     const tooltipMessageForSheetWeight = (value) => {
         return (
-            <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}) * Length of {value})/1000</div>
+            <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}) * Length of {value} {value === 'Part' ? 'including allownace' : ''})/1000</div>
         );
     }
     const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part including allownace) +  {isOneSide && !isSolidBar ? '(π * Inner Diameter * Length of Part including allownace) +' : ''} (π / 2 * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}))</div>
