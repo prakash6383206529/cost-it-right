@@ -542,7 +542,7 @@ export function getWeightOfScrap(data) {
  * @returns {number}
  */
 export function getNetSurfaceArea(data) {
-  const value = Math.PI * data.OuterDiameter * data.PartLength + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
+  const value = Math.PI * data.OuterDiameter * data.PartLengthWithAllowance + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
   return checkForNull(value)
 }
 
@@ -551,7 +551,7 @@ export function getNetSurfaceArea(data) {
  * @returns {number}
  */
 export function getNetSurfaceAreaBothSide(data) {
-  const value = Math.PI * data.OuterDiameter * data.PartLength + Math.PI * data.InnerDiameter * data.PartLength + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
+  const value = Math.PI * data.OuterDiameter * data.PartLengthWithAllowance + Math.PI * data.InnerDiameter * data.PartLengthWithAllowance + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
   return checkForNull(value)
 }
 
