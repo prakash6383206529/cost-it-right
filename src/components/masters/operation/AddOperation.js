@@ -136,7 +136,7 @@ class AddOperation extends Component {
     this.getDetail()
   }
 
-  commonFunction() {
+  commonFunction(plantId = "") {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, OPERATIONS_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -145,7 +145,8 @@ class AddOperation extends Component {
       DepartmentId: userDetails().DepartmentId,
       UserId: loggedInUserId(),
       Mode: 'master',
-      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
+      plantId: plantId
     }
     this.props.checkFinalUser(obj, (res) => {
       if (res?.data?.Result) {
@@ -598,6 +599,7 @@ class AddOperation extends Component {
 
   handleDestinationPlant = (newValue) => {
     this.setState({ destinationPlant: newValue })
+    this.commonFunction(newValue ? newValue.value : '')
   }
   /**
   * @method handleClient
@@ -712,7 +714,7 @@ class AddOperation extends Component {
       LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
       Technology: technologyArray,
       Remark: remarks,
-      plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+      Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
       Attachements: isEditFlag ? updatedFiles : files,
       LoggedInUserId: loggedInUserId(),
       EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
@@ -1069,7 +1071,7 @@ class AddOperation extends Component {
                     </Row>
 
                     <Row>
-                      {(costingTypeId === ZBCTypeId) && (
+                      {(costingTypeId === ZBCTypeId && !initialConfiguration.IsMultipleUserAllowForApproval) && (
                         <Col md="3">
                           <Field
                             label="Plant (Code)"
@@ -1121,7 +1123,7 @@ class AddOperation extends Component {
 
                       )}
                       {
-                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
+                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration.IsMultipleUserAllowForApproval) &&
                         <Col md="3">
                           <Field
                             label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}

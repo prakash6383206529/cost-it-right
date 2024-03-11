@@ -326,7 +326,7 @@ class AddRMImport extends Component {
     }
   }
 
-  commonFunction() {
+  commonFunction(plantId = '') {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, RM_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -336,6 +336,7 @@ class AddRMImport extends Component {
       TechnologyId: RM_MASTER_ID,
       Mode: 'master',
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
+      plantId: plantId
     }
 
 
@@ -1078,6 +1079,7 @@ class AddRMImport extends Component {
       costingTypeId: costingHeadFlag,
       vendorName: [],
       vendorLocation: [],
+      singlePlantSelected: null
     });
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
@@ -1733,6 +1735,7 @@ class AddRMImport extends Component {
 
   handleSinglePlant = (newValue) => {
     this.setState({ singlePlantSelected: newValue })
+    this.commonFunction(newValue ? newValue.value : '')
   }
 
   conditionToggle = () => {
@@ -2035,7 +2038,7 @@ class AddRMImport extends Component {
                             />
                           </Col>
 
-                          {((costingTypeId === ZBCTypeId) && (
+                          {((costingTypeId === ZBCTypeId && !initialConfiguration.IsMultipleUserAllowForApproval) && (
                             <Col md="3">
                               <Field
                                 label="Plant (Code)"
@@ -2059,7 +2062,7 @@ class AddRMImport extends Component {
                             </Col>)
                           )}
                           {
-                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration.IsMultipleUserAllowForApproval) &&
                             <Col md="3">
                               <Field
                                 label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}

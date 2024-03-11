@@ -756,7 +756,7 @@ export const API = {
   createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
   approvalPushedOnSap: `${BASE_URL}/ExternalIntegration/create-push-pir-data-request-and-push-pir-data-on-sap`,
   checkSAPPoPrice: `${BASE_URL}/ExternalIntegration/check-sap-po-price`,
-
+  getAllApproverList: `${BASE_URL}/app-approval-system/get-approval-user-details`,
 
   // ApproveReject Drawer final approver
   checkFinalUser: `${BASE_URL}/app-approval-system/final-user-check`,

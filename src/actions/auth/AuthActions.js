@@ -2090,3 +2090,19 @@ export function getUsersOnboardingLevelAPI(UserId, callback) {
         });
     };
 }
+export function getAllApproverList(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllApproverList}?processId=${data.processId}&levelId=${data.levelId}&mode=${data.mode}`, config());
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            if (response && response.data && response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}

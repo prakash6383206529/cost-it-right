@@ -1022,7 +1022,7 @@ class BulkUpload extends Component {
                             <button
                                 type="submit"
                                 className="submit-button save-btn"
-                                disabled={setDisable}
+                                disabled={this.props.initialConfiguration.IsMultipleUserAllowForApproval ? false : setDisable}
                             >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? 'Update' : 'Save'}

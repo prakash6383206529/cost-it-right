@@ -309,7 +309,7 @@ function NfrSummaryDrawer(props) {
                         {/* {loader && <LoaderCustom />} */}
                         <Row className="mx-0 mb-3">
                             <Col>
-                                {nfrData?.ApprovalSteps && <ApprovalWorkFlow approvalLevelStep={nfrData?.ApprovalSteps} approvalNo={nfrData?.ApprovalToken} />}
+                                {nfrData?.ApprovalSteps && <ApprovalWorkFlow approvalLevelStep={nfrData?.ApprovalSteps} approvalNo={nfrData?.ApprovalToken} approverData={{}} />}
                             </Col>
                             {/* <Col md="12">
                                 <Table className='table cr-brdr-main'>
