@@ -31,7 +31,7 @@ function Tool(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const costingHead = useSelector(state => state.comman.costingHead)
-  const { CostingDataList, ErrorObjTools, IsIncludedToolCost } = useSelector(state => state.costing)
+  const { CostingDataList, ErrorObjTools, IsIncludedToolCost, includeToolCostIcc } = useSelector(state => state.costing)
 
   // BELOW CODE NEED TO BE USED WHEN OVERALL APPLICABILITY TREATED INSIDE GRID.
   const defaultValues = {
@@ -313,7 +313,7 @@ function Tool(props) {
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
         if (item.Value === '0') return false;
-        if (IsIncludedToolCost) {
+        if (IsIncludedToolCost || includeToolCostIcc) {
           if (item.Text === 'Fixed') {
             temp.push({ label: item.Text, value: item.Value })
           }
@@ -644,7 +644,7 @@ function Tool(props) {
                               <td style={{ width: 200 }}>{item.Quantity}</td>
                               <td>{item.ToolCost}</td>
                               <td>{item.Life}</td>
-                              <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, 2) : 0}</td>
+                              <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
                                 <button title='Edit' className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
                                 <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
