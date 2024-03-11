@@ -1,0 +1,1029 @@
+import React, { useState, useEffect } from 'react'
+import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useDispatch, useSelector } from 'react-redux'
+import { Col, Row } from 'reactstrap'
+import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
+import HeaderTitle from '../../../../common/HeaderTitle'
+import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
+import Switch from 'react-switch'
+import {
+    checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, calculateScrapWeight, percentageLimitValidation
+} from '../../../../../helper'
+import { getUOMSelectList } from '../../../../../actions/Common'
+import { reactLocalStorage } from 'reactjs-localstorage'
+import Toaster from '../../../../common/Toaster'
+import { G, KG, MG, STD, } from '../../../../../config/constants'
+import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
+import { debounce } from 'lodash'
+import TooltipCustom from '../../../../common/Tooltip'
+import { nonZero } from '../../../../../helper/validation'
+
+function IsolateReRender(control) {
+    const values = useWatch({
+        control,
+        name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength', 'endPieceAllowance'],
+    });
+
+    return values;
+}
+
+function Pipe(props) {
+
+    const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
+
+    const convert = (FinishWeightOfSheet, dimmension) => {
+        switch (dimmension) {
+            case G:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet)
+                }, 200);
+                break;
+            case KG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet * 1000)
+                }, 200);
+                break;
+            case MG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet / 1000)
+                }, 200);
+                break;
+            default:
+                break;
+        }
+    }
+    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+    const { rmRowData, item, CostingViewMode } = props
+
+    const defaultValues = {
+
+        OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== null ? checkForDecimalAndNull(WeightCalculatorRequest.OuterDiameter, localStorage.NoOfDecimalForInputOutput) : '',
+        Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
+        InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.InnerDiameter !== null ? checkForDecimalAndNull(WeightCalculatorRequest.InnerDiameter, localStorage.NoOfDecimalForInputOutput) : '',
+        SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfSheet, localStorage.NoOfDecimalForInputOutput) : '',
+        PartLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfPart !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfPart, localStorage.NoOfDecimalForInputOutput) : '',
+        NumberOfPartsPerSheet: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfPartsPerSheet, localStorage.NoOfDecimalForInputOutput) : '',
+        ScrapLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfScrap !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfScrap, localStorage.NoOfDecimalForInputOutput) : '',
+        WeightofSheet: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfSheetInUOM, localStorage.NoOfDecimalForInputOutput) : '',
+        WeightofPart: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfPartInUOM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfPartInUOM, localStorage.NoOfDecimalForInputOutput) : '',
+        WeightofScrap: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfScrapInUOM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfScrapInUOM, localStorage.NoOfDecimalForInputOutput) : '',
+        NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        FinishWeightOfSheet: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        cuttingAllowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.CuttingAllowance, localStorage.NoOfDecimalForInputOutput) : '',
+        partLengthWithAllowance: WeightCalculatorRequest && WeightCalculatorRequest.PartLengthWithAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PartLengthWithAllowance, localStorage.NoOfDecimalForInputOutput) : '',
+        endPieceAllowance: WeightCalculatorRequest && WeightCalculatorRequest.EndPieceAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.EndPieceAllowance, localStorage.NoOfDecimalForInputOutput) : '',
+        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.RecoveryPercentage !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
+
+    }
+
+    const {
+        register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
+            mode: 'onChange',
+            reValidateMode: 'onChange',
+            defaultValues: defaultValues,
+        })
+
+
+
+
+    const [isOneSide, setIsOneSide] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsOneSide ? WeightCalculatorRequest.IsOneSide : false)
+    const [isSolidBar, setIsSolidBar] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsSolidBar ? WeightCalculatorRequest.IsSolidBar : false)
+    const [UOMDimension, setUOMDimension] = useState(
+        WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== 0
+            ? {
+                label: WeightCalculatorRequest.UOMForDimension,
+                value: WeightCalculatorRequest.UOMForDimensionId,
+            }
+            : [],
+    )
+    const [dataToSend, setDataToSend] = useState({
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
+    })
+    const [isChangeApplies, setIsChangeApplied] = useState(true)
+    const tempOldObj = WeightCalculatorRequest
+    const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
+    const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
+    const [isDisable, setIsDisable] = useState(false)
+    let fields = IsolateReRender(control)
+    let fieldValues = {
+        OuterDiameter: fields && fields[0],
+        Thickness: fields && fields[1],
+        SheetLength: fields && fields[2],
+        PartLength: fields && fields[3],
+    }
+
+    const dispatch = useDispatch()
+
+    const values = useWatch({
+        control,
+        name: ['scrapRecoveryPercent', 'grossWeight', 'FinishWeightOfSheet', 'cuttingAllowance', 'PartLength'],
+    })
+
+    useEffect(() => {
+        if (!CostingViewMode) {
+            scrapWeightCalculation()
+            calculateLengthOfPart()
+        }
+    }, [values])
+
+    useEffect(() => {
+        //UNIT TYPE ID OF DIMENSIONS
+        dispatch(getUOMSelectList(res => {
+            const Data = res.data.Data
+            const kgObj = Data.find(el => el.Text === G)
+            setTimeout(() => {
+                setValue('UOMDimension', WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
+                    ? {
+                        label: WeightCalculatorRequest.UOMForDimension,
+                        value: WeightCalculatorRequest.UOMForDimensionId,
+                    }
+                    : { label: kgObj.Display, value: kgObj.Value })
+                setUOMDimension(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
+                    ? {
+                        label: WeightCalculatorRequest.UOMForDimension,
+                        value: WeightCalculatorRequest.UOMForDimensionId,
+                    }
+                    : { label: kgObj.Display, value: kgObj.Value })
+            }, 100);
+
+        }))
+    }, [])
+
+    const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
+
+    useEffect(() => {
+        if (!CostingViewMode) {
+            if (!isSolidBar) {
+                calculateInnerDiameter()
+            }
+            calculateNumberOfPartPerSheet()
+            calculateLengthofScrap()
+            calculateWeightOfSheet()
+            calculateWeightOfPart()
+            calculateWeightOfScrap()
+            calculateNetSurfaceArea()
+            setGrossWeight()
+        }
+    }, [fieldValues])
+
+    useEffect(() => {
+        if (!CostingViewMode) {
+            if (isOneSide) {
+                setNetSurfaceAreaBothSide()
+            } else {
+                calculateNetSurfaceArea()
+            }
+        }
+    }, [isOneSide])
+    const setFinishWeight = (e) => {
+        const FinishWeightOfSheet = e.target.value
+        const grossWeight = checkForNull(getValues('GrossWeight'))
+        if (e.target.value > grossWeight) {
+            setTimeout(() => {
+                setValue('FinishWeightOfSheet', 0)
+            }, 200);
+
+            Toaster.warning('Finish Weight should not be greater than gross weight')
+            return false
+        }
+        switch (UOMDimension.label) {
+            case G:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet)
+                }, 200);
+                break;
+            case KG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet * 1000)
+                }, 200);
+                break;
+            case MG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet / 1000)
+                }, 200);
+                break;
+            default:
+                break;
+        }
+    }
+
+    useEffect(() => {
+        if (Number(getValues('FinishWeightOfSheet')) < Number(getValues('GrossWeight'))) {
+            delete errors.FinishWeightOfSheet
+        }
+    }, [getValues('GrossWeight'), fieldValues])
+
+    /**
+     * @method calculateInnerDiameter
+     * @description CALCULATE INNER DIAMETER
+     */
+    const calculateInnerDiameter = () => {
+        let ID = checkForNull(fieldValues.OuterDiameter) - 2 * checkForNull(fieldValues.Thickness);
+
+        setValue('InnerDiameter', checkForDecimalAndNull(ID, localStorage.NoOfDecimalForInputOutput))
+        const updatedValue = dataToSend
+        updatedValue.InnerDiameter = ID
+        setDataToSend(updatedValue)
+    }
+
+    /**
+     * @method calculateNumberOfPartPerSheet
+     * @description CALCULATE NUMBER OF PARTS PER SHEET
+     */
+    const calculateNumberOfPartPerSheet = () => {
+        if (fieldValues.SheetLength === '') {
+            setValue('NumberOfPartsPerSheet', 1)
+            const updatedValue = dataToSend
+            updatedValue.NumberOfPartsPerSheet = 1
+            setDataToSend(updatedValue)
+        } else {
+            const EndPieceAllowance = Number(getValues('endPieceAllowance'))
+            const NumberParts = checkForNull((fieldValues.SheetLength - EndPieceAllowance) / fieldValues.PartLength)
+            // Check if NumberParts is negative and set NumberOfPartsPerSheet accordingly
+            const NumberOfPartsPerSheet = parseInt(NumberParts) < 0 ? 0 : parseInt(NumberParts);
+            setValue('NumberOfPartsPerSheet', NumberOfPartsPerSheet)
+            const updatedValue = dataToSend
+            updatedValue.NumberOfPartsPerSheet = NumberOfPartsPerSheet
+            setDataToSend(updatedValue)
+        }
+    }
+
+    /**
+     * @method calculateLengthofScrap
+     * @description CALCULATE LENGTH OF SCRAP
+     */
+    const calculateLengthofScrap = () => {
+        const scrapLength = checkForNull(fieldValues.SheetLength % fieldValues.PartLength)
+        const updatedValue = dataToSend
+        updatedValue.ScrapLength = scrapLength
+        setDataToSend(updatedValue)
+        setValue('ScrapLength', checkForDecimalAndNull(scrapLength, localStorage.NoOfDecimalForInputOutput))
+    }
+
+    /**
+     * @method calculateWeightOfSheet
+     * @description CALCULATE WEIGHT OF SHEET
+     */
+    const calculateWeightOfSheet = () => {
+        const data = {
+            Density: props.rmRowData.Density / 1000,
+            OuterDiameter: Number(getValues('OuterDiameter')),
+            InnerDiameter: isSolidBar ? 0 : dataToSend.InnerDiameter,
+            SheetLength: Number(getValues('SheetLength')),
+            ExtraVariable: '',
+        }
+        // const SheetWeight = getWeightOfSheet(data)
+        const SheetWeight = getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.SheetLength)
+
+        const updatedValue = dataToSend
+        updatedValue.WeightofSheet = SheetWeight
+        setDataToSend(updatedValue)
+        setValue('WeightofSheet', checkForDecimalAndNull(SheetWeight, localStorage.NoOfDecimalForInputOutput))
+    }
+
+    /**
+     * @method calculateWeightOfPart
+     * @description CALCULATE WEIGHT OF PART
+     */
+    const calculateWeightOfPart = () => {
+        const data = {
+            Density: props.rmRowData.Density / 1000,
+            OuterDiameter: getValues('OuterDiameter'),
+            InnerDiameter: isSolidBar ? 0 : dataToSend.InnerDiameter,
+            PartLength: getValues('PartLength'),
+            ExtraVariable: '',
+        }
+        // const PartWeight = getWeightOfPart(data)
+        const PartWeight = getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.PartLength)
+        const updatedValue = dataToSend
+        updatedValue.WeightofPart = PartWeight
+        setDataToSend(updatedValue)
+        setValue('WeightofPart', checkForDecimalAndNull(PartWeight, localStorage.NoOfDecimalForInputOutput))
+    }
+
+    /**
+     * @method calculateWeightOfScrap
+     * @description CALCULATE WEIGHT OF SCRAP
+     */
+    const calculateWeightOfScrap = () => {
+        const data = {
+            Density: props.rmRowData.Density / 1000,
+            OuterDiameter: getValues('OuterDiameter'),
+            InnerDiameter: isSolidBar ? 0 : dataToSend.InnerDiameter,
+            ScrapLength: dataToSend.ScrapLength,
+            ExtraVariable: '',
+        }
+        // const ScrapWeight = getWeightOfScrap(data)
+        const ScrapWeight = getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.ScrapLength)
+        const updatedValue = dataToSend
+        updatedValue.WeightofScrap = ScrapWeight
+        setDataToSend(updatedValue)
+        setValue('WeightofScrap', checkForDecimalAndNull(ScrapWeight, localStorage.NoOfDecimalForInputOutput))
+    }
+
+    /**
+     * @method calculateNetSurfaceArea
+     * @description CALCULATE NET SURFACE AREA
+     */
+    const calculateNetSurfaceArea = () => {
+        const data = {
+            OuterDiameter: getValues('OuterDiameter'),
+            InnerDiameter: isSolidBar ? 0 : dataToSend.InnerDiameter,
+            PartLength: getValues('PartLength'),
+            ExtraVariable: '',
+        }
+        const NetSurfaceArea = getNetSurfaceArea(data)
+        const updatedValue = dataToSend
+        updatedValue.NetSurfaceArea = NetSurfaceArea
+        setDataToSend(updatedValue)
+        setValue('NetSurfaceArea', checkForDecimalAndNull(NetSurfaceArea, localStorage.NoOfDecimalForInputOutput))
+    }
+
+    /**
+     * @method setNetSurfaceAreaBothSide
+     * @description CALCULATE NET SURFACE AREA BOTH SIDE
+     */
+    const setNetSurfaceAreaBothSide = () => {
+        const data = {
+            OuterDiameter: getValues('OuterDiameter'),
+            InnerDiameter: isSolidBar ? 0 : dataToSend.InnerDiameter,
+            PartLength: getValues('PartLength'),
+            ExtraVariable: '',
+        }
+
+        const NetSurfaceAreaBothSide = getNetSurfaceAreaBothSide(data)
+        const updatedValue = dataToSend
+        updatedValue.NetSurfaceArea = NetSurfaceAreaBothSide
+        setDataToSend(updatedValue)
+        setValue('NetSurfaceArea', checkForDecimalAndNull(NetSurfaceAreaBothSide, localStorage.NoOfDecimalForInputOutput))
+    }
+
+    /**
+     * @method setGrossWeight
+     * @description SET GROSS WEIGHT
+     */
+    const setGrossWeight = () => {
+        let WeightofPart
+        let WeightofSheet
+        let NumberOfPartsPerSheet
+        let grossWeight
+        const updatedValue = dataToSend
+        if (rmRowData.RawMaterialCategory === STD) {
+            WeightofPart = setValueAccToUOM(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
+            setGrossWeights(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
+            updatedValue.GrossWeight = WeightofPart
+            updatedValue.newGrossWeight = WeightofPart
+            setDataToSend(updatedValue)
+        } else {
+            // WeightofPart = setValueAccToUOM(dataToSend.WeightofPart, UOMDimension.label)
+            WeightofSheet = setValueAccToUOM(dataToSend.WeightofSheet, UOMDimension.label)
+            NumberOfPartsPerSheet = Number(getValues('NumberOfPartsPerSheet'))
+            grossWeight = checkForNull(WeightofSheet / NumberOfPartsPerSheet)
+            setGrossWeights(grossWeight)
+            updatedValue.GrossWeight = grossWeight
+            updatedValue.newGrossWeight = grossWeight
+            setDataToSend(updatedValue)
+        }
+        setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+    }
+
+    /**
+     * @method onSideToggle
+     * @description SIDE TOGGLE
+     */
+    const onSideToggle = () => {
+        setIsOneSide(!isOneSide)
+    }
+    /**
+ * @method onBarToggle
+ * @description BAR TOGGLE
+ */
+    const onBarToggle = () => {
+        setIsSolidBar(!isSolidBar)
+    }
+
+    /**
+     * @method renderListing
+     * @description Used show listing of unit of measurement
+     */
+    const renderListing = (label) => {
+        const temp = []
+
+        if (label === 'UOM') {
+            UOMSelectList &&
+                UOMSelectList.map((item) => {
+                    const accept = AcceptableSheetMetalUOM.includes(item.Text)
+                    if (accept === false) return false
+                    if (item.Value === '0') return false
+                    temp.push({ label: item.Display, value: item.Value })
+                    return null
+                })
+            return temp
+        }
+    }
+
+    /**
+     * @method cancel
+     * @description used to Reset form
+     */
+    const cancel = () => {
+        props.toggleDrawer('')
+    }
+
+    /**
+     * @method onSubmit
+     * @description Used to Submit the form
+     */
+    const onSubmit = debounce(handleSubmit((values) => {
+        setIsDisable(true)
+
+        if (!isSolidBar && Number(getValues('InnerDiameter') < 0)) {
+            Toaster.warning('Inner diameter cannot be negative')
+            setIsDisable(false)
+            return false
+        }
+        if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
+            if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== getValues('FinishWeightOfSheet') || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
+                setIsChangeApplied(true)
+            } else {
+                setIsChangeApplied(false)
+            }
+        }
+
+        let grossWeight = (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight
+
+        let data = {
+            LayoutType: 'Bar',
+            SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
+            IsChangeApplied: isChangeApplies, //NEED TO MAKE IT DYNAMIC how to do,
+            BaseCostingIdRef: item.CostingId,
+            CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
+            RawMaterialIdRef: rmRowData.RawMaterialId,
+            LoggedInUserId: loggedInUserId(),
+            RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeightOfSheet')) * rmRowData.ScrapRate,
+            UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
+            UOMForDimension: UOMDimension ? UOMDimension.label : '',
+            OuterDiameter: values.OuterDiameter,
+            Thickness: values.Thickness,
+            InnerDiameter: isSolidBar ? 0 : dataToSend.InnerDiameter,
+            LengthOfSheet: values.SheetLength,
+            LengthOfPart: values.PartLength,
+            NumberOfPartsPerSheet: dataToSend.NumberOfPartsPerSheet,
+            LengthOfScrap: dataToSend.ScrapLength,
+            WeightOfSheetInUOM: dataToSend.WeightofSheet,
+            WeightOfPartInUOM: dataToSend.WeightofPart,
+            WeightOfScrapInUOM: dataToSend.WeightofScrap,
+            // Side: isOneSide, why and where
+            UOMId: rmRowData.UOMId,
+            UOM: rmRowData.UOM,
+            IsOneSide: isOneSide,
+            // SurfaceAreaSide: isOneSide ? 'Both Side' : 'One  Side',
+            NetSurfaceArea: dataToSend.NetSurfaceArea,
+            GrossWeight: grossWeight,
+            FinishWeight: getValues('FinishWeightOfSheet'),
+            RecoveryPercentage: getValues('scrapRecoveryPercent'),
+            ScrapWeight: getValues('scrapWeight'),
+            CuttingAllowance: getValues('cuttingAllowance'),
+            PartLengthWithAllowance: getValues('partLengthWithAllowance'),
+            EndPieceAllowance: getValues('endPieceAllowance'),
+            IsSolidBar: isSolidBar
+        }
+
+        dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
+            setIsDisable(false)
+            if (res.data.Result) {
+                data.WeightCalculationId = res.data.Identity
+                Toaster.success("Calculation saved successfully")
+                props.toggleDrawer('', data)
+            }
+        }))
+    }), 500)
+
+    const handleUnit = (value) => {
+        setValue('UOMDimension', { label: value.label, value: value.value })
+        setUOMDimension(value)
+        let grossWeight = GrossWeight
+        setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
+        setTimeout(() => {
+            setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
+            setValue('FinishWeightOfSheet', checkForDecimalAndNull(setValueAccToUOM(FinishWeightOfSheet, value.label), localStorage.NoOfDecimalForInputOutput))
+        }, 500);
+    }
+
+    const UnitFormat = () => {
+        return <>Net Surface Area(mm<sup>2</sup>)</>
+    }
+
+    const handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
+    const scrapWeightCalculation = () => {
+        const scrapRecoveryPercent = Number((getValues('scrapRecoveryPercent')))
+        const grossWeight = getValues('GrossWeight')
+        const finishWeight = getValues('FinishWeightOfSheet')
+        const scrapWeight = calculateScrapWeight(grossWeight, finishWeight, scrapRecoveryPercent)
+        setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
+    }
+    const calculateLengthOfPart = () => {
+        const LengthOfPart = Number(getValues('PartLength'))
+        const CuttingAllowance = Number(getValues('cuttingAllowance'))
+        const PartLengthWithAllowance = checkForNull(LengthOfPart + CuttingAllowance)
+        setValue('partLengthWithAllowance', checkForDecimalAndNull(PartLengthWithAllowance, localStorage.NoOfDecimalForInputOutput))
+    }
+    /**
+     * @method render
+     * @description Renders the component
+     */
+    const tooltipMessageForSheetWeight = (value) => {
+        return <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter<sup>2</sup>'}) * Length of {value})/1000</div>
+    }
+    const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part) + {isOneSide ? `(π ${isSolidBar ? '' : ' * Inner Diameter'} * Length of Part) +` : ''} (π / 2 * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter<sup>2</sup>'}))</div>
+    return (
+        <>
+            <div className="user-page p-0">
+                <div>
+                    <form noValidate className="form"
+                        onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
+                        <div className="costing-border border-top-0 px-4">
+                            <Row className={''}>
+                                <Col md="12" className="switch mt-3  d-flex justify-content-start">
+                                    <label className="switch-level">
+                                        <div className={'left-title'}>{'Hollow Bar'}</div>
+                                        <Switch
+                                            onChange={onBarToggle}
+                                            checked={isSolidBar}
+                                            id="normal-switch"
+                                            disabled={CostingViewMode ? true : false}
+                                            background="#4DC771"
+                                            onColor="#4DC771"
+                                            onHandleColor="#ffffff"
+                                            offColor="#4DC771"
+                                            uncheckedIcon={false}
+                                            checkedIcon={false}
+                                            height={20}
+                                            width={46}
+                                        />
+                                        <div className={'right-title'}>{'Solid Bar'}</div>
+                                    </label>
+                                </Col>
+                                <Col md="4"></Col>
+
+                            </Row>
+                            <Row>
+                                <Col md="12" className={'mt25'}>
+                                    <HeaderTitle className="border-bottom"
+                                        title={'Sheet Specification'}
+                                        customClass={'underLine-title'}
+                                    />
+                                </Col>
+                            </Row>
+                            <Row className={''}>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Outer Diameter(mm)`}
+                                        name={'OuterDiameter'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.OuterDiameter}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col >
+                                {!isSolidBar && <>
+                                    <Col md="3">
+                                        <NumberFieldHookForm
+                                            label={`Thickness(mm)`}
+                                            name={'Thickness'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={true}
+                                            rules={{
+                                                required: true,
+                                                validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            }}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.Thickness}
+                                            disabled={CostingViewMode ? true : false}
+                                        />
+                                    </Col>
+                                    <Col md="3">
+                                        <TooltipCustom disabledIcon={true} tooltipClass='inner-diameter' id={'inner-diameter'} tooltipText="Inner Diameter = Outer Diameter - (2 * Thickness)" />
+                                        <TextFieldHookForm
+                                            label={`Inner Diameter(mm)`}
+                                            name={'InnerDiameter'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            id={'inner-diameter'}
+                                            rules={{
+                                                required: false,
+                                            }}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.InnerDiameter}
+                                            disabled={true}
+                                        />
+                                    </Col >
+                                </>}
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Length of Sheet(mm)`}
+                                        name={'SheetLength'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.SheetLength}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col >
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Length of Part(mm)`}
+                                        name={'PartLength'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.PartLength}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col >
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Cutting Allowance`}
+                                        name={'cuttingAllowance'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.cuttingAllowance}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col >
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part-with-allowance'} tooltipText="Length of Part inculding  allowance = (Length of Part + Cutting Allowance)" />
+                                    <TextFieldHookForm
+                                        label={`Length of Part inculding  allowance(mm)`}
+                                        name={'partLengthWithAllowance'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'length-of-part-with-allowance'}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.partLengthWithAllowance}
+                                        disabled={true}
+                                    />
+                                </Col >
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`End Piece Allowance (mm)`}
+                                        name={'endPieceAllowance'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.endPieceAllowance}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col >
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = ((Length(Sheet)-End Piece Allowance) / Length(Part))" />
+                                    <TextFieldHookForm
+                                        label="No. of Parts/Sheet"
+                                        name={'NumberOfPartsPerSheet'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'length-of-part'}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.NumberOfPartsPerSheet}
+                                        disabled={true}
+                                    />
+                                </Col >
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = Remainder of no. of parts/Sheet" />
+                                    <TextFieldHookForm
+                                        label={`Length of Scrap(mm)`}
+                                        name={'ScrapLength'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'length-of-scrap'}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.ScrapLength}
+                                        disabled={true}
+                                    />
+                                </Col >
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-sheet'} tooltipText={tooltipMessageForSheetWeight('Sheet')} />
+                                    <TextFieldHookForm
+                                        label={`Weight of Sheet(g)`}
+                                        name={'WeightofSheet'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'weight-of-sheet'}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.WeightofSheet}
+                                        disabled={true}
+                                    />
+                                </Col >
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-part'} tooltipText={tooltipMessageForSheetWeight('Part')} />
+                                    <TextFieldHookForm
+                                        label={`Weight of Part(g)`}
+                                        name={'WeightofPart'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'weight-of-part'}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.WeightofPart}
+                                        disabled={true}
+                                    />
+                                </Col >
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-scrap'} tooltipText={tooltipMessageForSheetWeight('Scrap')} />
+                                    <TextFieldHookForm
+                                        label={`Weight of Scrap(g)`}
+                                        name={'WeightofScrap'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'weight-of-scrap'}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.WeightofScrap}
+                                        disabled={true}
+                                    />
+                                </Col >
+                            </Row >
+
+                            <Row className={'mt-15'}>
+                                <Col md="12">
+                                    <HeaderTitle className="border-bottom"
+                                        title={'Surface Area'}
+                                        customClass={'underLine-title'}
+                                    />
+                                </Col>
+                            </Row>
+
+                            <Row className={''}>
+                                <Col md="4" className="switch">
+                                    <label className="switch-level">
+                                        <div className={'left-title'}>{'One Side'}</div>
+                                        <Switch
+                                            onChange={onSideToggle}
+                                            checked={isOneSide}
+                                            id="normal-switch"
+                                            disabled={CostingViewMode ? true : false}
+                                            background="#4DC771"
+                                            onColor="#4DC771"
+                                            onHandleColor="#ffffff"
+                                            offColor="#4DC771"
+                                            uncheckedIcon={false}
+                                            checkedIcon={false}
+                                            height={20}
+                                            width={46}
+                                        />
+                                        <div className={'right-title'}>{'Both Side'}</div>
+                                    </label>
+                                </Col>
+                                <Col md="4"></Col>
+
+                            </Row>
+                            <hr className="mx-n4 w-auto" />
+                            <Row>
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'surface-area'} tooltipText={surfaceaAreaTooltipMessage} />
+                                    <TextFieldHookForm
+                                        label={UnitFormat()}
+                                        name={'NetSurfaceArea'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'surface-area'}
+                                        rules={{
+                                            required: false,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.NetSurfaceArea}
+                                        disabled={true}
+                                    />
+                                </Col >
+                                <Col md="3">
+                                    <SearchableSelectHookForm
+                                        label={'Weight Unit'}
+                                        name={'UOMDimension'}
+                                        placeholder={'Select'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
+                                        options={renderListing('UOM')}
+                                        mandatory={true}
+                                        handleChange={handleUnit}
+                                        errors={errors.UOMDimension}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+
+                                </Col>
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Gross Weight = Weight of sheet / No. of Parts"} />
+                                    <TextFieldHookForm
+                                        label={`Gross Weight(${UOMDimension.label})`}
+                                        name={'GrossWeight'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'gross-weight'}
+                                        rules={{
+                                            required: false,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.GrossWeight}
+                                        disabled={true}
+                                    />
+                                </Col >
+                                <Col md="3">
+                                    <NumberFieldHookForm
+                                        label={`Finish Weight(${UOMDimension.label})`}
+                                        name={'FinishWeightOfSheet'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            max: {
+                                                value: getValues('GrossWeight'),
+                                                message: 'Finish weight should not be greater than gross weight.'
+                                            },
+                                        }}
+                                        handleChange={setFinishWeight}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.FinishWeightOfSheet}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Scrap Recovery (%)`}
+                                        name={'scrapRecoveryPercent'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        rules={{
+                                            required: false,
+                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                            max: {
+                                                value: 100,
+                                                message: 'Percentage cannot be greater than 100'
+                                            },
+                                        }}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.scrapRecoveryPercent}
+                                        disabled={props.CostingViewMode ? true : false}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Weight = (Gross Weight - Finish Weight )* Scrap Recovery (%)/100'} />
+                                    <TextFieldHookForm
+                                        label={`Scrap Weight(${UOMDimension.label})`}
+                                        name={'scrapWeight'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        id={'scrap-weight'}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.scrapWeight}
+                                        disabled={true}
+                                    />
+                                </Col>
+                            </Row >
+                        </div >
+
+                        {!CostingViewMode &&
+                            <div className="col-sm-12 text-right px-0 mt-4">
+                                <button
+                                    type={'button'}
+                                    className="reset mr15 cancel-btn"
+                                    onClick={cancel} >
+                                    <div className={'cancel-icon'}></div> {'Cancel'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={onSubmit}
+                                    disabled={props.CostingViewMode || isDisable ? true : false}
+                                    className="submit-button save-btn">
+                                    <div className={'save-icon'}></div>
+                                    {'Save'}
+                                </button>
+                            </div>
+                        }
+
+                    </form >
+                </div >
+            </div >
+        </>
+    )
+}
+
+export default Pipe
