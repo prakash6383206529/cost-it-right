@@ -21,7 +21,7 @@ import { nonZero } from '../../../../../helper/validation'
 function IsolateReRender(control) {
     const values = useWatch({
         control,
-        name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength', 'endPieceAllowance'],
+        name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength', 'endPieceAllowance', 'partLengthWithAllowance'],
     });
 
     return values;
@@ -113,6 +113,7 @@ function Pipe(props) {
         Thickness: fields && fields[1],
         SheetLength: fields && fields[2],
         PartLength: fields && fields[3],
+        PartLengthWithAllowance: fields && fields[5],
     }
 
     const dispatch = useDispatch()
@@ -241,7 +242,8 @@ function Pipe(props) {
             setDataToSend(updatedValue)
         } else {
             const EndPieceAllowance = Number(getValues('endPieceAllowance'))
-            const NumberParts = checkForNull((fieldValues.SheetLength - EndPieceAllowance) / fieldValues.PartLength)
+            const PartLengthWithAllowance = Number(getValues('partLengthWithAllowance'))
+            const NumberParts = checkForNull((fieldValues.SheetLength - EndPieceAllowance) / PartLengthWithAllowance)
             setValue('NumberOfPartsPerSheet', parseInt(NumberParts))
             const updatedValue = dataToSend
             updatedValue.NumberOfPartsPerSheet = parseInt(NumberParts)
@@ -291,11 +293,11 @@ function Pipe(props) {
             Density: props.rmRowData.Density / 1000,
             OuterDiameter: getValues('OuterDiameter'),
             InnerDiameter: isSolidBar ? 0 : dataToSend.InnerDiameter,
-            PartLength: getValues('PartLength'),
+            PartLengthWithAllowance: getValues('partLengthWithAllowance'),
             ExtraVariable: '',
         }
         // const PartWeight = getWeightOfPart(data)
-        const PartWeight = getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.PartLength)
+        const PartWeight = getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.PartLengthWithAllowance)
         const updatedValue = dataToSend
         updatedValue.WeightofPart = PartWeight
         setDataToSend(updatedValue)
@@ -330,7 +332,7 @@ function Pipe(props) {
         const data = {
             OuterDiameter: getValues('OuterDiameter'),
             InnerDiameter: isSolidBar ? 0 : dataToSend.InnerDiameter,
-            PartLength: getValues('PartLength'),
+            PartLengthWithAllowance: getValues('partLengthWithAllowance'),
             ExtraVariable: '',
         }
         const NetSurfaceArea = getNetSurfaceArea(data)
@@ -348,7 +350,7 @@ function Pipe(props) {
         const data = {
             OuterDiameter: getValues('OuterDiameter'),
             InnerDiameter: isSolidBar ? 0 : dataToSend.InnerDiameter,
-            PartLength: getValues('PartLength'),
+            PartLengthWithAllowance: getValues('partLengthWithAllowance'),
             ExtraVariable: '',
         }
 
@@ -547,7 +549,9 @@ function Pipe(props) {
             <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}) * Length of {value})/1000</div>
         );
     }
-    const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part) + {isOneSide ? `(π ${isSolidBar ? '' : ' * Inner Diameter'} * Length of Part) +` : ''} (π / 2 * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}))</div>
+    const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part including allownace) +  {isOneSide && !isSolidBar ? '(π * Inner Diameter * Length of Part including allownace) +' : ''} (π / 2 * (Outer Diameter<sup>2</sup>{isSolidBar ? '' : ' - Inner Diameter'}{isSolidBar ? '' : <sup>2</sup>}))</div>
+    console.log('isOneSide: ', isOneSide);
+    console.log('!isSolidBar: ', !isSolidBar);
     return (
         <>
             <div className="user-page p-0">
@@ -712,9 +716,9 @@ function Pipe(props) {
                                     />
                                 </Col >
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part-with-allowance'} tooltipText="Length of Part inculding  allowance = (Length of Part + Cutting Allowance)" />
+                                    <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part-with-allowance'} tooltipText="Length of Part including  allowance = (Length of Part + Cutting Allowance)" />
                                     <TextFieldHookForm
-                                        label={`Length of Part inculding  allowance(mm)`}
+                                        label={`Length of Part including  allowance(mm)`}
                                         name={'partLengthWithAllowance'}
                                         Controller={Controller}
                                         control={control}
@@ -750,7 +754,7 @@ function Pipe(props) {
                                     />
                                 </Col >
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = ((Length(Sheet)-End Piece Allowance) / Length(Part))" />
+                                    <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = ((Length(Sheet)-End Piece Allowance) / Length of Part including allownace)" />
                                     <TextFieldHookForm
                                         label="No. of Parts/Sheet"
                                         name={'NumberOfPartsPerSheet'}
