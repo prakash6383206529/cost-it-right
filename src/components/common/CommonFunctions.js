@@ -183,7 +183,7 @@ export const getCostingTypeIdByCostingPermission = () => {
     return costingTypeId;
 }
 
-export const checkMasterCreateByCostingPermission = () => {
+export const checkMasterCreateByCostingPermission = (isBulkupload = false) => {
     const costingPermision = reactLocalStorage.getObject('CostingTypePermission');
     let count = 0;
     for (const key in costingPermision) {
@@ -195,7 +195,7 @@ export const checkMasterCreateByCostingPermission = () => {
         }
     }
     if (count === 0) {
-        Toaster.warning("You have not enough permission for creating this master.")
+        Toaster.warning(`You have not enough permission for ${isBulkupload ? 'uploading' : 'creating'} this master.`)
         return false;
     }
     return true;

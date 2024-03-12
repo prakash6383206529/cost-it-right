@@ -466,7 +466,9 @@ function BudgetListing(props) {
 
     }
     const BulkToggle = () => {
-        setBulkUploadBtn(true)
+        if (checkMasterCreateByCostingPermission(true)) {
+            setBulkUploadBtn(true)
+        }
     }
 
     const ExcelFile = ReactExport.ExcelFile;

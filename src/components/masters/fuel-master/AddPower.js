@@ -24,7 +24,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getClientSelectList, } from '../actions/Client';
 import TooltipCustom from '../../common/Tooltip';
@@ -108,6 +108,7 @@ class AddPower extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     if (!this.state.isViewMode) {
       this.props.getPowerTypeSelectList(() => { })
       this.props.getUOMSelectList(() => { })
@@ -1620,7 +1621,7 @@ class AddPower extends Component {
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
                               <Field
-                                label={`Net Cost/Unit (INR)`}
+                                label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"NetPowerCostPerUnit"}
                                 type="text"
                                 placeholder={isViewMode ? '-' : 'Enter'}
@@ -1689,7 +1690,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Demand Charges/kW (INR)`}
+                                    label={`Demand Charges/kW (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"DemandChargesPerKW"}
                                     type="text"
                                     placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
@@ -1765,7 +1766,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Max Demand Charges/kW (INR)`}
+                                    label={`Max Demand Charges/kW (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"MaxDemandChargesKW"}
                                     type="text"
                                     placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
@@ -1936,7 +1937,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Asset Cost (INR)`}
+                                    label={`Asset Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"AssetCost"}
                                     type="text"
                                     placeholder={isViewMode ? '-' : 'Enter'}
@@ -1953,7 +1954,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Annual Cost (INR)`}
+                                    label={`Annual Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"AnnualCost"}
                                     type="text"
                                     placeholder={isViewMode ? '-' : 'Enter'}
@@ -2119,7 +2120,7 @@ class AddPower extends Component {
                                 <thead>
                                   <tr>
                                     <th>{`Source`}</th>
-                                    <th>{`Cost/Unit (INR)`}</th>
+                                    <th>{`Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`Contribution (%)`}</th>
                                     <th>{`Contribution Value`}</th>
                                     <th>{`Action`}</th>

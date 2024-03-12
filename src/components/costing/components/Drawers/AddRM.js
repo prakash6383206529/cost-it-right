@@ -18,6 +18,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import _ from 'lodash';
 import { IsNFR } from '../CostingDetails';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const gridOptions = {};
 
 function AddRM(props) {
@@ -87,7 +88,7 @@ function AddRM(props) {
 
   const currencyFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue !== '-' ? cellValue : 'INR'
+    return cellValue !== '-' ? cellValue : reactLocalStorage.getObject("baseCurrency")
   }
 
   const priceFormatter = (props) => {

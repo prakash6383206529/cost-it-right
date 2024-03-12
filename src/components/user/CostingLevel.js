@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col } from 'reactstrap';
-import { getAllLevelMappingAPI } from '../../actions/auth/AuthActions';
+import { getAllLevelMappingAPI, manageLevelTabApi } from '../../actions/auth/AuthActions';
 import { EMPTY_DATA, } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import LoaderCustom from '../common/LoaderCustom';
@@ -31,29 +31,32 @@ const CostingLevelListing = (props) => {
         noData: false,
     });
     const permissions = useContext(ApplyPermission);
+    const { isCallApi } = useSelector((state) => state.auth)
     const dispatch = useDispatch();
+
     useEffect(() => {
-        getLevelsListData();
-    }, []);
-    useEffect(() => {
-        if (props.updateApi) {
-            getLevelsListData()
-        }
+        getLevelsListData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.updateApi]);
+    }, []);
+
+    useEffect(() => {
+        if (isCallApi === true)
+            setTimeout(() => {
+                getLevelsListData();
+            }, 100);
+    }, [isCallApi]);
     const getLevelsListData = () => {
         setState((prevState) => ({ ...prevState, isLoader: true }))
         dispatch(getAllLevelMappingAPI(res => {
             setState((prevState) => ({ ...prevState, isLoader: false }))
             if (res.status === 204 && res.data === '') {
                 setState((prevState) => ({ ...prevState, tableData: [], }))
-            } else if (res && res.data && res.data.DataList) {
+            } else {
+                dispatch(manageLevelTabApi(false))
                 let Data = res.data.DataList;
                 setState((prevState) => ({
                     ...prevState, tableData: Data,
                 }))
-            } else {
-
             }
         }));
     }
@@ -139,7 +142,7 @@ const CostingLevelListing = (props) => {
                                     floatingFilter={true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={state.tableData}
+                                    rowData={state.tableData ?? []}
                                     pagination={true}
                                     paginationPageSize={defaultPageSize}
                                     onGridReady={onGridReady}
@@ -148,12 +151,15 @@ const CostingLevelListing = (props) => {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     onFilterModified={(e) => {
-                                        // setTimeout(() => {
-                                        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
-                                        // }, 500);
+                                        if (state.tableData.length !== 0) {
+                                            setTimeout(() => {
+                                                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
+                                            }, 50);
+                                        }
                                     }}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}

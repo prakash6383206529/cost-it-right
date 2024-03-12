@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { ViewCostingContext } from "../../CostingDetails";
 import NoContentFound from "../../../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../../../config/constants";
+import { reactLocalStorage } from "reactjs-localstorage";
 
 const OtherCostTable = (props) => {
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -63,7 +64,7 @@ const OtherCostTable = (props) => {
                     ) : (
                         <tr className='table-footer'>
                             <td colSpan={initialConfiguration.IsShowCRMHead ? 4 : 3} className='text-right'>
-                                Total Other Cost (INR):
+                                Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):
                             </td>
                             <td colSpan={3}>
                                 {checkForDecimalAndNull(otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}

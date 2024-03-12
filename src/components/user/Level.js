@@ -7,7 +7,7 @@ import { renderText, searchableSelect } from "../layout/FormInputs";
 import {
   addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI, setEmptyLevelAPI, setApprovalLevelForTechnology, getAllTechnologyAPI,
   getLevelMappingAPI, updateLevelMappingAPI, getSimulationTechnologySelectList, addSimulationLevel, updateSimulationLevel, getSimulationLevel, getMastersSelectList,
-  addMasterLevel, updateMasterLevel, getMasterLevel, addOnboardingLevel, updateOnboardingLevel, getOnboardingLevel
+  addMasterLevel, updateMasterLevel, getMasterLevel, addOnboardingLevel, updateOnboardingLevel, getOnboardingLevel, manageLevelTabApi
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
@@ -45,7 +45,7 @@ class Level extends Component {
   * @description used to called after mounting component
   */
   componentDidMount() {
-
+    this.setState({ levelType: this.props.activeTab === '1' ? "Costing" : this.props.activeTab === '2' ? "Simulation" : this.props.activeTab === '3' ? "Master" : "Onboarding" })
     this.props.getApprovalTypeSelectList(() => { })
     if (this.props.isEditFlag) {
       this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
@@ -234,6 +234,7 @@ class Level extends Component {
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && this.state.levelType === 'Master') return false
         if (item.Text === CUSTOMER_BASED && !(reactLocalStorage.getObject('CostingTypePermission').cbc)) return false
         if (this.state.levelType === 'Onboarding' && Number(item.Value) !== VENDORNEEDFORMID) return false;
+        if ((this.state.levelType === 'Simulation' || this.state.levelType === 'Master' || this.state.levelType === 'Costing') && Number(item.Value) === VENDORNEEDFORMID) return true
         const transformedText = transformApprovalItem(item);
         temp.push({ label: transformedText, value: item.Value });
 
@@ -439,6 +440,7 @@ class Level extends Component {
                 level: [],
               })
               this.toggleDrawer('', this.state.levelType, true)
+              this.props.manageLevelTabApi(true)
             }
           })
         }
@@ -462,11 +464,13 @@ class Level extends Component {
               Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
             }
             this.toggleDrawer('', this.state.levelType)
+            this.props.manageLevelTabApi(true)
             reset();
 
           })
         }
         if (this.state.levelType === 'Master') {
+          // this.props.manageLevelTabApi(true)
           // UPDATE SIMULATION LEVEL
           let formReq = {
             MasterId: technology.value,
@@ -485,6 +489,7 @@ class Level extends Component {
               Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
             }
             this.toggleDrawer('', this.state.levelType)
+            this.props.manageLevelTabApi(true)
             reset();
           })
         }
@@ -507,6 +512,7 @@ class Level extends Component {
               Toaster.success(MESSAGES.UPDATE_LEVEL_ONBOARDING_USER_SUCCESSFULLY)
             }
             this.toggleDrawer('', this.state.levelType)
+            this.props.manageLevelTabApi(true)
             reset();
           })
         }
@@ -532,6 +538,7 @@ class Level extends Component {
               level: [],
             })
             this.toggleDrawer('', this.state.levelType)
+            this.props.manageLevelTabApi(true)
           })
         }
 
@@ -548,6 +555,7 @@ class Level extends Component {
               level: [],
             })
             this.toggleDrawer('', this.state.levelType)
+            this.props.manageLevelTabApi(true)
           })
         }
         if (this.state.levelType === 'Master') {
@@ -569,6 +577,7 @@ class Level extends Component {
               level: [],
             })
             this.toggleDrawer('', this.state.levelType)
+            this.props.manageLevelTabApi(true)
           })
         }
         if (this.state.levelType === 'Onboarding') {
@@ -589,6 +598,7 @@ class Level extends Component {
               level: [],
             })
             this.toggleDrawer('', this.state.levelType)
+            this.props.manageLevelTabApi(true)
           })
         }
       }
@@ -811,14 +821,6 @@ class Level extends Component {
 
               </form >
             </div >
-            {/* <LevelsListing
-                    onRef={ref => (this.child = ref)}
-                    getLevelDetail={this.getLevelDetail} />
-
-                <LevelTechnologyListing
-                    onRef={ref => (this.childMapping = ref)}
-                    getLevelMappingDetails={this.getLevelMappingDetails}
-                /> */}
           </Container >
         </Drawer >
       </div >
@@ -868,7 +870,8 @@ export default connect(mapStateToProps, {
   getApprovalTypeSelectList,
   addOnboardingLevel,
   updateOnboardingLevel,
-  getOnboardingLevel
+  getOnboardingLevel,
+  manageLevelTabApi
 })(reduxForm({
   form: 'Level',
   enableReinitialize: true,

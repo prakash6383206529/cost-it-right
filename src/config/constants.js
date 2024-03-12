@@ -754,7 +754,8 @@ export const API = {
   approvalPushed: `${BASE_URL}/app-approval-system/approval-pushed`,
   getSelectedCostingStatusList: `${BASE_URL}/app-approval-system/get-all-approval-status`,
   createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
-  approvalPushedOnSap: `${BASE_URL}/app-approval-system/approval-pushed-on-sap`,
+  approvalPushedOnSap: `${BASE_URL}/ExternalIntegration/create-push-pir-data-request-and-push-pir-data-on-sap`,
+  checkSAPPoPrice: `${BASE_URL}/ExternalIntegration/check-sap-po-price`,
 
 
   // ApproveReject Drawer final approver
@@ -951,8 +952,6 @@ export const API = {
   saveSimulationForRawMaterial: `${BASE_URL}/simulation/save-simulation-for-raw-material`,
   getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,
   deleteDraftSimulation: `${BASE_URL}/simulation/delete-draft-simulation`,
-  getAmmendentStatus: `${BASE_URL}/sap-integration/get-ammendent-status`,          						//RE
-  // getAmmendentStatus: `${BASE_URL}/sap-sync/get-ammendent-status`, //MINDA
   draftExchangeRateSimulation: `${BASE_URL}/simulation/draft-simulation-exchange-rate`,
   getverifyExchangeSimulationList: `${BASE_URL}/simulation/get-all-exchange-rate-impacted-simulation-costings`,
   runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
@@ -994,7 +993,7 @@ export const API = {
   draftProfitSimulation: `${BASE_URL}/simulation/draft-simulation-profit`,
   getTokenSelectListAPI: `${BASE_URL}/simulation/select-list-get-draft-token-number-by-technologyId`,
   getListingForSimulationCombined: `${BASE_URL}/simulation/get-master-details-by-token-number`,
-  getAmmendentStatus: `${BASE_URL}/simulation/get-ammendent-status`,             //THIS IS DUMMY API, IT WILL BE REPLACE FROM REAL API IN FUTURE
+  getAmmendentStatus: `${BASE_URL}/ExternalIntegration/get-ammendent-status`,
   getMasterSelectListSimulation: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master-with-permission`,
   getAllSimulationBoughtOutPart: `${BASE_URL}/simulation/get-all-simulation-bought-out-part`,
 
@@ -1013,7 +1012,6 @@ export const API = {
   simulationReject: `${BASE_URL}/app-simulation-approval-system/rejected-simulated-costing-by-approver`,
   simulationSendToApprover: `${BASE_URL}/app-simulation-approval-system/simulation-send-to-approver-by-sender`,
   simulationComparisionData: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-comparison`,
-  simualtionPush: `${BASE_URL}/sap-integration/insert-ammendent-data`,          						//RE
   getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
   simulationUploadFileByCategory: `${BASE_URL}/simulation/simulation-file-upload-with-form-data`,          						//RE
   simulationUploadFtp: `${BASE_URL}/simulation/simulation-file-upload-on-ftp`,          						//RE
@@ -1648,6 +1646,7 @@ export const GET_MASTER_SELECT_LIST = 'GET_MASTER_SELECT_LIST'
 export const MASTER_LEVEL_DATALIST_API = 'MASTER_LEVEL_DATALIST_API'
 export const ONBOARDING_LEVEL_DATALIST_API = 'ONBOARDING_LEVEL_DATALIST_API'
 export const ONBOARDING_LEVEL_API = 'ONBOARDING_LEVEL_API'
+export const MANAGE_LEVEL_TAB_API = 'MANAGE_LEVEL_TAB_API'
 
 //DEPARTMENT
 export const GET_DEPARTMENT_SUCCESS = 'GET_DEPARTMENT_SUCCESS'
@@ -2152,7 +2151,7 @@ export const VIEW_COSTING_DATA = {
   BasicRate: 'Basic Price',
   npvCost: 'Net NPV Cost',
   conditionCost: 'Net Costing Condition',
-  nPOPrice: 'Net Cost (INR)',
+  nPOPrice: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   currencyTitle: 'Currency',
   // currencyRate: 'Currency Rate',
   nPoPriceCurrency: 'Net Cost (In Currency)',
@@ -2452,7 +2451,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'conditionCost'
   },
   {
-    label: 'Net Cost (INR)',
+    label: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
     value: 'nPOPrice'
   },
   {
@@ -2491,7 +2490,7 @@ export const VIEW_COSTING_DATA_LOGISTICS = {
   RevisionNumber: 'Revision Number',
   plantExcel: 'Plant (Code)',
   nPackagingAndFreight: 'Net Freight',
-  nPOPrice: 'Net Cost (INR)',
+  nPOPrice: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   currencyTitle: 'Currency',
   nPoPriceCurrency: 'Net Cost (In Currency)',
   remark: 'Remarks',
@@ -2898,7 +2897,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.1.320";
+export const VERSION = "V2.1.326";
 
 
 
