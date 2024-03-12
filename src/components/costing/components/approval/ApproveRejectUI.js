@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { getReasonSelectList } from '../../../costing/actions/Approval'
-import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
+import { TextAreaHookForm, SearchableSelectHookForm, AllApprovalField } from '../../../layout/HookFormInputs'
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { FILE_URL, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
@@ -34,6 +34,7 @@ function ApproveRejectUI(props) {
   const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId } = props
 
   const { TokensList } = useSelector(state => state.simulation)
+  const { initialConfiguration } = useSelector(state => state.auth)
 
   const { register, control, formState: { errors }, setValue, handleSubmit, getValues } = useForm({
     mode: 'onChange', reValidateMode: 'onChange',
@@ -363,21 +364,28 @@ function ApproveRejectUI(props) {
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
-                      <SearchableSelectHookForm
-                        label={'Approver'}
-                        name={'approver'}
-                        placeholder={'Select'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        //defaultValue={isEditFlag ? plantName : ''}
-                        options={approvalDropDown}
-                        mandatory={true}
-                        handleChange={handleApproverChange}
-                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
-                        errors={errors.approver}
-                      />
+                      {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                        <AllApprovalField
+                          label="Approver"
+                          approverList={approvalDropDown}
+                          popupButton="View all"
+                        />
+                      </> :
+                        <SearchableSelectHookForm
+                          label={'Approver'}
+                          name={'approver'}
+                          placeholder={'Select'}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          //defaultValue={isEditFlag ? plantName : ''}
+                          options={approvalDropDown}
+                          mandatory={true}
+                          handleChange={handleApproverChange}
+                          disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
+                          errors={errors.approver}
+                        />}
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `This user is not in the approval cycle for the ${getValues('ApprovalType')} approval type. Please contact the admin to add an approver for the ${getValues('ApprovalType')} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`} />}
                     </div>
                   </>
@@ -404,21 +412,28 @@ function ApproveRejectUI(props) {
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
-                      <SearchableSelectHookForm
-                        label={'Approver'}
-                        name={'approver'}
-                        placeholder={'Select'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        //defaultValue={isEditFlag ? plantName : ''}
-                        options={approvalDropDown}
-                        mandatory={true}
-                        handleChange={handleApproverChange}
-                        errors={errors.approver}
-                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
-                      />
+                      {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                        <AllApprovalField
+                          label="Approver"
+                          approverList={approvalDropDown}
+                          popupButton="View all"
+                        />
+                      </> :
+                        <SearchableSelectHookForm
+                          label={'Approver'}
+                          name={'approver'}
+                          placeholder={'Select'}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          //defaultValue={isEditFlag ? plantName : ''}
+                          options={approvalDropDown}
+                          mandatory={true}
+                          handleChange={handleApproverChange}
+                          errors={errors.approver}
+                          disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
+                        />}
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `This user is not in approval cycle for ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'} approval type, Please contact admin to add approver for ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
                     {

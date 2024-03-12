@@ -1,3 +1,4 @@
+@import "../../assests/scss/abstracts/variable";
 $input-form-group-width: 100%;
 
 .input-form-group {
@@ -57,4 +58,30 @@ form {
     padding-left: 3px !important;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+}
+
+.approval-container {
+    position: relative;
+
+    .view-btn {
+        position: absolute;
+        right: 3px;
+        top: 6px;
+        background-color: transparent;
+        color: $colorPrimary;
+        border: 0px solid transparent;
+
+        &:focus {
+            border: none !important;
+            box-shadow: none !important;
+        }
+    }
+}
+
+.view-all-list {
+    li {
+        color: $headinlightgblack;
+        font-weight: 600;
+        font-size: 14px;
+    }
 }

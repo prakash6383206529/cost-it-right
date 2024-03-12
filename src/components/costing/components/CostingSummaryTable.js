@@ -1079,6 +1079,7 @@ const CostingSummaryTable = (props) => {
               obj.TechnologyId = partInfo.TechnologyId
               obj.Mode = 'costing'
               obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+              obj.plantId = viewCostingData[index]?.costingTypeId === ZBCTypeId ? viewCostingData[index]?.plantId : viewCostingData[index]?.destinationPlantId
               dispatch(checkFinalUser(obj, res => {
                 if (res?.data?.Result) {
                   setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
