@@ -488,26 +488,6 @@ export function getComparisionSimulationData(data, callback) {
     }
 }
 
-export function pushAPI(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.simualtionPush, data, config())
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response)
-            } else {
-                dispatch({ type: API_FAILURE })
-                if (response.data.Message) {
-                    Toaster.error(response.data.Message)
-                }
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE })
-            apiErrors(error)
-        })
-    }
-}
-
-
 export function getSimulationStatus(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
@@ -836,26 +816,6 @@ export function getCombinedProcessCostingSimulationList(token, callback) {
     }
 }
 
-
-export function sapPushedInitialMoment(simulationId, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.sapPushedInitialMoment}?simulationId=${simulationId}`, config());
-        request.then((response) => {
-            // if (response.data.Result) {
-            //     dispatch({
-            //         type: GET_COSTING_SIMULATION_LIST,
-            //         payload: response.data.Data.SimulatedCostingList
-            //     })
-            // }
-            callback(response)
-            // apiErrors(response)
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            callback(error)
-            apiErrors(error);
-        })
-    }
-}
 export function getImpactedMasterData(simulationId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
@@ -1459,9 +1419,7 @@ export function setTokenForSimulation(value) {
 // START----> FOR SHOWING ERROR AND SUCCESS MESSAGE WITH BOX IN SIMULATION APPROVAL SUMMARY AND COSTING APPROVAL SUMMARY ****THIS IS THE DUMMY API CALL FOR CONSISTANCY IT WILL USE IN FUTURE
 export function getAmmendentStatus(params, callback) {
     return (dispatch) => {
-        // const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
-        const queryParameter = `${params.approvalTokenNumber}`;
-        const request = axios.get(`${API.getAmmendentStatus}?tokenNumber=${queryParameter}`, config())
+        const request = axios.get(`${API.getAmmendentStatus}?TokenNumber=${params?.TokenNumber}&CostingId=${params?.CostingId}`, config())
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -1766,5 +1724,22 @@ export function emptyCostingSimulationList(callback) {
             payload: []
         })
         callback([])
+    }
+}
+
+/**
+ * @method checkSAPPoPrice
+ * @description check SAP Po Price
+ */
+export function checkSAPPoPrice(simulationId, costingId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.checkSAPPoPrice}?simulationId=${simulationId}&costingId=${costingId}`, config());
+        request.then((response) => {
+            callback(response)
+        }).catch((error) => {
+            callback(error)
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
     }
 }

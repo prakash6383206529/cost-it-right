@@ -19,12 +19,12 @@
 // }
 
 .Add {
-    @include icons("../../images/Group 8861.svg");
+    @include icons("../../images/Add-file.svg");
     @include extra-icon-styles;
 }
 
 .Edit {
-    @include icons("../../images/Group 8860.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
+    @include icons("../../images/edit-icon.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
     @include extra-icon-styles;
 }
 
@@ -108,7 +108,7 @@
 }
 
 .Download {
-    @include icons("../../images/Group 8859.svg");
+    @include icons("../../images/Download.svg");
     @include extra-icon-styles;
 }
 
@@ -188,11 +188,11 @@
 }
 
 .plus-icon {
-    @include icons("../../images/Group 10491.svg", 22px, 22px);
+    @include icons("../../images/plus-icon-secondary.svg", 22px, 22px);
 }
 
 .plus {
-    @include icons("../../images/Path 15286.svg", 12px, 12px);
+    @include icons("../../images/plus-icon.svg", 12px, 12px);
 }
 
 .swap {
@@ -208,35 +208,35 @@
 }
 
 .minus-icon {
-    @include icons("../../images/Group 10490.svg", 22px, 22px);
+    @include icons("../../images/minus-icon.svg", 22px, 22px);
 }
 
 .Add-icon {
-    @include icons("../../images/Group 10401.svg", 72px, 20px);
+    @include icons("../../images/add-icon.svg", 72px, 20px);
 }
 
 // nowhere use this icon
 
 .Edit-icon {
-    @include icons("../../images/Group 10396.svg", 72px, 20px);
+    @include icons("../../images/edit-icon-secondary.svg", 72px, 20px);
 }
 
 // nowhere use this icon
 
 .Delete-icon {
-    @include icons("../../images/Group 10398.svg", 72px, 20px);
+    @include icons("../../images/delete-icon.svg", 72px, 20px);
 }
 
 // nowhere use this icon
 
 .View-icon {
-    @include icons("../../images/Group 10399.svg", 72px, 20px);
+    @include icons("../../images/view-icon.svg", 72px, 20px);
 }
 
 // nowhere use this icon
 
 .Download-icon {
-    @include icons("../../images/Group 10400.svg", 72px, 20px);
+    @include icons("../../images/download-icon.svg", 72px, 20px);
 }
 
 // nowhere use this icon
@@ -420,7 +420,7 @@
 }
 
 .zoom-in-hover {
-    @include icons("../../images/Path 15286.svg", 10px, 10px)
+    @include icons("../../images/plus-icon.svg", 10px, 10px)
 }
 
 .zoom-in {

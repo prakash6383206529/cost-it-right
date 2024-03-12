@@ -385,46 +385,20 @@ function ApprovalSummary(props) {
   }
 
   const callPushAPI = debounce(() => {
-    let pushdata = {
-      effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
-      vendorCode: vendorCodeForSap,
-      materialNumber: dataSend[1].PartNumber,
-      netPrice: dataSend[0].NewPOPrice,
-      plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
-      currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
-      materialGroup: '',
-      taxCode: 'YW',
-      basicUOM: "NO",
-      purchasingGroup: '',
-      purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
-      CostingId: approvalData.CostingId,
-      DecimalOption: approvalData.DecimalOption,
-      InfoToConditions: conditionInfo,
-      TokenNumber: approvalData?.ApprovalNumber
-      // effectiveDate: '11/30/2021',
-      // vendorCode: '203670',
-      // materialNumber: 'S07004-003A0Y',
-      // materialGroup: 'M089',
-      // taxCode: 'YW',
-      // plant: '1401',
-      // netPrice: '30.00',
-      // currencyKey: 'INR',
-      // basicUOM: 'NO',
-      // purchasingOrg: 'MRPL',
-      // purchasingGroup: 'O02'
-
+    let obj = {
+      "BaseCositngId": approvalData.CostingId,
+      "LoggedInUserId": loggedInUserId(),
+      "SimulationId": null,
+      "BoughtOutPartId": null,
     }
-    //MINDA
-    // let obj = {
-    //   LoggedInUserId: loggedInUserId(),
-    //   Request: [pushdata]
-    // }
-    // dispatch(approvalPushedOnSap(obj, res => {
-    //   if (res && res.status && (res.status === 200 || res.status === 204)) {
-    //     Toaster.success('Approval pushed successfully.')
-    //   }
-    // }))
-    setShowListing(true)
+    dispatch(approvalPushedOnSap(obj, (res) => {
+      if (res?.data?.DataList && res?.data?.DataList[0]?.IsPushed === false) {
+        Toaster.error(res?.data?.DataList[0]?.Message)
+      } else if (res?.data?.Result) {
+        Toaster.success('Approval pushed successfully.')
+      }
+      setShowListing(true)
+    }))
 
   }, 500)
 
@@ -523,7 +497,7 @@ function ApprovalSummary(props) {
         showListing === false &&
         <>
           {isLoader && <LoaderCustom />}
-          {getConfigurationKey()?.IsSAPConfigured && <ErrorMessage approvalNumber={approvalNumber} isCosting={true} />}
+          {getConfigurationKey()?.IsSAPConfigured && approvalData?.CostingId && <ErrorMessage isCosting={true} CostingId={approvalData?.CostingId} />}
           <div className="container-fluid approval-summary-page">
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
@@ -852,7 +826,7 @@ function ApprovalSummary(props) {
             </Row >
           }
           {/* MINDA */}
-          {/* {
+          {initialConfiguration?.IsSAPConfigured &&
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right bluefooter-butn">
                 <Fragment>
@@ -876,7 +850,7 @@ function ApprovalSummary(props) {
                 </Fragment>
               </div>
             </Row>
-          } */}
+          }
 
 
 

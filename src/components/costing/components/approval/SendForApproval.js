@@ -7,7 +7,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, approvalRequestByApprove } from '../../actions/Approval'
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper/auth'
-import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkHistoryCostingAndSAPPoPrice, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
+import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails } from '../../../../helper'
@@ -29,10 +29,11 @@ import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { transformApprovalItem } from '../../../common/CommonFunctions'
+import { checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
-  const { isApprovalisting, selectedRows, mandatoryRemark, dataSelected } = props
+  const { isApprovalisting, selectedRows, mandatoryRemark, dataSelected, callSapCheckAPI } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -80,6 +81,8 @@ const SendForApproval = (props) => {
   const [technologyLevelsList, setTechnologyLevelsList] = useState({});
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
   const [costingIdArray, setCostingIdArray] = useState([])
+  const [isDisableSubmit, setIsDisableSubmit] = useState(false)
+  const [count, setCount] = useState(0)
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList) => {
 
@@ -212,6 +215,26 @@ const SendForApproval = (props) => {
     requestObject.CostingId = requestArray
     setCostingIdArray(requestObject)
   }, [])
+
+  useEffect(() => {
+    if (initialConfiguration?.IsSAPConfigured && viewApprovalData && viewApprovalData?.length === 1 && count === 0 && callSapCheckAPI === true) {//&& !isSimulationApprovalListing
+      setIsLoader(true)
+      dispatch(checkSAPPoPrice('', viewApprovalData[0]?.costingId, res => {
+        setCount(count + 1)
+        let status = 200
+        if ('response' in res) {
+
+          status = res && res?.response?.status
+        }
+        if (status !== undefined && status === 200) {
+          setIsDisableSubmit(false)
+        } else {
+          setIsDisableSubmit(true)
+        }
+        setIsLoader(false)
+      }))
+    }
+  }, [viewApprovalData])
 
   /**
    * @method renderDropdownListing
@@ -1321,7 +1344,7 @@ const SendForApproval = (props) => {
                       type="button"
                       // className="submit-button save-btn"
                       // disabled={(isDisable || isFinalApproverShow)}
-                      disabled={isDisable}
+                      disabled={isDisable || isDisableSubmit}
                       onClick={onSubmit}
                     >
                       <div className={'save-icon'}></div>

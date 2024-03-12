@@ -10,6 +10,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import LoaderCustom from '../../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { CUSTOMER_POAM_IMPACT_EXCEL_TEMPLATE } from '../../ExcelTemplate';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -221,8 +222,8 @@ function CustomerPoamImpact(props) {
                                                 {<AgGridColumn field="DispatchQuantity" headerName="Dispatch Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="FromDate" headerName="Old Effective Date" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="ToDate" headerName="New Effective Date" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="OldRate" headerName="Old Rate (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="NewRate" headerName="New Rate (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="OldRate" headerName={`Old Rate (${reactLocalStorage.getObject("baseCurrency")})`} width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="NewRate" headerName={`New Rate (${reactLocalStorage.getObject("baseCurrency")})`} width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="Variance" headerName="Variance" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="Impact" headerName="Impact" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                             </AgGridReact>

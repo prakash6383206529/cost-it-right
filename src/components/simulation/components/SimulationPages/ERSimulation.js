@@ -26,6 +26,7 @@ import WarningMessage from '../../../common/WarningMessage';
 import DatePicker from "react-datepicker";
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 import TooltipCustom from '../../../common/Tooltip';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -403,9 +404,9 @@ function ERSimulation(props) {
                                             <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={190}></AgGridColumn>
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' headerName="Part No" minWidth={190}></AgGridColumn>}
-                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="BankRate" editable='false' headerName={`Bank Rate(${reactLocalStorage.getObject("baseCurrency")})`} minWidth={190}></AgGridColumn>
                                             <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission %" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="CustomRate" editable='false' headerName={`Custom Rate(${reactLocalStorage.getObject("baseCurrency")})`} minWidth={190}></AgGridColumn>
 
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate" marryChildren={true} >
                                                 <AgGridColumn width={120} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
@@ -413,8 +414,8 @@ function ERSimulation(props) {
                                             </AgGridColumn>}
 
                                             {isImpactedMaster && <>
-                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Existing Exchange Rate(INR)" minWidth={190}></AgGridColumn>
-                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="Revised Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(${reactLocalStorage.getObject("baseCurrency")})`} minWidth={190}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(${reactLocalStorage.getObject("baseCurrency")}) `} minWidth={190}></AgGridColumn>
                                             </>}
                                             {props.children}
                                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>

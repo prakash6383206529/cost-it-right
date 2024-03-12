@@ -5,7 +5,7 @@ import { getAllApprovalUserFilterByDepartment, getReasonSelectList, } from '../.
 import { formatRMSimulationObject, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { BOPIMPORT, EMPTY_GUID, EXCHNAGERATE, RMIMPORT } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList } from '../../../simulation/actions/Simulation'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import { debounce } from 'lodash'
 import "react-datepicker/dist/react-datepicker.css";
@@ -51,6 +51,7 @@ function SimulationApproveReject(props) {
   const [finalLevelUser, setFinalLevelUser] = useState(false);
   const [showMessage, setShowMessage] = useState()
   const [disableReleaseStrategy, setDisableReleaseStrategy] = useState(false)
+  const [isDisableSubmit, setIsDisableSubmit] = useState(false)                     //RE
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -115,6 +116,35 @@ function SimulationApproveReject(props) {
       setTokenDropdown(false)
     }
   }, [])
+
+  useEffect(() => {
+    //THIS OBJ IS FOR SAVE SIMULATION
+    if (initialConfiguration?.IsSAPConfigured && type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
+      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
+
+      //THIS CONDITION IS FOR SAVE SIMULATION
+      dispatch(saveSimulationForRawMaterial(simObj, res => {
+        if (res?.data?.Result) {
+          Toaster.success('Simulation has been saved successfully')
+          setLoader(true)
+          dispatch(checkSAPPoPrice(simulationDetail?.SimulationId, '', res => {
+            let status = 200
+            if ('response' in res) {
+
+              status = res && res?.response?.status
+            }
+
+            if (status !== undefined && status === 200) {
+              setIsDisableSubmit(false)
+            } else {
+              setIsDisableSubmit(true)
+            }
+            setLoader(false)
+          }))
+        }
+      }))
+    }
+  }, [simulationDetail])
 
   const callbackSetDataInFields = (obj) => {
     setDataInFields(obj)
@@ -546,6 +576,7 @@ function SimulationApproveReject(props) {
         disableReleaseStrategy={disableReleaseStrategy}
         fileDataCallback={fileDataCallback}
         isSimulationApprovalListing={props?.isSimulationApprovalListing}
+        isDisableSubmit={isDisableSubmit}
       />
 
       {

@@ -117,6 +117,7 @@ function CostingDetails(props) {
   const costingMode = useSelector(state => state.costing.costingMode);
   const [addVendorsTourStep, setAddVendorsTourStep] = useState([])
   const [createCostingTourSteps, setCreateCostingTourSteps] = useState([])
+  const [disableButton, setDisableButton] = useState(false)
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(props?.isNFR ? props?.isViewModeCosting : false)
@@ -173,7 +174,9 @@ function CostingDetails(props) {
       }))
 
     }
+    setDisableButton(false)
     return () => {
+      setDisableButton(false)
       reactLocalStorage.setObject('PartData', [])
     }
   }, [])
@@ -273,7 +276,7 @@ function CostingDetails(props) {
             setValue('ECNNumber', Data.ECNNumber)
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
-            setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice))
+            setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice))
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
             setPartType({ label: Data.PartType, value: Data.PartTypeId })
 
@@ -429,7 +432,7 @@ function CostingDetails(props) {
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
-              setValue('ShareOfBusiness', Data?.Price !== null ? checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice) : '')
+              setValue('ShareOfBusiness', Data?.Price !== null ? checkForDecimalAndNull(Data.Price, initialConfiguration?.NoOfDecimalForPrice) : '')
               setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
               //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
@@ -834,6 +837,7 @@ function CostingDetails(props) {
     //nextToggle()
     setCostingOptionsSelectedObject({})
     setIsCopyCostingDrawer(false)
+    setDisableButton(false)
     dispatch(getBriefCostingById('', (res) => { }))
 
     if (type === ZBCTypeId) {
@@ -1109,8 +1113,9 @@ function CostingDetails(props) {
           }
 
           if (IdForMultiTechnology.includes(String(technology?.value)) || (type === WACTypeId)) {
+            setDisableButton(true)
             dispatch(createMultiTechnologyCosting(data, (res) => {
-              if (res.data.Result) {
+              if (res?.data?.Result) {
                 dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
                   setIsCostingViewMode(false)
                   setIsCostingEditMode(false)
@@ -1120,11 +1125,14 @@ function CostingDetails(props) {
                 }))
                 setPartInfo(res.data.Data)
                 setCostingData({ costingId: res.data.Data.CostingId, type })
+              } else {
+                setDisableButton(false)
               }
             }))
           } else {
+            setDisableButton(true)
             dispatch(createCosting(data, (res) => {
-              if (res.data.Result) {
+              if (res?.data?.Result) {
                 dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
                   setIsCostingViewMode(false)
                   setIsCostingEditMode(false)
@@ -1134,6 +1142,8 @@ function CostingDetails(props) {
                 }))
                 setPartInfo(res.data.Data)
                 setCostingData({ costingId: res.data.Data.CostingId, type })
+              } else {
+                setDisableButton(false)
               }
             }))
           }
@@ -1254,7 +1264,9 @@ function CostingDetails(props) {
     if (type === ZBCTypeId) {
       let tempData = zbcPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
+      setDisableButton(true)
       dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
+        setDisableButton(false)
         dispatch(setCostingEffectiveDate(res?.data?.Data?.EffectiveDate !== null ? DayTime(res?.data?.Data?.EffectiveDate).format('YYYY-MM-DD') : null))
         setTimeout(() => {
           setStepTwo(true)
@@ -1266,7 +1278,9 @@ function CostingDetails(props) {
     if (type === WACTypeId) {
       let tempData = wacPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
+      setDisableButton(true)
       dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
+        setDisableButton(false)
         dispatch(setCostingEffectiveDate(res?.data?.Data?.EffectiveDate !== null ? DayTime(res?.data?.Data?.EffectiveDate).format('YYYY-MM-DD') : null))
         setTimeout(() => {
           setStepTwo(true)
@@ -1278,20 +1292,28 @@ function CostingDetails(props) {
     if (type === VBCTypeId) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
+      setDisableButton(true)
       dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
-        dispatch(setCostingEffectiveDate(res?.data?.Data?.EffectiveDate !== null ? DayTime(res?.data?.Data?.EffectiveDate).format('YYYY-MM-DD') : null))
+        if (res && res?.data?.Result) {
+          setDisableButton(false)
+          dispatch(setCostingEffectiveDate(res?.data?.Data?.EffectiveDate !== null ? DayTime(res?.data?.Data?.EffectiveDate).format('YYYY-MM-DD') : null))
 
-        setTimeout(() => {
-          setStepTwo(true)
-          setStepOne(false)
-        }, 500)
+          setTimeout(() => {
+            setStepTwo(true)
+            setStepOne(false)
+          }, 500)
+        } else {
+          setDisableButton(false)
+        }
       }))
     }
 
     if (type === NCCTypeId) {
       let tempData = nccGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
+      setDisableButton(true)
       dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
+        setDisableButton(false)
         dispatch(setCostingEffectiveDate(res?.data?.Data?.EffectiveDate !== null ? DayTime(res?.data?.Data?.EffectiveDate).format('YYYY-MM-DD') : null))
         setTimeout(() => {
           setStepTwo(true)
@@ -1302,7 +1324,9 @@ function CostingDetails(props) {
     if (type === CBCTypeId) {
       let tempData = cbcGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
+      setDisableButton(true)
       dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
+        setDisableButton(false)
         dispatch(setCostingEffectiveDate(res?.data?.Data?.EffectiveDate !== null ? DayTime(res?.data?.Data?.EffectiveDate).format('YYYY-MM-DD') : null))
         setTimeout(() => {
           setStepTwo(true)
@@ -1334,6 +1358,7 @@ function CostingDetails(props) {
     } else {
 
       /*Copy Costing Drawer code here*/
+      setDisableButton(true)
       setIsCostingViewMode(false)
       setIsCostingEditMode(false)
       setIsCopyCostingDrawer(true)
@@ -1404,7 +1429,7 @@ function CostingDetails(props) {
    */
   const deleteCosting = (Item, index, type) => {
     let reqData = { Id: Item.CostingId, UserId: loggedInUserId() }
-    dispatch(deleteDraftCosting(reqData, () => {
+    dispatch(deleteDraftCosting(reqData, (res) => {
       setIsCostingViewMode(false)
       setIsCostingEditMode(false)
       setIsCopyCostingMode(false)
@@ -1582,6 +1607,7 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
+    setDisableButton(false)
     if (props?.nfrData?.isNFR) {
       // CODE FIR BACK BUTTON
       setNFRListing(true)
@@ -2443,15 +2469,15 @@ function CostingDetails(props) {
                                                   {item.DisplayStatus}
                                                 </div>
                                               </td>
-                                              <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
+                                              <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey()?.NoOfDecimalForPrice) : 0}</td>
                                               <td style={{ width: "250px" }}>
                                                 <div className='action-btn-wrapper pr-2'>
-                                                  {AddAccessibility && actionPermission.addZBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBCTypeId)} />}
-                                                  {ViewAccessibility && actionPermission.viewZBC && !item.IsNewCosting && item.Status !== '-' && (<button className="View " type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBCTypeId)} />)}
-                                                  {EditAccessibility && actionPermission.editZBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit " type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBCTypeId)} />)}
-                                                  {CopyAccessibility && actionPermission.copyZBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All " type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBCTypeId)} />)}
-                                                  {DeleteAccessibility && actionPermission.deleteZBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBCTypeId)} />)}
-                                                  {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, ZBCTypeId)} />}
+                                                  {AddAccessibility && actionPermission.addZBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBCTypeId)} disabled={disableButton} />}
+                                                  {ViewAccessibility && actionPermission.viewZBC && !item.IsNewCosting && item.Status !== '-' && (<button className="View " type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBCTypeId)} disabled={disableButton} />)}
+                                                  {EditAccessibility && actionPermission.editZBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit " type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBCTypeId)} disabled={disableButton} />)}
+                                                  {CopyAccessibility && actionPermission.copyZBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All " type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBCTypeId)} disabled={disableButton} />)}
+                                                  {DeleteAccessibility && actionPermission.deleteZBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBCTypeId)} disabled={disableButton} />)}
+                                                  {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, ZBCTypeId)} disabled={disableButton} />}
                                                 </div>
                                               </td>
                                             </tr>
@@ -2485,7 +2511,7 @@ function CostingDetails(props) {
                                     }} />}</h6>
                                 </Col>
                                 <Col md="6" className={"mb-2 mt-3"}>
-                                  {nccGrid && nccGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
+                                  {nccGrid && nccGrid.length < initialConfiguration?.NumberOfVendorsForCostDetails ? (
                                     <button
                                       type="button"
                                       className={"user-btn"}
@@ -2550,15 +2576,15 @@ function CostingDetails(props) {
                                                 {item.DisplayStatus}
                                               </div>
                                             </td>
-                                            <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
+                                            <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey()?.NoOfDecimalForPrice) : 0}</td>
                                             <td>
                                               <div className='action-btn-wrapper pr-2'>
-                                                {AddAccessibility && actionPermission.addNCC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, NCCTypeId)} />}
-                                                {ViewAccessibility && actionPermission.viewNCC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, NCCTypeId)} />)}
-                                                {EditAccessibility && actionPermission.editNCC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, NCCTypeId)} />)}
-                                                {CopyAccessibility && actionPermission.copyNCC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, NCCTypeId)} />)}
-                                                {DeleteAccessibility && actionPermission.deleteNCC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, NCCTypeId)} />)}
-                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, NCCTypeId)} />}
+                                                {AddAccessibility && actionPermission.addNCC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, NCCTypeId)} disabled={disableButton} />}
+                                                {ViewAccessibility && actionPermission.viewNCC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, NCCTypeId)} disabled={disableButton} />)}
+                                                {EditAccessibility && actionPermission.editNCC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, NCCTypeId)} disabled={disableButton} />)}
+                                                {CopyAccessibility && actionPermission.copyNCC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, NCCTypeId)} disabled={disableButton} />)}
+                                                {DeleteAccessibility && actionPermission.deleteNCC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, NCCTypeId)} disabled={disableButton} />)}
+                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, NCCTypeId)} disabled={disableButton} />}
                                               </div>
                                             </td>
                                           </tr>
@@ -2592,7 +2618,7 @@ function CostingDetails(props) {
                                     }} />}</h6>
                                 </Col>
                                 <Col md="6" className={"mb-2 mt-3"}>
-                                  {!breakupBOP && vbcVendorGrid && vbcVendorGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
+                                  {!breakupBOP && vbcVendorGrid && vbcVendorGrid.length < initialConfiguration?.NumberOfVendorsForCostDetails ? (
                                     <button
                                       type="button"
                                       className={"user-btn"}
@@ -2686,15 +2712,15 @@ function CostingDetails(props) {
                                                 {item.DisplayStatus}
                                               </div>
                                             </td>
-                                            <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
+                                            <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey()?.NoOfDecimalForPrice) : 0}</td>
                                             <td>
                                               <div className='action-btn-wrapper pr-2'>
-                                                {AddAccessibility && actionPermission.addVBC && showAddButtonInBOPBreakup && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBCTypeId)} />}
-                                                {ViewAccessibility && actionPermission.viewVBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBCTypeId)} />)}
-                                                {EditAccessibility && actionPermission.editVBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBCTypeId)} />)}
-                                                {String(partType.label) !== BOUGHTOUTPARTSPACING && CopyAccessibility && actionPermission.copyVBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBCTypeId)} />)}
-                                                {DeleteAccessibility && actionPermission.deleteVBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBCTypeId)} />)}
-                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBCTypeId)} />}
+                                                {AddAccessibility && actionPermission.addVBC && showAddButtonInBOPBreakup && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBCTypeId)} disabled={disableButton} />}
+                                                {ViewAccessibility && actionPermission.viewVBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBCTypeId)} disabled={disableButton} />)}
+                                                {EditAccessibility && actionPermission.editVBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBCTypeId)} disabled={disableButton} />)}
+                                                {String(partType.label) !== BOUGHTOUTPARTSPACING && CopyAccessibility && actionPermission.copyVBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBCTypeId)} disabled={disableButton} />)}
+                                                {DeleteAccessibility && actionPermission.deleteVBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBCTypeId)} disabled={disableButton} />)}
+                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBCTypeId)} disabled={disableButton} />}
                                               </div>
                                             </td>
                                           </tr>
@@ -2727,7 +2753,7 @@ function CostingDetails(props) {
                                     }} />}</h6>
                                 </Col>
                                 <Col md="6" className={"mb-2 mt-3"}>
-                                  {cbcGrid && cbcGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
+                                  {cbcGrid && cbcGrid.length < initialConfiguration?.NumberOfVendorsForCostDetails ? (
                                     <button
                                       type="button"
                                       className={"user-btn"}
@@ -2791,15 +2817,15 @@ function CostingDetails(props) {
                                                 {item.DisplayStatus}
                                               </div>
                                             </td>
-                                            <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
+                                            <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey()?.NoOfDecimalForPrice) : 0}</td>
                                             <td>
                                               <div className='action-btn-wrapper pr-2'>
-                                                {AddAccessibility && actionPermission.addCBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, CBCTypeId)} />}
-                                                {ViewAccessibility && actionPermission.viewCBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, CBCTypeId)} />)}
-                                                {EditAccessibility && actionPermission.editCBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, CBCTypeId)} />)}
-                                                {CopyAccessibility && actionPermission.copyCBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, CBCTypeId)} />)}
-                                                {DeleteAccessibility && actionPermission.deleteCBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, CBCTypeId)} />)}
-                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, CBCTypeId)} />}
+                                                {AddAccessibility && actionPermission.addCBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, CBCTypeId)} disabled={disableButton} />}
+                                                {ViewAccessibility && actionPermission.viewCBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, CBCTypeId)} disabled={disableButton} />)}
+                                                {EditAccessibility && actionPermission.editCBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, CBCTypeId)} disabled={disableButton} />)}
+                                                {CopyAccessibility && actionPermission.copyCBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, CBCTypeId)} disabled={disableButton} />)}
+                                                {DeleteAccessibility && actionPermission.deleteCBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, CBCTypeId)} disabled={disableButton} />)}
+                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, CBCTypeId)} disabled={disableButton} />}
                                               </div>
                                             </td>
                                           </tr>
@@ -2901,15 +2927,15 @@ function CostingDetails(props) {
                                                   {item.DisplayStatus}
                                                 </div>
                                               </td>
-                                              <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
+                                              <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey()?.NoOfDecimalForPrice) : 0}</td>
                                               <td style={{ width: "250px" }}>
                                                 <div className='action-btn-wrapper pr-2'>
-                                                  {AddAccessibility && actionPermission.addZBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, WACTypeId)} />}
-                                                  {ViewAccessibility && actionPermission.viewZBC && !item.IsNewCosting && item.Status !== '-' && (<button className="View " type={"button"} title={"View Costing"} onClick={() => viewDetails(index, WACTypeId)} />)}
-                                                  {EditAccessibility && actionPermission.editZBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit " type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, WACTypeId)} />)}
+                                                  {AddAccessibility && actionPermission.addZBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, WACTypeId)} disabled={disableButton} />}
+                                                  {ViewAccessibility && actionPermission.viewZBC && !item.IsNewCosting && item.Status !== '-' && (<button className="View " type={"button"} title={"View Costing"} onClick={() => viewDetails(index, WACTypeId)} disabled={disableButton} />)}
+                                                  {EditAccessibility && actionPermission.editZBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit " type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, WACTypeId)} disabled={disableButton} />)}
                                                   {/* {CopyAccessibility && actionPermission.copyZBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All " type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, WACTypeId)} />)} */}
-                                                  {DeleteAccessibility && actionPermission.deleteZBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, WACTypeId)} />)}
-                                                  {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, WACTypeId)} />}
+                                                  {DeleteAccessibility && actionPermission.deleteZBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, WACTypeId)} disabled={disableButton} />)}
+                                                  {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, WACTypeId)} disabled={disableButton} />}
                                                 </div>
                                               </td>
                                             </tr>

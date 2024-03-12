@@ -26,7 +26,7 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import { disabledClass, isResetClick } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import { ApplyPermission } from ".";
@@ -464,7 +464,9 @@ const MachineRateListing = (props) => {
 
   }
   const bulkToggle = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: true }))
+    if (checkMasterCreateByCostingPermission(true)) {
+      setState((prevState) => ({ ...prevState, isBulkUpload: true }))
+    }
   }
 
   const closeBulkUploadDrawer = (event, type) => {
@@ -476,7 +478,9 @@ const MachineRateListing = (props) => {
 
 
   const displayForm = () => {
-    props.displayForm()
+    if (checkMasterCreateByCostingPermission()) {
+      props.displayForm()
+    }
   }
 
 

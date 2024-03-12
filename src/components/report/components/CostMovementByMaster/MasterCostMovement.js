@@ -70,7 +70,7 @@ function MasterCostMovement() {
         dispatch(getApprovalTypeSelectList(() => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(fetchPlantDataAPI(() => { }))
-        dispatch(getPlantSelectListByType(ZBC, '', "REPORT", () => { }))
+        dispatch(getPlantSelectListByType(ZBC, "REPORT", '', () => { }))
     }, [])
     const { handleSubmit, control, register, getValues, setValue, formState: { errors } } = useForm({
         mode: 'onChange',

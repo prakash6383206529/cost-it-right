@@ -630,7 +630,7 @@ function ApproveRejectUI(props) {
                     id="Approval_Submit"
                     className="submit-button"
                     onClick={props.isShowNFRPopUp ? showPopupWrapper : submitButton}
-                    disabled={isDisable}
+                    disabled={isDisable || (props?.isDisableSubmit ? true : false)}
                     icon={"save-icon"}
                     buttonName={"Submit"}
                   />

@@ -67,7 +67,7 @@ function CommonApproval(props) {
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
     let master = props?.MasterId
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
-    const netCostHeader = `Net Cost (${initialConfiguration?.BaseCurrency})`
+    const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
 
     useEffect(() => {
         dispatch(agGridStatus("", ""))

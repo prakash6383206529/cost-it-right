@@ -48,7 +48,7 @@ function Rejection(props) {
     });
 
     useEffect(() => {
-        if (applicability && applicability.value !== undefined) {
+        if (applicability && applicability.value !== undefined && !CostingViewMode) {
             setApplicability(applicability)
             checkRejectionApplicability(applicability.label)
         }
@@ -64,11 +64,15 @@ function Rejection(props) {
     }, [])
 
     useEffect(() => {
-        checkRejectionApplicability(applicability.label)
+        if (!CostingViewMode) {
+            checkRejectionApplicability(applicability.label)
+        }
     }, [rejectionFieldValues]);
 
     useEffect(() => {
-        checkRejectionApplicability(applicability.label)
+        if (!CostingViewMode) {
+            checkRejectionApplicability(applicability.label)
+        }
     }, [IsIncludedSurfaceInRejection]);
 
 

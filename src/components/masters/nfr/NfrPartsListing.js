@@ -24,6 +24,7 @@ import Toaster from '../../common/Toaster';
 import RMDrawer from './RMDrawer';
 import OutsourcingDrawer from './OutsourcingDrawer';
 import WarningMessage from '../../common/WarningMessage';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const gridOptions = {};
 
 
@@ -284,7 +285,7 @@ function NfrPartsListing(props) {
      */
     const netLandedFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const tempValue = `${checkForDecimalAndNull(row?.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)} (${row?.Currency ? row?.Currency : getConfigurationKey()?.BaseCurrency}/${row?.UOM ? row?.UOM : 'UOM'})`
+        const tempValue = `${checkForDecimalAndNull(row?.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)} (${row?.Currency ? row?.Currency : reactLocalStorage.getObject("baseCurrency")}/${row?.UOM ? row?.UOM : 'UOM'})`
         return tempValue;
     }
 
