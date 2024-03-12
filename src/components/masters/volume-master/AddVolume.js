@@ -148,6 +148,9 @@ class AddVolume extends Component {
         costingTypeId: getCostingTypeIdByCostingPermission()
       })
     }, 100)
+    if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
     setTimeout(() => {
       this.props.getFinancialYearSelectList(() => { })
       if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {

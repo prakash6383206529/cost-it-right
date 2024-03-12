@@ -133,6 +133,7 @@ function CostingSimulation(props) {
     const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
     const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
+    const [costingIdArray, setCostingIdArray] = useState({})
 
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
@@ -431,6 +432,11 @@ function CostingSimulation(props) {
             setAPIData(tempArrayCosting)
             setCostingArr(tempArrayCosting)
             setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate, IsExchangeRateSimulation: Data.IsExchangeRateSimulation })
+            let requestObject = {}
+
+            requestObject.IsCreate = true
+            requestObject.CostingId = []
+            setCostingIdArray(requestObject)
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
@@ -1542,7 +1548,7 @@ function CostingSimulation(props) {
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
 
-    const headers = { netCostHeadder: `Net Cost (${getConfigurationKey()?.BaseCurrency})` }
+    const headers = { netCostHeadder: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})` }
 
     return (
         <>
@@ -1865,6 +1871,7 @@ function CostingSimulation(props) {
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
                                 CostingTypeId={amendmentDetails.SimulationHeadId}
                                 isSimulationWithCosting={isSimulationWithCosting}
+                                costingIdArray={costingIdArray}
                             />
                         }
                     </div >

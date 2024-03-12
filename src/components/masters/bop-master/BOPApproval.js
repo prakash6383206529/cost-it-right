@@ -16,6 +16,7 @@ import { masterFinalLevelUser } from '../actions/Material'
 import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from '../../../helper'
 import NoContentFound from '../../common/NoContentFound';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 
 
@@ -269,8 +270,8 @@ function BOPApproval(props) {
                                     <AgGridColumn width="140" field="Specification" headerName='Specification'></AgGridColumn>
                                     <AgGridColumn width="140" field="Plants" headerName='Plant'></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName='Vendor'></AgGridColumn>
-                                    <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
-                                    <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost(INR)"></AgGridColumn>
+                                    <AgGridColumn width="140" field="BasicRate" headerName={`Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`}></AgGridColumn>
+                                    <AgGridColumn width="140" field="NetLandedCost" headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}></AgGridColumn>
                                     <AgGridColumn width="140" field="EffectiveDate" cellRenderer='effectiveDateRenderer' headerName="Effective Date"></AgGridColumn>
 
 

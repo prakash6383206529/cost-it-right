@@ -92,6 +92,9 @@ class AddProfit extends Component {
    */
   componentDidMount() {
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
+    if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
     if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
       this.props.getRawMaterialNameChild(() => { })
     }

@@ -159,17 +159,17 @@ class AddBOPImport extends Component {
     if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       obj = {
         toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Price (${currency?.label})  + Condition Cost (${currency?.label})`,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency})  + Condition Cost (${initialConfiguration?.BaseCurrency})`
+        toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Price (${reactLocalStorage.getObject("baseCurrency")})  + Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`
       }
     } else if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
       obj = {
         toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Rate (${currency?.label}) / Minimum Order Quantity`,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
+        toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) / Minimum Order Quantity`
       }
     } else {
       obj = {
         toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Rate (${currency?.label})`,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
+        toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
       }
     }
     this.setState({ toolTipTextNetCost: obj })
@@ -183,7 +183,7 @@ class AddBOPImport extends Component {
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       obj = {
         toolTipTextBasicPriceSelectedCurrency: `Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) / Minimum Order Quantity`,
-        toolTipTextBasicPriceBaseCurrency: `Basic Price (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
+        toolTipTextBasicPriceBaseCurrency: `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) =  Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) / Minimum Order Quantity`
       }
     }
     this.setState({ toolTipTextBasicPrice: obj })
@@ -260,7 +260,7 @@ class AddBOPImport extends Component {
     const obj = {
       ...this.state.toolTipTextObject, netCostCurrency: this.toolTipNetCost(currency)?.toolTipTextNetCostSelectedCurrency, netCostBaseCurrency: this.toolTipNetCost(currency)?.toolTipTextNetCostBaseCurrency,
       basicPriceSelectedCurrency: this.toolTipBasicPrice(currency)?.toolTipTextBasicPriceSelectedCurrency, basicPriceBaseCurrency: this.toolTipBasicPrice(currency)?.toolTipTextBasicPriceBaseCurrency
-      , toolTipTextBasicRateSelectedCurrency: `Basic Rate (${initialConfiguration?.BaseCurrency}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? '-' : currencyValue})`
+      , toolTipTextBasicRateSelectedCurrency: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? '-' : currencyValue})`
     }
     this.setState({ toolTipTextObject: obj })
   }
@@ -1808,7 +1808,7 @@ class AddBOPImport extends Component {
                             <Col md="3">
                               <TooltipCustom id="bop-basic-rate-currency" tooltipText={toolTipTextObject?.toolTipTextBasicRateSelectedCurrency} />
                               <Field
-                                label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                                label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"BasicRateBaseCurrency"}
                                 type="text"
                                 placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
@@ -1840,7 +1840,7 @@ class AddBOPImport extends Component {
                             <Col md="3">
                               <TooltipCustom id="bop-basic-base-currency" tooltipText={toolTipTextBasicPrice?.toolTipTextBasicPriceBaseCurrency} />
                               <Field
-                                label={`Basic Price/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
+                                label={`Basic Price/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"BasicPriceBaseCurrency"}
                                 type="text"
                                 placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
@@ -1871,7 +1871,7 @@ class AddBOPImport extends Component {
                               <div className='d-flex align-items-center'>
                                 <div className='w-100'>
                                   <Field
-                                    label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
+                                    label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"FinalConditionCostBaseCurrency"}
                                     type="text"
                                     placeholder={"-"}
@@ -1914,7 +1914,7 @@ class AddBOPImport extends Component {
                             <Col md="3">
                               <TooltipCustom id="bop-net-cost-base" tooltipText={toolTipTextNetCost?.toolTipTextNetCostBaseCurrency} />
                               <Field
-                                label={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
+                                label={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
                                 type="text"
                                 placeholder={"-"}

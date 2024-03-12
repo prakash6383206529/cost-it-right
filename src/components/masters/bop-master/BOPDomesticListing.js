@@ -25,7 +25,7 @@ import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel } from '../../common/CommonFunctions';
+import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel, checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import { ApplyPermission } from ".";
@@ -441,7 +441,9 @@ const BOPDomesticListing = (props) => {
   }
 
   const bulkToggle = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: true }))
+    if (checkMasterCreateByCostingPermission(true)) {
+      setState((prevState) => ({ ...prevState, isBulkUpload: true }))
+    }
   }
 
   const closeBulkUploadDrawer = (event, type) => {
@@ -556,7 +558,9 @@ const BOPDomesticListing = (props) => {
 
   }
   const formToggle = () => {
-    props.displayForm()
+    if (checkMasterCreateByCostingPermission()) {
+      props.displayForm()
+    }
   }
 
   /**

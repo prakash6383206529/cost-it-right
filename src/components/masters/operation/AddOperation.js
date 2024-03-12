@@ -773,8 +773,11 @@ class AddOperation extends Component {
           return false
         }
         this.setState({ IsSendForApproval: true })
+        formData.IsSendForApproval = true;
+
       } else {
         this.setState({ IsSendForApproval: false })
+        formData.IsSendForApproval = false;
       }
 
       this.setState({ setDisable: true })
@@ -1176,7 +1179,7 @@ class AddOperation extends Component {
                       </Col>
                       <Col md="3">
                         <Field
-                          label={`Rate (INR)`}
+                          label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={"Rate"}
                           type="text"
                           placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Select"}

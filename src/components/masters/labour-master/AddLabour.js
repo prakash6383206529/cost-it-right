@@ -1082,7 +1082,7 @@ class AddLabour extends Component {
                       <Col md="3">
                         <div className="form-group">
                           <Field
-                            label={`Rate per Person/Annum (INR)`}
+                            label={`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
                             name={"LabourRate"}
                             type="text"
                             placeholder={isViewMode ? "-" : "Enter"}
@@ -1203,7 +1203,7 @@ class AddLabour extends Component {
                             <tr>
                               <th>{`Machine Type`}</th>
                               <th>{`Labour Type`}</th>
-                              <th>{`Rate per Person/Annum(INR)`}</th>
+                              <th>{`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                               <th>{`Working hours`}</th>
                               <th>{`Efficiency`}</th>
                               <th>{`Effective Date`}</th>

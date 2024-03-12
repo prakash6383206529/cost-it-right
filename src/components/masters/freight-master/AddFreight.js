@@ -911,7 +911,7 @@ class AddFreight extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Rate (INR/Kg)`}
+                              label={`Rate (${reactLocalStorage.getObject("baseCurrency")}/Kg)`}
                               name={"PartTruckLoadRatePerKilogram"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
@@ -924,7 +924,7 @@ class AddFreight extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Rate (INR/Cubic Feet)`}
+                              label={`Rate (${reactLocalStorage.getObject("baseCurrency")}/Cubic Feet)`}
                               name={"PartTruckLoadRatePerCubicFeet"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
@@ -983,7 +983,7 @@ class AddFreight extends Component {
                           </Col>
                           <Col md="2">
                             <Field
-                              label={`Rate (INR)`}
+                              label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                               name={"Rate"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}

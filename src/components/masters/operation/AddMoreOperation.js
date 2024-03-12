@@ -2650,7 +2650,7 @@ function AddMoreOperation(props) {
                             <TooltipCustom id={"netCost"} disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />
                             <Col md="3">
                                 <NumberFieldHookForm
-                                    label={`Rate (INR)`}
+                                    label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={'netCost'}
                                     Controller={Controller}
                                     id={"netCost"}

@@ -18,6 +18,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_RM_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 import DayTime from '../../common/DayTimeWrapper';
 import DatePicker from "react-datepicker";
+import { reactLocalStorage } from 'reactjs-localstorage';
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
@@ -876,7 +877,7 @@ function VerifySimulation(props) {
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" tooltipField="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                                             <AgGridColumn width={120} field="PlantName" tooltipField="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
-                                            {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn width={130} field="POPrice" tooltipField="POPrice" headerName="Existing Net Cost (INR)" cellRenderer='priceFormatter'></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn width={130} field="POPrice" tooltipField="POPrice" headerName={`Existing Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='priceFormatter'></AgGridColumn>}
 
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
@@ -902,7 +903,7 @@ function VerifySimulation(props) {
                                             {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" tooltipField="OldExchangeRate" headerName="Existing Exchange Rate"></AgGridColumn>}
                                             {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" tooltipField="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="Revised Exchange Rate"></AgGridColumn>}
 
-                                            {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName="Revised Net Cost (INR)" cellRenderer='combinedProcessCostFormatter'></AgGridColumn>}
+                                            {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName={`Revised Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='combinedProcessCostFormatter'></AgGridColumn>}
                                             {isCombinedProcess && <AgGridColumn width={145} field="OldNetCC" headerName="Existing CC" cellRenderer='combinedProcessCostFormatter'></AgGridColumn>}
                                             {isCombinedProcess && <AgGridColumn width={150} field="NewNetCC" cellRenderer='combinedProcessCostFormatter' headerName="Revised CC" ></AgGridColumn>}
 

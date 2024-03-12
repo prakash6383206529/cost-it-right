@@ -12,6 +12,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { SALES_PROVISION_EXCEL_TEMPLATE } from '../../ExcelTemplate';
 import { hideColumnFromExcel } from '../../../common/CommonFunctions';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -270,8 +271,8 @@ function SalePurchaseProvisionListing(props) {
                                                     <AgGridColumn width="150" field="ToDate" headerName="To" />
                                                 </AgGridColumn>
                                                 {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="OldRate" width="120" headerName="Existing Net Cost (INR)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="NewRate" width="120" headerName="Revised Net Cost (INR)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="OldRate" width="120" headerName={`Existing Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="NewRate" width="120" headerName={`Revised Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="Variance" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {/* // {<AgGridColumn field="Difference" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}           //RE */}
                                                 {<AgGridColumn field="SupplyQuantity" headerName="Supply Quantity (No.)" floatingFilter={true}></AgGridColumn>}

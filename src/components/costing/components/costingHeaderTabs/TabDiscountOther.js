@@ -23,20 +23,16 @@ import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
 import { createToprowObjAndSave, errorCheckObject, formatMultiTechnologyUpdate } from '../../CostingUtil';
-import { IdForMultiTechnology, STRINGMAXLENGTH } from '../../../../config/masterData';
+import { IdForMultiTechnology } from '../../../../config/masterData';
 
 import LoaderCustom from '../../../common/LoaderCustom';
 import WarningMessage from '../../../common/WarningMessage';
-import NpvCost from '../CostingHeadCosts/AdditionalOtherCost/NpvCost';
-import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import TooltipCustom from '../../../common/Tooltip';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80 } from "../../../../helper/validation";
-import ConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/ConditionCosting';
 import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import OtherCostDrawer from '../CostingHeadCosts/AdditionalOtherCost/OtherCostDrawer'
-import OtherCostTable from '../CostingHeadCosts/AdditionalOtherCost/OtherCostTable';
 import Button from '../../../layout/Button';
 import { useMemo } from 'react';
 let counter = 0;
@@ -1716,7 +1712,7 @@ function TabDiscountOther(props) {
                     <Col md="3">
                       <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Price = (Total Cost - Hundi/Discount Value) + Total Other Cost"} />
                       <TextFieldHookForm
-                        label="Basic Price (INR)"
+                        label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
                         name={'BasicRateINR'}
                         Controller={Controller}
                         id="basic-rate"
@@ -1811,7 +1807,7 @@ function TabDiscountOther(props) {
                     <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net Cost = Basic Rate + Total Costing Condition Cost"} />
                     <Col md="3">
                       <TextFieldHookForm
-                        label="Net Cost (INR)"
+                        label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                         name={'NetPOPriceINR'}
                         Controller={Controller}
                         id="net-po-price"
