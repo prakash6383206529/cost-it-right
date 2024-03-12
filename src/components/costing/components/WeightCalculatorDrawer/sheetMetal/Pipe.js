@@ -70,6 +70,11 @@ function Pipe(props) {
     NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
     GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
     FinishWeightOfSheet: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
+    cuttingAllowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.CuttingAllowance, localStorage.NoOfDecimalForInputOutput) : '',
+    partLengthWithAllowance: WeightCalculatorRequest && WeightCalculatorRequest.PartLengthWithAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PartLengthWithAllowance, localStorage.NoOfDecimalForInputOutput) : '',
+    endPieceAllowance: WeightCalculatorRequest && WeightCalculatorRequest.EndPieceAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.EndPieceAllowance, localStorage.NoOfDecimalForInputOutput) : '',
+    scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, localStorage.NoOfDecimalForInputOutput) : '',
+    scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.RecoveryPercentage !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
   }
 
   const {
