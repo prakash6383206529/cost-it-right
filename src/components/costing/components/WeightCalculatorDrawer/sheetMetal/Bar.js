@@ -702,9 +702,9 @@ function Pipe(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={true}
+                                        mandatory={false}
                                         rules={{
-                                            required: true,
+                                            required: false,
                                             validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
@@ -740,9 +740,9 @@ function Pipe(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={true}
+                                        mandatory={false}
                                         rules={{
-                                            required: true,
+                                            required: false,
                                             validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
