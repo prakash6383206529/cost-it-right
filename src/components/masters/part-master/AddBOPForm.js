@@ -27,7 +27,8 @@ class AddBOPForm extends Component {
       isBOPNoNotSelected: false,
       isDimensionless: false,
       showErrorOnFocus: false,
-      UnitOfMeasurementType: ""
+      UnitOfMeasurementType: "",
+      mainLoader: false
     }
   }
 
@@ -36,6 +37,9 @@ class AddBOPForm extends Component {
  * @description called after render the component
  */
   componentDidMount() {
+    this.props.change('BOPPartName', '')
+    this.props.change('BOPCategory', '')
+    this.props.change('Specification', '')
     this.setState({ isLoader: true })
     const date = this.context
     this.props.getBoughtOutPartSelectList(date, () => { this.setState({ isLoader: false }) })
@@ -52,9 +56,13 @@ class AddBOPForm extends Component {
   */
   handleBOPPartChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ BOPPart: newValue, isPartNoNotSelected: false }, () => {
+      this.setState({ BOPPart: newValue, isPartNoNotSelected: false, mainLoader: true }, () => {
         const { BOPPart } = this.state;
         this.props.getDrawerBOPData(BOPPart.value, (res) => {
+          this.setState({ mainLoader: false })
+          this.props.change('BOPPartName', res?.data?.Data?.BoughtOutPartName)
+          this.props.change('BOPCategory', res?.data?.Data?.Category)
+          this.props.change('Specification', res?.data?.Data?.Specification)
           if (res?.data?.Data?.UnitOfMeasurementType === DIMENSIONLESS) {
             this.setState({ isDimensionless: true, UnitOfMeasurementType: res?.data?.Data?.UnitOfMeasurementType })
           } else {
@@ -193,8 +201,8 @@ class AddBOPForm extends Component {
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));
-
       });
+
 
     return (
       <>
@@ -204,10 +212,10 @@ class AddBOPForm extends Component {
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
+          {this.state.mainLoader && <LoaderCustom />}
           <Row>
-
             <Col md="6">
-              <label>{`${showBopLabel()}  Part No.`}<span className="asterisk-required">*</span></label>
+              <label>{`${showBopLabel()} Part No.`}<span className="asterisk-required">*</span></label>
               <div className='p-relative'>
                 {this.state.isLoader && <LoaderCustom customClass="input-loader" />}
                 <AsyncSelect
@@ -217,7 +225,7 @@ class AddBOPForm extends Component {
                   cacheOptions
                   loadOptions={promiseOptions}
                   onChange={(e) => this.handleBOPPartChange(e)}
-                  noOptionsMessage={({ inputValue }) => !inputValue ? `Please enter first few digits to see the ${showBopLabel()}  numbers` : "No results found"}
+                  noOptionsMessage={({ inputValue }) => !inputValue ? `Please enter first few digits to see the ${showBopLabel()} numbers` : "No results found"}
                   onBlur={() => this.setState({ showErrorOnFocus: true })}
                   onKeyDown={(onKeyDown) => {
                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -228,7 +236,7 @@ class AddBOPForm extends Component {
             </Col>
             <Col md="6">
               <Field
-                label={`${showBopLabel()}  Part Name`}
+                label={`${showBopLabel()} Part Name`}
                 name={"BOPPartName"}
                 type="text"
                 placeholder={""}
@@ -243,7 +251,7 @@ class AddBOPForm extends Component {
 
             <Col md="6">
               <Field
-                label={`${showBopLabel()}  Category`}
+                label={`${showBopLabel()} Category`}
                 name={"BOPCategory"}
                 type="text"
                 placeholder={""}
@@ -331,11 +339,11 @@ function mapStateToProps({ part }) {
 
   let initialValues = {};
   if (DrawerPartData && DrawerPartData !== undefined) {
-    initialValues = {
-      BOPPartName: DrawerPartData.BoughtOutPartName,
-      BOPCategory: DrawerPartData.Category,
-      Specification: DrawerPartData.Specification,
-    }
+    // initialValues = {
+    //   BOPPartName: DrawerPartData.BoughtOutPartName,
+    //   BOPCategory: DrawerPartData.Category,
+    //   Specification: DrawerPartData.Specification,
+    // }
   }
 
   return { boughtOutPartSelectList, DrawerPartData, initialValues, }

@@ -58,6 +58,9 @@ class AddExchangeRate extends Component {
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getCurrencySelectList(() => { })
     }
+    if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
     this.getDetail()
   }
 
@@ -104,7 +107,7 @@ class AddExchangeRate extends Component {
     const temp = [];
     if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
-        if (item.Value === '0' || item.Text === 'INR') return false;
+        if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -546,7 +549,7 @@ class AddExchangeRate extends Component {
                       </Col>
                       <Col md="3">
                         <Field
-                          label={`Currency Exchange Rate(INR)`}
+                          label={`Currency Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={"CurrencyExchangeRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
@@ -561,7 +564,7 @@ class AddExchangeRate extends Component {
                       </Col>
                       <Col md="3">
                         <Field
-                          label={`Bank Rate(INR)`}
+                          label={`Bank Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={"BankRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
@@ -591,7 +594,7 @@ class AddExchangeRate extends Component {
 
                       <Col md="3">
                         <Field
-                          label={`Custom Rate(INR)`}
+                          label={`Custom Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={"CustomRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}

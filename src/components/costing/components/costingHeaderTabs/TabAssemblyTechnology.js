@@ -50,7 +50,7 @@ function TabAssemblyTechnology(props) {
         // dispatch(setAllCostingInArray(res.data.DataList,false))
         let tempArr = [];
         tempArr = [res?.data?.DataList[0], ...res?.data?.DataList[0]?.CostingChildPartDetails]
-        reactLocalStorage.setObject('costingArray', tempArr);
+        sessionStorage.setItem('costingArray', JSON.stringify(tempArr));
 
       }))
     }
@@ -316,7 +316,7 @@ function TabAssemblyTechnology(props) {
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Part Cost/Pc`}</th>
                           {/* <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Operation Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Process Cost`}</th> */}
-                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`${showBopLabel()}  Cost`}</th>
+                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`${showBopLabel()} Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Part Cost/Assembly`}</th>
                           {/* <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Action`}</th> */}
                           {
@@ -371,15 +371,6 @@ function TabAssemblyTechnology(props) {
                     <button type={"button"} className="reset mr15 cancel-btn" onClick={props.backBtn}>
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
-                    </button>
-                    <button
-                      type={'button'}
-                      className="submit-button mr5 save-btn"
-                      onClick={saveCosting}
-                      disabled={checkIsDataChange || (DayTime(CostingEffectiveDate).isValid() === false) ? true : false}
-                    >
-                      <div className={'save-icon'}></div>
-                      {'Save'}
                     </button>
                   </div>}
               </form>

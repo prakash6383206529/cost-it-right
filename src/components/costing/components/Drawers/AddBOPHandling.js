@@ -15,6 +15,7 @@ import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../..
 import Toaster from '../../../common/Toaster';
 import { WACTypeId } from '../../../../config/constants';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
+import TooltipCustom from '../../../common/Tooltip';
 
 function AddBOPHandling(props) {
   const { item, isAssemblyTechnology } = props
@@ -58,7 +59,7 @@ function AddBOPHandling(props) {
       setBOPCost(BOPTotalCost)
       setBOPHandlingType(subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingChargeType)
     } else {
-      const childPartDetail = reactLocalStorage.getObject('costingArray')
+      const childPartDetail = JSON.parse(sessionStorage.getItem('costingArray'))
       let BOPSum = 0
       childPartDetail && childPartDetail.map((el) => {
         if (el.PartType === 'BOP' && el.AssemblyPartNumber === item?.PartNumber) {
@@ -169,7 +170,7 @@ function AddBOPHandling(props) {
     }
 
     if (handlingChargesChange !== obj.BOPHandlingCharges) {
-      Toaster.success(`${showBopLabel()}  Handling charges saved successfully`)
+      Toaster.success(`${showBopLabel()} Handling charges saved successfully`)
     }
     props.setBOPCostWithAsssembly(obj, item)
     setTimeout(() => {
@@ -186,7 +187,7 @@ function AddBOPHandling(props) {
               <Row className="drawer-heading">
                 <Col className='pl-0'>
                   <div className={'header-wrapper left'}>
-                    <h3>{`Add ${showBopLabel()}  Handling Charge`}</h3>
+                    <h3>{`Add ${showBopLabel()} Handling Charge`}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
@@ -199,7 +200,7 @@ function AddBOPHandling(props) {
                   <Row>
                     <Col md="12">
                       <TextFieldHookForm
-                        label={`${showBopLabel()}  Cost`}
+                        label={`${showBopLabel()} Cost`}
                         name={'BOPCost'}
                         Controller={Controller}
                         control={control}
@@ -218,7 +219,7 @@ function AddBOPHandling(props) {
 
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={`${showBopLabel()}  Handling Type`}
+                        label={`${showBopLabel()} Handling Type`}
                         name={"BOPHandlingType"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -237,7 +238,7 @@ function AddBOPHandling(props) {
                     <Col md="12">
                       {BOPHandlingType === 'Fixed' ?
                         <NumberFieldHookForm
-                          label={'Fixed'}
+                          label={'Fixed Cost'}
                           name={"BOPHandlingFixed"}
                           Controller={Controller}
                           control={control}
@@ -286,12 +287,14 @@ function AddBOPHandling(props) {
                         />}
                     </Col>
                     <Col md="12">
+                      <TooltipCustom id={"bop-handling-charges"} disabledIcon={true} tooltipText={`${BOPHandlingType === 'Fixed' ? `Handling Charges = Fixed Cost` : `Handling Charges = ${showBopLabel()} Cost * Percentage / 100`}`} />
                       <TextFieldHookForm
                         label="Handling Charges"
                         name={'BOPHandlingCharges'}
                         Controller={Controller}
                         control={control}
                         register={register}
+                        id={"bop-handling-charges"}
                         mandatory={false}
                         rules={{}}
                         handleChange={() => { }}

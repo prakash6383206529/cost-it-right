@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability, setCustomerForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID, MACHINE, MASTERS } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION } from '../../../config/masterData';
 import { COMBINED_PROCESS } from '../../../config/constants';
@@ -22,7 +22,7 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { allEqual, applyEditCondSimulation, checkForNull, getFilteredData, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
+import { allEqual, applyEditCondSimulation, checkForNull, checkPermission, getFilteredData, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
 import { ProcessListingSimulation } from './ProcessListingSimulation';
@@ -47,6 +47,7 @@ import Toaster from '../../common/Toaster';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+export const ApplyPermission = React.createContext();
 function Simulation(props) {
 
     const { register, control, setValue, formState: { errors }, getValues } = useForm({
@@ -90,6 +91,7 @@ function Simulation(props) {
     const [showCustomer, setShowCustomer] = useState(false)
     const [customer, setCustomer] = useState('')
     const [renderComponent, setRenderComponent] = useState(false)
+    const [permissionData, setPermissionData] = useState({});
 
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -163,6 +165,22 @@ function Simulation(props) {
         }
     }, [showMasterList])
 
+    const { topAndLeftMenuData } = useSelector((state) => state.auth);
+
+    useEffect(() => {
+        applyPermission(topAndLeftMenuData);
+    }, [topAndLeftMenuData]);
+
+    const applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
+            const accessData = Data && Data.Pages.find((el) => el.PageName === MACHINE);
+            const permmisionDataAccess = accessData && accessData.Actions && checkPermission(accessData.Actions);
+            if (permmisionDataAccess !== undefined) {
+                setPermissionData(permmisionDataAccess);
+            }
+        }
+    };
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
@@ -263,7 +281,7 @@ function Simulation(props) {
     }
 
     const handleTechnologyChange = (value) => {
-        if ((checkForNull(value?.value) === ASSEMBLY && Number(master) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS)) {
+        if ((checkForNull(value?.value) === ASSEMBLY && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS)) {
             setTechnology(value)
             setShowMasterList(false)
             // dispatch(setTechnologyForSimulation(value))                //RE
@@ -369,7 +387,7 @@ function Simulation(props) {
     const backToSimulation = (value) => {
         setShowEditTable(false)
         setShowMasterList(true)
-        setEditWarning(false)
+        setEditWarning(true)
         setTableData([])
         setIsBulkUpload(false)
     }
@@ -809,8 +827,8 @@ function Simulation(props) {
         if (length === 0 || length === undefined || length === null) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
-        switch (master.value) {
-            case RMDOMESTIC:
+        switch (String(master.value)) {
+            case String(RMDOMESTIC):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -855,7 +873,7 @@ function Simulation(props) {
                 //     setEditWarning(true)
                 // }
                 break;
-            case RMIMPORT:
+            case String(RMIMPORT):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -863,26 +881,25 @@ function Simulation(props) {
                 Data && Data.forEach((element, index) => {
 
                     if (index !== 0) {
-                        if (element?.CostingHead !== Data[index - 1]?.CostingHead) {
+                        if (element.CostingHead !== Data[index - 1].CostingHead) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
                         }
+                        // if (userDetails().Role !== 'Group Category Head') { //MINDA
+                        if (element.VendorName !== Data[index - 1].VendorName) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+                            setEditWarning(true);
+                            vendorFlag = false
+                        }
+                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlantId !== Data[index - 1].DestinationPlantId) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+                            setEditWarning(true);
+                            plantFlag = false
+                        }
                     }
-                    // if (userDetails().Role !== 'Group Category Head') { //MINDA
-                    if (element?.VendorName !== Data[index - 1]?.VendorName) {
-                        (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                        setEditWarning(true);
-                        vendorFlag = false
-                    }
-
-                    if (element?.PlantId !== Data[index - 1]?.PlantId) {
-                        (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
-                        setEditWarning(true);
-                        plantFlag = false
-                    }
-                }
-                )
+                });
+                // if (userDetails().Role !== 'Group Category Head') { //MINDA
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
@@ -895,7 +912,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
-            // case BOPIMPORT:
+            // case String(BOPIMPORT):
             //     if (Data.length === 0) {
             //         setEditWarning(true)
             //         return false
@@ -932,7 +949,7 @@ function Simulation(props) {
             //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
             //     }
             //     break;
-            // case BOPIMPORT:
+            // case String(BOPIMPORT):
             //     if (Data.length === 0) {
             //         setEditWarning(true)
             //         return false
@@ -969,7 +986,7 @@ function Simulation(props) {
             //     }
             //     break;
 
-            case SURFACETREATMENT:
+            case String(SURFACETREATMENT):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1005,7 +1022,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
-            case OPERATIONS:
+            case String(OPERATIONS):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1041,7 +1058,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
-            case MACHINERATE:
+            case String(MACHINERATE):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1077,7 +1094,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
-            case BOPDOMESTIC:
+            case String(BOPDOMESTIC):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1113,7 +1130,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
-            case BOPIMPORT:
+            case String(BOPIMPORT):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1150,7 +1167,7 @@ function Simulation(props) {
                 }
                 break;
 
-            case EXCHNAGERATE:
+            case String(EXCHNAGERATE):
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -1186,7 +1203,7 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Customer')
                 }
                 break;
-            // case BOPIMPORT:
+            // case String(BOPIMPORT):
             //     if (Data.length === 0) {
             //         setEditWarning(true)
             //         return false
@@ -1223,7 +1240,7 @@ function Simulation(props) {
             //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
             //     }
             //     break;
-            // case BOPIMPORT:
+            // case String(BOPIMPORT):
             //     if (Data.length === 0) {
             //         setEditWarning(true)
             //         return false
@@ -1259,7 +1276,7 @@ function Simulation(props) {
             //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Overhead Applicability')
             //     }
             //     break;
-            case COMBINED_PROCESS:                //RE
+            case String(COMBINED_PROCESS):                //RE
                 if (Data && Data.length === 0) {
                     setEditWarning(true)
                 } else {
@@ -1308,7 +1325,9 @@ function Simulation(props) {
         let tempObject = tokenForSimulation?.length !== 0 ? [{ SimulationId: tokenForSimulation?.value }] : []
         switch (page) {
             case RMDOMESTIC:
-                return <RMSimulation isDomestic={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                return <ApplyPermission.Provider value={permissionData}>
+                    <RMSimulation isDomestic={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />
+                </ApplyPermission.Provider> //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case RMIMPORT:
                 return <RMSimulation isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:

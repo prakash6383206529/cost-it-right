@@ -91,6 +91,9 @@ class AddOverhead extends Component {
    */
   componentDidMount() {
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
+    if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
     if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
       this.props.getRawMaterialNameChild(() => { })
     }
@@ -1272,7 +1275,7 @@ class AddOverhead extends Component {
                         {!isHideBOP && (
                           <Col md="3">
                             <Field
-                              label={`Overhead on ${showBopLabel()}  (%)`}
+                              label={`Overhead on ${showBopLabel()} (%)`}
                               name={"OverheadBOPPercentage"}
                               type="text"
                               placeholder={isBOP || isViewMode ? "-" : "Enter"}

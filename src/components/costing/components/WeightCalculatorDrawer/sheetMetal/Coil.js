@@ -5,7 +5,7 @@ import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation, calculateScrapWeight } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
@@ -18,6 +18,7 @@ import TooltipCustom from '../../../../common/Tooltip'
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
     const { rmRowData, item, CostingViewMode } = props
+    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -42,13 +43,13 @@ function Coil(props) {
     }
 
     const defaultValues = {
-        StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',
-        Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? WeightCalculatorRequest.Thickness : '',
-        Pitch: WeightCalculatorRequest && WeightCalculatorRequest.Pitch !== null ? WeightCalculatorRequest.Pitch : '',
-        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? WeightCalculatorRequest.Cavity : 1,
-        NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? WeightCalculatorRequest.NetSurfaceArea : '',
-        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '',
+        StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? checkForDecimalAndNull(WeightCalculatorRequest.StripWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
+        Pitch: WeightCalculatorRequest && WeightCalculatorRequest.Pitch !== null ? checkForDecimalAndNull(WeightCalculatorRequest.Pitch, localStorage.NoOfDecimalForInputOutput) : '',
+        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Cavity, localStorage.NoOfDecimalForInputOutput) : 1,
+        NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
     }
 
     const {
@@ -59,7 +60,6 @@ function Coil(props) {
         })
 
 
-    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
     const [UOMDimension, setUOMDimension] = useState(
         WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
             ? { label: WeightCalculatorRequest.UOMForDimension, value: WeightCalculatorRequest.UOMForDimensionId, }
@@ -81,7 +81,10 @@ function Coil(props) {
         control,
         name: ['StripWidth', 'Thickness', 'Pitch', 'Cavity'],
     })
-
+    const scrapWeightValue = useWatch({
+        control,
+        name: ['scrapRecoveryPercent', 'grossWeight', 'finishWeight'],
+    })
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -112,8 +115,14 @@ function Coil(props) {
             delete errors.FinishWeight
             setRerender(!reRender)
         }
+        scrapWeightCalculation()
     }, [getValues('GrossWeight'), fieldValues])
 
+    useEffect(() => {
+        if (!CostingViewMode) {
+            scrapWeightCalculation()
+        }
+    }, [scrapWeightValue])
     const setFinishWeight = (e) => {
         const FinishWeight = e.target.value
         switch (UOMDimension.label) {
@@ -235,6 +244,8 @@ function Coil(props) {
             NetSurfaceArea: values.NetSurfaceArea,
             GrossWeight: grossWeight,
             FinishWeight: getValues('FinishWeight'),
+            RecoveryPercentage: getValues('scrapRecoveryPercent'),
+            ScrapWeight: getValues('scrapWeight'),
         }
 
         dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
@@ -269,6 +280,14 @@ function Coil(props) {
             e.preventDefault();
         }
     };
+
+    const scrapWeightCalculation = () => {
+        const scrapRecoveryPercent = Number((getValues('scrapRecoveryPercent')))
+        const grossWeight = getValues('GrossWeight')
+        const finishWeight = getValues('FinishWeight')
+        const scrapWeight = calculateScrapWeight(grossWeight, finishWeight, scrapRecoveryPercent)
+        setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
+    }
 
     /**
      * @method render
@@ -452,6 +471,48 @@ function Coil(props) {
                                         customClassName={'withBorder'}
                                         errors={errors.FinishWeight}
                                         disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Scrap Recovery (%)`}
+                                        name={'scrapRecoveryPercent'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        rules={{
+                                            required: false,
+                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                            max: {
+                                                value: 100,
+                                                message: 'Percentage cannot be greater than 100'
+                                            },
+                                        }}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.scrapRecoveryPercent}
+                                        disabled={props.CostingViewMode ? true : false}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Weight = (Gross Weight - Finish Weight )* Scrap Recovery (%)/100'} />
+                                    <TextFieldHookForm
+                                        label={`Scrap Weight(${UOMDimension.label})`}
+                                        name={'scrapWeight'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        id={'scrap-weight'}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.scrapWeight}
+                                        disabled={true}
                                     />
                                 </Col>
                             </Row>

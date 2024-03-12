@@ -258,24 +258,20 @@ export const ErrorMessage = (props) => {
     const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
     const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
     const [ammendmentStatus, setAmmendmentStatus] = useState('');
-    const [noContent, setNoContent] = useState(false)
-    const [status, setStatus] = useState('')
-    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
     const [showbutton, setShowButton] = useState(false)
-    const [ammendentButton, setAmmendmentButton] = useState(false)
     const [amendentStatus, setAmendentstatus] = useState('')
     const [toggleSeeData, setToggleSeeData] = useState(true)
+    const [isGreen, setIsGreen] = useState(false)
     const [toggleAmmendmentData, setToggleAmmendmentStatus] = useState(true)
-    const { approvalNumber } = props
     const dispatch = useDispatch()
     const [sobButton, setSobButton] = useState(false)            //RE
     const [showSobMessageList, setShowSobMessageList] = useState(false)            //RE
     const [sobMessage, setSobMessage] = useState([])            //RE
-    const impactData = useSelector((state) => state.simulation.impactData)            //RE
+    const impactData = useSelector((state) => state.costing.impactData)            //RE
 
     const funcForErrorBoxButton = () => {
 
-        const statusWithButton = <><p className={`${toggleSeeData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<button className='see-data-btn' onClick={() => { setToggleSeeData(!toggleSeeData) }}>Show {toggleSeeData ? 'all' : 'less'} data</button>}</>
+        const statusWithButton = <><p className={`${toggleSeeData ? 'status-overflow' : ''} `}><span>{amendentStatus}</span></p>{<button className='see-data-btn' onClick={() => { setToggleSeeData(!toggleSeeData) }}>Show {toggleSeeData ? 'all' : 'less'} data</button>}</>
         return statusWithButton
     }
     const funcForErrorBoxButtonForAmmendment = () => {
@@ -293,24 +289,21 @@ export const ErrorMessage = (props) => {
     useEffect(() => {
         if (getConfigurationKey()?.IsSAPConfigured) {
             const obj = {
-                approvalTokenNumber: approvalNumber
+                TokenNumber: props?.isCosting === false ? props?.approvalNumber : null,
+                CostingId: props?.isCosting === true ? props?.CostingId : null,
             }
             dispatch(getAmmendentStatus(obj, res => {
-                setNoContent(res?.status === 204 ? true : false)
-
                 if (res?.status !== 204) {
-                    const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
-                    setStatus(RecordInsertStatus)
-                    setIsSuccessfullyInsert(IsSuccessfullyInsert)
-                    setAmmendmentStatus(AmmendentStatus);
-                    setShowButton(RecordInsertStatus?.length > 245 ? true : false)
-                    if (IsAmmendentDone) {
-                        setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
+                    const { IsSuccessfullyUpdated, ErrorStatus } = res?.data?.DataList[0]
+                    if (IsSuccessfullyUpdated === true) {
+                        setIsGreen(true)
+                        setAmendentstatus(ErrorStatus)
+                        setShowButton(ErrorStatus?.length > 245 ? true : false)
                     } else {
-                        setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
-                            } `)
+                        setIsGreen(false)
+                        setAmendentstatus(ErrorStatus)
                     }
-                    setAmmendmentButton(amendentStatus.length > 245 ? true : false)
+                    setRecordInsertStatusBox(true)
                 }
             }))
         }
@@ -412,13 +405,13 @@ export const ErrorMessage = (props) => {
     const errorBoxClassForStatus = () => {
         let temp;
 
-        temp = (noContent || status === null || status === '' || status === undefined) ? 'd-none' : isSuccessfullyInsert ? 'success' : 'error';
+        temp = (amendentStatus === null || amendentStatus === '' || amendentStatus === undefined) ? 'd-none' : isGreen ? 'success' : 'error';
         return temp
     }
     return (<>
         {recordInsertStatusBox &&
             <div className="error-box-container">
-                <Errorbox customClass={errorBoxClassForStatus()} errorText={showbutton ? funcForErrorBoxButton() : status} />
+                <Errorbox customClass={errorBoxClassForStatus()} errorText={showbutton ? funcForErrorBoxButton() : amendentStatus} />
                 <img
                     className="float-right"
                     alt={""}
@@ -428,7 +421,7 @@ export const ErrorMessage = (props) => {
             </div>
         }
 
-        {amendmentStatusBox &&
+        {/* {amendmentStatusBox &&
             <div className="error-box-container">
                 <Errorbox customClass={errorBoxClassForAmmendent()} errorText={ammendentButton ? funcForErrorBoxButtonForAmmendment() : amendentStatus} />
                 <img
@@ -438,9 +431,8 @@ export const ErrorMessage = (props) => {
                     src={errorBoxClassForAmmendent() === 'd-none' ? '' : errorBoxClassForAmmendent() === "success" ? imgGreencross : imgRedcross}
                 ></img>
             </div>
-        }
-
-        {/* {showSobMessageList &&             //RE
+        } */}
+        {showSobMessageList &&
             <div className="error-box-container">
                 <Errorbox customClass={"error"} errorText={sobButton ? funcForSobMessage() : sobMessage} />
                 <img
@@ -450,8 +442,7 @@ export const ErrorMessage = (props) => {
                     src={imgRedcross}
                 ></img>
             </div>
-        } */}
-
+        }
     </>)
 }
 // **END** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE

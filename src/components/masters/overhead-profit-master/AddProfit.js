@@ -92,6 +92,9 @@ class AddProfit extends Component {
    */
   componentDidMount() {
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
+    if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
     if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
       this.props.getRawMaterialNameChild(() => { })
     }
@@ -1285,7 +1288,7 @@ class AddProfit extends Component {
                         {!isHideBOP && (
                           <Col md="3">
                             <Field
-                              label={`Profit on ${showBopLabel()}  (%)`}
+                              label={`Profit on ${showBopLabel()} (%)`}
                               name={"ProfitBOPPercentage"}
                               type="text"
                               placeholder={isBOP || isViewMode ? "-" : "Enter"}

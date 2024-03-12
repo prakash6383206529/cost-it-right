@@ -18,7 +18,7 @@ import Button from '../../../../layout/Button';
 
 function SurfaceTreatmentCost(props) {
   const { item } = props
-  const tempArray = reactLocalStorage.getObject('surfaceCostingArray')
+  const tempArray = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
   let surfaceData = tempArray && tempArray.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
 
   const CostingViewMode = useContext(ViewCostingContext);
@@ -104,7 +104,7 @@ function SurfaceTreatmentCost(props) {
           LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
-          SurfaceTreatmentCost: el.Rate * 1,
+          SurfaceTreatmentCost: (checkForNull(el.Rate) * checkForNull(el?.Quantity)) + (checkForNull(el?.LabourRate) * checkForNull(el?.LabourQuantity)),
           SurfaceTreatmentDetailsId: '',
         }
       })

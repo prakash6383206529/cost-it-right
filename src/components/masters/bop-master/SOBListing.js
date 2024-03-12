@@ -7,7 +7,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey, searchNocontentFilter, showBopLabel } from '../../../helper';
+import { searchNocontentFilter, showBopLabel } from '../../../helper';
 import { Sob } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { ApplyPermission } from '.';
 import { useRef } from 'react';
 import Button from '../../layout/Button';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -345,7 +346,7 @@ const SOBListing = (props) => {
                 <AgGridColumn field="NoOfVendors" headerName="No. of Vendors"></AgGridColumn>
                 <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
                 <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB (%)"></AgGridColumn>
-                <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                <AgGridColumn width={205} field="WeightedNetLandedCost" headerName={`Weighted Net Cost (${reactLocalStorage.getObject("baseCurrency")}) `} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartNumber" width={120} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>

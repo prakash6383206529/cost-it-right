@@ -91,7 +91,7 @@ class AddBOPCategory extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? `Update ${showBopLabel()}  Category` : `Add ${showBopLabel()}  Category`}
+                                            <h3>{isEditFlag ? `Update ${showBopLabel()} Category` : `Add ${showBopLabel()} Category`}
                                                 <TourWrapper
                                                     buttonSpecificProp={{ id: "BOP_Domestic_Category_form" }}
                                                     stepsSpecificProp={{

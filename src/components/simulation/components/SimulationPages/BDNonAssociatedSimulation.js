@@ -23,6 +23,7 @@ import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
 import { BOP_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {
 
@@ -484,7 +485,7 @@ function BDNonAssociatedSimulation(props) {
         })
 
         return (
-            <ExcelSheet data={temp} name={`${showBopLabel()}  Data`}>
+            <ExcelSheet data={temp} name={`${showBopLabel()} Data`}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -587,21 +588,21 @@ function BDNonAssociatedSimulation(props) {
                                             enableBrowserTooltips={true}
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                            <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()}  Part No.`} minWidth={140}></AgGridColumn>
-                                            <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()}  Part Name`} minWidth={140}></AgGridColumn>
-                                            {<AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName={`${showBopLabel()}  Category`} minWidth={140}></AgGridColumn>}
+                                            <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()} Part No.`} minWidth={140}></AgGridColumn>
+                                            <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()} Part Name`} minWidth={140}></AgGridColumn>
+                                            {<AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName={`${showBopLabel()} Category`} minWidth={140}></AgGridColumn>}
                                             {list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
                                             {list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {<AgGridColumn field="Plants" tooltipField='Plants' editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
                                             {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" tooltipField='NumberOfPieces' editable='false' headerName="Min Order Quantity" minWidth={140} ></AgGridColumn>}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`${Number(selectedMasterForSimulation?.value) === 5} ? "Basic Rate (Currency)" : "Basic Rate (${reactLocalStorage.getObject("baseCurrency")})"`} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
                                             {<AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter'></AgGridColumn>}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`${Number(selectedMasterForSimulation?.value) === 5} ? "Net Cost (Currency)" : "Net Cost (${reactLocalStorage.getObject("baseCurrency")})"`} marryChildren={true}>
                                                 {/* <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
                                                 <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" valueGetter={ageValueGetterLanded} colId='NewNetLandedCost'></AgGridColumn>

@@ -18,6 +18,7 @@ import TooltipCustom from '../../../../common/Tooltip'
 function Sheet(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
     const { rmRowData, item, CostingViewMode } = props
+    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -43,18 +44,18 @@ function Sheet(props) {
 
     const defaultValues = {
         SheetWidth: WeightCalculatorRequest && WeightCalculatorRequest.Width !== null ? WeightCalculatorRequest.Width : '',
-        SheetThickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? WeightCalculatorRequest.Thickness : '',
-        SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== null ? WeightCalculatorRequest.LengthOfSheet : '',
-        SheetWeight: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== null ? WeightCalculatorRequest.WeightOfSheetInUOM : '',
-        StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',
-        StripsNumber: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfStrips !== null ? WeightCalculatorRequest.NumberOfStrips : '',
-        BlankSize: WeightCalculatorRequest && WeightCalculatorRequest.BlankSize !== null ? WeightCalculatorRequest.BlankSize : '',
-        ComponentPerStrip: WeightCalculatorRequest && WeightCalculatorRequest.ComponentsPerStrip !== null ? WeightCalculatorRequest.ComponentsPerStrip : '',
-        NoOfComponent: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== null ? WeightCalculatorRequest.NumberOfPartsPerSheet : '', // TOTAL COMPONENT PER SHEET
-        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? WeightCalculatorRequest.Cavity : 1,
-        NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? WeightCalculatorRequest.NetSurfaceArea : '',
-        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-        FinishWeightOfSheet: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '',
+        SheetThickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
+        SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfSheet, localStorage.NoOfDecimalForInputOutput) : '',
+        SheetWeight: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfSheetInUOM, localStorage.NoOfDecimalForInputOutput) : '',
+        BlankWidth: WeightCalculatorRequest && WeightCalculatorRequest.BlankWidth !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BlankWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        StripsNumber: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfStrips !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfStrips, localStorage.NoOfDecimalForInputOutput) : '',
+        BlankLength: WeightCalculatorRequest && WeightCalculatorRequest.BlankLength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BlankLength, localStorage.NoOfDecimalForInputOutput) : '',
+        ComponentPerStrip: WeightCalculatorRequest && WeightCalculatorRequest.ComponentsPerStrip !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ComponentsPerStrip, localStorage.NoOfDecimalForInputOutput) : '',
+        NoOfComponent: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfPartsPerSheet, localStorage.NoOfDecimalForInputOutput) : '', // TOTAL COMPONENT PER SHEET
+        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Cavity, localStorage.NoOfDecimalForInputOutput) : 1,
+        NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        FinishWeightOfSheet: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
     }
 
     const {
@@ -65,7 +66,6 @@ function Sheet(props) {
         })
 
 
-    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
     const [UOMDimension, setUOMDimension] = useState(
         WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
@@ -91,7 +91,7 @@ function Sheet(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['SheetThickness', 'SheetWidth', 'SheetLength', 'StripWidth', 'BlankSize', 'Cavity'],
+        name: ['SheetThickness', 'SheetWidth', 'SheetLength', 'BlankWidth', 'BlankLength', 'Cavity'],
     })
 
     const dispatch = useDispatch()
@@ -186,17 +186,23 @@ function Sheet(props) {
     }
 
     const setNoOfStrips = () => {
-        const stripNo = parseInt(checkForNull(getValues('SheetLength')) / checkForNull(getValues('StripWidth')))
-        setValue('StripsNumber', checkForNull(stripNo))
+        const stripNoByWidth = parseInt(checkForNull(getValues('SheetLength')) / checkForNull(getValues('BlankWidth')))
+        setValue('StripsNumberByWidth', checkForNull(stripNoByWidth))
+        const stripNoByLength = parseInt(checkForNull(getValues('SheetLength')) / checkForNull(getValues('BlankLength')))
+        setValue('StripsNumberByLength', checkForNull(stripNoByLength))
     }
 
     const setComponentPerStrips = () => {
-        const blankSize = getValues('BlankSize')
-        const componentPerStrip = parseInt(checkForNull(getValues('SheetWidth')) / blankSize)
-        setValue('ComponentPerStrip', checkForNull(componentPerStrip))
+        const blankLength = getValues('BlankLength')
+        const componentPerStripByWidth = parseInt(checkForNull(getValues('SheetWidth')) / blankLength)
+        const componentPerStripByLength = parseInt(checkForNull(getValues('SheetLength')) / blankLength)
+        setValue('componentPerStripByWidth', checkForNull(componentPerStripByWidth))
+        setValue('componentPerStripByLength', checkForNull(componentPerStripByLength))
         const updatedValue = dataToSend
-        updatedValue.ComponentsPerStrip = componentPerStrip
+        updatedValue.ComponentsPerStripByWidth = componentPerStripByWidth
+        updatedValue.ComponentsPerStripByLength = componentPerStripByLength
         setDataToSend(updatedValue)
+
     }
 
     const setNoOfComponent = () => {
@@ -294,9 +300,9 @@ function Sheet(props) {
             LengthOfSheet: values.SheetLength,
             WeightOfSheetInUOM: dataToSend.WeightOfSheet,
             Width: values.SheetWidth,
-            StripWidth: values.StripWidth,
+            BlankWidth: values.BlankWidth,
             NumberOfStrips: values.StripsNumber,
-            BlankSize: values.BlankSize,
+            BlankLength: values.BlankLength,
             ComponentsPerStrip: dataToSend.ComponentsPerStrip,
             NumberOfPartsPerSheet: values.NoOfComponent, //TOTAL COMPONENT PER SHEET
             UOMId: rmRowData.UOMId,
@@ -437,93 +443,6 @@ function Sheet(props) {
                                         disabled={true}
                                     />
                                 </Col>
-                            </Row>
-                            <Row>
-                                <Col md="12" className={''}>
-                                    <HeaderTitle className="border-bottom"
-                                        title={'Blank Specification'}
-                                        customClass={'underLine-title'}
-                                    />
-                                </Col>
-                            </Row>
-                            <Row className={'mt15'}>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Strip Width(mm)`}
-                                        name={'StripWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.StripWidth}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
-                                    <TextFieldHookForm
-                                        label={`No. of Strips`}
-                                        id={'sheet-strips'}
-                                        name={'StripsNumber'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.StripsNumber}
-                                        disabled={true}
-                                    />
-                                </Col>
-
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Blank Size(mm)`}
-                                        name={'BlankSize'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.BlankSize}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Components/Strip = (Sheet Width / Blank Size)'} />
-                                    <TextFieldHookForm
-                                        label={`Components/Strip`}
-                                        name={'ComponentPerStrip'}
-                                        id={'sheet-component-per-strip'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.ComponentPerStrip}
-                                        disabled={true}
-                                    />
-                                </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Cavity`}
@@ -544,12 +463,74 @@ function Sheet(props) {
                                         disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
+                            </Row>
+                            <Row>
+                                <Col md="12" className={''}>
+                                    <HeaderTitle className="border-bottom"
+                                        title={'Blank Specification'}
+                                        customClass={'underLine-title'}
+                                    />
+                                </Col>
+                            </Row>
+                            <Row className={'mt15'}>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
+                                    <NumberFieldHookForm
+                                        label={`Width(mm)`}
+                                        name={'BlankWidth'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.BlankWidth}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <NumberFieldHookForm
+                                        label={`Length(mm)`}
+                                        name={'BlankLength'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.BlankLength}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col>
+                            </Row >
+
+                            <Row>
+                                <Col md="12" className={'mt25'}>
+                                    <HeaderTitle className="border-bottom"
+                                        title={'Sheet Length/Blank Width'}
+                                        customClass={'underLine-title'}
+                                    />
+                                </Col>
+                            </Row>
+                            <Row className={'mt15'}>
+
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
                                     <TextFieldHookForm
-                                        label={`Total Components/Sheet`}
-                                        name={'NoOfComponent'}
-                                        id={'total-component'}
+                                        label={`No. of Strips`}
+                                        id={'sheet-strips'}
+                                        name={'StripsNumberByWidth'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -558,16 +539,16 @@ function Sheet(props) {
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.NoOfComponent}
+                                        errors={errors.StripsNumberByWidth}
                                         disabled={true}
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
-                                    <NumberFieldHookForm
-                                        label={`Total Components/Sheet`}
-                                        name={'NoOfComponent'}
-                                        id={'total-component'}
+                                    <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
+                                    <TextFieldHookForm
+                                        label={`No. of Strips`}
+                                        id={'sheet-strips'}
+                                        name={'StripsNumberByLength'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -576,12 +557,87 @@ function Sheet(props) {
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.NoOfComponent}
+                                        errors={errors.StripsNumberByLength}
                                         disabled={true}
                                     />
-                                </Col >
-                            </Row >
-
+                                </Col>
+                                <Row className={'mt15'}>
+                                    <Col md="3">
+                                        <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Components/Strip = (Sheet Width / Blank Size)'} />
+                                        <TextFieldHookForm
+                                            label={`Components/Strip`}
+                                            name={'componentPerStripByWidth'}
+                                            id={'sheet-component-per-strip'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.ComponentPerStrip}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                    <Col md="3">
+                                        <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Components/Strip = (Sheet Width / Blank Size)'} />
+                                        <TextFieldHookForm
+                                            label={`Components/Strip`}
+                                            name={'componentPerStripByLength'}
+                                            id={'sheet-component-per-strip'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.componentPerStripByLength}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row className={'mt15'}>
+                                    <Col md="3">
+                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
+                                        <TextFieldHookForm
+                                            label={`Total Components/Sheet`}
+                                            name={'NoOfComponentByWidth'}
+                                            id={'total-component'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.NoOfComponentByWidth}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                    <Col md="3">
+                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
+                                        <TextFieldHookForm
+                                            label={`Total Components/Sheet`}
+                                            name={'NoOfComponentByLength'}
+                                            id={'total-component'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.NoOfComponentByLength}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                </Row>
+                            </Row>
                             <hr className="mx-n4 w-auto" />
                             <Row>
                                 <Col md="3">

@@ -39,7 +39,9 @@ import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermiss
 import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
 import DayTime from '../common/DayTimeWrapper';
 import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
+import WarningMessage from '../common/WarningMessage';
 const bopMasterName = showBopLabel();
+
 class BulkUpload extends Component {
     constructor(props) {
         super(props);
@@ -114,28 +116,27 @@ class BulkUpload extends Component {
     }
 
     commonFunction() {
-
         let levelDetailsTemp = []
         levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId === Number(ZBCADDMORE) || this.state.costingTypeId === Number(ZBCADDMOREOPERATION) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) || this.state.costingTypeId === Number(VBCADDMOREOPERATION) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) || this.state.costingTypeId === Number(CBCADDMOREOPERATION) ? CBCTypeId : this.state.bopType === DETAILED_BOP ? VBCTypeId : this.state.costingTypeId, this.props?.masterId, this.props.userMasterLevelAPI)
         this.setState({ levelDetails: levelDetailsTemp })
-        if (levelDetailsTemp?.length !== 0) {
-            let obj = {
-                TechnologyId: this.props?.masterId,
-                DepartmentId: userDetails().DepartmentId,
-                UserId: loggedInUserId(),
-                Mode: 'master',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) || this.state.costingTypeId === Number(ZBCADDMOREOPERATION) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) || this.state.costingTypeId === Number(VBCADDMOREOPERATION) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) || this.state.costingTypeId === Number(CBCADDMOREOPERATION) ? CBCTypeId : this.state.bopType === DETAILED_BOP ? VBCTypeId : this.state.costingTypeId)
-            }
-
-            this.props.checkFinalUser(obj, (res) => {
-                if (res?.data?.Result) {
-                    this.setState({ IsFinalApprover: res?.data?.Data?.IsFinalApprover })
-                }
-            })
-            this.setState({ noApprovalCycle: false })
-        } else {
-            this.setState({ noApprovalCycle: true })
+        let obj = {
+            TechnologyId: this.props?.masterId,
+            DepartmentId: userDetails().DepartmentId,
+            UserId: loggedInUserId(),
+            Mode: 'master',
+            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) || this.state.costingTypeId === Number(ZBCADDMOREOPERATION) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) || this.state.costingTypeId === Number(VBCADDMOREOPERATION) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) || this.state.costingTypeId === Number(CBCADDMOREOPERATION) ? CBCTypeId : this.state.bopType === DETAILED_BOP ? VBCTypeId : this.state.costingTypeId)
         }
+
+        this.props.checkFinalUser(obj, (res) => {
+            if (res?.data?.Result) {
+                this.setState({ IsFinalApprover: res?.data?.Data?.IsFinalApprover })
+            }
+            if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                this.setState({ noApprovalCycle: true })
+            } else {
+                this.setState({ noApprovalCycle: false })
+            }
+        })
     }
 
     /**
@@ -237,6 +238,7 @@ class BulkUpload extends Component {
 
                     let checkForFileHead
                     const { fileName } = this.props;
+
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
@@ -270,12 +272,12 @@ class BulkUpload extends Component {
 
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const { updatedLabels } = updateBOPValues(BOP_VBC_DOMESTIC, [], bopMasterName)
-
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 const { updatedLabels } = updateBOPValues(BOP_ZBC_DOMESTIC, [], bopMasterName)
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
+
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const { updatedLabels } = updateBOPValues(BOP_CBC_DOMESTIC, [], bopMasterName)
@@ -330,7 +332,9 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(Vendor, '', '', true), fileHeads)
+                            const { updatedLabels } = updateBOPValues(Vendor, [], bopMasterName)
+
+                            checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, '', '', true), fileHeads)
                             break;
                         case String(LABOURBULKUPLOAD):
                             checkForFileHead = checkForSameFileUpload(Labour, fileHeads)
@@ -458,10 +462,12 @@ class BulkUpload extends Component {
                                 }
                                 else if (fileHeads[i] === 'Spec') {
                                     fileHeads[i] = 'RMSpec'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'CircleScrapCost') {
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'CircleScrapRate') {
                                     fileHeads[i] = 'JaliScrapCost'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapCost') {
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapRate/ForgingScrapRate') {
                                     fileHeads[i] = 'ScrapRate'
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRatePerScrapUOM/JaliScrapRatePerScrapUOM/ForgingScrapRatePerScrapUOM') {
+                                    fileHeads[i] = 'ScrapRatePerScrapUOM'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'PlantCode') {
                                     // } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import') && fileHeads[i] === 'PlantCode') {
                                     fileHeads[i] = 'DestinationPlantCode'
@@ -470,12 +476,16 @@ class BulkUpload extends Component {
                                 } else if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
                                 }
-                                if (fileHeads[i] === 'InsertPartNumber' || fileHeads[i] === 'BOPNumber') {
+                                if (fileHeads[i] === 'InsertPartNumber' || fileHeads[i] === 'BOPNumber' || fileHeads[i] === 'InsertNumber') {
                                     fileHeads[i] = 'BoughtOutPartNumber'
                                 }
-                                if (fileHeads[i] === 'InsertPartName' || fileHeads[i] === 'BOPName') {
+                                if (fileHeads[i] === 'InsertPartName' || fileHeads[i] === 'BOPName' || fileHeads[i] === 'InsertName') {
 
                                     fileHeads[i] = 'BoughtOutPartName'
+
+                                }
+                                if (fileHeads[i] === 'InsertVendor') {
+                                    fileHeads[i] = 'BOPVendor'
                                 }
                                 if (fileHeads[i] === 'InsertCategory') {
                                     fileHeads[i] = 'CategoryName'
@@ -491,41 +501,26 @@ class BulkUpload extends Component {
                                 }
                                 else if (fileHeads[i] === 'Spec') {
                                     fileHeads[i] = 'RMSpec'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'CircleScrapCost') {
-                                    fileHeads[i] = 'JaliScrapCost'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapCost') {
-                                    fileHeads[i] = 'ScrapRate'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'PlantCode') {
-                                    fileHeads[i] = 'DestinationPlantCode'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'PlantName') {
-                                    fileHeads[i] = 'DestinationPlantName'
-                                } else if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'MinimumOrderQuantity') {
-                                    fileHeads[i] = 'NumberOfPieces'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'Code') {
                                     fileHeads[i] = 'RawMaterialCode'
                                 }
-                                if (fileHeads[i] === 'InsertPartNumber') {
-                                    fileHeads[i] = 'BoughtOutPartNumber'
-                                }
-                                if (fileHeads[i] === 'InsertPartName') {
-                                    fileHeads[i] = 'BoughtOutPartName'
-                                }
-                                if (fileHeads[i] === 'InsertCategory') {
-                                    fileHeads[i] = 'CategoryName'
-                                }
-                                if (fileHeads[i] === 'MinimumOrderQuantity') {
-                                    fileHeads[i] = 'NumberOfPieces'
-                                }
-
-                                if (fileHeads[i] === 'InsertVendor') {
-                                    fileHeads[i] = 'BOPVendor'
-                                }
-
                                 if (fileName === 'Vendor' && fileHeads[i] === 'PlantCode') {
                                     fileHeads[i] = 'Plants'
                                 }
                                 if (fileName === 'Vendor' && fileHeads[i] === 'Potential Vendor') {
                                     fileHeads[i] = 'IsCriticalVendor'
+                                }
+                                if (fileHeads[i] === 'BOPNumber') {
+                                    fileHeads[i] = 'BoughtOutPartNumber'
+                                }
+                                if (fileHeads[i] === 'BOPName') {
+                                    fileHeads[i] = 'BoughtOutPartName'
+                                }
+                                if (fileHeads[i] === 'ClientApprovedVendor') {
+                                    fileHeads[i] = 'IsClientVendorBOP'
+                                }
+                                if (fileHeads[i] === 'Efficiency (%)') {
+                                    fileHeads[i] = 'EfficiencyPercentage'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;
@@ -603,6 +598,16 @@ class BulkUpload extends Component {
             Toaster.warning('Please select a file to upload.')
             return false
         }
+        const updatedFileData = fileData.map(record => {
+
+            const detailedEntry = fileName === 'Operation' &&
+                (costingTypeId === ZBCADDMOREOPERATION || costingTypeId === VBCADDMOREOPERATION || costingTypeId === CBCADDMOREOPERATION);
+            return {
+                ...record,
+                DetailedEntry: detailedEntry ? 'YES' : 'NO',
+                ForType: ''
+            };
+        });
         let uploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
@@ -611,7 +616,7 @@ class BulkUpload extends Component {
         }
 
         let masterUploadData = {
-            Records: fileData,
+            Records: fileName === 'Operation' ? updatedFileData : fileData,
             LoggedInUserId: loggedInUserId(),
             IsFinalApprover: !this.props.initialConfiguration.IsMasterApprovalAppliedConfigure ? true : IsFinalApprover,
             CostingTypeId: costingTypeId,
@@ -630,7 +635,6 @@ class BulkUpload extends Component {
         } else if (fileName === 'Budgeted Volume') {
             uploadData.TypeOfEntry = ENTRY_TYPE_IMPORT
         }
-
         if (fileName === 'RM Domestic' || fileName === 'RM Import') {
             this.props.bulkUploadRM(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
@@ -755,6 +759,7 @@ class BulkUpload extends Component {
      */
     render() {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
+
         const { faildRecords, failedData, costingTypeId, setDisable, noApprovalCycle, bopType } = this.state;
         if (faildRecords) {
 
@@ -923,7 +928,7 @@ class BulkUpload extends Component {
 
                                 </Row >
                                 <Row className=" justify-content-between">
-                                    <div className="col-sm-12  text-right">
+                                    <div className="col-sm-12 text-right">
                                         <button
                                             type={'button'}
                                             className="reset mr15 cancel-btn"
@@ -941,6 +946,7 @@ class BulkUpload extends Component {
                                             {isEditFlag ? 'Update' : 'Save'}
                                         </button>
                                     </div>
+                                    {noApprovalCycle && <WarningMessage dClass={"justify-content-end"} message={'This user is not in the approval cycle'} />}
                                 </Row>
                             </form >
                         </div >

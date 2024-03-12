@@ -11,6 +11,7 @@ import { getCostingCondition } from '../../../../../actions/Common'
 import Toaster from '../../../../common/Toaster'
 import TooltipCustom from '../../../../common/Tooltip'
 import { trim } from 'lodash'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 function AddConditionCosting(props) {
     const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, isFromMaster, EntryType } = props
@@ -499,7 +500,7 @@ function AddConditionCosting(props) {
                                     <Col md={3} className={'px-2'}>
                                         {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Price'} />}
                                         <TextFieldHookForm
-                                            label={`Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
+                                            label={`Cost (${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")})`}
                                             name={'CostCurrency'}
                                             id={'cost-by-percent'}
                                             Controller={Controller}
@@ -522,7 +523,7 @@ function AddConditionCosting(props) {
                                         isFromImport && <Col md={3} className='px-2'>
                                             <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-currency'} tooltipText={`Cost = Cost (${currency?.label}) * Currency (${currencyValue})`} />
                                             <TextFieldHookForm
-                                                label={`Cost (${initialConfiguration?.BaseCurrency})`}
+                                                label={`Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                                 name={'CostBase'}
                                                 id={'cost-by-currency'}
                                                 Controller={Controller}
@@ -545,9 +546,9 @@ function AddConditionCosting(props) {
                                     {
                                         type === 'Quantity' && <>
                                             <Col md={3} className='px-2'>
-                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity'} tooltipText={`Cost Per Quantity = Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency}) / Quantity`} />
+                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity'} tooltipText={`Cost Per Quantity = Cost (${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")}) / Quantity`} />
                                                 <TextFieldHookForm
-                                                    label={`Cost Per Quantity (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
+                                                    label={`Cost Per Quantity (${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")})`}
                                                     name={'ConditionCostPerQuantity'}
                                                     id={'cost-per-quantity'}
                                                     Controller={Controller}
@@ -562,9 +563,9 @@ function AddConditionCosting(props) {
                                                 />
                                             </Col>
                                             {isFromImport && <Col md={3} className='px-2'>
-                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity-coversion'} tooltipText={`Cost Per Quantity = Cost (${initialConfiguration?.BaseCurrency})  / Quantity`} />
+                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity-coversion'} tooltipText={`Cost Per Quantity = Cost (${reactLocalStorage.getObject("baseCurrency")})  / Quantity`} />
                                                 <TextFieldHookForm
-                                                    label={`Cost Per Quantity (${initialConfiguration?.BaseCurrency})`}
+                                                    label={`Cost Per Quantity (${reactLocalStorage.getObject("baseCurrency")})`}
                                                     name={'CostPerQuantityConversion'}
                                                     id={'cost-per-quantity-coversion'}
                                                     Controller={Controller}
@@ -600,7 +601,7 @@ function AddConditionCosting(props) {
                                     </Col >
                                 </Row >
                                 {/* <NpvCost showAddButton={false} tableData={tableData} hideAction={false} editData={editData} /> */}
-                                {<ConditionCosting tableData={tableData} hideAction={false} editData={editData} ViewMode={props.ViewMode} isFromImport={isFromImport} currency={currency} />}
+                                {<ConditionCosting tableData={tableData} hideAction={false} editData={editData} ViewMode={props.ViewMode} isFromImport={isFromImport} currency={currency} isFromMaster={isFromMaster} />}
                             </div >
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">

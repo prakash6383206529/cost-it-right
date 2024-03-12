@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { getBOPData, } from '../../../actions/Costing';
 import { useDispatch, useSelector } from 'react-redux';
-import { checkForDecimalAndNull } from '../../../../../helper';
+import { checkForDecimalAndNull, showBopLabel } from '../../../../../helper';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { WACTypeId } from '../../../../../config/constants';
 
@@ -50,7 +50,7 @@ function BoughtOutPart(props) {
         {partType && <td>{item && item.PartName}</td>}
         <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
-        {<td>{'-'}</td>}
+        <td>{item?.Technology ? item?.Technology : '-'}</td>
         {!partType && <td>{item?.CostingPartDetails?.BoughtOutPartRate !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         {!partType && <td>{'-'}</td>}
         <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item?.CostingPartDetails?.Quantity, initialConfiguration.NoOfDecimalForPrice) : 1}</td>

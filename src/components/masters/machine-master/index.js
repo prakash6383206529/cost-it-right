@@ -48,6 +48,7 @@ const MachineMaster = () => {
       const permmisionDataAccess = accessData && accessData.Actions && checkPermission(accessData.Actions);
       if (permmisionDataAccess !== undefined) {
         setPermissionData(permmisionDataAccess);
+        setState((prevState) => ({ ...prevState, AddAccessibility: permmisionDataAccess.Add, EditAccessibility: permmisionDataAccess.Edit, DeleteAccessibility: permmisionDataAccess.Delete }));
       }
     }
   };

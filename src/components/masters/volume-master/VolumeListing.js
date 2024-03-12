@@ -588,7 +588,9 @@ function VolumeListing(props) {
     setLimit(true);
   };
   const BulkToggle = () => {
-    setBulkUploadBtn(true);
+    if (checkMasterCreateByCostingPermission(true)) {
+      setBulkUploadBtn(true);
+    }
   };
   const toggle = (tab) => {
     if (activeTab !== tab) {

@@ -24,12 +24,24 @@ class App extends Component {
     this.props.getLoginPageInit(res => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
+
         reactLocalStorage.setObject('InitialConfiguration', Data)
+        let BOPLabel = Data.BOPLabel
+        reactLocalStorage.setObject('BOPLabel', BOPLabel)
+
         let costingHeadsList = Data.CostingHeadsList
         let costingHeadsListArray = costingHeadsList.split(",")
 
         let approvalTypeList = Data.ApprovalTypeList
         let approvalTypeListArray = approvalTypeList.split(",")
+
+        let onboardingName = Data.ApprovalOnboardingList.split("=")[0]
+        let onboardingId = Data.ApprovalOnboardingList.split("=")[1]
+        reactLocalStorage.setObject('onboardingName', onboardingName)
+        reactLocalStorage.setObject('onboardingId', onboardingId)
+
+        let baseCurrency = Data.BaseCurrency
+        reactLocalStorage.setObject('baseCurrency', baseCurrency)
 
         let objShort = {};
         costingHeadsListArray && costingHeadsListArray.map(item => {

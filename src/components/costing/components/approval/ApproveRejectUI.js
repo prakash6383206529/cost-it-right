@@ -110,7 +110,7 @@ function ApproveRejectUI(props) {
     props.closeDrawer('', 'Cancel')
   }
 
-  const submitButton = () => {
+  const submitButton = handleSubmit(() => {
     if (getConfigurationKey().IsReleaseStrategyConfigured && showApprovalTypeDropdown) {
       if (getValues('ApprovalType') === '' || !getValues('ApprovalType')) {
         Toaster.warning("Please select approval type")
@@ -118,7 +118,7 @@ function ApproveRejectUI(props) {
       }
     }
     onSubmit();
-  }
+  })
 
   const renderDropdownListing = (label) => {
     const tempDropdownList = []
@@ -361,7 +361,6 @@ function ApproveRejectUI(props) {
                         errors={errors.dept}
                         disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                       />
-                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
@@ -379,6 +378,7 @@ function ApproveRejectUI(props) {
                         disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                         errors={errors.approver}
                       />
+                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `This user is not in the approval cycle for the ${getValues('ApprovalType')} approval type. Please contact the admin to add an approver for the ${getValues('ApprovalType')} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`} />}
                     </div>
                   </>
                 )}
@@ -402,7 +402,6 @@ function ApproveRejectUI(props) {
                         errors={errors.dept}
                         disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                       />
-                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
@@ -420,6 +419,7 @@ function ApproveRejectUI(props) {
                         errors={errors.approver}
                         disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                       />
+                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `This user is not in approval cycle for ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'} approval type, Please contact admin to add approver for ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
                     {
                       type === 'Sender' &&
@@ -630,7 +630,7 @@ function ApproveRejectUI(props) {
                     id="Approval_Submit"
                     className="submit-button"
                     onClick={props.isShowNFRPopUp ? showPopupWrapper : submitButton}
-                    disabled={isDisable}
+                    disabled={isDisable || (props?.isDisableSubmit ? true : false)}
                     icon={"save-icon"}
                     buttonName={"Submit"}
                   />

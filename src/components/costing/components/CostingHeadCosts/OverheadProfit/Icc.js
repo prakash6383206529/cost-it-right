@@ -157,7 +157,7 @@ function Icc(props) {
 
             let NetRawMaterialsCost;
             if (isNetWeight && !(costData.IsAssemblyPart) && !(isPartApplicability)) {
-                let rmValue = reactLocalStorage.getObject('costingArray')
+                let rmValue = JSON.parse(sessionStorage.getItem('costingArray'))
                 let newRmCost = (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate) * (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight)
                 NetRawMaterialsCost = newRmCost
             } else {

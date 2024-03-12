@@ -23,6 +23,7 @@ import { UserListing } from '../../config/constants';
 import { PaginationWrapper } from '../common/commonPagination';
 import ScrollToTop from '../common/ScrollToTop';
 import Button from '../layout/Button';
+import DayTime from '../common/DayTimeWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -124,6 +125,33 @@ const UsersListing = (props) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 
 	}, []);
+
+	var filterParams = {
+		date: "",
+		comparator: function (filterLocalDateAtMidnight, cellValue) {
+			var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+			var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+			if (dateAsString == null) return -1;
+			var dateParts = dateAsString.split('/');
+			var cellDate = new Date(
+				Number(dateParts[2]),
+				Number(dateParts[1]) - 1,
+				Number(dateParts[0])
+			);
+			if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+				return 0;
+			}
+			if (cellDate < filterLocalDateAtMidnight) {
+				return -1;
+			}
+			if (cellDate > filterLocalDateAtMidnight) {
+				return 1;
+			}
+		},
+		browserDatePicker: true,
+		minValidYear: 2000,
+	};
+
 	/**
 		* @method getUsersListData
 		* @description Get user list data
@@ -258,6 +286,10 @@ const UsersListing = (props) => {
 		setState((prevState) => ({ ...prevState, UserId: UserId, isOpen: true, }))
 
 	}
+	const dateRenderer = (props) => {
+		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+		return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY HH:mm:ss') : '';
+	}
 
 	const closeUserDetails = () => {
 		setState((prevState) => ({ ...prevState, UserId: '', isOpen: false, }))
@@ -316,7 +348,8 @@ const UsersListing = (props) => {
 		customNoRowsOverlay: NoContentFound,
 		statusButtonFormatter: statusButtonFormatter,
 		hyphenFormatter: hyphenFormatter,
-		linkableFormatter: linkableFormatter
+		linkableFormatter: linkableFormatter,
+		dateRenderer: dateRenderer
 	};
 
 	return (
@@ -384,6 +417,10 @@ const UsersListing = (props) => {
 							<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName={`${handleDepartmentHeader()}`}></AgGridColumn>
 							{/* //RE    */}
 							{props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Points of Contact"></AgGridColumn>}
+							<AgGridColumn field="CreatedBy" headerName="Created By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+							<AgGridColumn field="CreatedDate" width={props?.RFQUser ? 220 : ''} headerName="Created Date (Created Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+							<AgGridColumn field="ModifiedDate" width={props?.RFQUser ? 220 : ''} headerName="Modified Date (Modified Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+							<AgGridColumn field="ModifiedBy" headerName="Modified By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
 							<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 							<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 							<AgGridColumn field="RoleName" width={120} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

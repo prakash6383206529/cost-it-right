@@ -4,10 +4,10 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
-  maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
-  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue, hashValidation, getNameBySplitting
+  maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3, decimalNumberLimit,
+  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, percentageLimitValidation, maxPercentValue, hashValidation, maxValue24, getNameBySplitting
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, renderNumberInputField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
@@ -17,7 +17,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads, GUIDE_BUTTON_SHOW } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads, GUIDE_BUTTON_SHOW, LOGISTICS } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -49,6 +49,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next'
 import Button from '../../layout/Button';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -163,6 +164,7 @@ class AddMoreDetails extends Component {
         processTour: false,
         processGroupTour: false
       },
+      UniqueProcessId: [],
     }
     this.dropzone = React.createRef();
   }
@@ -392,15 +394,21 @@ class AddMoreDetails extends Component {
 
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.props.change('TotalFuelCostPerYear', Data.TotalFuelCostPerYear ? Data.TotalFuelCostPerYear : '')
+          this.props.change('ConsumptionPerYear', Data.ConsumptionPerYear ? Data.ConsumptionPerYear : '')
+          this.props.change('FuelCostPerUnit', Data.FuelCostPerUnit ? Data.FuelCostPerUnit : '')
           this.setState({ minDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           const { machineType, effectiveDate } = this.state;
           if (machineType.value) {
             const data = {
               machineTypeId: machineType?.value,
-              plantId: Data.costingTypeId !== ZBCTypeId ? Data.DestinationPlantId : Data.Plant[0].PlantId,
+              plantId: Data.Plant[0].PlantId,
               effectiveDate: effectiveDate
             }
             this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
+          }
+          if (Data && Data.Plant[0]?.PlantId) {
+            this.props.getFuelByPlant(Data?.Plant[0]?.PlantId, () => { })
           }
           setTimeout(() => {
             const { machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList, fuelDataByPlant } = this.props;
@@ -409,12 +417,6 @@ class AddMoreDetails extends Component {
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
             const fuelObj = fuelDataByPlant && fuelDataByPlant.find(item => String(item.Value) === String(Data.FuleId))
-            let plantObj;
-            if ((getConfigurationKey().IsDestinationPlantConfigure && (Data.CostingTypeId === VBCTypeId)) || Data.CostingTypeId === CBCTypeId) {
-              plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
-            } else {
-              plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
-            }
             let LabourArray = Data && Data.MachineLabourRates?.map(el => {
               return {
                 labourTypeName: el.LabourTypeName,
@@ -460,15 +462,14 @@ class AddMoreDetails extends Component {
               isLoader: false,
               IsPurchased: Data.OwnershipIsPurchased,
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
-              // selectedPlants: { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId },  //RE
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
-              selectedPlants: plantObj,
+              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
               DateOfPurchase: DayTime(Data.DateOfPurchase).isValid() === true ? new Date(DayTime(Data.DateOfPurchase)) : '',
-              IsAnnualMaintenanceFixed: Data.IsMaintanceFixed,
-              IsAnnualConsumableFixed: Data.IsConsumableFixed,
-              IsInsuranceFixed: Data.IsInsuranceFixed,
+              IsAnnualMaintenanceFixed: Data.IsMaintanceFixed === true ? false : true,
+              IsAnnualConsumableFixed: Data.IsConsumableFixed === true ? false : true,
+              IsInsuranceFixed: Data.IsInsuranceFixed === true ? false : true,
               IsUsesFuel: Data.IsUsesFuel,
               IsUsesSolarPower: Data.IsUsesSolarPower,
               fuelType: fuelObj && fuelObj !== undefined ? { value: fuelObj.Value } : [],
@@ -485,7 +486,9 @@ class AddMoreDetails extends Component {
               machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit },
               crmHeads: crmHeadObj,
               updateCrmHeadObj: crmHeadObj,
-              IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost
+              IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost,
+              // selectedPlants: Data?.Plant ? { label: Data?.Plant[0]?.PlantName, value: Data?.Plant[0]?.PlantId } : null
+
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
             this.props.change('NumberOfWorkingHoursPerYear', Data.NumberOfWorkingHoursPerYear ? Data.NumberOfWorkingHoursPerYear : '')
           }, 2000)
@@ -524,7 +527,7 @@ class AddMoreDetails extends Component {
     const temp = [];
     if (label === 'technology') {
       technologySelectList && technologySelectList.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || (item.Value === String(LOGISTICS))) return false;
         temp.push({ Text: item.Text, Value: item.Value })
         return null;
       });
@@ -1302,7 +1305,7 @@ class AddMoreDetails extends Component {
       const ConsumptionPerYear = checkForNull(fieldsObj?.ConsumptionPerYear)
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
-      this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(fieldsObj.FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
     } else {
 
       // if (IsUsesSolarPower) {
@@ -2042,13 +2045,13 @@ class AddMoreDetails extends Component {
       EquityValue: machineFullValue.EquityValue,
       RateOfInterestPercentage: values.RateOfInterestPercentage,
       RateOfInterestValue: machineFullValue.RateOfInterestValue,
-      IsMaintanceFixed: IsAnnualMaintenanceFixed,
+      IsMaintanceFixed: IsAnnualMaintenanceFixed === true ? false : true,
       AnnualMaintancePercentage: values.AnnualMaintancePercentage,
       AnnualMaintanceAmount: IsAnnualMaintenanceFixed ? machineFullValue.MaintananceCost : values.AnnualMaintanceAmount,
-      IsConsumableFixed: IsAnnualConsumableFixed,
+      IsConsumableFixed: IsAnnualConsumableFixed === true ? false : true,
       AnnualConsumablePercentage: values.AnnualConsumablePercentage,
       AnnualConsumableAmount: IsAnnualConsumableFixed ? machineFullValue.ConsumableCost : values.AnnualConsumableAmount,
-      IsInsuranceFixed: IsInsuranceFixed,
+      IsInsuranceFixed: IsInsuranceFixed === true ? false : true,
       AnnualInsurancePercentage: values.AnnualInsurancePercentage,
       AnnualInsuranceAmount: IsInsuranceFixed ? machineFullValue.InsuranceCost : values.AnnualInsuranceAmount,
       BuildingCostPerSquareFeet: values.BuildingCostPerSquareFeet,
@@ -2085,9 +2088,9 @@ class AddMoreDetails extends Component {
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
       Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-      Plant: this.state.CostingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
+      Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
       selectedPlants: selectedPlants,
-      DestinationPlantId: this.state.CostingTypeId !== ZBCTypeId ? selectedPlants.value : null,
+      DestinationPlantId: '',
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
@@ -2096,7 +2099,6 @@ class AddMoreDetails extends Component {
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
       PowerEntryId: powerIdFromAPI,
-      selectedPlants: selectedPlants, //RE
       CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
       CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
       selectedCustomer: this.state.selectedCustomer,
@@ -2174,7 +2176,6 @@ class AddMoreDetails extends Component {
       } else {
         this.setState({ IsSendForApproval: false })
       }
-
       const formData = {
         IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
         CostingTypeId: this.state.CostingTypeId,
@@ -2204,13 +2205,13 @@ class AddMoreDetails extends Component {
         EquityValue: machineFullValue.EquityValue,
         RateOfInterestPercentage: values.RateOfInterestPercentage,
         RateOfInterestValue: machineFullValue.RateOfInterestValue,
-        IsMaintanceFixed: IsAnnualMaintenanceFixed,
+        IsMaintanceFixed: IsAnnualMaintenanceFixed === true ? false : true,
         AnnualMaintancePercentage: values.AnnualMaintancePercentage,
         AnnualMaintanceAmount: IsAnnualMaintenanceFixed ? machineFullValue.MaintananceCost : values.AnnualMaintanceAmount,
-        IsConsumableFixed: IsAnnualConsumableFixed,
+        IsConsumableFixed: IsAnnualConsumableFixed === true ? false : true,
         AnnualConsumablePercentage: values.AnnualConsumablePercentage,
         AnnualConsumableAmount: IsAnnualConsumableFixed ? machineFullValue.ConsumableCost : values.AnnualConsumableAmount,
-        IsInsuranceFixed: IsInsuranceFixed,
+        IsInsuranceFixed: IsInsuranceFixed === true ? false : true,
         AnnualInsurancePercentage: values.AnnualInsurancePercentage,
         AnnualInsuranceAmount: IsInsuranceFixed ? machineFullValue.InsuranceCost : values.AnnualInsuranceAmount,
         BuildingCostPerSquareFeet: values.BuildingCostPerSquareFeet,
@@ -2246,9 +2247,9 @@ class AddMoreDetails extends Component {
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-        Plant: this.state.CostingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
+        Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         selectedPlants: selectedPlants,
-        DestinationPlantId: this.state.CostingTypeId !== ZBCTypeId ? selectedPlants.value : null,
+        DestinationPlantId: '',
         Attachements: files,
         VendorPlant: [],
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -2283,7 +2284,6 @@ class AddMoreDetails extends Component {
         MachineId: MachineID,
         IsVendor: false,
       }
-
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
         if (IsFinancialDataChanged && isEditFlag) {
 
@@ -2485,7 +2485,7 @@ class AddMoreDetails extends Component {
   */
 
   DisplayMachineRateLabel = () => {
-    return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
+    return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} ({reactLocalStorage.getObject("baseCurrency")})</>
   }
 
   handleChangeIncludeMachineRateDepreciation = (value) => {
@@ -2554,12 +2554,32 @@ class AddMoreDetails extends Component {
       this.setState({ tourContainer: { [stateName]: false } })
     }
   }
+  machineRateTooltip = () => {
+    const { UOM, IsIncludeMachineRateDepreciation } = this.state
+    const { initialConfiguration } = this.props
+    let formula;
+    if (IsIncludeMachineRateDepreciation) {
+      formula = `(Total Cost(${reactLocalStorage.getObject("baseCurrency")}) + Interest Value + Depreciation Amount(${reactLocalStorage.getObject("baseCurrency")}) + Total Machine Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) + Total Power Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) + Total Labour Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) )/No. of Working Hrs/Annum`;
+    } else {
+      formula = `(Interest Value + Depreciation Amount(${reactLocalStorage.getObject("baseCurrency")}) + Total Machine Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) + Total Power Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) + Total Labour Cost/Annum(${reactLocalStorage.getObject("baseCurrency")}) )/No. of Working Hrs/Annum`;
+    }
 
+    switch (UOM.uom) {
+      case "Hours":
+        return formula;
+      case "Minutes":
+        return `${formula} / 60`;
+      case "Seconds":
+        return `${formula} / 3600`;
+      default:
+        return "Invalid UOM";
+    }
+  }
 
 
   /**
-  * @method render
-  * @description Renders the component
+   * @method render
+   * @description Renders the component
   */
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated, t } = this.props;
@@ -2826,7 +2846,7 @@ class AddMoreDetails extends Component {
 
                         <Col md="3">
                           <Field
-                            label={`Machine Cost(INR)`}
+                            label={`Machine Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                             name={"MachineCost"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
@@ -2840,7 +2860,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Accessories Cost(INR)`}
+                            label={`Accessories Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                             name={"AccessoriesCost"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
@@ -2854,7 +2874,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Installation Charges(INR)`}
+                            label={`Installation Charges (${reactLocalStorage.getObject("baseCurrency")})`}
                             name={"InstallationCharges"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
@@ -2868,7 +2888,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3"> <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = (Machine Cost + Accessories Cost + Installation Charges)"} />
                           <Field
-                            label={`Total Cost(INR)`}
+                            label={`Total Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                             name={this.props.fieldsObj.TotalCost === 0 ? '' : "TotalCost"}
                             type="text"
                             id="total-cost"
@@ -3028,7 +3048,7 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="4">
-                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="LoanValue" tooltipText={"Loan Value = (Loan %) * Total Cost"} />
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="LoanValue" tooltipText={"Loan Value = (Loan %) / 100 * Total Cost"} />
                               <Field
                                 label={`Loan Value`}
                                 name={this.props.fieldsObj.LoanValue === 0 ? '-' : "LoanValue"}
@@ -3044,7 +3064,7 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="4">
-                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="EquityValue" tooltipText={"Equity Value = (Equity %) * Total Cost"} />
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="EquityValue" tooltipText={"Equity Value = (Equity %) / 100 * Total Cost"} />
                               <Field
                                 label={`Equity Value`}
                                 name={this.props.fieldsObj.EquityValue === 0 ? '-' : "EquityValue"}
@@ -3062,7 +3082,7 @@ class AddMoreDetails extends Component {
 
 
                             <Col md="4">
-                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="RateOfInterestValue" width={'250px'} tooltipText={"Interest Value = (Loan %) * Total Cost * (Rate of Interest %)"} />
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="RateOfInterestValue" width={'250px'} tooltipText={"Interest Value = (Loan %) / 100 * Total Cost * (Rate of Interest %) / 100"} />
                               <Field
                                 label={`Interest Value`}
                                 name={this.props.fieldsObj.RateOfInterestValue === 0 ? '-' : "RateOfInterestValue"}
@@ -3143,11 +3163,11 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Working Hr/Shift`}
+                                label={`Working Hrs/Shift`}
                                 name={"WorkingHoursPerShift"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[hashValidation, decimalAndNumberValidation]}
+                                validate={[hashValidation, maxValue24]}
                                 component={renderText}
                                 required={false}
                                 disabled={disableAllForm}
@@ -3194,7 +3214,7 @@ class AddMoreDetails extends Component {
                               </div>
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} id="NumberOfWorkingHoursPerYear" width={'340px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hr/Shift * No. of Working days/Annum * (Availability %)'} />
+                              <TooltipCustom disabledIcon={true} id="NumberOfWorkingHoursPerYear" width={'340px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hrs/Shift * No. of Working days/Annum * (Availability %) / 100'} />
                               <Field
                                 label={`No. of Working Hrs/Annum`}
                                 name={this.props.fieldsObj.NumberOfWorkingHoursPerYear === 0 ? '-' : "NumberOfWorkingHoursPerYear"}
@@ -3309,7 +3329,7 @@ class AddMoreDetails extends Component {
                               </Col>}
                             <Col md="3">
                               <Field
-                                label={`Cost of Scrap(INR)`}
+                                label={`Cost of Scrap (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"CastOfScrap"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3351,7 +3371,7 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               <TooltipCustom disabledIcon={true} id="DepreciationAmount" width={'340px'} tooltipText={`Depreciation Amount = Total Cost - Cost of Scrap / ${this.state.depreciationType && this.state.depreciationType.value === SLM ? 'Life of Asset(Years)' : '(Depreciation Rate %) * Day of Purchase / 365'}`} />
                               <Field
-                                label={`Depreciation Amount(INR)`}
+                                label={`Depreciation Amount (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={this.props.fieldsObj.DepreciationAmount === 0 ? '-' : "DepreciationAmount"}
                                 type="text"
                                 id="DepreciationAmount"
@@ -3448,9 +3468,9 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>}
                             <Col md="3">
-                              {this.state.IsAnnualMaintenanceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualMaintanceAmount" tooltipText={`Annual Maintenance Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
+                              {this.state.IsAnnualMaintenanceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualMaintanceAmount" tooltipText={`Annual Maintenance Amount = ((Machine Cost + Accessories Cost) * Annual Maintenance Percentage / 100)`} />}
                               <Field
-                                label={`Annual Maintenance Amount(INR)`}
+                                label={`Annual Maintenance Amount (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"AnnualMaintanceAmount"}
                                 id="AnnualMaintanceAmount"
                                 type="text"
@@ -3518,7 +3538,7 @@ class AddMoreDetails extends Component {
                               {this.state.IsAnnualConsumableFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualConsumableAmount" tooltipText={`Annual Consumable Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
 
                               <Field
-                                label={`Annual Consumable Amount(INR)`}
+                                label={`Annual Consumable Amount (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"AnnualConsumableAmount"}
                                 id="AnnualConsumableAmount"
                                 type="text"
@@ -3586,7 +3606,7 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               {this.state.IsInsuranceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualInsuranceAmount" tooltipText={`Insurance Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
                               <Field
-                                label={`Insurance Amount(INR)`}
+                                label={`Insurance Amount (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"AnnualInsuranceAmount"}
                                 id="AnnualInsuranceAmount"
                                 type="text"
@@ -3663,7 +3683,7 @@ class AddMoreDetails extends Component {
                               <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualAreaCost" tooltipText={`Annual Area Cost = Building Cost * Machine Floor Area`} />
 
                               <Field
-                                label={`Annual Area Cost(INR)`}
+                                label={`Annual Area Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={this.props.fieldsObj.AnnualAreaCost === 0 ? '-' : "AnnualAreaCost"}
                                 type="text"
                                 id="AnnualAreaCost"
@@ -3694,7 +3714,7 @@ class AddMoreDetails extends Component {
 
                             <Col md="3">
                               <Field
-                                label={`Other Yearly Cost(INR)`}
+                                label={`Other Yearly Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"OtherYearlyCost"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3707,10 +3727,10 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} width={"300px"} id="TotalMachineCostPerAnnum" tooltipText={`Total Machine Cost = Annual Maintenance Amount + Annual Consumable Amount + Annual Insurance Amount + Other Yearly Cost`} />
+                              <TooltipCustom disabledIcon={true} width={"300px"} id="TotalMachineCostPerAnnum" tooltipText={`Total Machine Cost (${reactLocalStorage.getObject("baseCurrency")}) = Annual Maintenance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Consumable Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Insurance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Area Cost (${reactLocalStorage.getObject("baseCurrency")}) + Other Yearly Cost (${reactLocalStorage.getObject("baseCurrency")})`} />
 
                               <Field
-                                label={`Total Machine Cost/Annum(INR)`}
+                                label={`Total Machine Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={this.props.fieldsObj.TotalMachineCostPerAnnum === 0 ? '-' : "TotalMachineCostPerAnnum"}
                                 type="text"
                                 id="TotalMachineCostPerAnnum"
@@ -3839,10 +3859,12 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>
                               <Col md="3">
+                                <TooltipCustom disabledIcon={true} width={"300px"} id="TotalFuelCostPerYear" tooltipText={`Total Power Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}) = Fuel Cost (${reactLocalStorage.getObject("baseCurrency")}/${UOMName}) * Consumption/Annum (${reactLocalStorage.getObject("baseCurrency")})`} />
                                 <Field
-                                  label={`Total Power Cost/Annum(INR)`}
-                                  name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalFuelCostPerYear"}
+                                  label={`Total Power Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  name={"TotalFuelCostPerYear"}
                                   type="text"
+                                  id={'TotalFuelCostPerYear'}
                                   placeholder={'-'}
                                   validate={[number]}
                                   component={renderText}
@@ -3891,7 +3913,7 @@ class AddMoreDetails extends Component {
                                   name={"PowerRatingPerKW"}
                                   type="text"
                                   placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
+                                  validate={[number, checkWhiteSpaces, decimalNumberLimit]}
                                   component={renderText}
                                   //required={true}
                                   disabled={disableAllForm ? true : false}
@@ -3938,7 +3960,7 @@ class AddMoreDetails extends Component {
                                 <TooltipCustom disabledIcon={true} id="TotalPowerCostPerHour" width={"240px"} tooltipText={'Power Cost/Hour = (Efficiency %) * Power Rating * Cost/Unit'} />
 
                                 <Field
-                                  label={`Power Cost/Hour(INR)`}
+                                  label={`Power Cost/Hour (${reactLocalStorage.getObject("baseCurrency")})`}
                                   name={this.props.fieldsObj.TotalPowerCostPerHour === 0 ? '-' : "TotalPowerCostPerHour"}
                                   type="text"
                                   placeholder={'-'}
@@ -3953,7 +3975,7 @@ class AddMoreDetails extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={`Power Cost/Annum(INR)`}
+                                  label={`Power Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
                                   name={this.props.fieldsObj.TotalPowerCostPerYear === 0 ? '-' : "TotalPowerCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
@@ -4034,7 +4056,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
-                                label={`Cost/Annum(INR)`}
+                                label={`Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"LabourCostPerAnnum"}
                                 type="text"
                                 placeholder={'-'}
@@ -4067,7 +4089,7 @@ class AddMoreDetails extends Component {
                             <Col md="2">
                               <TooltipCustom disabledIcon={true} id="LabourCost" tooltipText={`Total Cost = Cost/Annum * No. of People`} />
                               <Field
-                                label={`Total Cost(INR)`}
+                                label={`Total Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={this.props.fieldsObj.LabourCost === 0 ? '-' : "LabourCost"}
                                 type="text"
                                 id="LabourCost"
@@ -4118,9 +4140,9 @@ class AddMoreDetails extends Component {
                                   <tr>
                                     {getConfigurationKey().IsShowCRMHead && <th>{`CRM Head`}</th>}
                                     <th>{`Labour Type`}</th>
-                                    <th>{`Cost/Annum(INR)`}</th>
+                                    <th>{`Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`No. of People`}</th>
-                                    <th>{`Total Cost (INR)`}</th>
+                                    <th>{`Total Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`Action`}</th>
                                   </tr>
                                 </thead>
@@ -4153,7 +4175,7 @@ class AddMoreDetails extends Component {
                                 {this.state.labourGrid?.length > 0 &&
                                   <tfoot>
                                     <tr className="bluefooter-butn">
-                                      <td colSpan={"3"} className="text-right">{'Total Labour Cost/Annum(INR):'}</td>
+                                      <td colSpan={"3"} className="text-right">{`Total Labour Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}):`}</td>
                                       <td colSpan={"2"}>{this.calculateTotalLabourCost()}</td>
                                     </tr>
                                   </tfoot>}
@@ -4198,7 +4220,7 @@ class AddMoreDetails extends Component {
                                   <Field
                                     name="ProcessName"
                                     type="text"
-                                    label="Process Name"
+                                    label="Process (Code)"
                                     component={searchableSelect}
                                     placeholder={this.state.isViewMode ? '-' : 'Select'}
                                     options={this.renderListing('ProcessNameList')}
@@ -4274,6 +4296,7 @@ class AddMoreDetails extends Component {
                             } */}
 
                             <Col className="d-flex col-auto UOM-label-container p-relative">
+                              {this.state.UOM.type === TIME && <TooltipCustom disabledIcon={true} id="machineRate" tooltipClass={'machine-rate'} tooltipText={this.machineRateTooltip()} />}
                               <div className="machine-rate-filed pr-3">
                                 <Field
                                   label={this.DisplayMachineRateLabel()}
@@ -4286,6 +4309,7 @@ class AddMoreDetails extends Component {
                                   disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                                   className=" "
                                   customClassName=" withBorder"
+                                  id="machineRate"
                                   placeholder={this.state.UOM.type === TIME ? '-' : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : "Enter"}
                                 />
                                 {this.state.errorObj.processMachineRate && (this.props.fieldsObj.MachineRate === undefined || this.state.UOM.type === TIME ? true : Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
@@ -4328,11 +4352,11 @@ class AddMoreDetails extends Component {
                               <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
-                                    <th>{`Process Name`}</th>
+                                    <th>{`Process (Code)`}</th>
                                     <th>{`UOM`}</th>
                                     {/* <th>{`Output/Hr`}</th>     COMMENTED FOR NOW MAY BE USED LATER
                                     <th>{`Output/Annum`}</th> */}
-                                    <th>{`Machine Rate(INR)`}</th>
+                                    <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`Action`}</th>
                                   </tr>
                                 </thead>
@@ -4606,7 +4630,7 @@ function mapStateToProps(state) {
     'AnnualInsurancePercentage', 'AnnualInsuranceAmount',
     'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
     'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear', 'TotalPowerCostPerHour',
-    'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
+    'FuelCostPerUnit', 'ConsumptionPerYear',
     'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification', 'LoanCRMHead',
     'InterestCRMHead', 'WorkingShiftCRMHead', 'DepreciationCRMHead', 'AnnualMaintanceCRMHead', 'AnnualConsumableCRMHead', 'AnnualInsuranceCRMHead', 'BuildingCRMHead',
     'MachineFloorCRMHead', 'OtherYearlyCRMHead', 'PowerCRMHead', 'FuelCRMHead');

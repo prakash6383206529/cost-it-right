@@ -1395,7 +1395,7 @@ const RejectedCostingSummaryTable = (props) => {
                           <tr>
                             <td>
                               <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView))}`}>Part Cost/Pc</span>
-                              <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(reducerFinish(viewCostingData[0]?.netRMCostView), reducerFinish(viewCostingData[1]?.netRMCostView))}`}>{showBopLabel()} Cost/Assembly</span>
+                              <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(reducerFinish(viewCostingData[0]?.netRMCostView), reducerFinish(viewCostingData[1]?.netRMCostView))}`}>{showBopLabel()}Cost/Assembly</span>
                               <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.netRMCostView[0]?.BurningLossWeight, viewCostingData[1]?.netRMCostView[0]?.BurningLossWeight)}`}>Process Cost/Assembly</span>
                               <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.netRMCostView[0]?.ScrapWeight, viewCostingData[1]?.netRMCostView[0]?.ScrapWeight)}`}>Operation Cost/Assembly</span>
                             </td>
@@ -2435,6 +2435,7 @@ const RejectedCostingSummaryTable = (props) => {
             closeDrawer={closeShowApproval}
             anchor={'right'}
             technologyId={technologyId}
+            callSapCheckAPI={false}
           />
         )
       }

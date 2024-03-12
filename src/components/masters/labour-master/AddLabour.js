@@ -728,7 +728,7 @@ class AddLabour extends Component {
         LabourId: LabourId,
         IsContractBase: IsEmployeContractual,
         IsVendor: IsVendor,
-        VendorId: IsEmployeContractual ? vendorName.value : '',
+        VendorId: (IsEmployeContractual && (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId)) ? vendorName.value : '',
         StateId: StateName.value,
         LoggedInUserId: loggedInUserId(),
         LabourDetails: gridTable,
@@ -756,7 +756,7 @@ class AddLabour extends Component {
         ProductId: product.value,
         IsContractBase: IsEmployeContractual,
         IsVendor: IsVendor,
-        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
+        VendorId: (IsEmployeContractual && (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId)) ? vendorName.value : '',
         StateId: StateName.value,
         LabourDetails: gridTable,
         Plants: [
@@ -1082,7 +1082,7 @@ class AddLabour extends Component {
                       <Col md="3">
                         <div className="form-group">
                           <Field
-                            label={`Rate per Person/Annum (INR)`}
+                            label={`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
                             name={"LabourRate"}
                             type="text"
                             placeholder={isViewMode ? "-" : "Enter"}
@@ -1189,6 +1189,7 @@ class AddLabour extends Component {
                                 type="button"
                                 className={"reset-btn pull-left ml5"}
                                 onClick={this.resetGridData}
+                                disabled={isViewMode}
                               >
                                 Reset
                               </button>
@@ -1202,7 +1203,7 @@ class AddLabour extends Component {
                             <tr>
                               <th>{`Machine Type`}</th>
                               <th>{`Labour Type`}</th>
-                              <th>{`Rate per Person/Annum(INR)`}</th>
+                              <th>{`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                               <th>{`Working hours`}</th>
                               <th>{`Efficiency`}</th>
                               <th>{`Effective Date`}</th>

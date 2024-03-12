@@ -542,7 +542,7 @@ export function getWeightOfScrap(data) {
  * @returns {number}
  */
 export function getNetSurfaceArea(data) {
-  const value = Math.PI * data.OuterDiameter * data.PartLength + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
+  const value = Math.PI * data.OuterDiameter * data.PartLengthWithAllowance + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
   return checkForNull(value)
 }
 
@@ -551,7 +551,7 @@ export function getNetSurfaceArea(data) {
  * @returns {number}
  */
 export function getNetSurfaceAreaBothSide(data) {
-  const value = Math.PI * data.OuterDiameter * data.PartLength + Math.PI * data.InnerDiameter * data.PartLength + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
+  const value = Math.PI * data.OuterDiameter * data.PartLengthWithAllowance + Math.PI * data.InnerDiameter * data.PartLengthWithAllowance + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
   return checkForNull(value)
 }
 
@@ -803,8 +803,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? (dataFromAPI.PlantName ? `${dataFromAPI.PlantName}` : '') : (dataFromAPI.DestinationPlantName ? `${dataFromAPI.DestinationPlantName}` : '')
   obj.vendorExcel = dataFromAPI.VendorName ? `${dataFromAPI.VendorName} (${dataFromAPI.VendorCode})` : ''
   obj.sobPercentageExcel = dataFromAPI?.ShareOfBusinessPercent ? `${dataFromAPI?.ShareOfBusinessPercent}%` : 0
-  obj.castingWeightExcel = checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.CastingWeight, getConfigurationKey().NoOfDecimalForPrice)
-  obj.meltingLossExcel = `${checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.MeltingLoss, getConfigurationKey().NoOfDecimalForPrice)} (${dataFromAPI?.CostingPartDetails?.LossPercentage ? dataFromAPI?.CostingPartDetails?.LossPercentage : 0}%)`
+  obj.castingWeightExcel = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.CastingWeight, getConfigurationKey().NoOfDecimalForPrice)
+  obj.meltingLossExcel = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : `${checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.MeltingLoss, getConfigurationKey().NoOfDecimalForPrice)} (${dataFromAPI?.CostingPartDetails?.LossPercentage ? dataFromAPI?.CostingPartDetails?.LossPercentage : 0}%)`
   // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
   obj.netChildPartsCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetChildPartsCost ? dataFromAPI?.CostingPartDetails?.NetChildPartsCost : 0
   obj.netOperationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
@@ -821,6 +821,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.anyOtherCostTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOtherCost ? dataFromAPI?.CostingPartDetails?.NetOtherCost : '-'
   obj.saNumber = dataFromAPI?.SANumber ?? '-'
   obj.lineNumber = dataFromAPI?.LineNumber ?? '-'
+  obj.partType = dataFromAPI?.CostingPartDetails?.Type
+  obj.partTypeId = dataFromAPI?.CostingPartDetails?.PartTypeId
   temp.push(obj)
   return temp
 }
@@ -1013,8 +1015,8 @@ export function getFilteredData(arr, id) {
 
 }
 
-export function calculateScrapWeight(grossWeight, finishWeight) {
-  const scrapWeight = checkForNull(grossWeight - finishWeight)
+export function calculateScrapWeight(grossWeight, finishWeight, ScrapRecoveryPercentage = 100) {
+  const scrapWeight = checkForNull(grossWeight - finishWeight) * checkForNull(ScrapRecoveryPercentage / 100)
   return scrapWeight
 }
 
@@ -1073,6 +1075,8 @@ export const getCurrencySymbol = (value) => {
       return "₹"
     case "THB":
       return "฿"
+    case "SEK":
+      return "kr"
     default:
       return "₹"
   }
@@ -1150,10 +1154,18 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
   array = _.map(master, 'label')
   bulkUploadArray = [...array]
   if (isBOP) {
-    bulkUploadArray = bulkUploadArray.map((item) =>
+    bulkUploadArray = bulkUploadArray.map(item =>
       item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
     );
+    fileHeads = fileHeads.map(item =>
+      item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
+
+    );
+
+
   }
+
+
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
     if (hasNote) {
@@ -1166,6 +1178,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
   // if (isRm && !fileHeads.includes('Note')) {
   //   fileHeads.unshift('Note');
   // }
+
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
@@ -1300,10 +1313,10 @@ export const OverheadAndProfitTooltip = (id, object, arr, conditon, NoOfDecimalF
     return (arr && arr[0]?.IsRMCutOffApplicable) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
 
   } else if (id.includes("BOP")) {
-    text = conditon && <p>${getConfigurationKey().BOPMasterName} cost is not included for ${getConfigurationKey().BOPMasterName} part type</p>;
+    text = conditon && <p>{showBopLabel()} cost is not included for {showBopLabel()} part type</p>;
     return conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
   } else if (id.includes("Combined")) {
-    text = <>{arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon && <p>{getConfigurationKey().BOPMasterName} cost is not included for ${getConfigurationKey().BOPMasterName} part type</p>}</>;
+    text = <>{arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon && <p>{showBopLabel()} cost is not included for {showBopLabel()} part type</p>}</>;
     return (arr[0]?.IsRMCutOffApplicable === true) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
   }
 }
@@ -1336,6 +1349,7 @@ export function getValueFromLabel(currency, currencySelectList) {
 }
 // get updated  dynamic bop labels 
 export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '') {
+
   const bopRegex = /BOP|BoughtOutPart/gi;
   const updatedLabels = bopLabels.map(label => ({
     ...label,
@@ -1343,6 +1357,7 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
     value: label.value.replace(bopRegex, bopReplacement),
 
   }));
+
   const updatedTempData = bopData.map(dataItem => {
     const newDataItem = {};
     for (let key in dataItem) {
@@ -1355,6 +1370,17 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
   });
 
   return { updatedLabels, updatedTempData };
+}
+/**
+  * @method setLoremIpsum
+  * @description show lorem ipsum data when stared application tour
+  */
+export function setLoremIpsum(obj) {
+  const newObj = {};
+  Object.keys(obj).forEach(key => {
+    newObj[key] = "Lorem Ipsum";
+  });
+  return [newObj];
 }
 
 

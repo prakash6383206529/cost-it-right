@@ -275,6 +275,7 @@ function RawMaterialCost(props) {
             IsScrapUOMApply: el.IsScrapUOMApply,
             ScrapUnitOfMeasurement: el.ScrapUnitOfMeasurement,
             Currency: el.Currency,
+            UOMSymbol: el.UOMSymbol,
           }
         })
 
@@ -304,6 +305,7 @@ function RawMaterialCost(props) {
           ScrapRatePerScrapUOM: rowData.ScrapRatePerScrapUOM,
           ScrapRatePerScrapUOMConversion: rowData.ScrapRatePerScrapUOMConversion,
           Currency: rowData.Currency,
+          UOMSymbol: rowData.UOMSymbol,
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
@@ -775,6 +777,7 @@ function RawMaterialCost(props) {
     let grossWeight
     let finishWeight
     let netLandedCost
+    let ScrapWeight
 
     // GROSS WEIGHT WILL ALWAYS BE KG ON THIS TAB, SO CONVERTING OTHER UNIT INTO KG
     if (Object.keys(weightData).length > 0) {
@@ -782,26 +785,31 @@ function RawMaterialCost(props) {
         grossWeight = weightData.GrossWeight / 1000
         finishWeight = weightData.FinishWeight / 1000
         netLandedCost = weightData.RawMaterialCost / 1000
+        ScrapWeight = weightData.ScrapWeight / 1000
+
       } else if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_KG) {
         grossWeight = weightData.GrossWeight
         finishWeight = weightData.FinishWeight
         netLandedCost = weightData.RawMaterialCost
+        ScrapWeight = weightData.ScrapWeight
 
       } else if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_MG) {
         grossWeight = weightData.GrossWeight / 1000000
         finishWeight = weightData.FinishWeight / 1000000
         netLandedCost = weightData.RawMaterialCost / 1000000
+        ScrapWeight = weightData.ScrapWeight / 1000000
 
       } else {
         grossWeight = weightData.GrossWeight
         finishWeight = weightData.FinishWeight
         netLandedCost = weightData.RawMaterialCost
+        ScrapWeight = weightData.ScrapWeight
       }
 
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
       const RecoveryPercentage = weightData.RecoveryPercentage
-      const scrapWeight = weightData.ScrapWeight ? weightData.ScrapWeight : checkForNull(GrossWeight - FinishWeight)
+      const scrapWeight = weightData.ScrapWeight ? ScrapWeight : checkForNull(GrossWeight - FinishWeight)
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
       tempData = {
@@ -939,6 +947,7 @@ function RawMaterialCost(props) {
       item.FinishWeight = 0
       item.GrossWeight = 0
       item.ScrapWeight = 0
+      item.Percentage = 0
       item.WeightCalculatorRequest = {}
       setValue(`${rmGridFields}.${index}.GrossWeight`, '')     //COMMENT
       setValue(`${rmGridFields}.${index}.FinishWeight`, '')
@@ -1506,7 +1515,7 @@ function RawMaterialCost(props) {
                                 </div>
                               </td>
                             }
-                            <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div> </td>
+                            <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied && item?.ScrapRecoveryPercentage ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div> </td>
                             <td>
                               <div className='d-flex'>
                                 <div className='w-fit' id={`net-rm-cost${index}`}>{<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(Number(costData?.TechnologyId) === MACHINING && item?.IsCalculatedEntry) ? 'Net RM Cost = RM/Pc - ScrapCost' : 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)'} />}{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}

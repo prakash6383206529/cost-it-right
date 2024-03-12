@@ -175,6 +175,7 @@ export function createCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
+      callback(error)
     })
   }
 }
@@ -1290,6 +1291,7 @@ export function deleteDraftCosting(data, callback) {
       }).catch((error) => {
         apiErrors(error)
         dispatch({ type: API_FAILURE })
+        callback(error)
       })
   }
 }
@@ -2490,6 +2492,7 @@ export function createMultiTechnologyCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
+      callback(error)
     })
   }
 }

@@ -15,14 +15,13 @@ import { ReportMaster, ReportSAPMaster, EMPTY_DATA, defaultPageSize } from '../.
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber, handleDepartmentHeader, showBopLabel } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber, handleDepartmentHeader, showBopLabel, getConfigurationKey } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingHeadsAPI } from '../../../actions/Common'
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 import { MESSAGES } from '../../../config/message'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
-import SelectRowWrapper from '../../common/SelectRowWrapper'
 import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { hideMultipleColumnFromExcel } from '../../common/CommonFunctions'
@@ -380,7 +379,7 @@ function ReportListing(props) {
                 <div
                     onClick={() => viewMultipleRMDetails(costingID)}
                     className={'link'}
-                > {cellValue}</div> : <div>{cellValue}</div>} </> : '-';
+                > {checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)}</div> : <div>{checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)}</div>} </> : '-';
     }
     const partCostFormatter = (props) => {
         const cellValue = props?.value;
@@ -1056,7 +1055,7 @@ function ReportListing(props) {
                             <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='rmHyperLinkFormatter'></AgGridColumn>
                             <AgGridColumn field='NetRawMaterialsCost' headerName='Part Cost/Pc' cellRenderer='partCostFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialRemark' headerName='RM Remark' cellRenderer='remarkFormatter'></AgGridColumn>
-                            <AgGridColumn field='NetBoughtOutPartCost' headerName={`Net ${showBopLabel()}  Cost`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                            <AgGridColumn field='NetBoughtOutPartCost' headerName={`Net ${showBopLabel()} Cost`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetProcessCost' headerName='Net Process Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetOperationCost' headerName='Net Operation Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetConversionCost' headerName='Net Conversion Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
@@ -1100,7 +1099,7 @@ function ReportListing(props) {
                             <AgGridColumn field='IsRegularized' headerName='Is Regularized' cellRenderer='hyphenFormatter'></AgGridColumn>
                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field='BasicRate' headerName='Basic Price' cellRenderer='decimalPriceFormatter'></AgGridColumn>}
                             <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net Cost Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                            <AgGridColumn field='NetPOPriceINR' headerName='Net Cost (INR)' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                            <AgGridColumn field='NetPOPriceINR' headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
                             {showSaLineNumber() && <AgGridColumn field="SANumber" headerName="SANumber" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             {showSaLineNumber() && <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>}

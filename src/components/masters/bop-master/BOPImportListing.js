@@ -24,7 +24,7 @@ import _ from "lodash";
 import AnalyticsDrawer from "../material-master/AnalyticsDrawer";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { ApplyPermission } from ".";
-import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel, } from "../../common/CommonFunctions";
+import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel, checkMasterCreateByCostingPermission, } from "../../common/CommonFunctions";
 import Attachament from "../../costing/components/Drawers/Attachament";
 import Button from "../../layout/Button";
 import BDSimulation from "../../simulation/components/SimulationPages/BDSimulation";
@@ -514,7 +514,9 @@ const BOPImportListing = (props) => {
     setState((prevState) => ({ ...prevState, showPopup: false }));
   };
   const bulkToggle = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: true }));
+    if (checkMasterCreateByCostingPermission(true)) {
+      setState((prevState) => ({ ...prevState, isBulkUpload: true }));
+    }
   };
   const closeBulkUploadDrawer = (event, type) => {
     setState((prevState) => ({ ...prevState, isBulkUpload: false }));
@@ -683,7 +685,9 @@ const BOPImportListing = (props) => {
     );
   };
   const formToggle = () => {
-    props.displayForm();
+    if (checkMasterCreateByCostingPermission()) {
+      props.displayForm();
+    }
   };
 
 
@@ -788,10 +792,10 @@ const BOPImportListing = (props) => {
   const { isBulkUpload, noData, editSelectedList } = state;
   const ExcelFile = ReactExport.ExcelFile;
   const headerNames = {
-    BasicRate: `Basic Rate (${initialConfiguration?.BaseCurrency})`,
-    BasicPrice: `Basic Price (${initialConfiguration?.BaseCurrency})`,
-    NetConditionCost: `Net Condition Cost (${initialConfiguration?.BaseCurrency})`,
-    NetCost: `Net Cost (${initialConfiguration?.BaseCurrency})`,
+    BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
+    BasicPrice: `Basic Price (${reactLocalStorage.getObject("baseCurrency")})`,
+    NetConditionCost: `Net Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+    NetCost: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   };
 
   var filterParams = {

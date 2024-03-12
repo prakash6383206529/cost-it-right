@@ -399,7 +399,7 @@ function CostingDetailStepTwo(props) {
       setNfrListing(true)
     } else {
       if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false && !partType) {
-        let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+        let tempArrForCosting = JSON.parse(sessionStorage.getItem('costingArray'))
         const data = _.find(tempArrForCosting, ['IsPartLocked', true])
         const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
         const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
@@ -411,7 +411,7 @@ function CostingDetailStepTwo(props) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
-        let surfaceArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
+        let surfaceArrForCosting = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
         const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
         const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
         if (surfaceData !== undefined || surfaceLockedData !== undefined) {
@@ -503,9 +503,9 @@ function CostingDetailStepTwo(props) {
                         <tr>
                           <th style={{ width: '100px' }}>{``}</th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`${partType ? "Part Cost/ Assembly" : `${costingData?.IsAssemblyPart ? 'RM Cost/ Assembly' : 'RM Cost/Pc'}`}`}</span></th>
-                          {!breakupBOP && <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? `${showBopLabel()}  Cost/ Assembly` : `${showBopLabel()}  Cost/ Pc`}`}</span></th>}
+                          {!breakupBOP && <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? `${showBopLabel()} Cost/ Assembly` : `${showBopLabel()} Cost/ Pc`}`}</span></th>}
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
-                          <th style={{ width: '180px' }}><span className="font-weight-500">{`${partType ? "Cost/ Assembly" : (breakupBOP ? "Net RMC + CC" : "Net RMC + BOP + CC")}`}</span></th>
+                          <th style={{ width: '180px' }}><span className="font-weight-500">{`${partType ? "Cost/ Assembly" : (breakupBOP ? "Net RMC + CC" : `Net RMC + ${showBopLabel()} + CC`)}`}</span></th>
                           <th style={{ width: '220px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight Cost`}</span></th>
@@ -513,7 +513,7 @@ function CostingDetailStepTwo(props) {
                           <th style={{ width: '160px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`Discounts`}</span></th>
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <th style={{ width: '100px' }}><span className="font-weight-500">{`Basic Price`}</span></th>}
-                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Net Cost(INR)`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}</span></th>
                         </tr>
                       </thead>}
                       <tbody>
@@ -539,7 +539,7 @@ function CostingDetailStepTwo(props) {
                                   </> : <>
                                     <td className="pr-0 pl-2"><span>Part Number: </span><span className="cr-prt-nm fs1 font-weight-500" title={item.PartNumber}>{item.PartNumber}</span></td>
                                     <td><span className="dark-blue fs1 font-weight-500"><span>Freight Cost: </span>{checkForDecimalAndNull(item.NetPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                    <td><span className="dark-blue fs1 font-weight-500"><span>Net Cost(INR): </span>{checkForDecimalAndNull(item.TotalCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500"><span>Net Cost ({reactLocalStorage.getObject("baseCurrency")}): </span>{checkForDecimalAndNull(item.TotalCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   </>
                                 }
                                 </>

@@ -4,9 +4,10 @@ import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
 import { useSelector } from 'react-redux'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 function ConditionCosting(props) {
-    const { isFromImport, currency } = props
+    const { isFromImport, currency, isFromMaster } = props
     const [totalCostBase, setTotalCostBase] = useState(0)
     const [totalCostCurrency, setTotalCostCurrency] = useState(0)
     const editDeleteData = (indexValue, operation) => {
@@ -34,9 +35,9 @@ function ConditionCosting(props) {
                                 {<th>{`Percentage (%)`}</th>}
                                 {<th>{`Quantity`}</th>}
                                 {isFromImport && <th style={{ minWidth: '100px' }}>{`Cost (${currency?.label})`}</th>}
-                                {<th style={{ minWidth: '100px' }}>{`Cost (${initialConfiguration?.BaseCurrency})`}</th>}
+                                {<th style={{ minWidth: '100px' }}>{`Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                 {isFromImport && <th style={{ minWidth: '100px' }}>{`Cost Per Quantity (${currency?.label})`}</th>}
-                                {<th>{`Cost Per Quantity (${initialConfiguration?.BaseCurrency})`}</th>}
+                                {<th>{`Cost Per Quantity (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
                             </tr>
@@ -70,10 +71,11 @@ function ConditionCosting(props) {
                                 </tr>
                             )}
                             <tr className='table-footer'>
-                                <td colSpan={4} className="text-right font-weight-600 fw-bold">{`Total Cost :`}</td>
-                                <td colSpan={isFromImport ? 1 : 3}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {`(${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}</div></td>
+
+                                <td colSpan={4} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Cost:' : `Total Cost (${reactLocalStorage.getObject("baseCurrency")}):`}`}</td>
+                                <td colSpan={isFromImport ? 1 : 3}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {isFromMaster ? `(${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")})` : ''}</div></td>
                                 {isFromImport && <>
-                                    <td colSpan={4} className="text-left"> {checkForDecimalAndNull(totalCostBase, initialConfiguration.NoOfDecimalForPrice)} ({initialConfiguration?.BaseCurrency})</td>
+                                    <td colSpan={4} className="text-left"> {checkForDecimalAndNull(totalCostBase, initialConfiguration.NoOfDecimalForPrice)} ({reactLocalStorage.getObject("baseCurrency")})</td>
                                 </>}
                             </tr>
                         </tbody>

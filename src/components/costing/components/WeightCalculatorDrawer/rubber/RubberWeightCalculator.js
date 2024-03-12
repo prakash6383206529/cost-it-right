@@ -18,11 +18,11 @@ function RubberWeightCalculator(props) {
     const dispatch = useDispatch()
 
     const defaultValues = {
-        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialGrossWeight !== undefined ? WeightCalculatorRequest.RawMaterialGrossWeight : '',
-        finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialFinishWeight !== undefined ? WeightCalculatorRequest.RawMaterialFinishWeight : '',
-        scrapRecoveryPercentage: WeightCalculatorRequest && WeightCalculatorRequest.RecoveryPercentage !== undefined ? WeightCalculatorRequest.RecoveryPercentage : '',
+        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialGrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialGrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialFinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialFinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        scrapRecoveryPercentage: WeightCalculatorRequest && WeightCalculatorRequest.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput) : '',
         rejectionType: WeightCalculatorRequest && WeightCalculatorRequest.RejectionType !== undefined ? { label: WeightCalculatorRequest.RejectionType, value: 5 } : '',
-        rejectionValue: WeightCalculatorRequest && WeightCalculatorRequest.RejectionValue !== undefined ? WeightCalculatorRequest.RejectionValue : '',
+        rejectionValue: WeightCalculatorRequest && WeightCalculatorRequest.RejectionValue !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RejectionValue, getConfigurationKey().NoOfDecimalForInputOutput) : '',
         netRmc: WeightCalculatorRequest && WeightCalculatorRequest.NetRawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetRawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',
         NetScrapRate: WeightCalculatorRequest && WeightCalculatorRequest.NetScrapRate !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetScrapRate, getConfigurationKey().NoOfDecimalForPrice) : '',
         scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) : '',
@@ -662,9 +662,9 @@ function RubberWeightCalculator(props) {
                                     </Col>
 
                                     <Col md="3">
-                                        <TooltipCustom disabledIcon={true} width={"230px"} id={'applicablityAdditional'} tooltipText={`Applicablity Cost = Gross RM Rate`} />
+                                        <TooltipCustom disabledIcon={true} width={"230px"} id={'applicablityAdditional'} tooltipText={`Applicability Cost = Gross RM Rate`} />
                                         <TextFieldHookForm
-                                            label={`Applicablity Cost`}
+                                            label={`Applicability Cost`}
                                             id={'applicablityAdditional'}
                                             name={'applicablityAdditional'}
                                             Controller={Controller}
@@ -681,7 +681,7 @@ function RubberWeightCalculator(props) {
                                     </Col>
 
                                     <Col md="3">
-                                        <TooltipCustom disabledIcon={true} id={'netCostAdditional'} tooltipText={`Net Cost = Value${additionalCostType.label === 'Fixed' ? "" : " * Applicablity Cost / 100"}`} />
+                                        <TooltipCustom disabledIcon={true} id={'netCostAdditional'} tooltipText={`Net Cost = Value${additionalCostType.label === 'Fixed' ? "" : " * Applicability Cost / 100"}`} />
                                         <TextFieldHookForm
                                             label={`Net Cost`}
                                             id={'netCostAdditional'}

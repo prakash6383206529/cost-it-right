@@ -103,10 +103,11 @@ function NfrListing(props) {
         dispatch(getAllNfrList((res) => {
             if (res?.data?.DataList?.length > 0) {
                 setRowData(StatusTooltip(res?.data?.DataList))
+            } else {
+                setRowData([])
             }
             setloader(false)
         }))
-        // setloader(false)
     }
 
     const resetState = () => {
@@ -318,6 +319,7 @@ function NfrListing(props) {
         statusFormatter: statusFormatter,
         dateFormater: dateFormater,
         valuesFloatingFilter: SingleDropdownFloationFilter,
+        customNoRowsOverlay: NoContentFound,
     }
     const handleMouse = () => {
         setIsHover(true)
@@ -401,6 +403,7 @@ function NfrListing(props) {
                                                 onFilterModified={onFloatingFilterChanged}
                                                 enableBrowserTooltips={true}
                                                 ref={agGridRef}
+                                                noRowsOverlayComponent={'customNoRowsOverlay'}
                                             >
                                                 {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
                                                 <AgGridColumn field="NfrNumber" headerName="NFR Id" width={150} cellRenderer={hyphenFormatter}></AgGridColumn>

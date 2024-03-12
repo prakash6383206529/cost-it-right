@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, isDirty, clearFields } from "redux
 import { Row, Col, Table, Label } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
-  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation, getNameBySplitting
+  checkWhiteSpaces, maxLength80, maxLength10, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation, getNameBySplitting, number
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList } from '../../../actions/Common';
@@ -23,7 +23,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { AcceptableMachineUOM } from '../../../config/masterData'
+import { AcceptableMachineUOM, LOGISTICS } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import attachClose from '../../../assests/images/red-cross.png'
@@ -388,7 +388,6 @@ class AddMachineRate extends Component {
           this.props.change('Specification', Data.Specification)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
-            let plantObj;
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
               return {
                 processName: el.ProcessName,
@@ -399,11 +398,6 @@ class AddMachineRate extends Component {
               }
             })
 
-            if ((getConfigurationKey().IsDestinationPlantConfigure && (Data.CostingTypeId === VBCTypeId)) || Data.CostingTypeId === CBCTypeId) {
-              plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
-            } else {
-              plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
-            }
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -412,7 +406,7 @@ class AddMachineRate extends Component {
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
               selectedTechnology: Data.Technology[0].Technology !== undefined ? { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId } : [],
-              selectedPlants: plantObj,
+              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               machineType: Data.MachineType !== undefined ? { label: Data.MachineType, value: Data.MachineTypeId } : [],
               processGrid: MachineProcessArray,
@@ -530,7 +524,7 @@ class AddMachineRate extends Component {
     const temp = [];
     if (label === 'technology') {
       costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || (item.Value === String(LOGISTICS))) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -1137,7 +1131,7 @@ class AddMachineRate extends Component {
           LoggedInUserId: loggedInUserId(),
           MachineProcessRates: processGrid,
           Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-          Plant: costingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
+          Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
           Remark: remarks,
           Attachements: updatedFiles,
           IsForcefulUpdated: true,
@@ -1145,7 +1139,7 @@ class AddMachineRate extends Component {
           MachineProcessGroup: this.props.processGroupApiData,
           VendorPlant: [],
           CustomerId: client.value,
-          DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsMachine.Plants[0].PlantId,
+          DestinationPlantId: '',
         }
 
         if (IsFinancialDataChanged) {
@@ -1216,8 +1210,8 @@ class AddMachineRate extends Component {
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-        Plant: costingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
-        DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsMachine.Plants[0].PlantId,
+        Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+        DestinationPlantId: '',
         Remark: remarks,
         Attachements: files,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -1368,7 +1362,7 @@ class AddMachineRate extends Component {
   */
 
   DisplayMachineRateLabel = () => {
-    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
+    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} ({reactLocalStorage.getObject("baseCurrency")})</>
   }
 
   checksFinancialDataChanged = (data) => {
@@ -1728,7 +1722,7 @@ class AddMachineRate extends Component {
                               <Field
                                 name="ProcessName"
                                 type="text"
-                                label="Process Name"
+                                label="Process (Code)"
                                 component={searchableSelect}
                                 placeholder={isEditFlag ? '-' : 'Select'}
                                 options={this.renderListing('ProcessNameList')}
@@ -1768,9 +1762,9 @@ class AddMachineRate extends Component {
                           <Field
                             label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}
-                            type="number"
+                            type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, hashValidation]}
+                            validate={[number, maxLength10, decimalLengthsix, hashValidation]}
                             component={renderText}
                             onChange={this.handleMachineRate}
                             required={true}
@@ -1821,9 +1815,9 @@ class AddMachineRate extends Component {
                           <Table className="table border" size="sm" >
                             <thead>
                               <tr>
-                                <th>{`Process Name`}</th>
+                                <th>{`Process (Code)`}</th>
                                 <th>{`UOM`}</th>
-                                <th>{`Machine Rate (INR)`}</th>
+                                <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                 <th>{`Action`}</th>
                               </tr>
                             </thead>

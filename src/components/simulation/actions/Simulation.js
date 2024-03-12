@@ -488,26 +488,6 @@ export function getComparisionSimulationData(data, callback) {
     }
 }
 
-export function pushAPI(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.simualtionPush, data, config())
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response)
-            } else {
-                dispatch({ type: API_FAILURE })
-                if (response.data.Message) {
-                    Toaster.error(response.data.Message)
-                }
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE })
-            apiErrors(error)
-        })
-    }
-}
-
-
 export function getSimulationStatus(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
@@ -836,26 +816,6 @@ export function getCombinedProcessCostingSimulationList(token, callback) {
     }
 }
 
-
-export function sapPushedInitialMoment(simulationId, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.sapPushedInitialMoment}?simulationId=${simulationId}`, config());
-        request.then((response) => {
-            // if (response.data.Result) {
-            //     dispatch({
-            //         type: GET_COSTING_SIMULATION_LIST,
-            //         payload: response.data.Data.SimulatedCostingList
-            //     })
-            // }
-            callback(response)
-            // apiErrors(response)
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            callback(error)
-            apiErrors(error);
-        })
-    }
-}
 export function getImpactedMasterData(simulationId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
@@ -1367,72 +1327,70 @@ export function getListingForSimulationCombined(requestData, master, callback) {
         }
         const request = axios.post(`${API.getListingForSimulationCombined}`, requestData, config());
         request.then((response) => {
-            if (response.data.Result) {
-                switch (master) {
-                    case RMDOMESTIC:
-                        dispatch({
-                            type: GET_RM_DOMESTIC_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case RMIMPORT:
-                        dispatch({
-                            type: GET_RM_IMPORT_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case BOPDOMESTIC:
-                        dispatch({
-                            type: GET_BOP_DOMESTIC_DATA_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case BOPIMPORT:
-                        dispatch({
-                            type: GET_BOP_IMPORT_DATA_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case OPERATIONS:
-                    case SURFACETREATMENT:
-                        dispatch({
-                            type: GET_OPERATION_COMBINED_DATA_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case MACHINERATE:
-                        dispatch({
-                            type: GET_MACHINE_DATALIST_SUCCESS,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    case EXCHNAGERATE:
-                        dispatch({
-                            type: EXCHANGE_RATE_DATALIST,
-                            payload: response.data.Data
-                        })
-                        break;
-                    case COMBINED_PROCESS:
-                        dispatch({
-                            type: GET_COMBINED_PROCESS_LIST,
-                            payload: response.data.DataList
-                        })
-                        break;
-
-                    //ADD CASE FOR COMBINED PROCESS IN RE (REMINDER)
-
-                    default:
-                        break;
-                }
-
-            }
             callback(response)
+            switch (master) {
+                case RMDOMESTIC:
+                    dispatch({
+                        type: GET_RM_DOMESTIC_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case RMIMPORT:
+                    dispatch({
+                        type: GET_RM_IMPORT_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case BOPDOMESTIC:
+                    dispatch({
+                        type: GET_BOP_DOMESTIC_DATA_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case BOPIMPORT:
+                    dispatch({
+                        type: GET_BOP_IMPORT_DATA_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case OPERATIONS:
+                case SURFACETREATMENT:
+                    dispatch({
+                        type: GET_OPERATION_COMBINED_DATA_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case MACHINERATE:
+
+                    dispatch({
+                        type: GET_MACHINE_DATALIST_SUCCESS,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                case EXCHNAGERATE:
+                    dispatch({
+                        type: EXCHANGE_RATE_DATALIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+                case COMBINED_PROCESS:
+                    dispatch({
+                        type: GET_COMBINED_PROCESS_LIST,
+                        payload: response?.status === 204 ? [] : response?.data?.DataList
+                    })
+                    break;
+
+                //ADD CASE FOR COMBINED PROCESS IN RE (REMINDER)
+
+                default:
+                    break;
+            }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
@@ -1461,9 +1419,7 @@ export function setTokenForSimulation(value) {
 // START----> FOR SHOWING ERROR AND SUCCESS MESSAGE WITH BOX IN SIMULATION APPROVAL SUMMARY AND COSTING APPROVAL SUMMARY ****THIS IS THE DUMMY API CALL FOR CONSISTANCY IT WILL USE IN FUTURE
 export function getAmmendentStatus(params, callback) {
     return (dispatch) => {
-        // const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
-        const queryParameter = `${params.approvalTokenNumber}`;
-        const request = axios.get(`${API.getAmmendentStatus}?tokenNumber=${queryParameter}`, config())
+        const request = axios.get(`${API.getAmmendentStatus}?TokenNumber=${params?.TokenNumber}&CostingId=${params?.CostingId}`, config())
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -1768,5 +1724,22 @@ export function emptyCostingSimulationList(callback) {
             payload: []
         })
         callback([])
+    }
+}
+
+/**
+ * @method checkSAPPoPrice
+ * @description check SAP Po Price
+ */
+export function checkSAPPoPrice(simulationId, costingId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.checkSAPPoPrice}?simulationId=${simulationId}&costingId=${costingId}`, config());
+        request.then((response) => {
+            callback(response)
+        }).catch((error) => {
+            callback(error)
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
     }
 }

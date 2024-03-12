@@ -26,7 +26,7 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import { disabledClass, isResetClick } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import { ApplyPermission } from ".";
@@ -49,7 +49,7 @@ const MachineRateListing = (props) => {
     processName: [],
     machineType: [],
     isBulkUpload: false,
-    isLoader: true,
+    isLoader: false,
     showPopup: false,
     showCopyPopup: false,
     deletedId: '',
@@ -58,7 +58,7 @@ const MachineRateListing = (props) => {
     isOpenProcessGroupDrawer: false,
     analyticsDrawer: false,
     selectedRowData: [],
-    floatingFilterData: { CostingHead: "", Technology: "", VendorName: "", Plant: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", UOM: "" },
+    floatingFilterData: { CostingHead: "", Technology: "", VendorName: "", Plant: "", MachineNumber: "", MachineName: "", MachineTypeName: "", TonnageCapacity: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", UOM: "" },
     warningMessage: false,
     filterModel: {},
     pageNo: 1,
@@ -85,9 +85,9 @@ const MachineRateListing = (props) => {
       setTimeout(() => {
         if (!props.stopApiCallOnCancel) {
           if (props.isSimulation) {
-            props?.changeSetLoader(true);
             if (props.selectionForListingMasterAPI === 'Combined') {
-              dispatch(getListingForSimulationCombined(props.objectForMultipleSimulation, MACHINERATE, () => {
+              props?.changeSetLoader(true);
+              dispatch(getListingForSimulationCombined(props.objectForMultipleSimulation, MACHINERATE, (res) => {
                 props?.changeSetLoader(false);
               }));
             }
@@ -384,9 +384,9 @@ const MachineRateListing = (props) => {
     const rowData = props?.data;
     let isEditable = false
     let isDeleteButton = false
-    if (permissions.Edit) { isEditable = true }
+    if (permissions?.Edit) { isEditable = true }
     else { isEditable = false }
-    if (permissions.Delete && !rowData.IsMachineAssociated) {
+    if (permissions?.Delete && !rowData.IsMachineAssociated) {
       isDeleteButton = true
     } else {
       isDeleteButton = false
@@ -395,7 +395,7 @@ const MachineRateListing = (props) => {
       <>
         <button className="cost-movement" title='Cost Movement' type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> </button>
         {state.isProcessGroup && <button className="group-process" type={'button'} title={'View Process Group'} onClick={() => viewProcessGroupDetail(rowData)} />}
-        {permissions.View && <button title="View" className="View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+        {permissions?.View && <button title="View" className="View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
         {isEditable && <button title="Edit" className="Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
         <button className="Copy All Costing" title="Copy Machine" type={'button'} onClick={() => copyItem(cellValue)} />
         {isDeleteButton && <button title="Delete" className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
@@ -464,7 +464,9 @@ const MachineRateListing = (props) => {
 
   }
   const bulkToggle = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: true }))
+    if (checkMasterCreateByCostingPermission(true)) {
+      setState((prevState) => ({ ...prevState, isBulkUpload: true }))
+    }
   }
 
   const closeBulkUploadDrawer = (event, type) => {
@@ -476,7 +478,9 @@ const MachineRateListing = (props) => {
 
 
   const displayForm = () => {
-    props.displayForm()
+    if (checkMasterCreateByCostingPermission()) {
+      props.displayForm()
+    }
   }
 
 
@@ -486,20 +490,16 @@ const MachineRateListing = (props) => {
     temp = TempData && TempData.map((item) => {
       if (item.MachineTonnage === null) {
         item.MachineTonnage = ' '
-      } else if (item.EffectiveDate === null) {
-        item.EffectiveDate = ' '
-      }
-      else if (item.Plants === '-') {
+      } else if (item.Plants === '-') {
         item.Plants = ' '
       } else if (item.MachineTypeName === '-') {
         item.MachineTypeName = ' '
       } else if (item.VendorName === '-') {
         item.VendorName = ' '
       }
-      if (item.EffectiveDate !== null) {
-        item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+      if (item?.EffectiveDateNew?.includes('T')) {
+        item.EffectiveDateNew = DayTime(item.EffectiveDateNew).format('DD/MM/YYYY')
       }
-
       return item
     })
 
@@ -685,7 +685,7 @@ const MachineRateListing = (props) => {
   };
 
   return (
-    <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
+    <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
       {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />} {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
       <form noValidate> {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
         {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
@@ -704,9 +704,9 @@ const MachineRateListing = (props) => {
               {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
                 <>
                   <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                  {permissions.Add && (<button type="button" className={"user-btn mr5"} onClick={displayForm} title="Add"   >  <div className={"plus mr-0"}></div>    {/* ADD */} </button>)}
-                  {permissions.BulkUpload && (<button type="button" className={"user-btn mr5"} onClick={bulkToggle} title="Bulk Upload"    >  <div className={"upload mr-0"}></div>{/* Bulk Upload */} </button>)}
-                  {permissions.Download && <>  <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} </button>
+                  {permissions?.Add && (<button type="button" className={"user-btn mr5"} onClick={displayForm} title="Add">  <div className={"plus mr-0"}></div>{/* ADD */}</button>)}
+                  {permissions?.BulkUpload && (<button type="button" className={"user-btn mr5"} onClick={bulkToggle} title="Bulk Upload"><div className={"upload mr-0"}></div>{/* Bulk Upload */} </button>)}
+                  {permissions?.Download && <>  <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} </button>
 
                     <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
                       <button id={'Excel-Downloads-machine'} className="p-absolute" type="button" >
@@ -751,7 +751,7 @@ const MachineRateListing = (props) => {
                 <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
+                <AgGridColumn field="TonnageCapacity" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
                 <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                 <AgGridColumn field="UOM" headerName='UOM'></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

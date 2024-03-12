@@ -7,9 +7,9 @@ import NoContentFound from "../../common/NoContentFound";
 import Switch from "react-switch";
 import BulkUpload from "../../massUpload/BulkUpload";
 import AddVendorDrawer from "./AddVendorDrawer";
-import { checkPermission, searchNocontentFilter, showTitleForActiveToggle, } from "../../../helper/util";
+import { checkPermission, searchNocontentFilter, showTitleForActiveToggle, updateBOPValues, } from "../../../helper/util";
 import { MASTERS, VENDOR, VendorMaster } from "../../../config/constants";
-import { getConfigurationKey, loggedInUserId } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, showBopLabel } from "../../../helper";
 import LoaderCustom from "../../common/LoaderCustom";
 import ReactExport from "react-export-excel";
 import { VENDOR_DOWNLOAD_EXCEl } from "../../../config/masterData";
@@ -652,10 +652,15 @@ const VendorListing = () => {
   }
   const onBtExport = () => {
     let tempArr = [];
+    const bopMasterName = showBopLabel();
     // tempArr = state.gridApi && state.gridApi?.getSelectedRows();
     tempArr = selectedRowForPagination
 
-    tempArr = tempArr && tempArr.length > 0 ? tempArr : allSupplierDataList ? allSupplierDataList : []; return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
+    tempArr = tempArr && tempArr.length > 0 ? tempArr : allSupplierDataList ? allSupplierDataList : [];
+    //return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
+    const { updatedLabels, updatedTempData } = updateBOPValues(VENDOR_DOWNLOAD_EXCEl, tempArr, bopMasterName)
+
+    return returnExcelColumn(updatedLabels, updatedTempData)
   };
   const returnExcelColumn = (data = [], TempData) => {
     let temp = [];
@@ -799,13 +804,10 @@ const VendorListing = () => {
               <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type" cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
               <AgGridColumn field="VendorName" headerName="Vendor Name"              ></AgGridColumn>
               <AgGridColumn field="VendorCode" headerName="Vendor Code"              ></AgGridColumn>
-              <AgGridColumn field="Country"
-                headerName="Country" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
-              <AgGridColumn field="State" headerName="State" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
-              <AgGridColumn field="City" headerName="City" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
-              {getConfigurationKey()?.IsCriticalVendorConfigured && (
-                <AgGridColumn field="IsCriticalVendor" headerName="Is Critical Vendor"                ></AgGridColumn>
-              )}
+              <AgGridColumn field="Country" headerName="Country" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
+              <AgGridColumn field="State" headerName="State" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+              <AgGridColumn field="City" headerName="City" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+              {getConfigurationKey()?.IsCriticalVendorConfigured && (<AgGridColumn field="IsCriticalVendor" headerName="Potential Vendor" ></AgGridColumn>)}
               <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}              ></AgGridColumn>
               <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"}              ></AgGridColumn>
             </AgGridReact>

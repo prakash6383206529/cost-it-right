@@ -996,6 +996,7 @@ function RfqListing(props) {
                             cancel={cancel}
                             selectedRows={selectedRows}
                             mandatoryRemark={mandatoryRemark}
+                            callSapCheckAPI={false}
                         />
                     )
                 }

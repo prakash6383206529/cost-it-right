@@ -80,13 +80,24 @@ function AssemblyPart(props) {
           }
           // let tempArr = setArrayForCosting
           let array = [];
-          array = reactLocalStorage.getObject('costingArray')
-          Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
-            array.push(item)
-            return null
-          })
-          let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
-          reactLocalStorage.setObject('costingArray', uniqueArary);
+          let obj = JSON.parse(sessionStorage.getItem('costingArray'))?.filter(element => element.PartType === 'Assembly' && PartNumber === element?.PartNumber)
+
+          if (obj?.length > 0) {
+            array = [Data]
+            Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
+              array.push(item)
+              return null
+            })
+            sessionStorage.setItem('costingArray', JSON.stringify(array))
+          } else {
+            array = JSON.parse(sessionStorage.getItem('costingArray'))
+            Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
+              array.push(item)
+              return null
+            })
+            let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
+            sessionStorage.setItem('costingArray', JSON.stringify(uniqueArary))
+          }
           props.toggleAssembly(BOMLevel, PartNumber, Data)
 
         }
@@ -318,7 +329,7 @@ function AssemblyPart(props) {
                   type="button"
                   className={'user-btn add-oprn-btn mr-1'}
                   onClick={bopHandlingDrawer}>
-                  <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()}  H`}</button>
+                  <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>
                 </>
               }
               {

@@ -40,7 +40,12 @@ import {
     AMENDMENTS_APPROVAL_DASHBOARD,
     GET_USERS_MASTER_LEVEL_API,
     GET_RFQ_USER_DATA_SUCCESS,
+    ONBOARDING_LEVEL_DATALIST_API,
+    GET_ONBOARDING_LEVEL_BY_ID,
+    GET_PLANT_SELECT_LIST_FOR_DEPARTMENT,
+    MANAGE_LEVEL_TAB_API
 } from '../../src/config/constants'
+import DayTime from '../components/common/DayTimeWrapper'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
 
@@ -192,11 +197,18 @@ export default function authReducer(state = initialState, action) {
                 userList: action.payload
             };
         case GET_USER_DATA_SUCCESS:
+            let arr = [];
+            arr = action.payload && action.payload.filter((item) => {
+                item.CreatedDateExcel = item.CreatedDate ? DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss') : ""
+                item.ModifiedDateExcel = item.ModifiedDate ? DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss') : ""
+                return item
+            }
+            )
             return {
                 ...state,
                 loading: false,
                 error: true,
-                userDataList: commonUserFunction(action.payload)
+                userDataList: commonUserFunction(arr)
             };
         case GET_RFQ_USER_DATA_SUCCESS:
             return {
@@ -366,6 +378,32 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 userMasterLevelAPI: action.payload
+            }
+        case ONBOARDING_LEVEL_DATALIST_API:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                onboardingLevelDataList: action.payload
+            };
+        case GET_ONBOARDING_LEVEL_BY_ID:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                OnboardingLevelSelectList: action.payload
+            }
+        case GET_PLANT_SELECT_LIST_FOR_DEPARTMENT:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                plantSelectListForDepartment: action.payload
+            }
+        case MANAGE_LEVEL_TAB_API:
+            return {
+                ...state,
+                isCallApi: action.payload
             }
         default:
             return state;

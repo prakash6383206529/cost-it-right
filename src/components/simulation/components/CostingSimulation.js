@@ -133,6 +133,7 @@ function CostingSimulation(props) {
     const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
     const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
+    const [costingIdArray, setCostingIdArray] = useState({})
 
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
@@ -167,75 +168,88 @@ function CostingSimulation(props) {
 
     useEffect(() => {
         if (SimulationTechnologyIdState && count === 0 && amendmentDetails.SimulationHeadId) {
-            //MINDA
-            // if (getConfigurationKey().IsReleaseStrategyConfigured) {
-            //     let data = []
-            //     selectedRowData && selectedRowData?.map(item => {
-            //         let obj = {}
-            //         obj.SimulationId = simulationId
-            //         data.push(obj)
-            //     })
-            //     let requestObject = {
-            //         "RequestFor": "SIMULATION",
-            //         "TechnologyId": props.technologyId,
-            //         "LoggedInUserId": loggedInUserId(),
-            //         "ReleaseStrategyApprovalDetails": data
-            //     }
-            //     dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-            //         setReleaseStrategyDetails(res?.data?.Data)
-            //         if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
-            //             showIsPFSOrBudgetingDetailsExistWarning(false)
-            //             setWarningMessage("")
-            //             setDisableSendForApproval(false)
-            //             setIsFinalLevelApprover(false)
-
-            //         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-            //             setWarningMessage("Budgeting cost does not exist, common approval flow will run for this part")
-            //             showIsPFSOrBudgetingDetailsExistWarning(true)
-            //             let obj = {
-            //                 DepartmentId: userData.DepartmentId,
-            //                 UserId: loggedInUserId(),
-            //                 TechnologyId: SimulationTechnologyIdState,
-            //                 Mode: 'simulation',
-            //                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
-            //             }
-            //             dispatch(checkFinalUser(obj, res => {
-            //                 if (res && res.data && res.data.Result) {
-            //                     setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
-            //                     if (res.data?.Data?.IsUserInApprovalFlow === false) {
-            //                         setDisableSendForApproval(true)
-            //                     }
-            //                     let countTemp = count + 1
-            //                     setCount(countTemp)
-            //                 }
-            //             }))
-            //         } else if (res?.data?.Result === false) {
-            //             showIsPFSOrBudgetingDetailsExistWarning(true)
-            //             setWarningMessage("This user is not in the approval cycle")
-            //         } else {
-            //             // showIsPFSOrBudgetingDetailsExistWarning(true)
-            //             // setWarningMessage("This user is not in the approval cycle")
-            //         }
-            //     }))
-            // } else {
-            let obj = {
-                DepartmentId: userData.DepartmentId,
-                UserId: loggedInUserId(),
-                TechnologyId: SimulationTechnologyIdState,
-                Mode: 'simulation',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
-            }
-            dispatch(checkFinalUser(obj, res => {
-                if (res && res.data && res.data.Result) {
-                    setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
-                    if (res.data?.Data?.IsUserInApprovalFlow === false) {
-                        setDisableSendForApproval(true)
-                    }
-                    let countTemp = count + 1
-                    setCount(countTemp)
+            if (getConfigurationKey().IsReleaseStrategyConfigured) {
+                let data = []
+                selectedRowData && selectedRowData?.map(item => {
+                    let obj = {}
+                    obj.SimulationId = simulationId
+                    data.push(obj)
+                })
+                let requestObject = {
+                    "RequestFor": "SIMULATION",
+                    "TechnologyId": props.technologyId,
+                    "LoggedInUserId": loggedInUserId(),
+                    "ReleaseStrategyApprovalDetails": data
                 }
-            }))
-            // }
+                dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+                    setReleaseStrategyDetails(res?.data?.Data)
+                    if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+                        showIsPFSOrBudgetingDetailsExistWarning(false)
+                        setWarningMessage("")
+                        setDisableSendForApproval(false)
+                        setIsFinalLevelApprover(false)
+
+                    } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                        setWarningMessage("Budgeting cost does not exist, common approval flow will run for this part")
+                        showIsPFSOrBudgetingDetailsExistWarning(true)
+                        let obj = {
+                            DepartmentId: userData.DepartmentId,
+                            UserId: loggedInUserId(),
+                            TechnologyId: SimulationTechnologyIdState,
+                            Mode: 'simulation',
+                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
+                        }
+                        dispatch(checkFinalUser(obj, res => {
+                            if (res && res.data && res.data.Result) {
+                                setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                                if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                                    setDisableSendForApproval(true)
+                                }
+                                let countTemp = count + 1
+                                setCount(countTemp)
+                            }
+                        }))
+                    } else if (res?.data?.Result === false) {
+                        showIsPFSOrBudgetingDetailsExistWarning(true)
+                        setWarningMessage("This user is not in the approval cycle")
+                    } else {
+                        // showIsPFSOrBudgetingDetailsExistWarning(true)
+                        // setWarningMessage("This user is not in the approval cycle")
+                    }
+                }))
+            } else {
+                let technologyId = SimulationTechnologyIdState
+                if (amendmentDetails?.IsExchangeRateSimulation) {
+                    if (String(SimulationTechnologyIdState) === String(RMIMPORT) || String(SimulationTechnologyIdState) === String(BOPIMPORT)) {
+                        technologyId = EXCHNAGERATE
+                    }
+                } else {
+                    technologyId = SimulationTechnologyIdState
+                }
+                let obj = {
+                    DepartmentId: userData.DepartmentId,
+                    UserId: loggedInUserId(),
+                    TechnologyId: technologyId,
+                    Mode: 'simulation',
+                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
+                }
+                dispatch(checkFinalUser(obj, res => {
+                    if (res && res.data && res.data.Result) {
+                        setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                        if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                            setMessage("This user is not in the approval cycle")
+                            setDisableSendForApproval(true)
+                        } if (res.data.Data.IsFinalApprover) {
+                            setDisableSendForApproval(true)
+                            setMessage("Final level approver can not send draft token for approval")
+                        } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
+                            setDisableSendForApproval(false)
+                        }
+                        let countTemp = count + 1
+                        setCount(countTemp)
+                    }
+                }))
+            }
             // let obj = {
             //     DepartmentId: userData.DepartmentId,
             //     UserId: loggedInUserId(),
@@ -418,6 +432,11 @@ function CostingSimulation(props) {
             setAPIData(tempArrayCosting)
             setCostingArr(tempArrayCosting)
             setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate, IsExchangeRateSimulation: Data.IsExchangeRateSimulation })
+            let requestObject = {}
+
+            requestObject.IsCreate = true
+            requestObject.CostingId = []
+            setCostingIdArray(requestObject)
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
@@ -1529,7 +1548,7 @@ function CostingSimulation(props) {
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
 
-    const headers = { netCostHeadder: `Net Cost (${getConfigurationKey()?.BaseCurrency})` }
+    const headers = { netCostHeadder: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})` }
 
     return (
         <>
@@ -1683,17 +1702,17 @@ function CostingSimulation(props) {
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OperationCostVariance" tooltipField='OperationCostVariance' headerName='Variance (Oper. Cost)' cellRenderer="operVarianceFormatter" ></AgGridColumn>}
 
 
-                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && isSimulationWithCosting && <AgGridColumn width={140} field="BoughtOutPartQuantity" tooltipField='BoughtOutPartQuantity' headerName={`${showBopLabel()}  Quantity`} cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
-                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="OldBOPRate" tooltipField='OldBOPRate' headerName={`Existing ${showBopLabel()}  Rate`} cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
-                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="NewBOPRate" tooltipField='NewBOPRate' headerName={`Revised ${showBopLabel()}  Rate`} cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
+                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && isSimulationWithCosting && <AgGridColumn width={140} field="BoughtOutPartQuantity" tooltipField='BoughtOutPartQuantity' headerName={`${showBopLabel()} Quantity`} cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
+                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="OldBOPRate" tooltipField='OldBOPRate' headerName={`Existing ${showBopLabel()} Rate`} cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
+                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="NewBOPRate" tooltipField='NewBOPRate' headerName={`Revised ${showBopLabel()} Rate`} cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
 
                                                     {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="OldNetLandedCost" tooltipField='OldNetLandedCost' headerName='Existing Net Landed Cost' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
                                                     {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="NewNetLandedCost" tooltipField='NewNetLandedCost' headerName='Revised Net Landed Cost' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
 
                                                     {!isSimulationWithCosting && <AgGridColumn width={140} field="Variance" tooltipField='Variance' headerName='Variance' cellRenderer='varianceFormatter' ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" tooltipField='OldNetBoughtOutPartCost' headerName={`Existing Net ${showBopLabel()}  Cost`} cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" tooltipField='NewNetBoughtOutPartCost' headerName={`Revised Net ${showBopLabel()}  Cost`} cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" tooltipField='NetBoughtOutPartCostVariance' headerName={`Variance (${showBopLabel()}  Cost)`} cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" tooltipField='OldNetBoughtOutPartCost' headerName={`Existing Net ${showBopLabel()} Cost`} cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" tooltipField='NewNetBoughtOutPartCost' headerName={`Revised Net ${showBopLabel()} Cost`} cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" tooltipField='NetBoughtOutPartCostVariance' headerName={`Variance (${showBopLabel()} Cost)`} cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
 
                                                     {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="OldNetProcessCost" tooltipField='OldNetProcessCost' headerName='Existing Net Process Cost' cellRenderer='processCostFormatter' ></AgGridColumn>}
@@ -1719,9 +1738,9 @@ function CostingSimulation(props) {
                                                     {(isMultiTechnology && hideDataColumn.showChildParts) && <AgGridColumn width={140} field="OldNetChildPartsCostWithQuantity" tooltipField='OldNetChildPartsCostWithQuantity' headerName="Existing Net Child's Part Cost With Quantity" cellRenderer={decimalFormatter}></AgGridColumn>}
                                                     {(isMultiTechnology && hideDataColumn.showChildParts) && <AgGridColumn width={140} field="NewNetChildPartsCostWithQuantity" tooltipField='NewNetChildPartsCostWithQuantity' headerName="Revised Net Child's Part Cost With Quantity" cellRenderer={decimalFormatter}></AgGridColumn>}
                                                     {(isMultiTechnology && hideDataColumn.showChildParts) && <AgGridColumn width={140} field="Variance" tooltipField='Variance' headerName='Variance (w.r.t. Existing)' cellRenderer={decimalFormatter}></AgGridColumn>}
-                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" tooltipField='OldNetBoughtOutPartCost' headerName={`Existing Net ${showBopLabel()}  Cost`} cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
-                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" tooltipField='NewNetBoughtOutPartCost' headerName={`Revised Net ${showBopLabel()}  Cost`} cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
-                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" tooltipField='NetBoughtOutPartCostVariance' headerName={`Variance (${showBopLabel()}  Cost)`} cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
+                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" tooltipField='OldNetBoughtOutPartCost' headerName={`Existing Net ${showBopLabel()} Cost`} cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
+                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" tooltipField='NewNetBoughtOutPartCost' headerName={`Revised Net ${showBopLabel()} Cost`} cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
+                                                    {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" tooltipField='NetBoughtOutPartCostVariance' headerName={`Variance (${showBopLabel()} Cost)`} cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
                                                     {/* {showRM && <AgGridColumn width={150} field="RMName" tooltipField="RMName" headerName="RM Name"></AgGridColumn>}
                                                         {showRM && <AgGridColumn width={150} field="RMGrade" tooltipField="RMGrade" headerName="RM Grade"></AgGridColumn>}
@@ -1852,6 +1871,7 @@ function CostingSimulation(props) {
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
                                 CostingTypeId={amendmentDetails.SimulationHeadId}
                                 isSimulationWithCosting={isSimulationWithCosting}
+                                costingIdArray={costingIdArray}
                             />
                         }
                     </div >

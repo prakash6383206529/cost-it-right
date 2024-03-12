@@ -1,6 +1,6 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW } from "../../config/constants";
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW, RELEASESTRATEGYTYPEID6 } from "../../config/constants";
 import Toaster from "./Toaster";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
@@ -142,6 +142,9 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
         case RELEASESTRATEGYTYPEID4:
             approvalTypeId = RELEASESTRATEGYTYPEID4;
             break;
+        case RELEASESTRATEGYTYPEID6:
+            approvalTypeId = RELEASESTRATEGYTYPEID6;
+            break;
         case PFS2TypeId:
             approvalTypeId = PFS2APPROVALTYPEID;
             break;
@@ -180,7 +183,7 @@ export const getCostingTypeIdByCostingPermission = () => {
     return costingTypeId;
 }
 
-export const checkMasterCreateByCostingPermission = () => {
+export const checkMasterCreateByCostingPermission = (isBulkupload = false) => {
     const costingPermision = reactLocalStorage.getObject('CostingTypePermission');
     let count = 0;
     for (const key in costingPermision) {
@@ -192,7 +195,7 @@ export const checkMasterCreateByCostingPermission = () => {
         }
     }
     if (count === 0) {
-        Toaster.warning("You have not enough permission for creating this master.")
+        Toaster.warning(`You have not enough permission for ${isBulkupload ? 'uploading' : 'creating'} this master.`)
         return false;
     }
     return true;

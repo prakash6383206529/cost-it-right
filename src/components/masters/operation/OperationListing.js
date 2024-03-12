@@ -27,7 +27,7 @@ import _ from 'lodash';
 import { disabledClass, isResetClick } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -569,8 +569,9 @@ const OperationListing = (props) => {
     }
 
     const formToggle = () => {
-
-        props.formToggle()
+        if (checkMasterCreateByCostingPermission()) {
+            props.formToggle()
+        }
     }
 
     const hideForm = () => {
@@ -578,7 +579,9 @@ const OperationListing = (props) => {
     }
 
     const bulkToggle = () => {
-        setState(prevState => ({ ...prevState, isBulkUpload: true }))
+        if (checkMasterCreateByCostingPermission(true)) {
+            setState(prevState => ({ ...prevState, isBulkUpload: true }))
+        }
     }
 
     const closeBulkUploadDrawer = (event, type) => {
@@ -904,7 +907,7 @@ const OperationListing = (props) => {
                             {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                             <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                            <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                            <AgGridColumn field="Rate" headerName={`Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                             {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper ag-grid-action-container"} width={150} /* pinned="right" */ headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}

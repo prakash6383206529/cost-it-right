@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import NoContentFound from '../../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../../config/constants'
+import { EMPTY_DATA, WACTypeId } from '../../../../config/constants'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useForm, Controller } from 'react-hook-form';
@@ -8,6 +8,7 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, getConfigurationKey, showBopLabel } from '../../../../helper'
 import { useSelector } from 'react-redux'
 import TooltipCustom from '../../../common/Tooltip'
+import { IdForMultiTechnology } from '../../../../config/masterData'
 function ViewOverheadProfit(props) {
   const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow } = props
 
@@ -23,6 +24,8 @@ function ViewOverheadProfit(props) {
   const [viewOverheadData, setViewOverheadData] = useState(overheadData)
   const [viewProfitData, setViewProfitData] = useState(profitData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { viewCostingDetailData } = useSelector((state) => state.costing)
+  const partType = IdForMultiTechnology?.includes(String(viewCostingDetailData[0]?.technologyId) || String(viewCostingDetailData[0]?.costingTypeId) === WACTypeId)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
 
   useEffect(() => {
     setViewOverheadData(overheadData)
@@ -114,7 +117,7 @@ function ViewOverheadProfit(props) {
                   )}
                   {viewOverheadData.IsOverheadRMApplicable && (
                     <tr>
-                      <td>{`RM`}</td>
+                      <td>{partType ? 'Part Cost' : 'RM'}</td>
                       <td>
                         {viewOverheadData.OverheadRMPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadRMPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                       </td>
@@ -130,7 +133,7 @@ function ViewOverheadProfit(props) {
                   )}
                   {viewOverheadData.IsOverheadBOPApplicable && (
                     <tr>
-                      <td>{`${showBopLabel()} `}</td>
+                      <td>{`${showBopLabel()}`}</td>
                       <td>
                         {viewOverheadData.OverheadBOPPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                       </td>
@@ -235,7 +238,7 @@ function ViewOverheadProfit(props) {
                   )}
                   {viewProfitData.IsProfitRMApplicable && (
                     <tr>
-                      <td>{`RM`}</td>
+                      <td>{partType ? 'Part Cost' : 'RM'}</td>
                       <td>
                         {viewProfitData.ProfitRMPercentage ? checkForDecimalAndNull(viewProfitData.ProfitRMPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                       </td>
@@ -251,7 +254,7 @@ function ViewOverheadProfit(props) {
                   )}
                   {viewProfitData.IsProfitBOPApplicable && (
                     <tr>
-                      <td>{`${showBopLabel()} `}</td>
+                      <td>{`${showBopLabel()}`}</td>
                       <td>
                         {viewProfitData.ProfitBOPPercentage ? checkForDecimalAndNull(viewProfitData.ProfitBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                       </td>

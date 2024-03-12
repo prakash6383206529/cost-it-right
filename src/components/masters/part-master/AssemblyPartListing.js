@@ -344,9 +344,9 @@ const AssemblyPartListing = React.memo((props) => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-    if (window.screen.width >= 1600) {
-      state.gridApi.sizeColumnsToFit();
-    }
+    // if (window.screen.width >= 1600) {
+    //   state.gridApi.sizeColumnsToFit();
+    // }
   };
 
   const isFirstColumn = (params) => {
@@ -533,10 +533,10 @@ const AssemblyPartListing = React.memo((props) => {
               ></AgGridColumn>
               <AgGridColumn
                 field="PartId"
-                width={180}
+                width={250}
                 cellClass="ag-grid-action-container actions-wrapper"
                 headerName="Action"
-                pinned="right"
+                pinned={window.screen.width < 1920 ? "right" : ""}
                 type="rightAligned"
                 floatingFilter={false}
                 cellRenderer={"buttonFormatter"}

@@ -550,6 +550,8 @@ function AddToComparisonDrawer(props) {
           obj.anyOtherCostTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOtherCost ? dataFromAPI?.CostingPartDetails?.NetOtherCost : '-'
           obj.saNumber = dataFromAPI?.SANumber ?? '-'
           obj.lineNumber = dataFromAPI?.LineNumber ?? '-'
+          obj.partType = dataFromAPI?.CostingPartDetails?.Type
+          obj.partTypeId = dataFromAPI?.CostingPartDetails?.PartTypeId
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 
@@ -957,7 +959,7 @@ function AddToComparisonDrawer(props) {
                   )}
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={"Vendor"}
+                      label={"Vendor (Code)"}
                       name={"vendor"}
                       placeholder={"Select"}
                       Controller={Controller}
