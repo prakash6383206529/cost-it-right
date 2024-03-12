@@ -149,6 +149,8 @@ function SimulationApprovalSummary(props) {
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
     const [accDisable, setAccDisable] = useState(false)
     const [technologyName, setTechnologyName] = useState('')
+    const [plantId, setPlantId] = useState(null)
+    const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
     const headers = {
         NetCost: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
     }
@@ -174,6 +176,12 @@ function SimulationApprovalSummary(props) {
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
                 SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
             let uniqueArr
+            setPlantId(SimulatedCostingList[0].PlantId)
+            setDataForFetchingAllApprover({
+                processId: SimulationApprovalProcessId,
+                levelId: SimulationSteps[SimulationSteps.length - 1].LevelId,
+                mode: 'Simulation'
+            })
             if (IsSimulationWithOutCosting) {
                 uniqueArr = SimulatedCostingList
             } else {
@@ -289,16 +297,20 @@ function SimulationApprovalSummary(props) {
                 TechnologyId: technologyIdTemp,
                 Mode: 'simulation',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
+                plantId: plantId
             }
-            dispatch(checkFinalUser(obj, res => {
-                if (res && res.data && res.data.Result) {
-                    setFinalLevelUser(res.data.Data.IsFinalApprover)
-                }
-            }))
+            if (initialConfiguration.IsMultipleUserAllowForApproval ? plantId : true) {
+
+                dispatch(checkFinalUser(obj, res => {
+                    if (res && res.data && res.data.Result) {
+                        setFinalLevelUser(res.data.Data.IsFinalApprover)
+                    }
+                }))
+            }
             // }
 
         }))
-    }, [])
+    }, [plantId])
 
     useEffect(() => {
         // CHECK IF THERE IS NO DATA FOR EACH MASTER IN LAST REVISION DATA
@@ -1158,7 +1170,7 @@ function SimulationApprovalSummary(props) {
                         </Row >
 
                         {/* Code for approval workflow */}
-                        < ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={simulationDetail?.Token} />
+                        < ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={simulationDetail?.Token} approverData={dataForFetchingAllApprover} />
 
                         <Row>
                             <Col md="10"><div className="left-border">{'Amendment Details:'}</div></Col>

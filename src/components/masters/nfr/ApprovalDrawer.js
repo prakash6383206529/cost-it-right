@@ -41,6 +41,7 @@ const ApprovalDrawer = (props) => {
     const [filterStatus, setFilterStatus] = useState('')
 
     useEffect(() => {
+
         dispatch(getReasonSelectList((res) => { }))
         dispatch(getAllApprovalDepartment((res) => {
             const Data = res?.data?.SelectList
@@ -53,6 +54,7 @@ const ApprovalDrawer = (props) => {
                 DepartmentId: departObj[0]?.Value,
                 TechnologyId: technologyId,
                 ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(NFRTypeId),
+                // plantId: approvalData.plantId
             }
             dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
                 res.data.DataList && res.data.DataList.map((item) => {
