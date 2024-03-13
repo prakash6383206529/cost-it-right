@@ -80,7 +80,7 @@ function Tool(props) {
 
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : ''
-    dispatch(fetchCostingHeadsAPI(request, (res) => { }))
+    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
   }, [])
 
   useEffect(() => {
