@@ -103,12 +103,22 @@ function AddBudget(props) {
             setTableData(res.data.SelectList)
         }))
 
+        getDetail()
+        commonFunction();
+        dispatch(getUsersMasterLevelAPI(loggedInUserId(), BUDGET_ID, (res) => { }))
+        dispatch(getSelectListPartType((res) => {
+            setPartTypeList(res?.data?.SelectList)
+        }))
+    }, [])
+
+    const commonFunction = (plantId = '') => {
         let obj = {
             TechnologyId: BUDGET_ID,
             DepartmentId: userDetails().DepartmentId,
             UserId: loggedInUserId(),
             Mode: 'master',
-            approvalTypeId: costingTypeId
+            approvalTypeId: costingTypeId,
+            plantId: plantId,
         }
         dispatch(checkFinalUser(obj, res => {
             if (res.data?.Result) {
@@ -120,16 +130,7 @@ function AddBudget(props) {
                 }
             }
         }))
-
-        getDetail()
-
-        dispatch(getUsersMasterLevelAPI(loggedInUserId(), BUDGET_ID, (res) => { }))
-        dispatch(getSelectListPartType((res) => {
-            setPartTypeList(res?.data?.SelectList)
-        }))
-    }, [])
-
-
+    }
     useEffect(() => {
         if (userMasterLevelAPI) {
             let levelDetailsTemp = []
@@ -243,6 +244,7 @@ function AddBudget(props) {
     const handlePlants = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             setSelectedPlants(newValue)
+            commonFunction(newValue.value)
         } else {
             setSelectedPlants([])
         }
