@@ -78,6 +78,7 @@ function SummaryDrawer(props) {
             if (checkForNull(props.masterId) === RM_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
+                masterPlantId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.MasterApprovalPlantId
                 Data.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
                 if (Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
                     setShowImport(false)

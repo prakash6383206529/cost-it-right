@@ -232,7 +232,7 @@ function SimulationApproveReject(props) {
             TechnologyId: item,
             ReasonId: 0,
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
-            plantId: selectedRowData[0].PLantId
+            plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : ''
           }
           let approverIdListTemp = []
           dispatch(getAllSimulationApprovalList(obj, (res) => {
@@ -315,9 +315,8 @@ function SimulationApproveReject(props) {
           TechnologyId: technologyIdTemp,
           ReasonId: 0,
           ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(appTypeId),
-          plantId: selectedRowData[0].PlantId
+          plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : ''
         }
-        console.log(selectedRowData[0].PlantId, "selectedRowData[0]");
         dispatch(getAllSimulationApprovalList(obj, (res) => {
           const Data = res?.data?.DataList[1] ? res?.data?.DataList[1] : []
           if (Object?.keys(Data)?.length > 0 && Data?.Value !== EMPTY_GUID) {
@@ -334,6 +333,7 @@ function SimulationApproveReject(props) {
             })
           }
           let tempDropdownList = []
+          let approverIdListTemp = []
           res?.data?.DataList && res?.data?.DataList?.map((item) => {
             if (item?.Value === '0') return false;
             tempDropdownList?.push({
@@ -342,9 +342,11 @@ function SimulationApproveReject(props) {
               levelId: item?.LevelId,
               levelName: item?.LevelName
             })
+            approverIdListTemp.push(item.Value)
             return null
           })
           setApprovalDropDown(tempDropdownList)
+          setApproverIdList(approverIdListTemp)
           if ((tempDropdownList[0]?.value === EMPTY_GUID || tempDropdownList.length === 0) && type !== 'Reject' && !IsFinalLevel) {
             setShowWarningMessage(true)
             setApprovalDropDown([])
