@@ -50,10 +50,11 @@ function ViewOtherCostDrawer(props) {
 
                 totalCost = checkForNull(totalCost) + checkForNull(item.NetCost)
                 let obj = {}
-                obj.OtherCostDescription = item.Description
-                obj.OtherCostApplicability = item.ApplicabilityType
-                obj.PercentageOtherCost = item.Value ? item.Value : '-'
-                obj.AnyOtherCost = item.NetCost
+                obj.OtherCostDescription = item?.Description
+                obj.OtherCostApplicability = item?.ApplicabilityType
+                obj.ApplicabilityCost = item?.ApplicabilityCost
+                obj.PercentageOtherCost = item?.Value ? item?.Value : '-'
+                obj.AnyOtherCost = item?.NetCost
                 tempNew.push(obj)
             })
             setTotalOtherCost(totalCost)
@@ -61,10 +62,10 @@ function ViewOtherCostDrawer(props) {
             let discountTable = []
             viewCostingData && viewCostingData[costingIndex]?.CostingPartDetails?.DiscountCostDetails && viewCostingData[costingIndex].CostingPartDetails.DiscountCostDetails.map((item) => {
                 let obj = {}
-                obj.DiscountDescription = item.Description
-                obj.DiscountApplicability = item.ApplicabilityType
-                obj.Percentage = item.Value ? item.Value : '-'
-                obj.Value = item.NetCost
+                obj.DiscountDescription = item?.Description
+                obj.DiscountApplicability = item?.ApplicabilityType
+                obj.Percentage = item?.Value ? item?.Value : '-'
+                obj.Value = item?.NetCost
                 discountTable.push(obj)
             })
             setDiscountData(discountTable)
@@ -127,6 +128,7 @@ function ViewOtherCostDrawer(props) {
                         <tr>
                             <th>{`Other Cost Description`}</th>
                             <th>{`Other Cost Applicability`}</th>
+                            {<th>{`Cost Applicability (${reactLocalStorage.getObject('baseCurrency')})`}</th>}
                             <th>{'Percentage (%)'}</th>
                             <th>{`Cost`}</th>
                         </tr>
@@ -137,6 +139,7 @@ function ViewOtherCostDrawer(props) {
                                 <tr key={index} >
                                     <td>{item.OtherCostDescription}</td>
                                     <td>{item?.OtherCostApplicability}</td>
+                                    <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                                     <td>{String(item?.OtherCostApplicability) === String('Fixed') ? '-' : item.PercentageOtherCost}</td>
                                     <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                                 </tr>
@@ -146,7 +149,7 @@ function ViewOtherCostDrawer(props) {
                             <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
                         </tr> :
                             <tr className='table-footer'>
-                                <td className='text-right' colSpan={3}>Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):</td>
+                                <td className='text-right' colSpan={4}>Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):</td>
                                 <td colSpan={2}>{checkForDecimalAndNull(totalOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             </tr>}
                     </tbody>

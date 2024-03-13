@@ -12,9 +12,12 @@ import { IdForMultiTechnology } from '../../../../config/masterData'
 function ViewOverheadProfit(props) {
   const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow } = props
 
-  const { rejectData, modelType, isRmCutOffApplicable, rawMaterialCostWithCutOff, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit, isIncludeOverheadAndProfitInICC } = rejectAndModelType;
+  const { rejectData, modelType, isRmCutOffApplicable, rawMaterialCostWithCutOff, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit, isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC } = rejectAndModelType;
+  console.log('isIncludeToolCostInCCForICC: ', isIncludeToolCostInCCForICC);
 
   const showTooltipForOH = [isRmCutOffApplicable, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithOverheadAndProfit]
+
+  const showToolTipForICC = [isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC]
 
   const { register, control } = useForm({
     mode: 'onChange',
@@ -51,6 +54,11 @@ function ViewOverheadProfit(props) {
     {isIncludeToolCostWithOverheadAndProfit && <p>Tool Cost Included</p>}
     {isIncludeSurfaceTreatmentWithOverheadAndProfit && <p>Surface Treatment Cost Included</p>}
 
+  </>
+
+  const iccToolTipText = <>
+    {isIncludeToolCostInCCForICC && <p>Tool Cost Included</p>}
+    {isIncludeOverheadAndProfitInICC && <p>Overhead and Profit Included</p>}
   </>
   const modelShowData = () => {
     return <>
@@ -382,7 +390,7 @@ function ViewOverheadProfit(props) {
 
                 <th>{`Applicability`}</th>
                 <th>{`Interest Rate ${iccPaymentData.ICCApplicabilityDetail.ICCApplicability === 'Fixed' ? '' : '(%)'}`}</th>
-                <th><div className='w-fit'>Cost (Applicability){isIncludeOverheadAndProfitInICC && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="icc-table" tooltipText={'Overhead and Profit Cost Included'} />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){showToolTipForICC.includes(true) && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="icc-table" tooltipText={iccToolTipText} />}</div></th>
                 <th>{`Net ICC`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>

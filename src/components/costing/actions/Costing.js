@@ -59,6 +59,7 @@ import {
   CORRUGATED_DATA,
   COSTING_ACC_OPEN_CLOSE_STATUS,
   GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
+  SET_TOOL_COST_ICC,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2816,3 +2817,14 @@ export function getExternalIntegrationFgWiseImpactData(data, callback) {
     })
   }
 }
+
+
+export function setIncludeToolCostIcc(IsIncluded, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_TOOL_COST_ICC,
+      payload: IsIncluded,
+    });
+    callback();
+  }
+};
