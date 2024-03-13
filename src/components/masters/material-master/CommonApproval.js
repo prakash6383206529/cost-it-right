@@ -147,7 +147,6 @@ function CommonApproval(props) {
 * @method getTableData
 * @description getting approval list table
 */
-    console.log('props?.isApproval: ', props?.isApproval, props?.isPageNoChange('master'));
 
     const getTableData = (skip = 0, take = 10, isPagination = true, dataObj, pageDropDownChange = false) => {
         //  API CALL FOR GETTING RM APPROVAL LIST
@@ -952,7 +951,7 @@ function CommonApproval(props) {
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {!loader &&
-                                        <PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableData} floatingFilterData={floatingFilterData} module="Approval" isApproval={props?.isApproval} isPageNoChange={props?.isPageNoChange} />}
+                                        <PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableData} floatingFilterData={floatingFilterData} module="Approval" isApproval={props?.isApproval} />}
                                     {<PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableData} floatingFilterData={floatingFilterData} module="Approval" />}
                                 </div>
                             </div >

@@ -187,9 +187,7 @@ function VolumeListing(props) {
       setTotalRecordCount(volumeDataList[0].TotalRecordCount);
     } else {
       setNoData(false);
-    } return () => {
-      dispatch(resetStatePagination());
-    };
+    } // eslint-disable-next-line
 
   }, [volumeDataList]);
 
