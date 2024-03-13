@@ -181,7 +181,7 @@ class AddBOPDomestic extends Component {
     }, 300);
   }
 
-  commonFunction() {
+  commonFunction(plantId = '') {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -190,7 +190,8 @@ class AddBOPDomestic extends Component {
       DepartmentId: userDetails().DepartmentId,
       UserId: loggedInUserId(),
       Mode: 'master',
-      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
+      plantId: plantId
     }
 
     this.props.checkFinalUser(obj, (res) => {
@@ -509,6 +510,7 @@ class AddBOPDomestic extends Component {
   handlePlant = (e) => {
 
     this.setState({ selectedPlants: e })
+    this.commonFunction(e ? e.value : '')
   }
 
   /**

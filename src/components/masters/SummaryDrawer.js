@@ -63,10 +63,9 @@ function SummaryDrawer(props) {
     const [showImport, setShowImport] = useState(false)
     const [bopDataResponse, setBopDataResponse] = useState([])
     const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when master is approved and need to push it for scheduling
-
     // const { rmDomesticListing, rmImportListing, bopDomesticList, bopImportList } = useSelector(state => state.material)
-
-
+    const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
+    const [mastersPlantId, setMastersPlantId] = useState('')
     useEffect(() => {
         let CostingTypeId = ''
         setLoader(true)
@@ -75,6 +74,7 @@ function SummaryDrawer(props) {
             setApprovalLevelStep(Data.MasterSteps)
             setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
             setLoader(false)
+            let masterPlantId = ''
             if (checkForNull(props.masterId) === RM_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
@@ -88,6 +88,7 @@ function SummaryDrawer(props) {
                 CostingTypeId = Data.ImpactedMasterDataList.BOPListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.BOPListResponse[0].Attachements)
                 setBopDataResponse(Data.ImpactedMasterDataList.BOPListResponse)
+                masterPlantId = Data.ImpactedMasterDataList.BOPListResponse[0]?.MasterApprovalPlantId
                 if (Data.ImpactedMasterDataList.BOPListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
                     setShowImport(false)
                 } else {
@@ -99,14 +100,17 @@ function SummaryDrawer(props) {
                 CostingTypeId = Data.ImpactedMasterDataList.OperationListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.OperationListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                masterPlantId = Data.ImpactedMasterDataList.OperationListResponse[0]?.MasterApprovalPlantId
             } else if (checkForNull(props.masterId) === MACHINE_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.MachineListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.MachineListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                masterPlantId = Data.ImpactedMasterDataList.MachineListResponse[0]?.MasterApprovalPlantId
             } else if (checkForNull(props.masterId) === BUDGET_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.BudgetingListResponse[0]?.CostingHeadId
                 setFiles(Data.ImpactedMasterDataList.BudgetingListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                masterPlantId = Data.ImpactedMasterDataList.BudgetingListResponse[0]?.MasterApprovalPlantId
             }
             setCostingTypeId(CostingTypeId)
             Data.NumberOfMaster > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
@@ -115,8 +119,15 @@ function SummaryDrawer(props) {
                 UserId: loggedInUserId(),
                 TechnologyId: props.masterId,
                 Mode: 'master',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+                plantId: masterPlantId
             }
+            setMastersPlantId(masterPlantId)
+            setDataForFetchingAllApprover({
+                processId: approvalData.approvalProcessId,
+                levelId: Data.MasterSteps[Data.MasterSteps.length - 1].LevelId,
+                mode: 'Master'
+            })
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
                     setFinalLevelUser(res.data.Data.IsFinalApprover)
@@ -193,7 +204,7 @@ function SummaryDrawer(props) {
                         {loader ? <LoaderCustom /> :
                             <Row className="mx-0 mb-3">
                                 <Col>
-                                    <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} />
+                                    <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} approverData={dataForFetchingAllApprover} />
 
 
                                     {isRMApproval && <>
@@ -260,6 +271,7 @@ function SummaryDrawer(props) {
                     type={approvalDrawer ? 'Approve' : 'Reject'}
                     anchor={'right'}
                     masterId={approvalDetails.MasterId}
+                    masterPlantId={mastersPlantId}
                     closeDrawer={closeApproveRejectDrawer}
                     IsFinalLevelButtonShow={finalLevelUser}
                     costingTypeId={costingTypeId}

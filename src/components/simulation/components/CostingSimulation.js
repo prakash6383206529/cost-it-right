@@ -110,6 +110,7 @@ function CostingSimulation(props) {
     const [isBreakupBoughtOutPart, setIsBreakupBoughtOutPart] = useState(false)
     const [disableSendForApproval, setDisableSendForApproval] = useState(false);
     const [message, setMessage] = useState('');
+    const [plantId, setPlantId] = useState(null)
 
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
 
@@ -134,6 +135,7 @@ function CostingSimulation(props) {
     const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
     const [costingIdArray, setCostingIdArray] = useState({})
+    const { initialConfiguration } = useSelector(state => state.auth)
 
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
@@ -231,24 +233,27 @@ function CostingSimulation(props) {
                     UserId: loggedInUserId(),
                     TechnologyId: technologyId,
                     Mode: 'simulation',
-                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
+                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId),
+                    plantId: plantId
                 }
-                dispatch(checkFinalUser(obj, res => {
-                    if (res && res.data && res.data.Result) {
-                        setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
-                        if (res?.data?.Data?.IsUserInApprovalFlow === false) {
-                            setMessage("This user is not in the approval cycle")
-                            setDisableSendForApproval(true)
-                        } if (res.data.Data.IsFinalApprover) {
-                            setDisableSendForApproval(true)
-                            setMessage("Final level approver can not send draft token for approval")
-                        } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
-                            setDisableSendForApproval(false)
+                if (initialConfiguration.IsMultipleUserAllowForApproval ? plantId : true) {
+                    dispatch(checkFinalUser(obj, res => {
+                        if (res && res.data && res.data.Result) {
+                            setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                            if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                                setMessage("This user is not in the approval cycle")
+                                setDisableSendForApproval(true)
+                            } if (res.data.Data.IsFinalApprover) {
+                                setDisableSendForApproval(true)
+                                setMessage("Final level approver can not send draft token for approval")
+                            } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
+                                setDisableSendForApproval(false)
+                            }
+                            let countTemp = count + 1
+                            setCount(countTemp)
                         }
-                        let countTemp = count + 1
-                        setCount(countTemp)
-                    }
-                }))
+                    }))
+                }
             }
             // let obj = {
             //     DepartmentId: userData.DepartmentId,
@@ -268,7 +273,7 @@ function CostingSimulation(props) {
             //     }
             // }))
         }
-    }, [SimulationTechnologyIdState, amendmentDetails.SimulationHeadId])
+    }, [SimulationTechnologyIdState, amendmentDetails.SimulationHeadId, plantId])
 
     useEffect(() => {
         // TO CHECK IF ANY OF THE RECORD HAS ASSEMBLY ROW
@@ -474,6 +479,9 @@ function CostingSimulation(props) {
         if (isMultiTechnology) {
             dispatch(getAllSimulatedMultiTechnologyCosting(simulationId, (res) => {
                 setCommonStateForList(res)
+                if (res?.data?.Result) {
+                    setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
+                }
             }))
         } else {
             let masterTemp = selectedMasterForSimulation?.value
@@ -492,6 +500,9 @@ function CostingSimulation(props) {
                     dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, res => {
                         setMasterLoader(false)
                         setCommonStateForList(res)
+                        if (res?.data?.Result) {
+                            setPlantId(res?.data?.Data.SimulationBoughtOutPart[0].PlantId)
+                        }
                     }))
                     break;
                 case Number(SURFACETREATMENT):
@@ -499,6 +510,9 @@ function CostingSimulation(props) {
                     dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
                         setMasterLoader(false)
                         setCommonStateForList(res)
+                        if (res?.data?.Result) {
+                            setPlantId(res?.data?.Data.SimulationBoughtOutPart[0].PlantId)
+                        }
                     }))
                     break;
                 case Number(OPERATIONS):
@@ -506,6 +520,9 @@ function CostingSimulation(props) {
                     dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
                         setMasterLoader(false)
                         setCommonStateForList(res)
+                        if (res?.data?.Result) {
+                            setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
+                        }
                     }))
                     break;
                 case Number(BOPDOMESTIC):
@@ -514,12 +531,17 @@ function CostingSimulation(props) {
                     if (isMasterAssociatedWithCosting) {
                         dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
                             setMasterLoader(false)
-                            setCommonStateForList(res)
+                            if (res?.data?.Result) {
+                                setPlantId(res?.data?.Data.BreakUpBoughtOutPartCostings[0].PlantId)
+                            }
                         }))
                     } else {
                         dispatch(getAllSimulatedBoughtOutPart(simulationId, (res) => {
                             setMasterLoader(false)
                             setCommonStateForList(res)
+                            if (res?.data?.Result) {
+                                setPlantId(res?.data?.Data.SimulationBoughtOutPart[0].PlantId)
+                            }
                         }))
                     }
                     break;
@@ -528,6 +550,9 @@ function CostingSimulation(props) {
                     dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
                         setMasterLoader(false)
                         setCommonStateForList(res)
+                        if (res?.data?.Result) {
+                            setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
+                        }
                     }))
                     break;
                 case Number(MACHINERATE):
@@ -535,6 +560,9 @@ function CostingSimulation(props) {
                     dispatch(getMachineRateCostingSimulationList(simulationId, (res) => {
                         setMasterLoader(false)
                         setCommonStateForList(res)
+                        if (res?.data?.Result) {
+                            setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
+                        }
                     }))
                     break;
                 case Number(COMBINED_PROCESS):                   //RE

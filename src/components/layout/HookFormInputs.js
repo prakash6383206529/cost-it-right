@@ -5,6 +5,7 @@ import AsyncSelect from 'react-select/async';
 import LoaderCustom from "../common/LoaderCustom";
 import { SPACEBAR } from "../../config/constants";
 import DatePicker, { ReactDatePicker } from 'react-datepicker'
+import Popup from "reactjs-popup";
 
 export const TextFieldHooks = (input) => {
 
@@ -768,3 +769,37 @@ export const DateTimePickerHookForm = (field) => {
   )
 }
 
+export const AllApprovalField = (props) => {
+  const { label, mandatory, className, id, approverList, popupButton } = props
+  const InputClassName = `form-control ${className ? className : ""}`;
+  let value = approverList.length !== 0 ? `${approverList[0].label} ${approverList.length > 1 ? '...' : ''}` : '-';
+  return (
+    <>
+      <div className={'form-group'}>
+
+        <label className={label === false ? 'd-none' : ''}>
+          {label}
+          {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        </label>
+        <div id={id ? id : ''} className="approval-container">
+          <input
+            className={InputClassName}
+            disabled={true}
+            placeholder={'-'}
+            value={value}
+            autoComplete={'off'}
+          />
+          {approverList.length > 1 && <Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn" type={'button'}>{popupButton}</button>}
+            position="left center">
+            <ul className="px-1 view-all-list">
+              {approverList && approverList.map((item, index) => {
+                return <li key={item.value}>{index + 1}. {item.label}</li>
+              })}
+            </ul>
+
+          </Popup>}
+        </div>
+      </div>
+    </>
+  )
+}
