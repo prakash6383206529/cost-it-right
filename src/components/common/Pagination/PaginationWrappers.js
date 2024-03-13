@@ -41,7 +41,9 @@ export function PaginationWrappers(props) {
             case 'Budget':
                 getDataList(newSkip, numericPageSize, true);
                 break;
-
+            case 'Approval':
+                getDataList(newSkip, numericPageSize, true, floatingFilterData, true)
+                break;
 
 
             default:
@@ -107,7 +109,6 @@ export function PaginationWrappers(props) {
             //         break;
             // }
         } else {
-
             // const newSkip = Math.max(0, Math.floor(currentRowIndex / numericPageSize) - 1) * numericPageSize;
             const newSkip = (calculatedPageNo - 1) * numericPageSize; // Adjusted the calculation here
             dispatch(skipUpdate(newSkip));
@@ -160,9 +161,17 @@ export function PaginationWrappers(props) {
             //         break;
             // }
         }
+        if (props?.isApproval) {
+            console.log('props?.isApproval: ', props?.isApproval);
+            // Apply approval logic
+            gridApi.paginationSetPageSize(numericPageSize);
+            props?.isPageNoChange('master');
+        } else {
+            // Default logic
+            gridApi.paginationSetPageSize(numericPageSize);
+        }
 
-
-        gridApi.paginationSetPageSize(numericPageSize);
+        // gridApi.paginationSetPageSize(numericPageSize);
     };
 
     return (

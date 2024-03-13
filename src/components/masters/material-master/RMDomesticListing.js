@@ -220,7 +220,7 @@ function RMDomesticListing(props) {
 
                 if (res && res.status === 204) {
                     setTotalRecordCount(0)
-                    dispatch(updatePageNumber(1))
+                    dispatch(updatePageNumber(0))
                     // setPageNo(0)
                 }
 

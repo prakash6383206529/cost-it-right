@@ -53,6 +53,9 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
             case 'budget':
                 getDataList(newSkip, pageSizeValue, true)
                 break;
+            case 'Approval':
+                getDataList(newSkip, pageSizeValue, true, floatingFilterData, true)
+                break;
             // audit             getDataList(skip, pageSize, true, filterDataObj);
 
 
