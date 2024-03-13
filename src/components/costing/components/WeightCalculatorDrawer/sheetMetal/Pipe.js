@@ -565,7 +565,7 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                      validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -646,7 +646,7 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                      validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -666,7 +666,7 @@ function Pipe(props) {
                     mandatory={false}
                     rules={{
                       required: false,
-                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                      validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -704,7 +704,7 @@ function Pipe(props) {
                     mandatory={false}
                     rules={{
                       required: false,
-                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                      validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
