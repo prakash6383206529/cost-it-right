@@ -27,6 +27,9 @@ import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloat
 import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
+import PaginationControls from '../../common/Pagination/PaginationControls';
+import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
+import { updatePageNumber, updateCurrentRowIndex, resetStatePagination } from '../../common/Pagination/paginationAction';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -48,24 +51,24 @@ function ProfitListing(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [selectedRowData, setSelectedRowData] = useState([])
     const [disableDownload, setDisableDownload] = useState(false)
-
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [disableFilter, setDisableFilter] = useState(true)
     const [warningMessage, setWarningMessage] = useState(false)
-    const [globalTake, setGlobalTake] = useState(defaultPageSize)
+    // const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [filterModel, setFilterModel] = useState({});
-    const [pageNo, setPageNo] = useState(1)
-    const [pageNoNew, setPageNoNew] = useState(1)
+    // const [pageNo, setPageNo] = useState(1)
+    // const [pageNoNew, setPageNoNew] = useState(1)
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
-    const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    // const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [dataCount, setDataCount] = useState(0)
-    const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+    // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "" })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
     let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const globalTakes = useSelector((state) => state.pagination.globalTakes);
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -107,6 +110,8 @@ function ProfitListing(props) {
         }, 300);
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
+        dispatch(resetStatePagination());
+
 
     }, [])
 
@@ -145,7 +150,8 @@ function ProfitListing(props) {
             setIsLoader(false)
             if (res && res.status === 204) {
                 setTotalRecordCount(0)
-                setPageNo(0)
+                dispatch(updatePageNumber(0))
+                // setPageNo(0)
             }
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
@@ -253,11 +259,12 @@ function ProfitListing(props) {
         setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
-        setPageNo(1)
-        setPageNoNew(1)
-        setCurrentRowIndex(0)
+        dispatch(updatePageNumber(1))
+        // setPageNo(1)
+        dispatch(updateCurrentRowIndex(0))
+        // setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
-        getDataList(null, null, null, null, 0, globalTake, true, floatingFilterData)
+        getDataList(null, null, null, null, 0, globalTakes, true, floatingFilterData)
     }
 
 
@@ -277,78 +284,17 @@ function ProfitListing(props) {
 
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
-        setPageNo(1)
-        setPageNoNew(1)
-        setCurrentRowIndex(0)
+        dispatch(resetStatePagination())
+        // setPageNo(1)
+        // setPageNoNew(1)
+        // setCurrentRowIndex(0)
         getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
         dispatch(setSelectedRowForPagination([]))
-        setGlobalTake(10)
-        setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        // setGlobalTake(10)
+        // setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         setDataCount(0)
 
     }
-
-
-    const onBtPrevious = () => {
-        if (currentRowIndex >= 10) {
-            setPageNo(pageNo - 1)
-            setPageNoNew(pageNo - 1)
-            const previousNo = currentRowIndex - 10;
-            getDataList(null, null, null, null, previousNo, globalTake, true, floatingFilterData)
-            setCurrentRowIndex(previousNo)
-        }
-    }
-
-    const onBtNext = () => {
-
-        if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
-            return false
-        }
-
-        if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
-            return false
-        }
-
-        if (currentRowIndex < (totalRecordCount - 10)) {
-            setPageNo(pageNo + 1)
-            setPageNoNew(pageNo + 1)
-            const nextNo = currentRowIndex + 10;
-            getDataList(null, null, null, null, nextNo, globalTake, true, floatingFilterData)
-            setCurrentRowIndex(nextNo)
-        }
-    };
-
-
-    const onPageSizeChanged = (newPageSize) => {
-
-        if (Number(newPageSize) === 10) {
-            getDataList(null, null, null, null, currentRowIndex, 10, true, floatingFilterData)
-            setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
-            setGlobalTake(10)
-            setPageNo(pageNoNew)
-        }
-        else if (Number(newPageSize) === 50) {
-            getDataList(null, null, null, null, currentRowIndex, 50, true, floatingFilterData)
-            setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
-            setGlobalTake(50)
-            if (pageNo >= Math.ceil(totalRecordCount / 50)) {
-                setPageNo(Math.ceil(totalRecordCount / 50))
-                getDataList(null, null, null, null, 0, 50, true, floatingFilterData)
-            }
-        }
-        else if (Number(newPageSize) === 100) {
-            getDataList(null, null, null, null, currentRowIndex, 100, true, floatingFilterData)
-            setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
-            setGlobalTake(100)
-            if (pageNo >= Math.ceil(totalRecordCount / 100)) {
-                setPageNo(Math.ceil(totalRecordCount / 100))
-                getDataList(null, null, null, null, 0, 100, true, floatingFilterData)
-            }
-        }
-
-        gridApi.paginationSetPageSize(Number(newPageSize));
-
-    };
 
 
     /**
@@ -724,7 +670,7 @@ function ProfitListing(props) {
 
                                             rowData={overheadProfitList}
                                             pagination={true}
-                                            paginationPageSize={globalTake}
+                                            paginationPageSize={globalTakes}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
                                             noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -755,15 +701,8 @@ function ProfitListing(props) {
                                             <AgGridColumn field="ProfitId" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                         </AgGridReact>
                                         <div className='button-wrapper'>
-                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
-                                            {
-                                                <div className="d-flex pagination-button-container">
-                                                    <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                                                    {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                                                    {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                                                    {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                                    <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
-                                                </div>
+                                            {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="overHeadAndProfits" />}
+                                            {<PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="overHeadAndProfits" />
                                             }
                                         </div>
                                     </div>

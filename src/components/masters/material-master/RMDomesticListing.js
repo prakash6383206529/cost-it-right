@@ -4,13 +4,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { deleteRawMaterialAPI, getAllRMDataList } from '../actions/Material';
 import { IsShowFreightAndShearingCostFields, loggedInUserId, userDepartmetList } from "../../../helper/auth"
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import 'react-input-range/lib/css/index.css'
 import DayTime from '../../common/DayTimeWrapper'
-import BulkUpload from '../../massUpload/BulkUpload';
 import LoaderCustom from '../../common/LoaderCustom';
 import { FORGING, RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { RM_MASTER_ID, APPROVAL_ID, RmDomestic } from '../../../config/constants'
@@ -23,14 +22,15 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { disabledClass } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
-import { PaginationWrapper } from '../../common/commonPagination';
 import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
-
+import PaginationControls from '../../common/Pagination/PaginationControls';
+import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
+import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize } from '../../common/Pagination/paginationAction';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -49,27 +49,29 @@ function RMDomesticListing(props) {
     const allRmDataList = useSelector((state) => state.material.allRmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
     const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const { globalTakes } = useSelector((state) => state.pagination);
+
+
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
     const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
     const [disableDownload, setDisableDownload] = useState(false)
-    const [dateArray, setDateArray] = useState([])
     const [analyticsDrawer, setAnalyticsDrawer] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [warningMessage, setWarningMessage] = useState(false)
-    const [globalTake, setGlobalTake] = useState(defaultPageSize)
+    // const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [filterModel, setFilterModel] = useState({});
-    const [pageNo, setPageNo] = useState(1)
+    // const [pageNo, setPageNo] = useState(1)
     const [pageNoNew, setPageNoNew] = useState(1)
-    const [totalRecordCount, setTotalRecordCount] = useState(1)
+    const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
-    const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    // const [currentRowIndex, setCurrentRowIndex] = useState(defaultPageSize)
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
     const [inRangeDate, setinRangeDate] = useState([])
-    const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+    // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", NetConditionCost: "", NetCostWithoutConditionCost: "", MachiningScrapRate: "", IsScrapUOMApply: "", ScrapUnitOfMeasurement: "", CalculatedFactor: "", ScrapRatePerScrapUOM: "" })
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
@@ -144,6 +146,8 @@ function RMDomesticListing(props) {
         if (!props.stopApiCallOnCancel) {
             return () => {
                 dispatch(setSelectedRowForPagination([]))
+                dispatch(resetStatePagination());
+
                 reactLocalStorage.setObject('selectedRow', {})
             }
         }
@@ -154,7 +158,7 @@ function RMDomesticListing(props) {
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
+    const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
         const { isSimulation } = props
 
         if (filterModel?.EffectiveDate && !isReset) {
@@ -216,7 +220,8 @@ function RMDomesticListing(props) {
 
                 if (res && res.status === 204) {
                     setTotalRecordCount(0)
-                    setPageNo(0)
+                    dispatch(updatePageNumber(1))
+                    // setPageNo(0)
                 }
 
                 if (res) {
@@ -323,11 +328,13 @@ function RMDomesticListing(props) {
         setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
-        setPageNo(1)
+        // setPageNo(1)
+        dispatch(updatePageNumber(1))
         setPageNoNew(1)
-        setCurrentRowIndex(0)
+        dispatch(updateCurrentRowIndex(10))
+        // setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
-        getDataList(null, null, null, null, null, 0, 0, globalTake, true, floatingFilterData)
+        getDataList(null, null, null, null, null, 0, 0, globalTakes, true, floatingFilterData)
     }
 
 
@@ -352,49 +359,24 @@ function RMDomesticListing(props) {
 
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
-        setPageNo(1)
+        // setPageNo(1)
+        dispatch(updatePageNumber(1))
+
         setPageNoNew(1)
-        setCurrentRowIndex(0)
+        dispatch(updateCurrentRowIndex(10))
+        // setCurrentRowIndex(0)
         getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData, true)
         dispatch(setSelectedRowForPagination([]))
-        setGlobalTake(10)
-        setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        dispatch(updateGlobalTake(10))
+        // setGlobalTake(10)
+        dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
+        // setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         setDataCount(0)
         reactLocalStorage.setObject('selectedRow', {})
         if (isSimulation) {
             props.isReset()
         }
     }
-
-
-    const onBtPrevious = () => {
-        if (currentRowIndex >= 10) {
-            setPageNo(pageNo - 1)
-            setPageNoNew(pageNo - 1)
-            const previousNo = currentRowIndex - 10;
-            getDataList(null, null, null, null, null, 0, previousNo, globalTake, true, floatingFilterData)
-            setCurrentRowIndex(previousNo)
-        }
-    }
-
-    const onBtNext = () => {
-
-        if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
-            return false
-        }
-
-        if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
-            return false
-        }
-
-        if (currentRowIndex < (totalRecordCount - 10)) {
-            setPageNo(pageNo + 1)
-            setPageNoNew(pageNo + 1)
-            const nextNo = currentRowIndex + 10;
-            getDataList(null, null, null, null, null, 0, nextNo, globalTake, true, floatingFilterData)
-            setCurrentRowIndex(nextNo)
-        }
-    };
 
     /**
     * @method viewOrEditItemDetails
@@ -614,36 +596,7 @@ function RMDomesticListing(props) {
         });
     };
 
-    const onPageSizeChanged = (newPageSize) => {
 
-        if (Number(newPageSize) === 10) {
-            getDataList(null, null, null, null, null, 0, currentRowIndex, 10, true, floatingFilterData)
-            setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
-            setGlobalTake(10)
-            setPageNo(pageNoNew)
-        }
-        else if (Number(newPageSize) === 50) {
-            getDataList(null, null, null, null, null, 0, currentRowIndex, 50, true, floatingFilterData)
-            setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
-            setGlobalTake(50)
-            if (pageNo >= Math.ceil(totalRecordCount / 50)) {
-                setPageNo(Math.ceil(totalRecordCount / 50))
-                getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
-            }
-        }
-        else if (Number(newPageSize) === 100) {
-            getDataList(null, null, null, null, null, 0, currentRowIndex, 100, true, floatingFilterData)
-            setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
-            setGlobalTake(100)
-            if (pageNo >= Math.ceil(totalRecordCount / 100)) {
-                setPageNo(Math.ceil(totalRecordCount / 100))
-                getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
-            }
-        }
-
-        gridApi.paginationSetPageSize(Number(newPageSize));
-
-    };
 
     const returnExcelColumn = (data = [], TempData) => {
         let excelData = hideCustomerFromExcel(data, "CustomerName")
@@ -982,7 +935,7 @@ function RMDomesticListing(props) {
                                         domLayout='autoHeight'
                                         rowData={rmDataList}
                                         pagination={true}
-                                        paginationPageSize={globalTake}
+                                        paginationPageSize={globalTakes}
                                         onGridReady={onGridReady}
                                         gridOptions={gridOptions}
                                         noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -1033,16 +986,12 @@ function RMDomesticListing(props) {
                                         {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                     </AgGridReact>
                                     <div className='button-wrapper'>
-                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                                        {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />}
                                         {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                            <div className="d-flex pagination-button-container">
-                                                <p><Button id="rmDomesticListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
-                                                {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                                                {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                                                {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                                <p><Button id="rmDomesticListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-                                            </div>
+                                            <PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />
+
                                         }
+
                                     </div>
                                 </div>
                             </div>

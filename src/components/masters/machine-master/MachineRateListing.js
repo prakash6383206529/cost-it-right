@@ -16,12 +16,13 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { PaginationWrapper } from '../../common/commonPagination'
 import { loggedInUserId, getConfigurationKey, userDepartmetList, searchNocontentFilter } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import ProcessGroupDrawer from './ProcessGroupDrawer'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
+import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
+import PaginationControls from '../../common/Pagination/PaginationControls';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { disabledClass, isResetClick } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
@@ -30,6 +31,7 @@ import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import { ApplyPermission } from ".";
+import { resetStatePagination, updateCurrentRowIndex, updatePageNumber } from '../../common/Pagination/paginationAction';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -61,13 +63,8 @@ const MachineRateListing = (props) => {
     floatingFilterData: { CostingHead: "", Technology: "", VendorName: "", Plant: "", MachineNumber: "", MachineName: "", MachineTypeName: "", TonnageCapacity: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", UOM: "" },
     warningMessage: false,
     filterModel: {},
-    pageNo: 1,
-    pageNoNew: 1,
     totalRecordCount: 0,
     isFilterButtonClicked: false,
-    currentRowIndex: 0,
-    pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-    globalTake: defaultPageSize,
     disableFilter: true,
     noData: false,
     dataCount: 0,
@@ -78,6 +75,7 @@ const MachineRateListing = (props) => {
   const [searchText, setSearchText] = useState('');
   const { machineDatalist, allMachineDataList } = useSelector(state => state.machine)
   const { selectedRowForPagination } = useSelector(state => state.simulation);
+  const { globalTakes } = useSelector(state => state.pagination);
   const permissions = useContext(ApplyPermission);
 
   useEffect(() => {
@@ -104,12 +102,14 @@ const MachineRateListing = (props) => {
     fetchData();
     return () => {
       dispatch(setSelectedRowForPagination([]));
+      dispatch(resetStatePagination());
+
     };
     // eslint-disable-next-line
   }, []);
 
 
-  const getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 100, isPagination = true, dataObj = {}) => {
+  const getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 10, isPagination = true, dataObj = {}) => {
     if (state.filterModel?.EffectiveDateNew) {
       if (state.filterModel.EffectiveDateNew.dateTo) {
         let temp = []
@@ -149,7 +149,11 @@ const MachineRateListing = (props) => {
 
         if (res) {
           if (res && res.status === 204) {
-            setState((prevState) => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }))
+            setState((prevState) => ({
+              ...prevState, totalRecordCount: 0,
+              //  pageNo: 0
+            }))
+            dispatch(updatePageNumber(0));
           }
           if (res && res.data && res.data.DataList.length > 0) {
             setState((prevState) => ({ ...prevState, totalRecordCount: res.data.DataList[0].TotalRecordCount }))
@@ -232,8 +236,13 @@ const MachineRateListing = (props) => {
   };
 
   const onSearch = () => {
-    setState((prevState) => ({ ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
-    getDataList("", 0, '', 0, "", "", 0, state.globalTake, true, state.floatingFilterData);
+    setState((prevState) => ({
+      ...prevState, warningMessage: false,
+      //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
+    }));
+    dispatch(updatePageNumber(1));
+    dispatch(updateCurrentRowIndex(0))
+    getDataList("", 0, '', 0, "", "", 0, globalTakes, true, state.floatingFilterData);
   };
 
 
@@ -249,54 +258,19 @@ const MachineRateListing = (props) => {
     for (var prop in state.floatingFilterData) {
       state.floatingFilterData[prop] = "";
     }
-    setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
+    dispatch(resetStatePagination());
+    setState((prevState) => ({
+      ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false,
+      // pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
+    }));
     getDataList("", 0, 0, "", '', 10, true, state.floatingFilterData);
     dispatch(setSelectedRowForPagination([]));
-    setState((prevState) => ({ ...prevState, globalTake: 10, dataCount: 0, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, }, }));
+    setState((prevState) => ({
+      ...prevState, dataCount: 0,
+      //  globalTake: 10, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
+    }));
     setSearchText(''); // Assuming this state is bound to the input value
   };
-
-  const onBtPrevious = () => {
-    if (state.currentRowIndex >= 10) {
-      const previousNo = state.currentRowIndex - 10;
-      const newPageNo = state.pageNo - 1;
-      setState((prevState) => ({ ...prevState, pageNo: newPageNo >= 1 ? newPageNo : 1, pageNoNew: newPageNo >= 1 ? newPageNo : 1, currentRowIndex: previousNo, }));
-      getDataList('', 0, "", 0, "", '', previousNo, state.globalTake, true, state.floatingFilterData)
-    }
-  };
-
-  const onBtNext = () => {
-    if (state?.pageSize?.pageSize50 && state.pageNo >= Math.ceil(state.totalRecordCount / 50)) {
-      return false;
-    }
-    if (state?.pageSize?.pageSize100 && state?.pageNo >= Math.ceil(state.totalRecordCount / 100)) {
-      return false;
-    }
-
-    if (state.currentRowIndex < state.totalRecordCount - 10) {
-      setState((prevState) => ({ ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1, }));
-      const nextNo = state.currentRowIndex + 10;
-      getDataList('', 0, "", 0, "", '', nextNo, state.globalTake, true, state.floatingFilterData)
-      setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
-    }
-  };
-
-  const onPageSizeChanged = (newPageSize) => {
-    let pageSize, totalRecordCount;
-
-    if (Number(newPageSize) === 10) {
-      pageSize = 10;
-    } else if (Number(newPageSize) === 50) {
-      pageSize = 50;
-    } else if (Number(newPageSize) === 100) {
-      pageSize = 100;
-    }
-    totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
-    getDataList('', 0, "", 0, "", '', state.currentRowIndex, pageSize, true, state.floatingFilterData);
-    setState((prevState) => ({ ...prevState, globalTake: pageSize, pageNo: Math.min(state.pageNo, totalRecordCount), pageSize: { pageSize10: pageSize === 10, pageSize50: pageSize === 50, pageSize100: pageSize === 100, }, }));
-    state.gridApi.paginationSetPageSize(Number(newPageSize));
-  };
-
 
   const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
     let data = { isEditFlag: true, Id: Id, IsVendor: rowData.CostingHead, isViewMode: isViewMode, costingTypeId: rowData.CostingTypeId, }
@@ -734,7 +708,7 @@ const MachineRateListing = (props) => {
                 domLayout='autoHeight'
                 rowData={machineDatalist}
                 pagination={true}
-                paginationPageSize={state.globalTake}
+                paginationPageSize={globalTakes}
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -763,17 +737,12 @@ const MachineRateListing = (props) => {
                 {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
                 {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
               </AgGridReact>}
-              <div className='button-wrapper'> {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
+              <div className='button-wrapper'> {!state.isLoader &&
+                <PaginationWrappers gridApi={state.gridApi} module="Machine" totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} />
+              }
                 {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                  <div className="d-flex pagination-button-container">
-                    <p> <Button id="machineRateListing_previous" className="previous-page-pg" variant="previous-btn" onClick={() => onBtPrevious()} />
-                    </p>{state?.pageSize?.pageSize10 && (<p className="next-page-pg custom-left-arrow">  Page{" "}  <span className="text-primary"> {state.pageNo} </span>{" "}  of {Math.ceil(state.totalRecordCount / 10)}</p>)}
-                    {state?.pageSize?.pageSize50 && (<p className="next-page-pg custom-left-arrow">  Page{" "}  <span className="text-primary">  {state.pageNo}   </span>{" "}  of {Math.ceil(state.totalRecordCount / 50)} </p>)}
-                    {state?.pageSize?.pageSize100 && (<p className="next-page-pg custom-left-arrow">  Page{" "} <span className="text-primary"> {state.pageNo}  </span>{" "}   of {Math.ceil(state.totalRecordCount / 100)} </p>)}<p>
-                      <Button id="machineRateListing_next" className="next-page-pg" variant="next-btn" onClick={() => onBtNext()} />
-                    </p>
-                  </div>}
-
+                  <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} module="Machine"
+                  />}
               </div>
             </div>
           </div>

@@ -16,10 +16,11 @@ import { VENDOR_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
+import PaginationControls from "../../common/Pagination/PaginationControls";
+import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
 import WarningMessage from "../../common/WarningMessage";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import ScrollToTop from "../../common/ScrollToTop";
-import { PaginationWrapper } from "../../common/commonPagination";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import { disabledClass, isResetClick } from "../../../actions/Common";
 import { getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI, } from "../actions/Supplier";
@@ -29,6 +30,7 @@ import { hideMultipleColumnFromExcel } from "../../common/CommonFunctions";
 import { useDispatch, useSelector } from "react-redux";
 import Button from '../../layout/Button';
 import { useRef } from "react";
+import { updateGlobalTake, updatePageNumber, updatePageSize, updateCurrentRowIndex, resetStatePagination } from "../../common/Pagination/paginationAction";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -39,6 +41,7 @@ const VendorListing = () => {
   const { supplierDataList, allSupplierDataList } = useSelector((state) => state.supplier);
   const { statusColumnData } = useSelector((state) => state.comman);
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
+  const { currentRowIndex, globalTakes } = useSelector((state) => state.pagination);
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const [state, setState] = useState({
     isEditFlag: false,
@@ -84,7 +87,7 @@ const VendorListing = () => {
     showPopupToggle: false,
     isLoader: false,
     pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-    globalTake: defaultPageSize,
+    // globalTake: defaultPageSize,
     disableFilter: true,
     disableDownload: false,
     noData: false,
@@ -103,6 +106,8 @@ const VendorListing = () => {
     }, 300);
     return () => {
       dispatch(setSelectedRowForPagination([]));
+      dispatch(resetStatePagination());
+
     };
   }, [topAndLeftMenuData]);
 
@@ -117,9 +122,9 @@ const VendorListing = () => {
     applyPermission(topAndLeftMenuData);
     setTimeout(() => {
       if (statusColumnData?.data) {
-        setState((prevState) => ({ ...prevState, disableFilter: false, warningMessage: true, floatingFilterData: { ...prevState.floatingFilterData, VendorType: statusColumnData.data, }, }));
+        setState((prevState) => ({ ...prevState, warningMessage: true, floatingFilterData: { ...prevState.floatingFilterData, VendorType: statusColumnData.data, }, }));
       } else {
-        setState((prevState) => ({ ...prevState, warningMessage: false, disableFilter: false, floatingFilterData: { ...prevState.floatingFilterData, VendorType: "", }, }));
+        setState((prevState) => ({ ...prevState, warningMessage: false, floatingFilterData: { ...prevState.floatingFilterData, VendorType: "", }, }));
       }
     }, 500);
   }, [topAndLeftMenuData, statusColumnData]);
@@ -191,8 +196,13 @@ const VendorListing = () => {
 
         if (res) {
           if (res && res.status === 204) {
-            setState((prevState) => ({ ...prevState, totalRecordCount: 0, pageNo: 0, }));
+            setState((prevState) => ({
+              ...prevState, totalRecordCount: 0,
+              //  pageNo: 0,
+            }));
+            dispatch(updatePageNumber(0));
           }
+
           if (res && res.data && res.data.DataList.length > 0) {
             setState((prevState) => ({ ...prevState, totalRecordCount: res.data.DataList[0].TotalRecordCount, }));
           }
@@ -290,46 +300,16 @@ const VendorListing = () => {
    * filter data
    */
   const onSearch = () => {
-    setState((prevState) => ({ ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
-    getTableListData(0, state.floatingFilterData, state.globalTake, true);
+    setState((prevState) => ({
+      ...prevState, warningMessage: false,
+      //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0, 
+    }));
+    dispatch(updatePageNumber(1));
+    dispatch(updateCurrentRowIndex(0));
+    getTableListData(0, state.floatingFilterData, globalTakes, true);
   };
 
-  /**
-   * pagination previous function
-   */
-  const onBtPrevious = () => {
-    if (state.pageNo === 1) {
-      return false
-    }
-    if (state.currentRowIndex >= 10) {
-      setState((prevState) => ({ ...prevState, pageNo: state.pageNo - 1, pageNoNew: state.pageNo - 1 }))
-      const previousNo = state.currentRowIndex - 10;
-      getTableListData(previousNo, state.floatingFilterData, state.globalTake, true);
 
-      setState((prevState) => ({ ...prevState, currentRowIndex: previousNo }))
-    };
-  }
-  /**
-     * pagination next function
-     */
-
-  const onBtNext = () => {
-    if (state.pageSize.pageSize50 && state.pageNo >= Math.ceil(state.totalRecordCount / 50)) {
-      return false
-    }
-    if (state.pageSize.pageSize100 && state.pageNo >= Math.ceil(state.totalRecordCount / 100)) {
-      return false
-    }
-    if (state.currentRowIndex < (state.totalRecordCount - 10)) {
-      setState((prevState) => ({ ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1 }))
-      const nextNo = state.currentRowIndex + 10;
-
-      getTableListData(nextNo, state.floatingFilterData, state.globalTake, true);
-
-      setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }))
-    }
-
-  };
 
   /**
    * @method editItemDetails
@@ -512,7 +492,7 @@ const VendorListing = () => {
     if (type !== "cancel") {
       setTimeout(() => {
         getTableListData(
-          state.currentRowIndex,
+          currentRowIndex,
           state.floatingFilterData,
           100,
           true
@@ -527,7 +507,7 @@ const VendorListing = () => {
    */
   const filterList = () => {
     getTableListData(
-      state.currentRowIndex, state.floatingFilterData, 100, true);
+      currentRowIndex, state.floatingFilterData, 100, true);
   };
 
   const formToggle = () => {
@@ -556,27 +536,7 @@ const VendorListing = () => {
     params.api.paginationGoToPage(0);
   };
 
-  /**
-   * @method onPageSizeChanged
-   * @description on page size change
-   */
-  const onPageSizeChanged = (newPageSize) => {
-    let pageSize, totalRecordCount;
 
-    if (Number(newPageSize) === 10) {
-      pageSize = 10;
-    } else if (Number(newPageSize) === 50) {
-      pageSize = 50;
-    } else if (Number(newPageSize) === 100) {
-      pageSize = 100;
-    }
-    totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
-    getTableListData(
-      state.currentRowIndex, state.floatingFilterData, pageSize, true);
-
-    setState((prevState) => ({ ...prevState, globalTake: pageSize, pageNo: Math.min(state.pageNo, totalRecordCount), pageSize: { pageSize10: pageSize === 10, pageSize50: pageSize === 50, pageSize100: pageSize === 100, }, }));
-    state.gridApi.paginationSetPageSize(Number(newPageSize));
-  };
 
   /**
    * @method resetState
@@ -594,10 +554,20 @@ const VendorListing = () => {
     for (var prop in state.floatingFilterData) {
       state.floatingFilterData[prop] = "";
     }
-    setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
+    setState((prevState) => ({
+      ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false,
+      //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
+    }));
+    dispatch(updatePageNumber(1));
+    dispatch(updateCurrentRowIndex(0));
     getTableListData(0, state.floatingFilterData, 10, true);
     dispatch(setSelectedRowForPagination([]));
-    setState((prevState) => ({ ...prevState, globalTake: 10, dataCount: 0, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, }, }));
+    dispatch(updateGlobalTake(10));
+    dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }));
+    setState((prevState) => ({
+      ...prevState, dataCount: 0,
+      //  globalTake: 10,  pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
+    }));
     if (searchRef.current) {
       searchRef.current.value = '';
     }
@@ -780,7 +750,7 @@ const VendorListing = () => {
               domLayout="autoHeight"
               rowData={supplierDataList}
               pagination={true}
-              paginationPageSize={state.globalTake}
+              paginationPageSize={globalTakes}
               onGridReady={onGridReady}
               onFilterModified={onFloatingFilterChanged}
               gridOptions={gridOptions}
@@ -808,32 +778,15 @@ const VendorListing = () => {
             </AgGridReact>
             <div className="button-wrapper">
               {!state.isLoader && (
-                <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />
+                <PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Vendor" />
               )}
-              <div className="d-flex pagination-button-container">
+              <PaginationControls
+                totalRecordCount={state.totalRecordCount}
+                getDataList={getTableListData}
+                floatingFilterData={state.floatingFilterData}
+                module="Vendor"
+              />
 
-                <p><Button id="vebdorListing_previous" variant="previous-btn" disabled={false} onClick={() => onBtPrevious()} /></p>
-
-                {state?.pageSize?.pageSize10 && (
-                  <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
-                    {Math.ceil(state.totalRecordCount / 10)}
-                  </p>
-                )}
-                {state?.pageSize?.pageSize50 && (
-                  <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
-                    {Math.ceil(state.totalRecordCount / 50)}
-                  </p>
-                )}
-                {state?.pageSize?.pageSize100 && (
-                  <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
-                    {Math.ceil(state.totalRecordCount / 100)}
-                  </p>
-                )}
-                <p><Button id="vendorListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-              </div>
             </div>
           </div>
         </div>

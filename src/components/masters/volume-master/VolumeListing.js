@@ -19,7 +19,6 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import ScrollToTop from "../../common/ScrollToTop";
 import AddLimit from "./AddLimit";
-import { PaginationWrapper } from "../../common/commonPagination";
 import WarningMessage from "../../common/WarningMessage";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import _ from "lodash";
@@ -30,6 +29,9 @@ import { Drawer } from "@material-ui/core";
 import classnames from "classnames";
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from "../../common/CommonFunctions";
 import Button from "../../layout/Button";
+import PaginationControls from "../../common/Pagination/PaginationControls";
+import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
+import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber } from "../../common/Pagination/paginationAction";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -131,14 +133,14 @@ function VolumeListing(props) {
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [disableFilter, setDisableFilter] = useState(true); // STATE MADE FOR CHECKBOX SELECTION
   const [warningMessage, setWarningMessage] = useState(false);
-  const [globalTake, setGlobalTake] = useState(defaultPageSize);
+  // const [globalTake, setGlobalTake] = useState(defaultPageSize);
   const [filterModel, setFilterModel] = useState({});
-  const [pageNo, setPageNo] = useState(1);
-  const [pageNoNew, setPageNoNew] = useState(1);
+  // const [pageNo, setPageNo] = useState(1);
+  // const [pageNoNew, setPageNoNew] = useState(1);
   const [totalRecordCount, setTotalRecordCount] = useState(1);
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
-  const [currentRowIndex, setCurrentRowIndex] = useState(0);
-  const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false, });
+  // const [currentRowIndex, setCurrentRowIndex] = useState(0);
+  // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false, });
   const [floatingFilterData, setFloatingFilterData] = useState({
     CostingHead: "",
     Year: "",
@@ -159,13 +161,16 @@ function VolumeListing(props) {
   const [noData, setNoData] = useState(false);
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { volumeDataList, volumeDataListForDownload } = useSelector((state) => state.volume);
+  const { globalTakes } = useSelector((state) => state.pagination);
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const dispatch = useDispatch();
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
     getTableListData(0, defaultPageSize, true);
-    return () => { dispatch(setSelectedRowForPagination([])); };
+    return () => {
+      dispatch(setSelectedRowForPagination([]));
+    };
   }, []);
 
   useEffect(() => {
@@ -174,6 +179,7 @@ function VolumeListing(props) {
     setTimeout(() => {
       setIsLoader(false);
     }, 200);
+
   }, [topAndLeftMenuData]);
 
   useEffect(() => {
@@ -181,7 +187,10 @@ function VolumeListing(props) {
       setTotalRecordCount(volumeDataList[0].TotalRecordCount);
     } else {
       setNoData(false);
-    }
+    } return () => {
+      dispatch(resetStatePagination());
+    };
+
   }, [volumeDataList]);
 
   /**
@@ -228,7 +237,8 @@ function VolumeListing(props) {
       if (res) {
         if ((res && res.status === 204) || res.length === 0) {
           setTotalRecordCount(0);
-          setPageNo(0);
+          // setPageNo(0);
+          dispatch(updatePageNumber(0));
         }
         let isReset = true;
         setTimeout(() => {
@@ -279,7 +289,7 @@ function VolumeListing(props) {
     dispatch(deleteVolume(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
-        getTableListData(0, globalTake, true);
+        getTableListData(0, globalTakes, true);
         gridApi.deselectAll();
         dispatch(setSelectedRowForPagination([]));
         setDataCount(0);
@@ -334,7 +344,7 @@ function VolumeListing(props) {
     setBulkUploadBtn(false);
     if (type !== "cancel") {
       setTimeout(() => {
-        getTableListData(0, globalTake, true);
+        getTableListData(0, globalTakes, true);
       }, 200);
     }
   };
@@ -346,7 +356,7 @@ function VolumeListing(props) {
     setBulkUploadBtn(false);
     if (type !== "cancel") {
       setTimeout(() => {
-        getTableListData(0, globalTake, true);
+        getTableListData(0, globalTakes, true);
       }, 200);
     }
   };
@@ -427,38 +437,11 @@ function VolumeListing(props) {
     setShowVolumeForm(false);
     setData({ isEditFlag: false, ID: "" });
     setTimeout(() => {
-      if (type === "submit") getTableListData(0, globalTake, true);
+      if (type === "submit") getTableListData(0, globalTakes, true);
     }, 200);
   };
 
-  const onBtPrevious = () => {
-    if (currentRowIndex >= 10) {
-      setPageNo(pageNo - 1);
-      setPageNoNew(pageNo - 1);
-      const previousNo = currentRowIndex - 10;
-      getTableListData(previousNo, globalTake, true);
-      setCurrentRowIndex(previousNo);
-    }
-  };
 
-  const onBtNext = () => {
-    if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
-      return false;
-    }
-
-    if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
-      return false;
-    }
-
-    if (currentRowIndex < totalRecordCount - 10) {
-      setPageNo(pageNo + 1);
-      setPageNoNew(pageNo + 1);
-      const nextNo = currentRowIndex + 10;
-      getTableListData(nextNo, globalTake, true);
-      // skip, take, isPagination, floatingFilterData, (res)
-      setCurrentRowIndex(nextNo);
-    }
-  };
 
   const onGridReady = (params) => {
     setGridApi(params.api);
@@ -466,42 +449,17 @@ function VolumeListing(props) {
     params.api.paginationGoToPage(0);
   };
 
-  const onPageSizeChanged = (newPageSize) => {
-    if (Number(newPageSize) === 10) {
-      getTableListData(currentRowIndex, 10, true);
-      setPageSize((prevState) => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false, }));
-      setGlobalTake(10);
-      setPageNo(pageNoNew);
-    } else if (Number(newPageSize) === 50) {
-      getTableListData(currentRowIndex, 50, true);
-      setPageSize((prevState) => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false, }));
-      setGlobalTake(50);
-      setPageNo(pageNoNew);
-      if (pageNo >= Math.ceil(totalRecordCount / 50)) {
-        setPageNo(Math.ceil(totalRecordCount / 50));
-        getTableListData(0, 50, true);
-      }
-    } else if (Number(newPageSize) === 100) {
-      getTableListData(currentRowIndex, 100, true);
-      setPageSize((prevState) => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false, }));
-      setGlobalTake(100);
-      if (pageNo >= Math.ceil(totalRecordCount / 100)) {
-        setPageNo(Math.ceil(totalRecordCount / 100));
-        getTableListData(0, 100, true);
-      }
-    }
-
-    gridApi.paginationSetPageSize(Number(newPageSize));
-  };
 
   const onSearch = () => {
     setWarningMessage(false);
     setIsFilterButtonClicked(true);
-    setPageNo(1);
-    setPageNoNew(1);
-    setCurrentRowIndex(0);
+    dispatch(updatePageNumber(1));
+    updateCurrentRowIndex(0);
+    // setPageNo(1);
+    // setPageNoNew(1);
+    // setCurrentRowIndex(0);
     gridOptions?.columnApi?.resetColumnState();
-    getTableListData(0, globalTake, true);
+    getTableListData(0, globalTakes, true);
   };
 
   const onFloatingFilterChanged = (value) => {
@@ -570,13 +528,15 @@ function VolumeListing(props) {
 
     setFloatingFilterData(floatingFilterData);
     setWarningMessage(false);
-    setPageNo(1);
-    setPageNoNew(1);
-    setCurrentRowIndex(0);
+    dispatch(updateGlobalTake(10));
+    dispatch(resetStatePagination());
+    // setPageNo(1);
+    // setPageNoNew(1);
+    // setCurrentRowIndex(0);
     getTableListData(0, 10, true);
     dispatch(setSelectedRowForPagination([]));
-    setGlobalTake(10);
-    setPageSize((prevState) => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false, }));
+    // setGlobalTake(10);
+    // setPageSize((prevState) => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false, }));
     setDataCount(0);
   };
 
@@ -727,7 +687,7 @@ function VolumeListing(props) {
                   rowData={volumeDataList}
                   editable={true}
                   // pagination={true}
-                  paginationPageSize={globalTake}
+                  paginationPageSize={globalTakes}
                   onGridReady={onGridReady}
                   gridOptions={gridOptions}
                   noRowsOverlayComponent={"customNoRowsOverlay"}
@@ -756,29 +716,11 @@ function VolumeListing(props) {
                   <AgGridColumn field="VolumeId" width={120} cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                 </AgGridReact >
                 <div className="button-wrapper">
-                  {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                  {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="Volume" />
+                  }
                   {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && (
-                    <div className="d-flex pagination-button-container">
+                    <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="Volume" />
 
-                      <p><Button id="volumeListing_previous" variant="previous-btn" disabled={false} onClick={() => onBtPrevious()} /></p>
-
-                      {pageSize.pageSize10 && (<p className="next-page-pg custom-left-arrow">
-                        Page <span className="text-primary">{pageNo}</span> of{" "}
-                        {Math.ceil(totalRecordCount / 10)}
-                      </p>
-                      )}
-                      {pageSize.pageSize50 && (<p className="next-page-pg custom-left-arrow">
-                        Page <span className="text-primary">{pageNo}</span> of{" "}
-                        {Math.ceil(totalRecordCount / 50)}
-                      </p>
-                      )}
-                      {pageSize.pageSize100 && (<p className="next-page-pg custom-left-arrow">
-                        Page <span className="text-primary">{pageNo}</span> of{" "}
-                        {Math.ceil(totalRecordCount / 100)}
-                      </p>
-                      )}
-                      <p><Button id="volumeListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-                    </div>
                   )}
                 </div>
               </div >

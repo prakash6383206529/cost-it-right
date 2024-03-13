@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from "classnames";
 import MachineRateListing from "./MachineRateListing";
@@ -14,10 +14,12 @@ import ScrollToTop from "../../common/ScrollToTop";
 import { CheckApprovalApplicableMaster } from "../../../helper";
 import CommonApproval from "../material-master/CommonApproval";
 import { MESSAGES } from "../../../config/message";
-
+import { resetStatePagination } from "../../common/Pagination/paginationAction";
 export const ApplyPermission = React.createContext();
 
 const MachineMaster = () => {
+  const dispatch = useDispatch()
+
   const [state, setState] = useState({
     activeTab: "1",
     isMachineRateForm: false,
@@ -55,6 +57,7 @@ const MachineMaster = () => {
 
   const toggle = (tab) => {
     if (state.activeTab !== tab) {
+      dispatch(resetStatePagination())
       setState((prevState) => ({ ...prevState, activeTab: tab, stopApiCallOnCancel: false, }));
     };
   }

@@ -7,7 +7,6 @@ import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, FILE_URL } f
 import NoContentFound from '../../common/NoContentFound';
 import { getOperationsDataList, deleteOperationAPI, setOperationList } from '../actions/OtherOperation';
 import AddOperation from './AddOperation';
-import { PaginationWrapper } from '../../common/commonPagination'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
@@ -30,6 +29,9 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
+import PaginationControls from '../../common/Pagination/PaginationControls';
+import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
+import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber } from '../../common/Pagination/paginationAction';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -59,13 +61,13 @@ const OperationListing = (props) => {
         floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '' },
         warningMessage: false,
         filterModel: {},
-        pageNo: 1,
-        pageNoNew: 1,
+        // pageNo: 1,
+        // pageNoNew: 1,
         totalRecordCount: 0,
         isFilterButtonClicked: false,
-        currentRowIndex: 0,
-        pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-        globalTake: defaultPageSize,
+        // currentRowIndex: 0,
+        // pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+        // globalTake: defaultPageSize,
         noData: false,
         dataCount: 0,
         attachment: false,
@@ -82,6 +84,7 @@ const OperationListing = (props) => {
     const [searchText, setSearchText] = useState('');
     const { operationList, allOperationList, operationDataHold } = useSelector(state => state.otherOperation);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
+    const { globalTakes } = useSelector(state => state.pagination);
     const { selectedRowForPagination } = useSelector(state => state.simulation);
     useEffect(() => {
         if (!topAndLeftMenuData) {
@@ -95,6 +98,7 @@ const OperationListing = (props) => {
         setTimeout(() => {
             setState(prevState => ({ ...prevState, isLoader: false }));
         }, 300);
+
         // eslint-disable-next-line
     }, [topAndLeftMenuData]); // Add props.stopAPICall to the dependency array
 
@@ -118,10 +122,13 @@ const OperationListing = (props) => {
         } else if (props.stopAPICall === true) {
             setState(prevState => ({ ...prevState, tableData: props.operationDataHold }));
         }
+
         // eslint-disable-next-line
     }, []);
     useEffect(() => {
         dispatch(setSelectedRowForPagination([]));
+        dispatch(resetStatePagination());
+
         // eslint-disable-next-line
     }, []);
 
@@ -199,7 +206,8 @@ const OperationListing = (props) => {
 
                 // PAGINATION CODE
                 if (res && res.status === 204) {
-                    setState(prevState => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }))
+                    setState(prevState => ({ ...prevState, totalRecordCount: 0 }))
+                    dispatch(updatePageNumber(0))
                 }
                 let FloatingfilterData = state.filterModel
                 let obj = { ...state.floatingFilterData }
@@ -293,7 +301,13 @@ const OperationListing = (props) => {
     };
 
     const onSearch = () => {
-        setState((prevState) => ({ ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, noData: false, }));
+        dispatch(updatePageNumber(1));
+        dispatch(updateCurrentRowIndex(0));
+        setState((prevState) => ({
+            ...prevState, warningMessage: false,
+            //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0, 
+            noData: false,
+        }));
         getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     };
 
@@ -312,80 +326,23 @@ const OperationListing = (props) => {
         for (var prop in state.floatingFilterData) {
             state.floatingFilterData[prop] = "";
         }
-        setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
-
+        dispatch(resetStatePagination());
+        setState((prevState) => ({
+            ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false,
+            // pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
+        }));
         getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         dispatch(setSelectedRowForPagination([]));
-
-        setState((prevState) => ({ ...prevState, globalTake: 10, dataCount: 0, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, }, }));
+        dispatch(updateGlobalTake(10));
+        setState((prevState) => ({
+            ...prevState, dataCount: 0,
+            // pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
+        }));
         setSearchText(''); // Assuming this state is bound to the input value
 
     };
-    const onBtPrevious = () => {
-        if (state.currentRowIndex >= 10) {
-            const previousNo = state.currentRowIndex - 10;
-            const newPageNo = state.pageNo - 1;
-
-            setState((prevState) => ({ ...prevState, pageNo: newPageNo >= 1 ? newPageNo : 1, pageNoNew: newPageNo >= 1 ? newPageNo : 1, currentRowIndex: previousNo, }));
 
 
-            getTableListData(null, null, null, null, previousNo, state.globalTake, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
-
-        }
-    };
-
-    const onBtNext = () => {
-        if (
-            state.pageSize?.pageSize50 &&
-            state.pageNo >= Math.ceil(state.totalRecordCount / 50)
-        ) {
-            return false;
-        }
-
-        if (
-            state.pageSize?.pageSize100 &&
-            state.pageNo >= Math.ceil(state.totalRecordCount / 100)
-        ) {
-            return false;
-        }
-
-        if (state.currentRowIndex < state.totalRecordCount - 10) {
-            setState((prevState) => ({ ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1, }));
-            const nextNo = state.currentRowIndex + 10;
-            getTableListData(null, null, null, null, nextNo, state.globalTake, true, state.floatingFilterData)
-            setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
-        }
-    };
-    const onPageSizeChanged = (newPageSize) => {
-        let pageSize, totalRecordCount;
-
-        if (Number(newPageSize) === 10) {
-            pageSize = 10;
-        } else if (Number(newPageSize) === 50) {
-            pageSize = 50;
-        } else if (Number(newPageSize) === 100) {
-            pageSize = 100;
-        }
-
-        totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
-
-        getTableListData(null, null, null, null, state.currentRowIndex,
-            pageSize,
-            true,
-            state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
-
-
-        setState((prevState) => ({
-            ...prevState, globalTake: pageSize, tableData: [], pageNo: Math.min(state.pageNo, totalRecordCount), // Ensure pageNo is within bounds
-            pageSize: {
-                pageSize10: pageSize === 10,
-                pageSize50: pageSize === 50,
-                pageSize100: pageSize === 100,
-            },
-        }));
-
-        state.gridApi.paginationSetPageSize(Number(newPageSize));
-    };
 
 
     /**
@@ -880,7 +837,7 @@ const OperationListing = (props) => {
                             rowData={state.tableData}
                             pagination={true}
 
-                            paginationPageSize={state.globalTake}
+                            paginationPageSize={globalTakes}
                             onGridReady={onGridReady}
                             gridOptions={gridOptions}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -914,14 +871,12 @@ const OperationListing = (props) => {
                             {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                         </AgGridReact>}
                         <div className='button-wrapper'>
-                            {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
+                            {!state.isLoader &&
+                                <PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" />
+                            }
                             {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                <div className="d-flex pagination-button-container">
-                                    <p><Button id="operationListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
-                                    {state?.pageSize?.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(Number(state.totalRecordCount ? state.totalRecordCount / 10 : 0 / 10))}</p>}
-                                    {state?.pageSize?.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 50)}</p>}
-                                    {state?.pageSize?.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 100)}</p>}
-                                    <p><Button id="operationListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>                                </div>
+                                <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Operations" />
+
                             }
                         </div>
                     </div>

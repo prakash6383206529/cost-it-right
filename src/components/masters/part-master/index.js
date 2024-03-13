@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import classnames from "classnames";
 import AddAssemblyPart from "./AddAssemblyPart";
@@ -13,10 +13,11 @@ import ScrollToTop from "../../common/ScrollToTop";
 import { MASTERS, PART } from "../../../config/constants";
 import { checkPermission } from "../../../helper/util";
 import { MESSAGES } from "../../../config/message";
-
+import { resetStatePagination } from "../../common/Pagination/paginationAction";
 export const ApplyPermission = React.createContext();
 
 const PartMaster = () => {
+  const dispatch = useDispatch()
   const [state, setState] = useState({
     isOpen: false,
     activeTab: "1",
@@ -61,7 +62,10 @@ const PartMaster = () => {
   };
 
   const toggle = (tab) => {
-    if (state.activeTab !== tab) { setState((prevState) => ({ ...prevState, activeTab: tab, })); }
+    if (state.activeTab !== tab) {
+      dispatch(resetStatePagination())
+      setState((prevState) => ({ ...prevState, activeTab: tab, }));
+    }
   };
 
   const displayForm = useCallback(() => {
