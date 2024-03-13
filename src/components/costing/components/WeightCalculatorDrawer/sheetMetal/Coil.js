@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation, calculateScrapWeight } from '../../../../../helper'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation, calculateScrapWeight, calculatePercentage } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
@@ -50,6 +50,8 @@ function Coil(props) {
         NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
         GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
         FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.RecoveryPercentage !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
     }
 
     const {
@@ -231,7 +233,7 @@ function Coil(props) {
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
             RawMaterialIdRef: rmRowData.RawMaterialId,
             LoggedInUserId: loggedInUserId(),
-            RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeight')) * rmRowData.ScrapRate,
+            RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeight')) * calculatePercentage(getValues('scrapRecoveryPercent')) * rmRowData.ScrapRate,
             UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
             UOMForDimension: UOMDimension ? UOMDimension.label : '',
             Thickness: values.Thickness,
@@ -319,7 +321,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -330,7 +332,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Thickness(mm)`}
                                         name={'Thickness'}
                                         Controller={Controller}
@@ -359,7 +361,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -370,7 +372,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Cavity`}
                                         name={'Cavity'}
                                         Controller={Controller}
@@ -379,7 +381,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -394,7 +396,7 @@ function Coil(props) {
                             <hr className="mx-n4 w-auto" />
                             <Row>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={UnitFormat()}
                                         name={'NetSurfaceArea'}
                                         Controller={Controller}
@@ -403,7 +405,7 @@ function Coil(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -432,7 +434,7 @@ function Coil(props) {
 
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={'Gross Weight =  (Density * Thickness * Strip Width * Pitch) / 1000'} />
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={'Gross Weight =  (Density * Thickness * Strip Width * Pitch) / Cavity * 1000'} />
                                     <TextFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}
@@ -450,7 +452,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Finish Weight(${UOMDimension.label})`}
                                         name={'FinishWeight'}
                                         Controller={Controller}
