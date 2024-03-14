@@ -282,6 +282,7 @@ export const ProcessGroup = (props) => {
                                         >
                                             <div className={'plus'}></div>ADD</button>
                                         <button
+                                            id="addGroupProcess_Reset"
                                             type="button"
                                             className={`${props.isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
                                             onClick={resetHandler}

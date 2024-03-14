@@ -1,99 +1,118 @@
 {
-    "addMachineRate":{
-        "AddMachineRate_zeroBased":"Select Zero based Costing Head.",
-        "AddMachineRate_customerBased":"Select Vendor based Costing Head.",
-        "AddMachineRate_vendorBased":"Select Customer based Costing Head.",
-        "AddMachineRate_technology_container":"Select Technology from the dropdown.",
-        "AddMachineRate_Plant_container":"Select Plant (Code) from the dropdown.",
-        "AddMachineRate_Specification":"Enter Your specification.",
-        "AddMachineRate_MachineName":"Enter Your Machine Name.",
-        "AddMachineRate_MachineType_container":"Select Your Machine Type.",
-        "AddMachineRate_TonnageCapacity":"Enter Tonnage Capacity.",
-        "AddMachineRate_EffectiveDate":"Select Your Effective Date.",
-        "addMoreMachine_Details":"Click here to add More Machine Details"        
+    "addMachineRate": {
+        "AddMachineRate_zeroBased": "Select a Zero-based Costing Head.",
+        "AddMachineRate_customerBased": "Select a Vendor-based Costing Head.",
+        "AddMachineRate_vendorBased": "Select a Customer-based Costing Head.",
+        "AddMachineRate_technology_container": "Select Technology from the dropdown.",
+        "AddMachineRate_Plant_container": "Select your Plant code.",
+        "AddMachineRate_customerNamer_container": "Select a Customer code from the dropdown.",
+        "AddMachineRate_Vendor_container": "Select a Vendor from the dropdown.",
+        "AddMachineRate_MachineNumber_container": "Enter the Machine Number.",
+        "AddMachineRate_Specification": "Enter the specification.",
+        "AddMachineRate_MachineName": "Enter the Machine Name.",
+        "AddMachineRate_MachineType_container": "Select the Machine Type.",
+        "AddMachineRate_TonnageCapacity": "Enter the tonnage capacity of the machine.",
+        "AddMachineRate_EffectiveDate": "Select the Effective date.",
+        "AddMoreMachine_Details": "Click here to add more Machine Details.",
+        "AddMachineRate_ProcessName_container": "Select the Process from the dropdown.",
+        "Add_Machine_Process": "Click here to add Your Machine Process.",
+        "AddMachineRate_UOM_container": "Select the Unit of Measurement.",
+        "AddMachineRate_MachineRate": "Enter the Machine Rate.",
+        "AddMachineRate_addmore": "Click here to add the process.",
+        "AddMachineRate_reset": "Click here to reset the process.",
+        "AddProcessGroup_reset": "Click here to reset the Process Group.",
+        "AddMachineRate_Remark": "Add necessary remarks.",
+        "AddMachineRate_UploadFiles": "Add necessary attachments.",
+        "groupName": "Select the Group Name.",
+        "process_container": "Select the process from the dropdown.",
+        "AddMoreDetails_Toggle": "Click here to add a Process.",
+        "AddMoreDetails_ProcessGroup_Add": "Click here to add the Process.",
+        "AddMachineRate_Cancel": "Click here to reset the form and return to the machine listing page.",
+        "AddMachineRate_SendForApproval": "Click here to Send for Approval."
     },
-    "addMachineRateMoreDetails":{
-        "AddMoreDetails_Plant_container":"Select Plant (Code) from the dropdown.",
-        "AddMoreDetails_MachineName":"Enter your Machine Name.",
-        "AddMoreDetails_Specification":"Enter your Machine Specification Name.",
-        "AddMoreDetails_Description":"Enter Your Description",
-        "AddMoreDetails_MachineType_container":"Enter Your Machine Type",
-        "AddMoreDetails_Manufacture":"Enter Your Manfacturer.",
-        "AddMoreDetails_yearofManfacturing":"Enter Year Of Manfacturing",
-        "AddMoreDetails_TonnageCapacity":"Enter Tonnage Capacity.",
-        "AddMoreDetails_MachineCost":"Enter Your Cost.",
-        "AddMoreDetails_AccessoriesCost":"Enter Your Accessories ",
-        "AddMoreDetails_InstallationCharges":"Enter Your Installation Charges",
-        "AddMoreDetails_EffectiveDate":"Select Your Effective Date."
-       
+    "addMachineRateMoreDetails": {
+        "AddMoreDetails_Plant_container": "Select your Plant code.",
+        "AddMoreDetails_MachineName": "Enter your Machine Name.",
+        "AddMoreDetails_Specification": "Enter your Machine Specification Name.",
+        "AddMoreDetails_Description": "Enter Your Description.",
+        "AddMoreDetails_MachineType_container": "Enter Your Machine Type.",
+        "AddMoreDetails_Manufacture": "Enter Your Manufacturer.",
+        "AddMoreDetails_yearofManfacturing": "Enter Year Of Manufacturing.",
+        "AddMoreDetails_TonnageCapacity": "Enter Tonnage Capacity.",
+        "AddMoreDetails_MachineCost": "Enter Your Cost.",
+        "AddMoreDetails_AccessoriesCost": "Enter Your Accessories.",
+        "AddMoreDetails_InstallationCharges": "Enter Your Installation Charges.",
+        "AddMoreDetails_EffectiveDate": "Select Your Effective Date."
     },
-    "addLoanInterest":{
-        "AddMoreDetails_LoanPercentage":"Enter Your Loan percentage",
-        "AddMoreDetails_RateOfInterestPercentage":"Enter Your Rate of Interest Per annum"
+    "addLoanInterest": {
+        "AddMoreDetails_LoanPercentage": "Enter Your Loan percentage.",
+        "AddMoreDetails_RateOfInterestPercentage": "Enter Your Rate of Interest Per annum."
     },
-    "addWorkingHours":{
-        "AddMoreDetails_WorkingShift_container":"Select No of Shifts",
-        "AddMoreDetails_WorkingHoursPerShift":"Enter Your Working Hours",
-        "AddMoreDetails_NumberOfWorkingDaysPerYear":"Enter Your Working Hours per annum",
-        "AddMoreDetails_EfficiencyPercentage":"Enter Your Efficiency Percentage"
+    "addWorkingHours": {
+        "AddMoreDetails_WorkingShift_container": "Select the Number of Shifts.",
+        "AddMoreDetails_WorkingHoursPerShift": "Enter Your Working Hours.",
+        "AddMoreDetails_NumberOfWorkingDaysPerYear": "Enter Your Working Hours per annum.",
+        "AddMoreDetails_EfficiencyPercentage": "Enter Your Efficiency Percentage."
     },
-    "addDepreciation":{
-        "AddMoreDetails_DepreciationTypeId_container":"Select Your depreciation type",
-        "AddMoreDetails_DepreciationRatePercentage":"Select Your depreciation type",
-        "AddMoreDetails_CastOfScrap":"Select Your depreciation type",
-        "AddDetails_DateOfPurchase":"Select Your Date of Purchase"
+    "addDepreciation": {
+        "AddMoreDetails_DepreciationTypeId_container": "Select Your depreciation type.",
+        "AddMoreDetails_DepreciationRatePercentage": "Select Your depreciation rate.",
+        "AddMoreDetails_CastOfScrap": "Enter Your Scrap Cost.",
+        "AddDetails_DateOfPurchase": "Select Your Date of Purchase."
     },
-    "addVariableCost":{
-        "AnnualMaintanceAmount":"Enter Your Maintenance Amount",
-        "AnnualConsumableAmount":"Enter Your Annual Consumable Amount",
-        "AnnualInsuranceAmount":"Enter Your Insurance Amount",
-        "AddMoreDetails_BuildingCostPerSquareFeet":"Enter Your Building Cost",
-        "AddMoreDetails_MachineFloorAreaPerSquareFeet":"Enter Your Machine Floor Area",
-        "AddMoreDetails_OtherYearlyCost":"Enter Your Other Cost"
+    "addVariableCost": {
+        "AnnualMaintanceAmount": "Enter Your Maintenance Amount.",
+        "AnnualConsumableAmount": "Enter Your Annual Consumable Amount.",
+        "AnnualInsuranceAmount": "Enter Your Insurance Amount.",
+        "AddMoreDetails_BuildingCostPerSquareFeet": "Enter Your Building Cost.",
+        "AddMoreDetails_MachineFloorAreaPerSquareFeet": "Enter Your Machine Floor Area.",
+        "AddMoreDetails_OtherYearlyCost": "Enter Your Other Cost."
     },
-    "addMachinePower":{
-        "AddMoreDetails_UtilizationFactorPercentage":"Enter Your Power Efficiency",
-        "AddMoreDetails_PowerRatingPerKW":"Enter Your Power Rating"
+    "addMachinePower": {
+        "AddMoreDetails_UtilizationFactorPercentage": "Enter Your Power Efficiency.",
+        "AddMoreDetails_PowerRatingPerKW": "Enter Your Power Rating."
     },
-    "addMachineLabour":{
-        "AddMoreDetails_LabourTypeIds_container":"Enter Your Labour Type",
-        "AddMoreDetails_NumberOfLabour":"Enter Number Of Labour",
-        "AddMoreDetails_Labour_Add":"Add data shows in the grid below"
+    "addMachineLabour": {
+        "AddMoreDetails_LabourTypeIds_container": "Enter Your Labour Type.",
+        "AddMoreDetails_NumberOfLabour": "Enter Number Of Labour.",
+        "AddMoreDetails_Labour_Add": "Add data shown in the grid below."
     },
-    "addMachineProcess":{
-        "AddMoreDetails_ProcessName_container":"Select Your Process Name",
-        "AddMoreDetails_Process":"Add Your More Process Details",
-        "AddMoreDetails_UOM_container":"Select UOM from the dropdown",
-        "AddMoreDetails_MachineRate":"Enter Your Machine Rate",
-        "AddMoreDetails_Process_Add":"Add data shows in the grid below"
+    "addMachineProcess": {
+        "AddMoreDetails_ProcessName_container": "Select Your Process Name.",
+        "AddMoreDetails_Process": "Add Your More Process Details.",
+        "AddMoreDetails_UOM_container": "Select UOM from the dropdown.",
+        "AddMoreDetails_MachineRate": "Enter Your Machine Rate.",
+        "AddMoreDetails_Process_Add": "Add data shown in the grid below."
     },
-    "addMachineProcessGroup":{
-        "groupName":"Select Your Group Name",
-        "process_container":"Select Your Process",
-        "AddMoreDetails_Toggle":"Select Your Process",
-        "AddMoreDetails_ProcessGroup_Add":"Add data shows in the grid below.",
-        "AddMoreDetails_Remark":"Add remarks if necessary",
-        "AddMoreDetails_UploadFiles":"Add attachements if necessary",
-        "AddMoreDetails_Cancel":"Click here to reset the form and go-back to the grid page",
-        "AddMoreDetails_SendForApproval":"Click here to Send For Approval"
+    "addMachineProcessGroup": {
+        "groupName": "Select Your Group Name.",
+        "process_container": "Select Your Process.",
+        "AddMoreDetails_Toggle": "Select Your Process.",
+        "AddMoreDetails_ProcessGroup_Add": "Add data shown in the grid below.",
+        "AddMoreDetails_Remark": "Add remarks if necessary.",
+        "AddMoreDetails_UploadFiles": "Add attachments if necessary.",
+        "AddMoreDetails_Cancel": "Click here to reset the form and go back to the grid page.",
+        "AddMoreDetails_SendForApproval": "Click here to Send For Approval."
     },
-    "addManageProcess":{
-        "AddProcessDrawer_ProcessName":"Enter Your Process Name",
-        "AddProcessDrawer_Cancel":"Click here to reset the form and go-back to the grid page"
+    "addManageProcess": {
+        "AddProcessDrawer_ProcessName": "Enter the Process Name.",
+        "AddProcessDrawer_ProcessCode": "Enter the Process Code.",
+        "AddProcessDrawer_Cancel": "Click here to reset the form and return to the process list page.",
+        "AddProcessDrawer_Save": "Click here to add the process."
     },
-    "addMachineRateMoreProcess":{
-        "AddMachineRate_ProcessName_container":"Select Your Process from the dropdown.",
-        "Add_Machine_Process":"Click here add Your Machine Process.",
-        "AddMachineRate_UOM_container":"Select UOM from the dropdown.",
-        "AddMachineRate_MachineRate":"Enter Your Machine Rate.",
-        "AddMachineRate_addmore":"Add data shows in the grid below.",
-        "groupName":"Enter Your Group Name.",
-        "process_container":"Select Process from the dropdown.",
-        "AddMoreDetails_Toggle":"Add More Process from here.",
-        "AddMoreDetails_ProcessGroup_Add":"Add data shows in the grid below",
-        "AddMachineRate_Remark":"Add remarks if necessary.",
-        "AddMachineRate_UploadFiles":"Add attachements if necessary.",
-        "AddMachineRate_Cancel":"Click here to reset the form and go-back to the grid page",
-        "AddMachineRate_SendForApproval":"Click here to Send For Approval."
+    "addMachineRateMoreProcess": {
+        "AddMachineRate_ProcessName_container": "Select Your Process from the dropdown.",
+        "Add_Machine_Process": "Click here to add Your Machine Process.",
+        "AddMachineRate_UOM_container": "Select the UOM.",
+        "AddMachineRate_MachineRate": "Enter Your Machine Rate.",
+        "AddMachineRate_addmore": "Add data shown in the grid below.",
+        "groupName": "Enter Your Group Name.",
+        "process_container": "Select Process from the dropdown.",
+        "AddMoreDetails_Toggle": "Add More Process from here.",
+        "AddMoreDetails_ProcessGroup_Add": "Add data shown in the grid below.",
+        "AddMachineRate_Remark": "Add necessary remarks.",
+        "AddMachineRate_UploadFiles": "Add necessary attachments.",
+        "AddMachineRate_Cancel": "Click here to reset the form and go back to the grid page.",
+        "AddMachineRate_SendForApproval": "Click here to Send For Approval."
     }
 }

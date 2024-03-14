@@ -1,0 +1,17 @@
+{
+    "addZBCPlantRate": {
+        "AddZBCPlantRate_Plant_Name": "Please provide the name of the plant.",
+        "AddZBCPlantRate_Plant_Code": "Please input the plant code.",
+        "AddZBCPlantRate_Company_Code": "Select the company code from the dropdown menu.",
+        "AddZBCPlantRate_Phone_Number": "Enter the phone number of the plant.",
+        "AddZBCPlantRate_Ext": "Provide the extension number if applicable.",
+        "AddZBCPlantRate_Address1": "Enter the primary address of the plant.",
+        "AddZBCPlantRate_Address2": "Enter the secondary address of the plant.",
+        "AddZBCPlantRate_Country": "Select the country from the dropdown menu.",
+        "AddZBCPlantRate_State": "Select the state from the dropdown menu.",
+        "AddZBCPlantRate_City": "Select the city from the dropdown menu.",
+        "AddZBCPlantRate_ZipCode": "Please enter the zip code of the plant location.",
+        "AddZBCPlantRate_Save": "Click here to save the information.",
+        "AddZBCPlantRate_Cancel": "Click here to reset the form and return to the grid page."
+    }
+}

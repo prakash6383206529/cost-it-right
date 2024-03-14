@@ -1848,7 +1848,15 @@ class AddRMImport extends Component {
                           <TourWrapper
                             buttonSpecificProp={{ id: "RM_Import_form" }}
                             stepsSpecificProp={{
-                              steps: Steps(t).ADD_RAW_MATERIAL_IMPORT
+                              steps: Steps(t, {
+                                hasSource: (costingTypeId === ZBCTypeId),
+                                plantField: (costingTypeId === ZBCTypeId),
+                                CBCTypeField: (costingTypeId === CBCTypeId),
+
+                                destinationField: ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)),
+                                sourceField: ((this.state.HasDifferentSource ||
+                                  costingTypeId === VBCTypeId))
+                              }).ADD_RAW_MATERIAL_IMPORT
                             }} />
                         </h2>
                       </div>
@@ -2133,8 +2141,8 @@ class AddRMImport extends Component {
                               </Col>
                               <Col md="3" className='mb-4'>
                                 <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                                <div id="AddRMImport_Vendor" className="d-flex justify-space-between align-items-center async-select">
-                                  <div className="fullinput-icon p-relative">
+                                <div className="d-flex justify-space-between align-items-center async-select">
+                                  <div id="AddRMImport_Vendor" className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                     <AsyncSelect
                                       name="DestinationSupplierId"

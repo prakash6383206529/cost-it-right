@@ -1,4 +1,6 @@
-export function Steps(t) {
+import { reactLocalStorage } from "reactjs-localstorage";
+
+export function Steps(t, config) {
     return {
         BOP_DOMESTIC_FORM: [
             {
@@ -9,10 +11,10 @@ export function Steps(t) {
                 element: "#bop_form_vendor_based",
                 intro: t("bopDomesticForm.bop_form_vendor_based"),
             },
-            {
+            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
                 element: "#bop_form_customer_based",
                 intro: t("bopDomesticForm.bop_form_customer_based"),
-            },
+            }] : []),
             {
                 element: "#bop_part_name_form_zero_based",
                 intro: t("bopDomesticForm.bop_part_name_form_zero_based"),
@@ -41,14 +43,31 @@ export function Steps(t) {
                 element: "#AddBOPDomestic_Plant_container",
                 intro: t("bopDomesticForm.AddBOPDomestic_Plant_container"),
             },
-            {
-                element: "#bop_vendor_name_form_zero_based",
-                intro: t("bopDomesticForm.bop_vendor_name_form_zero_based"),
+            ...config && config.CBCTypeField ? [
+                {
+                    element: "#AddBOPDomestic_clientName_container",
+                    intro: t("bopDomesticForm.AddBOPDomestic_Customer_container"),
+                },
+            ] : [],
+            ...(!(config && config.CBCTypeField) ? [
+                {
+                    element: "#bop_vendor_name_form_zero_based",
+                    intro: t("bopDomesticForm.bop_vendor_name_form_zero_based"),
+                },
+                {
+                    element: "#addBOPDomestic_vendorToggle",
+                    intro: t("bopDomesticForm.addBOPDomestic_vendorToggle"),
+                },
+            ] : []),
+            ...config && config.sourceField ? [{
+                element: "#AddBOPDomestic_Source",
+                intro: t("bopDomesticForm.AddBOPDomestic_Source"),
             },
             {
-                element: "#addBOPDomestic_vendorToggle",
-                intro: t("bopDomesticForm.addBOPDomestic_vendorToggle"),
-            },
+                element: "#AddBOPDomestic_SourceLocation_container",
+                intro: t("bopDomesticForm.AddBOPDomestic_SourceLocation_container"),
+            }
+            ] : [],
             {
                 element: "#AddBOPDomestic_EffectiveDate",
                 intro: t("bopDomesticForm.AddBOPDomestic_EffectiveDate"),
@@ -61,10 +80,12 @@ export function Steps(t) {
                 element: "#AddBOPDomestic_BasicRateBase",
                 intro: t("bopDomesticForm.AddBOPDomestic_BasicRateBase"),
             },
-            {
-                element: "#addBOPDomestic_condition",
-                intro: t("bopDomesticForm.addBOPDomestic_condition"),
-            },
+            ...config && config.conditionCost ? [
+                {
+                    element: "#addBOPDomestic_condition",
+                    intro: t("bopDomesticForm.addBOPDomestic_condition"),
+                },
+            ] : [],
             {
                 element: "#AddBOPDomestic_Remark",
                 intro: t("bopDomesticForm.AddBOPDomestic_Remark"),
@@ -91,10 +112,10 @@ export function Steps(t) {
                 element: "#bop_import_vendor_based",
                 intro: t("bopImportForm.bop_import_vendor_based"),
             },
-            {
+            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
                 element: "#bop_import_customer_based",
                 intro: t("bopImportForm.bop_import_customer_based"),
-            },
+            }] : []),
             {
                 element: "#AddBOPImport_BoughtOutPartName",
                 intro: t("bopImportForm.AddBOPImport_BoughtOutPartName"),
@@ -123,17 +144,39 @@ export function Steps(t) {
                 element: "#AddBOPImport_Plant_container",
                 intro: t("bopImportForm.AddBOPImport_Plant_container"),
             },
-            {
-                element: "#AddBOPImport_BOPVendoreName",
-                intro: t("bopImportForm.AddBOPImport_BOPVendoreName"),
+            ...config && config.CBCTypeField ? [
+                {
+                    element: "#AddBOPImport_clientName_container",
+                    intro: t("bopImportForm.AddBOPImport_Customer_container"),
+                },
+            ] : [],
+            ...(!(config && config.CBCTypeField) ? [
+
+                {
+                    element: "#AddBOPImport_BOPVendoreName",
+                    intro: t("bopImportForm.AddBOPImport_BOPVendoreName"),
+                },
+                {
+                    element: "#addBOPDomestic_vendorToggle",
+                    intro: t("bopImportForm.addBOPDomestic_vendorToggle"),
+                },
+            ] : []),
+            ...config && config.sourceField ? [{
+                element: "#AddBOPImport_Source",
+                intro: t("bopImportForm.AddBOPImport_Source"),
             },
             {
-                element: "#addBOPDomestic_vendorToggle",
-                intro: t("bopImportForm.addBOPDomestic_vendorToggle"),
-            },
+                element: "#AddBOPImport_SourceLocation_container",
+                intro: t("bopImportForm.AddBOPImport_SourceLocation_container"),
+            }
+            ] : [],
             {
                 element: "#AddBOPImport_incoTerms_container",
                 intro: t("bopImportForm.AddBOPImport_incoTerms_container"),
+            },
+            {
+                element: "#AddBOPImport_paymentTerms_container",
+                intro: t("bopImportForm.paymentTerm"),
             },
             {
                 element: "#AddBOPImport_Currency_container",
@@ -151,6 +194,8 @@ export function Steps(t) {
                 element: "#AddBOPImport_BasicRateSelectedCurrency",
                 intro: t("bopImportForm.AddBOPImport_BasicRateSelectedCurrency"),
             },
+
+
             {
                 element: "#AddBOPImport_Remark",
                 intro: t("bopImportForm.AddBOPImport_Remark"),

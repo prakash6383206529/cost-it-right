@@ -526,6 +526,7 @@ class AddIndivisualProduct extends Component {
                                                 <Row>
                                                     <Col md="4" className="mb-5 pb-1">
                                                         <label
+                                                            id="AddIndivisualProduct_isImpactCalculation"
                                                             className={`custom-checkbox ${isViewMode ? "disabled" : ""
                                                                 }`}
                                                             onChange={this.onPressImpactCalculation}

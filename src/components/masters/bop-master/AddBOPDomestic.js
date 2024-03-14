@@ -1062,8 +1062,13 @@ class AddBOPDomestic extends Component {
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} {showBopLabel()} (Domestic)
                           <TourWrapper
                             buttonSpecificProp={{ id: "BOP_Domestic_form" }}
+
                             stepsSpecificProp={{
-                              steps: Steps(t).BOP_DOMESTIC_FORM
+                              steps: Steps(t, {
+                                sourceField: (costingTypeId === VBCTypeId),
+                                CBCTypeField: (costingTypeId === CBCTypeId),
+                                conditionCost: (initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId)
+                              }).BOP_DOMESTIC_FORM
                             }} />
                         </h1>
                       </div>

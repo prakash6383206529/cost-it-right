@@ -1374,7 +1374,11 @@ class AddBOPImport extends Component {
                           <TourWrapper
                             buttonSpecificProp={{ id: "BOP_Import_form" }}
                             stepsSpecificProp={{
-                              steps: Steps(t).BOP_IMPORT_FORM
+                              steps: Steps(t, {
+                                CBCTypeField: (costingTypeId === CBCTypeId),
+
+                                sourceField: (costingTypeId === VBCTypeId)
+                              }).BOP_IMPORT_FORM
                             }} />
                         </h1>
                       </div>

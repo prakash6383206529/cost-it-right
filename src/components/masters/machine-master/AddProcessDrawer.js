@@ -307,6 +307,7 @@ class AddProcessDrawer extends Component {
                   </Col>
                   <Col md="12">
                     <Field
+                      id="AddProcessDrawer_ProcessCode"
                       label={`Process Code`}
                       name={'ProcessCode'}
                       type="text"
@@ -334,6 +335,7 @@ class AddProcessDrawer extends Component {
                       {'Cancel'}
                     </button>
                     <button
+                      id="AddProcessDrawer_Save"
                       type="submit"
                       className="user-btn save-btn"
                       disabled={setDisable}

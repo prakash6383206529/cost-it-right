@@ -68,9 +68,10 @@ import {
 const initialState = {
   technologyList: [],
   tourStartData: {
-    showTour: false
+    showExtraData: false
   }
 };
+
 
 export default function commanReducer(state = initialState, action) {
   switch (action.type) {

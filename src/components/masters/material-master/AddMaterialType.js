@@ -17,7 +17,7 @@ import { MESSAGES } from '../../../config/message';
 import { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, decimalLengthFour, hashValidation, positiveAndDecimalNumber, required } from '../../../helper';
 
 const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("RawMaterialMaster");
   const dispatch = useDispatch();
 
   const [state, setState] = useState({
