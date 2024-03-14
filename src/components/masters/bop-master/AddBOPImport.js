@@ -226,7 +226,7 @@ class AddBOPImport extends Component {
     }
   }
 
-  commonFunction() {
+  commonFunction(plantId = '') {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -236,6 +236,7 @@ class AddBOPImport extends Component {
       UserId: loggedInUserId(),
       Mode: 'master',
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
+      plantId: plantId
     }
 
     this.props.checkFinalUser(obj, (res) => {
@@ -719,6 +720,7 @@ class AddBOPImport extends Component {
   */
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
+    this.commonFunction(e.value)
   }
 
   /**

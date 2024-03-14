@@ -126,17 +126,18 @@ class BulkUpload extends Component {
             Mode: 'master',
             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) || this.state.costingTypeId === Number(ZBCADDMOREOPERATION) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) || this.state.costingTypeId === Number(VBCADDMOREOPERATION) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) || this.state.costingTypeId === Number(CBCADDMOREOPERATION) ? CBCTypeId : this.state.bopType === DETAILED_BOP ? VBCTypeId : this.state.costingTypeId)
         }
-
-        this.props.checkFinalUser(obj, (res) => {
-            if (res?.data?.Result) {
-                this.setState({ IsFinalApprover: res?.data?.Data?.IsFinalApprover })
-            }
-            if (res?.data?.Data?.IsUserInApprovalFlow === false) {
-                this.setState({ noApprovalCycle: true })
-            } else {
-                this.setState({ noApprovalCycle: false })
-            }
-        })
+        if (!this.props.initialConfiguration.IsMultipleUserAllowForApproval) {
+            this.props.checkFinalUser(obj, (res) => {
+                if (res?.data?.Result) {
+                    this.setState({ IsFinalApprover: res?.data?.Data?.IsFinalApprover })
+                }
+                if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                    this.setState({ noApprovalCycle: true })
+                } else {
+                    this.setState({ noApprovalCycle: false })
+                }
+            })
+        }
     }
 
     /**
@@ -940,7 +941,7 @@ class BulkUpload extends Component {
                                         <button
                                             type="submit"
                                             className="submit-button save-btn"
-                                            disabled={setDisable || noApprovalCycle}
+                                            disabled={(setDisable || noApprovalCycle) && (!this.props.initialConfiguration.IsMultipleUserAllowForApproval)}
                                         >
                                             <div className={"save-icon"}></div>
                                             {isEditFlag ? 'Update' : 'Save'}
@@ -1064,7 +1065,7 @@ class BulkUpload extends Component {
                             <button
                                 type="submit"
                                 className="submit-button save-btn"
-                                disabled={setDisable}
+                                disabled={this.props.initialConfiguration.IsMultipleUserAllowForApproval ? false : setDisable}
                             >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? 'Update' : 'Save'}

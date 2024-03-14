@@ -756,7 +756,7 @@ export const API = {
   createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
   approvalPushedOnSap: `${BASE_URL}/ExternalIntegration/create-push-pir-data-request-and-push-pir-data-on-sap`,
   checkSAPPoPrice: `${BASE_URL}/ExternalIntegration/check-sap-po-price`,
-
+  getAllApproverList: `${BASE_URL}/app-approval-system/get-approval-user-details`,
 
   // ApproveReject Drawer final approver
   checkFinalUser: `${BASE_URL}/app-approval-system/final-user-check`,
@@ -1510,6 +1510,7 @@ export const SET_BREAKUP_BOP = 'SET_BREAKUP_BOP'
 export const SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API = 'SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API'
 export const SET_COSTING_MODE = 'SET_COSTING_MODE'
 export const COSTING_ACC_OPEN_CLOSE_STATUS = 'COSTING_ACC_OPEN_CLOSE_STATUS'
+export const SET_TOOL_COST_ICC = 'SET_TOOL_COST_ICC'
 
 export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
 
@@ -2897,7 +2898,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.1.326";
+export const VERSION = "V2.1.328";
 
 
 

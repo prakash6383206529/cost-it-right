@@ -23,6 +23,7 @@ import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABIL
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import LoaderCustom from '../../common/LoaderCustom';
+import { fetchCostingHeadsAPI } from '../../../actions/Common';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, date, simulationTechnologyId } = props
@@ -73,10 +74,18 @@ function RunSimulationDrawer(props) {
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const showCheckBox = !(simulationApplicability?.value === APPLICABILITY_PART_SIMULATION)
+    const [otherCostApplicabilityListing, setOtherCostApplicabilityListing] = useState([])
+    const [remainingApplicabilityListing, setRemainingApplicabilityListing] = useState([])
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
         // dispatch(getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, () => { }))
+        dispatch(fetchCostingHeadsAPI('', true, (res) => {
+            setOtherCostApplicabilityListing(res?.data?.SelectList)
+        }))
+        dispatch(fetchCostingHeadsAPI('', false, (res) => {
+            setRemainingApplicabilityListing(res?.data?.SelectList)
+        }))
 
     }, [])
 
@@ -130,7 +139,7 @@ function RunSimulationDrawer(props) {
         }
     }, [topAndLeftMenuData])
 
-    const costingHead = useSelector(state => state.comman.costingHead)
+    // const costingHead = useSelector(state => state.comman.costingHead)
     const { applicabilityHeadListSimulation } = useSelector(state => state.simulation)
     const toggleDrawer = (event, mode = false) => {
         if (runSimulationDisable) {
@@ -183,6 +192,7 @@ function RunSimulationDrawer(props) {
             setValue('OtherCostPercent', "")
             errors.OtherCostPercent = {}
             setOtherCostApplicability([])
+
         }
 
         if (elementObj.Text === "Additional Discount") {
@@ -498,12 +508,13 @@ function RunSimulationDrawer(props) {
     * @method renderListing
     * @description Used show listing of unit of measurement
     */
-    const renderListing = (label) => {
-
+    const renderListing = (label, type = '') => {
         const temp = [];
 
         if (label === 'Applicability') {
-            costingHead && costingHead.map(item => {
+            let resOfCostingHead = type === 'Additional Other Cost' ? otherCostApplicabilityListing : remainingApplicabilityListing
+
+            resOfCostingHead && resOfCostingHead.map(item => {
                 if (item.Value === '0' || item.Value === '8') return false;
                 if (Number(simulationTechnologyId) === ASSEMBLY_TECHNOLOGY_MASTER) {
                     if (!item.Text.includes('RM')) {
@@ -645,7 +656,7 @@ function RunSimulationDrawer(props) {
                                                                                             rules={{ required: false }}
                                                                                             register={register}
                                                                                             defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
-                                                                                            options={renderListing('Applicability')}
+                                                                                            options={renderListing('Applicability', el.Text)}
                                                                                             mandatory={true}
                                                                                             disabled={false}
                                                                                             customClassName={"auto-width"}

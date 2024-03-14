@@ -216,7 +216,7 @@ class AddMachineRate extends Component {
     this.getDetails()
   }
 
-  commonFunction() {
+  commonFunction(plantId = "") {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -226,7 +226,8 @@ class AddMachineRate extends Component {
       DepartmentId: userDetails().DepartmentId,
       UserId: loggedInUserId(),
       Mode: 'master',
-      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
+      plantId: plantId
     }
     this.props.checkFinalUser(obj, (res) => {
       if (res?.data?.Result) {
@@ -612,7 +613,7 @@ class AddMachineRate extends Component {
   * @description called
   */
   handlePlants = (newValue, actionMeta) => {
-
+    this.commonFunction(newValue ? newValue.value : '')
     if (newValue && newValue !== '') {
       this.setState({ selectedPlants: newValue, })
     } else {

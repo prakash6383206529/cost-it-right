@@ -27,7 +27,8 @@ function Icc(props) {
 
     const ICCApplicabilityDetail = CostingInterestRateDetail && CostingInterestRateDetail.ICCApplicabilityDetail !== null ? CostingInterestRateDetail.ICCApplicabilityDetail : {}
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-    const { IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc } = useSelector(state => state.costing)
+    const { IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc, includeToolCostIcc, ToolTabData } = useSelector(state => state.costing)
+
 
     const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
     const [tempInventoryObj, setTempInventoryObj] = useState(ICCApplicabilityDetail)
@@ -163,8 +164,8 @@ function Icc(props) {
             } else {
                 NetRawMaterialsCost = headerCosts.NetRawMaterialsCost
             }
-
-            const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const toolCost = checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost)
+            const ConversionCostForCalculation = costData.IsAssemblyPart ? (checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) + checkForNull(includeToolCostIcc ? toolCost : 0) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal + checkForNull(includeToolCostIcc ? toolCost : 0);
             const RMBOPCC = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
             const RMBOP = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
             const RMCC = NetRawMaterialsCost + ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
@@ -294,7 +295,7 @@ function Icc(props) {
 
     useEffect(() => {
         checkInventoryApplicability(ICCapplicability?.label)
-    }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight, includeOverHeadProfitIcc, totalOverHeadAndProfit]);
+    }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight, includeOverHeadProfitIcc, totalOverHeadAndProfit, includeToolCostIcc]);
 
 
     useEffect(() => {

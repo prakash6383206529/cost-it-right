@@ -47,6 +47,7 @@ function NfrSummaryDrawer(props) {
     const [showOutsourcingDrawer, setShowOutsourcingDrawer] = useState('');
     const [OutsourcingCostingData, setOutsourcingCostingData] = useState({});
     const [disablePushButton, setDisablePushButton] = useState(false);
+    const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
 
     const dispatch = useDispatch()
 
@@ -72,6 +73,7 @@ function NfrSummaryDrawer(props) {
             //     }
             // }))
             let levelDetailsTemp = ''
+            let Data = res?.data?.Data;
             if (res?.data?.Data?.CostingData) {
                 let technologyId = res?.data?.Data?.CostingData[0]?.TechnologyId
                 dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId, (res) => {
@@ -88,6 +90,7 @@ function NfrSummaryDrawer(props) {
                         obj.TechnologyId = technologyId
                         obj.Mode = 'costing'
                         obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+                        obj.plantId = Data?.CostingData[0]?.PlantId
                         dispatch(checkFinalUser(obj, (res) => {
                             if (res?.data?.Result) {
                                 setSendForApprovalButtonShow(true)
@@ -96,6 +99,11 @@ function NfrSummaryDrawer(props) {
                                     setIsDataCome(true)
                                 }, 100);
                             }
+                            setDataForFetchingAllApprover({
+                                processId: rowData?.ApprovalProcessId,
+                                levelId: Data.ApprovalSteps[Data.ApprovalSteps.length - 1].LevelId,
+                                mode: 'nfr'
+                            })
                         }))
                     }
                     setLevelDetails(levelDetailsTemp)
@@ -309,7 +317,7 @@ function NfrSummaryDrawer(props) {
                         {/* {loader && <LoaderCustom />} */}
                         <Row className="mx-0 mb-3">
                             <Col>
-                                {nfrData?.ApprovalSteps && <ApprovalWorkFlow approvalLevelStep={nfrData?.ApprovalSteps} approvalNo={nfrData?.ApprovalToken} />}
+                                {nfrData?.ApprovalSteps && <ApprovalWorkFlow approvalLevelStep={nfrData?.ApprovalSteps} approvalNo={nfrData?.ApprovalToken} approverData={dataForFetchingAllApprover} />}
                             </Col>
                             {/* <Col md="12">
                                 <Table className='table cr-brdr-main'>

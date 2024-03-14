@@ -4,7 +4,7 @@ import { useForm, Controller, } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
-import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, AllApprovalField, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, approvalRequestByApprove } from '../../actions/Approval'
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
@@ -83,6 +83,7 @@ const SendForApproval = (props) => {
   const [costingIdArray, setCostingIdArray] = useState([])
   const [isDisableSubmit, setIsDisableSubmit] = useState(false)
   const [count, setCount] = useState(0)
+  const [approverIdList, setApproverIdList] = useState([])
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList) => {
 
@@ -116,13 +117,14 @@ const SendForApproval = (props) => {
 
       setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
       setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
-
+      let approverIdListTemp = []
       let requestObject = {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: departObj[0]?.Value,
         TechnologyId: technologyId,
         ReasonId: 0, // key only for minda
         ApprovalTypeId: ApprovalTypeId,
+        plantId: selectedRows[0]?.PlantId
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
@@ -133,6 +135,7 @@ const SendForApproval = (props) => {
           if (item.Value === '0') return false;
           if (item.Value === EMPTY_GUID) return false;
           tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+          approverIdListTemp.push(item.Value)
           return null
         })
         const Data = res.data.DataList[1]
@@ -150,10 +153,50 @@ const SendForApproval = (props) => {
           setShowValidation(true)
         }
         setApprovalDropDown(tempDropdownList)
+        setApproverIdList(approverIdListTemp)
       }))
     }))
     userTechnology(ApprovalTypeId, levelsList)
   }
+  useEffect(() => {
+    dispatch(getAllApprovalDepartment((res) => {
+      const Data = res?.data?.SelectList
+      const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+      let approverIdListTemp = []
+      let requestObject = {
+        LoggedInUserId: userData.LoggedInUserId,
+        DepartmentId: departObj[0]?.Value,
+        TechnologyId: props.technologyId,
+        ReasonId: 0, // key only for minda
+        ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
+        plantId: dataSelected[0]?.plantId
+      }
+      dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+        let tempDropdownList = []
+        if (res.data.DataList.length === 1) {
+          return false
+        }
+        res.data.DataList && res.data.DataList.map((item) => {
+          if (item.Value === '0') return false;
+          if (item.Value === EMPTY_GUID) return false;
+          tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+          approverIdListTemp.push(item.Value)
+          return null
+        })
+        const Data = res.data.DataList[1]
+        setApprover(Data.Text)
+        setSelectedApprover(Data.Value)
+        setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+        if (tempDropdownList?.length !== 0) {
+          setValue('approver', { label: Data.Text, value: Data.Value })
+        } else {
+          setShowValidation(true)
+        }
+        setApprovalDropDown(tempDropdownList)
+        setApproverIdList(approverIdListTemp)
+      }))
+    }))
+  }, [])
 
   const userTechnology = (approvalTypeId, levelsList) => {
     let levelDetailsTemp = ''
@@ -496,6 +539,7 @@ const SendForApproval = (props) => {
 
         // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
         // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
+        tempObj.ApproverIdList = approverIdList
         tempObj.SenderLevelId = levelDetails.LevelId
         tempObj.SenderLevel = levelDetails.Level
         tempObj.SenderId = userData.LoggedInUserId
@@ -556,7 +600,8 @@ const SendForApproval = (props) => {
         ApproverDepartmentName: selectedDepartment.label,
         ApproverLevelId: selectedApproverLevelId.levelId,
         ApproverLevel: selectedApproverLevelId.levelName,
-        ApproverId: selectedApprover,
+        // ApproverId: selectedApprover,
+        ApproverIdList: approverIdList,
         // ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
         // ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
         // ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
@@ -1106,22 +1151,29 @@ const SendForApproval = (props) => {
                         />
                       </Col >
                       <Col md="6">
-                        <SearchableSelectHookForm
-                          label={"Approver"}
-                          name={"approver"}
-                          placeholder={"Select"}
-                          Controller={Controller}
-                          control={control}
-                          rules={{ required: true }}
-                          register={register}
-                          defaultValue={""}
-                          options={approvalDropDown}
-                          mandatory={true}
-                          disabled={disableRS || !(userData.Department.length > 1)}
-                          customClassName={"mb-0 approver-wrapper"}
-                          handleChange={handleApproverChange}
-                          errors={errors.approver}
-                        />
+                        {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                          <AllApprovalField
+                            label="Approver"
+                            approverList={approvalDropDown}
+                            popupButton="View all"
+                          />
+                        </> :
+                          <SearchableSelectHookForm
+                            label={"Approver"}
+                            name={"approver"}
+                            placeholder={"Select"}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={""}
+                            options={approvalDropDown}
+                            mandatory={true}
+                            disabled={disableRS || !(userData.Department.length > 1)}
+                            customClassName={"mb-0 approver-wrapper"}
+                            handleChange={handleApproverChange}
+                            errors={errors.approver}
+                          />}
                         {
                           showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
                         }

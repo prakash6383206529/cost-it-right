@@ -15,6 +15,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { useEffect } from 'react';
 import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
 import { createToprowObjAndSave } from '../../../CostingUtil';
+import AddAssemblyProcess from '../../Drawers/AddAssemblyProcess';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -29,6 +30,7 @@ function AssemblyPart(props) {
   const [totalLabourCost, setTotalLabourCost] = useState(0)
   const [isBOPExists, setIsBOPExists] = useState(false)
   const [callSaveAssemblyApi, setCallSaveAssemblyApi] = useState(false)
+  const [isProcessDrawerOpen, setIsProcessDrawerOpen] = useState(false)
   const { partNumberAssembly } = useSelector(state => state.costing)
   const costingApprovalStatus = useContext(CostingStatusContext);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
@@ -233,6 +235,23 @@ function AssemblyPart(props) {
 
   }, [])
 
+  /**
+  * @method ProcessDrawerToggle
+  * @description TOGGLE DRAWER
+  */
+  const ProcessDrawerToggle = () => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    setIsProcessDrawerOpen(true)
+  }
+
+  /**
+    * @method closeProcessDrawer
+    * @description HIDE RM DRAWER
+    */
+  const closeProcessDrawer = (e = '', rowData = {}) => {
+    setIsProcessDrawerOpen(false)
+  }
+
   const nestedAssembly = children && children.map(el => {
     if (el.PartType !== 'Sub Assembly') return false;
     return <AssemblyPart
@@ -346,6 +365,14 @@ function AssemblyPart(props) {
                     onClick={DrawerToggle}>
                     <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>
               }
+              {/* <button
+                type="button"
+                className={'user-btn '}
+                onClick={ProcessDrawerToggle}
+                title={'Add Process'}
+              >
+                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
+              </button> */}
             </div >
             {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
             < div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}> {(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child assemblies costing are coming from individual costing, please edit there if want to change costing" : "This sub-assembly is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div >
@@ -395,6 +422,20 @@ function AssemblyPart(props) {
           closeDrawer={closeLabourDrawer}
           anchor={'right'}
         />
+      }
+      {
+        isProcessDrawerOpen && (
+          <AddAssemblyProcess
+            isOpen={isProcessDrawerOpen}
+            closeDrawer={closeProcessDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+            // ccData={subAssemblyTechnologyArray[0]?.CostingPartDetails !== null && subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingProcessCostResponse}
+            item={item}
+            isAssemblyTechnology={true}
+          />
+        )
       }
     </ >
   );

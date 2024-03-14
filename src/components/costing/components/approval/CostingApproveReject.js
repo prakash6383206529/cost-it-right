@@ -44,7 +44,7 @@ function CostingApproveReject(props) {
   const [finalLevelUser, setFinalLevelUser] = useState(false);
   const [showMessage, setShowMessage] = useState()
   const [disableReleaseStrategy, setDisableReleaseStrategy] = useState(false)
-
+  const [approverIdList, setApproverIdList] = useState([])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   useEffect(() => {
@@ -92,7 +92,8 @@ function CostingApproveReject(props) {
       DepartmentId: departmentId && departmentId,
       TechnologyId: technology,
       ReasonId: reasonId,
-      ApprovalTypeId: approverTypeId
+      ApprovalTypeId: approverTypeId,
+      plantId: approvalData[0].PlantId
     }
     dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
       const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -104,6 +105,7 @@ function CostingApproveReject(props) {
       }
       setDataInFields(dataInFieldTemp)
       let tempDropdownList = []
+      let approverIdListTemp = []
       res.data.DataList && res.data.DataList.map((item) => {
         if (item.Value === '0') return false;
         if (item.Value === EMPTY_GUID) {
@@ -113,9 +115,11 @@ function CostingApproveReject(props) {
           setShowWarningMessage(false)
         }
         tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+        approverIdListTemp.push(item.Value)
         return null
       })
       setApprovalDropDown(tempDropdownList)
+      setApproverIdList(approverIdListTemp)
     }))
   }
 
@@ -257,7 +261,8 @@ function CostingApproveReject(props) {
         SenderLevel: levelDetails.Level,
         ApproverDepartmentId: dept && dept.value ? dept.value : '',
         ApproverDepartmentName: dept && dept.label ? dept.label : '',
-        Approver: approver && approver.value ? approver.value : '',
+        // Approver: approver && approver.value ? approver.value : '',
+        ApproverIdList: approverIdList,
         ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
         ApproverLevel: approver && approver.levelName ? approver.levelName : '',
         Remark: remark,
