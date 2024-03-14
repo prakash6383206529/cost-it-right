@@ -1565,7 +1565,7 @@ class AddBOPImport extends Component {
                                   onChange={this.breakUpHandleChange}
                                 >
                                   Detailed {showBopLabel()}
-                                  < input
+                                  <input
                                     type="checkbox"
                                     checked={isTechnologyVisible}
                                     disabled={isViewMode || isEditFlag ? true : false

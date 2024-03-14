@@ -1275,7 +1275,7 @@ class AddOverhead extends Component {
                         {!isHideBOP && (
                           <Col md="3">
                             <Field
-                              label={`Overhead on ${showBopLabel()}  (%)`}
+                              label={`Overhead on ${showBopLabel()} (%)`}
                               name={"OverheadBOPPercentage"}
                               type="text"
                               placeholder={isBOP || isViewMode ? "-" : "Enter"}

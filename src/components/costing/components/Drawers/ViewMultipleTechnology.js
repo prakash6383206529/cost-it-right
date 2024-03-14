@@ -69,7 +69,7 @@ function ViewMultipleTechnology(props) {
                                 <th>{`Technology`}</th>
                                 <th>{`Quantity`}</th>
                                 <th>{`Part Cost/Pc`}</th>
-                                <th>{`${showBopLabel()}  Cost`}</th>
+                                <th>{`${showBopLabel()} Cost`}</th>
                                 <th>{`Part Cost/Assembly`}</th>
                                 <th className="costing-border-right">{`Action`}</th>
                             </tr >

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { } from "../../../actions/Common";
 import {
@@ -45,10 +45,11 @@ const IndivisualProductListing = (props) => {
   const [noData, setNoData] = useState(false);
   const [dataCount, setDataCount] = useState(0);
   const [searchText, setSearchText] = useState("")
-
   const dispatch = useDispatch();
-
   const permissions = useContext(ApplyPermission);
+  const { newPartsListing, productDataList } = useSelector((state) => state.part);
+  const { initialConfiguration } = useSelector((state) => state.auth);
+
 
   useEffect(() => {
 
@@ -90,7 +91,7 @@ const IndivisualProductListing = (props) => {
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      props.productDataList.length !== 0 &&
+      productDataList?.length !== 0 &&
         setNoData(searchNocontentFilter(value, noData));
     }, 500);
   };
@@ -203,8 +204,8 @@ const IndivisualProductListing = (props) => {
     tempArr =
       tempArr && tempArr.length > 0
         ? tempArr
-        : props.productDataList
-          ? props.productDataList
+        : productDataList
+          ? productDataList
           : [];
     return returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl, tempArr);
   };
@@ -260,6 +261,7 @@ const IndivisualProductListing = (props) => {
     if (window.screen.width >= 1600) {
       gridApi.sizeColumnsToFit();
     }
+    setNoData(false);
   };
 
 
@@ -354,7 +356,7 @@ const IndivisualProductListing = (props) => {
       </Row>
 
       <div
-        className={`ag-grid-wrapper height-width-wrapper ${(props.productDataList && props.productDataList?.length <= 0) ||
+        className={`ag-grid-wrapper height-width-wrapper ${(productDataList && productDataList?.length <= 0) ||
           noData
           ? "overlay-contain"
           : ""

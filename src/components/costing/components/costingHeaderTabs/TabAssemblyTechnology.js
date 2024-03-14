@@ -316,7 +316,7 @@ function TabAssemblyTechnology(props) {
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Part Cost/Pc`}</th>
                           {/* <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Operation Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Process Cost`}</th> */}
-                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`${showBopLabel()}  Cost`}</th>
+                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`${showBopLabel()} Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Part Cost/Assembly`}</th>
                           {/* <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Action`}</th> */}
                           {

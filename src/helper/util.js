@@ -1155,10 +1155,18 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
   array = _.map(master, 'label')
   bulkUploadArray = [...array]
   if (isBOP) {
-    bulkUploadArray = bulkUploadArray.map((item) =>
+    bulkUploadArray = bulkUploadArray.map(item =>
       item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
     );
+    fileHeads = fileHeads.map(item =>
+      item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
+
+    );
+
+
   }
+
+
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
     if (hasNote) {
@@ -1171,6 +1179,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
   // if (isRm && !fileHeads.includes('Note')) {
   //   fileHeads.unshift('Note');
   // }
+
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
@@ -1341,6 +1350,7 @@ export function getValueFromLabel(currency, currencySelectList) {
 }
 // get updated  dynamic bop labels 
 export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '') {
+
   const bopRegex = /BOP|BoughtOutPart/gi;
   const updatedLabels = bopLabels.map(label => ({
     ...label,
@@ -1348,6 +1358,7 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
     value: label.value.replace(bopRegex, bopReplacement),
 
   }));
+
   const updatedTempData = bopData.map(dataItem => {
     const newDataItem = {};
     for (let key in dataItem) {
@@ -1361,6 +1372,24 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
 
   return { updatedLabels, updatedTempData };
 }
+/**
+  * @method setLoremIpsum
+  * @description show lorem ipsum data when stared application tour
+  */
+export function setLoremIpsum(obj) {
+  const newObj = {};
+  Object.keys(obj).forEach(key => {
+    newObj[key] = "Lorem Ipsum";
+  });
+  return [newObj];
+}
 
+// 
 
-
+// function for % and & issue in the queryparams
+// Utility function to encode query parameters
+export function encodeQueryParams(params) {
+  return Object.entries(params)
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+}

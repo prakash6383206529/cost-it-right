@@ -199,11 +199,11 @@ function CostingDetailSimulationDrawer(props) {
                                             (Number(masterID) === Number(BOPDOMESTIC) || Number(masterID) === Number(BOPIMPORT)) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Existing {showBopLabel()}  Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
+                                                    <label>Existing {showBopLabel()} Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldBOPCost > pricesDetail?.NewBOPCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldBOPCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>Revised {showBopLabel()}  Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
+                                                    <label>Revised {showBopLabel()} Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
                                                     <label className={`${pricesDetail?.OldBOPCost > pricesDetail?.NewBOPCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewBOPCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>

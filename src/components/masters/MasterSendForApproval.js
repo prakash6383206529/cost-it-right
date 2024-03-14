@@ -251,7 +251,7 @@ function MasterSendForApproval(props) {
                         setIsDisable(false)
                         setIsLoader(false)
                         if (res?.data?.Result) {
-                            Toaster.success(`${showBopLabel()}  has been sent for approval.`)
+                            Toaster.success(`${showBopLabel()} has been sent for approval.`)
                             props.closeDrawer('', 'submit')
                         }
                     }))

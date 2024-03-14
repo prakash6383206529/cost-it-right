@@ -344,9 +344,9 @@ const AssemblyPartListing = React.memo((props) => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-    if (window.screen.width >= 1600) {
-      state.gridApi.sizeColumnsToFit();
-    }
+    // if (window.screen.width >= 1600) {
+    //   state.gridApi.sizeColumnsToFit();
+    // }
   };
 
   const isFirstColumn = (params) => {

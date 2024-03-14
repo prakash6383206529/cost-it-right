@@ -937,7 +937,7 @@ export const Vendor = [
     { label: 'RawMaterialVendor', value: 'RawMaterialVendor' },//*
     { label: 'LabourVendor', value: 'LabourVendor', }, //*
     { label: 'PartVendor', value: 'PartVendor', }, //*
-    { label: 'InsertVendor', value: 'BOPVendor', },//*
+    { label: 'BOPVendor', value: 'BOPVendor', },//*
     { label: 'VendorName', value: 'VendorName', },//*
     { label: 'VendorCode', value: 'VendorCode', },//*
     { label: 'VendorEmail', value: 'VendorEmail', },//*
@@ -960,7 +960,7 @@ export const VendorTempData = [
         'RawMaterialVendor': 'YES OR NO',
         'LabourVendor': 'YES OR NO',
         'PartVendor': 'YES OR NO',
-        'InsertVendor': 'YES OR NO',
+        'BOPVendor': 'YES OR NO',
         'VendorName': 'TATA Steel',
         'VendorCode': 'VC01',
         'VendorEmail': 'Vendor@gmail.com',
@@ -5665,7 +5665,7 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
-    { label: "SAP Code", value: "SAPCode", },
+    // { label: "SAP Code", value: "SAPCode", },
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
