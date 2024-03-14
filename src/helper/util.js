@@ -1384,5 +1384,12 @@ export function setLoremIpsum(obj) {
   return [newObj];
 }
 
+// 
 
-
+// function for % and & issue in the queryparams
+// Utility function to encode query parameters
+export function encodeQueryParams(params) {
+  return Object.entries(params)
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+}
