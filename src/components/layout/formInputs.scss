@@ -60,21 +60,26 @@ form {
     border-bottom-left-radius: 0;
 }
 
+.view-btn {
+    background-color: transparent;
+    color: $colorPrimary;
+    border: 0px solid transparent;
+    font-weight: 500;
+
+    &:focus {
+        border: none !important;
+        box-shadow: none !important;
+    }
+}
+
 .approval-container {
     position: relative;
+    @extend .view-btn;
 
     .view-btn {
         position: absolute;
         right: 3px;
         top: 6px;
-        background-color: transparent;
-        color: $colorPrimary;
-        border: 0px solid transparent;
-
-        &:focus {
-            border: none !important;
-            box-shadow: none !important;
-        }
     }
 }
 
