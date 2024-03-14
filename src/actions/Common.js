@@ -740,10 +740,10 @@ export function fetchSupplierCityDataAPI(callback) {
  * @method fetchCostingHeadsAPI
  * @description Used to fetch costing heads
  */
-export function fetchCostingHeadsAPI(costingHeads, callback) {
+export function fetchCostingHeadsAPI(costingHeads, isAddOtherCostApplicability = false, callback) {
   return (dispatch, getState) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingHeads}?applicabilityFor=${costingHeads}`, config());
+    const request = axios.get(`${API.getCostingHeads}?applicabilityFor=${costingHeads}&isAddOtherCostApplicability=${isAddOtherCostApplicability}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({

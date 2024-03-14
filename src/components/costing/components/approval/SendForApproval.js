@@ -124,7 +124,7 @@ const SendForApproval = (props) => {
         TechnologyId: technologyId,
         ReasonId: 0, // key only for minda
         ApprovalTypeId: ApprovalTypeId,
-        plantId: dataSelected[0]?.plantId
+        plantId: selectedRows[0]?.PlantId
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
@@ -158,6 +158,45 @@ const SendForApproval = (props) => {
     }))
     userTechnology(ApprovalTypeId, levelsList)
   }
+  useEffect(() => {
+    dispatch(getAllApprovalDepartment((res) => {
+      const Data = res?.data?.SelectList
+      const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+      let approverIdListTemp = []
+      let requestObject = {
+        LoggedInUserId: userData.LoggedInUserId,
+        DepartmentId: departObj[0]?.Value,
+        TechnologyId: props.technologyId,
+        ReasonId: 0, // key only for minda
+        ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
+        plantId: dataSelected[0]?.plantId
+      }
+      dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+        let tempDropdownList = []
+        if (res.data.DataList.length === 1) {
+          return false
+        }
+        res.data.DataList && res.data.DataList.map((item) => {
+          if (item.Value === '0') return false;
+          if (item.Value === EMPTY_GUID) return false;
+          tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+          approverIdListTemp.push(item.Value)
+          return null
+        })
+        const Data = res.data.DataList[1]
+        setApprover(Data.Text)
+        setSelectedApprover(Data.Value)
+        setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+        if (tempDropdownList?.length !== 0) {
+          setValue('approver', { label: Data.Text, value: Data.Value })
+        } else {
+          setShowValidation(true)
+        }
+        setApprovalDropDown(tempDropdownList)
+        setApproverIdList(approverIdListTemp)
+      }))
+    }))
+  }, [])
 
   const userTechnology = (approvalTypeId, levelsList) => {
     let levelDetailsTemp = ''

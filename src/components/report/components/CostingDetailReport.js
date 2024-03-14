@@ -175,7 +175,7 @@ function ReportListing(props) {
     }, [statusColumnData])
 
     useEffect(() => {
-        dispatch(fetchCostingHeadsAPI('master', res => {
+        dispatch(fetchCostingHeadsAPI('master', false, res => {
             if (res) {
                 let temp = []
                 res?.data?.SelectList && res?.data?.SelectList.map((item) => {

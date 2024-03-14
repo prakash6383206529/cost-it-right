@@ -501,7 +501,7 @@ function CostingSimulation(props) {
                         setMasterLoader(false)
                         setCommonStateForList(res)
                         if (res?.data?.Result) {
-                            setPlantId(res?.data?.Data.SimulationBoughtOutPart[0].PlantId)
+                            setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
                         }
                     }))
                     break;
@@ -511,7 +511,7 @@ function CostingSimulation(props) {
                         setMasterLoader(false)
                         setCommonStateForList(res)
                         if (res?.data?.Result) {
-                            setPlantId(res?.data?.Data.SimulationBoughtOutPart[0].PlantId)
+                            setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
                         }
                     }))
                     break;
