@@ -248,7 +248,7 @@ const CostRatioListing = (props) => {
                             <tr>
                                 <td>
                                     <div className='column-data'>Net RM Cost (%)</div>
-                                    <div className='column-data'>Net {showBopLabel()}  Cost (%)</div>
+                                    <div className='column-data'>Net {showBopLabel()} Cost (%)</div>
                                     <div className='column-data'>Process Cost (%)</div>
                                     <div className='column-data'>Operation Cost (%)</div>
                                     <div className='column-data'>Other Operation Cost (%)</div>

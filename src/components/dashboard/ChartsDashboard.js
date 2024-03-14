@@ -57,7 +57,7 @@ export const data1 = {
       backgroundColor: colorArray[0],
     },
     {
-      label: `${showBopLabel()} `,
+      label: `${showBopLabel()}`,
       data: [5, 7, 10, 6, 8, 5, 11, 7],
       fill: false,
       borderColor: colorArray[1],

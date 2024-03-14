@@ -41,9 +41,7 @@ const GuidedSteps = ({ showTour, onExit, steps, hints, initialHintEnable, onChan
     );
 };
 
-const TourWrapper = ({ buttonSpecificProp, stepsSpecificProp, toggleExtraData }) => {
-
-    const tourStartData = useSelector(state => state.comman.tourStartData);
+const TourWrapper = ({ buttonSpecificProp, stepsSpecificProp }) => {
     const [showTour, setShowTour] = useState(false);
     const [hintEnable, setHintEnable] = useState(false)
 
@@ -51,12 +49,8 @@ const TourWrapper = ({ buttonSpecificProp, stepsSpecificProp, toggleExtraData })
         buttonSpecificProp.onClick && buttonSpecificProp.onClick(true);
         setTimeout(() => {
             setShowTour(!showTour);
-        }, 400)
-
+        }, 300);
     };
-    useEffect(() => {
-        setShowTour(tourStartData.showTour);
-    }, [tourStartData.showTour])
 
     const onExit = () => {
         if (stepsSpecificProp.onExit) {
@@ -65,7 +59,6 @@ const TourWrapper = ({ buttonSpecificProp, stepsSpecificProp, toggleExtraData })
         setShowTour(false);
         setHintEnable(true)
         buttonSpecificProp.onClick && buttonSpecificProp.onClick(false);
-
     }
 
     return (

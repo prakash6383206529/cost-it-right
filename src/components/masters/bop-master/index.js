@@ -210,7 +210,7 @@ const BOPMaster = () => {
                       toggle("1");
                     }}
                   >
-                    Manage {showBopLabel()}  (Domestic)
+                    Manage {showBopLabel()} (Domestic)
                   </NavLink>
                 </NavItem>
 
@@ -223,7 +223,7 @@ const BOPMaster = () => {
                       toggle("2");
                     }}
                   >
-                    Manage {showBopLabel()}  (Import)
+                    Manage {showBopLabel()} (Import)
                   </NavLink>
                 </NavItem>
 

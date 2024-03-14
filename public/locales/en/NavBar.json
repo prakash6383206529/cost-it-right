@@ -1,0 +1,14 @@
+{
+    "navBar": {
+        "dashboard": "Welcome to the dashboard. View the last 7 days of approval status.",
+        "master": "Manage master data: raw materials, parts,BOP info, and vendors.",
+        "additional_master": "Manage additional data: overhead, profit, operations and more.",
+        "costing": "Create, edit, and view costing data.",
+        "simulation": "Create and run amendments data.",
+        "users": "Manage user accounts, permissions and approval levels.",
+        "nfr": "Create, edit, and view NFRs.",
+        "rfq": "Manage and track RFQs: send requests, receive quotations, and more.",
+        "audit": "Monitor system activities, track changes, review logs, and ensure compliance with regulations.",
+        "reports": "Generate and view reports."
+    }
+}

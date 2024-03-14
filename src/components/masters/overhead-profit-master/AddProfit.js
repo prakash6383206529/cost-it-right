@@ -1288,7 +1288,7 @@ class AddProfit extends Component {
                         {!isHideBOP && (
                           <Col md="3">
                             <Field
-                              label={`Profit on ${showBopLabel()}  (%)`}
+                              label={`Profit on ${showBopLabel()} (%)`}
                               name={"ProfitBOPPercentage"}
                               type="text"
                               placeholder={isBOP || isViewMode ? "-" : "Enter"}

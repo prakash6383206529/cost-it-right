@@ -237,7 +237,6 @@ const IndivisualPartListing = (props) => {
     getTableListData(0, globalTakes, state.floatingFilterData, true);
   };
 
-
   const resetState = () => {
     setState((prevState) => ({
       ...prevState,

@@ -42,7 +42,7 @@ function SimulationApprovalListing(props) {
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
     const userData = userDetails()
-
+    const { initialConfiguration } = useSelector(state => state.auth)
     const dispatch = useDispatch()
     const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
 
@@ -509,11 +509,13 @@ function SimulationApprovalListing(props) {
         let tempArrIsFinalLevelButtonShow = []
         let tempArrIsPushedButtonShow = []
         var selectedRows = gridApi.getSelectedRows();
+        console.log('selectedRows: ', selectedRows);
         let tempArrReason = []
         let tempArrTechnology = []
         let tempArrSimulationTechnologyHead = []
         let costingHeadArray = []
         let approvalTypeArray = []
+        let plantIds = []
 
         selectedRows && selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
@@ -525,10 +527,14 @@ function SimulationApprovalListing(props) {
             tempArrSimulationTechnologyHead.push(item?.SimulationTechnologyHead)
             costingHeadArray.push(item?.CostingHead)
             approvalTypeArray.push(item?.ApprovalTypeId)
+            plantIds.push(item.PlantId)
             return null
         })
         selectedRows && dispatch(setMasterForSimulation({ label: selectedRows[0]?.SimulationTechnologyHead, value: selectedRows[0]?.SimulationTechnologyId }))
-
+        if (!allEqual(plantIds) && initialConfiguration.IsMultipleUserAllowForApproval) {
+            Toaster.warning('Plant should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        }
         if (!allEqual(arr)) {
             Toaster.warning('Status should be same for sending multiple costing for approval')
             gridApi.deselectAll()
@@ -620,7 +626,8 @@ function SimulationApprovalListing(props) {
                         UserId: loggedInUserId(),
                         TechnologyId: approvalData?.SimulationTechnologyId,
                         Mode: 'simulation',
-                        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId)
+                        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId),
+                        plantId: selectedRowData[0].PlantId
                     }
                     dispatch(checkFinalUser(obj, res => {
                         if (res && res.data && res.data.Result) {
@@ -644,6 +651,7 @@ function SimulationApprovalListing(props) {
                 TechnologyId: selectedRowData[0]?.SimulationTechnologyId,
                 Mode: 'simulation',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.SimulationHeadId),
+                plantId: selectedRowData[0].PlantId
             }
             setSimulationDetail({ DepartmentId: selectedRowData[0]?.DepartmentId, TokenNo: selectedRowData[0]?.SimulationTokenNumber, Status: selectedRowData[0]?.SimulationStatus, SimulationId: selectedRowData[0]?.SimulationId, SimulationAppliedOn: selectedRowData[0]?.SimulationAppliedOn, EffectiveDate: selectedRowData[0]?.EffectiveDate, IsExchangeRateSimulation: selectedRowData[0]?.IsExchangeRateSimulation })
             dispatch(setMasterForSimulation({ label: selectedRowData[0]?.SimulationTechnologyHead, value: selectedRowData[0]?.SimulationTechnologyId }))
