@@ -122,8 +122,8 @@ function AddAssemblyOperation(props) {
       return item1
     })
     let isTopRowAssemblyClicked = false
-    let arr = reactLocalStorage.getObject('costingArray')?.filter(element => element?.PartType === 'Assembly')
-    let arrST = reactLocalStorage.getObject('surfaceCostingArray')?.filter(element => element?.PartType === 'Assembly')
+    let arr = JSON.parse(sessionStorage.getItem('costingArray'))?.filter(element => element?.PartType === 'Assembly')
+    let arrST = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))?.filter(element => element?.PartType === 'Assembly')
     if (arr[0]?.PartType === 'Assembly') {
       isTopRowAssemblyClicked = true
     }

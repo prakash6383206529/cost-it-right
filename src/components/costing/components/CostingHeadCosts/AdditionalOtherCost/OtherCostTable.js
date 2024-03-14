@@ -20,6 +20,7 @@ const OtherCostTable = (props) => {
                         <th>{`Other Cost Description`}</th>
                         {/* <th>{`Other Cost Type`}</th> */}
                         <th>{`Other Cost Applicability`}</th>
+                        <th>{`Cost Applicability (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                         <th>{'Percentage (%)'}</th>
                         <th>{`Cost`}</th>
                         {!CostingViewMode && <th className='text-right'>{`Action`}</th>}
@@ -33,7 +34,8 @@ const OtherCostTable = (props) => {
                                 <td>{item.OtherCostDescription}</td>
                                 {/* <td>{item.OtherCostType}</td> */}
                                 <td>{item?.OtherCostApplicability}</td>
-                                <td>{item.PercentageOtherCost}</td>
+                                <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                <td>{item?.PercentageOtherCost}</td>
                                 <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                                 {!CostingViewMode && <td className='text-right'>
                                     <button
@@ -63,7 +65,7 @@ const OtherCostTable = (props) => {
                         </tr>
                     ) : (
                         <tr className='table-footer'>
-                            <td colSpan={initialConfiguration.IsShowCRMHead ? 4 : 3} className='text-right'>
+                            <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4} className='text-right'>
                                 Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):
                             </td>
                             <td colSpan={3}>

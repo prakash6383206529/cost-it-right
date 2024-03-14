@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getOverheadProfitTabData, isOverheadProfitDataChange, setIncludeOverheadProfitIcc, setOverheadProfitData, setSurfaceCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, setToolCostInOverheadProfit } from '../../actions/Costing';
+import { getOverheadProfitTabData, isOverheadProfitDataChange, setIncludeOverheadProfitIcc, setIncludeToolCostIcc, setOverheadProfitData, setSurfaceCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, setToolCostInOverheadProfit } from '../../actions/Costing';
 import { costingInfoContext, } from '../CostingDetailStepTwo';
 import { checkForNull, } from '../../../../helper';
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
@@ -23,6 +23,8 @@ function TabOverheadProfit(props) {
   const [isPressedToolCost, setIsPressToolCost] = useState(false)
   const [isPressedOverHeadAndProfit, setIsPressedOverHeadAndProfit] = useState(false)
   const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(false)
+  const [IsIncludeToolCostInCCForICC, setIsIncludeToolCostInCCForICC] = useState(false)
+  const [isPressedToolCostICC, setIsPressedToolCostICC] = useState(false)
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -64,6 +66,11 @@ function TabOverheadProfit(props) {
       if (OverheadProfitTabData[0].IsIncludeOverheadAndProfitInICC !== null && !isPressedOverHeadAndProfit) {
         setIncludeOverheadProfitInIcc(OverheadProfitTabData[0].IsIncludeOverheadAndProfitInICC)
         dispatch(setIncludeOverheadProfitIcc(OverheadProfitTabData[0].IsIncludeOverheadAndProfitInICC, () => { }))
+      }
+
+      if (OverheadProfitTabData[0].IsIncludeToolCostInCCForICC !== null && !isPressedToolCostICC) {
+        setIsIncludeToolCostInCCForICC(OverheadProfitTabData[0].IsIncludeToolCostInCCForICC)
+        dispatch(setIncludeToolCostIcc(OverheadProfitTabData[0].IsIncludeToolCostInCCForICC, () => { }))
       }
     }
   }, [OverheadProfitTabData])
@@ -556,6 +563,17 @@ function TabOverheadProfit(props) {
     setIncludeOverheadProfitInIcc(!IncludeOverheadProfitInIcc)
     dispatch(isOverheadProfitDataChange(true))
   }
+  const onPressIsIncludeToolCostInCCForICC = () => {
+    if (ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0].CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== 'Fixed') {
+      Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in ICC.')
+      return false
+    } else {
+      dispatch(setIncludeToolCostIcc(!IsIncludeToolCostInCCForICC, () => { }))
+      setIsPressedToolCostICC(true)
+      setIsIncludeToolCostInCCForICC(!IsIncludeToolCostInCCForICC)
+      dispatch(isOverheadProfitDataChange(true))
+    }
+  }
 
   /**
   * @method onSubmit
@@ -673,6 +691,24 @@ function TabOverheadProfit(props) {
                     />
                   </label>
 
+                  <label
+                    id="Overhead_profit_checkbox5"
+                    className={`custom-checkbox mb-0 w-fit-content`}
+                    onChange={onPressIsIncludeToolCostInCCForICC}
+                  >
+                    Include Tool Cost in CC for ICC
+                    <input
+                      type="checkbox"
+                      checked={IsIncludeToolCostInCCForICC}
+                      disabled={(CostingViewMode || (OverheadProfitTabData && OverheadProfitTabData[0]?.IsOpen === false)) ? true : false}
+                    />
+                    <span
+                      className=" before-box"
+                      checked={IsIncludeToolCostInCCForICC}
+                      onChange={onPressIsIncludeToolCostInCCForICC}
+                    />
+                  </label>
+
                 </Col>
               </Row>
 
@@ -705,6 +741,7 @@ function TabOverheadProfit(props) {
                                   IsIncludedSurfaceInRejection={IsIncludeSurfaceTreatmentRejection}
                                   IsIncludeToolCost={IsIncludeToolCost}
                                   IncludeOverheadProfitInIcc={IncludeOverheadProfitInIcc}
+                                  IncludeToolcostInCCForICC={IsIncludeToolCostInCCForICC}
                                   setPartDetails={setPartDetails}
                                   setOverheadDetail={setOverheadDetail}
                                   setProfitDetail={setProfitDetail}
@@ -726,6 +763,7 @@ function TabOverheadProfit(props) {
                                   IsIncludeSurfaceTreatmentRejection={IsIncludeSurfaceTreatmentRejection}
                                   IsIncludeToolCost={IsIncludeToolCost}
                                   IncludeOverheadProfitInIcc={IncludeOverheadProfitInIcc}
+                                  IncludeToolcostInCCForICC={IsIncludeToolCostInCCForICC}
                                   setPartDetails={setPartDetails}
                                   toggleAssembly={toggleAssembly}
                                   setOverheadDetail={setOverheadDetail}
