@@ -84,6 +84,8 @@ export const checkInterestRateConfigure = (excelData) => {
 export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVendor = false) => {
 
 
+
+
     return excelData.filter((el) => {
         if (checkVendorPlantConfigurable() === false) {
             if (el.value === 'VendorPlant') return false;
@@ -144,12 +146,14 @@ class Downloadxls extends React.Component {
     * @description Switch case for different xls file head according to master
     */
     renderSwitch = (master) => {
-
+        let updatedLabels, updatedTempData;
         switch (master) {
             case 'RM Specification':
                 return this.returnExcelColumn(RMSpecification, RMSpecificationXLTempData);
             case 'Vendor':
-                return this.returnExcelColumn(checkVendorPlantConfig(Vendor, '', false, true), VendorTempData);
+                ({ updatedLabels, updatedTempData } = updateBOPValues(Vendor, VendorTempData, bopMasterName));
+
+                return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', false, true), updatedTempData);
             case 'Overhead':
                 return this.returnExcelColumn(Overhead, OverheadTempData);
             case 'Fuel':
@@ -220,6 +224,7 @@ class Downloadxls extends React.Component {
     * @description Switch case for different xls file head according to master
     */
     renderVBCSwitch = (master, bopType) => {
+
         let updatedLabels, updatedTempData;
         switch (master) {
             case 'RM Domestic':
@@ -358,7 +363,7 @@ class Downloadxls extends React.Component {
         if (isFailedFlag && (costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) && (fileName === 'Machine')) {
 
             return (
-                <ExcelFile hideElement={true} filename={costingTypeId === ZBCADDMORE ? "ZBC Add more details" : costingTypeId === VBCADDMORE ? "VBC Add more details" : "CBC Add more details"} fileExtension={'.xls'} >
+                <ExcelFile hideElement={true} filename={"Add more details"} fileExtension={'.xls'} >
                     {isMachineMoreTemplate || (costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) ? this.renderZBCSwitch(costingTypeId) : ""}
                 </ExcelFile>
             );
@@ -416,7 +421,7 @@ class Downloadxls extends React.Component {
                         </ExcelFile>}
                     {/* ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER */}
                     {(costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) &&
-                        <ExcelFile filename={costingTypeId === ZBCADDMORE ? "ZBC Add more details" : (costingTypeId === VBCADDMORE ? "VBC Add more details" : "CBC Add more details")} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download More DETAIL</button>}>
+                        <ExcelFile filename={"Add more details"} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download More DETAIL</button>}>
                             {fileName ? this.renderZBCSwitch(costingTypeId) : ''}
                         </ExcelFile >}
                 </>
