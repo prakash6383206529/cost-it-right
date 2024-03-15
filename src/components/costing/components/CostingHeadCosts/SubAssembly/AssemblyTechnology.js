@@ -454,7 +454,7 @@ function AssemblyTechnology(props) {
                                     <button
                                         type="button"
                                         className={'user-btn add-oprn-btn'}
-                                        title={`Add ${showBopLabel()}  Handling`}
+                                        title={`Add ${showBopLabel()} Handling`}
                                         onClick={() => { setIsOpenBOPDrawer(true) }}
                                     >
                                         <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>

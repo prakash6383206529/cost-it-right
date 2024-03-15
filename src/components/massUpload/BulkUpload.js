@@ -27,7 +27,7 @@ import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPL
 //MINDA
 // import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
 import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm } from '../../config/masterData';
-import { CheckApprovalApplicableMaster, checkForSameFileUpload, userTechnologyDetailByMasterId } from '../../helper';
+import { CheckApprovalApplicableMaster, checkForSameFileUpload, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
@@ -40,6 +40,7 @@ import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
 import DayTime from '../common/DayTimeWrapper';
 import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
 import WarningMessage from '../common/WarningMessage';
+const bopMasterName = showBopLabel();
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -228,13 +229,17 @@ class BulkUpload extends Component {
             data.append('file', fileObj)
 
             ExcelRenderer(fileObj, (err, resp) => {
+
+
                 if (err) {
 
                 } else {
 
                     fileHeads = resp.rows[0];
+
                     let checkForFileHead
                     const { fileName } = this.props;
+
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
@@ -267,27 +272,44 @@ class BulkUpload extends Component {
                             // case String(INSERTDOMESTICBULKUPLOAD):
 
                             if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_DOMESTIC, VBCTypeId), fileHeads, true)
+                                const { updatedLabels } = updateBOPValues(BOP_VBC_DOMESTIC, [], bopMasterName)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_ZBC_DOMESTIC), fileHeads, true)
+                                const { updatedLabels } = updateBOPValues(BOP_ZBC_DOMESTIC, [], bopMasterName)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
+
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_CBC_DOMESTIC), fileHeads, true)
+                                const { updatedLabels } = updateBOPValues(BOP_CBC_DOMESTIC, [], bopMasterName)
+
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
+
                             } else if (this.state.bopType === DETAILED_BOP) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_DETAILED_DOMESTIC), fileHeads, true)
+                                const { updatedLabels } = updateBOPValues(BOP_DETAILED_DOMESTIC, [], bopMasterName)
+
+
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
                             }
                             break;
                         case String(BOPIMPORTBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_ZBC_IMPORT), fileHeads, true)
+                                const { updatedLabels } = updateBOPValues(BOP_ZBC_IMPORT, [], bopMasterName)
+
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_IMPORT, VBCTypeId), fileHeads, true)
+                                const { updatedLabels } = updateBOPValues(BOP_VBC_IMPORT, [], bopMasterName)
+
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
                             } else if (this.state.bopType === DETAILED_BOP) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_DETAILED_IMPORT), fileHeads, true)
+                                const { updatedLabels } = updateBOPValues(BOP_DETAILED_IMPORT, [], bopMasterName)
+
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
                             } else {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_CBC_IMPORT, CBCTypeId), fileHeads, true)
+                                const { updatedLabels } = updateBOPValues(BOP_CBC_IMPORT, [], bopMasterName)
+
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, CBCTypeId), fileHeads, true)
                             }
                             break;
                         case String(PARTCOMPONENTBULKUPLOAD):
@@ -311,7 +333,9 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(Vendor, '', '', true), fileHeads)
+                            const { updatedLabels } = updateBOPValues(Vendor, [], bopMasterName)
+
+                            checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, '', '', true), fileHeads)
                             break;
                         case String(LABOURBULKUPLOAD):
                             checkForFileHead = checkForSameFileUpload(Labour, fileHeads)
@@ -451,6 +475,23 @@ class BulkUpload extends Component {
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'PlantName') {
                                     fileHeads[i] = 'DestinationPlantName'
                                 } else if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'MinimumOrderQuantity') {
+                                    fileHeads[i] = 'NumberOfPieces'
+                                }
+                                if (fileHeads[i] === 'InsertPartNumber' || fileHeads[i] === 'BOPNumber' || fileHeads[i] === 'InsertNumber') {
+                                    fileHeads[i] = 'BoughtOutPartNumber'
+                                }
+                                if (fileHeads[i] === 'InsertPartName' || fileHeads[i] === 'BOPName' || fileHeads[i] === 'InsertName') {
+
+                                    fileHeads[i] = 'BoughtOutPartName'
+
+                                }
+                                if (fileHeads[i] === 'InsertVendor') {
+                                    fileHeads[i] = 'BOPVendor'
+                                }
+                                if (fileHeads[i] === 'InsertCategory') {
+                                    fileHeads[i] = 'CategoryName'
+                                }
+                                if (fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
                                 }
                                 if (fileHeads[i] === 'InsertVendor') {
@@ -719,6 +760,7 @@ class BulkUpload extends Component {
      */
     render() {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
+
         const { faildRecords, failedData, costingTypeId, setDisable, noApprovalCycle, bopType } = this.state;
         if (faildRecords) {
 

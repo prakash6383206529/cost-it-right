@@ -81,17 +81,17 @@ function RMImportListing(props) {
   const [viewAttachment, setViewAttachment] = useState([])
   const [editSelectedList, setEditSelectedList] = useState(false)
   const [tempList, setTempList] = useState([])
-  const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
+  const netCostHeader = `Net Cost (${getConfigurationKey()?.BaseCurrency})`
   const { tokenForSimulation } = useSelector(state => state.simulation)
   const headerNames = {
-    BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
-    ScrapRate: `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
-    MachiningScrapCost: `Machining Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
-    FreightCost: `Freight Cost (${reactLocalStorage.getObject("baseCurrency")})`,
-    ShearingCost: `Shearing Cost (${reactLocalStorage.getObject("baseCurrency")})`,
-    BasicPrice: `Basic Price (${reactLocalStorage.getObject("baseCurrency")})`,
-    NetConditionCost: `Net Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`,
-    NetCost: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+    BasicRate: `Basic Rate (${getConfigurationKey()?.BaseCurrency})`,
+    ScrapRate: `Scrap Rate (${getConfigurationKey()?.BaseCurrency})`,
+    MachiningScrapCost: `Machining Scrap Cost (${getConfigurationKey()?.BaseCurrency})`,
+    FreightCost: `Freight Cost (${getConfigurationKey()?.BaseCurrency})`,
+    ShearingCost: `Shearing Cost (${getConfigurationKey()?.BaseCurrency})`,
+    BasicPrice: `Basic Price (${getConfigurationKey()?.BaseCurrency})`,
+    NetConditionCost: `Net Condition Cost (${getConfigurationKey()?.BaseCurrency})`,
+    NetCost: `Net Cost (${getConfigurationKey()?.BaseCurrency})`,
   }
   var filterParams = {
     date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
@@ -531,6 +531,7 @@ function RMImportListing(props) {
 
 
   const costFormatter = (props) => {
+    console.log('props: ', props);
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
     return cellValue !== INR ? cellValue : '';
   }
@@ -610,9 +611,7 @@ function RMImportListing(props) {
   }
 
   const bulkToggle = () => {
-    if (checkMasterCreateByCostingPermission(true)) {
-      setisBulkUpload(true);
-    }
+    setisBulkUpload(true);
   }
 
   const closeBulkUploadDrawer = (event, type) => {
@@ -1046,7 +1045,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)' cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapRate" headerName="Scrap Rate (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapRateInINR" headerName={headerNames?.ScrapRate} cellRenderer='commonCostFormatter'></AgGridColumn>
-                    {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" cellRenderer='commonCostFormatter' headerName='Machining Scrap Rate (Currency)'></AgGridColumn>}
+                    {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" cellRenderer='commonCostFormatter' headerName='Machining Scrap Cost (Currency)'></AgGridColumn>}
                     {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRateInINR" cellRenderer='commonCostFormatter' headerName={headerNames?.MachiningScrapCost}></AgGridColumn>}
                     {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
                     {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMFreightCost" headerName="Freight Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>)}

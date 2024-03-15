@@ -23,14 +23,16 @@ function Dashboard(props) {
   const { handleSubmit } = props
   const { t } = useTranslation("Dashboard")
   const [acc1, setAcc1] = useState(false)
+
   const [acc2, setAcc2] = useState(true)
+
   const [acc3, setAcc3] = useState(false)
+
   const [hideDash, setShowHideDash] = useState(false)
   const [activeTab, setactiveTab] = useState('1');
   const [viewSimulation, setViewSimulation] = useState(true)
   const [viewCosting, setViewCosting] = useState(true)
   const [pageDropDownRef, setPageDropDownRef] = useState('')
-  const [showTour, setShowTour] = useState(false)
 
   const [viewMastersObj, setViewMAstersObj] = useState({
     RM: false,
@@ -180,7 +182,11 @@ function Dashboard(props) {
                 <Row className="m-0" id={`${pageDropDownRef === 'master' ? 'refresh-to-top' : ''}`}>
                   <div className="graph-box w-100">
                     <Row>
-                      <Col md="8"><h3 className="mb-0">Masters Approval Status</h3></Col>
+                      <Col md="8"><h3 className="mb-0">Masters Approval Status{acc3 && <TourWrapper
+                        buttonSpecificProp={{ id: "Dashboard_master_form" }}
+                        stepsSpecificProp={{
+                          steps: Steps(t).DASHBOARD_MASTER_TAB
+                        }} />}</h3></Col>
                       <Col md="4" className="text-right">
                         <button id="Dashboard_Master_Accordian" className="btn btn-small-primary-circle ml-1" type="button" disabled={dashboardTabLock} onClick={() => { setAcc3(!acc3) }}>
                           {acc3 ? (

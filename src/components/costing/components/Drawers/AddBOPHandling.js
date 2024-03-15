@@ -170,7 +170,7 @@ function AddBOPHandling(props) {
     }
 
     if (handlingChargesChange !== obj.BOPHandlingCharges) {
-      Toaster.success(`${showBopLabel()}  Handling charges saved successfully`)
+      Toaster.success(`${showBopLabel()} Handling charges saved successfully`)
     }
     props.setBOPCostWithAsssembly(obj, item)
     setTimeout(() => {
@@ -187,7 +187,7 @@ function AddBOPHandling(props) {
               <Row className="drawer-heading">
                 <Col className='pl-0'>
                   <div className={'header-wrapper left'}>
-                    <h3>{`Add ${showBopLabel()}  Handling Charge`}</h3>
+                    <h3>{`Add ${showBopLabel()} Handling Charge`}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
@@ -219,7 +219,7 @@ function AddBOPHandling(props) {
 
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={`${showBopLabel()}  Handling Type`}
+                        label={`${showBopLabel()} Handling Type`}
                         name={"BOPHandlingType"}
                         placeholder={"Select"}
                         Controller={Controller}
