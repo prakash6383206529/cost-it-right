@@ -468,11 +468,16 @@ const OperationListing = (props) => {
  * @method effectiveDateFormatter
  * @description Renders buttons
  */
-    const effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
-    }
+    // const effectiveDateFormatter = (props) => {
+    //     
+    //     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    //     return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+    // }
 
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted || props?.value || '-';
+        return cellValue !== '-' ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+    }
 
     const renderPlantFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -599,8 +604,10 @@ const OperationListing = (props) => {
 
     const returnExcelColumn = (data = [], TempData) => {
         let excelData = hideCustomerFromExcel(data, "CustomerName")
+        console.log('excelData: ', excelData);
         let temp = []
         temp = TempData && TempData.map((item) => {
+            console.log('temp: ', temp);
             if (item.Specification === null) {
                 item.Specification = ' '
             }
@@ -611,11 +618,13 @@ const OperationListing = (props) => {
             } else if (item?.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
+            console.log('item: ', item);
             return item
         })
         return (
 
             <ExcelSheet data={temp} name={OperationMaster}>
+
                 {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -811,7 +820,7 @@ const OperationListing = (props) => {
                                             />
 
                                             <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
-                                                <Button id={"Excel-Downloads-bop-domesti"} className="p-absolute" />}>
+                                                <Button id={"Excel-Downloads-operation"} className="p-absolute" />}>
 
                                                 {onBtExport()}
                                             </ExcelFile>
