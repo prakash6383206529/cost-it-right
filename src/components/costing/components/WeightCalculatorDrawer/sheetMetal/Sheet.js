@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { Col, Row } from 'reactstrap'
+import { Col, Row, Table } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, NumberFieldHookForm } from '../../../../layout/HookFormInputs'
@@ -18,6 +18,8 @@ import TooltipCustom from '../../../../common/Tooltip'
 function Sheet(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
     const { rmRowData, item, CostingViewMode } = props
+    const [rightEndAcc, setRightEndAcc] = useState(true)
+    const [bottomEndAcc, setBottomEndAcc] = useState(true)
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
     const convert = (FinishWeightOfSheet, dimmension) => {
@@ -503,7 +505,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                             </Row>
-                            <Row className={'mt15'}>
+                            <Row className='sheet-specification-details'>
                                 <Col md="3">
                                     <NumberFieldHookForm
                                         label={`Thickness(mm)`}
@@ -605,14 +607,14 @@ function Sheet(props) {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md="12" className={''}>
+                                <Col md="12">
                                     <HeaderTitle className="border-bottom"
                                         title={'Blank Specification'}
                                         customClass={'underLine-title'}
                                     />
                                 </Col>
                             </Row>
-                            <Row className={'mt15'}>
+                            <Row>
                                 <Col md="3">
                                     <NumberFieldHookForm
                                         label={`Width(mm)`}
@@ -628,7 +630,7 @@ function Sheet(props) {
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
-                                        customClassName={'withBorder'}
+                                        customClassName={'withBorder mb-0'}
                                         errors={errors.BlankWidth}
                                         disabled={CostingViewMode ? true : false}
                                     />
@@ -648,580 +650,514 @@ function Sheet(props) {
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
-                                        customClassName={'withBorder'}
+                                        customClassName={'withBorder mb-0'}
                                         errors={errors.BlankLength}
                                         disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                             </Row >
-
-                            <Row>
-                                <Col md="12" className={'mt25'}>
-                                    <HeaderTitle className="border-bottom"
-                                        title={'Sheet Length/Blank Width'}
-                                        customClass={'underLine-title'}
-                                    />
-                                </Col>
-                            </Row>
                             <Row className={'mt15'}>
-
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
-                                    <TextFieldHookForm
-                                        label={`No. of Strips`}
-                                        id={'sheet-strips'}
-                                        name={'NumberOfStripsByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NumberOfStripsByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
-                                    <TextFieldHookForm
-                                        label={`No. of Strips`}
-                                        id={'sheet-strips'}
-                                        name={'NumberOfStripsByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NumberOfStripsByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Row className={'mt15'}>
-                                    <Col md="3">
-                                        <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Blanks/Strip = (Sheet Width / Blank Size)'} />
-                                        <TextFieldHookForm
-                                            label={`Blanks/Strip`}
-                                            name={'BlanksPerStripByWidth'}
-                                            id={'sheet-component-per-strip'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.ComponentPerStrip}
-                                            disabled={true}
-                                        />
-                                    </Col>
-                                    <Col md="3">
-                                        <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Blanks/Strip = (Sheet Width / Blank Size)'} />
-                                        <TextFieldHookForm
-                                            label={`Blanks/Strip`}
-                                            name={'BlanksPerStripByLength'}
-                                            id={'sheet-component-per-strip'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.blanksPerStripByLength}
-                                            disabled={true}
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row className={'mt15'}>
-                                    <Col md="3">
-                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
-                                        <TextFieldHookForm
-                                            label={`Components/Sheet`}
-                                            name={'NoOfComponentByWidth'}
-                                            id={'total-component'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.NoOfComponentByWidth}
-                                            disabled={true}
-                                        />
-                                    </Col>
-                                    <Col md="3">
-                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
-                                        <TextFieldHookForm
-                                            label={`Components/Sheet`}
-                                            name={'NoOfComponentByLength'}
-                                            id={'total-component'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.NoOfComponentByLength}
-                                            disabled={true}
-                                        />
-                                    </Col>
-                                </Row>
-                            </Row>
-                            <hr className="mx-n4 w-auto" />
-                            <Row>
-                                <Col md="12" className={'mt25'}>
-                                    <HeaderTitle className="border-bottom"
-                                        title={'Utilization of Sheet'}
-                                        customClass={'underLine-title'}
-                                    />
-
-                                </Col>
-                            </Row>
-                            <Row className={'mt15'}>
-                                <HeaderTitle className="border-bottom"
-                                    title={'Bottom End'}
-                                    customClass={'underLine-title'}
-                                />
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Sheet Width(mm)`}
-                                        name={'SheetWidthBottom'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.SheetWidthBottom}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Length(mm)`}
-                                        name={'RemainingSLBottomByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSLBottomByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Width/Blank Width`}
-                                        name={'RemainingSWPerBWBottomByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSWPerBWBottomByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Length/Blank Length`}
-                                        name={'RemainingSLPerBLBottomByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSLPerBLBottomByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`No. of Blanks(Bottom End)`}
-                                        name={'NoOfBlanksBottomEndByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NoOfBlanksBottomEndByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
-                            <Row className={'mt15'}>
-                                <HeaderTitle className="border-bottom"
-                                    title={'Right End'}
-                                    customClass={'underLine-title'}
-                                />
-
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Length(mm)`}
-                                        name={'RemainingSLRightEndByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSLRightEndByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Width(mm)`}
-                                        name={'RemainingSWRightEndByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSWRightEndByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Length/Blank Length`}
-                                        name={'RemainingSLPerBLRightEndByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSLPerBLRightEndByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Width/Blank Width`}
-                                        name={'RemainingSWPerBWRightEndByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSWPerBWRightEndByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`No. of Blanks(Right End)`}
-                                        name={'NoOfBlanksRightEndByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NoOfBlanksRightEndByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Total Blanks from remaining sheet`}
-                                        name={'TotalNoOfBlanksByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.TotalNoOfBlanksByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Additional Components from remaining sheet`}
-                                        name={'AdditionalComponentsByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.AdditionalComponentsByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Total Component/Sheet`}
-                                        name={'TotalComponentByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.TotalComponentByWidth}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
-                            {/******************************WIDTH PART END****************************** */}
-                            <Row className={'mt15'}>
-                                <HeaderTitle className="border-bottom"
-                                    title={'Bottom End'}
-                                    customClass={'underLine-title'}
-                                />
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Sheet Width(mm)`}
-                                        name={'SheetWidthBottom'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.SheetWidthBottom}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Length(mm)`}
-                                        name={'RemainingSLBottomByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSLBottomByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Width/Blank Length`}
-                                        name={'RemainingSWPerBLBottomByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSWPerBLBottomByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Length/Blank Width`}
-                                        name={'RemainingSLPerBWBottomByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSLPerBWBottomByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`No. of Blanks(Bottom End)`}
-                                        name={'NoOfBlanksBottomEndByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NoOfBlanksBottomEndByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
-                            <Row className={'mt15'}>
-                                <HeaderTitle className="border-bottom"
-                                    title={'Right End'}
-                                    customClass={'underLine-title'}
-                                />
-
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Length(mm)`}
-                                        name={'RemainingSLRightEndByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSLRightEndByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Width(mm)`}
-                                        name={'RemainingSWRightEndByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSWRightEndByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Length/Blank Width`}
-                                        name={'RemainingSLPerBWRightEndByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSLPerBWRightEndByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Remaining Sheet Width/Blank Length`}
-                                        name={'RemainingSWPerBLRightEndByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RemainingSWPerBLRightEndByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`No. of Blanks(Right End)`}
-                                        name={'NoOfBlanksRightEndByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NoOfBlanksRightEndByLength}
-                                        disabled={true}
-                                    />
+                                <Col md="12">
+                                    <Table bordered className='sheet-table'>
+                                        <thead>
+                                            <tr>
+                                                <td className='text-center'><strong>Sheet Length/Blank Width</strong></td>
+                                                <td className='text-center'><strong>Sheet Length/Blank Length</strong></td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td> <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
+                                                    <TextFieldHookForm
+                                                        label={`No. of Strips`}
+                                                        id={'sheet-strips'}
+                                                        name={'NumberOfStripsByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.NumberOfStripsByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                <td><TooltipCustom disabledIcon={true} id={'sheet-strips-length'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
+                                                    <TextFieldHookForm
+                                                        label={`No. of Strips`}
+                                                        id={'sheet-strips-length'}
+                                                        name={'NumberOfStripsByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.NumberOfStripsByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                            </tr>
+                                            <tr>
+                                                <td> <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Blanks/Strip = (Sheet Width / Blank Size)'} />
+                                                    <TextFieldHookForm
+                                                        label={`Blanks/Strip`}
+                                                        name={'BlanksPerStripByWidth'}
+                                                        id={'sheet-component-per-strip'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.ComponentPerStrip}
+                                                        disabled={true}
+                                                    /></td>
+                                                <td><TooltipCustom disabledIcon={true} id={'sheet-component-per-strip-length'} tooltipText={'Blanks/Strip = (Sheet Width / Blank Size)'} />
+                                                    <TextFieldHookForm
+                                                        label={`Blanks/Strip`}
+                                                        name={'BlanksPerStripByLength'}
+                                                        id={'sheet-component-per-strip-length'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.blanksPerStripByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                            </tr>
+                                            <tr>
+                                                <td> <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
+                                                    <TextFieldHookForm
+                                                        label={`Components/Sheet`}
+                                                        name={'NoOfComponentByWidth'}
+                                                        id={'total-component'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.NoOfComponentByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                <td> <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component-length'} tooltipText={'Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
+                                                    <TextFieldHookForm
+                                                        label={`Components/Sheet`}
+                                                        name={'NoOfComponentByLength'}
+                                                        id={'total-component-length'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.NoOfComponentByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                            </tr>
+                                            <tr><td className='text-center' colSpan={2}><h3>Utilization of Sheet</h3></td></tr>
+                                            <tr><td colSpan={2}><div className='d-flex justify-content-between'><strong>Bottom End</strong> <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setBottomEndAcc(!bottomEndAcc) }}>
+                                                {bottomEndAcc ? (
+                                                    <i className="fa fa-minus" ></i>
+                                                ) : (
+                                                    <i className="fa fa-plus"></i>
+                                                )}
+                                            </button></div></td>
+                                            </tr>
+                                            {bottomEndAcc && <>
+                                                <tr>
+                                                    <td> <NumberFieldHookForm
+                                                        label={`Sheet Width(mm)`}
+                                                        name={'SheetWidthBottom'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.SheetWidthBottom}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Sheet Width(mm)`}
+                                                        name={'SheetWidthBottom'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.SheetWidthBottom}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Remaining Sheet Length(mm)`}
+                                                        name={'RemainingSLBottomByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSLBottomByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td> <NumberFieldHookForm
+                                                        label={`Remaining Sheet Length(mm)`}
+                                                        name={'RemainingSLBottomByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSLBottomByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Remaining Sheet Width/Blank Width`}
+                                                        name={'RemainingSWPerBWBottomByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSWPerBWBottomByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Remaining Sheet Width/Blank Length`}
+                                                        name={'RemainingSWPerBLBottomByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSWPerBLBottomByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Remaining Sheet Length/Blank Length`}
+                                                        name={'RemainingSLPerBLBottomByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSLPerBLBottomByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Remaining Sheet Length/Blank Width`}
+                                                        name={'RemainingSLPerBWBottomByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSLPerBWBottomByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td> <NumberFieldHookForm
+                                                        label={`No. of Blanks(Bottom End)`}
+                                                        name={'NoOfBlanksBottomEndByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.NoOfBlanksBottomEndByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td><NumberFieldHookForm
+                                                        label={`No. of Blanks(Bottom End)`}
+                                                        name={'NoOfBlanksBottomEndByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.NoOfBlanksBottomEndByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                            </>}
+                                            <tr><td colSpan={2}><div className='d-flex justify-content-between'><strong>Right End</strong> <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setRightEndAcc(!rightEndAcc) }}>
+                                                {rightEndAcc ? (
+                                                    <i className="fa fa-minus" ></i>
+                                                ) : (
+                                                    <i className="fa fa-plus"></i>
+                                                )}
+                                            </button></div></td></tr>
+                                            {rightEndAcc && <>
+                                                <tr>
+                                                    <td> <NumberFieldHookForm
+                                                        label={`Remaining Sheet Length(mm)`}
+                                                        name={'RemainingSLRightEndByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSLRightEndByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Remaining Sheet Length(mm)`}
+                                                        name={'RemainingSLRightEndByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSLRightEndByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Remaining Sheet Width(mm)`}
+                                                        name={'RemainingSWRightEndByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSWRightEndByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td> <NumberFieldHookForm
+                                                        label={`Remaining Sheet Width(mm)`}
+                                                        name={'RemainingSWRightEndByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSWRightEndByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td> <NumberFieldHookForm
+                                                        label={`Remaining Sheet Length/Blank Length`}
+                                                        name={'RemainingSLPerBLRightEndByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSLPerBLRightEndByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Remaining Sheet Length/Blank Width`}
+                                                        name={'RemainingSLPerBWRightEndByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSLPerBWRightEndByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td> <NumberFieldHookForm
+                                                        label={`Remaining Sheet Width/Blank Width`}
+                                                        name={'RemainingSWPerBWRightEndByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSWPerBWRightEndByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Remaining Sheet Width/Blank Length`}
+                                                        name={'RemainingSWPerBLRightEndByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.RemainingSWPerBLRightEndByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td> <NumberFieldHookForm
+                                                        label={`No. of Blanks(Right End)`}
+                                                        name={'NoOfBlanksRightEndByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.NoOfBlanksRightEndByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td><NumberFieldHookForm
+                                                        label={`No. of Blanks(Right End)`}
+                                                        name={'NoOfBlanksRightEndByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.NoOfBlanksRightEndByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td> <NumberFieldHookForm
+                                                        label={`Total Blanks from remaining sheet`}
+                                                        name={'TotalNoOfBlanksByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.TotalNoOfBlanksByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td> <NumberFieldHookForm
+                                                        label={`Total Blanks from remaining sheet`}
+                                                        name={'TotalNoOfBlanksByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.TotalNoOfBlanksByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Additional Components from remaining sheet`}
+                                                        name={'AdditionalComponentsByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.AdditionalComponentsByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Additional Components from remaining sheet`}
+                                                        name={'AdditionalComponentsByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.AdditionalComponentsByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                            </>}
+                                            <>
+                                                <tr>
+                                                    <td><NumberFieldHookForm
+                                                        label={`Total Component/Sheet`}
+                                                        name={'TotalComponentByWidth'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.TotalComponentByWidth}
+                                                        disabled={true}
+                                                    /></td>
+                                                    <td> <NumberFieldHookForm
+                                                        label={`Total Component/Sheet`}
+                                                        name={'TotalComponentByLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.TotalComponentByLength}
+                                                        disabled={true}
+                                                    /></td>
+                                                </tr>
+                                            </>
+                                        </tbody>
+                                    </Table>
                                 </Col>
                             </Row>
-                            <Row>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Total Blanks from remaining sheet`}
-                                        name={'TotalNoOfBlanksByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.TotalNoOfBlanksByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Additional Components from remaining sheet`}
-                                        name={'AdditionalComponentsByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.AdditionalComponentsByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Total Component/Sheet`}
-                                        name={'TotalComponentByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.TotalComponentByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
-                            <hr className="mx-n4 w-auto" />
                             <Row>
                                 <Col md="3">
                                     <NumberFieldHookForm
@@ -1238,7 +1174,7 @@ function Sheet(props) {
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
-                                        customClassName={'withBorder'}
+                                        customClassName={'withBorder mb-0'}
                                         errors={errors.NetSurfaceArea}
                                         disabled={CostingViewMode ? true : false}
                                     />
@@ -1254,6 +1190,7 @@ function Sheet(props) {
                                         register={register}
                                         defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
                                         options={renderListing('UOM')}
+                                        customClassName={'mb-0'}
                                         mandatory={true}
                                         handleChange={handleUnit}
                                         errors={errors.UOMDimension}
@@ -1263,8 +1200,7 @@ function Sheet(props) {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Gross Weight = Weight of sheet / No. of Parts"} />
+                                <Col md="3"> <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Gross Weight = Weight of sheet / No. of Parts"} />
                                     <TextFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeightByWidth'}
@@ -1282,58 +1218,52 @@ function Sheet(props) {
                                         customClassName={'withBorder'}
                                         errors={errors.GrossWeightByWidth}
                                         disabled={true}
-                                    />
-                                </Col >
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Finish Weight(${UOMDimension.label})`}
-                                        name={'FinishWeightOfSheetByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
-                                            max: {
-                                                value: getValues('GrossWeightByWidth'),
-                                                message: 'Finish weight should not be greater than gross weight.'
-                                            },
-                                        }}
-                                        handleChange={(e) => setFinishWeight(e, 'Width')}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.FinishWeightOfSheetByWidth}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Scrap Recovery (%)`}
-                                        name={'ScrapRecoveryPercentByWidth'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                            max: {
-                                                value: 100,
-                                                message: 'Percentage cannot be greater than 100'
-                                            },
-                                        }}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.ScrapRecoveryPercentByWidth}
-                                        disabled={props.CostingViewMode ? true : false}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Weight = (Gross Weight - Finish Weight )* Scrap Recovery (%)/100'} />
+                                    /></Col>
+                                <Col md="3"> <TextFieldHookForm
+                                    label={`Finish Weight(${UOMDimension.label})`}
+                                    name={'FinishWeightOfSheetByWidth'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    rules={{
+                                        required: true,
+                                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                        max: {
+                                            value: getValues('GrossWeightByWidth'),
+                                            message: 'Finish weight should not be greater than gross weight.'
+                                        },
+                                    }}
+                                    handleChange={(e) => setFinishWeight(e, 'Width')}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.FinishWeightOfSheetByWidth}
+                                    disabled={CostingViewMode ? true : false}
+                                /></Col>
+                                <Col md="3"> <TextFieldHookForm
+                                    label={`Scrap Recovery (%)`}
+                                    name={'ScrapRecoveryPercentByWidth'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    rules={{
+                                        required: false,
+                                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                        max: {
+                                            value: 100,
+                                            message: 'Percentage cannot be greater than 100'
+                                        },
+                                    }}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.ScrapRecoveryPercentByWidth}
+                                    disabled={props.CostingViewMode ? true : false}
+                                /></Col>
+                                <Col md="3"><TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Weight = (Gross Weight - Finish Weight )* Scrap Recovery (%)/100'} />
                                     <TextFieldHookForm
                                         label={`Scrap Weight(${UOMDimension.label})`}
                                         name={'ScrapWeightByWidth'}
@@ -1348,98 +1278,9 @@ function Sheet(props) {
                                         customClassName={'withBorder'}
                                         errors={errors.ScrapWeightByWidth}
                                         disabled={true}
-                                    />
-                                </Col>
+                                    /></Col>
                             </Row>
-                            <Row>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Gross Weight = Weight of sheet / No. of Parts"} />
-                                    <TextFieldHookForm
-                                        label={`Gross Weight(${UOMDimension.label})`}
-                                        name={'GrossWeightByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        id={'gross-weight'}
-                                        rules={{
-                                            required: false,
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.GrossWeightByLength}
-                                        disabled={true}
-                                    />
-                                </Col >
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Finish Weight(${UOMDimension.label})`}
-                                        name={'FinishWeightOfSheetByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
-                                            max: {
-                                                value: getValues('GrossWeightByLength'),
-                                                message: 'Finish weight should not be greater than gross weight.'
-                                            },
-                                        }}
-                                        handleChange={(e) => setFinishWeight(e, 'Length')}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.FinishWeightOfSheetByLength}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Scrap Recovery (%)`}
-                                        name={'ScrapRecoveryPercentByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                            max: {
-                                                value: 100,
-                                                message: 'Percentage cannot be greater than 100'
-                                            },
-                                        }}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.ScrapRecoveryPercentByLength}
-                                        disabled={props.CostingViewMode ? true : false}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Weight = (Gross Weight - Finish Weight )* Scrap Recovery (%)/100'} />
-                                    <TextFieldHookForm
-                                        label={`Scrap Weight(${UOMDimension.label})`}
-                                        name={'ScrapWeightByLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        id={'scrap-weight'}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.scrapWeightByLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
+
                         </div >
 
                         {!CostingViewMode && <div className="col-sm-12 text-right px-0 mt-4">
