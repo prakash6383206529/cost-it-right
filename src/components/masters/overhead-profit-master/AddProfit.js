@@ -1343,9 +1343,10 @@ class AddProfit extends Component {
                             customClassName=" textAreaWithBorder"
                             onChange={this.handleMessageChange}
                             validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
-                            //required={true}
+                            required={true}
                             component={renderTextAreaField}
-                            maxLength="512"
+                            // maxLength="512"
+                            // maxLength="5000"
                             disabled={isViewMode}
                           />
                         </Col>

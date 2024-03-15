@@ -1884,7 +1884,6 @@ class AddMachineRate extends Component {
                             validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                             //required={true}
                             component={renderTextAreaField}
-                            maxLength="512"
                             rows="6"
                             disabled={this.state.isViewFlag || (isEditFlag && IsDetailedEntry) ? true : isViewMode}
                           />

@@ -1331,7 +1331,8 @@ class AddOverhead extends Component {
                             onChange={this.handleMessageChange}
                             component={renderTextAreaField}
                             validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
-                            maxLength="512"
+                            // maxLength="512"
+                            // maxLength="5000"
                             disabled={isViewMode}
                           />
                         </Col>

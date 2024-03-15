@@ -2831,7 +2831,7 @@ class AddRMImport extends Component {
                               onChange={this.handleMessageChange}
                               validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                               component={renderTextAreaField}
-                              maxLength="512"
+                              // maxLength="5000"
                               rows="10"
                               disabled={isViewFlag}
 

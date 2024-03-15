@@ -1279,7 +1279,8 @@ class AddOperation extends Component {
                           validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                           disabled={isViewMode}
                           component={renderTextAreaField}
-                          maxLength="512"
+                        // maxLength="512"
+                        // maxLength="5000"
                         />
                       </Col>
                       <Col md="3">
