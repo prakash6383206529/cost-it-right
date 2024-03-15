@@ -912,6 +912,7 @@ class AddOperation extends Component {
         }
       }
     };
+
     return (
       <div className="container-fluid">
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -922,11 +923,12 @@ class AddOperation extends Component {
                 <div className="row">
                   <div className="col-md-6">
                     <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
-
                       <TourWrapper
                         buttonSpecificProp={{ id: "Add_Operation_form" }}
                         stepsSpecificProp={{
-                          steps: Steps(t).ADD_OPERATION
+                          steps: Steps(t, {
+                            vendorField: costingTypeId === VBCTypeId, customerField: costingTypeId === CBCTypeId, plantField: (costingTypeId === ZBCTypeId), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)
+                          }).ADD_OPERATION
                         }} />
                     </h2>
                   </div>
@@ -1097,6 +1099,7 @@ class AddOperation extends Component {
                             <div className="fullinput-icon p-relative">
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
+                                id="AddOperation_VendorCode"
                                 name="vendorName"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
@@ -1113,6 +1116,7 @@ class AddOperation extends Component {
                             </div>
                             {!isEditFlag && (
                               <div
+                                id="AddOperation_AddVendorCode"
                                 onClick={this.vendorToggler}
                                 className={"plus-icon-square  right"}
                               ></div>
@@ -1253,6 +1257,7 @@ class AddOperation extends Component {
                       <Col md="4">
                         {(!isEditFlag || (isEditFlag && this.state.isDetailEntry)) && getConfigurationKey().IsShowDetailedBreakup && < button
                           type="button"
+                          id="AddMoreOperation_container"
                           className={'user-btn '}
                           disabled={false}
                           onClick={() => this.moreDetailsToggler()}>

@@ -1,0 +1,17 @@
+{
+    "VolumeMaster": {
+        "AddVolume_ZeroBased": "Select the Zero-Based Costing Head.",
+        "AddVolume_VendorBased": "Select the Vendor-Based Costing Head.",
+        "AddVolume_CustomerBased": "Select the Customer-Based Costing Head.",
+        "AddVolume_PlantCode": "Select the Plant (Code) from the dropdown.",
+        "AddVolume_CustomerCode": "Select the Customer (Code) from the dropdown.",
+        "AddVolume_Vendor_container": "Select the Vendor (Code) from the dropdown.",
+        "AddVolume_Button": "Click here to add the vendor code.",
+        "AddVolume_PartType": "Select the Part Type from the dropdown.",
+        "AddVolume_PartNumber": "Select the Part No. (Revision No.) from the dropdown.",
+        "AddVolume_Year": "Select the Year.",
+        "AddVolume_Delete": "Click here to delete.",
+        "AddVolume_Cancel": "Click here to cancel and go back.",
+        "AddVolume_Save": "Click here to save the form."
+    }
+}

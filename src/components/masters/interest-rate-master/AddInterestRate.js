@@ -21,6 +21,9 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -554,7 +557,7 @@ class AddInterestRate extends Component {
     else {
       pos_drop_down = "top";
     }
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, t } = this.props;
     const { isEditFlag, isViewMode, setDisable, costingTypeId, isDataChanged } = this.state;
 
     const filterList = async (inputValue) => {
@@ -599,7 +602,11 @@ class AddInterestRate extends Component {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-heading mb-0">
-                      <h1>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Interest Rate</h1>
+                      <h1>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Interest RawMaterial <TourWrapper
+                        buttonSpecificProp={{ id: "Add_InterestRate_form" }}
+                        stepsSpecificProp={{
+                          steps: Steps(t, { vendorField: (costingTypeId === VBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) }).ADD_INTEREST_RATE
+                        }} /></h1>
                     </div>
                   </div>
                 </div>
@@ -612,7 +619,7 @@ class AddInterestRate extends Component {
                   <div className="add-min-height">
                     <Row>
                       <Col md="12">
-                        {reactLocalStorage.getObject('CostingTypePermission').zbc && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        {reactLocalStorage.getObject('CostingTypePermission').zbc && <Label id='AddIntrestRate_ZeroBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -626,7 +633,7 @@ class AddInterestRate extends Component {
                           />{" "}
                           <span>Zero Based</span>
                         </Label>}
-                        {reactLocalStorage.getObject('CostingTypePermission').vbc && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        {reactLocalStorage.getObject('CostingTypePermission').vbc && <Label id='AddIntrestRate_VendorBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -640,7 +647,7 @@ class AddInterestRate extends Component {
                           />{" "}
                           <span>Vendor Based</span>
                         </Label>}
-                        {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                        {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddIntrestRate_CustomerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -821,6 +828,7 @@ class AddInterestRate extends Component {
 
                         <Col md="3">
                           <Field
+                            id='AddIntrestRate_AnnualICC'
                             label={`Annual ICC (%)`}
                             name={"ICCPercent"}
                             type="text"
@@ -873,6 +881,7 @@ class AddInterestRate extends Component {
 
                           <Col md="3">
                             <Field
+                              id="AddIntrestRate_RepaymentPeriod"
                               label={`Repayment Period (Days)`}
                               name={"RepaymentPeriod"}
                               type="text"
@@ -888,6 +897,7 @@ class AddInterestRate extends Component {
                           </Col>
                           <Col md="3">
                             <Field
+                              id="AddIntrestRate_PaymentTermPercent"
                               label={`Payment Term (%)`}
                               name={"PaymentTermPercent"}
                               type="text"
@@ -935,6 +945,7 @@ class AddInterestRate extends Component {
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn">
                       <button
+                        id='AddIntrestRate_Cancel'
                         type={"button"}
                         className=" mr15 cancel-btn"
                         onClick={this.cancelHandler}
@@ -945,6 +956,7 @@ class AddInterestRate extends Component {
                       </button>
                       {!isViewMode && <button
                         type="submit"
+                        id='AddIntrestRate_Save'
                         disabled={isViewMode || setDisable}
                         className="user-btn mr5 save-btn"
                       >
@@ -1016,5 +1028,6 @@ export default connect(mapStateToProps, {
   form: 'AddInterestRate',
   enableReinitialize: true,
   touchOnChange: true
-})(AddInterestRate));
+})(withTranslation(['InterestRate'])(AddInterestRate)));
+
 

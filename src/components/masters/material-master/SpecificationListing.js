@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext, useRef } from "react";
+import React, { useState, useEffect, useCallback, useContext, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
@@ -21,8 +21,13 @@ import {
   deleteRMSpecificationAPI,
 } from "../actions/Material";
 import { PaginationWrapper } from "../../common/commonPagination";
-import { loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import Button from "../../layout/Button";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
+import { TourStartAction } from "../../../actions/Common";
+
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -31,7 +36,9 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const SpecificationListing = (props) => {
   const dispatch = useDispatch();
   const searchRef = useRef(null);
+  const tourStartData = useSelector(state => state.comman.tourStartData);
   const { rmSpecificationList } = useSelector((state) => state.material);
+  const { t } = useTranslation("common")
   const permissions = useContext(ApplyPermission);
   const [state, setState] = useState({
     isOpen: false,
@@ -52,6 +59,8 @@ const SpecificationListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+    render: false,
+
   });
 
   useEffect(() => {
@@ -148,25 +157,32 @@ const SpecificationListing = (props) => {
 * @method buttonFormatter
 * @description Renders buttons
 */
-  const buttonFormatter = useCallback(
-    (props) => {
+  const buttonFormatter = useMemo(() => {
+    return (props) => {
       const cellValue = props?.value;
       const rowData = props?.data;
+      let isEditbale = false;
+      let isDeleteButton = false;
+      isEditbale = permissions.Edit;
+      isDeleteButton =
+        (tourStartData?.showExtraData && props.rowIndex === 0) ||
+        (permissions.Delete && !rowData.IsAssociated);
+
       return (
         <>
-          {permissions.Edit && (
+          {isEditbale && (
             <Button
               id={`rmSpecification_edit${props.rowIndex}`}
-              className={"mr-1"}
+              className={"mr-1 Tour_List_Edit"}
               variant="Edit"
               onClick={() => editItemDetails(cellValue, rowData, false)}
               title={"Edit"}
             />
           )}
-          {permissions.Delete && (
+          {isDeleteButton && (
             <Button
               id={`rmSpecification_delete${props.rowIndex}`}
-              className={"mr-1"}
+              className={"mr-1 Tour_List_Delete"}
               variant="Delete"
               onClick={() => deleteItem(cellValue)}
               title={"Delete"}
@@ -174,10 +190,9 @@ const SpecificationListing = (props) => {
           )}
         </>
       );
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+    };
+  }, [permissions.Edit, permissions.Delete, tourStartData?.showExtraData]);
+
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
@@ -282,6 +297,23 @@ const SpecificationListing = (props) => {
       </ExcelSheet>
     );
   };
+  /**
+          * @method toggleExtraData
+          * @description Handle specific module tour state to display lorem data
+          */
+  const toggleExtraData = (showTour) => {
+    dispatch(TourStartAction({
+      showExtraData: showTour,
+    }));
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, render: false }));
+    }, 100);
+
+  }
+
+
+
 
   const onFilterTextBoxChanged = (e) => {
     state.gridApi.setQuickFilter(e.target.value);
@@ -318,7 +350,7 @@ const SpecificationListing = (props) => {
     }));
   };
 
-  const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
+  const { isOpen, isEditFlag, ID, isBulkUpload, noData, showExtraData, render } = state;
   const isFirstColumn = (params) => {
     const displayedColumns = params.columnApi.getAllDisplayedColumns();
     const thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -343,12 +375,8 @@ const SpecificationListing = (props) => {
       <form noValidate>
         <Row className="pt-4">
           <Col md={6} className="text-right mb-3 search-user-block">
-            {permissions.Add && (
-              <Button id="rmSpecification_filter" className={"mr5"} onClick={openModel} title={"Add"} icon={"plus"} />
-            )}
-            {permissions.BulkUpload && (
-              <Button id="rmSpecification_add" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
-            )}
+            {permissions.Add && (<Button id="rmSpecification_filter" className={"mr5 Tour_List_Add"} onClick={openModel} title={"Add"} icon={"plus"} />)}
+            {permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
             {permissions.Download && (
               <>
                 <>
@@ -356,7 +384,7 @@ const SpecificationListing = (props) => {
                     filename={"RM Specification"}
                     fileExtension={".xls"}
                     element={
-                      <Button className="mr5" id={"rmSpecification_excel_download"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <Button className="mr5 Tour_List_Download" id={"rmSpecification_excel_download"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                     }
                   >
                     {onBtExport()}
@@ -364,7 +392,7 @@ const SpecificationListing = (props) => {
                 </>
               </>
             )}
-            <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+            <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} className={" Tour_List_Reset"} icon={"refresh"} />
           </Col>
         </Row>
       </form>
@@ -380,14 +408,12 @@ const SpecificationListing = (props) => {
           >
             <div className="ag-grid-header">
               <input
-                ref={searchRef}
-                type="text"
-                className="form-control table-search"
-                id="filter-text-box"
-                placeholder="Search"
-                autoComplete={"off"}
-                onChange={(e) => onFilterTextBoxChanged(e)}
-              />
+                ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+              <TourWrapper
+                buttonSpecificProp={{ id: "Specification_Listing_Tour", onClick: toggleExtraData }}
+                stepsSpecificProp={{
+                  steps: Steps(t, { addLimit: false, filterButton: false, viewButton: false, costMovementButton: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                }} />
             </div>
             <div
               className={`ag-theme-material ${state.isLoader && "max-loader-height"
@@ -399,12 +425,14 @@ const SpecificationListing = (props) => {
                   customClassName="no-content-found"
                 />
               )}
-              <AgGridReact
+
+              {(render || state.isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout="autoHeight"
                 // columnDefs={c}
-                rowData={rmSpecificationList}
+                rowData={tourStartData?.showExtraData ? [...setLoremIpsum(rmSpecificationList[0]), ...rmSpecificationList] : rmSpecificationList}
+
                 pagination={true}
                 paginationPageSize={defaultPageSize}
                 onGridReady={onGridReady}
@@ -436,7 +464,7 @@ const SpecificationListing = (props) => {
                   floatingFilter={false}
                   cellRenderer={"totalValueRenderer"}
                 ></AgGridColumn>
-              </AgGridReact>
+              </AgGridReact>}
               {
                 <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />
               }
