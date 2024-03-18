@@ -951,6 +951,7 @@ class AddOverhead extends Component {
         }
       }
     };
+    console.log(costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate, costingTypeId === ZBCTypeId, getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate);
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -1109,7 +1110,9 @@ class AddOverhead extends Component {
                             </div>
                           </Col>
                         )}
-                        {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                        {/* {((costingTypeId === ZBCTypeId && !getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && ( */}
+                        {((costingTypeId === ZBCTypeId) && (
+
                           <Col md="3">
                             <Field
                               label="Plant (Code)"
