@@ -1,4 +1,10 @@
-export function Steps(t) {
+import { showBopLabel } from "../../../helper";
+
+import { reactLocalStorage } from "reactjs-localstorage";
+
+export function Steps(t, config) {
+    const introWithBOPDynamicValue = (intro) => intro.replace(/bop|BOP/gi, showBopLabel());
+
     return {
         ADD_OVERHEADS_DETAILS: [
             {
@@ -9,18 +15,31 @@ export function Steps(t) {
                 element: "#AddOverhead_vendorbased",
                 intro: t("overheadsdMaster.AddOverhead_vendorbased"),
             },
-            {
+            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
                 element: "#AddOverhead_customerbased",
                 intro: t("overheadsdMaster.AddOverhead_customerbased"),
-            },
+            }] : []),
             {
                 element: "#AddOverhead_ModelType_container",
                 intro: t("overheadsdMaster.AddOverhead_ModelType_container"),
             },
-            {
+            ...(config && config.vendorField ? [{
+                element: "#AddOverhead_vendorName",
+                intro: t("overheadsdMaster.AddOverhead_Vendor_container"),
+            },] : []),
+            ...(config && config.plantField ? [{
                 element: "#AddOverhead_Plant_container",
                 intro: t("overheadsdMaster.AddOverhead_Plant_container"),
-            },
+            },] : []),
+            ...(config && config.destinationPlant ? [{
+                element: "#AddOverhead_DestinationPlant_container",
+                intro: t("overheadsdMaster.AddOverhead_Plant_container"),
+            },] : []),
+            ...(config && config.customerField ? [{
+                element: "#AddOverhead_clientName_container",
+                intro: t("overheadsdMaster.AddOverhead_clientName_container"),
+            }] : []),
+
             {
                 element: "#AddOverhead_ApplyPartCheckbox",
                 intro: t("overheadsdMaster.AddOverhead_ApplyPartCheckbox"),
@@ -43,7 +62,7 @@ export function Steps(t) {
             },
             {
                 element: "#AddOverhead_OverheadBOPPercentage",
-                intro: t("overheadsdMaster.AddOverhead_OverheadBOPPercentage"),
+                intro: introWithBOPDynamicValue(t("overheadsdMaster.AddOverhead_OverheadBOPPercentage")),
             },
             {
                 element: "#AddOverhead_EffectiveDate",
@@ -64,7 +83,7 @@ export function Steps(t) {
             {
                 element: "#AddOverhead_Save",
                 intro: t("overheadsdMaster.AddOverhead_Save"),
-                position:'left'
+                position: 'left'
             },
         ],
         ADD_PROFIT_DETAILS: [
@@ -84,10 +103,24 @@ export function Steps(t) {
                 element: "#AddProfit_ModelType_container",
                 intro: t("overheadsProfits.AddProfit_ModelType_container"),
             },
-            {
+            ...(config && config.vendorField ? [{
+                element: "#addProfit_vendorContainer",
+                intro: t("overheadsProfits.addProfit_vendorContainer"),
+            },] : []),
+            ...(config && config.plantField ? [{
                 element: "#AddProfit_Plant_container",
                 intro: t("overheadsProfits.AddProfit_Plant_container"),
-            },
+            },] : []),
+            ...(config && config.destinationPlant ? [{
+                element: "#AddProfit_DestinationPlant_container",
+                intro: t("overheadsProfits.AddProfit_Plant_container"),
+            },] : []),
+            ...(config && config.customerField ? [{
+                element: "#AddProfit_clientName_container",
+                intro: t("overheadsProfits.AddProfit_clientName_container"),
+            }] : []),
+
+
             {
                 element: "#AddProfit_ApplyPartCheckbox",
                 intro: t("overheadsProfits.AddProfit_ApplyPartCheckbox"),
@@ -110,7 +143,7 @@ export function Steps(t) {
             },
             {
                 element: "#AddProfit_ProfitBOPPercentage",
-                intro: t("overheadsProfits.AddProfit_ProfitBOPPercentage"),
+                intro: introWithBOPDynamicValue(t("overheadsProfits.AddProfit_ProfitBOPPercentage")),
             },
             {
                 element: "#AddProfit_Remark",
@@ -127,7 +160,7 @@ export function Steps(t) {
             {
                 element: "#AddProfit_Save",
                 intro: t("overheadsProfits.AddProfit_Save"),
-                position:'left'
+                position: 'left'
             },
         ],
     }

@@ -11,7 +11,7 @@ import BulkUpload from "../../massUpload/BulkUpload";
 import { BOP_IMPORT_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import LoaderCustom from "../../common/LoaderCustom";
 import { BopImport, BOP_MASTER_ID } from "../../../config/constants";
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, updateBOPValues, userDepartmetList, } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, updateBOPValues, userDepartmetList, } from "../../../helper";
 import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -19,7 +19,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { getListingForSimulationCombined, setSelectedRowForPagination, } from "../../simulation/actions/Simulation";
 import WarningMessage from "../../common/WarningMessage";
-import { disabledClass } from "../../../actions/Common";
+import { TourStartAction, disabledClass } from "../../../actions/Common";
 import _ from "lodash";
 import AnalyticsDrawer from "../material-master/AnalyticsDrawer";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -29,10 +29,15 @@ import Attachament from "../../costing/components/Drawers/Attachament";
 import Button from "../../layout/Button";
 import BDSimulation from "../../simulation/components/SimulationPages/BDSimulation";
 import { useDispatch, useSelector } from "react-redux";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPImportListing = (props) => {
+  const { t } = useTranslation("common")
+
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -98,12 +103,15 @@ const BOPImportListing = (props) => {
     viewAttachment: [],
     editSelectedList: false,
     tempList: [],
+    render: false,
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
   const { bopImportList, allBopDataList } = useSelector((state) => state.boughtOutparts);
   const { filteredRMData } = useSelector((state) => state.material);
   const { initialConfiguration } = useSelector((state) => state.auth);
+  const tourStartData = useSelector(state => state.comman.tourStartData);
+
   const { selectedRowForPagination, tokenForSimulation } = useSelector(
     (state) => state.simulation
   );
@@ -296,7 +304,20 @@ const BOPImportListing = (props) => {
 
     }
   };
+  /**
+            * @method toggleExtraData
+            * @description Handle specific module tour state to display lorem data
+            */
+  const toggleExtraData = (showTour) => {
+    dispatch(TourStartAction({
+      showExtraData: showTour,
+    }));
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, render: false }));
+    }, 100);
 
+  }
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       if (bopImportList?.length !== 0) {
@@ -546,32 +567,30 @@ const BOPImportListing = (props) => {
 
     if (permissions?.Edit) {
       isEditable = true;
-    } else {
-      isEditable = false;
     }
-
-    if (permissions?.Delete && !rowData.IsBOPAssociated) {
-      isDeleteButton = true;
+    if (tourStartData.showExtraData && props.rowIndex === 0) {
+      isDeleteButton = true
     } else {
-      isDeleteButton = false;
+      if (permissions?.Delete && !rowData.IsBOPAssociated) {
+        isDeleteButton = true
+      }
     }
-
     return (
       <>
 
         <Button
           id={`bopimporting_movement${props.rowIndex}`}
-          className="cost-movement" title="Cost Movement" type={"button"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} />
+          className="cost-movement Tour_List_Cost_Movement" title="Cost Movement" type={"button"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} />
         {permissions?.View && (
           <Button
             id={`bopImportingListing_View${props.rowIndex}`}
-            title="View" className="View" variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
+            title="View" className="View Tour_List_View" variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
 
         )}
         {isEditable && (
 
 
-          <Button id={`bopImportingListing_Edit${props.rowIndex}`} title={"Edit"} className={"Edit"} variant={"Edit"} type={"button"} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
+          <Button id={`bopImportingListing_Edit${props.rowIndex}`} title={"Edit"} className={"Edit Tour_List_Edit"} variant={"Edit"} type={"button"} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
           />
         )}
         {isDeleteButton && (
@@ -579,7 +598,7 @@ const BOPImportListing = (props) => {
           <Button
             id={`bopImportingListing_Delete${props.rowIndex}`}
             title={"Delete"}
-            className={"Delete"}
+            className={"Delete Tour_List_Delete"}
             variant={"Delete"}
             type={"button"}
             onClick={() => deleteItem(cellValue)}
@@ -960,6 +979,11 @@ const BOPImportListing = (props) => {
                   className={`pt-4  ${props?.benchMark ? "zindex-2" : "filter-row-large"} ${props.isSimulation ? "simulation-filter zindex-0" : ""}`}                >
                   <Col md="3" lg="3">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+                    {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+                      buttonSpecificProp={{ id: "BOPImporting_Listing_Tour", onClick: toggleExtraData }}
+                      stepsSpecificProp={{
+                        steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                      }} />)}
                   </Col>
                   <Col md="9" lg="9" className=" mb-3">
                     <div className="d-flex justify-content-end bd-highlight w100">
@@ -979,17 +1003,17 @@ const BOPImportListing = (props) => {
                           }
 
                           {
-                            <Button id="bopImportListing_filterData" disabled={state.disableFilter} title={"Filtered data"} type="button" className={"user-btn mr5"} icon={"filter mr-0"} onClick={() => onSearch()} />
+                            <Button id="bopImportListing_filterData" disabled={state.disableFilter} title={"Filtered data"} type="button" className={"user-btn mr5 Tour_List_Filter"} icon={"filter mr-0"} onClick={() => onSearch()} />
                           }
                           {permissions?.Add && (
-                            <Button id="bopImportListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
+                            <Button id="bopImportListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus"} />
                           )}
                           {permissions?.BulkUpload && (
-                            <Button id="bopImportListing_add" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
+                            <Button id="bopImportListing_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
                           )}
                           {permissions?.Download && (
                             <>
-                              <Button className={"user-btn mr5"} id={"bopImportingListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                              <Button className={"user-btn mr5 Tour_List_Download"} id={"bopImportingListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
 
                               <ExcelFile filename={`${showBopLabel()} Import`} fileExtension={".xls"} element={<Button id={"Excel-Downloads-bop-import"} className="p-absolute" />}>
                                 {onBtExport()}
@@ -999,7 +1023,7 @@ const BOPImportListing = (props) => {
 
                         </>
                       )}
-                      <Button id={"bopImportingListing_refresh"} className={"user-btn mr-1"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                      <Button id={"bopImportingListing_refresh"} className={"user-btn mr-1 Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                     </div>
                     {props.isSimulation && props.isFromVerifyPage && (
                       <button type="button" className={"apply"} onClick={cancel}                        >
@@ -1028,12 +1052,14 @@ const BOPImportListing = (props) => {
                       {noData && (
                         <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
                       )}
-                      <AgGridReact
+                      {(state.render || state.isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
                         defaultColDef={defaultColDef}
                         floatingFilter={true}
                         domLayout="autoHeight"
                         // columnDefs={c}
-                        rowData={bopImportList}
+                        rowData={tourStartData.showExtraData && bopImportList ? [...setLoremIpsum(bopImportList[0]), ...bopImportList] : bopImportList}
+
                         pagination={true}
                         paginationPageSize={state.globalTake}
                         onGridReady={onGridReady}
@@ -1077,9 +1103,9 @@ const BOPImportListing = (props) => {
                         <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer="costFormatter"></AgGridColumn>
                         <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer={"commonCostFormatter"}></AgGridColumn>
                         <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                        {!props.isSimulation && !props.isMasterSummaryDrawer && (<AgGridColumn field="BoughtOutPartId" width={160} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>)}
+                        {!props.isSimulation && !props.isMasterSummaryDrawer && (<AgGridColumn field="BoughtOutPartId" width={160} pinned="right" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>)}
                         {props.isMasterSummaryDrawer && (<AgGridColumn field="Attachements" headerName="Attachments" cellRenderer={"attachmentFormatter"}></AgGridColumn>)}
-                        {props.isMasterSummaryDrawer && (<AgGridColumn field="Remark" tooltipField="Remark"></AgGridColumn>)}</AgGridReact>
+                        {props.isMasterSummaryDrawer && (<AgGridColumn field="Remark" tooltipField="Remark"></AgGridColumn>)}</AgGridReact>}
                       <div>
                         {!state.isLoader && !props.isMasterSummaryDrawer && (<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />)}
                         <div className="d-flex pagination-button-container">

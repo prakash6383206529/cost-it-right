@@ -17,7 +17,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, IsShowFreightAndShearingCostFields, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
+import { CheckApprovalApplicableMaster, IsShowFreightAndShearingCostFields, getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, userDepartmetList } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -34,6 +34,9 @@ import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultip
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import RMSimulation from '../../simulation/components/SimulationPages/RMSimulation';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -81,17 +84,20 @@ function RMImportListing(props) {
   const [viewAttachment, setViewAttachment] = useState([])
   const [editSelectedList, setEditSelectedList] = useState(false)
   const [tempList, setTempList] = useState([])
-  const netCostHeader = `Net Cost (${getConfigurationKey()?.BaseCurrency})`
+  const [showExtraData, setShowExtraData] = useState(false)
+  const [render, setRender] = useState(false)
+  const { t } = useTranslation("common")
+  const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
   const { tokenForSimulation } = useSelector(state => state.simulation)
   const headerNames = {
-    BasicRate: `Basic Rate (${getConfigurationKey()?.BaseCurrency})`,
-    ScrapRate: `Scrap Rate (${getConfigurationKey()?.BaseCurrency})`,
-    MachiningScrapCost: `Machining Scrap Cost (${getConfigurationKey()?.BaseCurrency})`,
-    FreightCost: `Freight Cost (${getConfigurationKey()?.BaseCurrency})`,
-    ShearingCost: `Shearing Cost (${getConfigurationKey()?.BaseCurrency})`,
-    BasicPrice: `Basic Price (${getConfigurationKey()?.BaseCurrency})`,
-    NetConditionCost: `Net Condition Cost (${getConfigurationKey()?.BaseCurrency})`,
-    NetCost: `Net Cost (${getConfigurationKey()?.BaseCurrency})`,
+    BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
+    ScrapRate: `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
+    MachiningScrapCost: `Machining Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
+    FreightCost: `Freight Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+    ShearingCost: `Shearing Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+    BasicPrice: `Basic Price (${reactLocalStorage.getObject("baseCurrency")})`,
+    NetConditionCost: `Net Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+    NetCost: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   }
   var filterParams = {
     date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
@@ -297,7 +303,19 @@ function RMImportListing(props) {
 
     }, 300);
   }
+  /**
+        * @method toggleExtraData
+        * @description Handle specific module tour state to display lorem data
+        */
+  const toggleExtraData = (showTour) => {
+    setRender(true)
+    setTimeout(() => {
+      setShowExtraData(showTour)
+      setRender(false)
+    }, 100);
 
+
+  }
   const onFloatingFilterChanged = (value) => {
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
@@ -464,11 +482,12 @@ function RMImportListing(props) {
       isEditbale = false
     }
 
-
-    if (DeleteAccessibility && !rowData.IsRMAssociated) {
+    if (showExtraData && props.rowIndex === 0) {
       isDeleteButton = true
     } else {
-      isDeleteButton = false
+      if (DeleteAccessibility && !rowData.IsRMAssociated) {
+        isDeleteButton = true
+      }
     }
 
 
@@ -476,28 +495,28 @@ function RMImportListing(props) {
       <>
         <Button
           id={`rmImportListing_movement${props?.rowIndex}`}
-          className={"mr-1"}
+          className={"mr-1 Tour_List_Cost_Movement"}
           variant="cost-movement"
           onClick={() => showAnalytics(cellValue, rowData)}
           title={"Cost Movement"}
         />
         {ViewRMAccessibility && <Button
           id={`rmImportListing_view${props?.rowIndex}`}
-          className={"mr-1"}
+          className={"mr-1 Tour_List_View"}
           variant="View"
           onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
           title={"View"}
         />}
         {isEditbale && <Button
           id={`rmImportListing_edit${props?.rowIndex}`}
-          className={"mr-1"}
+          className={"mr-1 Tour_List_Edit"}
           variant="Edit"
           onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
           title={"Edit"}
         />}
         {isDeleteButton && <Button
           id={`rmImportListing_delete${props?.rowIndex}`}
-          className={"mr-1"}
+          className={"mr-1 Tour_List_Delete"}
           variant="Delete"
           onClick={() => deleteItem(cellValue)}
           title={"Delete"}
@@ -531,7 +550,6 @@ function RMImportListing(props) {
 
 
   const costFormatter = (props) => {
-    console.log('props: ', props);
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
     return cellValue !== INR ? cellValue : '';
   }
@@ -611,7 +629,9 @@ function RMImportListing(props) {
   }
 
   const bulkToggle = () => {
-    setisBulkUpload(true);
+    if (checkMasterCreateByCostingPermission(true)) {
+      setisBulkUpload(true);
+    }
   }
 
   const closeBulkUploadDrawer = (event, type) => {
@@ -907,6 +927,11 @@ function RMImportListing(props) {
           <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
             <Col md="3" lg="3">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+              {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+                buttonSpecificProp={{ id: "RMImport_Listing_Tour", onClick: toggleExtraData }}
+                stepsSpecificProp={{
+                  steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                }} />)}
             </Col>
             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
               {(!props?.isMasterSummaryDrawer) && <>
@@ -917,7 +942,7 @@ function RMImportListing(props) {
 
                     <Button
                       id="rmImportListing_filter"
-                      className={"mr5"}
+                      className={"mr5 Tour_List_Filter"}
                       onClick={() => onSearch()}
                       title={"Filtered data"}
                       icon={"filter"}
@@ -937,7 +962,7 @@ function RMImportListing(props) {
 
                       <Button
                         id="rmImportListing_filter"
-                        className={"mr5"}
+                        className={"mr5 Tour_List_Filter"}
                         onClick={() => onSearch()}
                         title={"Filtered data"}
                         icon={"filter"}
@@ -948,7 +973,7 @@ function RMImportListing(props) {
 
                         <Button
                           id="rmImportListing_add"
-                          className={"mr5"}
+                          className={"mr5 Tour_List_Add"}
                           onClick={formToggle}
                           title={"Add"}
                           icon={"plus"}
@@ -957,7 +982,7 @@ function RMImportListing(props) {
                       {BulkUploadAccessibility && (
                         <Button
                           id="rmImportListing_add"
-                          className={"mr5"}
+                          className={"mr5 Tour_List_BulkUpload"}
                           onClick={bulkToggle}
                           title={"Bulk Upload"}
                           icon={"upload"}
@@ -967,7 +992,7 @@ function RMImportListing(props) {
                         DownloadAccessibility &&
                         <>
                           <Button
-                            className="mr5"
+                            className="mr5 Tour_List_Download"
                             id={"rmImportListing_excel_download"}
                             onClick={onExcelDownload}
                             title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
@@ -988,7 +1013,7 @@ function RMImportListing(props) {
                   onClick={() => resetState()}
                   title={"Reset Grid"}
                   icon={"refresh"}
-                  className={"mr5"}
+                  className={"mr5 Tour_List_Reset"}
                 />
                 {isSimulation && isFromVerifyPage && <button type="button" className={"apply"} onClick={cancel}><div className={'back-icon'}></div>Back</button>}
               </>}
@@ -999,13 +1024,15 @@ function RMImportListing(props) {
               <div className={`ag-grid-wrapper ${(rmImportDataList && rmImportDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material `}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                  <AgGridReact
+                  {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
                     style={{ height: '100%', width: '100%' }}
                     defaultColDef={defaultColDef}
                     floatingFilter={true}
 
                     domLayout='autoHeight'
-                    rowData={rmImportDataList}
+                    rowData={showExtraData && rmImportDataList ? [...setLoremIpsum(rmImportDataList[0]), ...rmImportDataList] : rmImportDataList}
+
                     pagination={true}
                     paginationPageSize={globalTake}
                     onGridReady={onGridReady}
@@ -1045,7 +1072,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)' cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapRate" headerName="Scrap Rate (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapRateInINR" headerName={headerNames?.ScrapRate} cellRenderer='commonCostFormatter'></AgGridColumn>
-                    {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" cellRenderer='commonCostFormatter' headerName='Machining Scrap Cost (Currency)'></AgGridColumn>}
+                    {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" cellRenderer='commonCostFormatter' headerName='Machining Scrap Rate (Currency)'></AgGridColumn>}
                     {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRateInINR" cellRenderer='commonCostFormatter' headerName={headerNames?.MachiningScrapCost}></AgGridColumn>}
                     {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
                     {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMFreightCost" headerName="Freight Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>)}
@@ -1061,13 +1088,13 @@ function RMImportListing(props) {
                     <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer='costFormatter'></AgGridColumn>
 
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                    {(!isSimulation && !props?.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                    {(!isSimulation && !props?.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container actions-wrapper" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                     {props?.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
                     {props?.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
-                  </AgGridReact >
+                  </AgGridReact >}
                   <div className={`button-wrapper ${props?.isMasterSummaryDrawer ? "dropdown-mt-0" : ""}`}>
                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
                     {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&

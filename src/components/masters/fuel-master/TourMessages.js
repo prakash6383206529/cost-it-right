@@ -1,3 +1,5 @@
+import { reactLocalStorage } from "reactjs-localstorage";
+
 export function Steps(t) {
     return {
         ADD_FUEL: [
@@ -9,10 +11,10 @@ export function Steps(t) {
                 element: "#AddFuel_vendorbased",
                 intro: t("addfuel.AddFuel_vendorbased"),
             },
-            {
+            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
                 element: "#AddFuel_customerbased",
                 intro: t("addfuel.AddFuel_customerbased"),
-            },
+            }] : []),
             {
                 element: "#AddFuel_plant_container",
                 intro: t("addfuel.AddFuel_plant_container"),

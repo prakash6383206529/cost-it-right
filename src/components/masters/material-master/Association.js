@@ -11,6 +11,9 @@ import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import Button from '../../layout/Button';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
 
 class Association extends Component {
     constructor(props) {
@@ -145,7 +148,7 @@ class Association extends Component {
         this.setState({ showPopup: false })
     }
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, t } = this.props;
         const { setDisable } = this.state
 
         return (
@@ -167,6 +170,12 @@ class Association extends Component {
                                         <div className={"header-wrapper left"}>
                                             <h3>
                                                 {"Add Association"}
+                                                <TourWrapper
+                                                    buttonSpecificProp={{ id: "Association_Type_form" }}
+                                                    stepsSpecificProp={{
+                                                        steps: Steps(t).ADD_RM_ASSOCIATION,
+                                                    }}
+                                                />
                                             </h3>
                                         </div>
                                         <div
@@ -307,4 +316,6 @@ export default connect(mapStateToProps, {
     form: 'Association',
     enableReinitialize: true,
     touchOnChange: true
-})(Association));
+
+})(withTranslation(['RawMaterialMaster'])(Association)))
+
