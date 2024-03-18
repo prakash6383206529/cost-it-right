@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, RECEIVED, RFQ, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
+import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, RECEIVED, REJECTED, RETURNED, RFQ, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -138,6 +138,12 @@ function RfqListing(props) {
                         break;
                     case SENT:
                         item.tooltipText = 'Costing under the quotation has been sent.'
+                        break;
+                    case REJECTED:
+                        item.tooltipText = 'Quotation has been rejected.'
+                        break;
+                    case RETURNED:
+                        item.tooltipText = 'Quotation has been returned.'
                         break;
                     default:
                         break;
