@@ -718,7 +718,7 @@ function Pipe(props) {
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part-with-allowance'} tooltipText="Length of Part including  allowance = (Length of Part + Cutting Allowance)" />
                                     <TextFieldHookForm
-                                        label={`Length of Part including  allowance(mm)`}
+                                        label={`Length of Part including allowance(mm)`}
                                         name={'partLengthWithAllowance'}
                                         Controller={Controller}
                                         control={control}
@@ -728,7 +728,7 @@ function Pipe(props) {
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
-                                        customClassName={'withBorder'}
+                                        customClassName={'withBorder label-fit'}
                                         errors={errors.partLengthWithAllowance}
                                         disabled={true}
                                     />

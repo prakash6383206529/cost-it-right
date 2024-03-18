@@ -879,7 +879,7 @@ class AddOperation extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration, isOperationAssociated, t } = this.props;
+    const { handleSubmit, initialConfiguration, isOperationAssociated, t, data } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -922,16 +922,17 @@ class AddOperation extends Component {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-                    <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
-                      <TourWrapper
+                    {!data.isCostingDrawer && <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
+
+                      {!data.isViewMode && <TourWrapper
                         buttonSpecificProp={{ id: "Add_Operation_form" }}
                         stepsSpecificProp={{
                           steps: Steps(t, {
                             showSendForApproval: !this.state.isFinalApprovar,
                             vendorField: costingTypeId === VBCTypeId, customerField: costingTypeId === CBCTypeId, plantField: (costingTypeId === ZBCTypeId || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure)
                           }).ADD_OPERATION
-                        }} />
-                    </h2>
+                        }} />}
+                    </h2>}
                   </div>
                 </div>
                 <form
@@ -1350,7 +1351,7 @@ class AddOperation extends Component {
                     </Row>
                   </div>
 
-                  <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                  {!data.isCostingDrawer && <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                       {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                       <button id="AddOperation_Cancel"
@@ -1384,7 +1385,7 @@ class AddOperation extends Component {
                         }
                       </>}
                     </div>
-                  </Row>
+                  </Row>}
                 </form>
               </div>
             </div>

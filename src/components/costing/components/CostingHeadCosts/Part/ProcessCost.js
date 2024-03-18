@@ -24,6 +24,7 @@ import Button from '../../../../layout/Button';
 import TourWrapper from '../../../../common/Tour/TourWrapper';
 import { Steps } from '../../TourMessages';
 import { useTranslation } from 'react-i18next';
+import ViewDetailedForms from '../../Drawers/ViewDetailedForms';
 
 let counter = 0;
 function ProcessCost(props) {
@@ -62,6 +63,8 @@ function ProcessCost(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC } = useSelector(state => state.costing)
   const { rmFinishWeight } = props
+  const [openMachineForm, setOpenMachineForm] = useState(false)
+
   let dragEnd;
   const [tourState, setTourState] = useState(
     { step: [] }
@@ -1455,7 +1458,7 @@ function ProcessCost(props) {
                                     className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div>
 
                               }
-                              <span title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName + index : item.GroupName + index} draggable={CostingViewMode ? false : true}>
+                              <span className='link' onClick={() => setOpenMachineForm({ isOpen: true, id: item.MachineId })} title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName + index : item.GroupName + index} draggable={CostingViewMode ? false : true}>
                                 {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
                             </td>
                             {processGroup && <td className='text-overflow'><span title={item.ProcessName}>{'-'}</span></td>}
@@ -1670,6 +1673,7 @@ function ProcessCost(props) {
           />
         )
       }
+      {openMachineForm && <ViewDetailedForms data={openMachineForm} formName="Machine" cancel={() => setOpenMachineForm({ isOpen: false, id: '' })} />}
     </>
   )
 }

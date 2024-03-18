@@ -1418,7 +1418,7 @@ class AddMachineRate extends Component {
             <div className="row">
               <div className="col-md-12">
                 <div className="shadow-lgg login-formg">
-                  <div className="row">
+                  {!this.props.data.isCostingDrawer && <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
                         <h2> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Machine Rate
@@ -1437,7 +1437,7 @@ class AddMachineRate extends Component {
                         </h2>
                       </div >
                     </div >
-                  </div >
+                  </div >}
                   <form
                     noValidate
                     className="form"
@@ -1959,7 +1959,7 @@ class AddMachineRate extends Component {
                         </Col>
                       </Row >
                     </div >
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                    {!this.props.data.isCostingDrawer && <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                         {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                         {
@@ -2013,7 +2013,7 @@ class AddMachineRate extends Component {
                         }
                       </div>
 
-                    </Row>
+                    </Row>}
                   </form >
                 </div >
               </div >
