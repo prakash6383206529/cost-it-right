@@ -604,10 +604,8 @@ const OperationListing = (props) => {
 
     const returnExcelColumn = (data = [], TempData) => {
         let excelData = hideCustomerFromExcel(data, "CustomerName")
-        console.log('excelData: ', excelData);
         let temp = []
         temp = TempData && TempData.map((item) => {
-            console.log('temp: ', temp);
             if (item.Specification === null) {
                 item.Specification = ' '
             }
@@ -618,7 +616,6 @@ const OperationListing = (props) => {
             } else if (item?.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
-            console.log('item: ', item);
             return item
         })
         return (

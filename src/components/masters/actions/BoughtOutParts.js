@@ -48,7 +48,6 @@ export function createBOP(data, callback) {
  * @description get all BOP Domestic Data list.
  */
 export function getBOPDataList(data, skip, take, isPagination, obj, isImport, callback) {
-  console.log("data, skip, take", data, skip, take);
   return (dispatch) => {
     // dispatch({ type: API_REQUEST});
     if (isPagination === true) {

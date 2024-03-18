@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Button from '../../layout/Button';
 import { decrementPage, incrementPage, skipUpdate, updateCurrentRowIndex } from './paginationAction';
-import { b } from 'react-dom-factories';
 
 const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData, module }) => {
     const { pageNo, pageSize, currentRowIndex } = useSelector((state) => state.pagination);
@@ -15,7 +14,6 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
     } else {
         pageSizeValue = 10;
     }
-
 
     const handlePagination = (action) => {
         const newSkip = action === 'next' ? (pageNo * pageSizeValue) : ((pageNo - 2) * pageSizeValue);
@@ -73,7 +71,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
     };
 
     const onBtNext = () => {
-        const totalPages = Math.ceil(totalRecordCount / pageSizeValue);
+        const totalPages = totalRecordCount ? Math.ceil(totalRecordCount / pageSizeValue) : 0;
         if (pageNo < totalPages) {
             handlePagination('next');
         }
@@ -86,25 +84,25 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
     return (
         <div className="d-flex pagination-button-container">
             <p>
-                <Button id="rmDomesticListing_previous" variant="previous-btn" onClick={onBtPrevious} />
+                <Button id="commonPagination_previous" variant="previous-btn" onClick={onBtPrevious} />
             </p>
             {pageSize?.pageSize10 && (
                 <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}
+                    Page <span className="text-primary">{pageNo}</span> of {totalRecordCount ? (Math.ceil(totalRecordCount / 10)) : 0}
                 </p>
             )}
             {pageSize?.pageSize50 && (
                 <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}
+                    Page <span className="text-primary">{pageNo}</span> of {totalRecordCount ? (Math.ceil(totalRecordCount / 50)) : 0}
                 </p>
             )}
             {pageSize?.pageSize100 && (
                 <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}
+                    Page <span className="text-primary">{pageNo}</span> of {totalRecordCount ? (Math.ceil(totalRecordCount / 60)) : 0}
                 </p>
             )}
             <p>
-                <Button id="rmDomesticListing_next" variant="next-btn" onClick={onBtNext} />
+                <Button id="commonPagination_next" variant="next-btn" onClick={onBtNext} />
             </p>
         </div>
     );

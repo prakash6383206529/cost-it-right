@@ -1116,7 +1116,7 @@ export const API = {
   // saveSAPDetail: `${BASE_URL}/sap-sync/save-sap-push-details`,
   // updateSAPDetail: `${BASE_URL}/sap-sync/update-sap-push-details`,
   // getPurcahseOrganisationByPlant: `${BASE_URL}/sap-sync/get-purchase-organization-by-plant-id`,
-  // getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
+  getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
   // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
   // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
 }
