@@ -10,7 +10,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
-import { checkPermission, searchNocontentFilter } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { INTERESTRATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -25,8 +25,11 @@ import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
-import { agGridStatus, isResetClick } from '../../../actions/Common';
+import { TourStartAction, agGridStatus, isResetClick } from '../../../actions/Common';
 import Button from '../../layout/Button';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -57,11 +60,12 @@ const InterestRateListing = (props) => {
     deletedId: '',
     selectedRowData: false,
     noData: false,
-    dataCount: 0
+    dataCount: 0,
+    showExtraData: false
   })
   const [gridApi, setGridApi] = useState(null);
   const { statusColumnData } = useSelector((state) => state.comman);
-
+  const { t } = useTranslation("common")
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { interestRateDataList } = useSelector((state) => state.interestRate);
   const floatingFilterIcc = { maxValue: 3, suppressFilterButton: true, component: "InterestRate" }
@@ -133,7 +137,20 @@ const InterestRateListing = (props) => {
       }
     }));
   }
+  /**
+       * @method toggleExtraData
+       * @description Handle specific module tour state to display lorem data
+       */
+  const toggleExtraData = (showTour) => {
+    dispatch(TourStartAction({
+      showExtraData: showTour,
+    }));
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+    }, 100);
 
+  }
   /**
     * @method viewOrEditItemDetails
     * @description confirm edit oor view item
@@ -186,9 +203,9 @@ const InterestRateListing = (props) => {
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
-        {ViewAccessibility && <Button id={`interesetRateListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />}
-        {EditAccessibility && <Button id={`interesetRateListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />}
-        {DeleteAccessibility && <Button id={`interesetRateListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+        {ViewAccessibility && <Button id={`interesetRateListing_view${props.rowIndex}`} className={"View mr-2 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />}
+        {EditAccessibility && <Button id={`interesetRateListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />}
+        {DeleteAccessibility && <Button id={`interesetRateListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
   };
@@ -361,18 +378,18 @@ const InterestRateListing = (props) => {
               <Col md="6" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
-                    {AddAccessibility && (<Button id="interestRateListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
-                    {BulkUploadAccessibility && (<Button id="interestRateListing_bulkUpload" className={"user-btn mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+                    {AddAccessibility && (<Button id="interestRateListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
+                    {BulkUploadAccessibility && (<Button id="interestRateListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                     {DownloadAccessibility &&
                       <>
                         <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
-                          <Button id={"Excel-Downloads-interestRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
+                          <Button id={"Excel-Downloads-interestRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
                           {onBtExport()}
                         </ExcelFile>
                       </>
 
                     }
-                    <Button id={"interestRateListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                    <Button id={"interestRateListing_refresh"} className={"Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                   </div>
                 </div>
               </Col>
@@ -381,6 +398,11 @@ const InterestRateListing = (props) => {
           <div className={`ag-grid-wrapper height-width-wrapper ${(interestRateDataList && interestRateDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+              <TourWrapper
+                buttonSpecificProp={{ id: "Interest_Listing_Tour", onClick: toggleExtraData }}
+                stepsSpecificProp={{
+                  steps: Steps(t, { addLimit: false, filterButton: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, costMovementButton: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                }} />
             </div>
             <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -389,7 +411,8 @@ const InterestRateListing = (props) => {
                 floatingFilter={true}
                 domLayout='autoHeight'
                 // columnDefs={c}
-                rowData={interestRateDataList}
+                rowData={state.showExtraData ? [...setLoremIpsum(interestRateDataList[0]), ...interestRateDataList] : interestRateDataList}
+
                 pagination={true}
                 paginationPageSize={defaultPageSize}
                 onGridReady={onGridReady}
@@ -415,7 +438,7 @@ const InterestRateListing = (props) => {
                 <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period (Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>}
               {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
             </div>

@@ -1,8 +1,10 @@
 import { includes } from "lodash";
+import { showBopLabel } from "../../helper";
 
 export function Steps(t, config) {
 
     let moduleNames = []
+    const introWithBOPDynamicValue = (intro) => intro.replace(/bop|BOP/gi, showBopLabel());
 
     if (config?.topAndLeftMenuData) {
         moduleNames = config?.topAndLeftMenuData.map(el => el.ModuleName)
@@ -22,7 +24,7 @@ export function Steps(t, config) {
 
                 {
                     element: " #Master_NavBar",
-                    intro: t("navBar.master"),
+                    intro: introWithBOPDynamicValue(t("navBar.master")),
                 },
             ] : [],
             ...includes(moduleNames, "Additional Masters") ? [

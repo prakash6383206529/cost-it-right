@@ -17,7 +17,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { disabledClass } from '../../../actions/Common';
@@ -31,6 +31,10 @@ import Button from '../../layout/Button';
 import PaginationControls from '../../common/Pagination/PaginationControls';
 import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize } from '../../common/Pagination/paginationAction';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next';
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -75,6 +79,10 @@ function RMDomesticListing(props) {
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", NetConditionCost: "", NetCostWithoutConditionCost: "", MachiningScrapRate: "", IsScrapUOMApply: "", ScrapUnitOfMeasurement: "", CalculatedFactor: "", ScrapRatePerScrapUOM: "" })
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
+    const { t } = useTranslation("common")
+
 
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
@@ -323,7 +331,20 @@ function RMDomesticListing(props) {
 
     }
 
+    /**
+        * @method toggleExtraData
+        * @description Handle specific module tour state to display lorem data
+        */
+    const toggleExtraData = (showTour) => {
 
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 100);
+
+
+    }
     const onSearch = () => {
         setNoData(false)
         setWarningMessage(false)
@@ -447,11 +468,12 @@ function RMDomesticListing(props) {
         } else {
             isEditbale = false
         }
-
-        if (DeleteAccessibility && !rowData.IsRMAssociated) {
+        if (showExtraData && props.rowIndex === 0) {
             isDeleteButton = true
         } else {
-            isDeleteButton = false
+            if (DeleteAccessibility && !rowData.IsRMAssociated) {
+                isDeleteButton = true
+            }
         }
 
         return (
@@ -459,28 +481,28 @@ function RMDomesticListing(props) {
 
                 <Button
                     id={`rmDomesticListing_movement${props.rowIndex}`}
-                    className={"mr-1"}
+                    className={"mr-1 Tour_List_Cost_Movement"}
                     variant="cost-movement"
                     onClick={() => showAnalytics(cellValue, rowData)}
                     title={"Cost Movement"}
                 />
                 {ViewRMAccessibility && <Button
                     id={`rmDomesticListing_view${props.rowIndex}`}
-                    className={"mr-1"}
+                    className={"mr-1 Tour_List_View"}
                     variant="View"
                     onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
                     title={"View"}
                 />}
                 {isEditbale && <Button
                     id={`rmDomesticListing_edit${props.rowIndex}`}
-                    className={"mr-1"}
+                    className={"mr-1 Tour_List_Edit"}
                     variant="Edit"
                     onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
                     title={"Edit"}
                 />}
                 {isDeleteButton && <Button
                     id={`rmDomesticListing_delete${props.rowIndex}`}
-                    className={"mr-1"}
+                    className={"mr-1 Tour_List_Delete"}
                     variant="Delete"
                     onClick={() => deleteItem(cellValue)}
                     title={"Delete"}
@@ -550,7 +572,9 @@ function RMDomesticListing(props) {
     }
 
     const bulkToggle = () => {
-        setisBulkUpload(true);
+        if (checkMasterCreateByCostingPermission(true)) {
+            setisBulkUpload(true);
+        }
     }
 
     const closeBulkUploadDrawer = (event, type) => {
@@ -822,6 +846,13 @@ function RMDomesticListing(props) {
                     <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-4'}`}>
                         <Col md="3" lg="3" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                            {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+                                buttonSpecificProp={{
+                                    id: "RMDomestic_Listing_Tour", onClick: toggleExtraData
+                                }}
+                                stepsSpecificProp={{
+                                    steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                                }} />)}
                         </Col>
                         <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
                             {
@@ -835,7 +866,7 @@ function RMDomesticListing(props) {
 
                                             <Button
                                                 id="rmDomesticListing_filter"
-                                                className={"mr5"}
+                                                className={"mr5 Tour_List_Filter"}
                                                 onClick={() => onSearch()}
                                                 title={"Filtered data"}
                                                 icon={"filter"}
@@ -856,7 +887,7 @@ function RMDomesticListing(props) {
 
                                                     <Button
                                                         id="rmDomesticListing_filter"
-                                                        className={"mr5"}
+                                                        className={"mr5 Tour_List_Filter"}
                                                         onClick={() => onSearch()}
                                                         title={"Filtered data"}
                                                         icon={"filter"}
@@ -867,7 +898,7 @@ function RMDomesticListing(props) {
                                                 {AddAccessibility && (
                                                     <Button
                                                         id="rmDomesticListing_add"
-                                                        className={"mr5"}
+                                                        className={"mr5 Tour_List_Add"}
                                                         onClick={formToggle}
                                                         title={"Add"}
                                                         icon={"plus"}
@@ -876,7 +907,7 @@ function RMDomesticListing(props) {
                                                 {BulkUploadAccessibility && (
                                                     <Button
                                                         id="rmDomesticListing_add"
-                                                        className={"mr5"}
+                                                        className={"mr5 Tour_List_BulkUpload"}
                                                         onClick={bulkToggle}
                                                         title={"Bulk Upload"}
                                                         icon={"upload"}
@@ -887,7 +918,7 @@ function RMDomesticListing(props) {
                                                     <>
 
                                                         <Button
-                                                            className="mr5"
+                                                            className="mr5 Tour_List_Download"
                                                             id={"rmDomesticListing_excel_download"}
                                                             onClick={onExcelDownload}
                                                             title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
@@ -913,6 +944,7 @@ function RMDomesticListing(props) {
                             }
                             <Button
                                 id={"rmDomesticListing_refresh"}
+                                className={"Tour_List_Reset"}
                                 onClick={() => resetState()}
                                 title={"Reset Grid"}
                                 icon={"refresh"}
@@ -926,12 +958,13 @@ function RMDomesticListing(props) {
                             <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                 <div className={`ag-theme-material `}>
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                    <AgGridReact
+                                    {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
                                         style={{ height: '100%', width: '100%' }}
                                         defaultColDef={defaultColDef}
                                         floatingFilter={true}
                                         domLayout='autoHeight'
-                                        rowData={rmDataList}
+                                        rowData={showExtraData && rmDataList ? [...setLoremIpsum(rmDataList[0]), ...rmDataList] : rmDataList}
+
                                         pagination={true}
                                         paginationPageSize={globalTakes}
                                         onGridReady={onGridReady}
@@ -968,7 +1001,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="CalculatedFactor" headerName='Calculated Factor' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        {props.isMasterSummaryDrawer && rmDataList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
+                                        {props.isMasterSummaryDrawer && rmDataList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Rate'></AgGridColumn>}
                                         {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
                                         {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>)}
                                         {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>)}
@@ -977,12 +1010,12 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
 
                                         <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                        {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                        {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                         <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                         <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                                         {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
                                         {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
-                                    </AgGridReact>
+                                    </AgGridReact>}
                                     <div className='button-wrapper'>
                                         {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />}
                                         {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&

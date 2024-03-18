@@ -1607,7 +1607,18 @@ class AddRMDomestic extends Component {
                           {this.state.showTour && <TourWrapper
                             buttonSpecificProp={{ id: "RM_domestic_form" }}
                             stepsSpecificProp={{
-                              steps: Steps(t).RM_DOMESTIC_FORM
+                              steps: Steps(t,
+                                {
+                                  showSendForApproval: !this.state.isFinalApprovar,
+                                  hasSource: (costingTypeId === ZBCTypeId),
+                                  destinationField: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant),
+                                  plantField: (costingTypeId === ZBCTypeId),
+                                  CBCTypeField: (costingTypeId === CBCTypeId),
+                                  sourceField: (this.state.HasDifferentSource ||
+                                    costingTypeId === VBCTypeId),
+                                  conditionCost: (initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId)
+
+                                }).RM_DOMESTIC_FORM
                             }} />}
                         </h1>
                       </div>
@@ -1893,8 +1904,8 @@ class AddRMDomestic extends Component {
                               </Col>
                               <Col md="3" className='mb-4'>
                                 <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                                <div id="AddRMDomestic_Vendor" className="d-flex justify-space-between align-items-center async-select">
-                                  <div className="fullinput-icon p-relative">
+                                <div className="d-flex justify-space-between align-items-center async-select">
+                                  <div id="AddRMDomestic_Vendor" className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                     <AsyncSelect
                                       name="DestinationSupplierId"

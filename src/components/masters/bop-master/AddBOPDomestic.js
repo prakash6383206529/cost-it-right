@@ -1007,6 +1007,7 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
+
     const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice } = this.state;
@@ -1062,8 +1063,14 @@ class AddBOPDomestic extends Component {
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} {showBopLabel()} (Domestic)
                           <TourWrapper
                             buttonSpecificProp={{ id: "BOP_Domestic_form" }}
+
                             stepsSpecificProp={{
-                              steps: Steps(t).BOP_DOMESTIC_FORM
+                              steps: Steps(t, {
+                                showSendForApproval: !this.state.isFinalApprovar,
+                                sourceField: (costingTypeId === VBCTypeId),
+                                CBCTypeField: (costingTypeId === CBCTypeId),
+                                conditionCost: (initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId)
+                              }).BOP_DOMESTIC_FORM
                             }} />
                         </h1>
                       </div>

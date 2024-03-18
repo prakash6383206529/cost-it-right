@@ -33,6 +33,9 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import WarningMessage from '../../common/WarningMessage'
 import { getSelectListPartType } from '../actions/Part'
 import NoContentFound from '../../common/NoContentFound'
+import TourWrapper from '../../common/Tour/TourWrapper'
+import { useTranslation } from 'react-i18next'
+import { Steps } from './TourMessages'
 const gridOptions = {};
 function AddBudget(props) {
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset } = useForm({
@@ -40,6 +43,7 @@ function AddBudget(props) {
         reValidateMode: 'onChange',
     });
 
+    const { t } = useTranslation("BudgetMaster")
 
     const [selectedPlants, setSelectedPlants] = useState([]);
     const [vendorName, setVendorName] = useState([]);
@@ -793,6 +797,16 @@ function AddBudget(props) {
                                                         {isEditFlag
                                                             ? "Update Budget"
                                                             : "Add Budget"}
+                                                        <TourWrapper
+                                                            buttonSpecificProp={{ id: "Add_Budget_form" }}
+                                                            stepsSpecificProp={{
+                                                                steps: Steps(t, {
+                                                                    customerField: (costingTypeId === CBCTypeId),
+                                                                    vendorField: (costingTypeId === VBCTypeId),
+                                                                    plantField: (costingTypeId === ZBCTypeId),
+                                                                    destinationPlant: ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant))
+                                                                }).ADD_BUDGET
+                                                            }} />
                                                     </h1>
                                                 </div>
                                             </div>
@@ -801,7 +815,7 @@ function AddBudget(props) {
                                             <div className="add-min-height">
                                                 <Row>
                                                     <Col md="12">
-                                                        {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                                        {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id='AddBudget_ZeroBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                                                             <input
                                                                 type="radio"
                                                                 name="costingHead"
@@ -815,7 +829,7 @@ function AddBudget(props) {
                                                             />{" "}
                                                             <span>Zero Based</span>
                                                         </Label>}
-                                                        {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                                        {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id='AddBudget_VendorBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                                                             <input
                                                                 type="radio"
                                                                 name="costingHead"
@@ -829,7 +843,7 @@ function AddBudget(props) {
                                                             />{" "}
                                                             <span>Vendor Based</span>
                                                         </Label>}
-                                                        {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                                                        {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id='AddBudget_CustomerBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                                                             <input
                                                                 type="radio"
                                                                 name="costingHead"
@@ -882,6 +896,7 @@ function AddBudget(props) {
                                                                         <div className="fullinput-icon p-relative">
                                                                             {inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                                                             <AsyncSelect
+                                                                                id="AddBudget_vendorName"
                                                                                 name="vendorName"
                                                                                 //ref={this.myRef}
                                                                                 //key={this.state.updateAsyncDropdown}
@@ -980,6 +995,7 @@ function AddBudget(props) {
                                                                 <div className="d-flex justify-space-between align-items-center async-select">
                                                                     <div className="fullinput-icon p-relative">
                                                                         <AsyncSelect
+                                                                            id='AddBudget_PartNumber'
                                                                             name="PartNumber"
                                                                             //ref={this.myRef}
                                                                             //key={updateAsyncDropdown}
@@ -1044,7 +1060,7 @@ function AddBudget(props) {
                                                                     handleChange={handleCurrencyChange}
                                                                     disabled={disableCurrency || isViewMode ? true : false}
                                                                 />
-                                                                <button className='user-btn budget-tick-btn' type='button' onClick={getCostingPrice} disabled={isViewMode ? true : false} >
+                                                                <button id='AddBudget_checkbox' className='user-btn budget-tick-btn' type='button' onClick={getCostingPrice} disabled={isViewMode ? true : false} >
                                                                     <div className='save-icon' ></div>
                                                                 </button>
                                                             </div>
@@ -1128,7 +1144,7 @@ function AddBudget(props) {
                                                     </Col>
                                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <><Col md="8" className='mt-3'><div className="left-border mt-1">Costing Condition:</div></Col>
                                                         <Col md="4" className="text-right mt-3">
-                                                            <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }} disabled={isViewMode ? true : false}>
+                                                            <button id='AddBudget_Add' className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }} disabled={isViewMode ? true : false}>
                                                                 {conditionAcc ? (
                                                                     <i className="fa fa-minus" ></i>
                                                                 ) : (
@@ -1207,6 +1223,8 @@ function AddBudget(props) {
                                                     {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                                                     <button
                                                         type={"button"}
+                                                        id='AddBudget_Cancel'
+
                                                         className="mr15 cancel-btn"
                                                         onClick={cancelHandler}
                                                         disabled={setDisable}
@@ -1217,6 +1235,7 @@ function AddBudget(props) {
 
                                                     {!isFinalApprover ?
                                                         <button type="submit"
+                                                            id='AddBudget_Save'
                                                             className="user-btn approval-btn save-btn mr5"
                                                             disabled={setDisable || disableSendForApproval || isViewMode}
                                                         >

@@ -879,7 +879,7 @@ class AddOperation extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration, isOperationAssociated, t } = this.props;
+    const { handleSubmit, initialConfiguration, isOperationAssociated, t, data } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -912,6 +912,7 @@ class AddOperation extends Component {
         }
       }
     };
+
     return (
       <div className="container-fluid">
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -921,14 +922,17 @@ class AddOperation extends Component {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-                    <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
+                    {!data.isCostingDrawer && <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
 
-                      <TourWrapper
+                      {!data.isViewMode && <TourWrapper
                         buttonSpecificProp={{ id: "Add_Operation_form" }}
                         stepsSpecificProp={{
-                          steps: Steps(t).ADD_OPERATION
-                        }} />
-                    </h2>
+                          steps: Steps(t, {
+                            showSendForApproval: !this.state.isFinalApprovar,
+                            vendorField: costingTypeId === VBCTypeId, customerField: costingTypeId === CBCTypeId, plantField: (costingTypeId === ZBCTypeId || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure)
+                          }).ADD_OPERATION
+                        }} />}
+                    </h2>}
                   </div>
                 </div>
                 <form
@@ -1097,6 +1101,7 @@ class AddOperation extends Component {
                             <div className="fullinput-icon p-relative">
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
+                                id="AddOperation_VendorCode"
                                 name="vendorName"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
@@ -1113,6 +1118,7 @@ class AddOperation extends Component {
                             </div>
                             {!isEditFlag && (
                               <div
+                                id="AddOperation_AddVendorCode"
                                 onClick={this.vendorToggler}
                                 className={"plus-icon-square  right"}
                               ></div>
@@ -1253,6 +1259,7 @@ class AddOperation extends Component {
                       <Col md="4">
                         {(!isEditFlag || (isEditFlag && this.state.isDetailEntry)) && getConfigurationKey().IsShowDetailedBreakup && < button
                           type="button"
+                          id="AddMoreOperation_container"
                           className={'user-btn '}
                           disabled={false}
                           onClick={() => this.moreDetailsToggler()}>
@@ -1345,7 +1352,7 @@ class AddOperation extends Component {
                     </Row>
                   </div>
 
-                  <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                  {!data.isCostingDrawer && <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                       {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                       <button id="AddOperation_Cancel"
@@ -1368,6 +1375,7 @@ class AddOperation extends Component {
                           </button>
                           :
                           <button
+                            id="AddOperation_Save"
                             type="submit"
                             className="user-btn mr5 save-btn"
                             disabled={isViewMode || setDisable || disableSendForApproval}
@@ -1378,7 +1386,7 @@ class AddOperation extends Component {
                         }
                       </>}
                     </div>
-                  </Row>
+                  </Row>}
                 </form>
               </div>
             </div>

@@ -7,7 +7,7 @@ import NoContentFound from "../../common/NoContentFound";
 import Switch from "react-switch";
 import BulkUpload from "../../massUpload/BulkUpload";
 import AddVendorDrawer from "./AddVendorDrawer";
-import { checkPermission, searchNocontentFilter, showTitleForActiveToggle, updateBOPValues, } from "../../../helper/util";
+import { checkPermission, searchNocontentFilter, setLoremIpsum, showTitleForActiveToggle, updateBOPValues, } from "../../../helper/util";
 import { MASTERS, VENDOR, VendorMaster } from "../../../config/constants";
 import { getConfigurationKey, loggedInUserId, showBopLabel } from "../../../helper";
 import LoaderCustom from "../../common/LoaderCustom";
@@ -31,12 +31,17 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from '../../layout/Button';
 import { useRef } from "react";
 import { updateGlobalTake, updatePageNumber, updatePageSize, updateCurrentRowIndex, resetStatePagination } from "../../common/Pagination/paginationAction";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const VendorListing = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation("common")
+
   const searchRef = useRef(null);
   const { supplierDataList, allSupplierDataList } = useSelector((state) => state.supplier);
   const { statusColumnData } = useSelector((state) => state.comman);
@@ -92,6 +97,8 @@ const VendorListing = () => {
     disableDownload: false,
     noData: false,
     dataCount: 0,
+    render: false,
+    showExtraData: false,
   });
 
   useEffect(() => {
@@ -326,7 +333,16 @@ const VendorListing = () => {
   const deleteItem = (Id) => {
     setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
   };
-
+  /**
+                 @method toggleExtraData
+                 @description Handle specific module tour state to display lorem data
+                */
+  const toggleExtraData = (showTour) => {
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+    }, 100);
+  }
   /**
    * @method confirmDeleteItem
    * @description confirm delete item
@@ -366,11 +382,11 @@ const VendorListing = () => {
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
-        {ViewAccessibility && (<Button id={`vendorListing_view${props.rowIndex}`} className={"View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
+        {ViewAccessibility && (<Button id={`vendorListing_view${props.rowIndex}`} className={"View Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
         )}
-        {EditAccessibility && (<Button id={`vebdorListing_edit${props.rowIndex}`} className={"mr-1"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
+        {EditAccessibility && (<Button id={`vebdorListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
         )}
-        {DeleteAccessibility && (<Button id={`vendorListing_delete${props.rowIndex}`} className={"mr-1"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
+        {DeleteAccessibility && (<Button id={`vendorListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
         )}
       </>
     );
@@ -453,7 +469,7 @@ const VendorListing = () => {
     showTitleForActiveToggle(props?.rowIndex);
     return (
       <>
-        <label htmlFor="normal-switch" className="normal-switch">
+        <label htmlFor="normal-switch" className="normal-switch Tour_List_Status">
           {/* <span>Switch with default style</span> */}
           <Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!ActivateAccessibility} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
         </label>
@@ -702,6 +718,13 @@ const VendorListing = () => {
         <Col md="3">
           {" "}
           <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+          <TourWrapper
+            buttonSpecificProp={{
+              id: "vendor_listing_Tour", onClick: toggleExtraData
+            }}
+            stepsSpecificProp={{
+              steps: Steps(t, { multipleFilter: false, addLimit: false, updateAssociatedTechnology: false, costMovementButton: false, copyButton: false, viewBOM: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+            }} />
         </Col>
         <Col md="9">
           <div className="d-flex justify-content-end bd-highlight w100 ">
@@ -714,14 +737,14 @@ const VendorListing = () => {
               )}
             </div>
             <div className="d-flex">
-              <Button id="vendorListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter}
+              <Button id="vendorListing_filter" className={"mr5 Tour_List_Filter"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter}
               />
-              {AddAccessibility && (<Button id="vendorListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
+              {AddAccessibility && (<Button id="vendorListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus"} />
               )}
-              {BulkUploadAccessibility && (<Button id="vendorListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
+              {BulkUploadAccessibility && (<Button id="vendorListing_bulkUpload" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
               )}
               {DownloadAccessibility && (<>
-                <Button className="mr5" id={"vendorListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                <Button className="mr5 Tour_List_Download" id={"vendorListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                 />
 
                 <ExcelFile filename={"Vendor"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-vendor"} className="p-absolute" />}>
@@ -729,7 +752,7 @@ const VendorListing = () => {
                 </ExcelFile>
               </>
               )}
-              <Button id={"vendorListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+              <Button id={"vendorListing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
             </div>
           </div>
         </Col>
@@ -753,7 +776,8 @@ const VendorListing = () => {
               defaultColDef={defaultColDef}
               floatingFilter={true}
               domLayout="autoHeight"
-              rowData={supplierDataList}
+              rowData={state.showExtraData && supplierDataList ? [...setLoremIpsum(supplierDataList[0]), ...supplierDataList] : supplierDataList}
+
               pagination={true}
               paginationPageSize={globalTakes}
               onGridReady={onGridReady}

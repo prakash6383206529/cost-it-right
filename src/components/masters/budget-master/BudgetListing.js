@@ -8,7 +8,7 @@ import { deleteBudget, getBudgetDataList, getPartCostingHead, } from '../actions
 import { BUDGET_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS } from '../../../config/constants'
-import { checkPermission, searchNocontentFilter } from '../../../helper/util'
+import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util'
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -19,7 +19,7 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import WarningMessage from '../../common/WarningMessage'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash'
-import { disabledClass } from '../../../actions/Common'
+import { TourStartAction, disabledClass } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { Drawer } from '@material-ui/core'
 import Attachament from '../../costing/components/Drawers/Attachament'
@@ -30,6 +30,10 @@ import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctio
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
 import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import PaginationControls from '../../common/Pagination/PaginationControls';
+import TourWrapper from '../../common/Tour/TourWrapper'
+import { Steps } from '../../common/Tour/TourMessages'
+import { useTranslation } from 'react-i18next'
+
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -49,7 +53,8 @@ function BudgetListing(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [isLoader, setIsLoader] = useState(false);
     const [dataCount, setDataCount] = useState(0);
-
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX SELECTION
     const [warningMessage, setWarningMessage] = useState(false)
@@ -73,6 +78,7 @@ function BudgetListing(props) {
     const { globalTakes } = useSelector(state => state.pagination)
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     const dispatch = useDispatch();
+    const { t } = useTranslation("common")
 
     useEffect(() => {
         applyPermission(topAndLeftMenuData)
@@ -173,7 +179,20 @@ function BudgetListing(props) {
             }
         }))
     }
+    /**
+       * @method toggleExtraData
+       * @description Handle specific module tour state to display lorem data
+       */
+    const toggleExtraData = (showTour) => {
 
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 100);
+
+
+    }
     /**
      * @method editItemDetails
      * @description confirm edit item
@@ -222,9 +241,9 @@ function BudgetListing(props) {
         const cellValue = props?.value;
         const rowData = props?.data;
         return (
-            <>  {ViewAccessibility && <Button id={`budgetListing_view${props.rowIndex}`} className={"mr-1"} variant="View" onClick={() => editItemDetails(cellValue, true)} title={"View"} />}
-                {editAccessibility && <Button id={`budgetListing_edit${props.rowIndex}`} variant="Edit" className={"mr-1"} onClick={() => editItemDetails(cellValue, false)} title={"Edit"} />}
-                {deleteAccessibility && <Button id={`budgetListing_delete${props.rowIndex}`} title='Delete' variant="Delete" onClick={() => deleteItem(rowData.BudgetingId)} className={"mr-1"} />}
+            <>  {ViewAccessibility && <Button id={`budgetListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => editItemDetails(cellValue, true)} title={"View"} />}
+                {editAccessibility && <Button id={`budgetListing_edit${props.rowIndex}`} variant="Edit" className={"mr-1 Tour_List_Edit"} onClick={() => editItemDetails(cellValue, false)} title={"Edit"} />}
+                {deleteAccessibility && <Button id={`budgetListing_delete${props.rowIndex}`} title='Delete' variant="Delete" onClick={() => deleteItem(rowData.BudgetingId)} className={"Tour_List_Delete"} />}
             </>
         )
     };
@@ -500,7 +519,7 @@ function BudgetListing(props) {
                                             </div>}
                                         {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
                                             // <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                                            <Button id="budgetListing_filter" className={"user-btn mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
+                                            <Button id="budgetListing_filter" className={"user-btn mr5 Tour_List_Filter"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
 
                                         }
                                         {shown ? (
@@ -511,17 +530,17 @@ function BudgetListing(props) {
                                         )}
 
                                         {addAccessibility && !props?.isMasterSummaryDrawer && (
-                                            <Button id="budgetListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
+                                            <Button id="budgetListing_add" className={"user-btn mr5 Tour_List_Add "} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
 
                                         )}
                                         {bulkUploadAccessibility && !props?.isMasterSummaryDrawer &&
-                                            <Button id="budgetListing_bulkUpload" className={"user-btn mr5"} onClick={BulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />
+                                            <Button id="budgetListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={BulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />
                                         }
 
                                         {
                                             downloadAccessibility && !props?.isMasterSummaryDrawer &&
                                             <>
-                                                <Button className="user-btn mr5" id={"budgetListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                <Button className="user-btn mr5 Tour_List_Download" id={"budgetListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                     icon={"download mr-1"}
                                                     buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                 />
@@ -532,7 +551,7 @@ function BudgetListing(props) {
                                                 </ExcelFile>
                                             </>
                                         }
-                                        <Button id={"budgetListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                                        <Button id={"budgetListing_refresh"} className={"Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
 
                                     </div>
                                 </Col>
@@ -542,6 +561,11 @@ function BudgetListing(props) {
                         <div className={`ag-grid-wrapper height-width-wrapper  ${(volumeDataList && volumeDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                <TourWrapper
+                                    buttonSpecificProp={{ id: "Budget_Listing_Tour", onClick: toggleExtraData }}
+                                    stepsSpecificProp={{
+                                        steps: Steps(t, { addLimit: false, costMovementButton: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                                    }} />
                             </div>
                             <div className={`ag-theme-material ${isLoader && !props?.isMasterSummaryDrawer && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -550,7 +574,8 @@ function BudgetListing(props) {
                                     floatingFilter={true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={volumeDataList}
+                                    rowData={showExtraData ? [...setLoremIpsum(volumeDataList[0]), ...volumeDataList] : volumeDataList}
+
                                     editable={true}
                                     // pagination={true}
                                     paginationPageSize={globalTakes}
@@ -575,7 +600,7 @@ function BudgetListing(props) {
                                     <AgGridColumn field="NetPoPrice" headerName="Net Cost"></AgGridColumn>
                                     <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}
-                                    {!props?.isMasterSummaryDrawer && <AgGridColumn field="BudgetingId" width={120} cellClass={"actions-wrapper ag-grid-action-container"} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!props?.isMasterSummaryDrawer && <AgGridColumn field="BudgetingId" width={120} pinned="right" cellClass={"actions-wrapper ag-grid-action-container"} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
                                     {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>

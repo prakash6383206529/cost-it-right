@@ -24,8 +24,11 @@ import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { filterParams } from "../../common/DateFilter";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { hyphenFormatter } from "../masterUtil";
-import { searchNocontentFilter } from "../../../helper";
+import { searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import { ApplyPermission } from ".";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { useTranslation } from "react-i18next";
+import { Steps } from "../../common/Tour/TourMessages";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,8 +52,9 @@ const IndivisualProductListing = (props) => {
   const permissions = useContext(ApplyPermission);
   const { newPartsListing, productDataList } = useSelector((state) => state.part);
   const { initialConfiguration } = useSelector((state) => state.auth);
-
-
+  const [showExtraData, setShowExtraData] = useState(false)
+  const [render, setRender] = useState(false)
+  const { t } = useTranslation("common")
   useEffect(() => {
 
     getTableListData();
@@ -88,6 +92,20 @@ const IndivisualProductListing = (props) => {
     };
     props.getDetails(requestData);
   };
+  /**
+       * @method toggleExtraData
+       * @description Handle specific module tour state to display lorem data
+       */
+  const toggleExtraData = (showTour) => {
+
+    setRender(true)
+    setTimeout(() => {
+      setShowExtraData(showTour)
+      setRender(false)
+    }, 100);
+
+
+  }
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
@@ -130,7 +148,7 @@ const IndivisualProductListing = (props) => {
         {permissions.View && (
           <button
             title="View"
-            className="View"
+            className="View Tour_List_View"
             type={"button"}
             onClick={() => viewOrEditItemDetails(cellValue, true)}
           />
@@ -138,7 +156,7 @@ const IndivisualProductListing = (props) => {
         {permissions.View && (
           <button
             title="Edit"
-            className="Edit mr-2"
+            className="Edit mr-2 Tour_List_Edit"
             type={"button"}
             onClick={() => viewOrEditItemDetails(cellValue, false)}
           />
@@ -146,7 +164,7 @@ const IndivisualProductListing = (props) => {
         {permissions.Delete && (
           <button
             title="Delete"
-            className="Delete"
+            className="Delete Tour_List_Delete"
             type={"button"}
             onClick={() => deleteItem(cellValue)}
           />
@@ -301,7 +319,7 @@ const IndivisualProductListing = (props) => {
               {permissions.Add && (
                 <button
                   type="button"
-                  className={"user-btn mr5"}
+                  className={"user-btn mr5 Tour_List_Add"}
                   title="Add"
                   onClick={formToggle}
                 >
@@ -312,7 +330,7 @@ const IndivisualProductListing = (props) => {
               {permissions.BulkUpload && (
                 <button
                   type="button"
-                  className={"user-btn mr5"}
+                  className={"user-btn mr5 Tour_List_BulkUpload"}
                   onClick={bulkToggle}
                   title="Bulk Upload"
                 >
@@ -331,7 +349,7 @@ const IndivisualProductListing = (props) => {
                         title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"
                           }`}
                         type="button"
-                        className={"user-btn mr5"}
+                        className={"user-btn mr5 Tour_List_Download"}
                       >
                         <div className="download mr-1"></div>
                         {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
@@ -344,7 +362,7 @@ const IndivisualProductListing = (props) => {
               )}
               <button
                 type="button"
-                className="user-btn"
+                className="user-btn Tour_List_Reset"
                 title="Reset Grid"
                 onClick={() => resetState()}
               >
@@ -371,6 +389,11 @@ const IndivisualProductListing = (props) => {
             autoComplete={"off"}
             onChange={(e) => onFilterTextBoxChanged(e)}
           />
+          <TourWrapper
+            buttonSpecificProp={{ id: "IndividualProduct_Listing_Tour", onClick: toggleExtraData }}
+            stepsSpecificProp={{
+              steps: Steps(t, { addLimit: false, filterButton: false, costMovementButton: false, viewBOM: false, updateAssociatedTechnology: false, copyButton: false, status: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+            }} />
         </div>
         <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
           {noData && (
@@ -379,11 +402,12 @@ const IndivisualProductListing = (props) => {
               customClassName="no-content-found"
             />
           )}
-          <AgGridReact
+          {(render || isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
             defaultColDef={defaultColDef}
             floatingFilter={true}
             domLayout="autoHeight"
-            rowData={tableData}
+            rowData={showExtraData ? [...setLoremIpsum(tableData[0]), ...tableData] : tableData}
             pagination={true}
             paginationPageSize={defaultPageSize}
             onGridReady={onGridReady}
@@ -445,7 +469,7 @@ const IndivisualProductListing = (props) => {
               floatingFilter={false}
               cellRenderer={"totalValueRenderer"}
             ></AgGridColumn>
-          </AgGridReact>
+          </AgGridReact>}
           {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
         </div>
       </div>

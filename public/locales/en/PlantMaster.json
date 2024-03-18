@@ -1,0 +1,17 @@
+{
+    "addZBCPlantRate": {
+        "AddZBCPlantRate_Plant_Name": "Enter the plant name.",
+        "AddZBCPlantRate_Plant_Code": "Enter the plant code.",
+        "AddZBCPlantRate_Company_Code": "Select the company code from the dropdown.",
+        "AddZBCPlantRate_Phone_Number": "Enter the phone number.",
+        "AddZBCPlantRate_Ext": "Enter the extension.",
+        "AddZBCPlantRate_Address1": "Enter the primary address.",
+        "AddZBCPlantRate_Address2": "Enter the secondary address.",
+        "AddZBCPlantRate_Country": "Select the country from the dropdown.",
+        "AddZBCPlantRate_State": "Select the state from the dropdown.",
+        "AddZBCPlantRate_City": "Select the city from the dropdown.",
+        "AddZBCPlantRate_ZipCode": "Enter the zip code.",
+        "AddZBCPlantRate_Save": "Click here to save the plant.",
+        "AddZBCPlantRate_Cancel": "Click here to cancel and go back to the plant listing."
+    }
+}
