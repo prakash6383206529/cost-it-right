@@ -17,6 +17,7 @@ import { AcceptableOperationUOM, REMARKMAXLENGTH, STRINGMAXLENGTH, TEMPOBJECTOTH
 import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 import { swappingLogicCommon } from '../../../CostingUtil';
 import Button from '../../../../layout/Button';
+import ViewDetailedForms from '../../Drawers/ViewDetailedForms';
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
@@ -40,6 +41,7 @@ function OperationCostExcludedOverhead(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
+  const [openOperationForm, setOpenOperationForm] = useState(false)
 
   useEffect(() => {
     const Params = {
@@ -459,7 +461,7 @@ function OperationCostExcludedOverhead(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OtherOperationName + index} draggable={CostingViewMode ? false : true}>{item.OtherOperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OtherOperationName + index} draggable={CostingViewMode ? false : true} onClick={() => setOpenOperationForm({ isOpen: true, id: item.OtherOperationId })} className='link'>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -555,6 +557,7 @@ function OperationCostExcludedOverhead(props) {
           Ids={Ids}
         />
       }
+      {openOperationForm && <ViewDetailedForms data={openOperationForm} formName="Operation" cancel={() => setOpenOperationForm({ isOpen: false, id: '' })} />}
     </ >
   );
 }

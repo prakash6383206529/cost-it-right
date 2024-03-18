@@ -11,6 +11,7 @@ import VariableMhrDrawer from '../Drawers/processCalculatorDrawer/VariableMhrDra
 import { getProcessDefaultCalculation, getProcessMachiningCalculation } from '../../actions/CostWorking'
 import { MACHINING } from '../../../../config/masterData'
 import { getCostingLabourDetails } from '../../actions/Costing'
+import ViewDetailedForms from './ViewDetailedForms'
 
 function ViewConversionCost(props) {
 
@@ -50,6 +51,8 @@ function ViewConversionCost(props) {
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
   const [showLabourData, setShowLabourData] = useState(initialConfiguration.IsShowCostingLabour ? initialConfiguration.IsShowCostingLabour : false)
   const [labourTable, setLabourTable] = useState([])
+  const [openOperationForm, setOpenOperationForm] = useState(false)
+  const [openMachineForm, setOpenMachineForm] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -316,7 +319,9 @@ function ViewConversionCost(props) {
                               }
                                 className={`${isPDFShow ? '' : processAccObj[index] ? 'Open' : 'Close'}`}></div>
                           }
-                          <span title={item.ProcessName}>
+                          <span className='link' onClick={() => {
+                            setOpenMachineForm({ isOpen: true, id: item.MachineId })
+                          }} title={item.ProcessName}>
                             {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
                         </td>
                         {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.ProcessName}>{'-'}</span></td>}
@@ -401,7 +406,7 @@ function ViewConversionCost(props) {
                       <tr key={index}>
                         {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                         <td>
-                          {item.OperationName ? item.OperationName : '-'}
+                          <span onClick={() => setOpenOperationForm({ isOpen: true, id: item.OperationId })} className='link'>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""} {item.OperationName ? item.OperationName : '-'}</span>
                         </td>
                         <td>
                           {item.OperationCode ? item.OperationCode : '-'}
@@ -522,7 +527,7 @@ function ViewConversionCost(props) {
                     <tr key={index}>
                       {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                       <td>
-                        {item.OtherOperationName ? item.OtherOperationName : '-'}
+                        <span onClick={() => setOpenOperationForm({ isOpen: true, id: item.OtherOperationId })} className='link'> {item.OtherOperationName ? item.OtherOperationName : '-'}</span>
                       </td>
                       <td>
                         {item.OtherOperationCode ? item.OtherOperationCode : '-'}
@@ -770,6 +775,9 @@ function ViewConversionCost(props) {
         {props?.operationShow && costingOperationCost.length !== 0 && operationTableData()}
 
       </>}
+      {openOperationForm && <ViewDetailedForms data={openOperationForm} formName="Operation" cancel={() => setOpenOperationForm({ isOpen: false, id: '' })} />}
+      {openMachineForm && <ViewDetailedForms data={openMachineForm} formName="Machine" cancel={() => setOpenMachineForm({ isOpen: false, id: '' })} />}
+
     </>
   )
 }
