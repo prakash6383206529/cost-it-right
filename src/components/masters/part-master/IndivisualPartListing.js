@@ -21,16 +21,20 @@ import DayTime from "../../common/DayTimeWrapper";
 import _ from "lodash";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
-import { loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import { disabledClass } from "../../../actions/Common";
 import { ApplyPermission } from ".";
 import Button from "../../layout/Button";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const IndivisualPartListing = (props) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation("common")
 
   const [state, setState] = useState({
     pageNo: 1,
@@ -55,6 +59,8 @@ const IndivisualPartListing = (props) => {
     tableData: [],
     isBulkUpload: false,
     deletedId: "",
+    render: false,
+    showExtraData: false,
   });
   const [searchText, setSearchText] = useState('');
   const { newPartsListing, allNewPartsListing } = useSelector((state) => state.part);
@@ -365,7 +371,7 @@ const IndivisualPartListing = (props) => {
         {permissions.View && (
           <button
             title="View"
-            className="View"
+            className="View Tour_List_View"
             type={"button"}
             onClick={() => viewOrEditItemDetails(cellValue, rowData)}
           />
@@ -373,7 +379,7 @@ const IndivisualPartListing = (props) => {
         {permissions.View && (
           <button
             title="Edit"
-            className="Edit mr-2"
+            className="Edit mr-2 Tour_List_Edit"
             type={"button"}
             onClick={() => viewOrEditItemDetails(cellValue, false)}
           />
@@ -381,7 +387,7 @@ const IndivisualPartListing = (props) => {
         {permissions.Delete && (
           <button
             title="Delete"
-            className="Delete"
+            className="Delete Tour_List_Delete"
             type={"button"}
             onClick={() => deleteItem(ID.partId)}
           />
@@ -474,7 +480,16 @@ const IndivisualPartListing = (props) => {
     setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }))
     params.api.paginationGoToPage(0);
   };
-
+  /**
+             @method toggleExtraData
+             @description Handle specific module tour state to display lorem data
+            */
+  const toggleExtraData = (showTour) => {
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+    }, 100);
+  }
   const onExcelDownload = () => {
     setState((prevState) => ({ ...prevState, disableDownload: true }));
     dispatch(disabledClass(true));
@@ -675,7 +690,7 @@ const IndivisualPartListing = (props) => {
                 <button
                   title="Filtered data"
                   type="button"
-                  className="user-btn mr5"
+                  className="user-btn mr5 Tour_List_Filter"
                   onClick={() => onSearch()}
                   disabled={state.disableFilter}
                 >
@@ -684,7 +699,7 @@ const IndivisualPartListing = (props) => {
                 {permissions.Add && (
                   <button
                     type="button"
-                    className={"user-btn mr5"}
+                    className={"user-btn mr5 Tour_List_Add"}
                     title="Add"
                     onClick={formToggle}
                   >
@@ -694,7 +709,7 @@ const IndivisualPartListing = (props) => {
                 {permissions.BulkUpload && (
                   <button
                     type="button"
-                    className={"user-btn mr5"}
+                    className={"user-btn mr5 Tour_List_BulkUpload"}
                     onClick={bulkToggle}
                     title="Bulk Upload"
                   >
@@ -703,7 +718,7 @@ const IndivisualPartListing = (props) => {
                 )}
                 {permissions.Download && (
                   <>
-                    <Button className="mr5" id={"individualPartListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                    <Button className="mr5 Tour_List_Download" id={"individualPartListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                     />
                     <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-component-part"} className="p-absolute" />}>
                       {onBtExport()}
@@ -714,7 +729,8 @@ const IndivisualPartListing = (props) => {
 
                 <button
                   type="button"
-                  className="user-btn"
+                  className="user-btn Tour_List_Reset"
+
                   title="Reset Grid"
                   onClick={() => resetState()}
                 >
@@ -731,15 +747,12 @@ const IndivisualPartListing = (props) => {
             }`}
         >
           <div className="ag-grid-header">
-            <input
-              type="text"
-              value={searchText}
-              className="form-control table-search"
-              id="filter-text-box"
-              placeholder="Search"
-              autoComplete={"off"}
-              onChange={onFilterTextBoxChanged}
-            />
+            <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={onFilterTextBoxChanged} />
+            <TourWrapper
+              buttonSpecificProp={{ id: "IndivisualPart_Listing_Tour", onClick: toggleExtraData }}
+              stepsSpecificProp={{
+                steps: Steps(t, { addLimit: false, costMovementButton: false, updateAssociatedTechnology: false, copyButton: false, viewBOM: false, status: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+              }} />
           </div>
           <div
             className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}
@@ -755,7 +768,8 @@ const IndivisualPartListing = (props) => {
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout="autoHeight"
-                rowData={newPartsListing}
+                rowData={state.showExtraData && newPartsListing ? [...setLoremIpsum(newPartsListing[0]), ...newPartsListing] : newPartsListing}
+
                 pagination={true}
                 paginationPageSize={state.globalTake}
                 onGridReady={onGridReady}
@@ -771,56 +785,17 @@ const IndivisualPartListing = (props) => {
                 frameworkComponents={frameworkComponents}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn
-                  field="Technology"
-                  headerName="Technology"
-                  cellRenderer={checkBoxRenderer}
-
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="PartNumber"
-                  headerName="Part No."
-                ></AgGridColumn>
+                <AgGridColumn field="Technology" headerName="Technology" cellRenderer={checkBoxRenderer} ></AgGridColumn>
+                <AgGridColumn field="PartNumber" headerName="Part No." ></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
                 {initialConfiguration?.IsSAPCodeRequired && (
-                  <AgGridColumn
-                    field="SAPCode"
-                    headerName="SAP Code"
-                    cellRenderer={"hyphenFormatter"}
-                  ></AgGridColumn>
+                  <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 )}
-                <AgGridColumn
-                  field="ECNNumber"
-                  headerName="ECN No."
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="RevisionNumber"
-                  headerName="Revision No."
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="DrawingNumber"
-                  headerName="Drawing No."
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="EffectiveDate"
-                  headerName="Effective Date"
-                  cellRenderer={"effectiveDateFormatter"}
-                  filter="agDateColumnFilter"
-                  filterParams={filterParams}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="PartId"
-                  cellClass="ag-grid-action-container"
-                  headerName="Action"
-                  width={160}
-/*                   pinned="right"
- */                  type="rightAligned"
-                  floatingFilter={false}
-                  cellRenderer={"totalValueRenderer"}
-                ></AgGridColumn>
+                <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+                <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
+                <AgGridColumn field="PartId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>
               </AgGridReact>}
             <div className="button-wrapper">
               {!state.isLoader && (

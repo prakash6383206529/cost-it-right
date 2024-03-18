@@ -1,0 +1,22 @@
+{
+    "InterestRate": {
+        "AddInterestRate_CostingHeadSelection": "Select Zero, Vendor, or Customer-based Costing Head.",
+        "AddInterestRate_ZeroBased": "Select Zero-Based Costing Head.",
+        "AddInterestRate_VendorBased": "Select Vendor-Based Costing Head.",
+        "AddInterestRate_CustomerBased": "Select Customer-Based Costing Head.",
+        "AddInterestRate_RawMaterialName": "Enter the Raw Material Name.",
+        "AddInterestRate_RawMaterialGrade": "Enter the Raw Material Grade.",
+        "AddInterestRate_PlantCode": "Select Plant (Code) from the dropdown.",
+        "AddInterestRate_VendorCode": "Select Vendor (Code) from the dropdown.",
+        "AddInterestRate_DestinationPlant": "Select Plant (Code) from the dropdown.",
+        "AddInterestRate_ClientCode": "Select Customer (Code) from the dropdown.",
+        "AddInterestRate_ICCApplicability": "Select ICC Applicability.",
+        "AddInterestRate_AnnualICC": "Enter Annual ICC Percentage.",
+        "AddInterestRate_PaymentTermsApplicability": "Select Payment Terms Applicability.",
+        "AddInterestRate_RepaymentPeriod": "Enter Repayment Period in Days.",
+        "AddInterestRate_PaymentTermPercent": "Enter Payment Term Percentage.",
+        "AddInterestRate_EffectiveDate": "Select Effective Date from the calendar.",
+        "AddInterestRate_Cancel": "Click here to cancel and go back to the interest rate listing.",
+        "AddInterestRate_Save": "Click here to save the interest rate."
+    }
+}

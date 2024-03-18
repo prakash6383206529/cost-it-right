@@ -1423,10 +1423,17 @@ class AddMachineRate extends Component {
                       <div className="form-heading mb-0">
                         <h2> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Machine Rate
                           <TourWrapper
-                            buttonSpecificProp={{ id: "addMachineRate_guide" }}
+                            buttonSpecificProp={{ id: "MachineRate_form" }}
                             stepsSpecificProp={{
-                              steps: Steps(t).ADD_MACHINE_RATE
+                              steps: Steps(t, {
+                                showSendForApproval: !this.state.isFinalApprovar,
+
+                                vendorField: (costingTypeId === VBCTypeId),
+                                customerField: (costingTypeId === CBCTypeId)
+                              }
+                              ).ADD_MACHINE_RATE
                             }} />
+
                         </h2>
                       </div >
                     </div >
@@ -1518,6 +1525,7 @@ class AddMachineRate extends Component {
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
                                 name="vendorName"
+                                id="AddMachineRate_vendorName"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
                                 loadOptions={filterList}
@@ -1554,6 +1562,7 @@ class AddMachineRate extends Component {
                           <Col md="3">
                             <Field
                               name="clientName"
+                              id="AddMachineRate_customerName"
                               type="text"
                               label={"Customer (Code)"}
                               component={searchableSelect}
@@ -1711,11 +1720,11 @@ class AddMachineRate extends Component {
                           <HeaderTitle
                             title={'Process:'}
                             customClass={'Personal-Details'} />
-                          {!this.props.data.isCostingDrawer && <TourWrapper
+                          {/* <TourWrapper
                             buttonSpecificProp={{ id: "addMachineRate_Process" }}
                             stepsSpecificProp={{
                               steps: Steps(t).ADD_MACHINERATE_MORE_PROCESS
-                            }} />}
+                            }} /> */}
                         </Col>
                         <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
@@ -1804,6 +1813,7 @@ class AddMachineRate extends Component {
                                   <div className={'plus'}></div>ADD</button>
                                 <button
                                   type="button"
+                                  id="AddMachineRate_reset"
                                   disabled={isViewMode || (isEditFlag && isMachineAssociated) || (isEditFlag && IsDetailedEntry)}
                                   className={`${isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
                                   onClick={this.resetProcessGridData}
@@ -1976,6 +1986,7 @@ class AddMachineRate extends Component {
                                   :
 
                                   <button
+                                    id="AddMachineRate_Save"
                                     type="submit"
                                     className="user-btn mr5 save-btn"
                                     disabled={isViewMode || setDisable || disableSendForApproval}

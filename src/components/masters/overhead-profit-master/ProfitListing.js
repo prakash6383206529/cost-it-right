@@ -5,7 +5,7 @@ import {
     getProfitDataList, deleteProfit, activeInactiveProfit,
 } from '../actions/OverheadProfit';
 import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -27,6 +27,9 @@ import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloat
 import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -37,7 +40,8 @@ const gridOptions = {};
 function ProfitListing(props) {
 
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props
-
+    const [showExtraData, setShowExtraData] = useState(false)
+    const { t } = useTranslation("common")
     const [tableData, setTableData] = useState([])
     const dispatch = useDispatch()
     const [showPopup, setShowPopup] = useState(false)
@@ -248,7 +252,11 @@ function ProfitListing(props) {
         }
     }
 
+    const toggleExtraData = (showTour) => {
+        setShowExtraData(showTour)
 
+
+    }
     const onSearch = () => {
         setNoData(false)
         setWarningMessage(false)
@@ -412,9 +420,9 @@ function ProfitListing(props) {
 
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
@@ -672,13 +680,13 @@ function ProfitListing(props) {
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div className="warning-message d-flex align-items-center">
                                             {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                            <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                            <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                         </div>
 
                                         {AddAccessibility && (
                                             <button
                                                 type="button"
-                                                className={"user-btn mr5"}
+                                                className={"user-btn mr5 Tour_List_Add"}
                                                 onClick={formToggle}
                                                 title="Add"
                                             >
@@ -689,7 +697,7 @@ function ProfitListing(props) {
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" ></div>
                                                     {/* DOWNLOAD */}
                                                     {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                 </button>
@@ -701,7 +709,7 @@ function ProfitListing(props) {
                                             </>
                                         }
 
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <button type="button" className="user-btn Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
                                     </div>
@@ -714,6 +722,11 @@ function ProfitListing(props) {
                                 <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <TourWrapper
+                                            buttonSpecificProp={{ id: "profit_Listing_Tour", onClick: toggleExtraData }}
+                                            stepsSpecificProp={{
+                                                steps: Steps(t, { addLimit: false, bulkUpload: false, costMovementButton: false, downloadButton: true, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                                            }} />
                                     </div>
                                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -721,8 +734,8 @@ function ProfitListing(props) {
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
                                             domLayout='autoHeight'
+                                            rowData={showExtraData ? [...setLoremIpsum(overheadProfitList[0]), ...overheadProfitList] : overheadProfitList}
 
-                                            rowData={overheadProfitList}
                                             pagination={true}
                                             paginationPageSize={globalTake}
                                             onGridReady={onGridReady}
@@ -752,7 +765,7 @@ function ProfitListing(props) {
                                             <AgGridColumn field="ProfitBOPPercentage" headerName={`Profit on ${showBopLabel()} (%)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                            <AgGridColumn field="ProfitId" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                            <AgGridColumn field="ProfitId" width={180} cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                         </AgGridReact>
                                         <div className='button-wrapper'>
                                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
