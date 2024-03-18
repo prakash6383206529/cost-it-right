@@ -1,6 +1,8 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 
 export function Steps(t, config) {
+    const showSendForApprovalButton = config?.showSendForApproval !== undefined && config?.showSendForApproval === true
+
     return {
         ADD_OPERATION: [
             {
@@ -54,12 +56,12 @@ export function Steps(t, config) {
             },] : []),
             ...(config && config.plantField ? [{
                 element: "#AddOperation_DestinationPlant_container",
-                intro: t("operationMaster.AddOperation_Customer_container"),
+                intro: t("operationMaster.AddOperation_Plant_container"),
             },] : []),
 
             ...(config && config.customerField ? [{
                 element: "#AddOperation_clientName_container",
-                intro: t("operationMaster.AddOperation_Plant_container"),
+                intro: t("operationMaster.AddOperation_Customer_container"),
             },] : []),
             {
                 element: "#AddOperation_UnitOfMeasurementId_container",
@@ -100,11 +102,20 @@ export function Steps(t, config) {
                 element: "#AddOperation_Cancel",
                 intro: t("operationMaster.AddOperation_Cancel"),
             },
-            {
-                element: "#AddOperation_SendForApproval",
-                intro: t("operationMaster.AddOperation_SendForApproval"),
-                position: 'left'
-            },
+            ...((showSendForApprovalButton === false) ? [
+                {
+                    element: "#AddOperation_Save",
+                    intro: t("operationMaster.AddOperation_Save"),
+                    position: 'left'
+                },
+            ] : []),
+            ...((showSendForApprovalButton === true) ? [
+                {
+                    element: "#AddOperation_SendForApproval",
+                    intro: t("operationMaster.AddOperation_SendForApproval"),
+                    position: 'left'
+                },
+            ] : []),
         ],
     }
 }

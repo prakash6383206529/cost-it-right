@@ -28,6 +28,7 @@
         "AddRMDomestic_Vendor": "Select your vendor code.",
         "addRMDomestic_vendorToggle": "If not available in the list, add it here.",
         "addRMDomestic_cancel": "Click here to cancel the form and go back to the raw material listing.",
+        "addRMDomestic_save": "Click here to save the raw material.",
         "addRMDomestic_sendForApproval": "Click here to send the raw material for approval."
     },
     "addRawMaterialImport": {
@@ -58,6 +59,7 @@
         "AddRMImport_Remark": "Add necessary remarks.",
         "AddRMImport_UploadFiles": "Add necessary attachments.",
         "addRMImport_cancel": "Click here to cancel the form and go back to the raw material listing.",
+        "addRMImport_save": "Click here to save the raw material.",
         "addRMImport_sendForApproval": "Click here to send the raw material for approval."
     },
     "addRawMaterialSpecification": {

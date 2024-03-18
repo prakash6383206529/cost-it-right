@@ -1,5 +1,7 @@
 // tourmessages.js
 
+import { reactLocalStorage } from "reactjs-localstorage";
+
 export function Steps(t, config) {
     return {
         ADD_BUDGET: [
@@ -11,10 +13,10 @@ export function Steps(t, config) {
                 element: "#AddBudget_VendorBased",
                 intro: t("budgetMater.AddBudget_VendorBased"),
             },
-            {
+            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
                 element: "#AddBudget_CustomerBased",
                 intro: t("budgetMater.AddBudget_CustomerBased"),
-            },
+            }] : []),
 
             ...(config && config.vendorField ? [{
                 element: "#AddBudget_vendorName",
@@ -28,6 +30,12 @@ export function Steps(t, config) {
                 element: ".input-container #DestinationPlant_container",
                 intro: t("budgetMater.AddBudget_PlantCode"),
             },] : []),
+            ...(config && config.customerField ? [{
+                element: ".input-container #clientName_container",
+                intro: t("budgetMater.customer_container"),
+            },] : []),
+
+
             {
                 element: ".input-container #PartType_container",
                 intro: t("budgetMater.AddBudget_PartType"),

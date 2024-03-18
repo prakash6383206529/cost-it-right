@@ -1,8 +1,8 @@
 {
     "addMachineRate": {
         "AddMachineRate_zeroBased": "Select a Zero-based Costing Head.",
-        "AddMachineRate_customerBased": "Select a Vendor-based Costing Head.",
-        "AddMachineRate_vendorBased": "Select a Customer-based Costing Head.",
+        "AddMachineRate_customerBased": "Select a Customer-based Costing Head.",
+        "AddMachineRate_vendorBased": "Select a Vendor-based Costing Head.",
         "AddMachineRate_technology_container": "Select Technology from the dropdown.",
         "AddMachineRate_Plant_container": "Select your Plant code.",
         "AddMachineRate_customerNamer_container": "Select a Customer code from the dropdown.",
@@ -28,7 +28,8 @@
         "AddMoreDetails_Toggle": "Click here to add a Process.",
         "AddMoreDetails_ProcessGroup_Add": "Click here to add the Process.",
         "AddMachineRate_Cancel": "Click here to reset the form and return to the machine listing page.",
-        "AddMachineRate_SendForApproval": "Click here to Send for Approval."
+        "AddMachineRate_SendForApproval": "Click here to Send for Approval.",
+        "AddMachineRate_Save": "Click here to add the machine."
     },
     "addMachineRateMoreDetails": {
         "AddMoreDetails_Plant_container": "Select your Plant code.",

@@ -1426,6 +1426,8 @@ class AddMachineRate extends Component {
                             buttonSpecificProp={{ id: "MachineRate_form" }}
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                showSendForApproval: !this.state.isFinalApprovar,
+
                                 vendorField: (costingTypeId === VBCTypeId),
                                 customerField: (costingTypeId === CBCTypeId)
                               }
@@ -1984,6 +1986,7 @@ class AddMachineRate extends Component {
                                   :
 
                                   <button
+                                    id="AddMachineRate_Save"
                                     type="submit"
                                     className="user-btn mr5 save-btn"
                                     disabled={isViewMode || setDisable || disableSendForApproval}

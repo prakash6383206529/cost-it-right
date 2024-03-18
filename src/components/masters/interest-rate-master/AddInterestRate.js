@@ -605,7 +605,12 @@ class AddInterestRate extends Component {
                       <h1>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Interest RawMaterial <TourWrapper
                         buttonSpecificProp={{ id: "Add_InterestRate_form" }}
                         stepsSpecificProp={{
-                          steps: Steps(t, { vendorField: (costingTypeId === VBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) }).ADD_INTEREST_RATE
+                          steps: Steps(t, {
+                            vendorField: (costingTypeId === VBCTypeId),
+                            customerField: (costingTypeId === CBCTypeId),
+                            plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate),
+                            destinationPlant: ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant))
+                          }).ADD_INTEREST_RATE
                         }} /></h1>
                     </div>
                   </div>
@@ -619,7 +624,7 @@ class AddInterestRate extends Component {
                   <div className="add-min-height">
                     <Row>
                       <Col md="12">
-                        {reactLocalStorage.getObject('CostingTypePermission').zbc && <Label id='AddIntrestRate_ZeroBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        {reactLocalStorage.getObject('CostingTypePermission').zbc && <Label id='AddInterestRate_ZeroBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -633,7 +638,7 @@ class AddInterestRate extends Component {
                           />{" "}
                           <span>Zero Based</span>
                         </Label>}
-                        {reactLocalStorage.getObject('CostingTypePermission').vbc && <Label id='AddIntrestRate_VendorBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        {reactLocalStorage.getObject('CostingTypePermission').vbc && <Label id='AddInterestRate_VendorBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -647,7 +652,7 @@ class AddInterestRate extends Component {
                           />{" "}
                           <span>Vendor Based</span>
                         </Label>}
-                        {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddIntrestRate_CustomerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                        {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddInterestRate_CustomerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -737,6 +742,7 @@ class AddInterestRate extends Component {
                           <div className='p-relative'>
                             {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                             <AsyncSelect
+                              id="AddInterestRate_VendorName_container"
                               name="vendorName"
                               ref={this.myRef}
                               key={this.state.updateAsyncDropdown}
@@ -828,7 +834,7 @@ class AddInterestRate extends Component {
 
                         <Col md="3">
                           <Field
-                            id='AddIntrestRate_AnnualICC'
+                            id='AddInterestRate_AnnualICC'
                             label={`Annual ICC (%)`}
                             name={"ICCPercent"}
                             type="text"
@@ -881,7 +887,7 @@ class AddInterestRate extends Component {
 
                           <Col md="3">
                             <Field
-                              id="AddIntrestRate_RepaymentPeriod"
+                              id="AddInterestRate_RepaymentPeriod"
                               label={`Repayment Period (Days)`}
                               name={"RepaymentPeriod"}
                               type="text"
@@ -897,7 +903,7 @@ class AddInterestRate extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              id="AddIntrestRate_PaymentTermPercent"
+                              id="AddInterestRate_PaymentTermPercent"
                               label={`Payment Term (%)`}
                               name={"PaymentTermPercent"}
                               type="text"
@@ -945,7 +951,7 @@ class AddInterestRate extends Component {
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn">
                       <button
-                        id='AddIntrestRate_Cancel'
+                        id='AddInterestRate_Cancel'
                         type={"button"}
                         className=" mr15 cancel-btn"
                         onClick={this.cancelHandler}
@@ -956,7 +962,7 @@ class AddInterestRate extends Component {
                       </button>
                       {!isViewMode && <button
                         type="submit"
-                        id='AddIntrestRate_Save'
+                        id='AddInterestRate_Save'
                         disabled={isViewMode || setDisable}
                         className="user-btn mr5 save-btn"
                       >

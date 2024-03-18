@@ -1007,6 +1007,7 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
+
     const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice } = this.state;
@@ -1065,6 +1066,7 @@ class AddBOPDomestic extends Component {
 
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                showSendForApproval: !this.state.isFinalApprovar,
                                 sourceField: (costingTypeId === VBCTypeId),
                                 CBCTypeField: (costingTypeId === CBCTypeId),
                                 conditionCost: (initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId)

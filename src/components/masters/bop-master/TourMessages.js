@@ -1,6 +1,10 @@
 import { reactLocalStorage } from "reactjs-localstorage";
+import { showBopLabel } from "../../../helper";
 
 export function Steps(t, config) {
+    const showSendForApprovalButton = config?.showSendForApproval !== undefined && config?.showSendForApproval === true
+    const introWithBOPDynamicValue = (intro) => intro.replace(/bop|BOP/gi, showBopLabel());
+
     return {
         BOP_DOMESTIC_FORM: [
             {
@@ -17,11 +21,11 @@ export function Steps(t, config) {
             }] : []),
             {
                 element: "#bop_part_name_form_zero_based",
-                intro: t("bopDomesticForm.bop_part_name_form_zero_based"),
+                intro: introWithBOPDynamicValue(t("bopDomesticForm.bop_part_name_form_zero_based")),
             },
             {
                 element: "#AddBOPDomestic_BOPCategory_container",
-                intro: t("bopDomesticForm.AddBOPDomestic_BOPCategory_container"),
+                intro: introWithBOPDynamicValue(t("bopDomesticForm.AddBOPDomestic_BOPCategory_container")),
             },
             {
                 element: "#addBOPDomestic_categoryToggle",
@@ -29,11 +33,11 @@ export function Steps(t, config) {
             },
             {
                 element: "#bop_part_number_form_zero_based",
-                intro: t("bopDomesticForm.bop_part_number_form_zero_based"),
+                intro: introWithBOPDynamicValue(t("bopDomesticForm.bop_part_number_form_zero_based")),
             },
             {
                 element: "#bop_specification_form_zero_based",
-                intro: t("bopDomesticForm.bop_specification_form_zero_based"),
+                intro: introWithBOPDynamicValue(t("bopDomesticForm.bop_specification_form_zero_based")),
             },
             {
                 element: "#AddBOPDomestic_UOM_container",
@@ -96,12 +100,22 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddBOPDomestic_cancel",
-                intro: t("bopDomesticForm.AddBOPDomestic_cancel"),
+                intro: introWithBOPDynamicValue(t("bopDomesticForm.AddBOPDomestic_cancel")),
             },
-            {
-                element: "#AddBOPDomestic_sendForApproval",
-                intro: t("bopDomesticForm.AddBOPDomestic_sendForApproval"),
-            }
+            ...((showSendForApprovalButton === false) ? [
+                {
+                    element: "#AddBOPDomestic_updateSave",
+                    intro: introWithBOPDynamicValue(t("bopDomesticForm.addBOPDomestic_save")),
+                },
+            ] : []),
+
+            ...((showSendForApprovalButton === true) ? [
+
+                {
+                    element: "#AddBOPDomestic_sendForApproval",
+                    intro: introWithBOPDynamicValue(t("bopDomesticForm.AddBOPDomestic_sendForApproval")),
+                }
+            ] : []),
         ],
         BOP_IMPORT_FORM: [
             {
@@ -118,11 +132,11 @@ export function Steps(t, config) {
             }] : []),
             {
                 element: "#AddBOPImport_BoughtOutPartName",
-                intro: t("bopImportForm.AddBOPImport_BoughtOutPartName"),
+                intro: introWithBOPDynamicValue(t("bopImportForm.AddBOPImport_BoughtOutPartName")),
             },
             {
                 element: "#AddBOPImport_BOPCategory_container",
-                intro: t("bopImportForm.AddBOPImport_BOPCategory_container"),
+                intro: introWithBOPDynamicValue(t("bopImportForm.AddBOPImport_BOPCategory_container")),
             },
             {
                 element: "#addBOPDomestic_categoryToggle",
@@ -130,11 +144,11 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddBOPImport_BoughtOutPartNumber",
-                intro: t("bopImportForm.AddBOPImport_BoughtOutPartNumber"),
+                intro: introWithBOPDynamicValue(t("bopImportForm.AddBOPImport_BoughtOutPartNumber")),
             },
             {
                 element: "#AddBOPImport_Specification",
-                intro: t("bopImportForm.AddBOPImport_Specification"),
+                intro: introWithBOPDynamicValue(t("bopImportForm.AddBOPImport_Specification")),
             },
             {
                 element: "#AddBOPImport_UOM_container",
@@ -206,12 +220,21 @@ export function Steps(t, config) {
             },
             {
                 element: "#addBOPIMport_cancel",
-                intro: t("bopImportForm.addBOPIMport_cancel"),
+                intro: introWithBOPDynamicValue(t("bopImportForm.addBOPIMport_cancel")),
             },
-            {
-                element: "#addBOPIMport_sendForApproval",
-                intro: t("bopImportForm.addBOPIMport_sendForApproval"),
-            },
+            ...((showSendForApprovalButton === false) ? [
+
+                {
+                    element: "#addBOPIMport_save",
+                    intro: introWithBOPDynamicValue(t("addBOPImport_save")),
+                },
+            ] : []),
+            ...((showSendForApprovalButton === true) ? [
+                {
+                    element: "#addBOPIMport_sendForApproval",
+                    intro: introWithBOPDynamicValue(t("bopImportForm.addBOPIMport_sendForApproval")),
+                },
+            ] : []),
         ],
         BOP_DOMESTIC_CATEGORY_FORM: [
             {
@@ -220,7 +243,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddBOPDomesticCategory_Cancel",
-                intro: t("bopDomesticCategoryForm.AddBOPDomesticCategory_Cancel"),
+                intro: introWithBOPDynamicValue(t("bopDomesticCategoryForm.AddBOPDomesticCategory_Cancel")),
             },
             {
                 element: "#AddBOPDomesticCategory_Save",

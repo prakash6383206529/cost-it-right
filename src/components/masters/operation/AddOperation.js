@@ -927,7 +927,8 @@ class AddOperation extends Component {
                         buttonSpecificProp={{ id: "Add_Operation_form" }}
                         stepsSpecificProp={{
                           steps: Steps(t, {
-                            vendorField: costingTypeId === VBCTypeId, customerField: costingTypeId === CBCTypeId, plantField: (costingTypeId === ZBCTypeId), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)
+                            showSendForApproval: !this.state.isFinalApprovar,
+                            vendorField: costingTypeId === VBCTypeId, customerField: costingTypeId === CBCTypeId, plantField: (costingTypeId === ZBCTypeId || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure)
                           }).ADD_OPERATION
                         }} />
                     </h2>
@@ -1372,6 +1373,7 @@ class AddOperation extends Component {
                           </button>
                           :
                           <button
+                            id="AddOperation_Save"
                             type="submit"
                             className="user-btn mr5 save-btn"
                             disabled={isViewMode || setDisable || disableSendForApproval}

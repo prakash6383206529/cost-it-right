@@ -1609,6 +1609,7 @@ class AddRMDomestic extends Component {
                             stepsSpecificProp={{
                               steps: Steps(t,
                                 {
+                                  showSendForApproval: !this.state.isFinalApprovar,
                                   hasSource: (costingTypeId === ZBCTypeId),
                                   destinationField: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant),
                                   plantField: (costingTypeId === ZBCTypeId),

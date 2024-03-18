@@ -3,18 +3,18 @@
         "Add_operation_zero_based": "Select Zero-Based Costing Head.",
         "Add_operation_vendor_based": "Select Vendor-Based Costing Head.",
         "Add_operation_customer_based": "Select Customer-Based Costing Head.",
-        "AddOperation_operationType_container": "Select the Operation Type.",
-        "AddOperation_technology_container": "Select the Technology name.",
+        "AddOperation_operationType_container": "Select the Operation Type from the dropdown.",
+        "AddOperation_technology_container": "Select the Technology name from the dropdown.",
         "AddOperation_OperationName": "Enter the Operation name.",
         "AddOperation_OperationCode": "Enter the Operation code.",
-        "AddOperation_VendorCode": "Enter the Vendor Code.",
+        "AddOperation_VendorCode": "Select the Vendor (Code) from the dropdown.",
         "AddOperation_DestinationPlant_container": "Select Destination Plant (Code) from the dropdown.",
         "AddVendorCode": "Add the Vendor Code.",
         "AddOperation_Description": "Enter the Description.",
-        "AddOperation_Plant_container": "Select your Plant code.",
-        "AddOperation_Customer_container": "Select your Customer code.",
+        "AddOperation_Plant_container": "Select the Plant (Code) from the dropdown.",
+        "AddOperation_Customer_container": "Select the Customer (Code) from the dropdown.",
         "AddOperation_UnitOfMeasurementId_container": "Select the Unit of Measurement (UOM).",
-        "AddOperation_Rate": "Enter Your Rate.",
+        "AddOperation_Rate": "Enter the Rate.",
         "AddOperation_LabourRatePerUOM": "Enter the labour rate per UOM.",
         "AddOperation_EffectiveDate": "Select the Effective date from here.",
         "AddOperation_SurfaceTreatmentCheckbox": "Check the checkbox to indicate Surface Treatment.",
@@ -22,6 +22,7 @@
         "AddOperation_Remark": "Add necessary remarks.",
         "AddOperation_UploadFiles": "Add necessary attachments.",
         "AddOperation_Cancel": "Click here to cancel the form.",
-        "AddOperation_SendForApproval": "Click here to send the form for approval."
+        "AddOperation_Save": "Click here to save the operation.",
+        "AddOperation_SendForApproval": "Click here to send the operation for approval."
     }
 }

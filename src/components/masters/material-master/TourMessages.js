@@ -1,9 +1,10 @@
 import { IsShowFreightAndShearingCostFields } from "../../../helper";
-
-import { useReducer } from "react";
 import { reactLocalStorage } from "reactjs-localstorage";
 
 export function Steps(t, config) {
+    const showSendForApprovalButton = config?.showSendForApproval !== undefined && config?.showSendForApproval === true
+
+
     // const initialConfiguration = useReducer(state => state.auth.initialConfiguration)
     return {
         RM_DOMESTIC_FORM: [
@@ -61,10 +62,11 @@ export function Steps(t, config) {
             ] : [],
             ...config && config.plantField ? [
                 {
-                    element: "#AddRMDomestic_SourceSupplierPlantId_container",
+                    element: "#AddRMDomestic_DestinationPlant_container",
                     intro: t("form.AddRMDomestic_SourceSupplierPlantId_container"),
                 },
             ] : [],
+
             ...config && config.CBCTypeField ? [
                 {
                     element: "#AddRMDomestic_clientName_container",
@@ -145,11 +147,20 @@ export function Steps(t, config) {
                 element: "#addRMDomestic_cancel",
                 intro: t("form.addRMDomestic_cancel"),
             },
-            {
-                element: "#addRMDomestic_sendForApproval",
-                intro: t("form.addRMDomestic_sendForApproval"),
-                position: 'left',
-            },
+            ...((showSendForApprovalButton === false) ? [
+                {
+                    element: "#addRMDomestic_updateSave",
+                    intro: t("form.addRMDomestic_save"),
+                    position: 'left',
+                },
+            ] : []),
+            ...((showSendForApprovalButton === true) ? [
+                {
+                    element: "#addRMDomestic_sendForApproval",
+                    intro: t("form.addRMDomestic_sendForApproval"),
+                    position: 'left',
+                },
+            ] : []),
         ],
         ADD_RAW_MATERIAL_SPEC: [
             {
@@ -234,7 +245,7 @@ export function Steps(t, config) {
             },
             ...config && config.plantField ? [
                 {
-                    element: "#AddRMImport_SourceSupplierPlantId_container",
+                    element: "#AddRMImport_DestinationPlant_container",
                     intro: t("addRawMaterialImport.AddRMImport_SourceSupplierPlantId_container"),
                 }
             ] : [],
@@ -321,11 +332,20 @@ export function Steps(t, config) {
                 element: "#addRMImport_cancel",
                 intro: t("addRawMaterialImport.addRMImport_cancel"),
             },
-            {
-                element: "#addRMImport_sendForApproval",
-                intro: t("addRawMaterialImport.addRMImport_sendForApproval"),
-                position: 'left',
-            },
+            ...((showSendForApprovalButton === false) ? [
+                {
+                    element: "#addRMImport_updateSave",
+                    intro: t("addRawMaterialImport.addRMImport_save"),
+                    position: 'left',
+                },
+            ] : []),
+            ...((showSendForApprovalButton === true) ? [
+                {
+                    element: "#addRMImport_sendForApproval",
+                    intro: t("addRawMaterialImport.addRMImport_sendForApproval"),
+                    position: 'left',
+                },
+            ] : []),
         ],
         ADD_RM_ASSOCIATION: [
             {

@@ -3,16 +3,17 @@
         "AddBudget_ZeroBased": "Select a Zero-Based Costing Head.",
         "AddBudget_VendorBased": "Select a Vendor-Based Costing Head.",
         "AddBudget_CustomerBased": "Select a Customer-Based Costing Head.",
-        "AddBudget_Vendor_container": "Select Vendor from the dropdown.",
+        "AddBudget_Vendor_container": "Select Vendor (Code) from the dropdown.",
+        "customer_container": "Select Customer (Code) from the dropdown.",
         "AddBudget_PlantCode": "Select Plant (Code) from the dropdown.",
         "AddBudget_PartType": "Select Part Type from the dropdown.",
         "AddBudget_PartNumber": "Select Part No. (Revision No.) from the dropdown.",
-        "AddBudget_Year": "Select Year.",
-        "AddBudget_Currency": "Select Currency.",
-        "AddBudget_checkbox": "Check the checkbox.",
+        "AddBudget_Year": "Select Year from the dropdown.",
+        "AddBudget_Currency": "Select Currency from the dropdown.",
+        "AddBudget_checkbox": "Check the checkbox to see the current price.",
         "AddBudget_CurrentPrice": "Please verify your Current Price.",
         "AddBudget_Add": "For adding Condition costing, please add a drawer.",
-        "AddBudget_Cancel": "Click here to cancel and go back.",
+        "AddBudget_Cancel": "Click here to cancel and go back to the budget listing.",
         "AddBudget_Save": "Click here to send the form for approval."
     }
 }

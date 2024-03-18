@@ -1,79 +1,85 @@
+import { reactLocalStorage } from "reactjs-localstorage";
+
 export function Steps(t, config) {
     return {
         ADD_INTEREST_RATE: [
 
             {
-                element: "#AddIntrestRate_ZeroBased",
-                intro: t("intrestRate.AddIntrestRate_ZeroBased"),
+                element: "#AddInterestRate_ZeroBased",
+                intro: t("InterestRate.AddInterestRate_ZeroBased"),
             },
             {
-                element: "#AddIntrestRate_VendorBased",
-                intro: t("intrestRate.AddIntrestRate_VendorBased"),
+                element: "#AddInterestRate_VendorBased",
+                intro: t("InterestRate.AddInterestRate_VendorBased"),
             },
-            {
-                element: "#AddIntrestRate_CustomerBased",
-                intro: t("intrestRate.AddIntrestRate_VendorBased"),
-            },
+            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
+                element: "#AddInterestRate_CustomerBased",
+                intro: t("InterestRate.AddInterestRate_VendorBased"),
+            }] : []),
 
             // {
-            //     element: "#AddIntrestRate_RawMaterialName",
-            //     intro: t("intrestRate.AddIntrestRate_RawMaterialName"),
+            //     element: "#AddInterestRate_RawMaterialName",
+            //     intro: t("InterestRate.AddInterestRate_RawMaterialName"),
             // },
             // {
-            //     element: "#AddIntrestRate_RawMaterialGrade",
-            //     intro: t("intrestRate.AddIntrestRate_RawMaterialGrade"),
+            //     element: "#AddInterestRate_RawMaterialGrade",
+            //     intro: t("InterestRate.AddInterestRate_RawMaterialGrade"),
             // },
             ...(config && config.vendorField ? [{
 
-                element: "#AddIntrestRate_VendorName_container",
-                intro: t("intrestRate.AddIntrestRate_VendorCode"),
+                element: "#AddInterestRate_VendorName_container",
+                intro: t("InterestRate.AddInterestRate_VendorCode"),
             },] : []),
+            ...(config && config.customerField ? [{
+
+
+                element: "#AddInterestRate_clientName_container",
+                intro: t("InterestRate.AddInterestRate_ClientCode"),
+            },
+            ] : []),
             ...(config && config.plantField ? [{
                 element: "#AddInterestRate_Plant_container",
-                intro: t("intrestRate.AddIntrestRate_PlantCode"),
+                intro: t("InterestRate.AddInterestRate_PlantCode"),
             },] : []),
+
             ...(config && config.destinationPlant ? [{
 
                 element: "#AddInterestRate_DestinationPlant_container",
-                intro: t("intrestRate.AddIntrestRate_DestinationPlant"),
+                intro: t("InterestRate.AddInterestRate_DestinationPlant"),
             },] : []),
 
-            // {
-            //     element: "#AddIntrestRate_ClientCode",
-            //     intro: t("intrestRate.AddIntrestRate_ClientCode"),
-            // },
             {
                 element: "#AddInterestRate_ICCApplicability_container",
-                intro: t("intrestRate.AddIntrestRate_ICCApplicability"),
+                intro: t("InterestRate.AddInterestRate_ICCApplicability"),
             },
             {
-                element: "#AddIntrestRate_AnnualICC",
-                intro: t("intrestRate.AddIntrestRate_AnnualICC"),
+                element: "#AddInterestRate_AnnualICC",
+                intro: t("InterestRate.AddInterestRate_AnnualICC"),
             },
             {
                 element: "#AddInterestRate_PaymentTermsApplicability_container",
-                intro: t("intrestRate.AddIntrestRate_PaymentTermsApplicability"),
+                intro: t("InterestRate.AddInterestRate_PaymentTermsApplicability"),
             },
             {
-                element: "#AddIntrestRate_RepaymentPeriod",
-                intro: t("intrestRate.AddIntrestRate_RepaymentPeriod"),
+                element: "#AddInterestRate_RepaymentPeriod",
+                intro: t("InterestRate.AddInterestRate_RepaymentPeriod"),
             },
             {
-                element: "#AddIntrestRate_PaymentTermPercent",
-                intro: t("intrestRate.AddIntrestRate_PaymentTermPercent"),
+                element: "#AddInterestRate_PaymentTermPercent",
+                intro: t("InterestRate.AddInterestRate_PaymentTermPercent"),
             },
             {
                 element: "#AddInterestRate_EffectiveDate",
-                intro: t("intrestRate.AddIntrestRate_EffectiveDate"),
+                intro: t("InterestRate.AddInterestRate_EffectiveDate"),
 
             },
             {
-                element: "#AddIntrestRate_Cancel",
-                intro: t("intrestRate.AddIntrestRate_Cancel"),
+                element: "#AddInterestRate_Cancel",
+                intro: t("InterestRate.AddInterestRate_Cancel"),
             },
             {
-                element: "#AddIntrestRate_Save",
-                intro: t("intrestRate.AddIntrestRate_Save"),
+                element: "#AddInterestRate_Save",
+                intro: t("InterestRate.AddInterestRate_Save"),
             },
         ],
     };

@@ -1849,6 +1849,7 @@ class AddRMImport extends Component {
                             buttonSpecificProp={{ id: "RM_Import_form" }}
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                showSendForApproval: !this.state.isFinalApprovar,
                                 hasSource: (costingTypeId === ZBCTypeId),
                                 plantField: (costingTypeId === ZBCTypeId),
                                 CBCTypeField: (costingTypeId === CBCTypeId),

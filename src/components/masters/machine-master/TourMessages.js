@@ -1,4 +1,7 @@
+import { reactLocalStorage } from "reactjs-localstorage";
+
 export function Steps(t, config) {
+    const showSendForApprovalButton = config?.showSendForApproval !== undefined && config?.showSendForApproval === true
 
     return {
         ADD_MACHINE_RATE: [
@@ -10,10 +13,11 @@ export function Steps(t, config) {
                 element: "#AddMachineRate_vendorBased",
                 intro: t("addMachineRate.AddMachineRate_vendorBased"),
             },
-            {
+            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
+
                 element: "#AddMachineRate_customerBased",
                 intro: t("addMachineRate.AddMachineRate_customerBased"),
-            },
+            }] : []),
             {
                 element: "#AddMachineRate_technology_container",
                 intro: t("addMachineRate.AddMachineRate_technology_container"),
@@ -122,10 +126,18 @@ export function Steps(t, config) {
                 element: "#AddMachineRate_Cancel",
                 intro: t("addMachineRate.AddMachineRate_Cancel"),
             },
-            {
-                element: "#AddMachineRate_SendForApproval",
-                intro: t("addMachineRate.AddMachineRate_SendForApproval"),
-            }
+            ...((showSendForApprovalButton === true) ? [
+                {
+                    element: "#AddMachineRate_SendForApproval",
+                    intro: t("addMachineRate.AddMachineRate_SendForApproval"),
+                },
+            ] : []),
+            ...((showSendForApprovalButton === false) ? [
+                {
+                    element: "#AddMachineRate_Save",
+                    intro: t("addMachineRate.AddMachineRate_Save"),
+                }
+            ] : []),
         ],
         ADD_MACHINERATE_MORE_PROCESS: [
             {

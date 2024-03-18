@@ -801,6 +801,7 @@ function AddBudget(props) {
                                                             buttonSpecificProp={{ id: "Add_Budget_form" }}
                                                             stepsSpecificProp={{
                                                                 steps: Steps(t, {
+                                                                    customerField: (costingTypeId === CBCTypeId),
                                                                     vendorField: (costingTypeId === VBCTypeId),
                                                                     plantField: (costingTypeId === ZBCTypeId),
                                                                     destinationPlant: ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant))
@@ -895,6 +896,7 @@ function AddBudget(props) {
                                                                         <div className="fullinput-icon p-relative">
                                                                             {inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                                                             <AsyncSelect
+                                                                                id="AddBudget_vendorName"
                                                                                 name="vendorName"
                                                                                 //ref={this.myRef}
                                                                                 //key={this.state.updateAsyncDropdown}
