@@ -318,6 +318,10 @@ const ApprovalDrawer = (props) => {
                 "Reason": getValues('reason')?.label,
                 "NfrGroupList": arrayOfObj
             }
+            if (approverIdList.length === 0) {
+                Toaster.error(MESSAGES.SOME_ERROR)
+                return false
+            }
             dispatch(nfrSendToApproverBySender(req, (res) => {
                 if (res?.data?.Result) {
                     Toaster.success("Costing has been sent for approval.")
