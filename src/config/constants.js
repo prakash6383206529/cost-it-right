@@ -1116,7 +1116,7 @@ export const API = {
   // saveSAPDetail: `${BASE_URL}/sap-sync/save-sap-push-details`,
   // updateSAPDetail: `${BASE_URL}/sap-sync/update-sap-push-details`,
   // getPurcahseOrganisationByPlant: `${BASE_URL}/sap-sync/get-purchase-organization-by-plant-id`,
-  // getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
+  getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
   // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
   // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
 }
@@ -1396,6 +1396,20 @@ export const GET_DATA_WHILE_LOADING = 'GET_DATA_WHILE_LOADING';
 export const CORRUGATED_DATA = 'CORRUGATED_DATA';
 export const TOUR_START_DATA = 'TOUR_START_DATA';
 export const GUIDE_BUTTON_SHOW = true;
+
+//PAGINATION CONTROLS
+export const SET_PAGE_NUMBER = 'SET_PAGE_NUMBER';
+export const SET_PAGE_SIZE = 'SET_PAGE_SIZE';
+export const INCREMENT_PAGE = 'INCREMENT_PAGE';
+export const DECREMENT_PAGE = 'DECREMENT_PAGE';
+export const SET_CURRENT_ROW_INDEX = 'SET_CURRENT_ROW_INDEX';
+export const SET_FLOATING_FILTER_DATA = 'SET_FLOATING_FILTER_DATA';
+export const SET_UPDATED_CURRENT_ROW_INDEX = 'SET_UPDATED_CURRENT_ROW_INDEX';
+export const SET_UPDATED_PAGE_SIZE = 'SET_UPDATED_PAGE_SIZE';
+export const SET_UPDATE_GLOBALE_TAKE = 'SET_UPDATE_GLOBALE_TAKE';
+export const SET_UPDATED_PAGE_NUMBER = 'SET_UPDATED_PAGE_NUMBER';
+export const RESET_STATE = 'RESET_STATE';
+export const SET_SKIP = 'SET_SKIP';
 
 //OPERATION
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS'
@@ -1837,6 +1851,7 @@ export const PENDING = 'PendingForApproval'
 export const WAITING_FOR_APPROVAL = 'AwaitingApproval'
 export const APPROVED = 'Approved'
 export const REJECTED = 'Rejected'
+export const RETURNED = 'Returned'
 export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'

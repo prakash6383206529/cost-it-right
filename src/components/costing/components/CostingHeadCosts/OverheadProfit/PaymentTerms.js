@@ -452,7 +452,11 @@ function PaymentTerms(props) {
                                                     control={control}
                                                     register={register}
                                                     mandatory={false}
-                                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
+                                                    // handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
+                                                    handleChange={(e) => {
+                                                        dispatch(isOverheadProfitDataChange(true));
+                                                        handleChangeInterestRateFixedLimit(e);
+                                                    }}
                                                     defaultValue={''}
                                                     className=""
                                                     customClassName={'withBorder'}

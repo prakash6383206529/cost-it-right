@@ -8,14 +8,13 @@ import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, userDetails, userTechnologyDetailByMasterId } from '../../../helper'
-import { BOP_MASTER_ID, BUDGET_ID, defaultPageSize, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
+import { BOP_MASTER_ID, BUDGET_ID, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
 import { deleteRawMaterialAPI, getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
 import WarningMessage from '../../common/WarningMessage';
 import Toaster from '../../common/Toaster'
-import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
 import { agGridStatus, dashboardTabLock, getGridHeight, isResetClick } from '../../../actions/Common'
@@ -30,6 +29,9 @@ import { deleteMachine } from '../actions/MachineMaster';
 import { deleteOperationAPI } from '../actions/OtherOperation';
 import { deleteBudget } from '../actions/Budget';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
+import PaginationControls from '../../common/Pagination/PaginationControls';
+import { resetStatePagination, updateCurrentRowIndex, updatePageNumber } from '../../common/Pagination/paginationAction';
 
 const gridOptions = {};
 
@@ -37,7 +39,6 @@ function CommonApproval(props) {
     const searchRef = useRef(null);
     const [gridApi, setGridApi] = useState(null);     // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
     const [gridColumnApi, setGridColumnApi] = useState(null);   // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
-
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approvalData, setApprovalData] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
@@ -49,14 +50,14 @@ function CommonApproval(props) {
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [disableFilter, setDisableFilter] = useState(true)
     const [warningMessage, setWarningMessage] = useState(false)
-    const [globalTake, setGlobalTake] = useState(defaultPageSize)
+    // const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [filterModel, setFilterModel] = useState({});
-    const [pageNo, setPageNo] = useState(1)
-    const [pageNoNew, setPageNoNew] = useState(1)
+    // const [pageNo, setPageNo] = useState(1)
+    // const [pageNoNew, setPageNoNew] = useState(1)
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
-    const [currentRowIndex, setCurrentRowIndex] = useState(0)
-    const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+    // const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [noData, setNoData] = useState(false)
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalProcessId: "", ApprovalNumber: "", CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", Category: "", MaterialType: "", Plant: "", VendorName: "", UOM: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", RequestedBy: "", CreatedByName: "", LastApprovedBy: "", DisplayStatus: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", Specification: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", MachineRate: "", Technology: "", OperationName: "", OperationCode: "", UnitOfMeasurement: "", Rate: "", vendor: "", DestinationPlantName: "", UnitOfMeasurementName: "", IsScrapUOMApply: "", CalculatedFactor: "", ScrapUnitOfMeasurement: "", UOMToScrapUOMRatio: "" })
     const [levelDetails, setLevelDetails] = useState({})
@@ -66,6 +67,7 @@ function CommonApproval(props) {
     const dispatch = useDispatch()
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
     let master = props?.MasterId
+    const { globalTakes } = useSelector((state) => state.pagination)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
 
@@ -84,6 +86,7 @@ function CommonApproval(props) {
             // Cleanup function
             dispatch(setSelectedRowForPagination([]))
             setSelectedRowData([])
+            dispatch(resetStatePagination())
         }
 
     }, [])
@@ -165,7 +168,8 @@ function CommonApproval(props) {
             if (res) {
                 if (res && res.status === 204) {
                     setTotalRecordCount(0)
-                    setPageNo(0)
+                    // setPageNo(0)
+                    dispatch(updatePageNumber(0))
                 }
                 let isReset = true
                 setTimeout(() => {
@@ -244,11 +248,13 @@ function CommonApproval(props) {
 
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
-        setPageNo(1)
-        setPageNoNew(1)
-        setCurrentRowIndex(0)
+        // setPageNo(1)
+        // setPageNoNew(1)
+        // setCurrentRowIndex(0)
+        dispatch(updatePageNumber(1))
+        dispatch(updateCurrentRowIndex(0))
         gridOptions?.columnApi?.resetColumnState();
-        getTableData(0, globalTake, true, floatingFilterData)
+        getTableData(0, globalTakes, true, floatingFilterData)
     }
 
 
@@ -271,49 +277,19 @@ function CommonApproval(props) {
 
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
-        setPageNo(1)
-        setPageNoNew(1)
-        setCurrentRowIndex(0)
+        // setPageNo(1)
+        // setPageNoNew(1)
+        // setCurrentRowIndex(0)
+        dispatch(resetStatePagination())
         getTableData(0, 10, true, floatingFilterData)
         dispatch(setSelectedRowForPagination([]))
         setSelectedRowData([])
-        setGlobalTake(10)
-        setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        // setGlobalTake(10)
+        // setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         if (searchRef.current) {
             searchRef.current.value = '';
         }
     }
-
-
-    const onBtPrevious = () => {
-        if (currentRowIndex >= 10) {
-            setPageNo(pageNo - 1)
-            setPageNoNew(pageNo - 1)
-            const previousNo = currentRowIndex - 10;
-            getTableData(previousNo, globalTake, true, floatingFilterData)
-            setCurrentRowIndex(previousNo)
-        }
-    }
-
-    const onBtNext = () => {
-
-        if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
-            return false
-        }
-
-        if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
-            return false
-        }
-
-        if (currentRowIndex < (totalRecordCount - 10)) {
-            setPageNo(pageNo + 1)
-            setPageNoNew(pageNo + 1)
-            const nextNo = currentRowIndex + 10;
-            getTableData(nextNo, globalTake, true, floatingFilterData)
-            setCurrentRowIndex(nextNo)
-        }
-    };
-
 
 
     const createdOnFormatter = (props) => {
@@ -657,56 +633,6 @@ function CommonApproval(props) {
 
     };
 
-
-    const onPageSizeChanged = (newPageSize) => {
-
-        var value = document.getElementById('page-size').value;
-
-        if (Number(newPageSize) === 10) {
-            getTableData(currentRowIndex, 10, true, floatingFilterData, true)
-            setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
-            setGlobalTake(10)
-            setPageNo(pageNoNew)
-        }
-        else if (Number(newPageSize) === 50) {
-
-            setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
-            setGlobalTake(50)
-            setPageNo(pageNoNew)
-            if (pageNo >= Math.ceil(totalRecordCount / 50)) {
-                setPageNo(Math.ceil(totalRecordCount / 50))
-                getTableData(0, 50, true, floatingFilterData)
-            } else {
-                getTableData(currentRowIndex, 50, true, floatingFilterData, true)
-            }
-
-        }
-        else if (Number(newPageSize) === 100) {
-
-            setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
-            setGlobalTake(100)
-
-            if (pageNo >= Math.ceil(totalRecordCount / 100)) {
-                setPageNo(Math.ceil(totalRecordCount / 100))
-                getTableData(0, 100, true, floatingFilterData)
-            } else {
-                getTableData(currentRowIndex, 100, true, floatingFilterData, true)
-            }
-        }
-
-        if (props?.isApproval) {
-            gridApi.paginationSetPageSize(Number(newPageSize));  // APPLIED THIS IF ELSE CONDITION JUST BECAUSE IN DASHBOARD INCREASING PAGE DROPDOWN WAS NOT WORKING
-
-        }
-        else {
-            gridApi.paginationSetPageSize(Number(value));
-        }
-        if (props.isApproval) {
-
-            props?.isPageNoChange('master')
-        }
-    };
-
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
@@ -898,7 +824,7 @@ function CommonApproval(props) {
                                     domLayout='autoHeight'
                                     rowData={approvalList}
                                     pagination={true}
-                                    paginationPageSize={globalTake}
+                                    paginationPageSize={globalTakes}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -976,8 +902,6 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCostConversion" headerName={netCostHeader} cellRenderer='netCostFormatter'></AgGridColumn>}
 
                                     {/* {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
-
-
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
@@ -1027,19 +951,9 @@ function CommonApproval(props) {
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {!loader &&
-                                        <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />
-                                    }
-                                    {
-                                        <div className="d-flex pagination-button-container">
-                                            <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                                            {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                                            {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                                            {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                            <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
-                                        </div>
-                                    }
+                                        <PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableData} floatingFilterData={floatingFilterData} module="Approval" isApproval={props?.isApproval} />}
+                                    {<PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableData} floatingFilterData={floatingFilterData} module="Approval" />}
                                 </div>
-
                             </div >
                         </div >
                         <div className="text-right pb-3">
@@ -1059,7 +973,6 @@ function CommonApproval(props) {
                     selectedRowData={selectedRowData[0]?.CostingHead}
                 />
             }
-
             {
                 approvalDrawer &&
                 <MasterSendForApproval

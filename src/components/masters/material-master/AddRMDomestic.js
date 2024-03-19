@@ -2349,7 +2349,7 @@ class AddRMDomestic extends Component {
                               validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                               required={false}
                               component={renderTextAreaField}
-                              maxLength="512"
+                              // maxLength="512"
                               rows="6"
                               disabled={isViewFlag}
                             />

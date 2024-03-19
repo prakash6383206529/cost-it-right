@@ -17,6 +17,7 @@ import { CheckApprovalApplicableMaster } from '../../../helper';
 import CommonApproval from './CommonApproval';
 import { MESSAGES } from '../../../config/message';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
+import { resetStatePagination } from '../../common/Pagination/paginationAction';
 export const ApplyPermission = React.createContext();
 function RowMaterialMaster(props) {
 
@@ -108,6 +109,7 @@ function RowMaterialMaster(props) {
     const toggle = (tab) => {
         dispatch(setSelectedRowForPagination([]))
         if (activeTab !== tab) {
+            dispatch(resetStatePagination())
             setactiveTab(tab);
             setStopApiCallOnCancel(false)
         }

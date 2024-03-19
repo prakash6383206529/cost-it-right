@@ -7950,6 +7950,8 @@ export const statusDropdownforRfq = [
     { label: "UnderRevision", value: "4" },
     { label: "Sent", value: "5" },
     { label: "Cancelled", value: "6" },
+    { label: "Rejected", value: "7" },
+    { label: "Returned", value: "8" },
 ]
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },

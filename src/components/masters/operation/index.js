@@ -11,6 +11,7 @@ import { APPROVAL_CYCLE_STATUS_MASTER, OPERATIONS_ID } from '../../../config/con
 // import { APPROVED_STATUS_MASTER, OPERATIONS_ID } from '../../../config/constants';
 import CommonApproval from '../material-master/CommonApproval';
 import { MESSAGES } from '../../../config/message';
+import { resetStatePagination } from '../../common/Pagination/paginationAction';
 
 class OperationsMaster extends Component {
     constructor(props) {
@@ -52,6 +53,7 @@ class OperationsMaster extends Component {
     */
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
+            this.props.resetStatePagination(); // Dispatching the action
             this.setState({
                 activeTab: tab,
                 stopApiCallOnCancel: false
@@ -154,7 +156,9 @@ function mapStateToProps({ auth, comman }) {
     const { disabledClass } = comman;
     return { leftMenuData, loading, topAndLeftMenuData, disabledClass }
 }
+const mapDispatchToProps = (dispatch) => ({
+    resetStatePagination: () => dispatch(resetStatePagination())
+});
 
-
-export default connect(mapStateToProps, {})(OperationsMaster);
+export default connect(mapStateToProps, mapDispatchToProps)(OperationsMaster);
 

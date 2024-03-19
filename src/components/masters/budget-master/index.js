@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
+import { useDispatch } from 'react-redux';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import { BUDGET_ID, OPERATIONS_ID } from '../../../config/constants';
 import CommonApproval from '../material-master/CommonApproval';
 import BudgetListing from './BudgetListing';
 import AddBudget from './AddBudget';
+import { resetStatePagination } from '../../common/Pagination/paginationAction';
 
 function BudgetMaster() {
+    const dispatch = useDispatch();
     const [Id, setId] = useState('');
     const [activeTab, setActiveTab] = useState('1');
     const [isOperation, setIsOperation] = useState(false);
@@ -23,6 +26,7 @@ function BudgetMaster() {
     const [stopAPICall, setStopAPICall] = useState(false);
 
     const displayBudgetForm = (data) => {
+
         setIsOperation(true);
         setData(data);
     }
@@ -52,6 +56,7 @@ function BudgetMaster() {
     const toggle = (tab) => {
 
         if (activeTab !== tab) {
+            dispatch(resetStatePagination())
             setActiveTab(tab);
             setStopAPICall(false);
         }
