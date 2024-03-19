@@ -951,7 +951,6 @@ class AddOverhead extends Component {
         }
       }
     };
-
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -1111,7 +1110,9 @@ class AddOverhead extends Component {
                             </div>
                           </Col>
                         )}
-                        {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                        {/* {((costingTypeId === ZBCTypeId && !getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && ( */}
+                        {((costingTypeId === ZBCTypeId) && (
+
                           <Col md="3">
                             <Field
                               label="Plant (Code)"
@@ -1333,7 +1334,8 @@ class AddOverhead extends Component {
                             onChange={this.handleMessageChange}
                             component={renderTextAreaField}
                             validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
-                            maxLength="512"
+                            // maxLength="512"
+                            // maxLength="5000"
                             disabled={isViewMode}
                           />
                         </Col>

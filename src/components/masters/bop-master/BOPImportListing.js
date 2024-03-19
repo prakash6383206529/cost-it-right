@@ -4,7 +4,6 @@ import { BOPIMPORT, EMPTY_DATA, defaultPageSize, ENTRY_TYPE_IMPORT, FILE_URL, DR
 import { getBOPDataList, deleteBOP } from "../actions/BoughtOutParts";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
-import { PaginationWrapper } from "../../common/commonPagination";
 import Toaster from "../../common/Toaster";
 import DayTime from "../../common/DayTimeWrapper";
 import BulkUpload from "../../massUpload/BulkUpload";
@@ -27,8 +26,11 @@ import { ApplyPermission } from ".";
 import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel, checkMasterCreateByCostingPermission, } from "../../common/CommonFunctions";
 import Attachament from "../../costing/components/Drawers/Attachament";
 import Button from "../../layout/Button";
+import PaginationControls from "../../common/Pagination/PaginationControls";
 import BDSimulation from "../../simulation/components/SimulationPages/BDSimulation";
 import { useDispatch, useSelector } from "react-redux";
+import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
+import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize } from "../../common/Pagination/paginationAction";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
@@ -90,13 +92,12 @@ const BOPImportListing = (props) => {
     },
     warningMessage: false,
     filterModel: {},
-    pageNo: 1,
-    pageNoNew: 1,
+    // pageNo: 1,
+    // pageNoNew: 1,
     totalRecordCount: 0,
     isFilterButtonClicked: false,
     currentRowIndex: 0,
-    pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-    globalTake: defaultPageSize,
+    // pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
     noData: false,
     dataCount: 0,
     attachment: false,
@@ -109,6 +110,8 @@ const BOPImportListing = (props) => {
   const permissions = useContext(ApplyPermission);
   const { bopImportList, allBopDataList } = useSelector((state) => state.boughtOutparts);
   const { filteredRMData } = useSelector((state) => state.material);
+  const { globalTakes } = useSelector((state) => state.pagination);
+
   const { initialConfiguration } = useSelector((state) => state.auth);
   const tourStartData = useSelector(state => state.comman.tourStartData);
 
@@ -131,6 +134,8 @@ const BOPImportListing = (props) => {
 
         return () => {
           dispatch(setSelectedRowForPagination([]))
+          dispatch(resetStatePagination());
+
           // reactLocalStorage.setObject('selectedRow', {})
         }
       }
@@ -173,7 +178,7 @@ const BOPImportListing = (props) => {
    * @description GET DATALIST OF IMPORT BOP
    */
   const getDataList = (
-    bopFor = "", CategoryId = 0, vendorId = "", plantId = "", skip = 0, take = 100, isPagination = true, dataObj = {}, isReset = false) => {
+    bopFor = "", CategoryId = 0, vendorId = "", plantId = "", skip = 0, take = 10, isPagination = true, dataObj = {}, isReset = false) => {
     const { floatingFilterData } = state;
     if (props.isSimulation && !props?.isFromVerifyPage) {
       props?.changeTokenCheckBox(false);
@@ -239,9 +244,9 @@ const BOPImportListing = (props) => {
             setState((prevState) => ({
               ...prevState,
               totalRecordCount: 0,
-              pageNo: 0,
+              // pageNo: 0,
             }))
-
+            dispatch(updatePageNumber(0))
           }
 
           if (res && isPagination === false) {
@@ -262,8 +267,10 @@ const BOPImportListing = (props) => {
           if (res) {
             if (res && res.status === 204) {
               setState((prevState) => ({
-                ...prevState, totalRecordCount: 0, pageNo: 0,
-              }));
+                ...prevState, totalRecordCount: 0,
+                // pageNo: 0,
+              }))
+              dispatch(updatePageNumber(0));
             }
             if (res && res.data && res.data.DataList.length > 0) {
               setState((prevState) => ({
@@ -383,9 +390,13 @@ const BOPImportListing = (props) => {
 
   const onSearch = () => {
     setState((prevState) => ({
-      ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
+      ...prevState, warningMessage: false,
+      // pageNo: 1, pageNoNew: 1,
+      // currentRowIndex: 0,
     }));
-    getDataList("", 0, "", "", 0, state.globalTake, true, state.floatingFilterData);
+    dispatch(updateCurrentRowIndex(0));
+    dispatch(updatePageNumber(1));
+    getDataList("", 0, "", "", 0, globalTakes, true, state.floatingFilterData);
   };
   const resetState = () => {
     setState((prevState) => ({
@@ -398,93 +409,28 @@ const BOPImportListing = (props) => {
       state.floatingFilterData[prop] = "";
     }
     setState((prevState) => ({
-      ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
+      ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false,
+      // pageNo: 1, pageNoNew: 1,
+      // currentRowIndex: 0,
     }));
+    dispatch(updateCurrentRowIndex(0));
+    dispatch(updatePageNumber(1));
     getDataList("", 0, "", "", 0, 10, true, state.floatingFilterData);
     dispatch(setSelectedRowForPagination([]));
 
     setState((prevState) => ({
-      ...prevState, globalTake: 10, dataCount: 0,
-
-      pageSize: {
-        ...prevState.pageSize,
-        pageSize10: true,
-        pageSize50: false,
-        pageSize100: false,
-      },
+      ...prevState, dataCount: 0,
+      // pageSize: {
+      //   ...prevState.pageSize,
+      //   pageSize10: true,
+      //   pageSize50: false,
+      //   pageSize100: false,
+      // },
     }));
+    dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
 
-  };
+    dispatch(updateGlobalTake(10));
 
-  const onBtPrevious = () => {
-    if (state.currentRowIndex >= 10) {
-      const previousNo = state.currentRowIndex - 10;
-      const newPageNo = state.pageNo - 1;
-
-      setState((prevState) => ({
-        ...prevState,
-        pageNo: newPageNo >= 1 ? newPageNo : 1,
-        pageNoNew: newPageNo >= 1 ? newPageNo : 1,
-        currentRowIndex: previousNo,
-      }));
-
-      getDataList("", 0, "", "", previousNo, state.globalTake, true, state.floatingFilterData);
-    }
-  };
-
-  const onBtNext = () => {
-    if (
-      state.pageSize.pageSize50 &&
-      state.pageNo >= Math.ceil(state.totalRecordCount / 50)
-    ) {
-      return false;
-    }
-
-    if (
-      state.pageSize.pageSize100 &&
-      state.pageNo >= Math.ceil(state.totalRecordCount / 100)
-    ) {
-      return false;
-    }
-
-    if (state.currentRowIndex < state.totalRecordCount - 10) {
-      setState((prevState) => ({
-        ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1,
-      }));
-      const nextNo = state.currentRowIndex + 10;
-      getDataList("", 0, "", "", nextNo, state.globalTake, true, state.floatingFilterData);
-      // skip, take, isPagination, floatingFilterData, (res)
-      setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
-    }
-  };
-
-  const onPageSizeChanged = (newPageSize) => {
-
-    let pageSize, totalRecordCount;
-
-
-    if (Number(newPageSize) === 10) {
-      pageSize = 10;
-    } else if (Number(newPageSize) === 50) {
-      pageSize = 50;
-    } else if (Number(newPageSize) === 100) {
-      pageSize = 100;
-    }
-
-    totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
-
-    getDataList("", 0, "", "", state.currentRowIndex, pageSize, true, state.floatingFilterData);
-
-    setState((prevState) => ({
-      ...prevState, globalTake: pageSize, pageNo: Math.min(state.pageNo, totalRecordCount), // Ensure pageNo is within bounds
-      pageSize: {
-        pageSize10: pageSize === 10,
-        pageSize50: pageSize === 50,
-        pageSize100: pageSize === 100,
-      },
-    }));
-
-    state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   /**
@@ -1061,7 +1007,7 @@ const BOPImportListing = (props) => {
                         rowData={tourStartData.showExtraData && bopImportList ? [...setLoremIpsum(bopImportList[0]), ...bopImportList] : bopImportList}
 
                         pagination={true}
-                        paginationPageSize={state.globalTake}
+                        paginationPageSize={globalTakes}
                         onGridReady={onGridReady}
                         gridOptions={gridOptions}
                         noRowsOverlayComponent={"customNoRowsOverlay"}
@@ -1107,42 +1053,11 @@ const BOPImportListing = (props) => {
                         {props.isMasterSummaryDrawer && (<AgGridColumn field="Attachements" headerName="Attachments" cellRenderer={"attachmentFormatter"}></AgGridColumn>)}
                         {props.isMasterSummaryDrawer && (<AgGridColumn field="Remark" tooltipField="Remark"></AgGridColumn>)}</AgGridReact>}
                       <div>
-                        {!state.isLoader && !props.isMasterSummaryDrawer && (<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />)}
-                        <div className="d-flex pagination-button-container">
-                          <p>
-                            <Button id="bopImportListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} />
-                          </p>
-                          {state?.pageSize?.pageSize10 && (
-                            <p className="next-page-pg custom-left-arrow">
-                              Page{" "}
-                              <span className="text-primary">
-                                {state.pageNo}
-                              </span>{" "}
-                              of {Math.ceil(state.totalRecordCount / 10)}
-                            </p>
+                        {!state.isLoader && !props.isMasterSummaryDrawer &&
+                          (<PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} module='BOP' />
                           )}
-                          {state?.pageSize?.pageSize50 && (
-                            <p className="next-page-pg custom-left-arrow">
-                              Page{" "}
-                              <span className="text-primary">
-                                {state.pageNo}
-                              </span>{" "}
-                              of {Math.ceil(state.totalRecordCount / 50)}
-                            </p>
-                          )}
-                          {state?.pageSize?.pageSize100 && (
-                            <p className="next-page-pg custom-left-arrow">
-                              Page{" "}
-                              <span className="text-primary">
-                                {state.pageNo}
-                              </span>{" "}
-                              of {Math.ceil(state.totalRecordCount / 100)}
-                            </p>
-                          )}
-                          <p>
-                            <Button id="bopImportListing_next" variant="next-btn" onClick={() => onBtNext()} />
-                          </p>
-                        </div>
+                        <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} module='BOP'
+                        />
                       </div>
                     </div>
                   </div>

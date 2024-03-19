@@ -1122,7 +1122,10 @@ class AddProfit extends Component {
                             </div>
                           </Col>
                         )}
-                        {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                        {/* {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && ( */}
+                        {((costingTypeId === ZBCTypeId) && (
+
+
                           <Col md="3">
                             <Field
                               label="Plant (Code)"
@@ -1345,9 +1348,10 @@ class AddProfit extends Component {
                             customClassName=" textAreaWithBorder"
                             onChange={this.handleMessageChange}
                             validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
-                            //required={true}
+                            required={true}
                             component={renderTextAreaField}
-                            maxLength="512"
+                            // maxLength="512"
+                            // maxLength="5000"
                             disabled={isViewMode}
                           />
                         </Col>

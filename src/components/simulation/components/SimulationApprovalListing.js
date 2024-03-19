@@ -509,7 +509,6 @@ function SimulationApprovalListing(props) {
         let tempArrIsFinalLevelButtonShow = []
         let tempArrIsPushedButtonShow = []
         var selectedRows = gridApi.getSelectedRows();
-        console.log('selectedRows: ', selectedRows);
         let tempArrReason = []
         let tempArrTechnology = []
         let tempArrSimulationTechnologyHead = []

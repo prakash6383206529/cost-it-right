@@ -266,7 +266,6 @@ function OtherCostDrawer(props) {
 
     const editItemDetails = (index) => {
         const editObj = gridData[index]
-        console.log('editObj: ', editObj);
         setValue('OtherCostType', { label: editObj.OtherCostType, value: editObj.OtherCostType })
         setValue('OtherCostApplicability', { label: editObj.OtherCostApplicability, value: editObj.OtherCostApplicabilityId })
         setValue('PercentageOtherCost', editObj.PercentageOtherCost === '-' ? 0 : editObj.PercentageOtherCost)
