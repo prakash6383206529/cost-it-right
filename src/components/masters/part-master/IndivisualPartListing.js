@@ -150,10 +150,11 @@ const IndivisualPartListing = (props) => {
 
         setState((prevState) => ({
           ...prevState,
-          totalRecordCount: res.data && res.data.DataList && res.data.DataList[0].TotalRecordCount || 0,
-          tableData: res.data.DataList || [],
+          totalRecordCount: (res.data && res.data.DataList && res.data.DataList[0]?.TotalRecordCount) || 0,
+          tableData: res.data?.DataList || [],
           isFilterButtonClicked: false
-        }))
+        }));
+
         setTimeout(() => {
           setState((prevState) => ({
             ...prevState, isFilterButtonClicked: false,
