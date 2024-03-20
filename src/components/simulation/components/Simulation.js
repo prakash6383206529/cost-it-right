@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
@@ -43,12 +43,14 @@ import BDNonAssociatedSimulation from './SimulationPages/BDNonAssociatedSimulati
 import TooltipCustom from '../../common/Tooltip';
 import { getClientSelectList } from '../../masters/actions/Client';
 import Toaster from '../../common/Toaster';
+import { simulationContext } from '.';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 export const ApplyPermission = React.createContext();
 function Simulation(props) {
+    const { handleEditMasterPage, showTour } = useContext(simulationContext) || {};
 
     const { register, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -56,7 +58,6 @@ function Simulation(props) {
     })
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
-
     const [master, setMaster] = useState([])
     const [technology, setTechnology] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
@@ -164,7 +165,11 @@ function Simulation(props) {
             setShowEditTable(false)
         }
     }, [showMasterList])
-
+    useEffect(() => {
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditTable);
+        }
+    }, [showEditTable]);
     const { topAndLeftMenuData } = useSelector((state) => state.auth);
 
     useEffect(() => {
@@ -192,6 +197,7 @@ function Simulation(props) {
         setValue('Technology', '')
         setValue('Vendor', '')
         setValue('token', '')
+        dispatch(setVendorForSimulation(''))
         setIsTechnologyDisable(false)
         dispatch(setMasterForSimulation(value))
         dispatch(setTechnologyForSimulation(''))
@@ -281,10 +287,11 @@ function Simulation(props) {
     }
 
     const handleTechnologyChange = (value) => {
+
         if ((checkForNull(value?.value) === ASSEMBLY && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS)) {
             setTechnology(value)
             setShowMasterList(false)
-            // dispatch(setTechnologyForSimulation(value))                //RE
+            dispatch(setTechnologyForSimulation(value))
             setShowTokenDropdown(false)
             setVendor('')
             setValue('Vendor', '')
@@ -1614,7 +1621,7 @@ function Simulation(props) {
 
                     {
                         showMasterList && !partType &&
-                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
+                        <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer ${showTour ? '' : 'sticky-btn-footer'}`}>
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
                                     {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}

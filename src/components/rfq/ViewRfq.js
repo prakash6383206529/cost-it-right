@@ -737,8 +737,11 @@ function RfqListing(props) {
         let temp = []
         let tempObj = {}
         const isApproval = selectedRows.filter(item => item.ShowApprovalButton)
+
+
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
+
         setloader(true)
         setSelectedCostingList([])
         dispatch(getMultipleCostingDetails(costingIdList, (res) => {
@@ -773,6 +776,7 @@ function RfqListing(props) {
     const onRowSelect = (event) => {
         if (event.node.isSelected()) {
             const selectedRowIndex = event.node.rowIndex;
+
             setSelectedRowIndex(selectedRowIndex)
         } else {
             setaddComparisonToggle(false)
@@ -872,6 +876,7 @@ function RfqListing(props) {
     };
 
     const hideSummaryHandler = () => {
+
         setaddComparisonToggle(false)
         setSelectedRowIndex('')
         gridApi.deselectAll()
@@ -1089,6 +1094,9 @@ function RfqListing(props) {
                 }
 
             </div >
+            { }
+            { }
+
             {addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0 && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
 

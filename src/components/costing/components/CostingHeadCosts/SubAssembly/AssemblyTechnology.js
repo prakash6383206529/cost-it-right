@@ -10,7 +10,7 @@ import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCal
 import BoughtOutPart from '../BOP';
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 import { findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../../CostingUtil';
-import { getRMCCTabData, gridDataAdded, saveAssemblyCostingRMCCTab, saveCostingLabourDetails } from '../../../actions/Costing';
+import { getRMCCTabData, gridDataAdded, openCloseStatus, saveAssemblyCostingRMCCTab, saveCostingLabourDetails } from '../../../actions/Costing';
 import { EMPTY_GUID, WACTypeId } from '../../../../../config/constants';
 import _ from 'lodash';
 import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
@@ -46,6 +46,7 @@ function AssemblyTechnology(props) {
 
     const toggle = (BOMLevel, PartNumber, PartType) => {
         if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+        dispatch(openCloseStatus({ RMC: !IsOpen, bopHandling: isBOPExists && !IsOpen, }))
         if (PartType === 'Assembly') {
             // WHEN TOGGLE BUTTON IS PRESSED AT THAT TIME VALUES SHOULD BE CALCULATED UNTIL THEN VALUES SHOULD BE 0
             setIsOpen(!IsOpen)
@@ -453,8 +454,9 @@ function AssemblyTechnology(props) {
                                 isBOPExists && IsOpen && <>
                                     <button
                                         type="button"
+                                        id="Add_BOP_Handling_Charge"
                                         className={'user-btn add-oprn-btn'}
-                                        title={`Add ${showBopLabel()} Handling`}
+                                        title={`Add ${showBopLabel()} Handling`} s
                                         onClick={() => { setIsOpenBOPDrawer(true) }}
                                     >
                                         <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>
@@ -462,6 +464,7 @@ function AssemblyTechnology(props) {
                             }
                             <button
                                 type="button"
+                                id="Add_Assembly_Process"
                                 className={'user-btn '}
                                 onClick={ProcessDrawerToggle}
                                 title={'Add Process'}
@@ -470,6 +473,7 @@ function AssemblyTechnology(props) {
                             </button>
 
                             <button
+                                id="Costing_addOperation"
                                 type="button"
                                 className={'user-btn'}
                                 onClick={OperationDrawerToggle}

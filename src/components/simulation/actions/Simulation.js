@@ -839,6 +839,7 @@ export function getImpactedMasterData(simulationId, callback) {
                 callback(response);
             }
         }).catch((error) => {
+
             dispatch({ type: API_FAILURE, });
             callback(error);
             apiErrors(error);
@@ -982,6 +983,7 @@ export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+
             callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
@@ -1051,8 +1053,13 @@ export function getCostingBoughtOutPartSimulationList(token, callback) {
                     payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
                 })
                 callback(response)
+            } else {
+                // If the response status is not 200, handle it as an error
+
+                dispatch({ type: API_FAILURE });
             }
         }).catch((error) => {
+
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         })
@@ -1108,6 +1115,7 @@ export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraf
                 }
             }
         }).catch((error) => {
+
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         })
@@ -1498,6 +1506,7 @@ export function getMachineRateCostingSimulationList(token, callback) {
 
 // ASSEMBLY TECHNOLOGY
 export function setVendorForSimulation(selectedVendorForSimulation) {
+
     return (dispatch) => {
         dispatch({
             type: SET_SELECTED_VENDOR_SIMULATION,

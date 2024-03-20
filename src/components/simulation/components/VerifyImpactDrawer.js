@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import HeaderTitle from '../../common/HeaderTitle';
@@ -13,9 +13,12 @@ import NoContentFound from '../../common/NoContentFound';
 import { ErrorMessage } from '../SimulationUtils';
 import { VBC, VBCTypeId, CBCTypeId } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
+import { simulationContext } from '.';
 
 
 function VerifyImpactDrawer(props) {
+  const { showEditMaster, costingDrawerPage, showverifyPage, handleEditMasterPage } = useContext(simulationContext) || {};
+
   const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, isSimulationWithCosting } = props
 
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
@@ -44,7 +47,13 @@ function VerifyImpactDrawer(props) {
     }
     props.closeDrawer('', type)
   }
+  useEffect(() => {
+    if (handleEditMasterPage) {
 
+      handleEditMasterPage(showEditMaster, showverifyPage, props?.costingPage)
+
+    }
+  }, [handleEditMasterPage])
   useEffect(() => {
     let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&

@@ -11,6 +11,7 @@ import { checkPermission } from '../../../helper/util';
 import ScrollToTop from '../../common/ScrollToTop';
 import { MESSAGES } from '../../../config/message';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
+export const ApplyPermission = React.createContext();
 
 class OverheadProfit extends Component {
   constructor(props) {
@@ -25,7 +26,8 @@ class OverheadProfit extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       DownloadAccessibility: false,
-      stopApiCallOnCancel: false
+      stopApiCallOnCancel: false,
+      permissionData: {}
     }
   }
 
@@ -50,6 +52,9 @@ class OverheadProfit extends Component {
       const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
       if (permmisionData !== undefined) {
+        this.setState({
+          permissionData: permmisionData
+        })
         this.setState({
           ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
           AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
@@ -158,38 +163,41 @@ class OverheadProfit extends Component {
                     </NavLink>
                   </NavItem>
                 </Nav>
+                <ApplyPermission.Provider value={this.state.permissionData}>
 
-                <TabContent activeTab={this.state.activeTab}>
-                  {this.state.activeTab === '1' && (
-                    <TabPane tabId="1">
-                      <OverheadListing
-                        formToggle={this.displayOverheadForm}
-                        getDetails={this.getOverHeadDetails}
-                        AddAccessibility={this.state.AddAccessibility}
-                        EditAccessibility={this.state.EditAccessibility}
-                        DeleteAccessibility={this.state.DeleteAccessibility}
-                        DownloadAccessibility={this.state.DownloadAccessibility}
-                        ViewAccessibility={this.state.ViewAccessibility}
-                        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-                      />
-                    </TabPane>
-                  )}
+                  <TabContent activeTab={this.state.activeTab}>
+                    {this.state.activeTab === '1' && (
+                      <TabPane tabId="1">
+                        <OverheadListing
+                          formToggle={this.displayOverheadForm}
+                          getDetails={this.getOverHeadDetails}
+                          AddAccessibility={this.state.AddAccessibility}
+                          EditAccessibility={this.state.EditAccessibility}
+                          DeleteAccessibility={this.state.DeleteAccessibility}
+                          DownloadAccessibility={this.state.DownloadAccessibility}
+                          ViewAccessibility={this.state.ViewAccessibility}
+                          stopApiCallOnCancel={this.state.stopApiCallOnCancel}
+                        />
+                      </TabPane>
+                    )}
 
-                  {this.state.activeTab === '2' && (
-                    <TabPane tabId="2">
-                      <ProfitListing
-                        formToggle={this.displayProfitForm}
-                        getDetails={this.getProfitDetails}
-                        AddAccessibility={this.state.AddAccessibility}
-                        EditAccessibility={this.state.EditAccessibility}
-                        DeleteAccessibility={this.state.DeleteAccessibility}
-                        DownloadAccessibility={this.state.DownloadAccessibility}
-                        ViewAccessibility={this.state.ViewAccessibility}
-                        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-                      />
-                    </TabPane>
-                  )}
-                </TabContent>
+                    {this.state.activeTab === '2' && (
+                      <TabPane tabId="2">
+                        <ProfitListing
+                          formToggle={this.displayProfitForm}
+                          getDetails={this.getProfitDetails}
+                          AddAccessibility={this.state.AddAccessibility}
+                          EditAccessibility={this.state.EditAccessibility}
+                          DeleteAccessibility={this.state.DeleteAccessibility}
+                          DownloadAccessibility={this.state.DownloadAccessibility}
+                          ViewAccessibility={this.state.ViewAccessibility}
+                          stopApiCallOnCancel={this.state.stopApiCallOnCancel}
+                        />
+                      </TabPane>
+                    )}
+                  </TabContent>
+                </ApplyPermission.Provider>
+
               </div>
             </Col>
           </Row>

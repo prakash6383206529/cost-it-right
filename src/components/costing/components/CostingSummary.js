@@ -473,7 +473,7 @@ function CostingSummary(props) {
                         <div className="left-border">{'Part Details:'}  {<TourWrapper
                           buttonSpecificProp={{ id: "costing_summary" }}
                           stepsSpecificProp={{
-                            steps: Steps(t).COSTING_INITIAL
+                            steps: Steps(t, "costing-summary-page").COSTING_INITIAL
                           }} />}</div>
                       </Col>
                       <Col className="col-md-15">
@@ -724,6 +724,8 @@ function CostingSummary(props) {
         costingIdExist={costingIdExist}
         storeSummary={true}
         technology={technology}
+        partTypeValue={partType}
+
       />}
 
       {IsBulkOpen && <BOMUpload

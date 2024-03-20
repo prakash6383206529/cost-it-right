@@ -343,7 +343,7 @@ function CPSimulation(props) {
                                                 </div>
                                             </div>
                                         }
-                                        {!isImpactedMaster && <button type="button" className={"apply ml-2"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>}
+                                        {!isImpactedMaster && <button type="button" className={"apply ml-2 back_simulationPage"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>}
                                     </div>
                                 </Col>
                             </Row>
@@ -421,7 +421,7 @@ function CPSimulation(props) {
                                 !isImpactedMaster &&
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                        <div className="inputbox date-section mr-3 verfiy-page">
+                                        <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                             <DatePicker
                                                 name="EffectiveDate"
                                                 selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}

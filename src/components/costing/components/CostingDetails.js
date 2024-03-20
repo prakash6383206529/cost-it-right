@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc, setOtherCostData, setCostingEffectiveDate, setSurfaceCostInOverheadProfit, setToolCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc, setOtherCostData, setCostingEffectiveDate, setSurfaceCostInOverheadProfit, setToolCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, openCloseStatus
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -158,7 +158,7 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
-
+      dispatch(openCloseStatus({ RMC: false }))
       setValue('Technology', '')
       setValue('Part', '')
       reset()
@@ -1630,6 +1630,7 @@ function CostingDetails(props) {
 
     } else {
       setIsLoader(true)
+      dispatch(openCloseStatus({ RMC: false }))
       dispatch(getBriefCostingById('', (res) => { }))
       dispatch(isDiscountDataChange(false))
       dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
@@ -2148,11 +2149,13 @@ function CostingDetails(props) {
                           buttonSpecificProp={{ id: "Costing_Details_form", onClick: () => vendorTourStart() }}
                           stepsSpecificProp={{
                             steps: addVendorsTourStep
-                          }} /> : <TourWrapper
-                          buttonSpecificProp={{ id: "Costing_Details_form" }}
-                          stepsSpecificProp={{
-                            steps: Steps(t).COSTING_INITIAL
-                          }} />}</div>
+                          }} />
+                          :
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "Costing_Details_form" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t, "costing-details-page").COSTING_INITIAL
+                            }} />}</div>
                       </Col>
                       <Col className="col-md-15">
                         <SearchableSelectHookForm

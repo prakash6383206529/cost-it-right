@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { getOverheadDataList, deleteOverhead } from '../actions/OverheadProfit';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -28,6 +28,11 @@ import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../
 import PaginationControls from '../../common/Pagination/PaginationControls';
 import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import { updatePageNumber, updateCurrentRowIndex, resetStatePagination } from '../../common/Pagination/paginationAction';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { useTranslation } from 'react-i18next';
+import { Steps } from '../../common/Tour/TourMessages';
+import { ApplyPermission } from '.';
+import { useContext } from 'react';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -37,6 +42,9 @@ const gridOptions = {};
 
 function OverheadListing(props) {
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
+    const { t } = useTranslation("common")
+    const permissions = useContext(ApplyPermission);
+
 
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
@@ -46,7 +54,8 @@ function OverheadListing(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [disableFilter, setDisableFilter] = useState(true)
     const [disableDownload, setDisableDownload] = useState(false)
-
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [warningMessage, setWarningMessage] = useState(false)
     // const [globalTake, setGlobalTake] = useState(defaultPageSize)
@@ -245,7 +254,16 @@ function OverheadListing(props) {
         }
     }
 
+    const toggleExtraData = (showTour) => {
 
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 100);
+
+
+    }
     const onSearch = () => {
         setNoData(false)
         setWarningMessage(false)
@@ -351,13 +369,12 @@ function OverheadListing(props) {
 
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
-
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -606,7 +623,7 @@ function OverheadListing(props) {
                                         {AddAccessibility && (
                                             <button
                                                 type="button"
-                                                className={"user-btn mr5"}
+                                                className={"user-btn mr5 Tour_List_Add"}
                                                 onClick={formToggle}
                                                 title="Add"
                                             >
@@ -617,7 +634,7 @@ function OverheadListing(props) {
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" ></div>
                                                     {/* DOWNLOAD */}
                                                     {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                 </button>
@@ -629,7 +646,7 @@ function OverheadListing(props) {
                                             </>
                                         }
 
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <button type="button" className="user-btn Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
 
@@ -642,14 +659,21 @@ function OverheadListing(props) {
                                 <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <TourWrapper
+                                            buttonSpecificProp={{ id: "Overhead_listing_Tour", onClick: toggleExtraData }}
+                                            stepsSpecificProp={{
+                                                steps: Steps(t, { bulkUpload: false, costMovementButton: false, addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                                            }} />
                                     </div>
                                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                        <AgGridReact
+                                        {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
                                             domLayout='autoHeight'
-                                            rowData={overheadProfitList}
+                                            rowData={showExtraData ? [...setLoremIpsum(overheadProfitList[0]), ...overheadProfitList] : overheadProfitList}
+
                                             pagination={true}
                                             paginationPageSize={globalTakes}
                                             onGridReady={onGridReady}
@@ -678,8 +702,8 @@ function OverheadListing(props) {
                                             <AgGridColumn field="OverheadBOPPercentage" headerName={`Overhead on ${showBopLabel()} (%)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                            <AgGridColumn field="OverheadId" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                                        </AgGridReact>
+                                            <AgGridColumn field="OverheadId" width={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                        </AgGridReact>}
                                         <div className='button-wrapper'>
                                             {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="overHeadAndProfits" />}
                                             {<PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="overHeadAndProfits" />

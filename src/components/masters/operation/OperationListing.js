@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
@@ -9,7 +9,7 @@ import { getOperationsDataList, deleteOperationAPI, setOperationList } from '../
 import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
-import { checkPermission, searchNocontentFilter } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import { userDepartmetList, getConfigurationKey } from '../../../helper'
 import { OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -23,7 +23,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination, } from '../../simulation/actions/Simulation'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
-import { disabledClass, isResetClick } from '../../../actions/Common';
+import { TourStartAction, disabledClass, isResetClick } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
@@ -32,6 +32,9 @@ import Button from '../../layout/Button';
 import PaginationControls from '../../common/Pagination/PaginationControls';
 import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber } from '../../common/Pagination/paginationAction';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -79,8 +82,12 @@ const OperationListing = (props) => {
         DeleteAccessibility: false,
         BulkUploadAccessibility: false,
         DownloadAccessibility: false,
+        showExtraData: false,
+        render: false
 
     })
+    const tourStartData = useSelector(state => state.comman.tourStartData);
+    const { t } = useTranslation("common")
     const [searchText, setSearchText] = useState('');
     const { operationList, allOperationList, operationDataHold } = useSelector(state => state.otherOperation);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
@@ -101,6 +108,8 @@ const OperationListing = (props) => {
 
         // eslint-disable-next-line
     }, [topAndLeftMenuData]); // Add props.stopAPICall to the dependency array
+
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -341,7 +350,16 @@ const OperationListing = (props) => {
         setSearchText(''); // Assuming this state is bound to the input value
 
     };
+    const toggleExtraData = (showTour) => {
+        dispatch(TourStartAction({
+            showExtraData: showTour,
+        }));
+        setState((prevState) => ({ ...prevState, render: true }));
+        setTimeout(() => {
+            setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+        }, 100);
 
+    }
 
 
 
@@ -395,39 +413,39 @@ const OperationListing = (props) => {
     * @method buttonFormatter
     * @description Renders buttons
     */
-    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
-    const buttonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    const buttonFormatter = useMemo(() => {
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
 
-        let isEditable = false
-        let isDeleteButton = false
+        return (props) => {
+            const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+            const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
+            let isEditable = false;
+            let isDeleteButton = false;
 
-        if (EditAccessibility) {
-            isEditable = true
-        } else {
-            isEditable = false
-        }
+            if (EditAccessibility) {
+                isEditable = true;
+            }
 
+            if (tourStartData.showExtraData && props.rowIndex === 0) {
+                isDeleteButton = true;
+            } else {
+                if (DeleteAccessibility && !rowData.IsOperationAssociated) {
+                    isDeleteButton = true;
+                }
+            }
 
-        if (DeleteAccessibility && !rowData.IsOperationAssociated) {
-            isDeleteButton = true
-        } else {
-            isDeleteButton = false
-        }
+            return (
+                <>
+                    <Button id={`operationListing_movement${props.rowIndex}`} className={"cost-movement Tour_List_Cost_Movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
+                    {ViewAccessibility && <Button id={`operationListing_view${props.rowIndex}`} className={"View Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
+                    {isEditable && <Button id={`operationListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
+                    {isDeleteButton && <Button id={`operationListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+                </>
+            );
+        };
+    }, [state, tourStartData.showExtraData,]);
 
-
-        return (
-            <>
-                <Button id={`operationListing_movement${props.rowIndex}`} className={"cost-movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
-
-                {ViewAccessibility && <Button id={`operationListing_view${props.rowIndex}`} className={"View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
-                {isEditable && <Button id={`operationListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
-                {isDeleteButton && <Button id={`operationListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
-            </>
-        )
-    };
 
     /**
     * @method hyphenFormatter
@@ -773,6 +791,11 @@ const OperationListing = (props) => {
                     <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation || props.benchMark ? "zindex-0" : ""}`}>
                         <Col md="3" lg="3">
                             <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                            {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+                                buttonSpecificProp={{ id: "Operation_Listing_Tour", onClick: toggleExtraData }}
+                                stepsSpecificProp={{
+                                    steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                                }} />)}
                         </Col>
                         <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
                             <div className="d-flex justify-content-end bd-highlight w100">
@@ -784,7 +807,7 @@ const OperationListing = (props) => {
 
                                 { }
                                 {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                    <Button id="operationListing_filter" className={"user-btn mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
+                                    <Button id="operationListing_filter" className={"user-btn mr5 Tour_List_Filter"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
 
                                 }
                                 {(!isSimulation && !props?.benchMark) && <>
@@ -800,18 +823,18 @@ const OperationListing = (props) => {
                                     }
 
                                     {AddAccessibility && !props?.isMasterSummaryDrawer && (
-                                        <Button id="operationListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
+                                        <Button id="operationListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
 
                                     )}
                                     {BulkUploadAccessibility && !props?.isMasterSummaryDrawer && (
 
-                                        <Button id="operationListing_bulkUpload" className={"user-btn mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
+                                        <Button id="operationListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
                                     )}
                                     {
                                         DownloadAccessibility && !props?.isMasterSummaryDrawer &&
                                         <>
 
-                                            <Button className="user-btn mr5" id={"operationListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                                            <Button className="user-btn mr5 Tour_List_Download" id={"operationListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                                 icon={"download mr-1"}
                                                 buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                             />
@@ -827,7 +850,7 @@ const OperationListing = (props) => {
                                 }
                             </div>
 
-                            <Button id={"operationListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                            <Button id={"operationListing_refresh"} className="Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
 
                         </Col>
 
@@ -836,11 +859,14 @@ const OperationListing = (props) => {
                 <div className={`ag-grid-wrapper p-relative ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(state.tableData && state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${props.isSimulation ? 'min-height' : ''}`}>
                     <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                        {!state.isLoader && <AgGridReact
+
+                        {(state.render || state.isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout='autoHeight'
-                            rowData={state.tableData}
+                            rowData={state.showExtraData ? [...setLoremIpsum(state.tableData[0]), ...state.tableData] : state.tableData}
+
+
                             pagination={true}
 
                             paginationPageSize={globalTakes}
@@ -872,7 +898,7 @@ const OperationListing = (props) => {
                             <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                             <AgGridColumn field="Rate" headerName={`Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                            {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper ag-grid-action-container"} width={150} /* pinned="right" */ headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                            {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper ag-grid-action-container"} width={150} pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
                             {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                         </AgGridReact>}

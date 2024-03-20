@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
@@ -27,6 +27,8 @@ import DatePicker from "react-datepicker";
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 import TooltipCustom from '../../../common/Tooltip';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { simulationContext } from '..';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -36,6 +38,8 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
+    const { showEditMaster, handleEditMasterPage, showCompressedColumns, render } = useContext(simulationContext) || {};
+
     const { list, isbulkUpload, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -54,9 +58,22 @@ function ERSimulation(props) {
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
-
     const dispatch = useDispatch()
+    const columnWidths = {
 
+        Currency: showCompressedColumns ? 50 : 190,
+        CostingNumber: showCompressedColumns ? 90 : 190,
+        PartNumber: showCompressedColumns ? 100 : 190,
+        BankRate: showCompressedColumns ? 100 : 190,
+        BankCommissionPercentage: showCompressedColumns ? 100 : 190,
+        CustomRate: showCompressedColumns ? 100 : 135,
+        CurrencyExchangeRate: showCompressedColumns ? 100 : 190,
+        OldExchangeRate: showCompressedColumns ? 100 : 190,
+        NewExchangeRate: showCompressedColumns ? 100 : 190,
+        EffectiveDate: showCompressedColumns ? 100 : 190,
+        ExchangeRateId: showCompressedColumns ? 100 : 190,
+
+    };
     useEffect(() => {
         dispatch(getCurrencySelectList(() => { }))
         list && list?.map(item => {
@@ -64,7 +81,11 @@ function ERSimulation(props) {
             return null
         })
     }, [])
-
+    useEffect(() => {
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditMaster, showverifyPage)
+        }
+    }, [showverifyPage])
     useEffect(() => {
         const entryWithLargestDate = _.maxBy(list, entry => new Date(entry.EffectiveDate));
         setLargestDate(entryWithLargestDate?.EffectiveDate)
@@ -365,19 +386,20 @@ function ERSimulation(props) {
                                     <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                         <div className='d-flex align-items-center'>
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                            <button type="button" className="user-btn float-right mr-1" title="Reset Grid" onClick={() => resetState()}>
+                                            <button type="button" className="user-btn float-right mr-1 Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div></button>
                                             {isImpactedMaster && <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
                                                 <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                 {onBtExport()}
                                             </ExcelFile>}
                                         </div>
-                                        {!isImpactedMaster && <button type="button" id="simulation-back" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
+                                        {!isImpactedMaster && <button type="button" id="simulation-back" className={"apply back_simulationPage"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
                                     </div>
 
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        <AgGridReact
+                                        {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
@@ -401,27 +423,22 @@ function ERSimulation(props) {
                                             onFilterModified={onFloatingFilterChanged}
                                             enableBrowserTooltips={true}
                                         >
-                                            <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={190}></AgGridColumn>
-                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
-                                            {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' headerName="Part No" minWidth={190}></AgGridColumn>}
-                                            <AgGridColumn field="BankRate" editable='false' headerName={`Bank Rate(${reactLocalStorage.getObject("baseCurrency")})`} minWidth={190}></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission %" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="CustomRate" editable='false' headerName={`Custom Rate(${reactLocalStorage.getObject("baseCurrency")})`} minWidth={190}></AgGridColumn>
-
-                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate" marryChildren={true} >
-                                                <AgGridColumn width={120} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewCurrencyExchangeRate" tooltipField="NewCurrencyExchangeRate" valueGetter='data.NewCurrencyExchangeRate' editable={!isImpactedMaster} headerName="Revised" cellRenderer='newRateFormatter' colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
-                                            </AgGridColumn>}
-
+                                            <AgGridColumn field="Currency" editable='false' headerName="Currency" width={columnWidths.Currency}></AgGridColumn>
+                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" width={columnWidths.CostingNumber}></AgGridColumn>}
+                                            {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' headerName="Part No" width={columnWidths.PartNumber}></AgGridColumn>}
+                                            <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" width={columnWidths.BankRate}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " width={columnWidths.BankCommissionPercentage}></AgGridColumn>
+                                            <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" width={columnWidths.CustomRate}></AgGridColumn>
+                                            {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" width={columnWidths.CurrencyExchangeRate}></AgGridColumn>}
                                             {isImpactedMaster && <>
-                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(${reactLocalStorage.getObject("baseCurrency")})`} minWidth={190}></AgGridColumn>
-                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(${reactLocalStorage.getObject("baseCurrency")}) `} minWidth={190}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Existing Exchange Rate(INR)" width={columnWidths.OldExchangeRate}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="Revised Exchange Rate(INR)" width={columnWidths.NewExchangeRate}></AgGridColumn>
                                             </>}
                                             {props.children}
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' width={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
 
-                                        </AgGridReact>
+                                        </AgGridReact>}
 
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
@@ -434,7 +451,7 @@ function ERSimulation(props) {
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
                                     <div className="d-flex align-items-center">
                                         {simulationApplicability?.value === APPLICABILITY_PART_SIMULATION ?
-                                            <><div className="inputbox date-section mr-3 verfiy-page">
+                                            <><div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                                 <DatePicker
                                                     name="EffectiveDate"
                                                     selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
@@ -453,7 +470,7 @@ function ERSimulation(props) {
                                                 />
                                             </div>
                                                 {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
-                                                <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" id={"verify-btn"} disabled={isDisable}>
+                                                <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn verifySimulation" id={"verify-btn"} disabled={isDisable}>
                                                     <div className={"Run-icon"}>
                                                     </div>{" "}
                                                     {"Verify"}
