@@ -272,7 +272,7 @@ function ApprovalSummary(props) {
             TechnologyId: technologyId,
             Mode: 'costing',
             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
-            plantId: Data.TypeOfCosting === VBC ? Data.DestinationPlantId : Data.PlantId
+            plantId: Data.DestinationPlantId
           }
           dispatch(checkFinalUser(obj, res => {
             if (res && res.data && res.data.Result) {
