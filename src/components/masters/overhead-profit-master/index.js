@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
 import AddOverhead from './AddOverhead';
@@ -11,57 +11,58 @@ import { checkPermission } from '../../../helper/util';
 import ScrollToTop from '../../common/ScrollToTop';
 import { MESSAGES } from '../../../config/message';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
+import { Loader } from '../../common/Loader';
 export const ApplyPermission = React.createContext();
 
-class OverheadProfit extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeTab: '1',
-      isOverheadForm: false,
-      isProfitForm: false,
-      data: {},
-      ViewAccessibility: false,
-      AddAccessibility: false,
-      EditAccessibility: false,
-      DeleteAccessibility: false,
-      DownloadAccessibility: false,
-      stopApiCallOnCancel: false,
-      permissionData: {}
+const OverheadProfit = () => {
+  const [loading, setLoading] = useState(true); // State to manage loading
+
+  const [state, setState] = useState({
+    activeTab: '1',
+    isOverheadForm: false,
+    isProfitForm: false,
+    data: {},
+    ViewAccessibility: false,
+    AddAccessibility: false,
+    EditAccessibility: false,
+    DeleteAccessibility: false,
+    DownloadAccessibility: false,
+    stopApiCallOnCancel: false,
+    permissions: {}
+  });
+  const dispatch = useDispatch();
+
+  const topAndLeftMenuData = useSelector(state => state.auth.topAndLeftMenuData);
+  const disabledClass = useSelector(state => state.comman.disabledClass);
+
+  useEffect(() => {
+    applyPermission(topAndLeftMenuData);
+  }, [topAndLeftMenuData]);
+  useEffect(() => {
+    if (state.permissions && state.permissions.View) {
+      setLoading(false); // Update loading state once permissions are available
     }
-  }
-
-  componentDidMount() {
-    this.applyPermission(this.props.topAndLeftMenuData)
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
-      this.applyPermission(nextProps.topAndLeftMenuData)
-    }
-  }
-
+  }, [state.permissions]);
   /**
   * @method applyPermission
   * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
   */
-  applyPermission = (topAndLeftMenuData) => {
+  const applyPermission = (topAndLeftMenuData) => {
     if (topAndLeftMenuData !== undefined) {
       const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
       const accessData = Data && Data.Pages.find(el => el.PageName === OVERHEAD_AND_PROFIT)
       const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
       if (permmisionData !== undefined) {
-        this.setState({
-          permissionData: permmisionData
-        })
-        this.setState({
+        setState(prevState => ({
+          ...prevState,
+          permissions: permmisionData,
           ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
           AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
           EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
           DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
           DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-        })
+        }))
       }
 
     }
@@ -71,80 +72,102 @@ class OverheadProfit extends Component {
   * @method toggle
   * @description toggling the tabs
   */
-  toggle = (tab) => {
+  const toggle = (tab) => {
 
-    if (this.state.activeTab !== tab) {
-      this.setState({
+    if (state.activeTab !== tab) {
+      setState(prevState => ({
+        ...prevState,
+
         activeTab: tab,
         stopApiCallOnCancel: false
-      });
+      }));
     }
-    this.props.setSelectedRowForPagination([])
+    dispatch(setSelectedRowForPagination([])); // Dispatch action using useDispatch hook
   }
 
-  displayOverheadForm = () => {
-    this.setState({ isOverheadForm: true, isProfitForm: false, })
+  const displayOverheadForm = () => {
+    setState(prevState => ({
+      ...prevState,
+      isOverheadForm: true, isProfitForm: false,
+    }))
   }
 
-  displayProfitForm = () => {
-    this.setState({ isProfitForm: true, isOverheadForm: false, })
+  const displayProfitForm = () => {
+    setState(prevState => ({
+      ...prevState,
+      isProfitForm: true, isOverheadForm: false,
+    }))
   }
 
-  hideForm = (type) => {
-    this.setState({ isOverheadForm: false, isProfitForm: false, data: {}, stopApiCallOnCancel: false })
+  const hideForm = (type) => {
+    setState(prevState => ({
+      ...prevState,
+      isOverheadForm: false, isProfitForm: false, data: {}, stopApiCallOnCancel: false
+    }))
     if (type === 'cancel') {
-      this.setState({ stopApiCallOnCancel: true })
+      setState(prevState => ({
+        ...prevState,
+        stopApiCallOnCancel: true
+      }))
 
     }
   }
 
-  getOverHeadDetails = (data) => {
-    this.setState({ isOverheadForm: true, data: data })
+  const getOverHeadDetails = (data) => {
+    setState(prevState => ({
+      ...prevState,
+      isOverheadForm: true, data: data
+    }))
   }
 
-  getProfitDetails = (data) => {
-    this.setState({ isProfitForm: true, data: data })
+  const getProfitDetails = (data) => {
+    setState(prevState => ({
+      ...prevState,
+      isProfitForm: true, data: data
+    }))
   }
 
   /**
   * @method render
   * @description Renders the component
   */
-  render() {
-    const { isOverheadForm, isProfitForm, data } = this.state;
+  const { isOverheadForm, isProfitForm, data } = state;
 
-    if (isOverheadForm === true) {
-      return <AddOverhead
-        data={data}
-        hideForm={this.hideForm}
-      />
-    }
+  if (isOverheadForm === true) {
+    return <AddOverhead
+      data={data}
+      hideForm={hideForm}
+    />
+  }
 
-    if (isProfitForm === true) {
-      return <AddProfit
-        data={data}
-        hideForm={this.hideForm}
-      />
-    }
+  if (isProfitForm === true) {
+    return <AddProfit
+      data={data}
+      hideForm={hideForm}
+    />
+  }
 
-    return (
-      <>
-        <div className="container-fluid" id='go-to-top'>
-          {/* {this.props.loading && <Loader/>} */}
-          <ScrollToTop pointProp="go-to-top" />
 
-          <Row>
-            <Col>
+  return (
+    <>
+      <div className="container-fluid" id='go-to-top'>
+        {loading && <Loader />}
+        <ScrollToTop pointProp="go-to-top" />
+
+        <Row>
+          <Col>
+            {Object.keys(state.permissions).length > 0 && (
+
               <div>
                 <Nav tabs className="subtabs mt-0 p-relative">
-                  {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
+                  {disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
                   <NavItem>
                     <NavLink
                       className={classnames({
-                        active: this.state.activeTab === "1",
+                        active: state.activeTab === "1",
                       })}
                       onClick={() => {
-                        this.toggle("1");
+                        toggle("1");
                       }}
                     >
                       Manage Overhead
@@ -153,75 +176,58 @@ class OverheadProfit extends Component {
                   <NavItem>
                     <NavLink
                       className={classnames({
-                        active: this.state.activeTab === "2",
+                        active: state.activeTab === "2",
                       })}
                       onClick={() => {
-                        this.toggle("2");
+                        toggle("2");
                       }}
                     >
                       Manage Profits
                     </NavLink>
                   </NavItem>
                 </Nav>
-                <ApplyPermission.Provider value={this.state.permissionData}>
+                <ApplyPermission.Provider value={state.permissions}>
 
-                  <TabContent activeTab={this.state.activeTab}>
-                    {this.state.activeTab === '1' && (
+                  <TabContent activeTab={state.activeTab}>
+                    {state.activeTab === '1' && (
                       <TabPane tabId="1">
                         <OverheadListing
-                          formToggle={this.displayOverheadForm}
-                          getDetails={this.getOverHeadDetails}
-                          AddAccessibility={this.state.AddAccessibility}
-                          EditAccessibility={this.state.EditAccessibility}
-                          DeleteAccessibility={this.state.DeleteAccessibility}
-                          DownloadAccessibility={this.state.DownloadAccessibility}
-                          ViewAccessibility={this.state.ViewAccessibility}
-                          stopApiCallOnCancel={this.state.stopApiCallOnCancel}
+                          formToggle={displayOverheadForm}
+                          getDetails={getOverHeadDetails}
+                          AddAccessibility={state.AddAccessibility}
+                          EditAccessibility={state.EditAccessibility}
+                          DeleteAccessibility={state.DeleteAccessibility}
+                          DownloadAccessibility={state.DownloadAccessibility}
+                          ViewAccessibility={state.ViewAccessibility}
+                          stopApiCallOnCancel={state.stopApiCallOnCancel}
                         />
                       </TabPane>
                     )}
 
-                    {this.state.activeTab === '2' && (
+                    {state.activeTab === '2' && (
                       <TabPane tabId="2">
                         <ProfitListing
-                          formToggle={this.displayProfitForm}
-                          getDetails={this.getProfitDetails}
-                          AddAccessibility={this.state.AddAccessibility}
-                          EditAccessibility={this.state.EditAccessibility}
-                          DeleteAccessibility={this.state.DeleteAccessibility}
-                          DownloadAccessibility={this.state.DownloadAccessibility}
-                          ViewAccessibility={this.state.ViewAccessibility}
-                          stopApiCallOnCancel={this.state.stopApiCallOnCancel}
+                          formToggle={displayProfitForm}
+                          getDetails={getProfitDetails}
+                          AddAccessibility={state.AddAccessibility}
+                          EditAccessibility={state.EditAccessibility}
+                          DeleteAccessibility={state.DeleteAccessibility}
+                          DownloadAccessibility={state.DownloadAccessibility}
+                          ViewAccessibility={state.ViewAccessibility}
+                          stopApiCallOnCancel={state.stopApiCallOnCancel}
                         />
                       </TabPane>
                     )}
                   </TabContent>
                 </ApplyPermission.Provider>
-
               </div>
-            </Col>
-          </Row>
-        </div>
-      </>
-    );
-  }
+            )}
+          </Col>
+        </Row>
+      </div>
+    </>
+  );
+
 }
-
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ overheadProfit, auth, comman }) {
-  const { loading } = overheadProfit;
-  const { leftMenuData, topAndLeftMenuData } = auth;
-  const { disabledClass } = comman
-  return { loading, leftMenuData, topAndLeftMenuData, disabledClass }
-}
-
-
-export default connect(mapStateToProps,
-  {
-    setSelectedRowForPagination
-  })(OverheadProfit);
+export default OverheadProfit
 

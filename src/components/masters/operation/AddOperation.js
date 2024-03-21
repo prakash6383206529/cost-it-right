@@ -840,8 +840,8 @@ class AddOperation extends Component {
 
     const { filedObj } = this.props
     const { selectedPlants, operationType, selectedTechnology, UOM, destinationPlant, costingTypeId, isSurfaceTreatment, OperationId } = this.state
-    let isPlant = costingTypeId === ZBCTypeId ? selectedPlants.length > 0 : destinationPlant.label
-
+    let isFirstConditionTrue = costingTypeId === ZBCTypeId ? (selectedPlants.length > 0) : false;
+    let isPlant = isFirstConditionTrue || (Object.keys(destinationPlant).length > 0 ? true : false);
     if (operationType && selectedTechnology.length > 0 && filedObj.OperationName && UOM.label && filedObj.EffectiveDate && isPlant) {
       let obj = {}
       obj.operationType = this.state.operationType
@@ -858,9 +858,12 @@ class AddOperation extends Component {
       obj.customer = this.state.client
       obj.isSurfaceTreatment = isSurfaceTreatment
       obj.OperationId = OperationId
+
       if (String(this.state.operationType.label) === "Ni Cr Plating") {
+
         obj.useWatchArray = ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent']
       } else {
+
         obj.useWatchArray = String(this.state.operationType.label) === "Welding" ? ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'labourRate', 'weldingShift', 'machineConsumableCost', 'welderCost', 'interestDepriciationCost', 'otherCostWelding'] : ['gasCost', 'electricityCost', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'interestCost', 'depriciationCost', 'rateOperation', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent', 'otherCost']
       }
       this.setState({ addMoreDetails: true, addMoreDetailObj: obj })

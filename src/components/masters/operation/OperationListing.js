@@ -64,13 +64,8 @@ const OperationListing = (props) => {
         floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '' },
         warningMessage: false,
         filterModel: {},
-        // pageNo: 1,
-        // pageNoNew: 1,
         totalRecordCount: 0,
         isFilterButtonClicked: false,
-        // currentRowIndex: 0,
-        // pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-        // globalTake: defaultPageSize,
         noData: false,
         dataCount: 0,
         attachment: false,
@@ -83,7 +78,8 @@ const OperationListing = (props) => {
         BulkUploadAccessibility: false,
         DownloadAccessibility: false,
         showExtraData: false,
-        render: false
+        render: false,
+        permissionData: {},
 
     })
     const tourStartData = useSelector(state => state.comman.tourStartData);
@@ -150,12 +146,13 @@ const OperationListing = (props) => {
             if (permissionData !== undefined) {
                 setState((prevState) => ({
                     ...prevState,
-                    ViewAccessibility: permissionData && permissionData.View ? permissionData.View : false,
-                    AddAccessibility: permissionData && permissionData.Add ? permissionData.Add : false,
-                    EditAccessibility: permissionData && permissionData.Edit ? permissionData.Edit : false,
-                    DeleteAccessibility: permissionData && permissionData.Delete ? permissionData.Delete : false,
-                    BulkUploadAccessibility: permissionData && permissionData.BulkUpload ? permissionData.BulkUpload : false,
-                    DownloadAccessibility: permissionData && permissionData.Download ? permissionData.Download : false,
+                    permissionData: permissionData,
+                    ViewAccessibility: permissionData && permissionData?.View ? permissionData?.View : false,
+                    AddAccessibility: permissionData && permissionData?.Add ? permissionData?.Add : false,
+                    EditAccessibility: permissionData && permissionData?.Edit ? permissionData?.Edit : false,
+                    DeleteAccessibility: permissionData && permissionData?.Delete ? permissionData?.Delete : false,
+                    BulkUploadAccessibility: permissionData && permissionData?.BulkUpload ? permissionData?.BulkUpload : false,
+                    DownloadAccessibility: permissionData && permissionData?.Download ? permissionData?.Download : false,
                 }))
             }
         }
@@ -413,38 +410,39 @@ const OperationListing = (props) => {
     * @method buttonFormatter
     * @description Renders buttons
     */
-    const buttonFormatter = useMemo(() => {
-        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
+    const { permissionData } = state;
+    const buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        return (props) => {
-            const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-            const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let isEditable = false
+        let isDeleteButton = false
 
-            let isEditable = false;
-            let isDeleteButton = false;
 
-            if (EditAccessibility) {
-                isEditable = true;
-            }
+        if (permissionData?.Edit) {
+            isEditable = true
+        } else {
+            isEditable = false
+        }
 
-            if (tourStartData.showExtraData && props.rowIndex === 0) {
-                isDeleteButton = true;
-            } else {
-                if (DeleteAccessibility && !rowData.IsOperationAssociated) {
-                    isDeleteButton = true;
-                }
-            }
 
-            return (
-                <>
-                    <Button id={`operationListing_movement${props.rowIndex}`} className={"cost-movement Tour_List_Cost_Movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
-                    {ViewAccessibility && <Button id={`operationListing_view${props.rowIndex}`} className={"View Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
-                    {isEditable && <Button id={`operationListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
-                    {isDeleteButton && <Button id={`operationListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
-                </>
-            );
-        };
-    }, [state, tourStartData.showExtraData,]);
+        if (permissionData?.Delete && !rowData.IsOperationAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
+
+
+        return (
+            <>
+                <Button id={`operationListing_movement${props.rowIndex}`} className={"cost-movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
+
+                {permissionData?.View && <Button id={`operationListing_view${props.rowIndex}`} className={"View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
+                {isEditable && <Button id={`operationListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
+                {isDeleteButton && <Button id={`operationListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+            </>
+        )
+    };
 
 
     /**
@@ -654,7 +652,7 @@ const OperationListing = (props) => {
     */
 
     const { isSimulation } = props;
-    const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData } = state;
+    const { toggleForm, data, isBulkUpload, noData } = state;
     const ExcelFile = ReactExport.ExcelFile;
 
 
@@ -786,7 +784,7 @@ const OperationListing = (props) => {
     return (
         <div className={`${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-            <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+            <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
                 <form>
                     <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation || props.benchMark ? "zindex-0" : ""}`}>
                         <Col md="3" lg="3">
@@ -822,16 +820,16 @@ const OperationListing = (props) => {
                                         ""
                                     }
 
-                                    {AddAccessibility && !props?.isMasterSummaryDrawer && (
-                                        <Button id="operationListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
+                                    {permissionData?.Add && !props?.isMasterSummaryDrawer && (
+                                        <Button id="operationListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
 
                                     )}
-                                    {BulkUploadAccessibility && !props?.isMasterSummaryDrawer && (
+                                    {permissionData?.BulkUpload && !props?.isMasterSummaryDrawer && (
 
                                         <Button id="operationListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
                                     )}
                                     {
-                                        DownloadAccessibility && !props?.isMasterSummaryDrawer &&
+                                        permissionData?.Download && !props?.isMasterSummaryDrawer &&
                                         <>
 
                                             <Button className="user-btn mr5 Tour_List_Download" id={"operationListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
@@ -859,8 +857,7 @@ const OperationListing = (props) => {
                 <div className={`ag-grid-wrapper p-relative ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(state.tableData && state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${props.isSimulation ? 'min-height' : ''}`}>
                     <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-
-                        {(state.render || state.isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+                        {!state.isLoader && Object.keys(permissionData).length > 0 && <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout='autoHeight'
@@ -922,16 +919,14 @@ const OperationListing = (props) => {
                         rowData={state.selectedRowDataAnalytics}
                     />
                 }
-                {
-                    state.attachment && (
-                        <Attachament
-                            isOpen={state.attachment}
-                            index={state.viewAttachment}
-                            closeDrawer={closeAttachmentDrawer}
-                            anchor={'right'}
-                            gridListing={true}
-                        />
-                    )
+                {state.attachment && (<Attachament
+                    isOpen={state.attachment}
+                    index={state.viewAttachment}
+                    closeDrawer={closeAttachmentDrawer}
+                    anchor={'right'}
+                    gridListing={true}
+                />
+                )
                 }
 
             </div>
@@ -941,9 +936,5 @@ const OperationListing = (props) => {
         </div>
     );
 }
-
-
-
-
 
 export default OperationListing
