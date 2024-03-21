@@ -963,9 +963,9 @@ class AddOverhead extends Component {
                     <div className="col-md-6">
                       <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Overhead Details
                         <TourWrapper
-                          buttonSpecificProp={{ id: "Overhead_form" }}
+                          buttonSpecificProp={{ id: "Add_Overhead_form" }}
                           stepsSpecificProp={{
-                            steps: Steps(t).ADD_OVERHEADS_DETAILS
+                            steps: Steps(t, { vendorField: (costingTypeId === VBCTypeId), customerField: (costingTypeId === CBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) }).ADD_OVERHEADS_DETAILS
                           }} />
                       </h1>
                     </div>
@@ -1092,6 +1092,7 @@ class AddOverhead extends Component {
                             <div className='p-relative vendor-loader'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
+                                id="AddOverhead_vendorName"
                                 name="vendorName"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
@@ -1109,7 +1110,9 @@ class AddOverhead extends Component {
                             </div>
                           </Col>
                         )}
-                        {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                        {/* {((costingTypeId === ZBCTypeId && !getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && ( */}
+                        {((costingTypeId === ZBCTypeId) && (
+
                           <Col md="3">
                             <Field
                               label="Plant (Code)"
@@ -1275,7 +1278,7 @@ class AddOverhead extends Component {
                         {!isHideBOP && (
                           <Col md="3">
                             <Field
-                              label={`Overhead on ${showBopLabel()}  (%)`}
+                              label={`Overhead on ${showBopLabel()} (%)`}
                               name={"OverheadBOPPercentage"}
                               type="text"
                               placeholder={isBOP || isViewMode ? "-" : "Enter"}
@@ -1331,7 +1334,8 @@ class AddOverhead extends Component {
                             onChange={this.handleMessageChange}
                             component={renderTextAreaField}
                             validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
-                            maxLength="512"
+                            // maxLength="512"
+                            // maxLength="5000"
                             disabled={isViewMode}
                           />
                         </Col>

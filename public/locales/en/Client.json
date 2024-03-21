@@ -1,0 +1,21 @@
+{
+    "customer": {
+        "company_name": "Enter the company name.",
+        "company_code": "Enter the company code.",
+        "contact_name": "Enter the contact name.",
+        "customer_code": "Enter the customer's code.",
+        "contact_number": "Enter the contact number.",
+        "email": "Enter the email address.",
+        "phone_number": "Enter the phone number.",
+        "ext": "Enter the extension number.",
+        "mobile_number": "Enter the mobile number.",
+        "country": "Select the country from the dropdown.",
+        "state": "Select the state from the dropdown.",
+        "city": "Select the city from the dropdown.",
+        "zip_code": "Enter the zip code.",
+        "address1": "Enter the primary address.",
+        "address2": "Enter the secondary address.",
+        "cancel": "Click here to cancel and go back.",
+        "save": "Click here to save the customer."
+    }
+}

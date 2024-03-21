@@ -1,6 +1,14 @@
-export function Steps(t) {
-        return {
+export function Steps(t, config) {
+    return {
         ADD_ASSEMBLY_PART: [
+            {
+                element: "#AddAssemblyPart_Switch",
+                intro: t("addAssemblyPart.AddAssemblyPart_Switch"),
+            },
+            ...(config && config.partField ? [{
+                element: "#AddAssemblyPart_PartNumber",
+                intro: t("addAssemblyPart.AddAssemblyPart_PartNumber"),
+            },] : []),
             {
                 element: "#AddAssemblyPart_BOMNumber",
                 intro: t("addAssemblyPart.AddAssemblyPart_BOMNumber"),
@@ -40,6 +48,10 @@ export function Steps(t) {
             {
                 element: "#AddAssemblyPart_EffectiveDate",
                 intro: t("addAssemblyPart.AddAssemblyPart_EffectiveDate"),
+            },
+            {
+                element: "#AssemblyPart_Add_BOM",
+                intro: t("addAssemblyPart.AssemblyPart_Add_BOM"),
             },
             {
                 element: "#AddAssemblyPart_Remark",
@@ -147,6 +159,11 @@ export function Steps(t) {
                 element: "#AddIndivisualPart_EffectiveDate",
                 intro: t("addProductPart.AddIndivisualPart_EffectiveDate"),
             },
+            {
+                element: "#AddIndivisualProduct_isImpactCalculation",
+                intro: t("addProductPart.AddIndivisualPart_IsImpactCalculation_container"),
+            },
+
             {
                 element: "#AddIndivisualPart_Remark",
                 intro: t("addProductPart.AddIndivisualPart_Remark"),

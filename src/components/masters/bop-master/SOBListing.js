@@ -7,7 +7,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import { searchNocontentFilter, showBopLabel } from '../../../helper';
+import { searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
 import { Sob } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -21,6 +21,9 @@ import { ApplyPermission } from '.';
 import { useRef } from 'react';
 import Button from '../../layout/Button';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -30,6 +33,7 @@ const gridOptions = {};
 const SOBListing = (props) => {
   const dispatch = useDispatch();
   const searchRef = useRef(null);
+  const { t } = useTranslation("common")
   const { bopSobList } = useSelector((state) => state.boughtOutparts);
   const permissions = useContext(ApplyPermission);
   const [state, setState] = useState({
@@ -51,6 +55,8 @@ const SOBListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+    showExtraData: false,
+    render: false,
   });
 
   useEffect(() => {
@@ -113,7 +119,7 @@ const SOBListing = (props) => {
     const cellValue = params?.valueFormatted ? params.valueFormatted : params?.value;
     return (
       <>
-        {permissions.Edit && <Button id={`clientListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(cellValue)} title={"Edit"} />
+        {permissions.Edit && <Button id={`clientListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue)} title={"Edit"} />
         }
       </>
     );
@@ -212,7 +218,16 @@ const SOBListing = (props) => {
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
-
+  /**
+              * @method toggleExtraData
+              * @description Handle specific module tour state to display lorem data
+              */
+  const toggleExtraData = (showTour) => {
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+    }, 100);
+  }
   const onFilterTextBoxChanged = (e) => {
     state.gridApi.setQuickFilter(e.target.value);
   }
@@ -296,14 +311,14 @@ const SOBListing = (props) => {
                 <>
                   <ExcelFile filename={Sob} fileExtension={'.xls'}
                     element={
-                      <Button id={"Excel-Downloads-sobListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <Button id={"Excel-Downloads-sobListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                     }>
                     {onBtExport()}
                   </ExcelFile>
                 </>
               }
               <Button
-                id={"sobListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                id={"sobListing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
             </div>
           </Col>
         </Row>
@@ -314,6 +329,11 @@ const SOBListing = (props) => {
           <div className={`ag-grid-wrapper height-width-wrapper ${(bopSobList && bopSobList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+              <TourWrapper
+                buttonSpecificProp={{ id: "SOB_listing_Tour", onClick: toggleExtraData }}
+                stepsSpecificProp={{
+                  steps: Steps(t, { addLimit: false, filterButton: false, addButton: false, bulkUpload: false, downloadButton: true, viewButton: false, EditButton: true, DeleteButton: false, costMovementButton: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                }} />
             </div>
             <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -322,7 +342,7 @@ const SOBListing = (props) => {
                 floatingFilter={true}
                 domLayout='autoHeight'
                 // columnDefs={c}
-                rowData={bopSobList}
+                rowData={state.showExtraData && bopSobList ? [...setLoremIpsum(bopSobList[0]), ...bopSobList] : bopSobList}
                 pagination={true}
                 paginationPageSize={defaultPageSize}
                 onGridReady={onGridReady}
@@ -348,7 +368,7 @@ const SOBListing = (props) => {
                 <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB (%)"></AgGridColumn>
                 <AgGridColumn width={205} field="WeightedNetLandedCost" headerName={`Weighted Net Cost (${reactLocalStorage.getObject("baseCurrency")}) `} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartNumber" width={120} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartNumber" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
             </div>

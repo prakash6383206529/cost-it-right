@@ -17,6 +17,9 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { ZBCTypeId } from '../../../config/constants';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
 
 class AddZBCPlant extends Component {
   constructor(props) {
@@ -353,7 +356,7 @@ class AddZBCPlant extends Component {
   */
   render() {
 
-    const { isEditFlag } = this.props;
+    const { isEditFlag, t } = this.props;
     const { country, isViewMode, setDisable } = this.state;
     return (
       <>
@@ -374,6 +377,11 @@ class AddZBCPlant extends Component {
                   <Col>
                     <div className={"header-wrapper left"}>
                       <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} ZBC Plant
+                        <TourWrapper
+                          buttonSpecificProp={{ id: "ZBC_Plant_form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).Add_ZBCPlant_FORM
+                          }} />
                       </h3>
                     </div>
                     <div
@@ -585,6 +593,7 @@ class AddZBCPlant extends Component {
                   <div className="col-sm-12 text-right pr-3">
                     <button
                       type={"button"}
+                      id="AddZBCPlantRate_Cancel"
                       className=" mr15 cancel-btn"
                       onClick={this.cancelHandler}
                       disabled={setDisable}
@@ -595,6 +604,7 @@ class AddZBCPlant extends Component {
                     {!isViewMode &&
                       <button
                         type="button"
+                        id="AddZBCPlantRate_Save"
                         onClick={isEditFlag ? this.checkCompanyChange : this.onSubmit}
                         className="user-btn save-btn"
                         disabled={isViewMode || setDisable}
@@ -670,4 +680,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },
-})(AddZBCPlant));
+})(withTranslation(['PlantMaster'])(AddZBCPlant)),
+)

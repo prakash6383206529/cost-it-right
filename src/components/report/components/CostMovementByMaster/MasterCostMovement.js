@@ -237,7 +237,7 @@ function MasterCostMovement() {
             case 5:
                 return (<> <Col md="3">
                     <SearchableSelectHookForm
-                        label={`${showBopLabel()}  No.`}
+                        label={`${showBopLabel()} No.`}
                         name={'BOPId'}
                         placeholder={'Select'}
                         Controller={Controller}

@@ -1319,6 +1319,9 @@ class AddBOPImport extends Component {
   * @description Renders the component
   */
   render() {
+
+
+
     const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject } = this.state;
@@ -1374,7 +1377,12 @@ class AddBOPImport extends Component {
                           <TourWrapper
                             buttonSpecificProp={{ id: "BOP_Import_form" }}
                             stepsSpecificProp={{
-                              steps: Steps(t).BOP_IMPORT_FORM
+                              steps: Steps(t, {
+                                showSendForApproval: !this.state.isFinalApprovar,
+                                CBCTypeField: (costingTypeId === CBCTypeId),
+
+                                sourceField: (costingTypeId === VBCTypeId)
+                              }).BOP_IMPORT_FORM
                             }} />
                         </h1>
                       </div>
@@ -1565,7 +1573,7 @@ class AddBOPImport extends Component {
                                   onChange={this.breakUpHandleChange}
                                 >
                                   Detailed {showBopLabel()}
-                                  < input
+                                  <input
                                     type="checkbox"
                                     checked={isTechnologyVisible}
                                     disabled={isViewMode || isEditFlag ? true : false

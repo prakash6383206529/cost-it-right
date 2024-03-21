@@ -11,7 +11,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, updateBOPValues, userDepartmetList } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, updateBOPValues, userDepartmetList } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -21,7 +21,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import { hyphenFormatter } from '../masterUtil';
-import { disabledClass } from '../../../actions/Common';
+import { TourStartAction, disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -30,6 +30,12 @@ import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import { ApplyPermission } from ".";
 import { useRef } from 'react';
+import PaginationControls from '../../common/Pagination/PaginationControls';
+import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
+import { updatePageNumber, updatePageSize, updateCurrentRowIndex, updateGlobalTake, resetStatePagination } from '../../common/Pagination/paginationAction';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -43,6 +49,11 @@ const BOPDomesticListing = (props) => {
   const { bopDomesticList, allBopDataList } = useSelector(state => state.boughtOutparts);
   const { initialConfiguration } = useSelector(state => state.auth);
   const { selectedRowForPagination } = useSelector(state => state.simulation)
+  const { globalTakes } = useSelector((state) => state.pagination);
+  const tourStartData = useSelector(state => state.comman.tourStartData);
+
+  const { t } = useTranslation("common")
+
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -70,19 +81,19 @@ const BOPDomesticListing = (props) => {
     floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NumberOfPieces: "", NetCostWithoutConditionCost: "", NetConditionCost: "", IsBreakupBoughtOutPart: "", TechnologyName: "", },
     warningMessage: false,
     filterModel: {},
-    pageNo: 1,
-    pageNoNew: 1,
+    // pageNo: 1,
+    // pageNoNew: 1,
     totalRecordCount: 0,
     isFilterButtonClicked: false,
-    currentRowIndex: 0,
-    pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-    globalTake: defaultPageSize,
+    // currentRowIndex: 0,
+    // pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
     noData: false,
     dataCount: 0,
     attachment: false,
     viewAttachment: [],
-  });
+    render: false,
 
+  });
   useEffect(() => {
     setTimeout(() => {
       if (!props.stopApiCallOnCancel) {
@@ -98,6 +109,8 @@ const BOPDomesticListing = (props) => {
       setTimeout(() => {
         if (!props.stopApiCallOnCancel) {
           dispatch(setSelectedRowForPagination([]));
+          dispatch(resetStatePagination());
+
         }
       }, 300)
     };
@@ -118,7 +131,7 @@ const BOPDomesticListing = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
+  const getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
     const { floatingFilterData } = state
     if (state.filterModel?.EffectiveDate && !isReset) {
       if (state.filterModel.EffectiveDate.dateTo) {
@@ -168,7 +181,11 @@ const BOPDomesticListing = (props) => {
           }
 
           if (res && res.status === 204) {
-            setState((prevState) => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }))
+            setState((prevState) => ({
+              ...prevState, totalRecordCount: 0,
+              // pageNo: 0
+            }))
+            dispatch(updatePageNumber(0))
           }
 
           if (res && isPagination === false) {
@@ -334,9 +351,12 @@ const BOPDomesticListing = (props) => {
 
   const onSearch = () => {
     setState((prevState) => ({
-      ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
+      ...prevState, warningMessage: false,
+      // pageNo: 1, pageNoNew: 1,currentRowIndex: 0,
     }));
-    getDataList("", 0, "", "", 0, state.globalTake, true, state.floatingFilterData);
+    dispatch(updateCurrentRowIndex(0));
+    dispatch(updatePageNumber(1));
+    getDataList("", 0, "", "", 0, globalTakes, true, state.floatingFilterData);
   };
 
   const resetState = () => {
@@ -348,59 +368,25 @@ const BOPDomesticListing = (props) => {
     for (var prop in state.floatingFilterData) {
       state.floatingFilterData[prop] = "";
     }
-    setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
+    setState((prevState) => ({
+      ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false,
+      //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
+    }));
+    dispatch(updateCurrentRowIndex(0));
+    dispatch(updatePageNumber(1));
     getDataList("", 0, "", "", 0, 10, true, state.floatingFilterData);
     dispatch(setSelectedRowForPagination([]));
     setState((prevState) => ({
-      ...prevState, globalTake: 10, dataCount: 0, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
+      ...prevState,
+      // globalTake: 10,
+      dataCount: 0,
+      // pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
     }));
+    dispatch(updateGlobalTake(10));
+    dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }));
     if (searchRef.current) {
       searchRef.current.value = '';
     }
-  };
-
-  const onBtPrevious = () => {
-    if (state.currentRowIndex >= 10) {
-      const previousNo = state.currentRowIndex - 10;
-      const newPageNo = state.pageNo - 1;
-      setState((prevState) => ({ ...prevState, pageNo: newPageNo >= 1 ? newPageNo : 1, pageNoNew: newPageNo >= 1 ? newPageNo : 1, currentRowIndex: previousNo, }));
-      getDataList("", 0, "", "", previousNo, state.globalTake, true, state.floatingFilterData);
-    }
-  };
-  const onBtNext = () => {
-    if (state.pageSize.pageSize50 && state.pageNo >= Math.ceil(state.totalRecordCount / 50)
-    ) {
-      return false;
-    }
-
-    if (
-      state.pageSize.pageSize100 &&
-      state.pageNo >= Math.ceil(state.totalRecordCount / 100)
-    ) {
-      return false;
-    }
-
-    if (state.currentRowIndex < state.totalRecordCount - 10) {
-      setState((prevState) => ({ ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1, }));
-      const nextNo = state.currentRowIndex + 10;
-      getDataList("", 0, "", "", nextNo, state.globalTake, true, state.floatingFilterData);
-      // skip, take, isPagination, floatingFilterData, (res)
-      setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
-    }
-  };
-  const onPageSizeChanged = (newPageSize) => {
-    let pageSize, totalRecordCount;
-    if (Number(newPageSize) === 10) {
-      pageSize = 10;
-    } else if (Number(newPageSize) === 50) {
-      pageSize = 50;
-    } else if (Number(newPageSize) === 100) {
-      pageSize = 100;
-    }
-    totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
-    getDataList("", 0, "", "", state.currentRowIndex, pageSize, true, state.floatingFilterData);
-    setState((prevState) => ({ ...prevState, globalTake: pageSize, pageNo: Math.min(state.pageNo, totalRecordCount), pageSize: { pageSize10: pageSize === 10, pageSize50: pageSize === 50, pageSize100: pageSize === 100, }, }));
-    state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   /**
@@ -461,6 +447,7 @@ const BOPDomesticListing = (props) => {
   * @description Renders buttons
   */
   const buttonFormatter = (props) => {
+    const { showExtraData } = state
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     let isEditbale = false
@@ -470,17 +457,21 @@ const BOPDomesticListing = (props) => {
     } else {
       isEditbale = false
     }
-    if (permissions?.Delete && !rowData.IsBOPAssociated) {
+
+
+    if (tourStartData.showExtraData && props.rowIndex === 0) {
       isDeleteButton = true
     } else {
-      isDeleteButton = false
+      if (permissions?.Delete && !rowData.IsBOPAssociated) {
+        isDeleteButton = true
+      }
     }
     return (
       <>
-        <Button id={`bopDomesticListing_movement${props.rowIndex}`} className={"mr-1"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
-        {permissions?.View && <Button id={`bopDomesticListing_view${props.rowIndex}`} className={"mr-1"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
-        {isEditbale && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
-        {isDeleteButton && <Button id={`bopDomesticListing_delete${props.rowIndex}`} className={"mr-1"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+        <Button id={`bopDomesticListing_movement${props.rowIndex}`} className={"mr-1 Tour_List_Cost_Movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
+        {permissions?.View && <Button id={`bopDomesticListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
+        {isEditbale && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
+        {isDeleteButton && <Button id={`bopDomesticListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
   };
@@ -585,6 +576,20 @@ const BOPDomesticListing = (props) => {
       floatingFilter.id = specificId;
     });
   };
+  /**
+           * @method toggleExtraData
+           * @description Handle specific module tour state to display lorem data
+           */
+  const toggleExtraData = (showTour) => {
+    dispatch(TourStartAction({
+      showExtraData: showTour,
+    }));
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, render: false }));
+    }, 100);
+
+  }
 
   const onExcelDownload = () => {
     setState((prevState) => ({ ...prevState, disableDownload: true }))
@@ -794,6 +799,11 @@ const BOPDomesticListing = (props) => {
         <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} ${props?.benchMark ? 'zindex-2' : 'filter-row-large'}  ${props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
           <Col md="3" lg="3">
             <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+            {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+              buttonSpecificProp={{ id: "BOPDomestic_Listing_Tour", onClick: toggleExtraData }}
+              stepsSpecificProp={{
+                steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+              }} />)}
           </Col>
           <Col md="9" lg="9" className="mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
@@ -807,16 +817,16 @@ const BOPDomesticListing = (props) => {
                       </>
                     )}
                   </div>
-                  <Button id="bopDomesticListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
+                  <Button id="bopDomesticListing_filter" className={"mr5 Tour_List_Filter"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
                   {permissions?.Add && (
-                    <Button id="bopDomesticListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
+                    <Button id="bopDomesticListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus"} />
                   )}
                   {permissions?.BulkUpload && (
-                    <Button id="bopDomesticListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
+                    <Button id="bopDomesticListing_bulkUpload" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
                   )}
                   {permissions?.Download && (
                     <>
-                      <Button className="mr5" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <Button className="mr5 Tour_List_Download" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                       <ExcelFile filename={`${showBopLabel()} Domestic`} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
                         {onBtExport()}
                       </ExcelFile>
@@ -824,7 +834,7 @@ const BOPDomesticListing = (props) => {
                   )}
                 </>
               )}
-              <Button id={"bopDomesticListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+              <Button id={"bopDomesticListing_refresh"} className={"Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
             </div>
           </Col>
         </Row>
@@ -837,13 +847,15 @@ const BOPDomesticListing = (props) => {
           <div className={`ag-grid-wrapper ${props?.isDataInMaster && !noData ? 'master-approval-overlay' : ''} ${(bopDomesticList && bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
             <div className={`ag-theme-material p-relative ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found bop-drawer" />}
-              {!state.isLoader && <AgGridReact
+              {(state.render || state.isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout='autoHeight'
-                rowData={bopDomesticList}
+                rowData={tourStartData.showExtraData && bopDomesticList ? [...setLoremIpsum(bopDomesticList[0]), ...bopDomesticList] : bopDomesticList}
+
                 pagination={true}
-                paginationPageSize={state.globalTake}
+                paginationPageSize={globalTakes}
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -877,19 +889,14 @@ const BOPDomesticListing = (props) => {
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${showBopLabel()}`}></AgGridColumn>}
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
-                {!props?.isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                {!props?.isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                 {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
                 {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
               </AgGridReact>}
               <div className={`button-wrapper ${props?.isMasterSummaryDrawer ? 'mb-5' : ''}`}>
-                {!state.isLoader && !props.isMasterSummaryDrawer && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
-                <div className="d-flex pagination-button-container">
-                  <p><Button id="bopDomesticListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
-                  {state?.pageSize?.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 10)}</p>}
-                  {state?.pageSize?.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 50)}</p>}
-                  {state?.pageSize?.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 100)}</p>}
-                  <p><Button id="bopDomesticListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-                </div>
+                {!state.isLoader && !props.isMasterSummaryDrawer &&
+                  <PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} module="BOP" />}
+                <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} module="BOP" />
               </div>
             </div>
           </div>

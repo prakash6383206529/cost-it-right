@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { getBOPData, } from '../../../actions/Costing';
 import { useDispatch, useSelector } from 'react-redux';
-import { checkForDecimalAndNull } from '../../../../../helper';
+import { checkForDecimalAndNull, showBopLabel } from '../../../../../helper';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { WACTypeId } from '../../../../../config/constants';
 

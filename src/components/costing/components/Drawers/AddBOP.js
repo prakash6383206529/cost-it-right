@@ -215,7 +215,7 @@ function AddBOP(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{`Add ${showBopLabel()} :`}</h3>
+                    <h3>{`Add ${showBopLabel()}:`}</h3>
                   </div >
                   <div
                     onClick={cancel}
@@ -261,9 +261,9 @@ function AddBOP(props) {
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName={`${showBopLabel()} Type`} ></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()}  Part No.`}></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()}  Part Name`}></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()}  Category`}></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                         <AgGridColumn field="Specification" cellRenderer={'specificationFormat'}></AgGridColumn>
                         {costData && costData.VendorType === ZBC && <AgGridColumn field="Vendor"></AgGridColumn>}
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>

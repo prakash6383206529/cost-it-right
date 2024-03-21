@@ -348,7 +348,7 @@ function AssemblyPart(props) {
                   type="button"
                   className={'user-btn add-oprn-btn mr-1'}
                   onClick={bopHandlingDrawer}>
-                  <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()}  H`}</button>
+                  <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>
                 </>
               }
               {

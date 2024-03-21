@@ -17,7 +17,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, IsShowFreightAndShearingCostFields, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
+import { CheckApprovalApplicableMaster, IsShowFreightAndShearingCostFields, getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, userDepartmetList } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -25,7 +25,6 @@ import { useEffect } from 'react';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
-import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -34,6 +33,12 @@ import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultip
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import RMSimulation from '../../simulation/components/SimulationPages/RMSimulation';
+import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
+import PaginationControls from '../../common/Pagination/PaginationControls';
+import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize } from '../../common/Pagination/paginationAction';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -55,6 +60,8 @@ function RMImportListing(props) {
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
   const { selectedRowForPagination } = useSelector((state => state.simulation))
   const allRmDataList = useSelector((state) => state.material.allRmDataList);
+  const { globalTakes } = useSelector((state) => state.pagination);
+
   const [showPopup, setShowPopup] = useState(false)
   const [deletedId, setDeletedId] = useState('')
   const [showPopupBulk, setShowPopupBulk] = useState(false)
@@ -64,23 +71,26 @@ function RMImportListing(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
-  const [globalTake, setGlobalTake] = useState(defaultPageSize)
+  // const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [filterModel, setFilterModel] = useState({});
-  const [pageNo, setPageNo] = useState(1)
-  const [pageNoNew, setPageNoNew] = useState(1)
+  // const [pageNo, setPageNo] = useState(1)
+  // const [pageNoNew, setPageNoNew] = useState(1)
   const [totalRecordCount, setTotalRecordCount] = useState(0)
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
-  const [currentRowIndex, setCurrentRowIndex] = useState(0)
-  const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+  // const [currentRowIndex, setCurrentRowIndex] = useState(0)
+  // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", NetLandedCostConversion: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NetConditionCostConversion: "", NetConditionCost: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", RawMaterialShearingCostConversion: "", RawMaterialFreightCostConversion: "", MachiningScrapRateInINR: "", MachiningScrapRate: "", BasicRatePerUOMConversion: "", Currency: "" })
   const [noData, setNoData] = useState(false)
   const [dataCount, setDataCount] = useState(0)
   const [inRangeDate, setinRangeDate] = useState([])
-  const [dateArray, setDateArray] = useState([])
+  // const [dateArray, setDateArray] = useState([])
   const [attachment, setAttachment] = useState(false);
   const [viewAttachment, setViewAttachment] = useState([])
   const [editSelectedList, setEditSelectedList] = useState(false)
   const [tempList, setTempList] = useState([])
+  const [showExtraData, setShowExtraData] = useState(false)
+  const [render, setRender] = useState(false)
+  const { t } = useTranslation("common")
   const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
   const { tokenForSimulation } = useSelector(state => state.simulation)
   const headerNames = {
@@ -147,6 +157,8 @@ function RMImportListing(props) {
 
         return () => {
           dispatch(setSelectedRowForPagination([]))
+          dispatch(resetStatePagination());
+
           reactLocalStorage.setObject('selectedRow', {})
         }
       }
@@ -182,7 +194,7 @@ function RMImportListing(props) {
   * @method hideForm
   * @description HIDE DOMESTIC, IMPORT FORMS
   */
-  const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
+  const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
     const { isSimulation } = props
 
     if (filterModel?.EffectiveDate && !isReset) {
@@ -241,7 +253,8 @@ function RMImportListing(props) {
 
         if (res && res.status === 204) {
           setTotalRecordCount(0)
-          setPageNo(0)
+          dispatch(updatePageNumber(1))
+          // setPageNo(0)
         }
 
         if (res && isPagination === false) {
@@ -297,7 +310,19 @@ function RMImportListing(props) {
 
     }, 300);
   }
+  /**
+        * @method toggleExtraData
+        * @description Handle specific module tour state to display lorem data
+        */
+  const toggleExtraData = (showTour) => {
+    setRender(true)
+    setTimeout(() => {
+      setShowExtraData(showTour)
+      setRender(false)
+    }, 100);
 
+
+  }
   const onFloatingFilterChanged = (value) => {
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
@@ -356,42 +381,14 @@ function RMImportListing(props) {
     setNoData(false)
     setWarningMessage(false)
     setIsFilterButtonClicked(true)
-    setPageNo(1)
-    setPageNoNew(1)
-    setCurrentRowIndex(0)
+    dispatch(updatePageNumber(1))
+    // setPageNo(1)
+    // setPageNoNew(1)
+    dispatch(updateCurrentRowIndex(10))
+    // setCurrentRowIndex(0)
     gridOptions?.columnApi?.resetColumnState();
-    getDataList(null, null, null, null, null, 0, 0, globalTake, true, floatingFilterData)
+    getDataList(null, null, null, null, null, 0, 0, globalTakes, true, floatingFilterData)
   }
-
-
-  const onBtPrevious = () => {
-    if (currentRowIndex >= 10) {
-      setPageNo(pageNo - 1)
-      setPageNoNew(pageNo - 1)
-      const previousNo = currentRowIndex - 10;
-      getDataList(null, null, null, null, null, 0, previousNo, globalTake, true, floatingFilterData)
-      setCurrentRowIndex(previousNo)
-    }
-  }
-
-  const onBtNext = () => {
-
-    if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
-      return false
-    }
-
-    if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
-      return false
-    }
-
-    if (currentRowIndex < (totalRecordCount - 10)) {
-      setPageNo(pageNo + 1)
-      setPageNoNew(pageNo + 1)
-      const nextNo = currentRowIndex + 10;
-      getDataList(null, null, null, null, null, 0, nextNo, globalTake, true, floatingFilterData)
-      setCurrentRowIndex(nextNo)
-    }
-  };
 
 
   /**
@@ -464,11 +461,12 @@ function RMImportListing(props) {
       isEditbale = false
     }
 
-
-    if (DeleteAccessibility && !rowData.IsRMAssociated) {
+    if (showExtraData && props.rowIndex === 0) {
       isDeleteButton = true
     } else {
-      isDeleteButton = false
+      if (DeleteAccessibility && !rowData.IsRMAssociated) {
+        isDeleteButton = true
+      }
     }
 
 
@@ -476,28 +474,28 @@ function RMImportListing(props) {
       <>
         <Button
           id={`rmImportListing_movement${props?.rowIndex}`}
-          className={"mr-1"}
+          className={"mr-1 Tour_List_Cost_Movement"}
           variant="cost-movement"
           onClick={() => showAnalytics(cellValue, rowData)}
           title={"Cost Movement"}
         />
         {ViewRMAccessibility && <Button
           id={`rmImportListing_view${props?.rowIndex}`}
-          className={"mr-1"}
+          className={"mr-1 Tour_List_View"}
           variant="View"
           onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
           title={"View"}
         />}
         {isEditbale && <Button
           id={`rmImportListing_edit${props?.rowIndex}`}
-          className={"mr-1"}
+          className={"mr-1 Tour_List_Edit"}
           variant="Edit"
           onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
           title={"Edit"}
         />}
         {isDeleteButton && <Button
           id={`rmImportListing_delete${props?.rowIndex}`}
-          className={"mr-1"}
+          className={"mr-1 Tour_List_Delete"}
           variant="Delete"
           onClick={() => deleteItem(cellValue)}
           title={"Delete"}
@@ -638,35 +636,6 @@ function RMImportListing(props) {
     params.api.paginationGoToPage(0);
   };
 
-  const onPageSizeChanged = (newPageSize) => {
-
-    if (Number(newPageSize) === 10) {
-      getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
-      setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
-      setGlobalTake(10)
-      setPageNo(pageNoNew)
-    }
-    else if (Number(newPageSize) === 50) {
-      getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
-      setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
-      setGlobalTake(50)
-      if (pageNo > Math.ceil(totalRecordCount / 50)) {
-        setPageNo(Math.ceil(totalRecordCount / 50))
-        getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
-      }
-    }
-    else if (Number(newPageSize) === 100) {
-      getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
-      setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
-      setGlobalTake(100)
-      if (pageNo > Math.ceil(totalRecordCount / 100)) {
-        setPageNo(Math.ceil(totalRecordCount / 100))
-        getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
-      }
-    }
-    gridApi.paginationSetPageSize(Number(newPageSize));
-
-  };
 
   const returnExcelColumn = (data = [], TempData) => {
     let excelData = hideCustomerFromExcel(data, "CustomerName")
@@ -750,13 +719,14 @@ function RMImportListing(props) {
     }
     setFloatingFilterData(floatingFilterData)
     setWarningMessage(false)
-    setPageNo(1)
-    setPageNoNew(1)
-    setCurrentRowIndex(0)
+    dispatch(resetStatePagination())
+    // setPageNo(1)
+    // setCurrentRowIndex(0)
     getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData, true)
     dispatch(setSelectedRowForPagination([]))
-    setGlobalTake(10)
-    setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+    // setGlobalTake(10)
+    dispatch(updateGlobalTake(10))
+    // setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
     setDataCount(0)
     reactLocalStorage.setObject('selectedRow', {})
     if (isSimulation && !isFromVerifyPage) {
@@ -908,6 +878,11 @@ function RMImportListing(props) {
           <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
             <Col md="3" lg="3">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+              {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+                buttonSpecificProp={{ id: "RMImport_Listing_Tour", onClick: toggleExtraData }}
+                stepsSpecificProp={{
+                  steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                }} />)}
             </Col>
             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
               {(!props?.isMasterSummaryDrawer) && <>
@@ -918,7 +893,7 @@ function RMImportListing(props) {
 
                     <Button
                       id="rmImportListing_filter"
-                      className={"mr5"}
+                      className={"mr5 Tour_List_Filter"}
                       onClick={() => onSearch()}
                       title={"Filtered data"}
                       icon={"filter"}
@@ -938,7 +913,7 @@ function RMImportListing(props) {
 
                       <Button
                         id="rmImportListing_filter"
-                        className={"mr5"}
+                        className={"mr5 Tour_List_Filter"}
                         onClick={() => onSearch()}
                         title={"Filtered data"}
                         icon={"filter"}
@@ -949,7 +924,7 @@ function RMImportListing(props) {
 
                         <Button
                           id="rmImportListing_add"
-                          className={"mr5"}
+                          className={"mr5 Tour_List_Add"}
                           onClick={formToggle}
                           title={"Add"}
                           icon={"plus"}
@@ -958,7 +933,7 @@ function RMImportListing(props) {
                       {BulkUploadAccessibility && (
                         <Button
                           id="rmImportListing_add"
-                          className={"mr5"}
+                          className={"mr5 Tour_List_BulkUpload"}
                           onClick={bulkToggle}
                           title={"Bulk Upload"}
                           icon={"upload"}
@@ -968,7 +943,7 @@ function RMImportListing(props) {
                         DownloadAccessibility &&
                         <>
                           <Button
-                            className="mr5"
+                            className="mr5 Tour_List_Download"
                             id={"rmImportListing_excel_download"}
                             onClick={onExcelDownload}
                             title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
@@ -989,7 +964,7 @@ function RMImportListing(props) {
                   onClick={() => resetState()}
                   title={"Reset Grid"}
                   icon={"refresh"}
-                  className={"mr5"}
+                  className={"mr5 Tour_List_Reset"}
                 />
                 {isSimulation && isFromVerifyPage && <button type="button" className={"apply"} onClick={cancel}><div className={'back-icon'}></div>Back</button>}
               </>}
@@ -1000,15 +975,17 @@ function RMImportListing(props) {
               <div className={`ag-grid-wrapper ${(rmImportDataList && rmImportDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material `}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                  <AgGridReact
+                  {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
                     style={{ height: '100%', width: '100%' }}
                     defaultColDef={defaultColDef}
                     floatingFilter={true}
 
                     domLayout='autoHeight'
-                    rowData={rmImportDataList}
+                    rowData={showExtraData && rmImportDataList ? [...setLoremIpsum(rmImportDataList[0]), ...rmImportDataList] : rmImportDataList}
+
                     pagination={true}
-                    paginationPageSize={globalTake}
+                    paginationPageSize={globalTakes}
                     onGridReady={onGridReady}
                     gridOptions={gridOptions}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -1062,23 +1039,17 @@ function RMImportListing(props) {
                     <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer='costFormatter'></AgGridColumn>
 
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                    {(!isSimulation && !props?.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                    {(!isSimulation && !props?.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container actions-wrapper" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                     {props?.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
                     {props?.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
-                  </AgGridReact >
+                  </AgGridReact >}
                   <div className={`button-wrapper ${props?.isMasterSummaryDrawer ? "dropdown-mt-0" : ""}`}>
-                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                    {<PaginationWrappers gridApi={gridApi} globalTakes={globalTakes} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />}
                     {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                      <div className="d-flex pagination-button-container">
-                        <p><Button id="rmImportListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
-                        {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                        {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                        {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                        <p><Button id="rmImportListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-                      </div>
+                      <PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />                      // <div className="d-flex pagination-button-container">
                     }
                   </div>
                 </div >

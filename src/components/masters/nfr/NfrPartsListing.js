@@ -203,7 +203,7 @@ function NfrPartsListing(props) {
             <>
                 {showOutsourcing && !rowData?.IsRmAndBopActionEditable && < button type="button" className={"View mr-1"} onClick={() => { formToggle(rowData, true) }} disabled={false} title="View"></button >}
                 {showOutsourcing && rowData?.IsRmAndBopActionEditable && < button type="button" className={"add-out-sourcing mr-1"} onClick={() => { formToggle(rowData, false) }} disabled={false} title="Add"></button >}
-                {showOutsourcing && < button type="button" className={"pushed-action-btn mr-1"} onClick={() => { pushToSap(rowData) }} disabled={!showPush} title={`Please add RM/${showBopLabel()}  price in master, to add outsourcing cost and push the price on SAP`}></button >}
+                {showOutsourcing && < button type="button" className={"pushed-action-btn mr-1"} onClick={() => { pushToSap(rowData) }} disabled={!showPush} title={`Please add RM/${showBopLabel()} price in master, to add outsourcing cost and push the price on SAP`}></button >}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />}
@@ -462,7 +462,7 @@ function NfrPartsListing(props) {
                                     </div>
                                 </Col>
                                 <Col md="12" className='justify-content-end d-flex'>
-                                    {showWarning && <WarningMessage dClass="mt-2" message={`Please add RM/${showBopLabel()}  price in master, to add outsourcing cost and push the price on SAP`} />}
+                                    {showWarning && <WarningMessage dClass="mt-2" message={`Please add RM/${showBopLabel()} price in master, to add outsourcing cost and push the price on SAP`} />}
                                 </Col>
                             </Row>
 

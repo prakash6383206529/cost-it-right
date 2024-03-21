@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Row,
   Col,
@@ -23,11 +23,14 @@ import { checkPermission } from "../../../helper/util";
 import {
   APPROVAL_CYCLE_STATUS_MASTER, BOP, BOP_MASTER_ID, MASTERS, NON_APPROVAL_CYCLE_STATUS_MASTER,
 } from "../../../config/constants";
+import { resetStatePagination } from '../../common/Pagination/paginationAction';
+
 
 /* Create context for ApplyPermission */
 export const ApplyPermission = React.createContext();
 
 const BOPMaster = () => {
+  const dispatch = useDispatch();
   const [state, setState] = useState({
     activeTab: "1",
     isBOPDomesticForm: false,
@@ -106,6 +109,7 @@ const BOPMaster = () => {
 
   const toggle = (tab) => {
     if (state.activeTab !== tab) {
+      dispatch(resetStatePagination())
       setState((prevState) => ({
         ...prevState,
         activeTab: tab,
@@ -206,7 +210,7 @@ const BOPMaster = () => {
                       toggle("1");
                     }}
                   >
-                    Manage {showBopLabel()}  (Domestic)
+                    Manage {showBopLabel()} (Domestic)
                   </NavLink>
                 </NavItem>
 
@@ -219,7 +223,7 @@ const BOPMaster = () => {
                       toggle("2");
                     }}
                   >
-                    Manage {showBopLabel()}  (Import)
+                    Manage {showBopLabel()} (Import)
                   </NavLink>
                 </NavItem>
 
