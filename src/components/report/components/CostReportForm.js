@@ -12,7 +12,6 @@ import { BOUGHTOUTPARTSPACING, COMPONENT_PART, defaultPageSize, EMPTY_DATA, PROD
 import { MESSAGES } from "../../../config/message"
 import { getConfigurationKey, loggedInUserId } from "../../../helper"
 import { autoCompleteDropdown, autoCompleteDropdownPart } from "../../common/CommonFunctions"
-import DayTime from "../../common/DayTimeWrapper"
 import LoaderCustom from "../../common/LoaderCustom"
 import NoContentFound from "../../common/NoContentFound"
 import Toaster from "../../common/Toaster"
@@ -133,6 +132,8 @@ function CostReportForm(props) {
     */
     const handleFromDate = (value) => {
         setEffectiveDate(value)
+        setMinDate(value); // Set minDate for To Date picker
+
         dispatch(getFormGridData({ ...costReportFormData, fromDate: value }))
         // dispatch(getFormGridData({ ...costReportFormData, EffectiveDate: value }))      //RE
 
@@ -143,6 +144,7 @@ function CostReportForm(props) {
     * @description Handle change for To date input field
     */
     const handleToDate = (value) => {
+
         setMaxDate(value)
         setToDate(value)
         dispatch(getFormGridData({ ...costReportFormData, toDate: value }))
