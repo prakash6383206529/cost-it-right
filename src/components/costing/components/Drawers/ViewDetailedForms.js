@@ -26,7 +26,7 @@ const ViewDetailedForms = (props) => {
                 />
             case 'Machine':
                 const setData = (data = {}) => {
-                    console.log('data: ', data);
+
                     setState((prevState) => ({ ...prevState, data: data }));
                 };
 
@@ -38,7 +38,7 @@ const ViewDetailedForms = (props) => {
                 };
 
                 const displayMoreDetailsForm = (data = {}) => {
-                    console.log('data: ', data);
+
                     setState((prevState) => ({ ...prevState, isAddMoreDetails: true, isMachineRateForm: false, editDetails: data, }));
                 };
 

@@ -248,7 +248,7 @@ class AddMoreDetails extends Component {
     setTimeout(() => {
       if (nextProps.data !== this.props.data) {
         const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId, vendorName, client } = nextProps.data;
-        console.log('selectedPlants: ', selectedPlants);
+
         if (selectedPlants && Object.keys(selectedPlants)?.length > 0) {
           this.handlePlants(selectedPlants)
           if (machineType.value) {
