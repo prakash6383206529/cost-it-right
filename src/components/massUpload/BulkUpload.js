@@ -286,16 +286,12 @@ class BulkUpload extends Component {
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 const { updatedLabels } = updateBOPValues(BOP_ZBC_DOMESTIC, [], bopMasterName)
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
-
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const { updatedLabels } = updateBOPValues(BOP_CBC_DOMESTIC, [], bopMasterName)
-
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
-
                             } else if (this.state.bopType === DETAILED_BOP) {
                                 const { updatedLabels } = updateBOPValues(BOP_DETAILED_DOMESTIC, [], bopMasterName)
-
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
                             }
