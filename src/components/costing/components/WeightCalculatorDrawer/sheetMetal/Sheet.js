@@ -46,25 +46,50 @@ function Sheet(props) {
 
     const defaultValues = {
         SheetWidth: WeightCalculatorRequest && WeightCalculatorRequest.Width !== undefined ? WeightCalculatorRequest.Width : '',
+        SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.SheetLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.SheetLength, localStorage.NoOfDecimalForInputOutput) : '',
         SheetThickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
-        SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfSheet, localStorage.NoOfDecimalForInputOutput) : '',
-        SheetWeight: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfSheetInUOM, localStorage.NoOfDecimalForInputOutput) : '',
+        SheetWeight: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheet !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfSheet, localStorage.NoOfDecimalForInputOutput) : '',
+        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Cavity, localStorage.NoOfDecimalForInputOutput) : 1,
         BlankWidth: WeightCalculatorRequest && WeightCalculatorRequest.BlankWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BlankWidth, localStorage.NoOfDecimalForInputOutput) : '',
         StripsNumber: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfStrips !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfStrips, localStorage.NoOfDecimalForInputOutput) : '',
-        BlankLength: WeightCalculatorRequest && WeightCalculatorRequest.BlankLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BlankLength, localStorage.NoOfDecimalForInputOutput) : '',
         ComponentPerStrip: WeightCalculatorRequest && WeightCalculatorRequest.ComponentsPerStrip !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ComponentsPerStrip, localStorage.NoOfDecimalForInputOutput) : '',
         NoOfComponent: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfPartsPerSheet, localStorage.NoOfDecimalForInputOutput) : '', // TOTAL COMPONENT PER SHEET
-        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Cavity, localStorage.NoOfDecimalForInputOutput) : 1,
-        NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
-        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
-        FinishWeightOfSheet: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        BlankLength: WeightCalculatorRequest && WeightCalculatorRequest.BlankLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BlankLength, localStorage.NoOfDecimalForInputOutput) : '',
+        NumberOfStripsByWidth: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfStripsByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfStripsByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        NumberOfStripsByLength: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfStripsByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfStripsByLength, localStorage.NoOfDecimalForInputOutput) : '',
+        BlanksPerStripByWidth: WeightCalculatorRequest && WeightCalculatorRequest.BlanksPerStripByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BlanksPerStripByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        BlanksPerStripByLength: WeightCalculatorRequest && WeightCalculatorRequest.BlanksPerStripByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BlanksPerStripByLength, localStorage.NoOfDecimalForInputOutput) : '',
+        NoOfComponentByWidth: WeightCalculatorRequest && WeightCalculatorRequest.NoOfComponentByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfComponentByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        NoOfComponentByLength: WeightCalculatorRequest && WeightCalculatorRequest.NoOfComponentByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfComponentByLength, localStorage.NoOfDecimalForInputOutput) : '',
+        SheetWidthBottom: WeightCalculatorRequest && WeightCalculatorRequest.SheetWidthBottom !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.SheetWidthBottom, localStorage.NoOfDecimalForInputOutput) : '',
+        RemainingSLBottomByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthBottomByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthBottomByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        RemainingSWPerBWBottomByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthPerBlankWidthBottomByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetWidthPerBlankWidthBottomByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        RemainingSLPerBLBottomByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthPerBlankLengthBottomByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthPerBlankLengthBottomByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        NoOfBlanksBottomEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.NoOfBlanksBottomEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfBlanksBottomEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        RemainingSLRightEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthRightEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthRightEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        RemainingSLPerBLRightEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthPerBlankLengthRightEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthPerBlankLengthRightEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        RemainingSWRightEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthRightEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetWidthRightEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
     }
+
+    const remainingDefaultValues = {
+        BlankLength: WeightCalculatorRequest && WeightCalculatorRequest.BlankLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BlankLength, localStorage.NoOfDecimalForInputOutput) : '',
+        RemainingSWPerBWRightEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthPerBlankWidthRightEndByWidth !== undefined ? WeightCalculatorRequest.RemainingSheetWidthPerBlankWidthRightEndByWidth : '',
+        NoOfBlanksRightEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.NoOfBlanksRightEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfBlanksRightEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        TotalNoOfBlanksByWidth: WeightCalculatorRequest && WeightCalculatorRequest.TotalNoOfBlanksByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalNoOfBlanksByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        AdditionalComponentsByWidth: WeightCalculatorRequest && WeightCalculatorRequest.AdditionalComponentsByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.AdditionalComponentsByWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        TotalComponentByWidth: WeightCalculatorRequest && WeightCalculatorRequest.TotalComponentByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalComponentByWidth, localStorage.NoOfDecimalForInputOutput) : 1,
+        RemainingSLBottomByLength: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthBottomByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthBottomByLength, localStorage.NoOfDecimalForInputOutput) : '',
+        RemainingSWPerBLBottomByLength: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthPerBlankLengthBottomByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetWidthPerBlankLengthBottomByLength, localStorage.NoOfDecimalForInputOutput) : '',
+        RemainingSLPerBWBottomByLength: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthPerBlankWidthBottomByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthPerBlankWidthBottomByLength, localStorage.NoOfDecimalForInputOutput) : '',
+        NoOfBlanksBottomEndByLength: WeightCalculatorRequest && WeightCalculatorRequest.NoOfBlanksBottomEndByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfBlanksBottomEndByLength, localStorage.NoOfDecimalForInputOutput) : '',
+    }
+
 
     const {
         register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
             mode: 'onChange',
             reValidateMode: 'onChange',
-            defaultValues: defaultValues,
+            defaultValues: { ...defaultValues, ...remainingDefaultValues },
         })
 
 
@@ -89,7 +114,7 @@ function Sheet(props) {
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     const [isDisable, setIsDisable] = useState(false)
     const [reRender, setRerender] = useState(false)
-
+    const [finalComponentSelected, setFinalComponentSelected] = useState(false)
 
     const fieldValues = useWatch({
         control,
@@ -97,7 +122,11 @@ function Sheet(props) {
     })
     const scrapWeightValues = useWatch({
         control,
-        name: ['FinishWeightOfSheetByWidth', 'FinishWeightOfSheetByLength', 'ScrapRecoveryPercentByLength', 'ScrapRecoveryPercentByWidth'],
+        name: ['FinishWeightOfSheet', 'ScrapRecoveryPercent'],
+    })
+    const values = useWatch({
+        control,
+        name: ['BlankWidth', 'BlankLength'],
     })
     const dispatch = useDispatch()
 
@@ -122,6 +151,21 @@ function Sheet(props) {
             }, 100);
 
         }))
+        if (WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0) {
+            setValue('AdditionalComponentsByLength', WeightCalculatorRequest && WeightCalculatorRequest.AdditionalComponentsByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.AdditionalComponentsByLength, localStorage.NoOfDecimalForInputOutput) : '')
+            setValue('TotalComponentByLength', WeightCalculatorRequest && WeightCalculatorRequest.TotalComponentByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalComponentByLength, localStorage.NoOfDecimalForInputOutput) : '',)
+            setValue('ScrapWeight', WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, localStorage.NoOfDecimalForInputOutput) : '',)
+            setValue('GrossWeight', WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',)
+            setValue('FinishWeightOfSheet', WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '')
+            setValue('ScrapRecoveryPercent', WeightCalculatorRequest && WeightCalculatorRequest.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '')
+            setValue('NetSurfaceArea', WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '')
+            setValue('RemainingSLRightEndByLength', WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthRightEndByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthRightEndByLength, localStorage.NoOfDecimalForInputOutput) : '',)
+            setValue('RemainingSWRightEndByLength', WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthRightEndByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetWidthRightEndByLength, localStorage.NoOfDecimalForInputOutput) : '')
+            setValue('RemainingSLPerBWRightEndByLength', WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthPerBlankWidthRightEndByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthPerBlankWidthRightEndByLength, localStorage.NoOfDecimalForInputOutput) : '',)
+            setValue('RemainingSWPerBLRightEndByLength', WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthPerBlankLengthRightEndByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetWidthPerBlankLengthRightEndByLength, localStorage.NoOfDecimalForInputOutput) : '',)
+            setValue('NoOfBlanksRightEndByLength', WeightCalculatorRequest && WeightCalculatorRequest.NoOfBlanksRightEndByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfBlanksRightEndByLength, localStorage.NoOfDecimalForInputOutput) : '',)
+            setValue('TotalNoOfBlanksByLength', WeightCalculatorRequest && WeightCalculatorRequest.TotalNoOfBlanksByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalNoOfBlanksByLength, localStorage.NoOfDecimalForInputOutput) : '',)
+        }
     }, [])
 
     useEffect(() => {
@@ -129,32 +173,41 @@ function Sheet(props) {
     }, [scrapWeightValues])
     useEffect(() => {
         if (!CostingViewMode) {
+
             setWeightOfSheet()
             setNoOfStrips()
             setComponentPerStrips()
             setNoOfComponent()
             setTimeout(() => {
                 setGrossWeight()
-            }, 1000);
+            }, 300);
             setRemainingSheetLengthByWidth()
             setRemainingSheetLengthByLength()
         }
-    }, [fieldValues])
+    }, [fieldValues, finalComponentSelected])
+
+    useEffect(() => {
+        if (Number(getValues('TotalComponentByWidth')) > Number(getValues('TotalComponentByLength'))) {
+            setFinalComponentSelected(true)
+        } else if (Number(getValues('TotalComponentByWidth')) < Number(getValues('TotalComponentByLength'))) {
+            setFinalComponentSelected(false)
+        }
+    }, [values])
 
     useEffect(() => {
         if (Number(getValues('FinishWeightOfSheet')) < Number(GrossWeight)) {
             delete errors.FinishWeightOfSheet
             setRerender(!reRender)
         }
+
     }, [GrossWeight, fieldValues])
 
-    const setFinishWeight = (e, type) => {
+    const setFinishWeight = (e) => {
         const FinishWeightOfSheet = e.target.value
-        const grossWeight = type === 'Width' ? checkForNull(getValues('GrossWeightByWidth')) : checkForNull(getValues('GrossWeightByLength'))
+        const grossWeight = checkForNull(getValues('GrossWeight'))
         if (e.target.value > grossWeight) {
             setTimeout(() => {
-                setValue('FinishWeightOfSheetByWidth', '')
-                setValue('FinishWeightOfSheetByLength', '')
+                setValue('FinishWeightOfSheet', '')
             }, 200);
 
             Toaster.warning('Finish Weight should not be greater than gross weight')
@@ -236,26 +289,19 @@ function Sheet(props) {
      * @description SET GROSS WEIGHT
      */
     const setGrossWeight = () => {
-
-        let grossWeightByWidth
-        let grossWeightByLength
+        let grossWeight
         const sheetWeight = getValues('SheetWeight')
-        const noOfComponentByWidth = getValues('TotalComponentByWidth')
-        const noOfComponentByLength = getValues('TotalComponentByLength')
+        const noOfComponents = finalComponentSelected ? Number(getValues('TotalComponentByWidth')) : Number(getValues('TotalComponentByLength'))
         const cavity = getValues('Cavity')
 
-        grossWeightByWidth = (sheetWeight / noOfComponentByWidth) / cavity
-        grossWeightByLength = (sheetWeight / noOfComponentByLength) / cavity
-
+        grossWeight = (sheetWeight / noOfComponents) / cavity
+        setGrossWeights(grossWeight) // for coverting into gram
         const updatedValue = dataToSend
-        updatedValue.GrossWeightByWidth = setValueAccToUOM(grossWeightByWidth, UOMDimension.label)
-        updatedValue.GrossWeightByLength = setValueAccToUOM(grossWeightByLength, UOMDimension.label)
-        updatedValue.newGrossWeightByWidth = setValueAccToUOM(grossWeightByWidth, UOMDimension.label)
-        updatedValue.newGrossWeightByLength = setValueAccToUOM(grossWeightByLength, UOMDimension.label)
+        updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
+        updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
         setTimeout(() => {
             setDataToSend(updatedValue)
-            setValue('GrossWeightByWidth', checkForDecimalAndNull(setValueAccToUOM(grossWeightByWidth, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
-            setValue('GrossWeightByLength', checkForDecimalAndNull(setValueAccToUOM(grossWeightByLength, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
+            setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
         }, 200);
     }
     /**
@@ -311,7 +357,7 @@ function Sheet(props) {
         const remainingSWPerBLBottom = checkForNull(sheetWidth / blankLength)
         const remainingSLPerBWBottom = checkForNull(remainingSLBottom / blankWidth)
         const noOfBlanksBottomEnd = checkForNull(parseInt(remainingSWPerBLBottom) * parseInt(remainingSLPerBWBottom))
-        const remainingSLRightEnd = checkForNull(sheetLength - remainingSLBottom)
+        const remainingSLRightEnd = checkForNull(sheetLength - remainingSLBottom)//3535
         const remainingSWRightEnd = checkForNull(sheetWidth - (blankWidth * blanksPerStripByLength))
         const remainingSLPerBWRightEnd = checkForNull(remainingSLRightEnd / blankWidth)
         const remainingSWPerBLRightEnd = checkForNull(remainingSWRightEnd / blankLength)
@@ -375,8 +421,6 @@ function Sheet(props) {
             }
         }
 
-        let grossWeight = (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? GrossWeight : dataToSend.newGrossWeight
-
         let data = {
             LayoutType: 'Sheet',
             SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
@@ -385,16 +429,16 @@ function Sheet(props) {
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
             RawMaterialIdRef: rmRowData.RawMaterialId,
             LoggedInUserId: loggedInUserId(),
-            RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeightOfSheet')) * calculatePercentage(getValues('scrapRecoveryPercent')) * rmRowData.ScrapRate,
+            RawMaterialCost: getValues('GrossWeight') * rmRowData.RMRate - (getValues('GrossWeight') - getValues('FinishWeightOfSheet')) * calculatePercentage(getValues('ScrapRecoveryPercent')) * rmRowData.ScrapRate,
             UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
             UOMForDimension: UOMDimension ? UOMDimension.label : '',
             Cavity: values.Cavity,
             Thickness: values.SheetThickness,
-            SheetLength: values.SheetLength,
-            WeightOfSheet: dataToSend.WeightOfSheet,
-            Width: values.SheetWidth,
-            BlankWidth: values.BlankWidth,
-            BlankLength: values.BlankLength,
+            SheetLength: getValues('SheetLength'),
+            WeightOfSheet: getValues('SheetWeight'),
+            Width: getValues('SheetWidth'),
+            BlankWidth: getValues('BlankWidth'),
+            BlankLength: getValues('BlankLength'),
             UOMId: rmRowData.UOMId,
             UOM: rmRowData.UOM,
             NetSurfaceArea: values.NetSurfaceArea,
@@ -419,7 +463,7 @@ function Sheet(props) {
             TotalComponentByWidth: getValues('TotalComponentByWidth'),
             RemainingSheetLengthBottomByLength: getValues('RemainingSLBottomByLength'),
             RemainingSheetWidthPerBlankLengthBottomByLength: getValues('RemainingSWPerBLBottomByLength'),
-            RemainingSheetLengthPerBlankWidthBottomByLength: getValues('RemainingSLPerBLBottomByLength'),
+            RemainingSheetLengthPerBlankWidthBottomByLength: getValues('RemainingSLPerBWBottomByLength'),
             NoOfBlanksBottomEndByLength: getValues('NoOfBlanksBottomEndByLength'),
             RemainingSheetLengthRightEndByLength: getValues('RemainingSLRightEndByLength'),
             RemainingSheetWidthRightEndByLength: getValues('RemainingSWRightEndByLength'),
@@ -429,14 +473,10 @@ function Sheet(props) {
             TotalNoOfBlanksByLength: getValues('TotalNoOfBlanksByLength'),
             AdditionalComponentsByLength: getValues('AdditionalComponentsByLength'),
             TotalComponentByLength: getValues('TotalComponentByLength'),
-            GrossWeightByWidth: getValues('GrossWeightByWidth'),
-            FinishWeightOfSheetByWidth: getValues('FinishWeightOfSheetByWidth'),
-            ScrapRecoveryPercentByWidth: getValues('ScrapRecoveryPercentByWidth'),
-            ScrapWeightByWidth: getValues('ScrapWeightByWidth'),
-            GrossWeightByLength: getValues('GrossWeightByLength'),
-            FinishWeightOfSheetByLength: getValues('FinishWeightOfSheetByLength'),
-            ScrapRecoveryPercentByLength: getValues('ScrapRecoveryPercentByLength'),
-            ScrapWeightByLength: getValues('ScrapWeightByLength')
+            GrossWeight: getValues('GrossWeight'),
+            FinishWeight: getValues('FinishWeightOfSheet'),
+            RecoveryPercentage: getValues('ScrapRecoveryPercent'),
+            ScrapWeight: getValues('ScrapWeight'),
         }
 
         dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
@@ -452,28 +492,18 @@ function Sheet(props) {
     const handleUnit = (value) => {
         setValue('UOMDimension', { label: value.label, value: value.value })
         setUOMDimension(value)
-        let grossWeightByWidth = dataToSend.GrossWeightByWidth
-        console.log('dataToSend: ', dataToSend);
-        let grossWeightByLength = dataToSend.GrossWeightByLength
-        setDataToSend(prevState => ({ ...prevState, newGrossWeightByWidth: setValueAccToUOM(grossWeightByWidth, value.label), newGrossWeightByLength: setValueAccToUOM(grossWeightByLength, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
-        setValue('GrossWeightByWidth', checkForDecimalAndNull(setValueAccToUOM(grossWeightByWidth, value.label), localStorage.NoOfDecimalForInputOutput))
-        setValue('GrossWeightByLength', checkForDecimalAndNull(setValueAccToUOM(grossWeightByLength, value.label), localStorage.NoOfDecimalForInputOutput))
-        setValue('FinishWeightOfSheetByWidth', 0)
-        setValue('FinishWeightOfSheetByLength', 0)
-        setValue('ScrapRecoveryPercentByWidth', 0)
-        setValue('ScrapRecoveryPercentByLength', 0)
+        let grossWeight = GrossWeight
+        setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
+        setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
+        setValue('FinishWeightOfSheet', 0)
+        setValue('ScrapRecoveryPercent', 0)
     }
     const scrapWeightCalculation = () => {
-        const scrapRecoveryPercentByWidth = Number((getValues('ScrapRecoveryPercentByWidth')))
-        const scrapRecoveryPercentByLength = Number((getValues('ScrapRecoveryPercentByLength')))
-        const grossWeightByWidth = getValues('GrossWeightByWidth')
-        const grossWeightByLength = getValues('GrossWeightByLength')
-        const finishWeightOfSheetByWidth = getValues('FinishWeightOfSheetByWidth')
-        const finishWeightOfSheetByLength = getValues('FinishWeightOfSheetByLength')
-        const scrapWeightByWidth = calculateScrapWeight(grossWeightByWidth, finishWeightOfSheetByWidth, scrapRecoveryPercentByWidth)
-        const scrapWeightByLength = calculateScrapWeight(grossWeightByLength, finishWeightOfSheetByLength, scrapRecoveryPercentByLength)
-        setValue('ScrapWeightByWidth', checkForDecimalAndNull(scrapWeightByWidth, localStorage.NoOfDecimalForInputOutput))
-        setValue('ScrapWeightByLength', checkForDecimalAndNull(scrapWeightByLength, localStorage.NoOfDecimalForInputOutput))
+        const scrapRecoveryPercent = Number((getValues('ScrapRecoveryPercent')))
+        const grossWeight = getValues('GrossWeight')
+        const finishWeightOfSheet = getValues('FinishWeightOfSheet')
+        const scrapWeight = calculateScrapWeight(grossWeight, finishWeightOfSheet, scrapRecoveryPercent)
+        setValue('ScrapWeight', checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
     }
     const UnitFormat = () => {
         return <>Net Surface Area(mm<sup>2</sup>)</>
@@ -485,7 +515,13 @@ function Sheet(props) {
             e.preventDefault();
         }
     };
-
+    const handleRadioChange = (type) => {
+        if (type === 'Width') {
+            setFinalComponentSelected(true)
+        } else {
+            setFinalComponentSelected(false)
+        }
+    }
     /**
      * @method render
      * @description Renders the component
@@ -667,10 +703,10 @@ function Sheet(props) {
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td> <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
+                                                <td> <TooltipCustom disabledIcon={true} id={'sheet-strips-width'} tooltipText={'No. of Strips = (Sheet Length / Blank Width)'} />
                                                     <TextFieldHookForm
                                                         label={`No. of Strips`}
-                                                        id={'sheet-strips'}
+                                                        id={'sheet-strips-width'}
                                                         name={'NumberOfStripsByWidth'}
                                                         Controller={Controller}
                                                         control={control}
@@ -679,11 +715,11 @@ function Sheet(props) {
                                                         handleChange={() => { }}
                                                         defaultValue={''}
                                                         className=""
-                                                        customClassName={'withBorder'}
+                                                        customClassName={'withBorder ml-2'}
                                                         errors={errors.NumberOfStripsByWidth}
                                                         disabled={true}
                                                     /></td>
-                                                <td><TooltipCustom disabledIcon={true} id={'sheet-strips-length'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
+                                                <td><TooltipCustom disabledIcon={true} id={'sheet-strips-length'} tooltipText={'No. of Strips = (Sheet Length / Strip Length)'} />
                                                     <TextFieldHookForm
                                                         label={`No. of Strips`}
                                                         id={'sheet-strips-length'}
@@ -695,13 +731,13 @@ function Sheet(props) {
                                                         handleChange={() => { }}
                                                         defaultValue={''}
                                                         className=""
-                                                        customClassName={'withBorder'}
+                                                        customClassName={'withBorder ml-2'}
                                                         errors={errors.NumberOfStripsByLength}
                                                         disabled={true}
                                                     /></td>
                                             </tr>
                                             <tr>
-                                                <td> <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Blanks/Strip = (Sheet Width / Blank Size)'} />
+                                                <td> <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Blanks/Strip = (Sheet Width / Blank Length)'} />
                                                     <TextFieldHookForm
                                                         label={`Blanks/Strip`}
                                                         name={'BlanksPerStripByWidth'}
@@ -713,11 +749,11 @@ function Sheet(props) {
                                                         handleChange={() => { }}
                                                         defaultValue={''}
                                                         className=""
-                                                        customClassName={'withBorder'}
+                                                        customClassName={'withBorder ml-2'}
                                                         errors={errors.ComponentPerStrip}
                                                         disabled={true}
                                                     /></td>
-                                                <td><TooltipCustom disabledIcon={true} id={'sheet-component-per-strip-length'} tooltipText={'Blanks/Strip = (Sheet Width / Blank Size)'} />
+                                                <td><TooltipCustom disabledIcon={true} id={'sheet-component-per-strip-length'} tooltipText={'Blanks/Strip = (Sheet Width / Blank Width)'} />
                                                     <TextFieldHookForm
                                                         label={`Blanks/Strip`}
                                                         name={'BlanksPerStripByLength'}
@@ -729,17 +765,17 @@ function Sheet(props) {
                                                         handleChange={() => { }}
                                                         defaultValue={''}
                                                         className=""
-                                                        customClassName={'withBorder'}
+                                                        customClassName={'withBorder ml-2'}
                                                         errors={errors.blanksPerStripByLength}
                                                         disabled={true}
                                                     /></td>
                                             </tr>
                                             <tr>
-                                                <td> <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
+                                                <td> <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component-width'} tooltipText={'Component/Sheet = (No. of Strips * Blanks/Strip * Cavity )'} />
                                                     <TextFieldHookForm
                                                         label={`Components/Sheet`}
                                                         name={'NoOfComponentByWidth'}
-                                                        id={'total-component'}
+                                                        id={'total-component-width'}
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
@@ -747,11 +783,11 @@ function Sheet(props) {
                                                         handleChange={() => { }}
                                                         defaultValue={''}
                                                         className=""
-                                                        customClassName={'withBorder'}
+                                                        customClassName={'withBorder ml-2'}
                                                         errors={errors.NoOfComponentByWidth}
                                                         disabled={true}
                                                     /></td>
-                                                <td> <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component-length'} tooltipText={'Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
+                                                <td> <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component-length'} tooltipText={'Component/Sheet = (No. of Strips * Blanks/Strip * Cavity )'} />
                                                     <TextFieldHookForm
                                                         label={`Components/Sheet`}
                                                         name={'NoOfComponentByLength'}
@@ -763,7 +799,7 @@ function Sheet(props) {
                                                         handleChange={() => { }}
                                                         defaultValue={''}
                                                         className=""
-                                                        customClassName={'withBorder'}
+                                                        customClassName={'withBorder ml-2'}
                                                         errors={errors.NoOfComponentByLength}
                                                         disabled={true}
                                                     /></td>
@@ -779,144 +815,169 @@ function Sheet(props) {
                                             </tr>
                                             {bottomEndAcc && <>
                                                 <tr>
-                                                    <td> <NumberFieldHookForm
-                                                        label={`Sheet Width(mm)`}
-                                                        name={'SheetWidthBottom'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.SheetWidthBottom}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Sheet Width(mm)`}
-                                                        name={'SheetWidthBottom'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.SheetWidthBottom}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>
+                                                        <NumberFieldHookForm
+                                                            label={`Sheet Width(mm)`}
+                                                            name={'SheetWidthBottom'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.SheetWidthBottom}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td>
+                                                        <NumberFieldHookForm
+                                                            label={`Sheet Width(mm)`}
+                                                            name={'SheetWidthBottom'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.SheetWidthBottom}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                                 <tr>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Remaining Sheet Length(mm)`}
-                                                        name={'RemainingSLBottomByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSLBottomByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td> <NumberFieldHookForm
-                                                        label={`Remaining Sheet Length(mm)`}
-                                                        name={'RemainingSLBottomByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSLBottomByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>
+                                                        <TooltipCustom width={'280px'} tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheet-length-by-width'} tooltipText={'Remaining Sheet Length(mm) = Sheet Length - (Blank Width * No. of Strips)'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Length(mm)`}
+                                                            name={'RemainingSLBottomByWidth'}
+                                                            id={'remaining-sheet-length-by-width'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSLBottomByWidth}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td>  <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheet-length-by-length'} tooltipText={'Remaining Sheet Length(mm) = Sheet Length - (Blank Length * No. of Strips)'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Length(mm)`}
+                                                            name={'RemainingSLBottomByLength'}
+                                                            id={'remaining-sheet-length-by-length'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSLBottomByLength}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                                 <tr>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Remaining Sheet Width/Blank Width`}
-                                                        name={'RemainingSWPerBWBottomByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSWPerBWBottomByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Remaining Sheet Width/Blank Length`}
-                                                        name={'RemainingSWPerBLBottomByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSWPerBLBottomByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheet-width-blank-width'} tooltipText={'Remaining Sheet Width/Blank Width = (Sheet Width / Blank Width)'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Width/Blank Width`}
+                                                            name={'RemainingSWPerBWBottomByWidth'}
+                                                            id={'remaining-sheet-width-blank-width'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSWPerBWBottomByWidth}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheet-width-blank-length'} tooltipText={'Remaining Sheet Width/Blank Length = (Sheet Width / Blank Length)'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Width/Blank Length`}
+                                                            name={'RemainingSWPerBLBottomByLength'}
+                                                            id={'remaining-sheet-width-blank-length'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSWPerBLBottomByLength}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                                 <tr>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Remaining Sheet Length/Blank Length`}
-                                                        name={'RemainingSLPerBLBottomByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSLPerBLBottomByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Remaining Sheet Length/Blank Width`}
-                                                        name={'RemainingSLPerBWBottomByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSLPerBWBottomByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheet-length-blank-length'} tooltipText={'Remaining Sheet Length/Blank Length = (Sheet Length / Blank Length)'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Length/Blank Length`}
+                                                            name={'RemainingSLPerBLBottomByWidth'}
+                                                            id={'remaining-sheet-length-blank-length'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSLPerBLBottomByWidth}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheet-length-blank-width'} tooltipText={'Remaining Sheet Length/Blank Width = (Sheet Length / Blank Width)'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Length/Blank Width`}
+                                                            name={'RemainingSLPerBWBottomByLength'}
+                                                            id={'remaining-sheet-length-blank-width'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSLPerBWBottomByLength}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                                 <tr>
-                                                    <td> <NumberFieldHookForm
-                                                        label={`No. of Blanks(Bottom End)`}
-                                                        name={'NoOfBlanksBottomEndByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.NoOfBlanksBottomEndByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td><NumberFieldHookForm
-                                                        label={`No. of Blanks(Bottom End)`}
-                                                        name={'NoOfBlanksBottomEndByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.NoOfBlanksBottomEndByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'no-of-blanks-width-bottom'} tooltipText={'No. of Blanks(Bottom End) = Remaining Sheet Width/Blank Width * Remaining Sheet Length/Blank Length'} />
+                                                        <NumberFieldHookForm
+                                                            label={`No. of Blanks(Bottom End)`}
+                                                            name={'NoOfBlanksBottomEndByWidth'}
+                                                            id={'no-of-blanks-width-bottom'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.NoOfBlanksBottomEndByWidth}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'no-of-blanks-length-bottom'} tooltipText={'No. of Blanks(Bottom End) = Remaining Sheet Width/Blank Length * Remaining Sheet Length/Blank Width'} />
+                                                        <NumberFieldHookForm
+                                                            label={`No. of Blanks(Bottom End)`}
+                                                            name={'NoOfBlanksBottomEndByLength'}
+                                                            id={'no-of-blanks-length-bottom'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.NoOfBlanksBottomEndByLength}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                             </>}
                                             <tr><td colSpan={2}><div className='d-flex justify-content-between'><strong>Right End</strong> <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setRightEndAcc(!rightEndAcc) }}>
@@ -928,230 +989,294 @@ function Sheet(props) {
                                             </button></div></td></tr>
                                             {rightEndAcc && <>
                                                 <tr>
-                                                    <td> <NumberFieldHookForm
-                                                        label={`Remaining Sheet Length(mm)`}
-                                                        name={'RemainingSLRightEndByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSLRightEndByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Remaining Sheet Length(mm)`}
-                                                        name={'RemainingSLRightEndByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSLRightEndByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheet-length-right-width'} tooltipText={'Remaining Sheet Length = Sheet Length- Remaining Sheet Length'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Length(mm)`}
+                                                            name={'RemainingSLRightEndByWidth'}
+                                                            id={'remaining-sheet-length-right-width'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSLRightEndByWidth}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheet-length-right-length'} tooltipText={'Remaining Sheet Length = Sheet Length- Remaining Sheet Length'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Length(mm)`}
+                                                            name={'RemainingSLRightEndByLength'}
+                                                            id={'remaining-sheet-length-right-length'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSLRightEndByLength}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                                 <tr>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Remaining Sheet Width(mm)`}
-                                                        name={'RemainingSWRightEndByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSWRightEndByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td> <NumberFieldHookForm
-                                                        label={`Remaining Sheet Width(mm)`}
-                                                        name={'RemainingSWRightEndByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSWRightEndByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td> <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheet-width-right-width'} tooltipText={'Remaining Sheet Width = Sheet Width - (Blank Length * Blanks/Strip)'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Width(mm)`}
+                                                            name={'RemainingSWRightEndByWidth'}
+                                                            id={'remaining-sheet-width-right-width'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSWRightEndByWidth}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td>  <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheet-width-right-length'} tooltipText={'Remaining Sheet Width = Sheet Width - (Blank Width * Blanks/Strip)'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Width(mm)`}
+                                                            name={'RemainingSWRightEndByLength'}
+                                                            id={'remaining-sheet-width-right-length'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSWRightEndByLength}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                                 <tr>
-                                                    <td> <NumberFieldHookForm
-                                                        label={`Remaining Sheet Length/Blank Length`}
-                                                        name={'RemainingSLPerBLRightEndByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSLPerBLRightEndByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Remaining Sheet Length/Blank Width`}
-                                                        name={'RemainingSLPerBWRightEndByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSLPerBWRightEndByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheetLength-blankLength-width'} tooltipText={'Remaining Sheet Length/Blank Length = Remaining Sheet Length/ Blank Length'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Length/Blank Length`}
+                                                            name={'RemainingSLPerBLRightEndByWidth'}
+                                                            id={'remaining-sheetLength-blankLength-width'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSLPerBLRightEndByWidth}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td> <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheetLength-blankWidth-length'} tooltipText={'Remaining Sheet Length/Blank Width = Remaining Sheet Length/ Blank Width'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Length/Blank Width`}
+                                                            name={'RemainingSLPerBWRightEndByLength'}
+                                                            id={'remaining-sheetLength-blankWidth-length'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSLPerBWRightEndByLength}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                                 <tr>
-                                                    <td> <NumberFieldHookForm
-                                                        label={`Remaining Sheet Width/Blank Width`}
-                                                        name={'RemainingSWPerBWRightEndByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSWPerBWRightEndByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Remaining Sheet Width/Blank Length`}
-                                                        name={'RemainingSWPerBLRightEndByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.RemainingSWPerBLRightEndByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>  <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheetWidth-blankWidth-width'} tooltipText={'Remaining Sheet Width/Blank Width = Remaining Sheet Width/ Blank Width'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Remaining Sheet Width/Blank Width`}
+                                                            name={'RemainingSWPerBWRightEndByWidth'}
+                                                            id={'remaining-sheetWidth-blankWidth-width'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSWPerBWRightEndByWidth}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'remaining-sheetWidth-blankLength-length'} tooltipText={'Component/Sheet = (No. of Strips * Blanks/Strip * Cavity )'} /><NumberFieldHookForm
+                                                            label={`Remaining Sheet Width/Blank Length`}
+                                                            name={'RemainingSWPerBLRightEndByLength'}
+                                                            id={'remaining-sheetWidth-blankLength-length'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.RemainingSWPerBLRightEndByLength}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                                 <tr>
-                                                    <td> <NumberFieldHookForm
-                                                        label={`No. of Blanks(Right End)`}
-                                                        name={'NoOfBlanksRightEndByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.NoOfBlanksRightEndByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td><NumberFieldHookForm
-                                                        label={`No. of Blanks(Right End)`}
-                                                        name={'NoOfBlanksRightEndByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.NoOfBlanksRightEndByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'no-of-blanks-right-width'} tooltipText={'No. of Blanks(Right End) = Remaining Sheet Width/Blank Width* Remaining Sheet Length/Blank Length'} />
+                                                        <NumberFieldHookForm
+                                                            label={`No. of Blanks(Right End)`}
+                                                            name={'NoOfBlanksRightEndByWidth'}
+                                                            id={'no-of-blanks-right-width'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.NoOfBlanksRightEndByWidth}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'no-of-blanks-right-length'} tooltipText={'No. of Blanks(Right End) = Remaining Sheet Width/Blank Length* Remaining Sheet Length/Blank Width'} />
+                                                        <NumberFieldHookForm
+                                                            label={`No. of Blanks(Right End)`}
+                                                            name={'NoOfBlanksRightEndByLength'}
+                                                            id={'no-of-blanks-right-length'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.NoOfBlanksRightEndByLength}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                                 <tr>
-                                                    <td> <NumberFieldHookForm
-                                                        label={`Total Blanks from remaining sheet`}
-                                                        name={'TotalNoOfBlanksByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.TotalNoOfBlanksByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td> <NumberFieldHookForm
-                                                        label={`Total Blanks from remaining sheet`}
-                                                        name={'TotalNoOfBlanksByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.TotalNoOfBlanksByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-blanks-from-remaining-sheet-width'} tooltipText={'Total Blanks from remaining sheet = No. of Blanks(Bottom End)+ No. of Blanks(Right End)'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Total Blanks from remaining sheet`}
+                                                            name={'TotalNoOfBlanksByWidth'}
+                                                            id={'total-blanks-from-remaining-sheet-width'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.TotalNoOfBlanksByWidth}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-blanks-from-remaining-sheet-length'} tooltipText={'Total Blanks from remaining sheet = No. of Blanks(Bottom End)+ No. of Blanks(Right End)'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Total Blanks from remaining sheet`}
+                                                            name={'TotalNoOfBlanksByLength'}
+                                                            id={'total-blanks-from-remaining-sheet-length'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2 '}
+                                                            errors={errors.TotalNoOfBlanksByLength}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                                 <tr>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Additional Components from remaining sheet`}
-                                                        name={'AdditionalComponentsByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.AdditionalComponentsByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Additional Components from remaining sheet`}
-                                                        name={'AdditionalComponentsByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.AdditionalComponentsByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'additional-components-from-remaining-sheet-width'} tooltipText={'Additional Components from remaining sheet = Total Blanks from remaining sheet * Cavity'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Additional Components from remaining sheet`}
+                                                            name={'AdditionalComponentsByWidth'}
+                                                            id={'additional-components-from-remaining-sheet-width'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.AdditionalComponentsByWidth}
+                                                            disabled={true}
+                                                        /></td>
+                                                    <td>
+                                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'additional-components-from-remaining-sheet-length'} tooltipText={'Additional Components from remaining sheet = Total Blanks from remaining sheet * Cavity'} />
+                                                        <NumberFieldHookForm
+                                                            label={`Additional Components from remaining sheet`}
+                                                            name={'AdditionalComponentsByLength'}
+                                                            id={'additional-components-from-remaining-sheet-length'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder ml-2'}
+                                                            errors={errors.AdditionalComponentsByLength}
+                                                            disabled={true}
+                                                        /></td>
                                                 </tr>
                                             </>}
                                             <>
                                                 <tr>
-                                                    <td><NumberFieldHookForm
-                                                        label={`Total Component/Sheet`}
-                                                        name={'TotalComponentByWidth'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.TotalComponentByWidth}
-                                                        disabled={true}
-                                                    /></td>
-                                                    <td> <NumberFieldHookForm
-                                                        label={`Total Component/Sheet`}
-                                                        name={'TotalComponentByLength'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.TotalComponentByLength}
-                                                        disabled={true}
-                                                    /></td>
+                                                    <td>
+                                                        <div className='label-with-radio-btn ml-2'>
+                                                            <input
+                                                                type="radio"
+                                                                name="childType"
+                                                                checked={finalComponentSelected === true ? true : false}
+                                                                className='radio-btn'
+                                                                onClick={() => handleRadioChange('Width')}
+                                                                disabled={CostingViewMode ? true : false}
+                                                            />
+                                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component-per-sheet-width'} tooltipText={'Total Component/Sheet = Components/Sheet + Additional Components from remaining sheet'} />
+                                                            <NumberFieldHookForm
+                                                                label={`Total Component/Sheet`}
+                                                                name={'TotalComponentByWidth'}
+                                                                id={'total-component-per-sheet-width'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.TotalComponentByWidth}
+                                                                disabled={true}
+                                                            />
+                                                        </div>
+
+                                                    </td>
+                                                    <td>
+                                                        <div className='label-with-radio-btn ml-2'>
+                                                            <input
+                                                                type="radio"
+                                                                name="childType"
+                                                                className='radio-btn'
+                                                                checked={finalComponentSelected === false ? true : false}
+                                                                onClick={() => handleRadioChange('Length')}
+                                                                disabled={CostingViewMode ? true : false}
+                                                            />
+                                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component-per-sheet-length'} tooltipText={'Total Component/Sheet = Components/Sheet + Additional Components from remaining sheet'} />
+                                                            <NumberFieldHookForm
+                                                                label={`Total Component/Sheet`}
+                                                                name={'TotalComponentByLength'}
+                                                                Controller={Controller}
+                                                                id={'total-component-per-sheet-length'}
+                                                                control={control}
+                                                                register={register}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.TotalComponentByLength}
+                                                                disabled={true}
+                                                            /></div></td>
                                                 </tr>
                                             </>
                                         </tbody>
@@ -1200,10 +1325,12 @@ function Sheet(props) {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md="3"> <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Gross Weight = Weight of sheet / No. of Parts"} />
+                                <Col md="3">
+                                    <TooltipCustom width={'340px'} id={'gross-weight-info'} tooltipText={"Gross Weight is calculated by the maximum value of 'Total Component/Sheet' . Radio button is pre-selected accordingly"} />
+                                    <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Gross Weight = Weight of sheet / Total Component/Sheet"} />
                                     <TextFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
-                                        name={'GrossWeightByWidth'}
+                                        name={'GrossWeight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -1221,7 +1348,7 @@ function Sheet(props) {
                                     /></Col>
                                 <Col md="3"> <TextFieldHookForm
                                     label={`Finish Weight(${UOMDimension.label})`}
-                                    name={'FinishWeightOfSheetByWidth'}
+                                    name={'FinishWeightOfSheet'}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -1230,7 +1357,7 @@ function Sheet(props) {
                                         required: true,
                                         validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         max: {
-                                            value: getValues('GrossWeightByWidth'),
+                                            value: getValues('GrossWeight'),
                                             message: 'Finish weight should not be greater than gross weight.'
                                         },
                                     }}
@@ -1243,7 +1370,7 @@ function Sheet(props) {
                                 /></Col>
                                 <Col md="3"> <TextFieldHookForm
                                     label={`Scrap Recovery (%)`}
-                                    name={'ScrapRecoveryPercentByWidth'}
+                                    name={'ScrapRecoveryPercent'}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -1266,7 +1393,7 @@ function Sheet(props) {
                                 <Col md="3"><TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Weight = (Gross Weight - Finish Weight )* Scrap Recovery (%)/100'} />
                                     <TextFieldHookForm
                                         label={`Scrap Weight(${UOMDimension.label})`}
-                                        name={'ScrapWeightByWidth'}
+                                        name={'ScrapWeight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}

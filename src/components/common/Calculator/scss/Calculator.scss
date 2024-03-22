@@ -107,3 +107,19 @@
     }
   }
 }
+
+.label-with-radio-btn {
+  position: relative;
+  // margin-left: 10px;
+
+  input.radio-btn {
+    position: absolute;
+    top: 5px;
+    left: -16px;
+  }
+
+  .tooltip_custom_right {
+    position: absolute;
+    right: 0;
+  }
+}
