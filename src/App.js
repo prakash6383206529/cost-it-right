@@ -25,6 +25,8 @@ class App extends Component {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         reactLocalStorage.setObject('InitialConfiguration', Data)
+        let BOPLabel = Data.BOPLabel
+        reactLocalStorage.setObject('BOPLabel', BOPLabel)
         let costingHeadsList = Data.CostingHeadsList
         let costingHeadsListArray = costingHeadsList.split(",")
 
