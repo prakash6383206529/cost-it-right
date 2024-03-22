@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getCostingLabourDetails, getRMCCTabData, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setIsBreakupBoughtOutPartCostingFromAPI, setRMCCData } from '../../../actions/Costing';
+import { getCostingLabourDetails, getRMCCTabData, openCloseStatus, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setIsBreakupBoughtOutPartCostingFromAPI, setRMCCData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, loggedInUserId, showBopLabel, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { CostingStatusContext, IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
@@ -45,6 +45,7 @@ function AssemblyPart(props) {
   const dispatch = useDispatch()
   const toggle = (BOMLevel, PartNumber) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    dispatch(openCloseStatus({ bopHandling: isBOPExists && !IsOpen, }))
     if (isNFR && !openAllTabs) {
       Toaster.warning("All Raw Material's price has not added in the Raw Material master against this vendor and plant.")
       return false;
@@ -346,6 +347,7 @@ function AssemblyPart(props) {
               {
                 isBOPExists && item?.CostingPartDetails?.IsOpen && <><button
                   type="button"
+                  id='Add_BOP_Handling_Charge'
                   className={'user-btn add-oprn-btn mr-1'}
                   onClick={bopHandlingDrawer}>
                   <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`${showBopLabel()} H`}</button>
@@ -354,6 +356,7 @@ function AssemblyPart(props) {
               {
                 checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
                   <button
+                    id="assembly_addOperation"
                     type="button"
                     className={'user-btn add-oprn-btn'}
                     onClick={DrawerToggle}>
@@ -361,6 +364,7 @@ function AssemblyPart(props) {
                   :
                   <button
                     type="button"
+                    id="assembly_addOperation"
                     className={'user-btn add-oprn-btn'}
                     onClick={DrawerToggle}>
                     <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>
@@ -375,7 +379,7 @@ function AssemblyPart(props) {
               </button> */}
             </div >
             {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
-            < div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}> {(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child assemblies costing are coming from individual costing, please edit there if want to change costing" : "This sub-assembly is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div >
+            < div /*  id="lock_icon" */ className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}> {(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child assemblies costing are coming from individual costing, please edit there if want to change costing" : "This sub-assembly is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div >
           </div >
         </td >
 

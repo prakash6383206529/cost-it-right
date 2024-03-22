@@ -124,7 +124,7 @@ const ModelLanding = (props) => {
                                 errors={errors && errors.EffectiveDate}
                             />
                         </div>
-                        <button className='user-btn ml-1 mt-2' type="submit">
+                        <button id="view_reports" className='user-btn ml-1 mt-2 view_report' type="submit">
                             <div className='save-icon'></div>
                         </button>
                     </Col>

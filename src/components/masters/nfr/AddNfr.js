@@ -1113,6 +1113,7 @@ function AddNfr(props) {
                     partData={{ PartId: nfrData?.PartId, PartName: nfrData?.PartName, PartNumber: nfrData?.PartNumber }}
                     levelDetails={levelDetails}
                     nfrPartDetail={nfrPartDetail}
+                    PlantId={nfrPartDetail?.PlantId}
                 />
             }
             {

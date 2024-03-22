@@ -15,6 +15,9 @@ import ReactExport from 'react-export-excel';
 import { NFR_INSIGHT_REPORT } from '../../../../config/masterData';
 import NFRInsightStatusDetailsDrawer from './NFRInsightStatusDetailsDrawer';
 import { agGridStatus, isResetClick } from '../../../../actions/Common';
+import TourWrapper from '../../../common/Tour/TourWrapper';
+import { Steps } from '../../../common/Tour/TourMessages';
+import { useTranslation } from "react-i18next"
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -22,6 +25,8 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function NFRInsightsReport(props) {
+    const { t } = useTranslation("common")
+
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [isLoader, setIsLoader] = useState(false);
@@ -190,11 +195,11 @@ function NFRInsightsReport(props) {
                     <Col md="6" className="text-right search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                <button type="button" className="user-btn Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                     <div className="refresh mr-0"></div>
                                 </button>
                                 <ExcelFile filename={'NFR Insight Report'} fileExtension={'.xls'} element={
-                                    <button id={'Excel-Downloads-nfr'} className=" ml-1 user-btn" type="button"><div className="download mr-1" ></div>
+                                    <button id={'Excel-Downloads-nfr'} className=" ml-1 user-btn Tour_List_Download" type="button"><div className="download mr-1" ></div>
                                     </button>}>
                                     {onBtExport()}
                                 </ExcelFile>
@@ -205,6 +210,11 @@ function NFRInsightsReport(props) {
                 {<div className={`ag-grid-wrapper height-width-wrapper ${(nfrInsightDetails && nfrInsightDetails?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                        <TourWrapper
+                            buttonSpecificProp={{ id: "Simulation_Insights_Report" }}
+                            stepsSpecificProp={{
+                                steps: Steps(t, { addButton: false, bulkUpload: false, viewButton: false, EditButton: false, DeleteButton: false, filterButton: false, addLimit: false, costMovementButton: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                            }} />
                     </div>
                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
