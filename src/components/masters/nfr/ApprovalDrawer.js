@@ -54,7 +54,7 @@ const ApprovalDrawer = (props) => {
                 DepartmentId: departObj[0]?.Value,
                 TechnologyId: technologyId,
                 ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(NFRTypeId),
-                plantId: nfrPartDetail.PlantId
+                plantId: props?.PlantId
             }
             let approverIdListTemp = []
             dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
@@ -78,7 +78,7 @@ const ApprovalDrawer = (props) => {
         // obj.TechnologyId = technologyId
         obj.Mode = 'costing'
         obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
-        obj.plantId = nfrPartDetail.PlantId
+        obj.plantId = props?.PlantId
         dispatch(checkFinalUser(obj, (res) => {
             if (res?.data?.Result) {
                 if (res?.data?.Data?.IsFinalApprover) {
@@ -174,7 +174,7 @@ const ApprovalDrawer = (props) => {
                 DepartmentId: newValue.value,
                 TechnologyId: technologyId,
                 ApprovalTypeId: NFRAPPROVALTYPEID,
-                plantId: nfrPartDetail.PlantId
+                plantId: props?.PlantId
             }
             dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
                 res.data.DataList && res.data.DataList.map((item) => {
@@ -195,7 +195,7 @@ const ApprovalDrawer = (props) => {
                 // obj.TechnologyId = technologyId
                 obj.Mode = 'costing'
                 obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
-                obj.plantId = nfrPartDetail.PlantId
+                obj.plantId = props?.PlantId
                 dispatch(checkFinalUser(obj, (res) => {
                     if (res?.data?.Result) {
                         if (res?.data?.Data?.IsFinalApprover) {
