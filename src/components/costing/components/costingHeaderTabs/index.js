@@ -35,6 +35,7 @@ import { useTranslation } from 'react-i18next';
 import { getRMFromNFR, setOpenAllTabs } from '../../../masters/nfr/actions/nfr';
 import Toaster from '../../../common/Toaster';
 
+
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
   const { t } = useTranslation("Costing");
@@ -42,7 +43,9 @@ function CostingHeaderTabs(props) {
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
     IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange, ActualCostingDataList, IsIncludedSurfaceInRejection, IsIncludedToolCost, includeOverHeadProfitIcc, includeToolCostIcc } = useSelector(state => state.costing)
   const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount, costingOpenCloseStatus } = useSelector(state => state.costing)
-
+  const [isBOPExists, setIsBOPExists] = useState(false)
+  const [isPartExists, setIsPartExists] = useState(false)
+  const [ispartLocked, setIsPartLocked] = useState(false)
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
@@ -274,7 +277,21 @@ function CostingHeaderTabs(props) {
     }
 
   }, [activeTab])
+  useEffect(() => {
+    if (RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0].CostingChildPartDetails) {
 
+      const partTypes = RMCCTabData[0].CostingChildPartDetails.map(item => item.PartType);
+
+      const isBOPExists = partTypes.includes('BOP');
+      const isPartExists = partTypes.includes('Part');
+
+      setIsBOPExists(isBOPExists);
+      setIsPartExists(isPartExists);
+      const isPartLocked = RMCCTabData[0].CostingChildPartDetails.some(item => (item.PartType === 'Part' || item.PartType === 'Sub Assembly') && (item.IsPartLocked || item.IsLocked));
+      const issubAssemblyLocked = RMCCTabData[0].CostingChildPartDetails.some(item => item.PartType === 'Sub Assembly' && (item.IsPartLocked || item.IsLocked));
+      setIsPartLocked(isPartLocked);
+    }
+  }, [RMCCTabData]);
 
 
   const callAssemblyAPi = (tabId) => {
@@ -420,33 +437,50 @@ function CostingHeaderTabs(props) {
     }))
     tourStartRef()
   }
+
   const tourStartRef = () => {
     switch (Number(activeTab)) {
       case 1:
+
         if (costingOpenCloseStatus.RMC) {
 
-          setTabsTour(prevState => ({
-            ...prevState,
-            steps: Steps(t).TAB_RMC,
-            hints: []
-          }))
+          if (IdForMultiTechnology.includes(String(costingData?.TechnologyId))) {
+            setTabsTour(prevState => ({
+              ...prevState,
+              steps: Steps(t, '', { bopHandling: costingOpenCloseStatus.bopHandling }).TAB_PARTCOST,
+              hints: []
+            }))
+
+          } else {
+            setTabsTour(prevState => ({
+              ...prevState,
+              steps: Steps(t, '', { CostingViewMode: CostingViewMode, CostingEditMode: CostingEditMode, PartExists: isPartExists, isPartLocked: ispartLocked }).TAB_RMC,
+              hints: []
+            }))
+          }
+
         } else {
           const tempStep = [];
           if ((CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid()))) {
-            for (let i = 1; i < Steps(t).COSTING_TABS.length; i++) {
-              tempStep.push(Steps(t).COSTING_TABS[i])
+            for (let i = 1; i < Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS.length; i++) {
+              tempStep.push(Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS[i])
             }
+
             setTabsTour(prevState => ({
               ...prevState,
               steps: tempStep,
               hints: Steps(t).PART_HINT
             }))
+
+
           } else {
             setTabsTour(prevState => ({
               ...prevState,
-              steps: Steps(t).COSTING_TABS,
+              steps: Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS,
               hints: Steps(t).PART_HINT
-            }))
+            }));
+
+
           }
         }
         break;

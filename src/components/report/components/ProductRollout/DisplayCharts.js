@@ -10,6 +10,7 @@ import { getProductRolloutCostRatio, getSupplierContributionDetails } from "../.
 import NoContentFound from "../../../common/NoContentFound";
 import { EMPTY_DATA, EMPTY_GUID } from "../../../../config/constants";
 import LoaderCustom from "../../../common/LoaderCustom";
+import { showBopLabel } from "../../../../helper";
 
 
 const DisplayCharts = ({ productId }) => {
@@ -53,7 +54,6 @@ const DisplayCharts = ({ productId }) => {
                     }
                 }));
                 let pieChartDataTemp = res.data.Data;
-
                 let Labels = [];
                 let Dataset = []
                 Object.keys(pieChartDataTemp).forEach((key) => {
@@ -61,7 +61,7 @@ const DisplayCharts = ({ productId }) => {
                         Labels.push("RM")
                         Dataset.push(pieChartDataTemp[key])
                     } else if (key === 'BOPCost' && pieChartDataTemp[key] !== 0) {
-                        Labels.push("BOP")
+                        Labels.push(`${showBopLabel()}`)
                         Dataset.push(pieChartDataTemp[key])
                     } else if (key === 'CCCost' && pieChartDataTemp[key] !== 0) {
                         Labels.push("CC")

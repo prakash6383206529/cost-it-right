@@ -376,7 +376,7 @@ const ExchangeRateListing = (props) => {
                                             </>
 
                                         }
-                                        <Button id={"exchangeRateListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                                        <Button id={"exchangeRateListing_refresh"} className="Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                                     </div>
                                 </div>
                             </Col>

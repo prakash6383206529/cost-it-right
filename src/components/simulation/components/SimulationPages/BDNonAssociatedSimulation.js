@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA, CBCTypeId } from '../../../../config/constants';
@@ -24,6 +24,8 @@ import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
 import { BOP_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { simulationContext } from '..';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 const gridOptions = {
 
@@ -34,6 +36,8 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function BDNonAssociatedSimulation(props) {
+    const { showEditMaster, handleEditMasterPage, showCompressedColumns, render } = useContext(simulationContext) || {};
+
     const { list, isbulkUpload, rowCount, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -56,12 +60,25 @@ function BDNonAssociatedSimulation(props) {
         reValidateMode: 'onChange',
     })
 
-
-
     const dispatch = useDispatch()
-
     const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const columnWidths = {
+        BoughtOutPartNumber: showCompressedColumns ? 50 : 140,
+        BoughtOutPartName: showCompressedColumns ? 100 : 140,
+        BoughtOutPartCategory: showCompressedColumns ? 100 : 140,
+        Vendor: showCompressedColumns ? 100 : 140,
+        CustomerName: showCompressedColumns ? 100 : 140,
+        Plants: showCompressedColumns ? 100 : 140,
+        NumberOfPieces: showCompressedColumns ? 100 : 140,
+        BasicRate: showCompressedColumns ? 140 : 140,
+        newBasicRateFormatter: showCompressedColumns ? 140 : 140,
+        Percentage: showCompressedColumns ? 100 : 140,
+        OldNetLandedCost: showCompressedColumns ? 120 : 140,
+        NewNetLandedCost: showCompressedColumns ? 120 : 140,
+        EffectiveDate: showCompressedColumns ? 90 : 140,
+        CostingId: showCompressedColumns ? 90 : 140,
 
+    };
     useEffect(() => {
         list && list?.map(item => {
             if (!isbulkUpload) {
@@ -76,7 +93,12 @@ function BDNonAssociatedSimulation(props) {
             setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
     }, [])
+    useEffect(() => {
 
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditMaster, showverifyPage)
+        }
+    }, [showverifyPage])
     useEffect(() => {
         if (list && list.length > 0) {
             window.screen.width >= 1920 && gridRef?.current?.api?.sizeColumnsToFit();
@@ -229,8 +251,9 @@ function BDNonAssociatedSimulation(props) {
 
 
         return (
-            <>
+            <>            <div id={`newBasicRate-${props.rowIndex}`} className='ag-header-cell-label'>
                 {<span title={cell && value ? Number(row.NewBasicRate) : Number(row.BasicRate)}>{cell && value ? Number(row.NewBasicRate) : Number(row.BasicRate)} </span>}
+            </div>
             </>
         )
     }
@@ -313,7 +336,11 @@ function BDNonAssociatedSimulation(props) {
             }
         }
 
-        return <span title={returnValue}>{returnValue}</span>
+        return (
+            <div id="netCost_revised" className='ag-header-cell-label'>
+                <span title={returnValue}>{returnValue}</span>
+            </div>
+        );
     }
 
     const OldcostFormatter = (props) => {
@@ -326,7 +353,7 @@ function BDNonAssociatedSimulation(props) {
     const revisedBasicRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Revised{<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>}</span>
+                <span className='ag-header-cell-text basicRate_revised'>Revised{<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>}</span>
             </div>
         );
     };
@@ -559,60 +586,62 @@ function BDNonAssociatedSimulation(props) {
                                                     <label className='mr-1'>Vendor (Code):</label>
                                                     <p title={list[0].Vendor} className='mr-2'>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
                                                 </div>}
-                                                <button type="button" id="simulation-back" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                                                <button type="button" id="simulation-back" className={"apply back_simulationPage"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        {list && <AgGridReact
-                                            ref={gridRef}
-                                            style={{ height: '100%', width: '100%' }}
-                                            defaultColDef={defaultColDef}
-                                            domLayout='autoHeight'
-                                            // columnDefs={c}
-                                            rowData={list}
-                                            pagination={true}
-                                            paginationPageSize={defaultPageSize}
-                                            onGridReady={onGridReady}
-                                            gridOptions={gridOptions}
-                                            loadingOverlayComponent={'customLoadingOverlay'}
-                                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                                            noRowsOverlayComponentParams={{
-                                                title: EMPTY_DATA,
-                                            }}
-                                            frameworkComponents={frameworkComponents}
-                                            suppressColumnVirtualisation={true}
-                                            stopEditingWhenCellsLoseFocus={true}
-                                            onFilterModified={onFloatingFilterChanged}
-                                            enableBrowserTooltips={true}
-                                        >
-                                            {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                            <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()} Part No.`} minWidth={140}></AgGridColumn>
-                                            <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()} Part Name`} minWidth={140}></AgGridColumn>
-                                            {<AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName={`${showBopLabel()} Category`} minWidth={140}></AgGridColumn>}
-                                            {list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
-                                            {list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
-                                            {<AgGridColumn field="Plants" tooltipField='Plants' editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
-                                            {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" tooltipField='NumberOfPieces' editable='false' headerName="Min Order Quantity" minWidth={140} ></AgGridColumn>}
+                                        {list &&
+                                            (render ? <LoaderCustom customClass="loader-center" /> : (<AgGridReact
+                                                ref={gridRef}
+                                                style={{ height: '100%', width: '100%' }}
+                                                defaultColDef={defaultColDef}
+                                                domLayout='autoHeight'
+                                                // columnDefs={c}
+                                                rowData={list}
+                                                pagination={true}
+                                                paginationPageSize={defaultPageSize}
+                                                onGridReady={onGridReady}
+                                                gridOptions={gridOptions}
+                                                loadingOverlayComponent={'customLoadingOverlay'}
+                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                noRowsOverlayComponentParams={{
+                                                    title: EMPTY_DATA,
+                                                }}
+                                                frameworkComponents={frameworkComponents}
+                                                suppressColumnVirtualisation={true}
+                                                stopEditingWhenCellsLoseFocus={true}
+                                                onFilterModified={onFloatingFilterChanged}
+                                                enableBrowserTooltips={true}
+                                            >
+                                                {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
+                                                <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()} Part No.`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
+                                                <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()} Part Name`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
+                                                {<AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName={`${showBopLabel()} Category`} minWidth={columnWidths.BoughtOutPartCategory}></AgGridColumn>}
+                                                {list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName="Vendor (Code)" minWidth={columnWidths.Vendor} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                {list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" minWidth={columnWidths.CustomerName} cellRenderer='customerFormatter'></AgGridColumn>}
+                                                {<AgGridColumn field="Plants" tooltipField='Plants' editable='false' headerName="Plant (Code)" minWidth={columnWidths.Plants} cellRenderer='plantFormatter'></AgGridColumn>}
+                                                {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" tooltipField='NumberOfPieces' editable='false' headerName="Min Order Quantity" minWidth={columnWidths.NumberOfPieces} ></AgGridColumn>}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`${Number(selectedMasterForSimulation?.value) === 5} ? "Basic Rate (Currency)" : "Basic Rate (${reactLocalStorage.getObject("baseCurrency")})"`} marryChildren={true} width={240}>
-                                                <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
-                                            </AgGridColumn>
-                                            {<AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter'></AgGridColumn>}
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`${Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (" + reactLocalStorage.getObject("baseCurrency") + ")"}`} marryChildren={true} width={240}>
+                                                    <AgGridColumn width={columnWidths.BasicRate} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.newBasicRateFormatter} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                </AgGridColumn>
+                                                {<AgGridColumn width={columnWidths.Percentage} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter'></AgGridColumn>}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`${Number(selectedMasterForSimulation?.value) === 5} ? "Net Cost (Currency)" : "Net Cost (${reactLocalStorage.getObject("baseCurrency")})"`} marryChildren={true}>
-                                                {/* <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
-                                                <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" valueGetter={ageValueGetterLanded} colId='NewNetLandedCost'></AgGridColumn>
-                                            </AgGridColumn>
-
-                                            <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                            <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`${Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (" + reactLocalStorage.getObject("baseCurrency") + ")"}`} marryChildren={true}>
+                                                    {/* <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
+                                                    <AgGridColumn width={columnWidths.OldNetLandedCost} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.NewNetLandedCost} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" valueGetter={ageValueGetterLanded} colId='NewNetLandedCost'></AgGridColumn>
+                                                </AgGridColumn>
 
 
-                                        </AgGridReact>}
+                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
+
+
+                                            </AgGridReact>))}
 
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
@@ -623,7 +652,7 @@ function BDNonAssociatedSimulation(props) {
                         {true &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                    <div className="inputbox date-section mr-3 verfiy-page">
+                                    <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                         <DatePicker
                                             name="EffectiveDate"
                                             id="EffectiveDate"
@@ -642,7 +671,7 @@ function BDNonAssociatedSimulation(props) {
                                         />
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div>
-                                    <button onClick={verifySimulation} type="submit" id="verify-btn" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                    <button onClick={verifySimulation} type="submit" id="verify-btn" className="user-btn mr5 save-btn verifySimulation" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}

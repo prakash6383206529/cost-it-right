@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,11 +19,14 @@ import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_RM_SIMULATION, ASSEMBLY_TEC
 import DayTime from '../../common/DayTimeWrapper';
 import DatePicker from "react-datepicker";
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { simulationContext } from '.';
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
 
 function VerifySimulation(props) {
+    const { showEditMaster, showverifyPage, costingDrawerPage, handleEditMasterPage, showTour } = useContext(simulationContext) || {};
+
     const { cancelVerifyPage, token, assemblyTechnology, isCombinedProcess } = props
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [effectiveDate, setEffectiveDate] = useState('')
@@ -65,7 +68,12 @@ function VerifySimulation(props) {
 
     // const isAssemblyCosting = true
     const dispatch = useDispatch()
+    useEffect(() => {
 
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditMaster, showverifyPage, costingPage)
+        }
+    }, [costingPage, cancelVerifyPage])
     useEffect(() => {
         if (token) {
             verifyCostingList()
@@ -831,7 +839,7 @@ function VerifySimulation(props) {
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        <button type="button" className={"apply"} id="verfiy-simulation-back" onClick={cancelVerifyPage}> <div className={'back-icon'}></div>Back</button>
+                                        <button type="button" className={"apply back_verify_page"} id="verfiy-simulation-back" onClick={cancelVerifyPage}> <div className={'back-icon'}></div>Back</button>
                                     </div >
                                     <div className="ag-theme-material p-relative">
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
@@ -922,7 +930,7 @@ function VerifySimulation(props) {
                             </div >
                         </Col >
                     </Row >
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
+                    <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer ${showTour ? '' : 'sticky-btn-footer'}`}>
                         <div className="col-sm-12 text-right bluefooter-butn run-simulation">
                             {/* {!isAssemblyCosting && */}
                             {/* <button onClick={runSimulation} type="submit" disabled={hideRunButton || runSimulationPermission} className="user-btn mr5 save-btn"                    > */}

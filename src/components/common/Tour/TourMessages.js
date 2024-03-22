@@ -27,6 +27,7 @@ export function Steps(t, config) {
     let showRfqDetail = false
     let Cancel = false
     let viewProcessGroup = false
+    let viewUserDetails = false
 
 
 
@@ -51,13 +52,12 @@ export function Steps(t, config) {
         approve = config.approve !== undefined ? config.approve : true;
         reject = config.reject !== undefined ? config.reject : true;
         multipleFilter = config.multipleFilter !== undefined ? config.multipleFilter : true;
-        sapDownloadButton = config.sapDownloadButton !== undefined ? config.sapDownloadButton : false;
-        encodedDownloadButton = config.encodedDownloadButton !== undefined ? config.encodedDownloadButton : false;
         showcostingDetail = config.showcostingDetail !== undefined ? config.showcostingDetail : false;
         searchFilter = config.searchFilter !== undefined ? config.searchFilter : true;
         showRfqDetail = config.showRfqDetail !== undefined ? config.showRfqDetail : false;
         Cancel = config.Cancel !== undefined ? config.Cancel : false;
         viewProcessGroup = config.viewProcessGroup !== undefined ? config.viewProcessGroup : false;
+        viewUserDetails = config.viewUserDetails !== undefined ? config.viewUserDetails : false;
 
     }
     return {
@@ -174,6 +174,12 @@ export function Steps(t, config) {
             //     element: "#Machine_checkBox1",
             //     intro: t("showcaseTable.static.checkBox"),
             // },
+            ...(viewUserDetails ? [
+                {
+                    element: "#view_details",
+                    intro: t("showcaseTable.master_Listing_Tour.view_details"),
+                },
+            ] : []),
             ...(multipleFilter ? [
                 {
                     element: ".ag-floating-filter-button",
@@ -254,20 +260,20 @@ export function Steps(t, config) {
                 element: ".Tour_List_Reset", // Assuming reset button has this class
                 intro: t("showcaseTable.master_Listing_Tour.resetGrid"),
             },
-            ...(sapDownloadButton ? [
+            // ...(sapDownloadButton ? [
 
-                {
-                    element: "#Excel-Download-sap",
-                    intro: t("showcaseTable.actionButton.sapDownload"),
-                },
-            ] : []),
-            ...(encodedDownloadButton ? [
+            //     {
+            //         element: "#Excel-Download-sap",
+            //         intro: t("showcaseTable.actionButton.sapDownload"),
+            //     },
+            // ] : []),
+            // ...(encodedDownloadButton ? [
 
-                {
-                    element: "#Excel-Download-sap-encoded",
-                    intro: t("showcaseTable.actionButton.encodedDownload"),
-                },
-            ] : []),
+            //     {
+            //         element: "#Excel-Download-sap-encoded",
+            //         intro: t("showcaseTable.actionButton.encodedDownload"),
+            //     },
+            // ] : []),
             ...(costMovementButton ? [
                 {
                     element: ".Tour_List_Cost_Movement",
