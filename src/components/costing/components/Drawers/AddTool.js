@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
-import { getToolCategoryList } from '../../actions/Costing';
+import { getAssemblyChildPartbyAsmCostingId, getProcessAndOperationbyAsmAndChildCostingId, getToolCategoryList } from '../../actions/Costing';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
-import {
-  maxLength5, checkWhiteSpaces, postiveNumber, maxLength25, number, decimalNumberLimit6, alphaNumericValidation
-} from "../../../../helper/validation";
+import { checkWhiteSpaces, number, decimalNumberLimit6, alphaNumericValidation } from "../../../../helper/validation";
 import { STRINGMAXLENGTH } from '../../../../config/masterData';
+import { costingInfoContext } from '../CostingDetailStepTwo';
+import TooltipCustom from '../../../common/Tooltip';
+import { CRMHeads } from '../../../../config/constants';
+import Toaster from '../../../common/Toaster';
 
 function AddTool(props) {
 
-  const { rowObjData, isEditFlag, ProcessOperationArray, gridData, editIndex, CostingViewMode } = props;
+  const { rowObjData, isEditFlag, gridData, CostingViewMode } = props;
+  const costData = useContext(costingInfoContext)
 
   const defaultValues = {
     ToolOperationId: rowObjData?.ToolOperationId ? rowObjData.ToolOperationId : '',
@@ -24,6 +27,11 @@ function AddTool(props) {
     ToolCost: rowObjData?.ToolCost ? rowObjData.ToolCost : '',
     Life: rowObjData?.Life ? rowObjData.Life : '',
     TotalToolCost: rowObjData?.TotalToolCost ? rowObjData.TotalToolCost : '',
+    PartNumber: rowObjData?.PartNumber ? { label: rowObjData?.PartNumber, value: rowObjData?.PartId } : '',
+    partType: rowObjData?.PartType ? rowObjData?.PartType : '',
+    partQuantity: rowObjData?.PartQuantity ? rowObjData?.PartQuantity : '',
+    type: rowObjData?.ProcessOrOperationType ? rowObjData?.ProcessOrOperationType : '',
+    processOrOperationQuantity: rowObjData?.ProcessOrOperationQuantity ? rowObjData?.ProcessOrOperationQuantity : '',
   }
 
 
@@ -36,9 +44,13 @@ function AddTool(props) {
   const dispatch = useDispatch()
 
   const [tool, setTool] = useState(isEditFlag && rowObjData?.ToolCategory ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : []);
-  const [ToolForProcessOperation, setToolForProcessOperation] = useState(isEditFlag && rowObjData?.ProcessOrOperation ? { label: rowObjData.ProcessOrOperation, value: rowObjData.ProcessOrOperation } : []);
-  const [selectedTools, setSelectedTool] = useState();
-  const [dataToSend, setDataToSend] = useState({});
+  const [ToolForProcessOperation, setToolForProcessOperation] = useState(isEditFlag ? { label: rowObjData?.ProcessOrOperation, value: rowObjData?.ProcessOrOperationType === 'Operation' ? rowObjData?.OperationChildIdRef : rowObjData?.ProcessIdRef, processOrOperationQuantity: rowObjData?.ProcessOrOperationQuantity, type: rowObjData?.ProcessOrOperationType, machineId: rowObjData?.MachineIdRef } : []);
+  const [dataToSend, setDataToSend] = useState(isEditFlag ? { netToolCost: rowObjData?.TotalToolCost } : {});
+  const [partNumberArray, setPartNumberArray] = useState([])
+  const [processOperationArray, setProcessOperationArray] = useState([])
+  const [partNumberDetail, setPartNumberDetail] = useState(isEditFlag && rowObjData?.ChildPartNumber ? { label: rowObjData?.ChildPartNumber, value: rowObjData?.PartId, childPartCostingId: rowObjData?.ChildPartCostingIdRef, partQuantity: rowObjData?.PartQuantity, partType: rowObjData?.PartType, bomLevel: rowObjData?.BOMLevel, parentPartCostingId: rowObjData?.ParentPartCostingIdRef } : [])
+  const [tableData, setTableData] = useState(gridData && gridData?.length > 0 ? gridData : [])
+  const { ToolCategoryList } = useSelector(state => state?.costing)
 
   const fieldValues = useWatch({
     control,
@@ -47,24 +59,18 @@ function AddTool(props) {
 
   useEffect(() => {
     dispatch(getToolCategoryList(res => { }))
-
-    let tempArr = [];
-    gridData && gridData.map(el => {
-      tempArr.push(el.ProcessOrOperation)
-      return null;
-    })
-    setSelectedTool(tempArr)
+    dispatch(getAssemblyChildPartbyAsmCostingId(costData?.CostingId, false, res => {
+      setPartNumberArray(res?.data?.DataList)
+    }))
   }, [])
 
-  const ToolCategoryList = useSelector(state => state.costing.ToolCategoryList)
-
-
   useEffect(() => {
-    getNetToolCost()
-    setValue('TotalToolCost', getNetToolCost())
+    getNetToolCost(partNumberDetail?.partQuantity)
+    setValue('TotalToolCost', checkForDecimalAndNull(getNetToolCost(partNumberDetail?.partQuantity), getConfigurationKey().NoOfDecimalForPrice))
   }, [fieldValues]);
 
-  const toggleDrawer = (event, formData = {}) => {
+  const toggleDrawer = (event, formData = []) => {
+    console.log('formData: ', formData);
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
@@ -75,11 +81,23 @@ function AddTool(props) {
   * @method getNetToolCost
   * @description GET NET TOOL COST
   */
-  const getNetToolCost = () => {
-    const cost = checkForNull(getValues("Quantity")) * checkForNull(getValues("ToolCost")) / checkForNull(getValues("Life"))
+  const getNetToolCost = (partQuantity = '') => {
+    const cost = checkForNull(getValues("Quantity")) * checkForNull(getValues("ToolCost")) / checkForNull(getValues("Life")) * checkForNull(ToolForProcessOperation?.processOrOperationQuantity) * checkForNull(partQuantity)
     setDataToSend(prevState => ({ ...prevState, netToolCost: cost }))
-    return checkForDecimalAndNull(cost, getConfigurationKey().NoOfDecimalForPrice);
+    return cost
   }
+
+  const filterList = list => {
+    const partMap = {};
+    list.forEach(item => {
+      const { PartNumber, Level } = item;
+      const currentLevelNum = parseInt(Level.substring(1), 10);
+      if (!partMap[PartNumber] || currentLevelNum > parseInt(partMap[PartNumber].Level.substring(1), 10)) {
+        partMap[PartNumber] = item;
+      }
+    });
+    return Object.values(partMap);
+  };
 
   /**
   * @method renderListing
@@ -99,36 +117,35 @@ function AddTool(props) {
 
     if (label === 'ToolProcessOperation') {
 
-      ProcessOperationArray && ProcessOperationArray.map((item) => {
+      processOperationArray && processOperationArray.map((item) => {
+        if (item?.Value === "0") return false
+        temp.push({ label: item?.Text, value: item?.Value, processOrOperationQuantity: item?.Quantity, type: item?.Type, machineId: item?.MachineId })
 
-        if (item !== undefined) {
-          if (Array.isArray(item)) {
-            item.map((el) => {
-              if (el.Value === '' || (selectedTools && selectedTools.includes(el.label))) return false
-              temp.push(el)
-              return null;
-            })
-
-          } else {
-
-            if (item?.Value === '' || (selectedTools && selectedTools.includes(item?.label))) return false
-            temp.push(item)
-            return null;
-          }
-        }
       })
       return temp
     }
+    if (label === 'PartNumber') {
+      if (partNumberArray && partNumberArray.length > 0) {
 
+        const filteredList = filterList(partNumberArray);
+        filteredList && filteredList.map((item) => {
+          temp.push({ label: item?.PartNumber, value: item?.PartId, asmCostingId: item?.CostingId, childPartCostingId: item?.ChildPartCostingId, partQuantity: item?.Quantity, partType: item?.Type, bomLevel: item?.Level, parentPartCostingId: item?.ParentPartCostingId, parentPartNumber: item?.ParentPartNumber })
+          return null
+        })
+        return temp
+      }
+    }
   }
 
   /**
   * @method handleProcessOperationChange
-  * @description  TOOL CHANGE HANDLE
+  * @description  FOR SETTING THE PROCESS,OPERATION,THEIR TYPE AND THEIR QUANTITY VALUE
   */
   const handleProcessOperationChange = (newValue) => {
     if (newValue && newValue !== '') {
       setToolForProcessOperation(newValue)
+      setValue('type', newValue?.type)
+      setValue('processOrOperationQuantity', newValue?.processOrOperationQuantity)
     } else {
       setToolForProcessOperation([])
     }
@@ -148,14 +165,17 @@ function AddTool(props) {
 
   /**
   * @method addRow
-  * @description ADD ROW IN TO RM COST GRID
+  * @description ADD ROW IN TO IN THE TOOL GRID IN PARENT COMPONENT
   */
   const addRow = () => {
 
     if (Object.keys(errors).length > 0) return false;
-
+    const processOrOperation = ToolForProcessOperation.value;
+    const partNumber = partNumberDetail.label;
     let formData = {
+      IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
       ToolOperationId: isEditFlag ? rowObjData.ToolOperationId : '',
+      // ToolOperationId: getValues('type') === 'Operation'?ToolForProcessOperation?.value:EMPTY_GUID,
       ProcessOrOperation: ToolForProcessOperation.label,
       ToolCategory: tool.label,
       ToolName: getValues('ToolName'),
@@ -163,23 +183,61 @@ function AddTool(props) {
       ToolCost: getValues('ToolCost'),
       Life: getValues('Life'),
       NetToolCost: dataToSend.netToolCost,
-    }
-
-    if (formData.ProcessOrOperation === undefined || formData.ToolCategory === undefined || formData.ToolName === undefined || formData.Quantity === undefined || formData.ToolCost === undefined || formData.Life === undefined) {
-      return false
+      PartType: getValues('partType'),
+      PartQuantity: getValues('partQuantity'),
+      ProcessOrOperationType: getValues('type'),
+      ProcessOrOperationQuantity: getValues('processOrOperationQuantity'),
+      BOMLevel: partNumberDetail?.bomLevel,
+      PartNumber: costData?.PartNumber,
+      PartId: costData?.PartId,
+      OperationChildIdRef: getValues('type') === 'Operation' ? ToolForProcessOperation?.value : null,
+      ProcessIdRef: getValues('type') === 'Process' ? ToolForProcessOperation?.value : null,
+      MachineIdRef: getValues('type') === 'Process' ? ToolForProcessOperation?.machineId : null,
+      ParentPartCostingIdRef: partNumberDetail?.parentPartCostingId,
+      ChildPartCostingIdRef: partNumberDetail?.childPartCostingId,
+      ToolCRMHead: getValues('crmHead')?.label
     }
 
     let tempArr = []
-
+    let finalList = []
     if (isEditFlag) {
-      tempArr = Object.assign([...gridData], { [editIndex]: formData })
+      finalList = updateEntriesForPartNumber(partNumberDetail?.label, tableData, rowObjData?.OperationChildIdRef, rowObjData?.ProcessIdRef)
+      console.log('finalList: ', finalList);
+      tempArr = finalList
     }
     else {
-      tempArr = [...rowObjData, formData]
+      if (gridData && gridData.length > 0) {
+        const isDuplicate = gridData.some(item => {
+          return (
+            (item?.OperationIdRef === processOrOperation || item?.OperationChildIdRef === processOrOperation || item?.ProcessIdRef === processOrOperation) &&
+            item?.ChildPartNumber === partNumber
+          );
+        });
+        if (isDuplicate) {
+          // Display error message or handle duplicate case
+          Toaster.warning('You cannot add multiple tools for the same part and process/operation.');
+          return;
+        }
+      }
+      finalList = generateRowsForPartNumber(partNumberDetail?.label, partNumberArray)
+
+      tempArr = [...rowObjData, ...finalList]
     }
 
     props.setToolCost(tempArr, JSON.stringify(tempArr) !== JSON.stringify(rowObjData) ? true : false)
-    toggleDrawer('', formData)
+    toggleDrawer('', finalList, partNumberArray)
+  }
+
+  const handlePartNumChange = (newValue) => {
+    setValue('partQuantity', newValue?.partQuantity)
+    setValue('partType', newValue?.partType)
+    setValue('ProcessOrOperation', { label: '', value: '' })
+    setValue('processOrOperationQuantity', '')
+    setValue('type', '')
+    setPartNumberDetail(newValue)
+    dispatch(getProcessAndOperationbyAsmAndChildCostingId(newValue?.asmCostingId, newValue?.childPartCostingId, res => {
+      setProcessOperationArray(res?.data?.DataList)
+    }))
   }
 
   /**
@@ -191,20 +249,99 @@ function AddTool(props) {
     props.closeDrawer('', {})
   }
 
-  const onSubmitForm = data => {
-    let formData = {
-      ToolOperationId: isEditFlag ? rowObjData.ToolOperationId : '',
-      ProcessOrOperation: ToolForProcessOperation.label,
-      ToolCategory: data.ToolCategory.label,
-      ToolName: data.ToolName,
-      Quantity: data.Quantity,
-      ToolCost: data.ToolCost,
-      Life: data.Life,
-      NetToolCost: dataToSend.netToolCost, //NET TOOL COST
-    }
 
-    toggleDrawer('', formData)
+  /**
+   * @method generateRowsForPartNumber
+   * @description This is for calculation of Tool cost on same part number which is present at different BOM Level
+  */
+  const generateRowsForPartNumber = (partNumber, originalList) => {
+
+    // Filter original list for entries with the selected part number
+    const entriesForPartNumber = originalList.filter(item => item.PartNumber === partNumber);
+    console.log('entriesForPartNumber: ', entriesForPartNumber);
+
+    // Map these entries to generate rows with calculated TotalToolCost
+    const rows = entriesForPartNumber.map(item => {
+      const totalToolCost = getNetToolCost(item?.Quantity)
+      return {
+        IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
+        ToolOperationId: isEditFlag ? rowObjData.ToolOperationId : '',
+        // ToolOperationId: getValues('type') === 'Operation'?ToolForProcessOperation?.value:EMPTY_GUID,
+        ProcessOrOperation: ToolForProcessOperation.label,
+        ToolCategory: tool.label,
+        ToolName: getValues('ToolName'),
+        Quantity: getValues('Quantity'),
+        ToolCost: getValues('ToolCost'),
+        Life: getValues('Life'),
+        NetToolCost: totalToolCost,
+        PartType: item?.Type,
+        PartQuantity: item?.Quantity,
+        ProcessOrOperationType: getValues('type'),
+        ProcessOrOperationQuantity: getValues('processOrOperationQuantity'),
+        BOMLevel: item?.Level,
+        PartNumber: costData?.PartNumber,
+        PartId: costData?.PartId,
+        OperationChildIdRef: getValues('type') === 'Operation' ? ToolForProcessOperation?.value : null,
+        ProcessIdRef: getValues('type') === 'Process' ? ToolForProcessOperation?.value : null,
+        MachineIdRef: getValues('type') === 'Process' ? ToolForProcessOperation?.machineId : null,
+        ParentPartCostingIdRef: item?.ParentPartCostingId,
+        ChildPartCostingIdRef: item?.ChildPartCostingId,
+        ToolCRMHead: getValues('crmHead')?.label,
+        TotalToolCost: totalToolCost,
+        ChildPartNumber: item?.PartNumber,
+        ParentPartNumber: item?.ParentPartNumber
+      };
+    });
+
+    return rows;
   }
+
+  /**
+   * @method updateEntriesForPartNumber
+   * @description This is for calculation of Tool cost on same part number which is present at different BOM Level in update mode
+  */
+  const updateEntriesForPartNumber = (partNumber, list, OperationChildIdRef, ProcessIdRef) => {
+    console.log('ProcessIdRef: ', ProcessIdRef);
+    console.log('OperationChildIdRef: ', OperationChildIdRef);
+    console.log('list before array: ', list);
+    // Iterate over the list and update entries matching the partNumber
+    list.forEach(item => {
+      if (item.ChildPartNumber === partNumber) {
+        if (rowObjData?.ProcessOrOperationType === 'Operation' && item.OperationChildIdRef === OperationChildIdRef) {
+          console.log("COMING IN IF");
+          // Calculate the new TotalToolCost based on the item's Quantity
+          const totalToolCost = getNetToolCost(item?.PartQuantity)
+          // Update the item with the new TotalToolCost (or any other updates you need)
+          item.TotalToolCost = totalToolCost;
+
+          item.Quantity = getValues('Quantity')
+          item.ToolCost = getValues('ToolCost')
+          item.Life = getValues('Life')
+          item.NetToolCost = totalToolCost
+          item.ToolCRMHead = getValues('crmHead')?.label
+          // Here you can add any other property updates as needed
+        } else if (rowObjData?.ProcessOrOperationType === 'Process' && item.ProcessIdRef === ProcessIdRef) {
+
+          console.log("COMING IN ELSE IF");
+          // Calculate the new TotalToolCost based on the item's Quantity
+          const totalToolCost = getNetToolCost(item?.PartQuantity)
+          // Update the item with the new TotalToolCost (or any other updates you need)
+          item.TotalToolCost = totalToolCost;
+
+          item.Quantity = getValues('Quantity')
+          item.ToolCost = getValues('ToolCost')
+          item.Life = getValues('Life')
+          item.NetToolCost = totalToolCost
+          item.ToolCRMHead = getValues('crmHead')?.label
+          // Here you can add any other property updates as needed
+        }
+      }
+
+    });
+    console.log(list, "list before run");
+    return list
+  };
+
 
   /**
   * @method render
@@ -232,7 +369,85 @@ function AddTool(props) {
             <form noValidate className="form" onSubmit={handleSubmit(addRow)}>
               <>
                 <Row className="pl-3">
-                  <Col md="12">
+                  {
+                    getConfigurationKey().IsShowCRMHead && <Col md="6">
+                      <SearchableSelectHookForm
+                        name={`crmHead`}
+                        type="text"
+                        label="CRM Head"
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          required: false
+                        }}
+                        placeholder={'Select'}
+                        options={CRMHeads}
+                        customClassName="costing-selectable-dropdown"
+                        required={false}
+                        handleChange={() => { }}
+                        disabled={CostingViewMode}
+                        errors={errors.crmHead}
+                      />
+                    </Col >
+                  }
+                  <Col md="6">
+                    <SearchableSelectHookForm
+                      label={'Assembly/Child Part No.'}
+                      name={'PartNumber'}
+                      placeholder={'Select'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={ToolForProcessOperation.length !== 0 ? ToolForProcessOperation : ''}
+                      options={renderListing('PartNumber')}
+                      mandatory={true}
+                      handleChange={handlePartNumChange}
+                      errors={errors.PartNumber}
+                      disabled={isEditFlag || CostingViewMode ? true : false}
+                    />
+                  </Col>
+                  <Col md="6">
+                    <TextFieldHookForm
+                      label="Part Type"
+                      name={'partType'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.partType}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col md="6">
+                    <TextFieldHookForm
+                      label="Part Quantity"
+                      name={'partQuantity'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.partQuantity}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col md="6">
                     <SearchableSelectHookForm
                       label={'Process/Operation'}
                       name={'ProcessOrOperation'}
@@ -249,8 +464,45 @@ function AddTool(props) {
                       disabled={isEditFlag || CostingViewMode ? true : false}
                     />
                   </Col>
-
-                  <Col md="12">
+                  <Col md="6">
+                    <TextFieldHookForm
+                      label="Process/Operation Type"
+                      name={'type'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.type}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col md="6">
+                    <TextFieldHookForm
+                      label="Process/Operation Quantity"
+                      name={'processOrOperationQuantity'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.processOrOperationQuantity}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col md="6">
                     <SearchableSelectHookForm
                       label={'Tool Category'}
                       name={'ToolCategory'}
@@ -268,7 +520,7 @@ function AddTool(props) {
                     />
                   </Col>
 
-                  <Col md="12">
+                  <Col md="6">
                     <TextFieldHookForm
                       label="Tool Name"
                       name={'ToolName'}
@@ -290,7 +542,7 @@ function AddTool(props) {
                     />
                   </Col>
 
-                  <Col md="12">
+                  <Col md="6">
                     <TextFieldHookForm
                       label="Quantity"
                       name={'Quantity'}
@@ -311,7 +563,7 @@ function AddTool(props) {
                     />
                   </Col>
 
-                  <Col md="12">
+                  <Col md="6">
                     <TextFieldHookForm
                       label="Tool Cost"
                       name={'ToolCost'}
@@ -332,7 +584,7 @@ function AddTool(props) {
                     />
                   </Col>
 
-                  <Col md="12">
+                  <Col md="6">
                     <TextFieldHookForm
                       label="Life/Amortization"
                       name={'Life'}
@@ -353,7 +605,9 @@ function AddTool(props) {
                     />
                   </Col>
 
-                  <Col md="12">
+
+                  <Col md="6">
+                    <TooltipCustom disabledIcon={true} id={'total-tool-cost'} tooltipText={'Total Tool Cost = (Tool Cost * Quantity)/Life * Part Quantity * Process/Operation Quantity'} />
                     <TextFieldHookForm
                       label="Total Tool Cost"
                       name={'TotalToolCost'}
@@ -367,6 +621,7 @@ function AddTool(props) {
                       customClassName={'withBorder'}
                       errors={errors.TotalToolCost}
                       disabled={true}
+                      id={'total-tool-cost'}
                     />
                   </Col>
                 </Row>
@@ -383,7 +638,7 @@ function AddTool(props) {
                     <button
                       type={'submit'}
                       className="submit-button save-btn"
-                      onClick={addRow}
+                      // onClick={addRow}
                       disabled={CostingViewMode}
                     >
                       <div className={'save-icon'}></div>

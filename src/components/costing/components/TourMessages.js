@@ -1,23 +1,50 @@
 import React from 'react';
+import { showBopLabel } from '../../../helper';
 
-export function Steps(t, costingType) {
+export function Steps(t, params, config) {
+    const introWithBOPDynamicValue = (intro) => intro.replace(/bop|BOP/gi, showBopLabel());
+    let CostingEditMode = false
+    let CostingViewMode = false
+    let PartExists = false
+    let viewButton = true
+    let editButton = true
+    let viewBomButton = true
+    let isPartLocked = false
+    let showCostingSummaryExcel = false
+    let isSuperAdmin = false
+    const technology = Number(config?.technology?.value) === 13 ? true : false;
+    const disableCostingSummaryDetailedPdf = !config?.viewCostingData || config.viewCostingData.length === 0;
+    if (config) {
+        PartExists = config.PartExists !== undefined ? config.PartExists : false;
+        viewButton = config.viewButton !== undefined ? config.viewButton : true;
+        editButton = config.editButton !== undefined ? config.editButton : true;
+        viewBomButton = config.viewBomButton !== undefined ? config.viewBomButton : true;
+        isPartLocked = config.isPartLocked !== undefined ? config.isPartLocked : false;
+        showCostingSummaryExcel = config.showCostingSummaryExcel !== undefined ? config.showCostingSummaryExcel : false;
+        isSuperAdmin = config.isSuperAdmin !== undefined ? config.isSuperAdmin : false;
+        CostingViewMode = config.CostingViewMode !== undefined ? config.CostingViewMode : false;
+        CostingEditMode = config.CostingEditMode !== undefined ? config.CostingEditMode : false;
+
+
+    }
+
     return {
 
         COSTING_INITIAL: [
             {
-                element: ".input-container #Technology_container",
+                element: `.${params} .input-container #Technology_container`,
                 intro: t("costingInitial.Technology"),
             },
             {
-                element: ".input-container #PartType_container",
+                element: `.${params} .input-container #PartType_container`,
                 intro: t("costingInitial.PartType"),
             },
             {
-                element: ".input-container #Part_container",
+                element: `.${params} .input-container #Part_container`,
                 intro: t("costingInitial.Part"),
             },
             {
-                element: "#costing-cancel",
+                element: `.${params} #costing-cancel`,
                 intro: t("costingInitial.clear"),
                 position: "left"
             },
@@ -25,61 +52,61 @@ export function Steps(t, costingType) {
         COSTING_STEP_TWO: [
             {
                 element: "#ZBC_Costing_Add_Plant",
-                intro: t("costingStepTwo.Technology"),
+                intro: t("costingStepTwo.zbc"),
                 position: "left"
             },
             {
                 element: "#NCC_Costing_Add_Vendor",
-                intro: t("costingStepTwo.Technology"),
+                intro: t("costingStepTwo.ncc"),
                 position: "left"
             },
             {
                 element: "#VBC_Costing_Add_Vendor",
-                intro: t("costingStepTwo.Technology"),
+                intro: t("costingStepTwo.vbc"),
                 position: "left"
             },
             {
                 element: "#CBC_Costing_Add_Customer",
-                intro: t("costingStepTwo.Technology"),
+                intro: t("costingStepTwo.cbc"),
                 position: "left"
             },
             {
                 element: "#WAC_Costing_Add_Plant",
-                intro: t("costingStepTwo.Technology"),
+                intro: t("costingStepTwo.wac"),
                 position: "left"
             },
         ],
         VENDOR_COSTING_GRID: [
             {
-                element: `.costing-table-${costingType} .edit-sob-btn`,
+                element: `.costing-table-${params} .edit-sob-btn`,
                 intro: t("vendorCreateCosting.editSob"),
             },
             {
-                element: `.costing-table-${costingType} .Costing-version-0`,
+                element: `.costing-table-${params} .Costing-version-0`,
                 intro: t("vendorCreateCosting.version"),
             },
             {
-                element: `.costing-table-${costingType} .Add-file`,
+                element: `.costing-table-${params} .Add-file`,
                 intro: t("vendorCreateCosting.createCosting"),
             },
             {
-                element: `.costing-table-${costingType} .View`,
+                element: `.costing-table-${params} .View`,
                 intro: t("vendorCreateCosting.viewCosting"),
             },
             {
-                element: `.costing-table-${costingType} .Edit`,
+                element: `.costing-table-${params} .Edit`,
                 intro: t("vendorCreateCosting.editCosting"),
             },
             {
-                element: `.costing-table-${costingType} .Copy`,
+                element: `.costing-table-${params} .Copy`,
                 intro: t("vendorCreateCosting.copyCosting"),
             },
             {
-                element: `.costing-table-${costingType} .Delete`,
+                element: `.costing-table-${params} .Delete`,
                 intro: t("vendorCreateCosting.deleteCosting"),
             },
             {
-                element: `.costing-table-${costingType} .CancelIcon`,
+                element: `.costing-table-${params} .CancelIcon`,
                 intro: t("vendorCreateCosting.discard"),
             },
         ],
@@ -112,34 +139,89 @@ export function Steps(t, costingType) {
                 element: '#Discount_Other_tabs',
                 intro: t("costingTabs.Discount_Other_tabs")
             },
+            ...(config && config.assembly ? [
+                ...(config && config.bopHandling ? [
+                    {
+                        element: "#Add_BOP_Handling_Charge",
+                        intro: t("RMCtabs.AddBOPHandlingCharge"),
+                    },
+                ] : []),
+                {
+                    element: "#assembly_addOperation",
+                    intro: t("RMCtabs.AssemblyAddOperation"),
+                    position: 'left'
+                },
 
+            ] : []),
         ],
         TAB_RMC: [
+            ...(isPartLocked ? [
+                {
+                    element: '#lock_icon',
+                    intro: t("RMCtabs.PartLocked"),
+
+                },
+            ] : []),
+            ...(!PartExists || !isPartLocked ? [
+                ...(CostingViewMode === false && CostingEditMode === false) ? [
+
+                    {
+                        element: '#Costing_addRM',
+                        intro: t("RMCtabs.AddRM"),
+                        position: "left"
+                    },
+
+                    {
+                        element: '#Costing_addBOP',
+                        intro: t("RMCtabs.AddBOP"),
+                        position: "left"
+                    },
+
+
+                    {
+                        element: '#Costing_addProcess',
+                        intro: t("RMCtabs.AddProcess"),
+                        position: "left"
+                    },
+
+                    {
+                        element: '#Costing_addOperation',
+                        intro: t("RMCtabs.AddOperation"),
+                        position: "left"
+                    },
+
+
+                    {
+                        element: '#Costing_addOtherOperation',
+                        intro: t("RMCtabs.AddOtherOperation"),
+                        position: "left"
+                    },
+                ] : []
+            ] : []),
+
+
+
+        ],
+        TAB_PARTCOST: [
+            ...(config && config.bopHandling ? [
+                {
+                    element: "#Add_BOP_Handling_Charge",
+                    intro: introWithBOPDynamicValue(t("RMCtabs.AddBOPHandlingCharge")),
+                },
+            ] : []),
             {
-                element: '#Costing_addRM',
-                intro: t("RMCtabs.AddRM"),
-                position: "left"
-            },
-            {
-                element: '#Costing_addBOP',
-                intro: t("RMCtabs.AddBOP"),
-                position: "left"
-            },
-            {
-                element: '#Costing_addProcess',
+                element: "#Add_Assembly_Process",
                 intro: t("RMCtabs.AddProcess"),
-                position: "left"
             },
             {
-                element: '#Costing_addOperation',
+                element: "#Costing_addOperation",
                 intro: t("RMCtabs.AddOperation"),
-                position: "left"
             },
             {
-                element: '#Costing_addOtherOperation',
-                intro: t("RMCtabs.AddOtherOperation"),
-                position: "left"
+                element: ".Edit",
+                intro: t("RMCtabs.EditAssemblyCosting"),
             },
+
         ],
         TAB_ST: [
             {
@@ -239,10 +321,10 @@ export function Steps(t, costingType) {
             },
         ],
         TAB_DISCOUNT_OTHERS: [
-            {
-                element: '#discountDescriptionRemark',
-                intro: t("DiscountTab.discountRemark")
-            },
+            // {
+            //     element: '#discountDescriptionRemark',
+            //     intro: t("DiscountTab.discountRemark")
+            // },
             {
                 element: '.input-container #DiscountCostApplicability_container',
                 intro: t("DiscountTab.discountApplicability")
@@ -345,7 +427,7 @@ export function Steps(t, costingType) {
             },
             {
                 element: '#bop_handling_charge',
-                intro: t("RawMaterialCost.bopHanlding"),
+                intro: introWithBOPDynamicValue(t("RawMaterialCost.bopHanlding")),
             },
         ],
         PROCESS_COST: [
@@ -378,10 +460,239 @@ export function Steps(t, costingType) {
                 intro: t("operationCost.remark"),
             },
         ],
+        COSTING_SUMMARY: [
+            ...(disableCostingSummaryDetailedPdf ? [
+
+                {
+                    element: "#costingSummary", // Assuming filter button has this class
+                    intro: t("costingSummary.costingNotDone"),
+                },
+            ] : []),
+            ...(!(disableCostingSummaryDetailedPdf) ? [
+                ...(isSuperAdmin ? [
+                    {
+                        element: "#costingSummary_excel",
+                        intro: t("costingSummary.downloadExcel"),
+                    },
+
+                    {
+                        element: "#costingSummary_Detailed_pdf",
+                        intro: t("costingSummary.costingDetailedPdf"),
+                    },
+
+                    {
+                        element: "#costingSummary_pdf",
+                        intro: t("costingSummary.costingDownloadPdf"),
+                    },
+                ] : []),
+
+
+                ...(!(isSuperAdmin) ? [
+
+                    {
+                        element: "#costingSummary_sendforapproval", // Assuming filter button has this class
+                        intro: t("costingSummary.sendForApproval"),
+                    },
+                ] : []),
+
+                {
+                    element: "#costingSummary_addtocomparison",
+                    intro: t("costingSummary.addToComparison"),
+                },
+
+                ...(viewBomButton ? [
+                    {
+                        element: "#costingSummary_viewbom",
+                        intro: t("costingSummary.viewBOM"),
+                    },
+                ] : []),
+                ...(editButton ? [
+                    {
+                        element: "#costingSummary_edit",
+                        intro: t("costingSummary.edit"),
+                    },
+                ] : []),
+
+                ...(viewButton ? [
+                    {
+                        element: "#costingSummary_view",
+                        intro: t("costingSummary.view"),
+                    },
+                ] : []),
+
+                {
+                    element: "#costingSummary_add",
+                    intro: t("costingSummary.add"),
+                },
+
+
+                {
+                    element: "#costingSummary_discard",
+                    intro: t("costingSummary.discard"),
+                },
+                {
+                    element: "#costing_change_version",
+                    intro: t("costingSummary.changeVersion"),
+                },
+                ...(config?.totalCost !== 0 ? [
+                    {
+                        element: "#costing_view_pie_chart",
+                        intro: t("costingSummary.viewPieChart"),
+                    },
+                ] : []),
+                ...technology ? [
+                    {
+                        element: "#view_multiple_technology",
+                        intro: t("costingSummary.viewMultipleTechnology"),
+                    },
+                ] : [],
+                ...!technology ? [
+                    {
+                        element: "#view_RawMaterial",
+                        intro: t("costingSummary.viewRMCost"),
+                    },
+                    {
+                        element: "#view_BOP",
+                        intro: t("costingSummary.viewBOPCost"),
+                    },
+
+                    {
+                        element: "#view_conversion_cost", // Assuming reset button has this class
+                        intro: t("costingSummary.viewConversionCost"),
+                    },
+                ] : [],
+                {
+                    element: "#view_surface_treatment_cost",
+                    intro: t("costingSummary.viewSurfaceTreatmentCost"),
+                },
+                {
+                    element: "#view_overhead_profit",
+                    intro: t("costingSummary.viewOverheadProfitCost"),
+                },
+
+                {
+                    element: "#view_packaging_freight",
+                    intro: t("costingSummary.viewPackagingFreightCost"),
+                },
+                {
+                    element: "#view_toolCost",
+                    intro: t("costingSummary.viewToolCost"),
+                },
+                {
+                    element: "#view_otherToolCost",
+                    intro: t("costingSummary.viewOtherCost"),
+                },
+
+            ] : []),
+
+
+
+
+
+
+
+
+        ],
+        COSTING_COMPARISON: [
+
+            {
+                element: '.input-container #vendor_container',
+                intro: t("CostingComparison.vendor_code"),
+            },
+            {
+                element: '.input-container #destinationPlant_container',
+                intro: t("CostingComparison.plant_code"),
+            },
+            {
+                element: '#Costing_AddToComparison_submit',
+                intro: t("CostingComparison.add"),
+            },
+            {
+                element: '#costing_AddToComparison_cancel',
+                intro: t("CostingComparison.cancel"),
+            },
+        ],
+        COSTING_APPROVAL: [
+
+            {
+                element: "#filter-text-box",
+                intro: t("costingApproval.searchInput"),
+            },
+            {
+                element: ".ag-text-field-input",
+                intro: t("costingApproval.floating_FilterInput"),
+            },
+
+            {
+                element: ".ag-floating-filter-button",
+                intro: t("costingApproval.floating_FilterButton"),
+            },
+            {
+                element: ".ag-input-field-input",
+                intro: t("costingApproval.checkBoxButton"),
+            },
+            {
+                element: "#Costing_Approval_No_0",
+                intro: t("costingApproval.approval_Summary"),
+            },
+
+            {
+                element: "#Costing_Approval_Costing_Id_0",
+                intro: t("costingApproval.costing_Detailed"),
+            },
+
+            {
+                element: '#Costing_Approval_Filter',
+                intro: t("costingApproval.filterButton")
+            },
+
+            {
+                element: '#Costing_Approval_Reset',
+                intro: t("costingApproval.refreshButton")
+            },
+            {
+                element: '#Costing_Approval_Send',
+                intro: t("costingApproval.sendForApproval")
+            },
+            {
+                element: '#singleDropDown_container',
+                intro: t("costingApproval.status")
+            }
+
+        ],
+        SENDFORAPPROVAL: [
+            {
+                element: ".input-container #ApprovalType_container",
+                intro: t("SendForApproval.approvalType"),
+            },
+            {
+                element: ".input-container #reason_container",
+                intro: t("SendForApproval.reason"),
+            },
+
+            {
+                element: ".input-container #DecimalOption_container",
+                intro: t("SendForApproval.decimal-option"),
+            },
+            // {
+            //     element: "#remark_container",
+            //     intro: t("SendForApproval.remark"),
+            // },
+            // {
+            //     element: "#cancel_simulation",
+            //     intro: t("SendForApproval.attachments"),
+            // },
+            // {
+            //     element: "#cancel_SendForApproval",
+            //     intro: t("SendForApproval.cancel"),
+            // },
+            // {
+            //     element: "#submit_SendForApproval",
+            //     intro: t("SendForApproval.submit"),
+            // }
+        ],
         PART_HINT: [{ element: '.part-name .Close', hint: t("Hints.partHint") }],
         OVERHEAD_HINT: [{ element: '#overhead_profit_arrow .Close', hint: t("Hints.overheadHint") }],
         ST_HINT: [{ element: '#costing_surface_treatment_btn', hint: t("Hints.surfaceTreamentButton") }]
-
-
     }
 }

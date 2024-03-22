@@ -24,9 +24,13 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import LoaderCustom from '../../common/LoaderCustom';
 import { fetchCostingHeadsAPI } from '../../../actions/Common';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { useTranslation } from 'react-i18next';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, date, simulationTechnologyId } = props
+    const { t } = useTranslation("Simulation")
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { register, control, formState: { errors }, handleSubmit, getValues, setValue } = useForm({
@@ -580,6 +584,11 @@ function RunSimulationDrawer(props) {
                                             <div className={"header-wrapper left"}>
                                                 <h3>
                                                     {"Apply Simulation Applicability"}
+                                                    <TourWrapper
+                                                        buttonSpecificProp={{ id: "apply-simulation" }}
+                                                        stepsSpecificProp={{
+                                                            steps: Steps(t).RunsimulationDrawer
+                                                        }} />
                                                 </h3>
                                             </div>
 
@@ -603,6 +612,7 @@ function RunSimulationDrawer(props) {
                                                             <Col md={`${showCheckBox ? '6' : '8'}`} className='mb-3 check-box-container p-0'>
                                                                 <div class={'custom-check1 d-inline-block drawer-side-input-other'} id={`afpplicability-checkbox_${i}`}>
                                                                     <label
+                                                                        id="simulation_checkbox"
                                                                         className="custom-checkbox mb-0"
                                                                         onChange={() => handleApplicabilityChange(el)}
                                                                     >
@@ -1246,6 +1256,7 @@ function RunSimulationDrawer(props) {
                                                     <Row>
                                                         <div className="input-group col-md-12 mb-3 px-0 m-height-auto" id={`applicability-checkbox_20`}>
                                                             <label
+                                                                id="costing_simulation"
                                                                 className="custom-checkbox mb-0"
                                                                 onChange={() => applyNPV(`NPV`)}
                                                             >
