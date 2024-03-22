@@ -67,7 +67,8 @@ function ERSimulation(props) {
         BankRate: showCompressedColumns ? 100 : 190,
         BankCommissionPercentage: showCompressedColumns ? 100 : 190,
         CustomRate: showCompressedColumns ? 100 : 135,
-        CurrencyExchangeRate: showCompressedColumns ? 100 : 190,
+        CurrencyExchangeRate: showCompressedColumns ? 100 : 120,
+        NewCurrencyExchangeRate: showCompressedColumns ? 100 : 120,
         OldExchangeRate: showCompressedColumns ? 100 : 190,
         NewExchangeRate: showCompressedColumns ? 100 : 190,
         EffectiveDate: showCompressedColumns ? 100 : 190,
@@ -399,7 +400,6 @@ function ERSimulation(props) {
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
-
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
@@ -422,6 +422,7 @@ function ERSimulation(props) {
                                             suppressRowClickSelection={true}
                                             onFilterModified={onFloatingFilterChanged}
                                             enableBrowserTooltips={true}
+
                                         >
                                             <AgGridColumn field="Currency" editable='false' headerName="Currency" width={columnWidths.Currency}></AgGridColumn>
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" width={columnWidths.CostingNumber}></AgGridColumn>}
@@ -429,13 +430,17 @@ function ERSimulation(props) {
                                             <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" width={columnWidths.BankRate}></AgGridColumn>
                                             <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " width={columnWidths.BankCommissionPercentage}></AgGridColumn>
                                             <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" width={columnWidths.CustomRate}></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" width={columnWidths.CurrencyExchangeRate}></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate" marryChildren={true} >
+                                                <AgGridColumn width={columnWidths.CurrencyExchangeRate} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
+                                                <AgGridColumn width={columnWidths.NewCurrencyExchangeRate} field="NewCurrencyExchangeRate" tooltipField="NewCurrencyExchangeRate" valueGetter='data.NewCurrencyExchangeRate' editable={!isImpactedMaster} headerName="Revised" cellRenderer='newRateFormatter' colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                            </AgGridColumn>}
+
                                             {isImpactedMaster && <>
-                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Existing Exchange Rate(INR)" width={columnWidths.OldExchangeRate}></AgGridColumn>
-                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="Revised Exchange Rate(INR)" width={columnWidths.NewExchangeRate}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(${reactLocalStorage.getObject("baseCurrency")})`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(${reactLocalStorage.getObject("baseCurrency")}) `} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>
                                             </>}
                                             {props.children}
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' width={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
 
                                         </AgGridReact>}

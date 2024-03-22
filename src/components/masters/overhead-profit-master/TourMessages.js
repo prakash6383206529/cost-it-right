@@ -95,10 +95,10 @@ export function Steps(t, config) {
                 element: "#AddProfit_vendorBased",
                 intro: t("overheadsProfits.AddProfit_vendorBased"),
             },
-            {
+            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
                 element: "#AddProfit_customerBased",
                 intro: t("overheadsProfits.AddProfit_customerBased"),
-            },
+            }] : []),
             {
                 element: "#AddProfit_ModelType_container",
                 intro: t("overheadsProfits.AddProfit_ModelType_container"),
@@ -144,6 +144,10 @@ export function Steps(t, config) {
             {
                 element: "#AddProfit_ProfitBOPPercentage",
                 intro: introWithBOPDynamicValue(t("overheadsProfits.AddProfit_ProfitBOPPercentage")),
+            },
+            {
+                element: "#AddProfit_EffectiveDate",
+                intro: t("overheadsProfits.AddProfit_EffectiveDate"),
             },
             {
                 element: "#AddProfit_Remark",

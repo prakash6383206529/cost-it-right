@@ -1094,9 +1094,6 @@ function RfqListing(props) {
                 }
 
             </div >
-            { }
-            { }
-
             {addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0 && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
 

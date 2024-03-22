@@ -44,7 +44,8 @@
             "addLimit": "You can add limits from here.",
             "generateReport": "Generate a report from here.",
             "costing_version": "Click on the costing version to view costing details from here.",
-            "rfq_version": "Click on the RFQ version to view RFQ details from here."
+            "rfq_version": "Click on the RFQ version to view RFQ details from here.",
+            "view_details": "Click here to see the user details."
         },
         "masterBenchmark": {
             "master": "Select master from here."

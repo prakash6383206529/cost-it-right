@@ -414,32 +414,23 @@ const OperationListing = (props) => {
     const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
         let isEditable = false
         let isDeleteButton = false
-
-
         if (permissionData?.Edit) {
             isEditable = true
         } else {
             isEditable = false
         }
-
-
-        if (permissionData?.Delete && !rowData.IsOperationAssociated) {
-            isDeleteButton = true
-        } else {
-            isDeleteButton = false
-        }
+        isDeleteButton = (tourStartData.showExtraData && props.rowIndex === 0) || (permissionData?.Delete && !rowData.IsOperationAssociated);
 
 
         return (
             <>
-                <Button id={`operationListing_movement${props.rowIndex}`} className={"cost-movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
+                <Button id={`operationListing_movement${props.rowIndex}`} className={"cost-movement Tour_List_Cost_Movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
 
-                {permissionData?.View && <Button id={`operationListing_view${props.rowIndex}`} className={"View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
-                {isEditable && <Button id={`operationListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
-                {isDeleteButton && <Button id={`operationListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+                {permissionData?.View && <Button id={`operationListing_view${props.rowIndex}`} className={"View Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
+                {isEditable && <Button id={`operationListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
+                {isDeleteButton && <Button id={`operationListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
             </>
         )
     };
@@ -821,7 +812,7 @@ const OperationListing = (props) => {
                                     }
 
                                     {permissionData?.Add && !props?.isMasterSummaryDrawer && (
-                                        <Button id="operationListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
+                                        <Button id="operationListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
 
                                     )}
                                     {permissionData?.BulkUpload && !props?.isMasterSummaryDrawer && (
@@ -857,7 +848,7 @@ const OperationListing = (props) => {
                 <div className={`ag-grid-wrapper p-relative ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(state.tableData && state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${props.isSimulation ? 'min-height' : ''}`}>
                     <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                        {!state.isLoader && Object.keys(permissionData).length > 0 && <AgGridReact
+                        {(!state.render && !state.isLoader) && Object.keys(permissionData).length > 0 && <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout='autoHeight'

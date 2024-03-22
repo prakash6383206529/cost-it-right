@@ -35,6 +35,7 @@ import { useTranslation } from 'react-i18next';
 import { getRMFromNFR, setOpenAllTabs } from '../../../masters/nfr/actions/nfr';
 import Toaster from '../../../common/Toaster';
 
+
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
   const { t } = useTranslation("Costing");
@@ -443,7 +444,7 @@ function CostingHeaderTabs(props) {
 
         if (costingOpenCloseStatus.RMC) {
 
-          if (String(costData.TechnologyId) === "13") {
+          if (IdForMultiTechnology.includes(String(costingData?.TechnologyId))) {
             setTabsTour(prevState => ({
               ...prevState,
               steps: Steps(t, '', { bopHandling: costingOpenCloseStatus.bopHandling }).TAB_PARTCOST,
@@ -461,8 +462,8 @@ function CostingHeaderTabs(props) {
         } else {
           const tempStep = [];
           if ((CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid()))) {
-            for (let i = 1; i < Steps(t, '', { assembly: (String(costData.TechnologyId) !== "13" && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS.length; i++) {
-              tempStep.push(Steps(t, '', { assembly: (String(costData.TechnologyId) !== "13" && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS[i])
+            for (let i = 1; i < Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS.length; i++) {
+              tempStep.push(Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS[i])
             }
 
             setTabsTour(prevState => ({
@@ -475,7 +476,7 @@ function CostingHeaderTabs(props) {
           } else {
             setTabsTour(prevState => ({
               ...prevState,
-              steps: Steps(t, '', { assembly: (String(costData.TechnologyId) !== "13" && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS,
+              steps: Steps(t, '', { assembly: (!IdForMultiTechnology.includes(String(costingData?.TechnologyId)) && costData.IsAssemblyPart), bopHandling: costingOpenCloseStatus.bopHandling }).COSTING_TABS,
               hints: Steps(t).PART_HINT
             }));
 
