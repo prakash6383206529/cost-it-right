@@ -222,7 +222,7 @@ function CostingHeaderTabs(props) {
     if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true && ComponentItemToolData?.CostingPartDetails?.TotalToolCost > 0 && activeTab !== '5' && checkIsToolTabChange) {
 
       const data = {
-        "IsToolCostProcessWise": false,
+        "IsToolCostProcessWise": ComponentItemToolData?.CostingPartDetails?.IsToolCostProcessWise,
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
         "LoggedInUserId": loggedInUserId(),

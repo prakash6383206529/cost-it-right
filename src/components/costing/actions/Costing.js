@@ -2829,3 +2829,41 @@ export function setIncludeToolCostIcc(IsIncluded, callback) {
     callback();
   }
 };
+
+/**
+ * @method getAssemblyChildPartbyAsmCostingId
+ * @description To Get part List of all the parts of a BOM
+ */
+export function getAssemblyChildPartbyAsmCostingId(costingId, isAddedBoughtOutPartType = false, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getAssemblyChildPartbyAsmCostingId}?asmCostingId=${costingId}&isAddedBoughtOutPartType=${isAddedBoughtOutPartType}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+/**
+ * @method getProcessAndOperationbyAsmAndChildCostingId
+ * @description To get process and operation by assembly and child costing id
+ */
+export function getProcessAndOperationbyAsmAndChildCostingId(asmCostingId, childCostingId, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getProcessAndOperationbyCostingId}?asmCostingId=${asmCostingId}&childCostingId=${childCostingId}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}

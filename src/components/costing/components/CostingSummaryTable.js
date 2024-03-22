@@ -565,6 +565,7 @@ const CostingSummaryTable = (props) => {
     let data = viewCostingData[index]?.netToolCostView
     setIsViewToolCost(true)
     setViewToolCost(data)
+    setIndex(index)
   }
 
   const viewNpvData = (index) => {
@@ -3398,6 +3399,7 @@ const CostingSummaryTable = (props) => {
             viewToolCost={viewToolCost}
             closeDrawer={closeViewDrawer}
             anchor={'right'}
+            isToolCostProcessWise={viewCostingData[index]?.isToolCostProcessWise}
           />
         )
       }
