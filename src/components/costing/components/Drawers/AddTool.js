@@ -70,7 +70,6 @@ function AddTool(props) {
   }, [fieldValues]);
 
   const toggleDrawer = (event, formData = []) => {
-    console.log('formData: ', formData);
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
@@ -202,7 +201,6 @@ function AddTool(props) {
     let finalList = []
     if (isEditFlag) {
       finalList = updateEntriesForPartNumber(partNumberDetail?.label, tableData, rowObjData?.OperationChildIdRef, rowObjData?.ProcessIdRef)
-      console.log('finalList: ', finalList);
       tempArr = finalList
     }
     else {
@@ -258,7 +256,6 @@ function AddTool(props) {
 
     // Filter original list for entries with the selected part number
     const entriesForPartNumber = originalList.filter(item => item.PartNumber === partNumber);
-    console.log('entriesForPartNumber: ', entriesForPartNumber);
 
     // Map these entries to generate rows with calculated TotalToolCost
     const rows = entriesForPartNumber.map(item => {
@@ -301,14 +298,10 @@ function AddTool(props) {
    * @description This is for calculation of Tool cost on same part number which is present at different BOM Level in update mode
   */
   const updateEntriesForPartNumber = (partNumber, list, OperationChildIdRef, ProcessIdRef) => {
-    console.log('ProcessIdRef: ', ProcessIdRef);
-    console.log('OperationChildIdRef: ', OperationChildIdRef);
-    console.log('list before array: ', list);
     // Iterate over the list and update entries matching the partNumber
     list.forEach(item => {
       if (item.ChildPartNumber === partNumber) {
         if (rowObjData?.ProcessOrOperationType === 'Operation' && item.OperationChildIdRef === OperationChildIdRef) {
-          console.log("COMING IN IF");
           // Calculate the new TotalToolCost based on the item's Quantity
           const totalToolCost = getNetToolCost(item?.PartQuantity)
           // Update the item with the new TotalToolCost (or any other updates you need)
@@ -322,7 +315,6 @@ function AddTool(props) {
           // Here you can add any other property updates as needed
         } else if (rowObjData?.ProcessOrOperationType === 'Process' && item.ProcessIdRef === ProcessIdRef) {
 
-          console.log("COMING IN ELSE IF");
           // Calculate the new TotalToolCost based on the item's Quantity
           const totalToolCost = getNetToolCost(item?.PartQuantity)
           // Update the item with the new TotalToolCost (or any other updates you need)
@@ -338,7 +330,6 @@ function AddTool(props) {
       }
 
     });
-    console.log(list, "list before run");
     return list
   };
 

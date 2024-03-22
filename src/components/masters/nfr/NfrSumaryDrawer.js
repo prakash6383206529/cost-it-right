@@ -459,7 +459,7 @@ function NfrSummaryDrawer(props) {
                     CostingId={OutsourcingCostingData?.CostingId}
                     viewMode={true}
                 />}
-            {approvalDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} type='Approve' isFinalLevelUser={isFinalLevelUser} pushData={selectedRowData} technologyId={nfrData?.CostingData[0]?.TechnologyId} />}
+            {approvalDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} type='Approve' isFinalLevelUser={isFinalLevelUser} pushData={selectedRowData} technologyId={nfrData?.CostingData[0]?.TechnologyId} PlantId={nfrData?.PlantId} />}
             {rejectDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={rejectDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} rejectDrawer={true} isFinalLevelUser={isFinalLevelUser} pushData={selectedRowData} technologyId={nfrData?.CostingData[0]?.TechnologyId} />}
         </div >
     );
