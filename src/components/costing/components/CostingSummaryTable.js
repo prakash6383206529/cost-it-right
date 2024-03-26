@@ -2319,6 +2319,8 @@ const CostingSummaryTable = (props) => {
                                   index={index}
                                   isPDFShow={true}
                                   storeSummary={props?.storeSummary ? true : false}
+                                  simulationMode={simulationMode}
+                                  SimulationId={props?.simulationId}
                                 /></th></tr>}
 
                             <tr className={highlighter("netRM", "main-row")}>
@@ -3335,6 +3337,8 @@ const CostingSummaryTable = (props) => {
             index={index}
             isPDFShow={false}
             costingTypeId={viewCostingData[index]?.costingTypeId}
+            simulationMode={simulationMode}
+            SimulationId={props?.simulationId}
           />
         )
       }
