@@ -214,7 +214,7 @@ const SendForApproval = (props) => {
     dispatch(getReasonSelectList((res) => { }))
     dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
       setTechnologyLevelsList(res?.data?.Data)
-      if (initialConfiguration.IsReleaseStrategyConfigured && !props.isRfq) {
+      if (initialConfiguration.IsReleaseStrategyConfigured) {
         dispatch(getApprovalTypeSelectList((departmentRes) => {
           let data = []
           viewApprovalData && viewApprovalData?.map(item => {
@@ -1150,6 +1150,7 @@ const SendForApproval = (props) => {
                           errors={errors.dept}
                         />
                       </Col >
+                      {console.log('approvalDropDown: ', approvalDropDown)}
                       <Col md="6">
                         {initialConfiguration.IsMultipleUserAllowForApproval ? <>
                           <AllApprovalField
