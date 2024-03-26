@@ -631,6 +631,7 @@ export const API = {
   uploadSheetMetal: `${BASE_URL}/bulk-costing/save-costing-sheet-metal-in-mhr-process`,
   getAssemblyChildPartbyAsmCostingId: `${BASE_URL}/costing/get-assembly-child-parts-by-asmCostingId`,
   getProcessAndOperationbyCostingId: `${BASE_URL}/costing/get-process-and-operation-by-asmCostingId-or-childCostingId`,
+  getSettledSimulationCostingDetails: `${BASE_URL}/simulation/get-settled-simulation-costing-details`,
 
 
   //COST SUMMARY

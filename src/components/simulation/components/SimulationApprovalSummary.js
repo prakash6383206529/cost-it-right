@@ -1526,7 +1526,7 @@ function SimulationApprovalSummary(props) {
 
                                 <Row>
                                     <Col md="12" className="costing-summary-row">
-                                        {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} costingIdExist={true} selectedTechnology={technologyName} />}
+                                        {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} costingIdExist={true} selectedTechnology={technologyName} simulationId={simulationDetail?.SimulationId} />}
                                     </Col>
                                 </Row>
                             </>

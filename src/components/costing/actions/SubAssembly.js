@@ -200,4 +200,51 @@ export function updateMultiTechnologyTopAndWorkingRowCalculation(data, callback)
   }
 }
 
-
+/**
+ * @method getSettledSimulationCostingDetails
+ * @description getSettledSimulationCostingDetails
+ */
+export function getSettledSimulationCostingDetails(simulationId, baseCostingId, isViewMode, callback) {
+  return (dispatch) => {
+    if (baseCostingId !== '' && simulationId !== '') {
+      if (isViewMode) {
+        dispatch({
+          type: GET_SETTLED_COSTING_DETAILS_VIEW,
+          payload: [],
+        })
+      } else {
+        dispatch({
+          type: GET_SETTLED_COSTING_DETAILS,
+          payload: [],
+        })
+      }
+      const request = axios.get(`${API.getSettledSimulationCostingDetails}?simulationId=${simulationId}&baseCostingId=${baseCostingId}`, config())
+      request.then((response) => {
+        if (response.data.Result) {
+          if (isViewMode) {
+            dispatch({
+              type: GET_SETTLED_COSTING_DETAILS_VIEW,
+              payload: response.data.Data,
+            })
+          } else {
+            dispatch({
+              type: GET_SETTLED_COSTING_DETAILS,
+              payload: response.data.Data,
+            })
+          }
+          callback(response);
+        }
+      }).catch((error) => {
+        dispatch({ type: API_FAILURE });
+        callback(error);
+        apiErrors(error);
+      });
+    } else {
+      dispatch({
+        type: GET_SETTLED_COSTING_DETAILS,
+        payload: [],
+      })
+      callback();
+    }
+  };
+}
