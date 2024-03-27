@@ -261,6 +261,7 @@ function AddBOPHandling(props) {
                           disabled={(CostingViewMode || IsLocked) ? true : false}
                         /> :
                         <TextFieldHookForm
+                          id="BOPHandlingPercentage"
                           label="Percentage"
                           name={"BOPHandlingPercentage"}
                           Controller={Controller}
@@ -311,6 +312,7 @@ function AddBOPHandling(props) {
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
                 <div className="col-sm-12 text-left bluefooter-butn">
                   <button
+                    id="AddBopHandlingCharge_Save"
                     type={'button'}
                     disabled={(CostingViewMode || IsLocked) ? true : false}
                     className="submit-button mr5 save-btn"
@@ -320,6 +322,7 @@ function AddBOPHandling(props) {
                   </button>
 
                   <button
+                    id="AddBopHandlingCharge_Cancel"
                     type={'button'}
                     className="reset mr15 cancel-btn"
                     onClick={props.closeDrawer} >
