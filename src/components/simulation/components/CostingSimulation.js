@@ -183,7 +183,7 @@ function CostingSimulation(props) {
                     "RequestFor": "SIMULATION",
                     "TechnologyId": props.technologyId,
                     "LoggedInUserId": loggedInUserId(),
-                    "ReleaseStrategyApprovalDetails": data
+                    "ReleaseStrategyApprovalDetails": _.uniqBy(data, 'SimulationId')
                 }
                 dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
                     setReleaseStrategyDetails(res?.data?.Data)
@@ -1499,7 +1499,7 @@ function CostingSimulation(props) {
                 "RequestFor": "SIMULATION",
                 "TechnologyId": SimulationTechnologyIdState,
                 "LoggedInUserId": loggedInUserId(),
-                "ReleaseStrategyApprovalDetails": dataList
+                "ReleaseStrategyApprovalDetails": _.uniqBy(dataList, 'SimulationId')
             }
             dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
                 setReleaseStrategyDetails(res?.data?.Data)
@@ -1512,7 +1512,7 @@ function CostingSimulation(props) {
                     Toaster.warning('This is final level user')
                     return false
                 } else {
-                    Toaster.warning('This user is not in approval cycle')
+                    Toaster.warning(res?.data?.Message ? res?.data?.Message : 'This user is not in approval cycle')
                     return false
                 }
             }))
