@@ -1063,7 +1063,7 @@ export const API = {
   createNFRBOMDetails: `${BASE_URL}/nfr/create-nfr-bom-details`,
 
   //MINDA
-  // pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
+  pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
   // getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
   // createPFS2Costing: `${BASE_URL}/nfr/create-pfs2-costing`,
   // getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
