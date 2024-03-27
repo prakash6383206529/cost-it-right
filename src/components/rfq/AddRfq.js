@@ -32,11 +32,15 @@ import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
 import WarningMessage from '../common/WarningMessage';
 import { clearGradeSelectList, clearSpecificationSelectList, getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
+import { Steps } from './TourMessages';
+import { useTranslation } from 'react-i18next';
+import TourWrapper from '../common/Tour/TourWrapper';
 
 const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
 function AddRfq(props) {
+    const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
@@ -1342,7 +1346,13 @@ function AddRfq(props) {
                         <div className="shadow-lgg login-formg">
                             <div className="row">
                                 <div className="col-md-6">
-                                    <h3>{isViewFlag ? "View" : props?.isEditFlag ? "Update" : "Add"} RFQ</h3>
+                                    <h3>{isViewFlag ? "View" : props?.isEditFlag ? "Update" : "Add"} RFQ
+                                        <TourWrapper
+                                            buttonSpecificProp={{ id: "Add_RFQ_form" }}
+                                            stepsSpecificProp={{
+                                                steps: Steps(t).RFQ_FORM
+                                            }} />
+                                    </h3>
                                 </div>
                             </div>
                             <div >
@@ -1409,6 +1419,7 @@ function AddRfq(props) {
                                                     <label>Last Submission Date</label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
+                                                            id="submissionDate_container"
                                                             name={'SubmissionDate'}
                                                             placeholder={'Select'}
                                                             //selected={submissionDate}
@@ -1460,8 +1471,9 @@ function AddRfq(props) {
                                             <div className="inputbox date-section">
                                                 <div className="form-group">
                                                     <label>SOP Date<span className="asterisk-required">*</span></label>
-                                                    <div className="inputbox date-section">
+                                                    <div id="addRFQDate_container" className="inputbox date-section">
                                                         <DatePicker
+
                                                             name={'SOPDate'}
                                                             placeholder={'Select'}
                                                             //selected={submissionDate}
@@ -1567,6 +1579,7 @@ function AddRfq(props) {
                                         </Col> */}
                                         <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
+                                                id="add_part"
                                                 type="button"
                                                 className={'user-btn pull-left'}
                                                 onClick={() => addRowPartNoTable()}
@@ -1575,6 +1588,7 @@ function AddRfq(props) {
                                                 <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
                                             </button>
                                             <button
+                                                id="reset_part"
                                                 onClick={onResetPartNoTable} // Need to change this cancel functionality
                                                 type="button"
                                                 value="CANCEL"
@@ -1697,6 +1711,7 @@ function AddRfq(props) {
                                         </Col>
                                         <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
+                                                id="add_vendor"
                                                 type="button"
                                                 className={'user-btn pull-left'}
                                                 onClick={() => addRowVendorTable()}
@@ -1706,6 +1721,7 @@ function AddRfq(props) {
                                             </button>
 
                                             <button
+                                                id="reset_vendor"
                                                 onClick={onResetVendorTable} // Need to change this cancel functionality
                                                 type="button"
                                                 value="CANCEL"
@@ -1760,7 +1776,7 @@ function AddRfq(props) {
 
                                     <Row className="mt-3 conditional-date">
                                         <Col md="2">
-                                            < div className="custom-check1">
+                                            < div id="checkbox_container" className="custom-check1">
                                                 <label
                                                     className="custom-checkbox mb-0"
                                                     onChange={() => checkBoxHandler()}
@@ -1907,7 +1923,7 @@ function AddRfq(props) {
                                             <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                                 Maximum file upload limit has been reached.
                                             </div>
-                                            <div className={`${files?.length >= 4 ? 'd-none' : ''}`}>
+                                            <div id="addRFQ_uploadFile" className={`${files?.length >= 4 ? 'd-none' : ''}`}>
                                                 <Dropzone
                                                     ref={dropzone}
                                                     onChangeStatus={handleChangeStatus}
@@ -1977,6 +1993,7 @@ function AddRfq(props) {
 
                                         <div className="col-sm-12 text-right bluefooter-butn">
                                             <button
+                                                id="addRFQ_cancel"
                                                 type={"button"}
                                                 className="reset mr-2 cancel-btn"
                                                 onClick={cancel}
@@ -1988,6 +2005,7 @@ function AddRfq(props) {
                                             {
                                                 <button type="button" className="submit-button save-btn mr-2" value="save"
                                                     // {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"     //RE
+                                                    id="addRFQ_save"
                                                     onClick={(data, e) => handleSubmitClick(data, e, false)}
                                                     disabled={isViewFlag}>
                                                     <div className={"save-icon"}></div>
@@ -1996,6 +2014,7 @@ function AddRfq(props) {
                                             }
 
                                             <button type="button" className="submit-button save-btn" value="send"
+                                                id="addRFQ_send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}
                                                 disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
