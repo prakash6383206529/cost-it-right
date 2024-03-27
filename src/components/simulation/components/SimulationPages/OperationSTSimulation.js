@@ -72,10 +72,8 @@ function OperationSTSimulation(props) {
         VendorName: showCompressedColumns ? 100 : 190,
         PlantCode: showCompressedColumns ? 100 : 190,
         CustomerName: showCompressedColumns ? 100 : 140,
-        Rate: showCompressedColumns ? 120 : 120,
-        NewRate: showCompressedColumns ? 120 : 120,
         EffectiveDate: showCompressedColumns ? 90 : 190,
-        CostingId: showCompressedColumns ? 90 : 160,
+
 
     };
     const cancelVerifyPage = () => {
@@ -523,8 +521,8 @@ function OperationSTSimulation(props) {
                                                     {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} tooltipField={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" width={columnWidths.PlantCode} cellRenderer='plantFormatter'></AgGridColumn></>}
                                                     {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                     <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
-                                                        <AgGridColumn width={columnWidths.Rate} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
-                                                        <AgGridColumn width={columnWidths.NewRate} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                        <AgGridColumn width={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                     </AgGridColumn>
                                                     {props.children}
                                                     <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' width={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
