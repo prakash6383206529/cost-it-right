@@ -28,6 +28,7 @@ import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFuncti
 import { Steps } from './TourMessages'
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash'
 const gridOptions = {};
 function SimulationApprovalListing(props) {
     const { isDashboard } = props
@@ -629,7 +630,7 @@ function SimulationApprovalListing(props) {
                 "RequestFor": "SIMULATION",
                 "TechnologyId": selectedRowData[0]?.SimulationTechnologyId,
                 "LoggedInUserId": loggedInUserId(),
-                "ReleaseStrategyApprovalDetails": data
+                "ReleaseStrategyApprovalDetails": _.uniqBy(data, 'SimulationId')
             }
             dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
                 setReleaseStrategyDetails(res?.data?.Data)
@@ -658,6 +659,7 @@ function SimulationApprovalListing(props) {
                     setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
                     setApproveDrawer(true)
                 } else if (res?.data?.Result === false) {
+                    Toaster.warning(res?.data?.Message ? res?.data?.Message : 'This user is not in approval cycle')
                     return false
                 } else {
                 }
