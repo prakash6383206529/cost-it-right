@@ -14,7 +14,7 @@ import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails, setOpenAllTabs } from './actions/nfr';
-import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails, getCodeBySplitting, getNameBySplitting, checkForDecimalAndNull, } from '../../../helper';
+import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails, getCodeBySplitting, getNameBySplitting, checkForDecimalAndNull, setLoremIpsum, } from '../../../helper';
 import { checkFinalUser, createCosting, deleteDraftCosting, emptyCostingData, getBriefCostingById, gridDataAdded, isDataChange, isDiscountDataChange, saveAssemblyBOPHandlingCharge, saveAssemblyNumber, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setCostingDataList, setCostingEffectiveDate, setDiscountErrors, setIncludeOverheadProfitIcc, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData, setOverheadProfitData, setOverheadProfitErrors, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCBOPCostData, setRMCCData, setRMCCErrors, setSurfaceCostData, setToolTabData, setToolsErrors } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
@@ -24,6 +24,9 @@ import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 import WarningMessage from '../../common/WarningMessage'
 import LoaderCustom from '../../common/LoaderCustom';
 import OutsourcingDrawer from './OutsourcingDrawer';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { useTranslation } from 'react-i18next';
 
 
 
@@ -42,7 +45,7 @@ import OutsourcingDrawer from './OutsourcingDrawer';
 //         ], netPrice: 10
 //     }]
 function AddNfr(props) {
-    const { nfrData, nfrIdsList, isViewEstimation } = props;
+    const { nfrData, nfrIdsList, isViewEstimation, editNfr, activeTab, showNfrPartListing } = props;
     const dispatch = useDispatch();
     const [rowData, setRowData] = useState([])
     const [vendorName, setVendorname] = useState([])
@@ -73,7 +76,9 @@ function AddNfr(props) {
     const [indexInside, setIndexInside] = useState('');
     const [count, setCount] = useState(0);
     const [showCreateButton, setShowCreateButton] = useState(true);
-
+    const { t } = useTranslation("Nfr")
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
 
     const [costingObj, setCostingObj] = useState({
         item: {},
@@ -723,7 +728,15 @@ function AddNfr(props) {
             }}
         />
     }
+    const toggleExtraData = (showTour) => {
 
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 200);
+    }
+    const modifiedRowData = rowData && rowData.length > 0 ? showExtraData ? [...setLoremIpsum(rowData[0]), ...rowData] : rowData : [];
     const renderListing = (options) => {
         let opts1 = []
         if (options?.length > 0) {
@@ -850,7 +863,13 @@ function AddNfr(props) {
             {(loader && <LoaderCustom customClass="pdf-loader" />)}
             {props.showAddNfr && <div>
                 <div className='mb-2 d-flex justify-content-between'>
-                    <h1>Create Estimation</h1>
+                    <h1>Create Estimation
+                        <TourWrapper
+                            buttonSpecificProp={{ id: "Add_NFR_form", onClick: toggleExtraData }}
+                            stepsSpecificProp={{
+                                steps: Steps(t, { showNfrPartListing, activeTab, editNfr }).NFR_lISTING
+                            }} />
+                    </h1>
                     <button type="button" className={"apply mt-1"} onClick={onBackButton}>
                         <div className={'back-icon'}></div>Back
                     </button>
@@ -967,7 +986,7 @@ function AddNfr(props) {
                             </tr >
                         </thead >
                         <tbody>
-                            {rowData?.map((item, indexOuter) => (
+                            {modifiedRowData?.map((item, indexOuter) => (
                                 <React.Fragment key={item?.groupName}>
                                     {item?.data?.map((dataItem, indexInside) => (
                                         <tr key={`${item?.groupName} -${indexInside} `}>
@@ -1036,6 +1055,17 @@ function AddNfr(props) {
                                                     </>}
 
                                                 {item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
+                                                {(showExtraData && indexOuter === 0) && (
+                                                    <>
+                                                        <button className="Add-file" id="nfr_AddCosting" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />
+                                                        <button className="View" type={"button"} id="nfr_ViewCosting" title={"View Costing"} onClick={() => viewDetails(indexInside)} />
+
+                                                        <button className="Edit" id="nfr_EditCosting" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />
+                                                        <button className="Copy All" id="nfr_CopyCosting" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />
+                                                        <button className="Delete All" title={"Delete Costing"} id="nfr_DeleteCosting" type={"button"} onClick={() => deleteItem(dataItem, indexInside, indexOuter)} />
+                                                        <button title='Discard' id="nfr_DiscardCosting" className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />
+                                                    </>
+                                                )}
 
                                                 {(item?.isShowCreateCostingButton === true && dataItem?.SelectedCostingVersion && dataItem?.SelectedCostingVersion?.StatusId === DRAFTID) &&
                                                     <>
@@ -1049,7 +1079,7 @@ function AddNfr(props) {
                                             {
                                                 indexInside === 0 && (
                                                     <td rowSpan={item?.data.length} className="table-record">
-                                                        <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || (!item?.isRowActionEditable && !item?.IsShowEditButtonForPFS)} />
+                                                        <button className="Edit" type={"button"} id="nfr_RowEdit" title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || (!item?.isRowActionEditable && !item?.IsShowEditButtonForPFS)} />
                                                         {/* <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} /> */}
                                                     </td>
                                                 )
