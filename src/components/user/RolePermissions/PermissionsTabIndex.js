@@ -21,7 +21,9 @@ import LoaderCustom from "../../common/LoaderCustom";
 import RfqTab from "./RfqTab";
 import { getConfigurationKey, scrollReset } from "../../../helper";
 import NfrTab from "./NfrTab";
-
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "./TourMessages";
+import { withTranslation } from "react-i18next";
 class PermissionsTabIndex extends Component {
     constructor(props) {
         super(props);
@@ -172,6 +174,7 @@ class PermissionsTabIndex extends Component {
     }
 
     render() {
+        const { t } = this.props;
         const { isLoader, } = this.state;
 
         return (
@@ -186,7 +189,7 @@ class PermissionsTabIndex extends Component {
                                     {
                                         this.state.dashoard.length > 0 &&
                                         <NavItem>
-                                            <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                            <NavLink id="Dashboard" className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                                 Dashboard
                                             </NavLink>
                                         </NavItem>
@@ -194,72 +197,144 @@ class PermissionsTabIndex extends Component {
                                     {
                                         this.state.masters.length > 0 &&
                                         <NavItem>
-                                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                            <NavLink id="Masters" className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                                 Masters
+                                                {this.state.activeTab === '2' && (
+                                                    <TourWrapper
+                                                        buttonSpecificProp={{ id: "Add_User_form" }}
+                                                        stepsSpecificProp={{
+                                                            steps: Steps(t,).Master
+                                                        }}
+                                                    />
+                                                )}
                                             </NavLink>
                                         </NavItem>
                                     }
                                     {
                                         this.state.additionalMasters.length > 0 &&
                                         <NavItem>
-                                            <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                            <NavLink id="AdditionalMasters" className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                                 Additional Masters
+                                                {this.state.activeTab === '3' && (
+                                                    <TourWrapper
+                                                        buttonSpecificProp={{ id: "Add_Additonal_master_form" }}
+                                                        stepsSpecificProp={{
+                                                            steps: Steps(t,).AdditionalMaster
+                                                        }}
+                                                    />
+                                                )}
                                             </NavLink>
                                         </NavItem>
                                     }
                                     {
                                         this.state.costing.length > 0 &&
                                         <NavItem>
-                                            <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
+                                            <NavLink id="Costing" className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                                                 Costing
+                                                {this.state.activeTab === '4' && (
+                                                    <TourWrapper
+                                                        buttonSpecificProp={{ id: "Add_Costing_form" }}
+                                                        stepsSpecificProp={{
+                                                            steps: Steps(t,).Costing
+                                                        }}
+                                                    />
+                                                )}
                                             </NavLink>
                                         </NavItem>
                                     }
                                     {
                                         this.state.simulation.length > 0 &&
                                         <NavItem>
-                                            <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                                            <NavLink id="Simulation" className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                                                 Simulation
+                                                {this.state.activeTab === '5' && (
+                                                    <TourWrapper
+                                                        buttonSpecificProp={{ id: "Add_Simulation_form" }}
+                                                        stepsSpecificProp={{
+                                                            steps: Steps(t,).Simulation
+                                                        }}
+                                                    />
+                                                )}
                                             </NavLink>
                                         </NavItem>
                                     }
                                     {
                                         this.state.reportAnalytics.length > 0 &&
                                         <NavItem>
-                                            <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
+                                            <NavLink id="Reports" className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
                                                 Reports
+                                                {this.state.activeTab === '6' && (
+                                                    <TourWrapper
+                                                        buttonSpecificProp={{ id: "Add_Report_form" }}
+                                                        stepsSpecificProp={{
+                                                            steps: Steps(t,).Report
+                                                        }}
+                                                    />
+                                                )}
                                             </NavLink>
                                         </NavItem>
                                     }
                                     {
                                         this.state.user?.length > 0 &&
                                         <NavItem>
-                                            <NavLink className={classnames({ active: this.state.activeTab === '7' })} onClick={() => { this.toggle('7'); }}>
+                                            <NavLink id="Users" className={classnames({ active: this.state.activeTab === '7' })} onClick={() => { this.toggle('7'); }}>
                                                 Users
+                                                {this.state.activeTab === '7' && (
+                                                    <TourWrapper
+                                                        buttonSpecificProp={{ id: "Add_User_form" }}
+                                                        stepsSpecificProp={{
+                                                            steps: Steps(t,).User
+                                                        }}
+                                                    />
+                                                )}
                                             </NavLink>
                                         </NavItem>
                                     }
                                     {
                                         this?.state?.rfq?.length > 0 && getConfigurationKey().IsRFQConfigured &&
                                         <NavItem>
-                                            <NavLink className={classnames({ active: this.state.activeTab === '8' })} onClick={() => { this.toggle('8'); }}>
+                                            <NavLink id="RFQ" className={classnames({ active: this.state.activeTab === '8' })} onClick={() => { this.toggle('8'); }}>
                                                 RFQ
+                                                {this.state.activeTab === '8' && (
+                                                    <TourWrapper
+                                                        buttonSpecificProp={{ id: "Add_RFQ_form" }}
+                                                        stepsSpecificProp={{
+                                                            steps: Steps(t,).RFQ
+                                                        }}
+                                                    />
+                                                )}
                                             </NavLink>
                                         </NavItem>
                                     }
                                     {
                                         this?.state?.nfr?.length > 0 &&
                                         <NavItem>
-                                            <NavLink className={classnames({ active: this.state.activeTab === '9' })} onClick={() => { this.toggle('9'); }}>
+                                            <NavLink id="NFR" className={classnames({ active: this.state.activeTab === '9' })} onClick={() => { this.toggle('9'); }}>
                                                 NFR
+                                                {this.state.activeTab === '9' && (
+                                                    <TourWrapper
+                                                        buttonSpecificProp={{ id: "Add_NFR_form" }}
+                                                        stepsSpecificProp={{
+                                                            steps: Steps(t,).NFR
+                                                        }}
+                                                    />
+                                                )}
                                             </NavLink>
                                         </NavItem>
                                     }
                                     {
                                         this.state.audit.length > 0 &&
                                         <NavItem>
-                                            <NavLink className={classnames({ active: this.state.activeTab === '10' })} onClick={() => { this.toggle('10'); }}>
+                                            <NavLink id="Audit" className={classnames({ active: this.state.activeTab === '10' })} onClick={() => { this.toggle('10'); }}>
                                                 Audit
+                                                {this.state.activeTab === '10' && (
+                                                    <TourWrapper
+                                                        buttonSpecificProp={{ id: "Add_Audit_form" }}
+                                                        stepsSpecificProp={{
+                                                            steps: Steps(t,).Audit
+                                                        }}
+                                                    />
+                                                )}
                                             </NavLink>
                                         </NavItem>
                                     }
@@ -396,4 +471,4 @@ export default connect(mapStateToProps, {
     getActionHeadsSelectList,
     getModuleActionInit,
     getModuleActionInitNew,
-})(PermissionsTabIndex);
+})(withTranslation(['UserRegistration'])(PermissionsTabIndex));

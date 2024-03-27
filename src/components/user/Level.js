@@ -18,6 +18,9 @@ import { getApprovalTypeSelectList } from '../../actions/Common'
 import { CUSTOMER_BASED, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONAL, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, WACAPPROVALTYPEID, NEW_COMPONENT, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B4, VENDORNEEDFORMID, ONBOARDINGNAME } from "../../config/constants";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { transformApprovalItem } from "../common/CommonFunctions";
+import TourWrapper from "../common/Tour/TourWrapper";
+import { Steps } from "./TourMessages";
+import { withTranslation } from "react-i18next";
 
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
 class Level extends Component {
@@ -608,7 +611,7 @@ class Level extends Component {
 
 
   render() {
-    const { handleSubmit, isShowForm, isEditFlag } = this.props;
+    const { handleSubmit, isShowForm, isEditFlag, t } = this.props;
     const { isLoader, isSubmitted } = this.state;
 
     return (
@@ -629,7 +632,13 @@ class Level extends Component {
                         </div>
                         :
                         <div className={'header-wrapper left'}>
-                          <h3>{isEditFlag ? 'Update Highest Level of Approvals' : 'Set Highest Level of Approvals'}</h3>
+                          <h3>{isEditFlag ? 'Update Highest Level of Approvals' : 'Set Highest Level of Approvals'}
+                            <TourWrapper
+                              buttonSpecificProp={{ id: "Add_Hightest_Level_Form" }}
+                              stepsSpecificProp={{
+                                steps: Steps(t).ADD_LEVEL_MAPPING
+                              }} />
+                          </h3>
                         </div>
                     }
 
@@ -701,7 +710,7 @@ class Level extends Component {
                     <>
                       <Row>
                         <Col md="12">
-                          <Label className={'pl0 radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
+                          <Label id="AddApproval_CostingLevel" className={'pl0 radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
                             <input
                               type="radio"
                               name="levelType"
@@ -711,7 +720,7 @@ class Level extends Component {
                             />{' '}
                             <span>Costing</span>
                           </Label>
-                          <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
+                          <Label id="AddApproval_SimulationLevel" className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
                             <input
                               type="radio"
                               name="levelType"
@@ -723,7 +732,7 @@ class Level extends Component {
                           </Label>
 
                           {getConfigurationKey().IsMasterApprovalAppliedConfigure &&
-                            <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block Onboarding pr-3 w-auto'} check>
+                            <Label id="AddApproval_MasterLevel" className={'pl0  radio-box mb-0 pb-3 d-inline-block Onboarding pr-3 w-auto'} check>
                               <input
                                 type="radio"
                                 name="levelType"
@@ -734,7 +743,7 @@ class Level extends Component {
                               <span>Master</span>
                             </Label>
                           }
-                          {getConfigurationKey().IsShowOnboarding && <Label className={'pl0  radio-box mb-0 pb-3 d-inline-block w-auto'} check>
+                          {getConfigurationKey().IsShowOnboarding && <Label id="AddApproval_OnBoardingLevel" className={'pl0  radio-box mb-0 pb-3 d-inline-block w-auto'} check>
                             <input
                               type="radio"
                               name="levelType"
@@ -799,6 +808,7 @@ class Level extends Component {
                         </div>
                         <div className="text-right mt-0 col-md-12">
                           <button
+                            id="AddApproval_Cancel"
                             //disabled={pristine || submitting}
                             onClick={this.cancel}
                             type="button"
@@ -806,6 +816,7 @@ class Level extends Component {
                             className="reset mr15 cancel-btn">
                             <div className={"cancel-icon"}></div> CANCEL</button>
                           <button
+                            id="AddApproval_Save"
                             type="submit"
                             disabled={isSubmitted ? true : false}
                             className="btn-primary save-btn"
@@ -876,4 +887,4 @@ export default connect(mapStateToProps, {
   form: 'Level',
   enableReinitialize: true,
   touchOnChange: true
-})(Level));
+})(withTranslation(['UserRegistration'])(Level)));
