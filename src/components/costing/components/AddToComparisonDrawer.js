@@ -553,6 +553,7 @@ function AddToComparisonDrawer(props) {
           obj.lineNumber = dataFromAPI?.LineNumber ?? '-'
           obj.partType = dataFromAPI?.CostingPartDetails?.Type
           obj.partTypeId = dataFromAPI?.CostingPartDetails?.PartTypeId
+          obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 

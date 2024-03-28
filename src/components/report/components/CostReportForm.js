@@ -12,7 +12,6 @@ import { BOUGHTOUTPARTSPACING, COMPONENT_PART, defaultPageSize, EMPTY_DATA, PROD
 import { MESSAGES } from "../../../config/message"
 import { getConfigurationKey, loggedInUserId } from "../../../helper"
 import { autoCompleteDropdown, autoCompleteDropdownPart } from "../../common/CommonFunctions"
-import DayTime from "../../common/DayTimeWrapper"
 import LoaderCustom from "../../common/LoaderCustom"
 import NoContentFound from "../../common/NoContentFound"
 import Toaster from "../../common/Toaster"
@@ -24,11 +23,15 @@ import { getClientSelectList } from "../../masters/actions/Client"
 import { getProductGroupSelectList, getSelectListPartType } from "../../masters/actions/Part"
 import { getPartSelectListWtihRevNo } from "../../masters/actions/Volume"
 import { ASSEMBLY } from "../../../config/masterData"
+import TourWrapper from "../../common/Tour/TourWrapper"
+import { Steps } from "./TourMessages"
+import { useTranslation } from "react-i18next"
 
 
 
 const gridOptions = {}
 function CostReportForm(props) {
+    const { t } = useTranslation("Reports")
     const { isDateMandatory, showVendor, gotGiven, plantWiseGotGiven } = props
     const [technology, setTechnology] = useState([])
     const [partName, setpartName] = useState('')
@@ -44,6 +47,7 @@ function CostReportForm(props) {
     const [effectiveDate, setEffectiveDate] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [customerPoamSummary, setCustomerPoamSummary] = useState(props.customerPoamSummary ? true : false);
+
     const [productCategory, setProductCategory] = useState('');
     const [includeQuarterData, setIncludeQuarterData] = useState(false);
     const [partType, setPartType] = useState('');
@@ -133,6 +137,8 @@ function CostReportForm(props) {
     */
     const handleFromDate = (value) => {
         setEffectiveDate(value)
+        setMinDate(value); // Set minDate for To Date picker
+
         dispatch(getFormGridData({ ...costReportFormData, fromDate: value }))
         // dispatch(getFormGridData({ ...costReportFormData, EffectiveDate: value }))      //RE
 
@@ -143,6 +149,7 @@ function CostReportForm(props) {
     * @description Handle change for To date input field
     */
     const handleToDate = (value) => {
+
         setMaxDate(value)
         setToDate(value)
         dispatch(getFormGridData({ ...costReportFormData, toDate: value }))
@@ -489,6 +496,11 @@ function CostReportForm(props) {
     return (
         <>
             <div className="cost-ratio-report">
+                <TourWrapper
+                    buttonSpecificProp={{ id: "Add_Costing_form" }}
+                    stepsSpecificProp={{
+                        steps: Steps(t, { plantWiseGotGiven: props?.plantWiseGotGiven, gotGiven: props?.gotGiven, effectiveDate: props?.effectiveDate, dateHide: props?.dateHide, hideAddtable: props?.hideAddtable, showVendor: props?.showVendor, customerPoamSummary: customerPoamSummary, showCustomer: props?.showCustomer }).COST_REPORT_FORM
+                    }} />
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>
                     {false && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
 
@@ -724,8 +736,9 @@ function CostReportForm(props) {
                             />
                         </Col>}
                         {props.effectiveDate && <div className="form-group mb-0 col-md-3">
-                            <div className="inputbox date-section">
+                            <div id="EffectiveDate_Container" className="inputbox date-section">
                                 <DatePickerHookForm
+
                                     name={`EffectiveDate`}
                                     label={'Effective Date'}
                                     selected={new Date(effectiveDate)}
@@ -774,6 +787,7 @@ function CostReportForm(props) {
 
                         {!props.hideAddtable && <><Col md="3" className="mt-4 pt-1">
                             <button
+                                id="add-btn"
                                 type="submit"
                                 className={"user-btn  pull-left mt-1"}
 
@@ -781,6 +795,7 @@ function CostReportForm(props) {
                                 <div className={"plus"}></div>ADD
                             </button>
                             <button
+                                id="reset-btn"
                                 type="button"
                                 className={"reset-btn pull-left mt-1 ml5"}
                                 onClick={resetData}
@@ -789,7 +804,7 @@ function CostReportForm(props) {
                             </button>
                         </Col>
                             <Col md={customerPoamSummary ? 4 : 3} className="mt-4 pt-2 text-right">
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                <button type="button" className="user-btn reset-btn1" title="Reset Grid" onClick={() => resetState()}>
                                     <div className="refresh mr-0"></div>
                                 </button>
                             </Col>

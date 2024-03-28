@@ -83,6 +83,8 @@ class OperationsMaster extends Component {
                     <ScrollToTop pointProp="go-to-top" />
                     <Row>
                         <Col>
+                            {/* {Object.keys(permissions).length > 0 && ( */}
+
                             <div>
                                 <Nav tabs className="subtabs mt-0 p-relative">
                                     {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
@@ -110,11 +112,6 @@ class OperationsMaster extends Component {
                                             <OperationListing
                                                 formToggle={this.displayOperationForm}
                                                 getDetails={this.getDetails}
-                                                AddAccessibility={this.state.AddAccessibility}
-                                                EditAccessibility={this.state.EditAccessibility}
-                                                DeleteAccessibility={this.state.DeleteAccessibility}
-                                                BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                                DownloadAccessibility={this.state.DownloadAccessibility}
                                                 isMasterSummaryDrawer={false}
                                                 selectionForListingMasterAPI='Master'
                                                 stopAPICall={this.state.stopAPICall}
@@ -138,6 +135,7 @@ class OperationsMaster extends Component {
 
                                 </TabContent>
                             </div>
+                            {/* )} */}
                         </Col>
                     </Row>
                 </div>

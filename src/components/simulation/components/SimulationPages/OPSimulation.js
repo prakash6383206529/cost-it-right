@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
@@ -19,6 +19,7 @@ import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import { simulationContext } from '..';
 
 const gridOptions = {
 
@@ -26,6 +27,8 @@ const gridOptions = {
 
 
 function OPSImulation(props) {
+    const { showEditMaster, handleEditMasterPage } = useContext(simulationContext) || {};
+
     const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -48,7 +51,12 @@ function OPSImulation(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+    useEffect(() => {
 
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditMaster, showverifyPage)
+        }
+    }, [showverifyPage])
     useEffect(() => {
         list && list.map((item) => {
             item.NewOverheadApplicabilityType = list[0].OverheadApplicabilityType
@@ -1022,7 +1030,7 @@ function OPSImulation(props) {
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn verifySimulation" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}

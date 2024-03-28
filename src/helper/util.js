@@ -824,6 +824,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.lineNumber = dataFromAPI?.LineNumber ?? '-'
   obj.partType = dataFromAPI?.CostingPartDetails?.Type
   obj.partTypeId = dataFromAPI?.CostingPartDetails?.PartTypeId
+  obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
   temp.push(obj)
   return temp
 }

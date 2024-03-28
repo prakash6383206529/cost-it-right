@@ -229,7 +229,7 @@ export function ProcessListingSimulation(props) {
                                 </div>
                             </div>
                         }
-                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                        <button type="button" className="user-btn Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
                         </button>
                     </Col>

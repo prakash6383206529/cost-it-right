@@ -1,4 +1,4 @@
-import React, { useState, useRef, Fragment } from 'react';
+import React, { useState, useRef, Fragment, useContext } from 'react';
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,6 +39,7 @@ import { hideColumnFromExcel, hideMultipleColumnFromExcel } from '../../common/C
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
+import { simulationContext } from '.';
 
 const gridOptions = {};
 
@@ -111,6 +112,7 @@ function CostingSimulation(props) {
     const [disableSendForApproval, setDisableSendForApproval] = useState(false);
     const [message, setMessage] = useState('');
     const [plantId, setPlantId] = useState(null)
+    const { showEditMaster, showverifyPage, costingDrawerPage, handleEditMasterPage, showTour } = useContext(simulationContext) || {};
 
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
 
@@ -181,7 +183,7 @@ function CostingSimulation(props) {
                     "RequestFor": "SIMULATION",
                     "TechnologyId": props.technologyId,
                     "LoggedInUserId": loggedInUserId(),
-                    "ReleaseStrategyApprovalDetails": data
+                    "ReleaseStrategyApprovalDetails": _.uniqBy(data, 'SimulationId')
                 }
                 dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
                     setReleaseStrategyDetails(res?.data?.Data)
@@ -274,7 +276,13 @@ function CostingSimulation(props) {
             // }))
         }
     }, [SimulationTechnologyIdState, amendmentDetails.SimulationHeadId, plantId])
+    useEffect(() => {
 
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditMaster, showverifyPage, props.costingPage)
+
+        }
+    }, [handleEditMasterPage])
     useEffect(() => {
         // TO CHECK IF ANY OF THE RECORD HAS ASSEMBLY ROW
         let count = 0
@@ -531,8 +539,9 @@ function CostingSimulation(props) {
                     if (isMasterAssociatedWithCosting) {
                         dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
                             setMasterLoader(false)
+                            setCommonStateForList(res)
                             if (res?.data?.Result) {
-                                setPlantId(res?.data?.Data.BreakUpBoughtOutPartCostings[0].PlantId)
+                                setPlantId(res?.data?.Data?.SimulatedCostingList[0]?.PlantId)
                             }
                         }))
                     } else {
@@ -1490,7 +1499,7 @@ function CostingSimulation(props) {
                 "RequestFor": "SIMULATION",
                 "TechnologyId": SimulationTechnologyIdState,
                 "LoggedInUserId": loggedInUserId(),
-                "ReleaseStrategyApprovalDetails": dataList
+                "ReleaseStrategyApprovalDetails": _.uniqBy(dataList, 'SimulationId')
             }
             dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
                 setReleaseStrategyDetails(res?.data?.Data)
@@ -1503,7 +1512,7 @@ function CostingSimulation(props) {
                     Toaster.warning('This is final level user')
                     return false
                 } else {
-                    Toaster.warning('This user is not in approval cycle')
+                    Toaster.warning(res?.data?.Message ? res?.data?.Message : 'This user is not in approval cycle')
                     return false
                 }
             }))
@@ -1817,7 +1826,7 @@ function CostingSimulation(props) {
                                     </Col >
                                 </Row >
                             </div >
-                            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
+                            <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer ${showTour ? '' : 'sticky-btn-footer'}`}>
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                                     {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={message} />}
                                     {isPFSOrBudgetingDetailsExistWarning && <WarningMessage message={warningMessage} />}

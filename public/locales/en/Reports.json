@@ -1,0 +1,64 @@
+{
+    "costRatio": {
+        "FromDate": "Choose the start date for your report.",
+        "ToDate": "Choose the end date for your report.",
+        "Technology": "Choose the technology for your report.",
+        "PartType": "Choose the specific part type.",
+        "PartNo": "Choose the part number for your report.",
+        "RevisionNumber": "Indicate the revision number.",
+        "Vendor": "Choose the vendor code for your report.",
+        "productCategory_container": "Select the Product Category from the dropdown.",
+        "Customer": "Choose the customer code for your report.",
+        "PlantCode": "Choose the plant code for your report.",
+        "Plant": "Choose the plant for your report.",
+        "AddButton": "Add the selected criteria to your report.",
+        "ResetButton": "Reset all criteria to default values.",
+        "floatingFilterInput": "Use this input to search specific column-wise data.",
+        "floatingFilterButton": "Apply filters to refine data based on different conditions.",
+        "ResetButton1": "Refresh the grid to update filtered data.",
+        "EffectiveDate_Container": "Select Effective Date from the calendar."
+    },
+    "masterBenchmark": {
+        "master": "Select a master from here.",
+        "globalSearch": "Search for specific data from here.",
+        "filterData": "After entering the specific data, click here to filter it out.",
+        "cost-movement": "Check the movement in the cost from here.",
+        "view": "View detailed master from here.",
+        "edit": "Click here to edit the master.",
+        "delete": "If the master is not associated anywhere, you can delete it.",
+        "status": "Activate or deactivate from here.",
+        "AddButton": "Add the selected inputs to your report.",
+        "ResetButton": "Reset all to default values.",
+        "floatingFilterInput": "Use this input to search specific column-wise data.",
+        "floatingFilterButton": "Apply filters to refine data based on different conditions."
+    },
+    "supplierContribution": {
+        "FromDate": "Choose the start date for your report.",
+        "ToDate": "Choose the end date for your report.",
+        "PlantCode": "Choose the plant code from here.",
+        "runReport": "Click here to run your report.",
+        "reset": "Click here to reset your report."
+    },
+    "gotGivenReport": {
+        "technology": "Select the technology from here.",
+        "PartNo": "Select the part number.",
+        "Vendor": "Select the vendor code.",
+        "customer": "Select the customer code.",
+        "product": "Select the product code.",
+        "plant": "Select the plant code.",
+        "reset": "Click here to reset your report."
+    },
+    "costMovement": {
+        "FromDate": "Choose the start date.",
+        "ToDate": "Choose the end date.",
+        "Vendor": "Select the vendor code from here.",
+        "master": "Select a master from here.",
+        "costingHeadType": "Select the costing head type.",
+        "PlantCode": "Choose the plant code from here."
+    },
+    "assyReport": {
+        "modelNo": "Select the model number from here.",
+        "partNo": "Select the part number from here.",
+        "viewReport": "Click here to view the report."
+    }
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { CBCTypeId, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
@@ -23,6 +23,8 @@ import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
 import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { simulationContext } from '..';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -32,6 +34,8 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
+    const { showEditMaster, handleEditMasterPage, showCompressedColumns, render } = useContext(simulationContext) || {};
+
     const { list, isbulkUpload, rowCount, isImpactedMaster, lastRevision, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -59,7 +63,21 @@ function OperationSTSimulation(props) {
     const dispatch = useDispatch()
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const columnWidths = {
+        CostingHead: showCompressedColumns ? 50 : 190,
+        OperationName: showCompressedColumns ? 100 : 190,
+        OperationCode: showCompressedColumns ? 100 : 190,
+        Technology: showCompressedColumns ? 100 : 190,
+        VendorCode: showCompressedColumns ? 100 : 190,
+        VendorName: showCompressedColumns ? 100 : 190,
+        PlantCode: showCompressedColumns ? 100 : 190,
+        CustomerName: showCompressedColumns ? 100 : 140,
+        Rate: showCompressedColumns ? 120 : 120,
+        NewRate: showCompressedColumns ? 120 : 120,
+        EffectiveDate: showCompressedColumns ? 90 : 190,
+        CostingId: showCompressedColumns ? 90 : 160,
 
+    };
     const cancelVerifyPage = () => {
         setShowVerifyPage(false)
     }
@@ -83,7 +101,12 @@ function OperationSTSimulation(props) {
             setMaxDate(maxDate?.EffectiveDate)
         }
     }, [list])
+    useEffect(() => {
 
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditMaster, showverifyPage)
+        }
+    }, [showverifyPage])
 
     const newRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -104,7 +127,7 @@ function OperationSTSimulation(props) {
                 {
                     isImpactedMaster ?
                         valueShow ://NewNetOperationCost
-                        <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.Rate)}>{cell && value ? Number(cell) : Number(row.Rate)} </span>
+                        <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.Rate)}>{cell && value ? Number(cell) : Number(row.Rate)} </span>
                 }
 
             </>
@@ -184,7 +207,7 @@ function OperationSTSimulation(props) {
     const revisedBasicRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>}</span>
+                <span className='ag-header-cell-text basicRate_revised'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>}</span>
             </div>
         );
     };
@@ -398,7 +421,7 @@ function OperationSTSimulation(props) {
                                         <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                             <div className='d-flex align-items-center'>
                                                 <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
+                                                <button type="button" className="user-btn float-right mr-2 Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
                                                 <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
@@ -459,53 +482,56 @@ function OperationSTSimulation(props) {
                                                         <p title={list[0].VendorName} className='mr-2'>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
 
                                                     </div>}
-                                                    <button type="button" className={"apply"} id="simulation-back" onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
+                                                    <button type="button" className={"apply back_simulationPage"} id="simulation-back" onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
                                                 </div>}
                                             </div>
                                         </div>
                                         <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                            {list && <AgGridReact
-                                                ref={gridRef}
-                                                floatingFilter={true}
-                                                style={{ height: '100%', width: '100%' }}
-                                                defaultColDef={defaultColDef}
-                                                domLayout='autoHeight'
-                                                // columnDefs={c}
-                                                rowData={list}
-                                                pagination={true}
-                                                paginationPageSize={defaultPageSize}
-                                                onGridReady={onGridReady}
-                                                gridOptions={gridOptions}
-                                                // loadingOverlayComponent={'customLoadingOverlay'}
-                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                noRowsOverlayComponentParams={{
-                                                    title: EMPTY_DATA,
-                                                }}
-                                                frameworkComponents={frameworkComponents}
-                                                stopEditingWhenCellsLoseFocus={true}
-                                                suppressColumnVirtualisation={true}
-                                                rowSelection={'multiple'}
-                                                onFilterModified={onFloatingFilterChanged}
-                                                enableBrowserTooltips={true}
-                                            // frameworkComponents={frameworkComponents}
-                                            >
-                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190} cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
-                                                <AgGridColumn field="OperationName" tooltipField='OperationName' editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
-                                                <AgGridColumn field="OperationCode" tooltipField='OperationCode' editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
-                                                {!isImpactedMaster && <><AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" minWidth={190}></AgGridColumn></>}
-                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn></>}
-                                                {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} tooltipField={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn></>}
-                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
-                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
-                                                    <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
-                                                </AgGridColumn>
-                                                {props.children}
-                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                                <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
+                                            {list &&
+                                                (render ? <LoaderCustom customClass="loader-center" /> : (<AgGridReact
 
-                                            </AgGridReact>}
+                                                    ref={gridRef}
+                                                    floatingFilter={true}
+                                                    style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+                                                    domLayout='autoHeight'
+                                                    // columnDefs={c}
+                                                    rowData={list}
+                                                    pagination={true}
+                                                    paginationPageSize={defaultPageSize}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    // loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: EMPTY_DATA,
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                    stopEditingWhenCellsLoseFocus={true}
+                                                    suppressColumnVirtualisation={true}
+                                                    rowSelection={'multiple'}
+                                                    onFilterModified={onFloatingFilterChanged}
+                                                    enableBrowserTooltips={true}
+                                                // frameworkComponents={frameworkComponents}
+                                                >
+                                                    {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' width={columnWidths.CostingHead} cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
+                                                    <AgGridColumn field="OperationName" tooltipField='OperationName' editable='false' headerName="Operation Name" width={columnWidths.OperationName}></AgGridColumn>
+                                                    <AgGridColumn field="OperationCode" tooltipField='OperationCode' editable='false' headerName="Operation Code" width={columnWidths.OperationCode}></AgGridColumn>
+                                                    {!isImpactedMaster && <><AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" width={columnWidths.Technology}></AgGridColumn></>}
+                                                    {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName="Vendor (Code)" width={columnWidths.VendorCode} cellRenderer='vendorFormatter'></AgGridColumn></>}
+                                                    {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} tooltipField={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" width={columnWidths.PlantCode} cellRenderer='plantFormatter'></AgGridColumn></>}
+                                                    {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
+                                                    <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
+                                                        <AgGridColumn width={columnWidths.Rate} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={columnWidths.NewRate} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                    </AgGridColumn>
+                                                    {props.children}
+                                                    <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' width={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                    <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
+
+
+                                                </AgGridReact>))}
                                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
                                     </div>
@@ -516,7 +542,7 @@ function OperationSTSimulation(props) {
                                 !isImpactedMaster &&
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                        <div className="inputbox date-section mr-3 verfiy-page">
+                                        <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                             <DatePicker
                                                 name="EffectiveDate"
                                                 id='EffectiveDate'
@@ -535,7 +561,7 @@ function OperationSTSimulation(props) {
                                             />
                                             {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                         </div>
-                                        <button onClick={verifySimulation} type="button" id="verify-btn" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                        <button onClick={verifySimulation} type="button" id="verify-btn" className="user-btn mr5 save-btn verifySimulation" disabled={isDisable}>
                                             <div className={"Run-icon"}>
                                             </div>{" "}
                                             {"Verify"}
