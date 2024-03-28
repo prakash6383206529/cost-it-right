@@ -2389,7 +2389,7 @@ function UserRegistration(props) {
                       buttonSpecificProp={{ id: "Add_User_form" }}
                       stepsSpecificProp={{
                         steps: Steps(t, {
-                          costingField: acc1, simulationField: acc2, masterField: acc3, onBoardingField: acc4, RFQUser: props?.RFQUser
+                          costingField: acc1, simulationField: acc2, masterField: acc3, onBoardingField: acc4, RFQUser: props?.RFQUser, isShowPwdField: isShowPwdField, isEditFlag: isEditFlag
                         }).USER_MANAGEMENT
                       }} /></h2>
                   </div>

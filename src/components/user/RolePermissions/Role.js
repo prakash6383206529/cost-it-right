@@ -228,7 +228,7 @@ const Role = (props) => {
 									<TourWrapper
 										buttonSpecificProp={{ id: "Add_Role_form" }}
 										stepsSpecificProp={{
-											steps: Steps(t).ADD_ROLE
+											steps: Steps(t, { isEditFlag: isEditFlag }).ADD_ROLE
 										}} />
 								</h2>
 							</div>

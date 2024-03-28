@@ -1347,11 +1347,11 @@ function AddRfq(props) {
                             <div className="row">
                                 <div className="col-md-6">
                                     <h3>{isViewFlag ? "View" : props?.isEditFlag ? "Update" : "Add"} RFQ
-                                        <TourWrapper
+                                        {!isViewFlag && <TourWrapper
                                             buttonSpecificProp={{ id: "Add_RFQ_form" }}
                                             stepsSpecificProp={{
                                                 steps: Steps(t).RFQ_FORM
-                                            }} />
+                                            }} />}
                                     </h3>
                                 </div>
                             </div>

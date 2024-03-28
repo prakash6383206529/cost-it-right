@@ -20,29 +20,31 @@
     "AddUser_Company": "Enter the user's company name.",
     "AddUser_plant": "Select the plant code from here.",
     "AddUser_Checkbox": "Check the box to grant permission.",
-    "AddUser_Permissions_Costing": "Click here to add user-specific permissions for costing.",
+    "AddUser_Permissions_Costing": "Click here to add user-specific permissions for costing type approval.",
     "AddUser_Technology": "Select the user's preferred technology.",
     "AddUser_ApprovalType": "Select the approval type for the user.",
     "AddUser_Level": "Select the user's level.",
-    "AddUser_AddCosting": "Click here to add Costing",
-    "AddUser_Permissions_Simulation": "Click here to add user-specific permissions for simulation.",
+    "AddUser_Permissions_Simulation": "Click here to add user-specific permissions for simulation type approval.",
     "AddUser_Head": "Select the user's preferred heads.",
-    "AddUser_AddSimulation": "Click here to add Simulation",
-    "AddUser_Permissions_Master": "Click here to add user-specific permissions for master approval.",
-    "AddUser_Permissions_onBoarding": "Click here to add user-specific permissions for onboarding.",
+    "AddUser_Permissions_Master": "Click here to add user-specific permissions for master type approval.",
+    "AddUser_Permissions_onBoarding": "Click here to add user-specific permissions for onboarding type approval.",
     "AddUser_Master": "Select the master for user approval.",
-    "AddUser_AddMaster": "Click here to add Master",
-    "addUser_OnBoarding": "Click here to add Onboarding approval type.",
     "AddUser_Cancel": "Cancel the form and go back to the user listing page.",
     "AddUser_AddApprovalType": "Click on the 'Add' button to add a level of user for the",
-    "AddUser_Save": "Save the user and go back to the user listing page."
+    "user_changePassword": "Click here to change the password.",
+    "user_EditDetails": "Click here to edit the user details.",
+    "user_ViewCostingLevels": "Click here to view the highest approval level of costing for different technologies and approval types.",
+    "user_ViewSimulationLevels": "Click here to view the highest approval level of simulation for different approval types.",
+    "user_ViewMasterLevels": "Click here to view the highest approval level of master for different masters and approval types.",
+    "user_ViewOnBoardingLevels": "Click here to view the highest approval level of onboarding for different approval types."
   },
   "addCompany": {
     "AddCompany_Name": "Enter the company name.",
     "AddCompany_Code": "Enter the company code.",
     "AddCompany_PlantCode": "Click here to select plant code from the dropdown.",
-    "AddCompany_Cancel": "Click here to cancel and go back to the listing page.",
-    "AddCompany_Save": "Click here to save."
+    "AddCompany_Cancel": "Click here to cancel and go back to the company listing page.",
+    "AddCompany_Save": "Click here to save.",
+    "AddCompany_Update": "Click here to update."
   },
   "addRole": {
     "AddRole_Name": "Enter role name.",
@@ -57,23 +59,29 @@
     "RFQ": "Click on this RFQ to change or update permissions.",
     "NFR": "Click on this NFR to change or update permissions.",
     "audit": "Click on this audit to change or update permissions.",
-    "AddRole_Cancel": "Click here to cancel and go back to the listing page.",
-    "AddRole_Save": "Click here to save."
+    "AddRole_Cancel": "Click here to cancel and go back to the roles and permissions listing page.",
+    "AddRole_Save": "Click here to save.",
+    "AddRole_Update": "Click here to update."
   },
   "approvalForm": {
-    "AddApproval_CostingLevel": "Click here to select costing level.",
-    "AddApproval_SimulationLevel": "Click here to select simulation level.",
-    "AddApproval_MasterLevel": "Click here to select master level.",
-    "AddApproval_OnBoardingLevel": "Click here to select onboarding level.",
-    "AddApproval_ApprovalType_Required": "Click here to select approval type.",
-    "AddApproval_TechnologyHeads": "Click here to select technology/heads.",
-    "AddApproval_HighestApprovalLevel": "Click here to select highest approval level.",
-    "AddApproval_Cancel": "Click here to cancel  and go back to the listing page.",
-    "AddApproval_Save": "Click here to save."
+    "AddApproval_CostingLevel": "Click here to select the highest approval level of costing for different technologies and approval types.",
+    "AddApproval_SimulationLevel": "Click here to select the highest approval level of simulation for different technologies and approval types.",
+    "AddApproval_MasterLevel": "Click here to select the highest approval level of master for different technologies and approval types.",
+    "AddApproval_OnBoardingLevel": "Click here to select the highest approval level of onboarding for different technologies and approval types.",
+    "AddApproval_ApprovalType_Required": "Click here to select the approval type.",
+    "AddApproval_TechnologyHeads": "Click here to select the technology/heads.",
+    "AddApproval_HighestApprovalLevel": "Click here to select the highest approval level.",
+    "AddApproval_Cancel": "Click here to cancel and go back to the listing page.",
+    "AddApproval_Save": "Click here to save.",
+    "AddApproval_Update": "Click here to update."
   },
   "addRoleComponent": {
     "select_all": "Click the checkbox to select all permissions for all modules.",
     "specific_select": "Click the checkbox to select permissions for a specific role.",
     "action": "Toggle this switch to allow or disallow action permissions."
+  },
+  "saveUpdateButton": {
+    "Save_Button": "Click here to save and return to the listing page.",
+    "Update_Button": "Click here to update and return to the listing page."
   }
 }

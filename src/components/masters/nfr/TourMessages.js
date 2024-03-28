@@ -3,26 +3,17 @@ export function Steps(t, config) {
     let showNfrListing = true
     let showNfrPartListing = false
     let editNfr = false
+    const introMessage = config && config.isRowEdited === false ? t("nfr.reset_Estimation") : t("nfr.cancel_Estimation");
 
     if (config) {
         showNfrListing = config?.activeTab === '1' ? true : false
-
-
         showNfrPartListing = config?.showNfrPartListing ? true : false
-
-
         editNfr = config?.editNfr === true ? true : false
-
-
-
-
     }
     return {
 
         NFR_lISTING: [
             ...!editNfr ? [
-
-
                 {
                     element: "#filter-text-box",
                     intro: t("nfr.search"),
@@ -54,8 +45,6 @@ export function Steps(t, config) {
                     element: "#fetchNFR_btn",
                     intro: t("nfr.fetch"),
                 },
-
-
                 {
                     element: "#viewNfr_list",
                     intro: t("nfr.viewNPart"),
@@ -110,12 +99,30 @@ export function Steps(t, config) {
             ] : [],
             ...editNfr ? [
                 {
+                    element: "#back_addNfrPart",
+                    intro: t("nfr.back_nfrpart"),
+                },
+                {
                     element: "#GroupName_container",
                     intro: t("nfr.groupName"),
                 },
                 {
                     element: ".input-container #VendorName_container",
                     intro: t("nfr.vendor"),
+                },
+                ...config && config?.isRowEdited ? [
+
+                    {
+                        element: "#addNfr_update",
+                        intro: t("nfr.update_Estimation"),
+                    }] : [],
+                {
+                    element: "#addNfr_add",
+                    intro: t("nfr.add_Estimation"),
+                },
+                {
+                    element: "#addNfr_reset",
+                    intro: introMessage,
                 },
                 {
                     element: "#nfr_AddCosting",
@@ -148,15 +155,57 @@ export function Steps(t, config) {
 
             ] : [],
 
-
-
-
-
         ],
+        ADD_NFR: [
+            {
+                element: " #NFRVersion_container",
+                intro: t("addNfr.nfr_version"),
+            },
 
+            {
+                element: "#ProductCode_container",
+                intro: t("addNfr.product_code"),
+            },
 
+            {
+                element: ".input-container #Plant_container",
+                intro: t("addNfr.plant"),
 
+            },
+            {
+                element: "#HeaderMaterial_container",
+                intro: t("addNfr.header_material"),
+            },
+            {
+                element: ".input-container #PartType_container",
+                intro: t("addNfr.parttype"),
+            },
+            {
+                element: ".input-container #UOM_container",
+                intro: t("addNfr.uom"),
+            },
+            {
+                element: "#Quantity_container",
+                intro: t("addNfr.quantity"),
+            },
+            {
+                element: "#AddNFR_AddData",
+                intro: t("addNfr.add"),
+            },
+            {
+                element: "#AddNFR_ResetData",
+                intro: t("addNfr.reset"),
+            },
+            {
+                element: "#AddNFR_CancelData",
+                intro: t("addNfr.cancel"),
+            },
 
+            {
+                element: "#AddNFR_SubmitData",
+                intro: t("addNfr.submit"),
+            },
+        ]
     };
 
 }

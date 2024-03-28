@@ -1,6 +1,8 @@
 import { getConfigurationKey } from "../../helper";
 
 export function Steps(t, config) {
+    const introMessage = config && config.isEditFlag === true ? t("saveUpdateButton.Update_Button") : t("saveUpdateButton.Save_Button");
+
     const userManagementArray = [
         {
             element: "#FirstName_container",
@@ -45,14 +47,15 @@ export function Steps(t, config) {
             element: "#UserName_container",
             intro: t("userManagement.AddUser_UserName"),
         },
-        {
-            element: "#AddUser_Password",
-            intro: t("userManagement.AddUser_Password"),
-        },
-        {
-            element: "#AddUser_PasswordConfirm",
-            intro: t("userManagement.AddUser_ConfirmPassword"),
-        },
+        ...config && config?.isShowPwdField === true ? [
+            {
+                element: "#AddUser_Password",
+                intro: t("userManagement.AddUser_Password"),
+            },
+            {
+                element: "#AddUser_PasswordConfirm",
+                intro: t("userManagement.AddUser_ConfirmPassword"),
+            }] : [],
         {
             element: "#AddressLine1_container",
             intro: t("userManagement.AddUser_Address1"),
@@ -174,9 +177,40 @@ export function Steps(t, config) {
         },
         {
             element: "#AddUser_Save",
-            intro: t("userManagement.AddUser_Save"),
+            intro: introMessage,
         },
+
+
     ];
+    const userDetails = [
+        {
+            element: "#edit_userDetails",
+            intro: t("userManagement.user_EditDetails"),
+        },
+        {
+            element: "#changePassword",
+            intro: t("userManagement.user_changePassword"),
+        },
+        ...(config && config.RFQUser === false ? [{
+
+            element: "#costing_level",
+            intro: t("userManagement.user_ViewCostingLevels"),
+        },
+        {
+            element: "#simulation_level",
+            intro: t("userManagement.user_ViewSimulationLevels"),
+        },
+        {
+            element: "#master_level",
+            intro: t("userManagement.user_ViewMasterLevels"),
+        },
+
+        {
+            element: "#onboarding_level",
+            intro: t("userManagement.user_ViewOnBoardingLevels"),
+        }
+        ] : [])
+    ]
     const addCompany = [
         {
             element: "#Department_DepartmentName",
@@ -198,7 +232,7 @@ export function Steps(t, config) {
 
         {
             element: "#AddDepartment_Save",
-            intro: t("addCompany.AddCompany_Save"),
+            intro: introMessage,
         }
     ];
     const addRole = [
@@ -255,7 +289,7 @@ export function Steps(t, config) {
         },
         {
             element: "#AddRole_Save",
-            intro: t("addRole.AddRole_Save"),
+            intro: introMessage,
         }
     ];
     const AddlevelMapping = [
@@ -293,7 +327,7 @@ export function Steps(t, config) {
         },
         {
             element: "#AddApproval_Save",
-            intro: t("approvalForm.AddApproval_Save"),
+            intro: introMessage,
         },
     ];
     const HightestLevel_Approval = [
@@ -348,6 +382,7 @@ export function Steps(t, config) {
 
     return {
         USER_MANAGEMENT: userManagementArray,
+        USER_DETAILS: userDetails,
         ADD_COMPANY: addCompany,
         ADD_ROLE: addRole,
         ADD_LEVEL_MAPPING: AddlevelMapping,

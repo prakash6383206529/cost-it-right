@@ -636,7 +636,7 @@ class Level extends Component {
                             <TourWrapper
                               buttonSpecificProp={{ id: "Add_Hightest_Level_Form" }}
                               stepsSpecificProp={{
-                                steps: Steps(t).ADD_LEVEL_MAPPING
+                                steps: Steps(t, { isEditFlag: isEditFlag }).ADD_LEVEL_MAPPING
                               }} />
                           </h3>
                         </div>

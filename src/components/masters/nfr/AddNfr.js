@@ -867,10 +867,10 @@ function AddNfr(props) {
                         <TourWrapper
                             buttonSpecificProp={{ id: "Add_NFR_form", onClick: toggleExtraData }}
                             stepsSpecificProp={{
-                                steps: Steps(t, { showNfrPartListing, activeTab, editNfr }).NFR_lISTING
+                                steps: Steps(t, { showNfrPartListing, activeTab, editNfr, isRowEdited }).NFR_lISTING
                             }} />
                     </h1>
-                    <button type="button" className={"apply mt-1"} onClick={onBackButton}>
+                    <button type="button" id="back_addNfrPart" className={"apply mt-1"} onClick={onBackButton}>
                         <div className={'back-icon'}></div>Back
                     </button>
                 </div>
@@ -944,6 +944,7 @@ function AddNfr(props) {
 
                         {isRowEdited ?
                             <button
+                                id="addNfr_update"
                                 type="button"
                                 className={"user-btn  pull-left mt-1"}
                                 onClick={updateRow}
@@ -952,6 +953,7 @@ function AddNfr(props) {
                                 <div className={"plus"}></div> UPDATE
                             </button> :
                             <button
+                                id="addNfr_add"
                                 type="button"
                                 className={"user-btn  pull-left mt-1"}
                                 onClick={addRow}
@@ -961,6 +963,7 @@ function AddNfr(props) {
                                 {/* {isEditMode ? "UPDATE" : 'ADD'} */}
                             </button>}
                         <button
+                            id="addNfr_reset"
                             type="button"
                             className={"reset-btn pull-left mt-1 ml5"}
                             onClick={() => { resetData(false) }}

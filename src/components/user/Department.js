@@ -215,7 +215,7 @@ class Department extends Component {
 												<TourWrapper
 													buttonSpecificProp={{ id: "Add_Company_form" }}
 													stepsSpecificProp={{
-														steps: Steps(t).ADD_COMPANY
+														steps: Steps(t, { isEditFlag: isEditFlag }).ADD_COMPANY
 													}} />
 											</h3>
 
