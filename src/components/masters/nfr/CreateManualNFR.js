@@ -18,8 +18,12 @@ import { debounce } from 'lodash';
 import AddRMDetails from './AddRMDetails';
 import { createNFRBOMDetails } from './actions/nfr'
 import { number, checkWhiteSpaces, decimalNumberLimit6 } from '../../../helper'
+import { Steps } from './TourMessages';
+import TourWrapper from "../../common/Tour/TourWrapper"
+import { useTranslation } from 'react-i18next';
 
 function CreateManualNFR(props) {
+    const { t } = useTranslation("Nfr")
 
     const { handleSubmit, formState: { errors }, register, control, getValues, setValue } = useForm({
         mode: 'onChange',
@@ -480,6 +484,11 @@ function CreateManualNFR(props) {
                         <div className="col-md-6">
                             <h1>
                                 Add NFR
+                                <TourWrapper
+                                    buttonSpecificProp={{ id: "Add_NFR_form" }}
+                                    stepsSpecificProp={{
+                                        steps: Steps(t).ADD_NFR
+                                    }} />
                             </h1>
                         </div>
                     </div>
@@ -688,6 +697,7 @@ function CreateManualNFR(props) {
                                                                 <div className={"plus"}></div>ADD
                                                             </button>
                                                             <button
+                                                                id="AddNFR_ResetData"
                                                                 type="button"
                                                                 className={"mr15 ml-1 mt30 reset-btn"}
                                                                 onClick={() => resetData()}
@@ -766,6 +776,7 @@ function CreateManualNFR(props) {
                                         <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                             <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                                 <button
+                                                    id="AddNFR_CancelData"
                                                     type={'button'}
                                                     className="reset cancel-btn mr5"
                                                     onClick={cancel}
@@ -773,6 +784,7 @@ function CreateManualNFR(props) {
                                                     <div className={'cancel-icon'}></div> {'Cancel'}
                                                 </button>
                                                 <button
+                                                    id="AddNFR_SubmitData"
                                                     type={'submit'}
                                                     className="submit-button save-btn"
                                                 >

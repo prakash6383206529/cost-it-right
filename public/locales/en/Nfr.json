@@ -13,11 +13,16 @@
         "associatePartWithTechnology": "Click here to associate the part with technology.",
         "pushedNfrToSap": "Click here to push the cost to SAP.",
         "back": "Click here to go back to the NFR List.",
+        "back_nfrpart": "Click here to go back to the NFR Part List.",
         "add": "Click here to add a new NFR.",
         "viewOutSourcing": "View the Outsourcing list from here.",
         "groupName": "Enter your Group Name.",
         "vendor": "Select a Vendor from the dropdown.",
         "reset": "Click here to reset the form.",
+        "add_Estimation": "Click here to add New Estimation",
+        "update_Estimation": "Click here to update Estimation",
+        "reset_Estimation": "Click here to reset Details",
+        "cancel_Estimation": "Click here to cancel Update details",
         "cancel": "Click here to cancel and go back.",
         "save": "Click here to save the NFR.",
         "sendForApproval": "Click here to send the NFR for approval.",
@@ -31,5 +36,18 @@
         "nfr_RowEdit": "Click here to update the vendor.",
         "floatingFilterInput": "Here you can search for specific column-wise data.",
         "floatingFilterButton": "Here you can filter the data based on different conditions."
+    },
+    "addNfr": {
+        "nfr_version": "Specify the version of the NFR.",
+        "product_code": "Click here to select the product code.",
+        "plant": "Click here to select the plant code.",
+        "header_material": "Specify the header material for the NFR.",
+        "uom": "Click here to select the unit of measurement(UOM).",
+        "quantity": "Enter the quantity associated with the NFR.",
+        "parttype": "Click here to select the part type.",
+        "reset": "Click here to reset the NFR.",
+        "add": "Click here to add the NFR part.",
+        "cancel": "Click here to cancel and go back to the NFR.",
+        "submit": "Click here to submit the NFR."
     }
 }
