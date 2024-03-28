@@ -232,7 +232,7 @@ function SimulationApproveReject(props) {
             TechnologyId: item,
             ReasonId: 0,
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
-            plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : ''
+            plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : EMPTY_GUID
           }
           let approverIdListTemp = []
           dispatch(getAllSimulationApprovalList(obj, (res) => {
@@ -313,9 +313,9 @@ function SimulationApproveReject(props) {
           DepartmentId: departId,
           //NEED TO MAKE THIS 2   
           TechnologyId: technologyIdTemp,
-          ReasonId: 0,
-          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(appTypeId),
-          plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : ''
+          ReasonId: selectedRowData && selectedRowData[0].ReasonId ? selectedRowData[0].ReasonId : 0,
+          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData && selectedRowData[0]?.ApprovalTypeId ? selectedRowData[0]?.ApprovalTypeId : appTypeId),
+          plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : EMPTY_GUID
         }
         dispatch(getAllSimulationApprovalList(obj, (res) => {
           const Data = res?.data?.DataList[1] ? res?.data?.DataList[1] : []
@@ -535,7 +535,8 @@ function SimulationApproveReject(props) {
         UserId: loggedInUserId(),
         TechnologyId: technologyId,
         Mode: 'simulation',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId)
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId),
+        plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : EMPTY_GUID
       }
       dispatch(checkFinalUser(requestObj, res => {
         if (res && res.data && res.data.Result) {
