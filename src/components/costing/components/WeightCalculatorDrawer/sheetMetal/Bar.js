@@ -12,7 +12,7 @@ import {
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
-import { G, KG, MG, STD, } from '../../../../../config/constants'
+import { DISPLAY_G, DISPLAY_KG, DISPLAY_MG, G, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
@@ -33,17 +33,17 @@ function Pipe(props) {
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
-            case G:
+            case DISPLAY_G:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet)
                 }, 200);
                 break;
-            case KG:
+            case DISPLAY_KG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet * 1000)
                 }, 200);
                 break;
-            case MG:
+            case DISPLAY_MG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet / 1000)
                 }, 200);
@@ -73,8 +73,6 @@ function Pipe(props) {
         cuttingAllowance: WeightCalculatorRequest && WeightCalculatorRequest?.CuttingAllowance !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.CuttingAllowance, localStorage.NoOfDecimalForInputOutput) : '',
         partLengthWithAllowance: WeightCalculatorRequest && WeightCalculatorRequest?.PartLengthWithAllowance !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.PartLengthWithAllowance, localStorage.NoOfDecimalForInputOutput) : '',
         endPieceAllowance: WeightCalculatorRequest && WeightCalculatorRequest?.EndPieceAllowance !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.EndPieceAllowance, localStorage.NoOfDecimalForInputOutput) : '',
-        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, localStorage.NoOfDecimalForInputOutput) : '',
-        scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
 
     }
 
@@ -107,6 +105,8 @@ function Pipe(props) {
     const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
     const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
     const [isDisable, setIsDisable] = useState(false)
+    const [scrapWeight, setScrapWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== null ? WeightCalculatorRequest.ScrapWeight : '')
+
     let fields = IsolateReRender(control)
     let fieldValues = {
         OuterDiameter: fields && fields[0],
@@ -120,16 +120,20 @@ function Pipe(props) {
 
     const values = useWatch({
         control,
-        name: ['scrapRecoveryPercent', 'grossWeight', 'FinishWeightOfSheet', 'cuttingAllowance', 'PartLength'],
+        name: ['scrapRecoveryPercent', 'cuttingAllowance', 'PartLength'],
     })
 
     useEffect(() => {
         if (!CostingViewMode) {
-            scrapWeightCalculation()
             calculateLengthOfPart()
         }
     }, [values])
 
+    useEffect(() => {
+        if (!CostingViewMode) {
+            scrapWeightCalculation()
+        }
+    }, [values, GrossWeight, FinishWeightOfSheet])
     useEffect(() => {
         //UNIT TYPE ID OF DIMENSIONS
         dispatch(getUOMSelectList(res => {
@@ -151,6 +155,10 @@ function Pipe(props) {
             }, 100);
 
         }))
+        if (WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0) {
+            setValue('scrapWeight', WeightCalculatorRequest && WeightCalculatorRequest?.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, localStorage.NoOfDecimalForInputOutput) : '')
+            setValue('scrapRecoveryPercent', WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '')
+        }
     }, [])
 
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
@@ -191,17 +199,17 @@ function Pipe(props) {
             return false
         }
         switch (UOMDimension.label) {
-            case G:
+            case DISPLAY_G:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet)
                 }, 200);
                 break;
-            case KG:
+            case DISPLAY_KG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet * 1000)
                 }, 200);
                 break;
-            case MG:
+            case DISPLAY_MG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet / 1000)
                 }, 200);
@@ -373,22 +381,21 @@ function Pipe(props) {
         let grossWeight
         const updatedValue = dataToSend
         if (rmRowData.RawMaterialCategory === STD) {
-            WeightofPart = setValueAccToUOM(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
+            WeightofSheet = getValues('WeightofSheet')
             setGrossWeights(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
             updatedValue.GrossWeight = WeightofPart
             updatedValue.newGrossWeight = WeightofPart
             setDataToSend(updatedValue)
         } else {
-            // WeightofPart = setValueAccToUOM(dataToSend.WeightofPart, UOMDimension.label)
-            WeightofSheet = setValueAccToUOM(dataToSend.WeightofSheet, UOMDimension.label)
+            WeightofSheet = getValues('WeightofSheet')
             NumberOfPartsPerSheet = Number(getValues('NumberOfPartsPerSheet'))
             grossWeight = checkForNull(WeightofSheet / NumberOfPartsPerSheet)
             setGrossWeights(grossWeight)
-            updatedValue.GrossWeight = grossWeight
-            updatedValue.newGrossWeight = grossWeight
+            updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
+            updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
             setDataToSend(updatedValue)
         }
-        setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+        setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
     }
 
     /**
@@ -512,11 +519,11 @@ function Pipe(props) {
         setValue('UOMDimension', { label: value.label, value: value.value })
         setUOMDimension(value)
         let grossWeight = GrossWeight
+        let ScrapWeight = scrapWeight
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
-        setTimeout(() => {
-            setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
-            setValue('FinishWeightOfSheet', checkForDecimalAndNull(setValueAccToUOM(FinishWeightOfSheet, value.label), localStorage.NoOfDecimalForInputOutput))
-        }, 500);
+        setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
+        setValue('FinishWeightOfSheet', checkForDecimalAndNull(setValueAccToUOM(FinishWeightOfSheet, value.label), localStorage.NoOfDecimalForInputOutput))
+        setValue('scrapWeight', checkForDecimalAndNull(setValueAccToUOM(ScrapWeight, value.label), localStorage.NoOfDecimalForInputOutput))
     }
 
     const UnitFormat = () => {
@@ -530,10 +537,11 @@ function Pipe(props) {
     };
     const scrapWeightCalculation = () => {
         const scrapRecoveryPercent = Number((getValues('scrapRecoveryPercent')))
-        const grossWeight = getValues('GrossWeight')
-        const finishWeight = getValues('FinishWeightOfSheet')
+        const grossWeight = Number(GrossWeight)
+        const finishWeight = Number(FinishWeightOfSheet)
         const scrapWeight = calculateScrapWeight(grossWeight, finishWeight, scrapRecoveryPercent)
-        setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
+        setScrapWeight(checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
+        setValue('scrapWeight', checkForDecimalAndNull((setValueAccToUOM(scrapWeight, UOMDimension.label)), localStorage.NoOfDecimalForInputOutput))
     }
     const calculateLengthOfPart = () => {
         const LengthOfPart = Number(getValues('PartLength'))
@@ -940,6 +948,7 @@ function Pipe(props) {
                                         disabled={true}
                                     />
                                 </Col >
+
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Finish Weight(${UOMDimension.label})`}
