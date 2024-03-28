@@ -758,6 +758,7 @@ function ApprovalSummary(props) {
                   isVerifyImpactDrawer={false}
                   fgWiseAccDisable={fgWiseAccDisable}
                   tooltipEffectiveDate={partDetail.EffectiveDate ? DayTime(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
+                  isCosting={true}
                 />
               </Col>
             </Row>}
