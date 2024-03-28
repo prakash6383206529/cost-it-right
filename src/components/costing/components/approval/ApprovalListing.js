@@ -8,7 +8,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import CostingApproveReject from './CostingApproveReject'
-import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter } from '../../../../helper'
+import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter, setLoremIpsum } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
@@ -32,6 +32,9 @@ import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import ScrollToTop from '../../../common/ScrollToTop'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
+import TourWrapper from '../../../common/Tour/TourWrapper'
+import { Steps } from '../TourMessages'
+import { useTranslation } from 'react-i18next';
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -42,7 +45,7 @@ function ApprovalListing(props) {
   const [loader, setloader] = useState(false);
   const [approvalData, setApprovalData] = useState('')
   const [selectedRowData, setSelectedRowData] = useState([]);
-
+  const { t } = useTranslation("Costing")
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [openDraftDrawer, setOpenDraftDrawer] = useState(false)
   const [reasonId, setReasonId] = useState('')
@@ -57,7 +60,8 @@ function ApprovalListing(props) {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const approvalList = useSelector(state => state.approval.approvalList)
   const approvalListDraft = useSelector(state => state.approval.approvalListDraft)
-
+  const [showExtraData, setShowExtraData] = useState(false)
+  const [render, setRender] = useState(false)
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [disableFilter, setDisableFilter] = useState(true)
   const [warningMessage, setWarningMessage] = useState(false)
@@ -172,7 +176,16 @@ function ApprovalListing(props) {
     browserDatePicker: true,
     minValidYear: 2000,
   };
+  //**  HANDLE TOGGLE EXTRA DATA */
+  const toggleExtraData = (showTour) => {
+    setRender(true)
+    setTimeout(() => {
+      setShowExtraData(showTour)
+      setRender(false)
+    }, 100);
 
+
+  }
   var filterParamsThird = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -972,7 +985,17 @@ function ApprovalListing(props) {
   const closePopUp = () => {
     setShowPopup(false)
   }
-
+  const renderRowData = () => {
+    if (isDashboard) {
+      return approvalList; // Return simulationApprovalList if isDashboard is true
+    } else {
+      if (showExtraData && approvalListDraft && approvalListDraft.length > 0) {
+        return [...setLoremIpsum(approvalListDraft[0]), ...approvalListDraft]; // Apply the second operation if showExtraData is true
+      } else {
+        return approvalListDraft; // Return simulationApprovalListDraft if showExtraData is false
+      }
+    }
+  }
 
   const frameworkComponents = {
     renderPlant: renderPlant,
@@ -1052,16 +1075,24 @@ function ApprovalListing(props) {
                     <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                       <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                        {!isDashboard && <TourWrapper
+                          buttonSpecificProp={{
+                            id: "costing_approval_listing_Tour", onClick: toggleExtraData
+                          }}
+
+                          stepsSpecificProp={{
+                            steps: Steps(t).COSTING_APPROVAL
+                          }} />}
                       </div>
                       <div className="ag-theme-material">
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
-                        <AgGridReact
+                        {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
                           floatingFilter={true}
                           style={{ height: '100%', width: '100%' }}
                           defaultColDef={defaultColDef}
                           domLayout='autoHeight'
                           // columnDefs={c}
-                          rowData={isDashboard ? approvalList : approvalListDraft}
+                          rowData={renderRowData()}
                           pagination={true}
                           paginationPageSize={globalTake}
                           onGridReady={onGridReady}
@@ -1105,7 +1136,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="RequestedBy" headerName="Last Approved/Rejected By" cellRenderer={"lastApprovalFormatter"}></AgGridColumn>
                           <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On" filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
                           {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
-                        </AgGridReact>
+                        </AgGridReact>}
 
                         <div className='button-wrapper'>
                           {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}

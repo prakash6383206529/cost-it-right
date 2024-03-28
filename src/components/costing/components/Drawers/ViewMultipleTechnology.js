@@ -161,6 +161,9 @@ function ViewMultipleTechnology(props) {
                 tabAssemblyIndividualPartDetail={costingDetailId}
                 costingSummary={true}
                 costingTypeId={costingTypeId}
+                index={props?.index}
+                simulationMode={props?.simulationMode}
+                SimulationId={props?.SimulationId}
             />}
 
         </Fragment>
