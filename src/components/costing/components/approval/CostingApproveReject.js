@@ -75,7 +75,7 @@ function CostingApproveReject(props) {
             approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId, dataInFieldTemp)
           } else {
             setDisableReleaseStrategy(false)
-            approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId), dataInFieldTemp)
+            approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.approvalData[0].ApprovalTypeId ?? props?.costingTypeId), dataInFieldTemp)
             // MINDA
             // approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, props?.costingTypeId, dataInFieldTemp)
           }

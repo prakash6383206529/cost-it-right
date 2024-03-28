@@ -171,30 +171,32 @@ const SendForApproval = (props) => {
         ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
         plantId: dataSelected[0]?.plantId
       }
-      dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
-        let tempDropdownList = []
-        if (res.data.DataList.length === 1) {
-          return false
-        }
-        res.data.DataList && res.data.DataList.map((item) => {
-          if (item.Value === '0') return false;
-          if (item.Value === EMPTY_GUID) return false;
-          tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
-          approverIdListTemp.push(item.Value)
-          return null
-        })
-        const Data = res.data.DataList[1]
-        setApprover(Data.Text)
-        setSelectedApprover(Data.Value)
-        setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-        if (tempDropdownList?.length !== 0) {
-          setValue('approver', { label: Data.Text, value: Data.Value })
-        } else {
-          setShowValidation(true)
-        }
-        setApprovalDropDown(tempDropdownList)
-        setApproverIdList(approverIdListTemp)
-      }))
+      if (!initialConfiguration.IsReleaseStrategyConfigured) {
+        dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+          let tempDropdownList = []
+          if (res.data.DataList.length === 1) {
+            return false
+          }
+          res.data.DataList && res.data.DataList.map((item) => {
+            if (item.Value === '0') return false;
+            if (item.Value === EMPTY_GUID) return false;
+            tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+            approverIdListTemp.push(item.Value)
+            return null
+          })
+          const Data = res.data.DataList[1]
+          setApprover(Data.Text)
+          setSelectedApprover(Data.Value)
+          setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+          if (tempDropdownList?.length !== 0) {
+            setValue('approver', { label: Data.Text, value: Data.Value })
+          } else {
+            setShowValidation(true)
+          }
+          setApprovalDropDown(tempDropdownList)
+          setApproverIdList(approverIdListTemp)
+        }))
+      }
     }))
   }, [])
 
@@ -358,8 +360,10 @@ const SendForApproval = (props) => {
         DepartmentId: newValue.value,
         TechnologyId: props.technologyId,
         ApprovalTypeId: approvalType,
+        plantId: viewApprovalData[0]?.plantId ?? EMPTY_GUID
       }
       let Data = []
+      let approverIdListTemp = []
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         Data = res.data.DataList[1] ? res.data.DataList[1] : []
         setSelectedApprover(Data?.Value)
@@ -368,6 +372,7 @@ const SendForApproval = (props) => {
           if (item.Value === '0') return false;
           if (item.Value === EMPTY_GUID) return false;
           tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+          approverIdListTemp.push(item.Value)
           return null
         })
         if (tempDropdownList?.length === 0) {
@@ -377,6 +382,7 @@ const SendForApproval = (props) => {
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
         }
         setApprovalDropDown(tempDropdownList)
+        setApproverIdList(approverIdListTemp)
       }))
       setSelectedDepartment(newValue)
     } else {
@@ -1150,7 +1156,6 @@ const SendForApproval = (props) => {
                           errors={errors.dept}
                         />
                       </Col >
-                      {console.log('approvalDropDown: ', approvalDropDown)}
                       <Col md="6">
                         {initialConfiguration.IsMultipleUserAllowForApproval ? <>
                           <AllApprovalField
