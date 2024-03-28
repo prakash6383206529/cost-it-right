@@ -624,7 +624,7 @@ function LoginAudit(props) {
                                                     isClearable
                                                     maxDate={toDate}
                                                     dateFormat="dd/MM/yyyy"
-                                                    placeholderText="From date"
+                                                    placeholderText="select date"
                                                     className="form-control"
                                                     autoComplete="off"
                                                 />
@@ -643,7 +643,7 @@ function LoginAudit(props) {
                                                     isClearable
                                                     minDate={fromDate}
                                                     dateFormat="dd/MM/yyyy"
-                                                    placeholderText="To date"
+                                                    placeholderText="select date"
                                                     className="form-control"
                                                     autoComplete="off"
                                                     disabled={!fromDate} // Disable if fromDate is not selected
