@@ -1355,8 +1355,6 @@ function AddMoreOperation(props) {
 
                                         </Col>
                                             <Col md="3">
-                                                <TooltipCustom id={"electricityCost"} width={"230px"} disabledIcon={true} tooltipText={`Electricity Cost = Electricity Rate * Consumption`} />
-
                                                 <NumberFieldHookForm
                                                     label={`Electricity Cost`}
                                                     name={'electricityCost'}
@@ -1459,7 +1457,7 @@ function AddMoreOperation(props) {
                                             <Col md="3">
                                                 <TooltipCustom id={"electricityCostWelding"} width={"230px"} disabledIcon={true} tooltipText={`Electricity Cost = Electricity Rate * Consumption`} />
                                                 <NumberFieldHookForm
-                                                    label={`Electricity Cost`}
+                                                    label={`Electricity Cost23`}
                                                     name={'electricityCostWelding'}
                                                     Controller={Controller}
                                                     id={"electricityCostWelding"}
