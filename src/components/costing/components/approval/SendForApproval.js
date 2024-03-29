@@ -124,7 +124,7 @@ const SendForApproval = (props) => {
         TechnologyId: technologyId,
         ReasonId: 0, // key only for minda
         ApprovalTypeId: ApprovalTypeId,
-        plantId: selectedRows[0]?.PlantId
+        plantId: viewApprovalData[0]?.destinationPlantId ?? EMPTY_GUID
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
@@ -169,7 +169,7 @@ const SendForApproval = (props) => {
         TechnologyId: props.technologyId,
         ReasonId: 0, // key only for minda
         ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
-        plantId: dataSelected[0]?.plantId
+        plantId: viewApprovalData[0]?.plantId ?? EMPTY_GUID
       }
       if (!initialConfiguration.IsReleaseStrategyConfigured) {
         dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {

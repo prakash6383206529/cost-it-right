@@ -217,8 +217,8 @@ function ApprovalSummary(props) {
           PartNumber: PartNumber,
           VendorCode: Data.VendorCode,
           VendorName: Data.VendorName,
-          Plant: Data.TypeOfCosting === VBC ? Data.DestinationPlantCode : Data.PlantCode,
-          PlantId: Data.TypeOfCosting === VBC ? Data.DestinationPlantId : Data.PlantId,
+          Plant: Data.DestinationPlantCode ?? '',
+          PlantId: Data.DestinationPlantId ?? EMPTY_GUID,
           DepartmentCode: DepartmentCode,
           NewPOPrice: Data.NewPOPrice,
           EffectiveDate: ApprovalDetails[0].EffectiveDate,
@@ -251,7 +251,7 @@ function ApprovalSummary(props) {
                 TechnologyId: technologyId,
                 Mode: 'costing',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
-                plantId: Data.TypeOfCosting === VBC ? Data.DestinationPlantId : Data.PlantId
+                plantId: Data.DestinationPlantId ?? EMPTY_GUID
               }
               dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
