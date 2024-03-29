@@ -603,7 +603,7 @@ class AddInterestRate extends Component {
                   <div className="col-md-6">
                     <div className="form-heading mb-0">
                       <h1>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Interest RawMaterial <TourWrapper
-                        buttonSpecificProp={{ id: "Add_InterestRate_form" }}
+                        buttonSpecificProp={{ id: "Add_InterestRate_Form" }}
                         stepsSpecificProp={{
                           steps: Steps(t, {
                             vendorField: (costingTypeId === VBCTypeId),

@@ -376,7 +376,7 @@ function NfrListing(props) {
                                 <Col md="3" lg="3" className='mb-2'>
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                     <TourWrapper
-                                        buttonSpecificProp={{ id: "Add_NFR_form", onClick: toggleExtraData }}
+                                        buttonSpecificProp={{ id: "Nfr_Listing", onClick: toggleExtraData }}
                                         stepsSpecificProp={{
                                             steps: Steps(t, { activeTab }).NFR_lISTING
                                         }} />

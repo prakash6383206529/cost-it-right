@@ -928,7 +928,7 @@ class AddOperation extends Component {
                     {!data.isCostingDrawer && <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
 
                       {!data.isViewMode && <TourWrapper
-                        buttonSpecificProp={{ id: "Add_Operation_form" }}
+                        buttonSpecificProp={{ id: "Add_Operation_Form" }}
                         stepsSpecificProp={{
                           steps: Steps(t, {
                             showSendForApproval: !this.state.isFinalApprovar,

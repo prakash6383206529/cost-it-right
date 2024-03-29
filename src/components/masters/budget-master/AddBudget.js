@@ -798,7 +798,7 @@ function AddBudget(props) {
                                                             ? "Update Budget"
                                                             : "Add Budget"}
                                                         <TourWrapper
-                                                            buttonSpecificProp={{ id: "Add_Budget_form" }}
+                                                            buttonSpecificProp={{ id: "Add_Budget_Form" }}
                                                             stepsSpecificProp={{
                                                                 steps: Steps(t, {
                                                                     customerField: (costingTypeId === CBCTypeId),

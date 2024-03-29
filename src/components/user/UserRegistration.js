@@ -2386,7 +2386,7 @@ function UserRegistration(props) {
                 <div className="col-md-6">
                   <div className="form-heading mb-0">
                     <h2>{isEditFlag ? 'Update' : 'Add'} {props?.RFQUser ? 'RFQ ' : ''}User <TourWrapper
-                      buttonSpecificProp={{ id: "Add_User_form" }}
+                      buttonSpecificProp={{ id: "Add_User_Form" }}
                       stepsSpecificProp={{
                         steps: Steps(t, {
                           costingField: acc1, simulationField: acc2, masterField: acc3, onBoardingField: acc4, RFQUser: props?.RFQUser, isShowPwdField: isShowPwdField, isEditFlag: isEditFlag

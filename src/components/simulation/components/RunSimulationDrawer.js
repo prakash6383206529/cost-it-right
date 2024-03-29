@@ -585,7 +585,7 @@ function RunSimulationDrawer(props) {
                                                 <h3>
                                                     {"Apply Simulation Applicability"}
                                                     <TourWrapper
-                                                        buttonSpecificProp={{ id: "apply-simulation" }}
+                                                        buttonSpecificProp={{ id: "Run_Simulation_Drawer" }}
                                                         stepsSpecificProp={{
                                                             steps: Steps(t).RunsimulationDrawer
                                                         }} />

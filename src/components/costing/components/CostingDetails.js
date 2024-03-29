@@ -2152,7 +2152,7 @@ function CostingDetails(props) {
                           }} />
                           :
                           <TourWrapper
-                            buttonSpecificProp={{ id: "Costing_Details_form" }}
+                            buttonSpecificProp={{ id: "Costing_Details_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t, "costing-details-page").COSTING_INITIAL
                             }} />}</div>
@@ -2371,7 +2371,7 @@ function CostingDetails(props) {
                               <Row className="align-items-center">
                                 <Col md="6" className={"mb-2 mt-3"}>
                                   <h6 className="dark-blue-text sec-heading">ZBC:{zbcPlantGrid && zbcPlantGrid.length !== 0 && <TourWrapper
-                                    buttonSpecificProp={{ id: "zbc_Costing", onClick: () => tourStart("zbc", zbcPlantGrid) }}
+                                    buttonSpecificProp={{ id: "Zbc_Costing", onClick: () => tourStart("zbc", zbcPlantGrid) }}
                                     stepsSpecificProp={{
                                       steps: createCostingTourSteps
                                     }} />}</h6>
@@ -2508,7 +2508,7 @@ function CostingDetails(props) {
                               <Row className="align-items-center">
                                 <Col md={'6'} className={"mb-2 mt-3"}>
                                   <h6 className="dark-blue-text sec-heading">NCC:{nccGrid && nccGrid.length !== 0 && <TourWrapper
-                                    buttonSpecificProp={{ id: "ncc_Costing", onClick: () => tourStart("ncc", nccGrid) }}
+                                    buttonSpecificProp={{ id: "Ncc_Costing", onClick: () => tourStart("ncc", nccGrid) }}
                                     stepsSpecificProp={{
                                       steps: createCostingTourSteps
                                     }} />}</h6>
@@ -2750,7 +2750,7 @@ function CostingDetails(props) {
                               <Row className="align-items-center">
                                 <Col md={'6'} className={"mb-2 mt-3"}>
                                   <h6 className="dark-blue-text sec-heading">CBC: {cbcGrid && cbcGrid.length !== 0 && <TourWrapper
-                                    buttonSpecificProp={{ id: "cbc_Costing", onClick: () => tourStart("cbc", cbcGrid) }}
+                                    buttonSpecificProp={{ id: "Cbc_Costing", onClick: () => tourStart("cbc", cbcGrid) }}
                                     stepsSpecificProp={{
                                       steps: createCostingTourSteps
                                     }} />}</h6>
@@ -2856,7 +2856,7 @@ function CostingDetails(props) {
                               <Row className="align-items-center">
                                 <Col md="6" className={"mb-2 mt-3"}>
                                   <h6 className="dark-blue-text sec-heading">WAC:{wacPlantGrid && wacPlantGrid.length !== 0 && <TourWrapper
-                                    buttonSpecificProp={{ id: "wac_Costing", onClick: () => tourStart("wac", wacPlantGrid) }}
+                                    buttonSpecificProp={{ id: "Wac_Costing", onClick: () => tourStart("wac", wacPlantGrid) }}
                                     stepsSpecificProp={{
                                       steps: createCostingTourSteps
                                     }} />}</h6>

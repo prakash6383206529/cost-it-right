@@ -201,7 +201,7 @@ class PermissionsTabIndex extends Component {
                                                 Masters
                                                 {this.state.activeTab === '2' && (
                                                     <TourWrapper
-                                                        buttonSpecificProp={{ id: "Add_User_form" }}
+                                                        buttonSpecificProp={{ id: "Add_User_Form" }}
                                                         stepsSpecificProp={{
                                                             steps: Steps(t,).Master
                                                         }}
@@ -217,7 +217,7 @@ class PermissionsTabIndex extends Component {
                                                 Additional Masters
                                                 {this.state.activeTab === '3' && (
                                                     <TourWrapper
-                                                        buttonSpecificProp={{ id: "Add_Additonal_master_form" }}
+                                                        buttonSpecificProp={{ id: "Add_Additonal_Master_Form" }}
                                                         stepsSpecificProp={{
                                                             steps: Steps(t,).AdditionalMaster
                                                         }}
@@ -233,7 +233,7 @@ class PermissionsTabIndex extends Component {
                                                 Costing
                                                 {this.state.activeTab === '4' && (
                                                     <TourWrapper
-                                                        buttonSpecificProp={{ id: "Add_Costing_form" }}
+                                                        buttonSpecificProp={{ id: "Add_Costing_Form" }}
                                                         stepsSpecificProp={{
                                                             steps: Steps(t,).Costing
                                                         }}
@@ -249,7 +249,7 @@ class PermissionsTabIndex extends Component {
                                                 Simulation
                                                 {this.state.activeTab === '5' && (
                                                     <TourWrapper
-                                                        buttonSpecificProp={{ id: "Add_Simulation_form" }}
+                                                        buttonSpecificProp={{ id: "Add_Simulation_Form" }}
                                                         stepsSpecificProp={{
                                                             steps: Steps(t,).Simulation
                                                         }}
@@ -265,7 +265,7 @@ class PermissionsTabIndex extends Component {
                                                 Reports
                                                 {this.state.activeTab === '6' && (
                                                     <TourWrapper
-                                                        buttonSpecificProp={{ id: "Add_Report_form" }}
+                                                        buttonSpecificProp={{ id: "Add_Report_Form" }}
                                                         stepsSpecificProp={{
                                                             steps: Steps(t,).Report
                                                         }}
@@ -281,7 +281,7 @@ class PermissionsTabIndex extends Component {
                                                 Users
                                                 {this.state.activeTab === '7' && (
                                                     <TourWrapper
-                                                        buttonSpecificProp={{ id: "Add_User_form" }}
+                                                        buttonSpecificProp={{ id: "Add_User_Form" }}
                                                         stepsSpecificProp={{
                                                             steps: Steps(t,).User
                                                         }}
@@ -297,7 +297,7 @@ class PermissionsTabIndex extends Component {
                                                 RFQ
                                                 {this.state.activeTab === '8' && (
                                                     <TourWrapper
-                                                        buttonSpecificProp={{ id: "Add_RFQ_form" }}
+                                                        buttonSpecificProp={{ id: "Add_RFQ_Form" }}
                                                         stepsSpecificProp={{
                                                             steps: Steps(t,).RFQ
                                                         }}
@@ -313,7 +313,7 @@ class PermissionsTabIndex extends Component {
                                                 NFR
                                                 {this.state.activeTab === '9' && (
                                                     <TourWrapper
-                                                        buttonSpecificProp={{ id: "Add_NFR_form" }}
+                                                        buttonSpecificProp={{ id: "Add_Nfr_Form" }}
                                                         stepsSpecificProp={{
                                                             steps: Steps(t,).NFR
                                                         }}
@@ -329,7 +329,7 @@ class PermissionsTabIndex extends Component {
                                                 Audit
                                                 {this.state.activeTab === '10' && (
                                                     <TourWrapper
-                                                        buttonSpecificProp={{ id: "Add_Audit_form" }}
+                                                        buttonSpecificProp={{ id: "Add_Audit_Form" }}
                                                         stepsSpecificProp={{
                                                             steps: Steps(t,).Audit
                                                         }}

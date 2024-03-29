@@ -213,7 +213,7 @@ class Department extends Component {
 										<div className={'header-wrapper left'}>
 											<h3>{isEditFlag ? `Update ${handleDepartmentHeader()}` : `Add ${handleDepartmentHeader()}`}
 												<TourWrapper
-													buttonSpecificProp={{ id: "Add_Company_form" }}
+													buttonSpecificProp={{ id: "Add_Department_Form" }}
 													stepsSpecificProp={{
 														steps: Steps(t, { isEditFlag: isEditFlag }).ADD_COMPANY
 													}} />

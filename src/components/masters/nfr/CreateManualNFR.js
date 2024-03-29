@@ -485,7 +485,7 @@ function CreateManualNFR(props) {
                             <h1>
                                 Add NFR
                                 <TourWrapper
-                                    buttonSpecificProp={{ id: "Add_NFR_form" }}
+                                    buttonSpecificProp={{ id: "Create_ManualNfr_Form" }}
                                     stepsSpecificProp={{
                                         steps: Steps(t).ADD_NFR
                                     }} />

@@ -226,7 +226,7 @@ const Role = (props) => {
 							<div className="form-headingg">
 								<h2>{isEditFlag ? "Update Role" : "Add Role"}
 									<TourWrapper
-										buttonSpecificProp={{ id: "Add_Role_form" }}
+										buttonSpecificProp={{ id: "Add_Role_Form" }}
 										stepsSpecificProp={{
 											steps: Steps(t, { isEditFlag: isEditFlag }).ADD_ROLE
 										}} />

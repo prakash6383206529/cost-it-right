@@ -93,9 +93,9 @@ class AddBOPCategory extends Component {
                                         <div className={'header-wrapper left'}>
                                             <h3>{isEditFlag ? `Update ${showBopLabel()} Category` : `Add ${showBopLabel()} Category`}
                                                 <TourWrapper
-                                                    buttonSpecificProp={{ id: "BOP_Domestic_Category_form" }}
+                                                    buttonSpecificProp={{ id: "BOP_Domestic_Category_Form" }}
                                                     stepsSpecificProp={{
-                                                        steps: Steps(t).BOP_DOMESTIC_CATEGORY_FORM
+                                                        steps: Steps(t, { isEditFlag: isEditFlag }).BOP_DOMESTIC_CATEGORY_FORM
                                                     }} />
                                             </h3>
                                         </div>

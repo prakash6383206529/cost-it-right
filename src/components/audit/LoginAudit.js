@@ -658,7 +658,7 @@ function LoginAudit(props) {
                                             </div>
                                         </div>
                                         <TourWrapper
-                                            buttonSpecificProp={{ id: "Add_Budget_form" }}
+                                            buttonSpecificProp={{ id: "Login_Audit_Page" }}
                                             stepsSpecificProp={{
                                                 steps: Steps(t).AUDIT_LISTING
                                             }} />

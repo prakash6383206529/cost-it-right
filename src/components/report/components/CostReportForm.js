@@ -497,7 +497,7 @@ function CostReportForm(props) {
         <>
             <div className="cost-ratio-report">
                 <TourWrapper
-                    buttonSpecificProp={{ id: "Add_Costing_form" }}
+                    buttonSpecificProp={{ id: "Add_Costing_Form" }}
                     stepsSpecificProp={{
                         steps: Steps(t, { plantWiseGotGiven: props?.plantWiseGotGiven, gotGiven: props?.gotGiven, effectiveDate: props?.effectiveDate, dateHide: props?.dateHide, hideAddtable: props?.hideAddtable, showVendor: props?.showVendor, customerPoamSummary: customerPoamSummary, showCustomer: props?.showCustomer }).COST_REPORT_FORM
                     }} />
