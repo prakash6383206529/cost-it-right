@@ -370,16 +370,15 @@ function Pipe(props) {
    * @description SET GROSS WEIGHT
    */
   const setGrossWeight = () => {
-    let WeightofPart
     let WeightofSheet
     let NumberOfPartsPerSheet
     let grossWeight
     const updatedValue = dataToSend
     if (rmRowData.RawMaterialCategory === STD) {
-      WeightofPart = setValueAccToUOM(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
-      setGrossWeights(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
-      updatedValue.GrossWeight = WeightofPart
-      updatedValue.newGrossWeight = WeightofPart
+      grossWeight = checkForNull(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
+      setGrossWeights(grossWeight)
+      updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
+      updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
       setDataToSend(updatedValue)
     } else {
       // WeightofPart = setValueAccToUOM(dataToSend.WeightofPart, UOMDimension.label)
