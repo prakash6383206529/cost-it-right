@@ -9,7 +9,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, 
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
-import { G, KG, MG, } from '../../../../../config/constants'
+import { DISPLAY_G, DISPLAY_KG, DISPLAY_MG, G } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
 import { nonZero } from '../../../../../helper/validation'
@@ -24,17 +24,17 @@ function Sheet(props) {
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
-            case G:
+            case DISPLAY_G:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet)
                 }, 200);
                 break;
-            case KG:
+            case DISPLAY_KG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet * 1000)
                 }, 200);
                 break;
-            case MG:
+            case DISPLAY_MG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet / 1000)
                 }, 200);
@@ -68,7 +68,6 @@ function Sheet(props) {
         NoOfBlanksBottomEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.NoOfBlanksBottomEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfBlanksBottomEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
         RemainingSLRightEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthRightEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthRightEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
         RemainingSLPerBLRightEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthPerBlankLengthRightEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthPerBlankLengthRightEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        RemainingSWRightEndByWidth: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthRightEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetWidthRightEndByWidth, localStorage.NoOfDecimalForInputOutput) : '',
     }
 
     const remainingDefaultValues = {
@@ -80,8 +79,6 @@ function Sheet(props) {
         TotalComponentByWidth: WeightCalculatorRequest && WeightCalculatorRequest.TotalComponentByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalComponentByWidth, localStorage.NoOfDecimalForInputOutput) : 1,
         RemainingSLBottomByLength: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthBottomByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthBottomByLength, localStorage.NoOfDecimalForInputOutput) : '',
         RemainingSWPerBLBottomByLength: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthPerBlankLengthBottomByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetWidthPerBlankLengthBottomByLength, localStorage.NoOfDecimalForInputOutput) : '',
-        RemainingSLPerBWBottomByLength: WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthPerBlankWidthBottomByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthPerBlankWidthBottomByLength, localStorage.NoOfDecimalForInputOutput) : '',
-        NoOfBlanksBottomEndByLength: WeightCalculatorRequest && WeightCalculatorRequest.NoOfBlanksBottomEndByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfBlanksBottomEndByLength, localStorage.NoOfDecimalForInputOutput) : '',
     }
 
 
@@ -115,15 +112,14 @@ function Sheet(props) {
     const [isDisable, setIsDisable] = useState(false)
     const [reRender, setRerender] = useState(false)
     const [finalComponentSelected, setFinalComponentSelected] = useState(false)
+    const [scrapWeight, setScrapWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== null ? WeightCalculatorRequest.ScrapWeight : '')
+
 
     const fieldValues = useWatch({
         control,
-        name: ['SheetThickness', 'SheetWidth', 'SheetLength', 'BlankWidth', 'BlankLength', 'Cavity',],
+        name: ['SheetThickness', 'SheetWidth', 'SheetLength', 'BlankWidth', 'BlankLength', 'Cavity', 'ScrapRecoveryPercent'],
     })
-    const scrapWeightValues = useWatch({
-        control,
-        name: ['FinishWeightOfSheet', 'ScrapRecoveryPercent'],
-    })
+
     const values = useWatch({
         control,
         name: ['BlankWidth', 'BlankLength'],
@@ -165,12 +161,15 @@ function Sheet(props) {
             setValue('RemainingSWPerBLRightEndByLength', WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthPerBlankLengthRightEndByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetWidthPerBlankLengthRightEndByLength, localStorage.NoOfDecimalForInputOutput) : '',)
             setValue('NoOfBlanksRightEndByLength', WeightCalculatorRequest && WeightCalculatorRequest.NoOfBlanksRightEndByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfBlanksRightEndByLength, localStorage.NoOfDecimalForInputOutput) : '',)
             setValue('TotalNoOfBlanksByLength', WeightCalculatorRequest && WeightCalculatorRequest.TotalNoOfBlanksByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.TotalNoOfBlanksByLength, localStorage.NoOfDecimalForInputOutput) : '',)
+            setValue('RemainingSWRightEndByWidth', WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetWidthRightEndByWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetWidthRightEndByWidth, localStorage.NoOfDecimalForInputOutput) : '')
+            setValue('RemainingSLPerBWBottomByLength', WeightCalculatorRequest && WeightCalculatorRequest.RemainingSheetLengthPerBlankWidthBottomByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RemainingSheetLengthPerBlankWidthBottomByLength, localStorage.NoOfDecimalForInputOutput) : '')
+            setValue('NoOfBlanksBottomEndByLength', WeightCalculatorRequest && WeightCalculatorRequest.NoOfBlanksBottomEndByLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfBlanksBottomEndByLength, localStorage.NoOfDecimalForInputOutput) : '')
         }
     }, [])
 
     useEffect(() => {
         scrapWeightCalculation()
-    }, [scrapWeightValues])
+    }, [fieldValues, FinishWeightOfSheet, GrossWeight])
     useEffect(() => {
         if (!CostingViewMode) {
 
@@ -195,15 +194,16 @@ function Sheet(props) {
     }, [values])
 
     useEffect(() => {
-        if (Number(getValues('FinishWeightOfSheet')) < Number(GrossWeight)) {
+        if (Number(getValues('FinishWeightOfSheet')) < getValues('GrossWeight')) {
             delete errors.FinishWeightOfSheet
             setRerender(!reRender)
         }
 
-    }, [GrossWeight, fieldValues])
+    }, [getValues('GrossWeight'), fieldValues])
 
     const setFinishWeight = (e) => {
         const FinishWeightOfSheet = e.target.value
+        setFinishWeights(FinishWeightOfSheet)
         const grossWeight = checkForNull(getValues('GrossWeight'))
         if (e.target.value > grossWeight) {
             setTimeout(() => {
@@ -214,17 +214,17 @@ function Sheet(props) {
             return false
         }
         switch (UOMDimension.label) {
-            case G:
+            case DISPLAY_G:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet)
                 }, 200);
                 break;
-            case KG:
+            case DISPLAY_KG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet * 1000)
                 }, 200);
                 break;
-            case MG:
+            case DISPLAY_MG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet / 1000)
                 }, 200);
@@ -493,17 +493,19 @@ function Sheet(props) {
         setValue('UOMDimension', { label: value.label, value: value.value })
         setUOMDimension(value)
         let grossWeight = GrossWeight
+        let ScrapWeight = scrapWeight
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
         setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
-        setValue('FinishWeightOfSheet', 0)
-        setValue('ScrapRecoveryPercent', 0)
+        setValue('FinishWeightOfSheet', checkForDecimalAndNull(setValueAccToUOM(FinishWeightOfSheet, value.label), localStorage.NoOfDecimalForInputOutput))
+        setValue('ScrapWeight', checkForDecimalAndNull(setValueAccToUOM(ScrapWeight, value.label), localStorage.NoOfDecimalForInputOutput))
     }
     const scrapWeightCalculation = () => {
         const scrapRecoveryPercent = Number((getValues('ScrapRecoveryPercent')))
-        const grossWeight = getValues('GrossWeight')
-        const finishWeightOfSheet = getValues('FinishWeightOfSheet')
+        const grossWeight = Number(GrossWeight)
+        const finishWeightOfSheet = Number(FinishWeightOfSheet)
         const scrapWeight = calculateScrapWeight(grossWeight, finishWeightOfSheet, scrapRecoveryPercent)
-        setValue('ScrapWeight', checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
+        setScrapWeight(checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
+        setValue('ScrapWeight', checkForDecimalAndNull((setValueAccToUOM(scrapWeight, UOMDimension.label)), localStorage.NoOfDecimalForInputOutput))
     }
     const UnitFormat = () => {
         return <>Net Surface Area(mm<sup>2</sup>)</>
@@ -1361,7 +1363,7 @@ function Sheet(props) {
                                             message: 'Finish weight should not be greater than gross weight.'
                                         },
                                     }}
-                                    handleChange={(e) => setFinishWeight(e, 'Width')}
+                                    handleChange={setFinishWeight}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
