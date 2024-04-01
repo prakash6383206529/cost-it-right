@@ -1113,7 +1113,7 @@ const CostingSummaryTable = (props) => {
               obj.TechnologyId = partInfo.TechnologyId
               obj.Mode = 'costing'
               obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
-              obj.plantId = viewCostingData[index]?.costingTypeId === ZBCTypeId ? viewCostingData[index]?.plantId : viewCostingData[index]?.destinationPlantId
+              obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
               dispatch(checkFinalUser(obj, res => {
                 if (res?.data?.Result) {
                   setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
@@ -1295,6 +1295,7 @@ const CostingSummaryTable = (props) => {
               obj.TechnologyId = partInfo.TechnologyId
               obj.Mode = 'costing'
               obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+              obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
               dispatch(checkFinalUser(obj, res => {
                 if (res?.data?.Result) {
                   setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
@@ -2353,6 +2354,7 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block small-grey-text">RM-Grade</span>
                                     <span className={highlighter("rmRate")}>RM Rate</span>
                                     <span className={highlighter("scrapRate")}>Scrap Rate</span>
+                                    <span className={highlighter("", "scrap-recovery")}>Scrap Recovery %</span>
                                     <span className={highlighter("", "rm-reducer")}>Gross Weight</span>
                                     <span className={highlighter("", "finish-reducer")}>Finish Weight</span>
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
@@ -2372,6 +2374,9 @@ const CostingSummaryTable = (props) => {
                                           </span>
                                           <span className={highlighter("scrapRate")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                          </span>
+                                          <span className={highlighter("scrapRate")}>
+                                            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
                                           </span>
                                           <span className={highlighter("", "rm-reducer")}>
                                             {/* try with component */}

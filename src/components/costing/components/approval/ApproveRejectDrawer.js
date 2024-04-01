@@ -224,7 +224,8 @@ function ApproveRejectDrawer(props) {
             // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
             TechnologyId: item,
             ReasonId: 0,
-            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId)
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
+            plantId: approvalData.plantId ?? EMPTY_GUID
           }
           console.log(levelDetailsTemp, "levelDetailsTemp");
           let approverIdListTemp = []
@@ -297,7 +298,8 @@ function ApproveRejectDrawer(props) {
           //NEED TO MAKE THIS 2   
           TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
           ReasonId: 0,
-          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId)
+          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
+          plantId: approvalData.plantId ?? EMPTY_GUID
         }
 
         dispatch(getAllSimulationApprovalList(obj, (res) => {

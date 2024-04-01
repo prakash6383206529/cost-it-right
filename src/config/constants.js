@@ -2102,6 +2102,7 @@ export const VIEW_COSTING_DATA = {
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
+  ScrapRecoveryPercentage: 'Scrap Recovery %',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
   castingWeightExcel: 'Casting Weight',
@@ -2248,6 +2249,10 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
   {
     label: 'Scrap Rate',
     value: 'scrapRate'
+  },
+  {
+    label: 'Scrap Recovery %',
+    value: 'ScrapRecoveryPercentage'
   },
   {
     label: 'Gross Weight',
@@ -2921,7 +2926,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.2.1";
+export const VERSION = "V2.2.3";
 
 
 

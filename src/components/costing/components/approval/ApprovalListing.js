@@ -1197,6 +1197,7 @@ function ApprovalListing(props) {
           closeDrawer={closeShowApproval}
           anchor={'right'}
           isApprovalisting={true}
+          dataSelected={selectedRowData}
           technologyId={selectedRowData[0].TechnologyId}
           callSapCheckAPI={false}
         />

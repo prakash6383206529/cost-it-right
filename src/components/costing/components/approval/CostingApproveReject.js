@@ -93,7 +93,7 @@ function CostingApproveReject(props) {
       TechnologyId: technology,
       ReasonId: reasonId,
       ApprovalTypeId: approverTypeId,
-      plantId: approvalData[0].PlantId
+      plantId: approvalData[0].PlantId ?? EMPTY_GUID
     }
     dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
       const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -335,6 +335,7 @@ function CostingApproveReject(props) {
       DepartmentId: value.value,
       TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
       ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
+      plantId: approvalData[0].PlantId ?? EMPTY_GUID
     }
     let dataInFieldTemp = {
       ...dataInFields,
