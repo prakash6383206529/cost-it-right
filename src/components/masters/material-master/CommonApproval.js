@@ -795,7 +795,7 @@ function CommonApproval(props) {
                         title={"Delete"}
                     />
                 ) : (
-                    <div>-</div>
+                    <div> </div>
                 )}
             </>
         );
