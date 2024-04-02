@@ -317,7 +317,7 @@ function CostingDetails(props) {
         if (item.Value === '0') return false
         if (item.Value === PRODUCT_ID) return false
         if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
-        if (String(technology?.value) === String(ASSEMBLY) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
+        if (IdForMultiTechnology.includes(String(technology?.value)) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
@@ -328,7 +328,7 @@ function CostingDetails(props) {
         if (item.Value === '0') return false
         if (item.Value === PRODUCT_ID) return false
         if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
-        if (String(technology?.value) === String(ASSEMBLY) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
+        if (IdForMultiTechnology.includes(String(technology?.value)) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
