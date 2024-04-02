@@ -857,7 +857,7 @@ function SimulationApprovalListing(props) {
                                         <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                         <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                         {/* <AgGridColumn width={140} field="SimulatedOn" headerName='Last Approved On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>                //RE */}
-                                        <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved/Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                        <AgGridColumn width={200} field="LastApprovedBy" headerName='Last Approved/Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                         <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
 
                                         {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' tooltipField="TooltipText" cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
