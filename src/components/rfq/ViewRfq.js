@@ -910,7 +910,7 @@ function RfqListing(props) {
                             <Col md="6" className='d-flex'>
                                 <h3 className='mt-2'>RFQ No. : {data?.QuotationNumber ? data?.QuotationNumber : '-'}
                                     <TourWrapper
-                                        buttonSpecificProp={{ id: "Rfq_listing_Tour", onClick: toggleExtraData }}
+                                        buttonSpecificProp={{ id: "View_Rfq_Tour", onClick: toggleExtraData }}
                                         stepsSpecificProp={{
                                             steps: Steps(t, {
                                                 compare: isVisibiltyConditionMet,

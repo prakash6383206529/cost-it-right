@@ -23,7 +23,7 @@ const ProductRollout = () => {
         <div className="product-rollout-container">
             <h1>Detailed Model/Assy Report
                 <TourWrapper
-                    buttonSpecificProp={{ id: "ProductRollout_Form" }}
+                    buttonSpecificProp={{ id: "Product_Rollout_Form" }}
                     stepsSpecificProp={{
                         steps: Steps(t).ASSYREPORT
                     }} />

@@ -358,7 +358,7 @@ const RMListing = (props) => {
             <div className="ag-grid-header">
               <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
               <TourWrapper
-                buttonSpecificProp={{ id: "RMListing_Tour", onClick: toggleExtraData }}
+                buttonSpecificProp={{ id: "RM_Listing_Tour", onClick: toggleExtraData }}
                 stepsSpecificProp={{
                   steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, bulkUpload: false, addButton: false, filterButton: false, costMovementButton: false, viewButton: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
                 }}

@@ -2146,7 +2146,7 @@ function CostingDetails(props) {
                     <Row>
                       <Col md="12">
                         <div className="left-border mt-3 ">{"Part Details:"}{IsOpenVendorSOBDetails ? <TourWrapper
-                          buttonSpecificProp={{ id: "Costing_Details_form", onClick: () => vendorTourStart() }}
+                          buttonSpecificProp={{ id: "Costing_Details_Form", onClick: () => vendorTourStart() }}
                           stepsSpecificProp={{
                             steps: addVendorsTourStep
                           }} />

@@ -1604,11 +1604,12 @@ class AddRMDomestic extends Component {
                         <h1>
                           {isViewFlag ? 'View' : isEditFlag ? 'Update' : 'Add'} Raw Material (Domestic)
 
-                          {this.state.showTour && <TourWrapper
-                            buttonSpecificProp={{ id: "RM_domestic_form" }}
+                          {this.state.showTour && !isViewFlag && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_RM_Domestic_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t,
                                 {
+                                  isEditFlag: isEditFlag,
                                   showSendForApproval: !this.state.isFinalApprovar,
                                   hasSource: (costingTypeId === ZBCTypeId),
                                   destinationField: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant),

@@ -129,7 +129,7 @@ function Dashboard(props) {
                     <Col md="8"><h3 className="mb-0">Amendments Approval Status {acc2 &&
 
                       <TourWrapper
-                        buttonSpecificProp={{ id: "Dashboard_simulation_Form" }}
+                        buttonSpecificProp={{ id: "Dashboard_Simulation_Form" }}
                         stepsSpecificProp={{
                           steps: Steps(t).DASHBOARD_SIMULATION_TAB
                         }} />}

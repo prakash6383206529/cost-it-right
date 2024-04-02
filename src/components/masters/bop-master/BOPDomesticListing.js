@@ -800,7 +800,7 @@ const BOPDomesticListing = (props) => {
           <Col md="3" lg="3">
             <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
             {(!props.isSimulation && !props.benchMark) && (<TourWrapper
-              buttonSpecificProp={{ id: "BOPDomestic_Listing_Tour", onClick: toggleExtraData }}
+              buttonSpecificProp={{ id: "BOP_Domestic_Listing_Tour", onClick: toggleExtraData }}
               stepsSpecificProp={{
                 steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
               }} />)}

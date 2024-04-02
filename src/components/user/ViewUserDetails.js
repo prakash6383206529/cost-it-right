@@ -317,7 +317,7 @@ class ViewUserDetails extends Component {
                   <div className={'header-wrapper left'}>
                     <h3>{`User Details`}
                       <TourWrapper
-                        buttonSpecificProp={{ id: "User_Details_Form" }}
+                        buttonSpecificProp={{ id: "View_User_Details_Form" }}
                         stepsSpecificProp={{
                           steps: Steps(t, { RFQUser: this.props?.RFQUser }).USER_DETAILS
                         }} />

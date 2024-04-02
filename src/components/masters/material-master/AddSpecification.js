@@ -505,7 +505,7 @@ class AddSpecification extends Component {
                           ? "Update  Specification"
                           : "Add Raw Material Specification"}
                         <TourWrapper
-                          buttonSpecificProp={{ id: "RM_Spec_Form" }}
+                          buttonSpecificProp={{ id: "Add_RM_Spec_Form" }}
                           stepsSpecificProp={{
                             steps: Steps(t, { isEditFlag: isEditFlag }).ADD_RAW_MATERIAL_SPEC
                           }} />

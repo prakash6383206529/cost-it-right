@@ -275,9 +275,9 @@ class AddProcessDrawer extends Component {
                       <h3>{isEditFlag ? 'Update Process' : 'Add Process'}
 
                         <TourWrapper
-                          buttonSpecificProp={{ id: "Process_form" }}
+                          buttonSpecificProp={{ id: "Add_Process_Form" }}
                           stepsSpecificProp={{
-                            steps: Steps(t).ADD_MANAGE_PROCESS
+                            steps: Steps(t, { isEditFlag: isEditFlag }).ADD_MANAGE_PROCESS
                           }} />
                       </h3>
                     </div>

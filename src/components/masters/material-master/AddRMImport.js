@@ -1845,10 +1845,11 @@ class AddRMImport extends Component {
                       <div className="col-md-6">
                         <h2>
                           {isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} Raw Material (Import)
-                          <TourWrapper
-                            buttonSpecificProp={{ id: "RM_Import_form" }}
+                          {!isViewFlag && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_RM_Import_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                isEditFlag: isEditFlag,
                                 showSendForApproval: !this.state.isFinalApprovar,
                                 hasSource: (costingTypeId === ZBCTypeId),
                                 plantField: (costingTypeId === ZBCTypeId),
@@ -1858,7 +1859,7 @@ class AddRMImport extends Component {
                                 sourceField: ((this.state.HasDifferentSource ||
                                   costingTypeId === VBCTypeId))
                               }).ADD_RAW_MATERIAL_IMPORT
-                            }} />
+                            }} />}
                         </h2>
                       </div>
                     </div>

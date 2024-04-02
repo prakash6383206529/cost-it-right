@@ -485,7 +485,7 @@ class AddClientDrawer extends Component {
                                         <div className={'header-wrapper left'}>
                                             <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Customer
                                                 <TourWrapper
-                                                    buttonSpecificProp={{ id: "Customer_Form" }}
+                                                    buttonSpecificProp={{ id: "Add_Customer_Form" }}
                                                     stepsSpecificProp={{
                                                         steps: Steps(t).ADD_CLIENT
                                                     }} />

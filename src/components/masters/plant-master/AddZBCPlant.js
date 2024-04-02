@@ -377,11 +377,11 @@ class AddZBCPlant extends Component {
                   <Col>
                     <div className={"header-wrapper left"}>
                       <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} ZBC Plant
-                        <TourWrapper
-                          buttonSpecificProp={{ id: "Add_ZbcPlant_Form" }}
+                        {!isViewMode && <TourWrapper
+                          buttonSpecificProp={{ id: "Add_Zbc_Plant_Form" }}
                           stepsSpecificProp={{
-                            steps: Steps(t).Add_ZBCPlant_FORM
-                          }} />
+                            steps: Steps(t, { isEditFlag: isEditFlag }).Add_ZBCPlant_FORM
+                          }} />}
                       </h3>
                     </div>
                     <div

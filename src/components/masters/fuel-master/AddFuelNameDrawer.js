@@ -146,7 +146,7 @@ class AddFuelNameDrawer extends Component {
                   <div className={"header-wrapper left"}>
                     <h3>{isEditFlag ? "Update " : "Add "}Fuel
                       <TourWrapper
-                        buttonSpecificProp={{ id: "AddFuel_Drawer" }}
+                        buttonSpecificProp={{ id: "Add_Fuel_Drawer" }}
                         stepsSpecificProp={{
                           steps: Steps(t).ADD_FUEL_NAME_DRAWERS
                         }} />

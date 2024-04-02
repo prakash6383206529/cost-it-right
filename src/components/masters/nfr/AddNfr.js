@@ -865,7 +865,7 @@ function AddNfr(props) {
                 <div className='mb-2 d-flex justify-content-between'>
                     <h1>Create Estimation
                         <TourWrapper
-                            buttonSpecificProp={{ id: "Add_NFR_Form", onClick: toggleExtraData }}
+                            buttonSpecificProp={{ id: "Add_Nfr_Form", onClick: toggleExtraData }}
                             stepsSpecificProp={{
                                 steps: Steps(t, { showNfrPartListing, activeTab, editNfr, isRowEdited }).NFR_lISTING
                             }} />
