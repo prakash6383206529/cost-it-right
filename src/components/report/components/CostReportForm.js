@@ -654,11 +654,11 @@ function CostReportForm(props) {
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
-                                    rules={{ required: true }}
+                                    rules={{ required: false }}
                                     register={register}
                                     defaultValue={vendor.length !== 0 ? vendor : ""}
                                     options={renderListing("Vendor")}
-                                    mandatory={true}
+                                    mandatory={false}
                                     handleChange={handleVendorChange}
                                     // handleChange={() => { }}
                                     errors={errors.vendor}
