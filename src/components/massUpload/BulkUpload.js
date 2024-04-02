@@ -35,7 +35,7 @@ import { checkRFQBulkUpload } from '../rfq/actions/rfq';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { checkFinalUser } from '../../components/costing/actions/Costing';
-import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../common/CommonFunctions';
+import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, OperationFileData } from '../common/CommonFunctions';
 import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
 import DayTime from '../common/DayTimeWrapper';
 import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
@@ -523,6 +523,19 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'Efficiency (%)') {
                                     fileHeads[i] = 'EfficiencyPercentage'
                                 }
+                                if (fileName === 'Operation' && fileHeads[i] === 'OperationType') {
+                                    fileHeads[i] = 'ForType'
+                                }
+                                if (fileName === 'Operation' && fileHeads[i] === 'WeldingMaterialRate/kg') {
+                                    fileHeads[i] = 'OperationBasicRate'
+                                }
+                                if (fileName === 'Operation' && fileHeads[i] === 'Consumption') {
+                                    fileHeads[i] = 'OperationConsumption'
+                                }
+                                if (fileName === 'Operation' && fileHeads[i] === 'LabourRate') {
+                                    fileHeads[i] = 'LabourRatePerUOM'
+                                }
+
                                 obj[fileHeads[i]] = el;
                                 return null;
                             })
@@ -599,14 +612,14 @@ class BulkUpload extends Component {
             Toaster.warning('Please select a file to upload.')
             return false
         }
-        const updatedFileData = fileData.map(record => {
-
+        const operationData = OperationFileData(fileData)
+        const updatedFileData = operationData.map(record => {
             const detailedEntry = fileName === 'Operation' &&
                 (costingTypeId === ZBCADDMOREOPERATION || costingTypeId === VBCADDMOREOPERATION || costingTypeId === CBCADDMOREOPERATION);
             return {
                 ...record,
                 DetailedEntry: detailedEntry ? 'YES' : 'NO',
-                ForType: ''
+
             };
         });
         let uploadData = {
@@ -662,12 +675,14 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Operation') {
-            this.props.operationBulkUpload(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'Fuel') {
+        }
+        // else if (fileName === 'Operation') {
+        //     this.props.operationBulkUpload(masterUploadData, (res) => {
+        //         this.setState({ setDisable: false })
+        //         this.responseHandler(res)
+        //     });
+        // }
+        else if (fileName === 'Fuel') {
             this.props.fuelBulkUpload(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
@@ -798,7 +813,7 @@ class BulkUpload extends Component {
                                     {isZBCVBCTemplate &&
                                         <Col md="12">
                                             {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
-                                                <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                                <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
                                                         name="costingHead"
@@ -810,7 +825,7 @@ class BulkUpload extends Component {
                                                     <span>Zero Based</span>
                                                 </Label>
                                             }
-                                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
@@ -819,7 +834,7 @@ class BulkUpload extends Component {
                                                 />{' '}
                                                 <span>Vendor Based</span>
                                             </Label>}
-                                            {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
@@ -867,7 +882,7 @@ class BulkUpload extends Component {
                                                     />{' '}
                                                     <span>CBC More Details</span>
                                                 </Label>}
-                                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) &&
+                                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -877,7 +892,7 @@ class BulkUpload extends Component {
                                                     />{' '}
                                                     <span>ZBC More Details</span>
                                                 </Label>}
-                                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) &&
+                                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -887,7 +902,7 @@ class BulkUpload extends Component {
                                                     />{' '}
                                                     <span>VBC More Details</span>
                                                 </Label>}
-                                            {(fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) && (reactLocalStorage.getObject('CostingTypePermission').cbc) &&
+                                            {(fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) && (reactLocalStorage.getObject('CostingTypePermission').cbc) &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
