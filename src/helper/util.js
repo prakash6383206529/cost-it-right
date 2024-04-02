@@ -1148,13 +1148,17 @@ export const showTitleForActiveToggle = (index) => {
 }
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
 export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = false) => {
+
   let checkForFileHead, array = []
   let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
   const bopMasterName = showBopLabel()
   array = _.map(master, 'label')
   bulkUploadArray = [...array]
   if (isBOP) {
-    bulkUploadArray = bulkUploadArray.map((item) =>
+    bulkUploadArray = bulkUploadArray.map(item =>
+      item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
+    );
+    fileHeads = fileHeads.map(item =>
       item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
     );
   }
@@ -1163,16 +1167,12 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
-
     }
   }
-
-  // if (isRm && !fileHeads.includes('Note')) {
-  //   fileHeads.unshift('Note');
-  // }
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
+
 
 // SHOW ALL DATA ON HOVER WHEN DATA INPUT FIELD WILL DISABLE OR VIEW MODE
 export const showDataOnHover = (value) => {
@@ -1361,5 +1361,12 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
   return { updatedLabels, updatedTempData };
 }
 
+// 
 
-
+// function for % and & issue in the queryparams
+// Utility function to encode query parameters
+export function encodeQueryParams(params) {
+  return Object.entries(params)
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+}

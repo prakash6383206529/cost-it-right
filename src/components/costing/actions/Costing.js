@@ -60,7 +60,7 @@ import {
   COSTING_ACC_OPEN_CLOSE_STATUS,
   GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
 } from '../../../config/constants'
-import { apiErrors } from '../../../helper/util'
+import { apiErrors, encodeQueryParams } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -2660,7 +2660,8 @@ export function getLabourDetailsByFilter(data, callback) {
 
 export function checkPartNoExistInBop(data, callback) {
   return (dispatch) => {
-    const queryParams = `partNumber=${data.partNumber}&plantId=${data.plantId}&vendorId=${data.vendorId}&customerId=${data.customerId}`
+    // const queryParams = `partNumber=${data.partNumber}&plantId=${data.plantId}&vendorId=${data.vendorId}&customerId=${data.customerId}`
+    const queryParams = encodeQueryParams({ partNumber: data.partNumber, plantId: data.plantId, vendorId: data.vendorId, customerId: data.customerId });
     const request = axios.get(`${API.checkPartNoExistInBop}?${queryParams}`, config())
     request.then((response) => {
       if (response.data) {

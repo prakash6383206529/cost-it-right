@@ -2687,9 +2687,9 @@ export const SUB_ASSEMBLY = 'Sub Assembly';
 export const RMDOMESTICBULKUPLOAD = 'RM Domestic';
 export const RMIMPORTBULKUPLOAD = 'RM Import';
 export const RMSPECIFICATION = 'RM Specification'
-export const BOPDOMESTICBULKUPLOAD = 'BOP Domestic';
+export const BOPDOMESTICBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Domestic";
 export const INSERTDOMESTICBULKUPLOAD = 'Insert Domestic';
-export const BOPIMPORTBULKUPLOAD = 'BOP Import';
+export const BOPIMPORTBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Import";
 export const INSERTIMPORTBULKUPLOAD = 'Insert Import';
 export const BOMBULKUPLOAD = 'BOM';
 export const PARTCOMPONENTBULKUPLOAD = 'Part Component';
@@ -2897,7 +2897,4 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.1.326";
-
-
-
+export const VERSION = "V2.1.326.1";
