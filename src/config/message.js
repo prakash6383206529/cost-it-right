@@ -157,7 +157,7 @@ export const MESSAGES = {
   UPDATE_BOP_SUCESS: `${showBopLabel()} updated successfully`,
   BOP_DELETE_ALERT: `Are you sure you want to delete this ${showBopLabel()}?`,
   BOP_DELETE_SUCCESS: `${showBopLabel()} deleted successfully`,
-  BOP_BREAKUP_WARNING: `${showBopLabel()} with breakup will be visible in Approval Status tab until that ${showBopLabel()}'s costing is approved.`,
+  BOP_BREAKUP_WARNING: `${showBopLabel()} with breakup will be visible in Approval Status tab until it's costing is approved.`,
 
   //FUEL & POWER MASTER
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
