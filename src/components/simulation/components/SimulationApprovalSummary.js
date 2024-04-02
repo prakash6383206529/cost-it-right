@@ -1138,7 +1138,7 @@ function SimulationApprovalSummary(props) {
                             <Col md="8">
                                 <div className="left-border">
                                     {'Approval Workflow (Token No. '}
-                                    {`${simulationDetail && simulationDetail?.Token ? simulationDetail?.Token : '-'}) :`}
+                                    {`${simulationDetail && simulationDetail?.Token ? simulationDetail?.Token : '-'}):`}
                                 </div >
                             </Col >
                             <Col md="4" className="text-right">
