@@ -227,7 +227,6 @@ function ApproveRejectDrawer(props) {
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
             plantId: approvalData.plantId ?? EMPTY_GUID
           }
-          console.log(levelDetailsTemp, "levelDetailsTemp");
           let approverIdListTemp = []
           dispatch(getAllSimulationApprovalList(obj, (res) => {
             // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
