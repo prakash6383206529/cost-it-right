@@ -59,7 +59,7 @@ class AddProfit extends Component {
       isCC: false,
       isBOP: false,
       isProfitPercent: false,
-
+      IsFinancialDataChanged: true,
       isHideProfit: false,
       isHideRM: false,
       isHideCC: false,

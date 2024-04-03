@@ -194,7 +194,7 @@ function SummaryDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`Master Summary (Token No.${approvalDetails.Token})`}</h3>
+                                    <h3>{`Master Summary (Token No.${approvalDetails.Token}):`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}

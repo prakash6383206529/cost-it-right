@@ -420,7 +420,7 @@ class Downloadxls extends React.Component {
                             {costingTypeId !== CBCADDMOREOPERATION ? this.renderCBCSwitch(fileName) : this.renderCBCSwitch(costingTypeId)}
                         </ExcelFile>}
                     {bopType === DETAILED_BOP &&
-                        <ExcelFile filename={`${fileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC Detailed BOP</button>}>
+                        <ExcelFile filename={`${fileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC Detailed {showBopLabel()}</button>}>
                             {fileName ? this.renderVBCSwitch(fileName, bopType) : ''}
                         </ExcelFile>}
                     {/* ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER */}
