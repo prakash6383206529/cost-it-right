@@ -699,7 +699,8 @@ class AddInterestRate extends Component {
                           </Col>
                         </>
                       }
-                      {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                      {/* {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && ( */}
+                      {((costingTypeId === ZBCTypeId) && (
                         <Col md="3">
                           <Field
                             label="Plant (Code)"
