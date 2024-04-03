@@ -18,12 +18,10 @@ export const config = () => {
 
 
 // DEVELOPMENT
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
-const BASE_URL = `http://10.10.1.100:10162/api/v1`
-
+// const BASE_URL = `http://10.10.1.100:10162/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
-
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
@@ -2102,7 +2100,6 @@ export const VIEW_COSTING_DATA = {
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
-  ScrapRecoveryPercentage: 'Scrap Recovery %',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
   castingWeightExcel: 'Casting Weight',
@@ -2249,10 +2246,6 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
   {
     label: 'Scrap Rate',
     value: 'scrapRate'
-  },
-  {
-    label: 'Scrap Recovery %',
-    value: 'ScrapRecoveryPercentage'
   },
   {
     label: 'Gross Weight',
@@ -2926,7 +2919,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.2.4";
+export const VERSION = "V2.2.1";
 
 
 
