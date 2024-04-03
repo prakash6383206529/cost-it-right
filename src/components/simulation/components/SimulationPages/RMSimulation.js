@@ -89,18 +89,10 @@ function RMSimulation(props) {
         UnitOfMeasurementName: showCompressedColumns ? 50 : 100,
         CostingNumber: showCompressedColumns ? 50 : 190,
         PartNumber: showCompressedColumns ? 50 : 190,
-        oldBasicRateFormatter: showCompressedColumns ? 120 : 120,
-        newBasicRateFormatter: showCompressedColumns ? 120 : 120,
-        ScrapRate: showCompressedColumns ? 120 : 120,
-        NewScrapRate: showCompressedColumns ? 120 : 120,
-
         RMFreightCost: showCompressedColumns ? 50 : 150,
         RMShearingCost: showCompressedColumns ? 50 : 170,
         MachiningScrapRate: showCompressedColumns ? 50 : 170,
-        NetLandedCost: showCompressedColumns ? 120 : 120,
-        NewNetLandedCost: showCompressedColumns ? 120 : 120,
         EffectiveDate: showCompressedColumns ? 50 : 140,
-        RawMaterialId: showCompressedColumns ? 50 : 140,
         OldRMNetLandedCostConversion: showCompressedColumns ? 70 : 120,
         NewRMNetLandedCostConversion: showCompressedColumns ? 70 : 120,
         ScrapRatePerScrapUOM: showCompressedColumns ? 70 : 120,
@@ -937,8 +929,8 @@ function RMSimulation(props) {
                                                         ? "Basic Rate (Currency)"
                                                         : `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
                                                 } marryChildren={true} >
-                                                    <AgGridColumn width={columnWidths.oldBasicRateFormatter} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"}></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.newBasicRateFormatter} cellRenderer='newBasicRateFormatter' editable={isImpactedMaster ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"}></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={isImpactedMaster ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={"Percentage"} marryChildren={true} width={240}>
                                                     <AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter' headerComponent={'percentageHeader'}></AgGridColumn>
@@ -953,8 +945,8 @@ function RMSimulation(props) {
                                                 }>
                                                     {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.ScrapRatePerScrapUOM} field={isImpactedMaster ? "OldScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} editable='false' cellRenderer='oldScrapRateFormatterPerScrapUOM' headerName="Existing (In Scrap UOM)" colId={isImpactedMaster ? "ScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} ></AgGridColumn>}
                                                     {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.NewScrapRatePerScrapUOM} cellRenderer='newScrapRateUOMFormatter' field='NewScrapRatePerScrapUOM' headerName="Revised (In Scrap UOM)" colId={"NewScrapRatePerScrapUOM"} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRate}></AgGridColumn>}
-                                                    <AgGridColumn width={columnWidths.ScrapRate} field={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} ></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewScrapRate} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} headerComponent={'revisedScrapRateHeader'} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRateSecond} ></AgGridColumn>
+                                                    <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} ></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} headerComponent={'revisedScrapRateHeader'} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRateSecond} ></AgGridColumn>
                                                 </AgGridColumn>
                                                 {/* <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"BOP Net Landed Cost Conversion"} marryChildren={true}>
                                                 <AgGridColumn width={120} field="OldRMNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Existing" colId='OldRMNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
@@ -977,8 +969,8 @@ function RMSimulation(props) {
                                                 }
                                                 {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
                                                 {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}>
-                                                    <AgGridColumn width={columnWidths.OldRMNetLandedCostConversion} field="OldRMNetLandedCostConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewRMNetLandedCostConversion} field="NewRMNetLandedCostConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="OldRMNetLandedCostConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="NewRMNetLandedCostConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
                                                 {props.children}

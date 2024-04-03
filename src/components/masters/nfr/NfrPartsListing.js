@@ -12,7 +12,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination'
-import { checkForDecimalAndNull, checkPermission, getConfigurationKey, labelWithUOMAndCurrency, loggedInUserId, searchNocontentFilter, showBopLabel } from '../../../helper';
+import { checkForDecimalAndNull, checkPermission, getConfigurationKey, labelWithUOMAndCurrency, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import { getNfrPartDetails, nfrDetailsForDiscountAction, pushNfrRmBopOnSap } from './actions/nfr';
@@ -25,10 +25,15 @@ import RMDrawer from './RMDrawer';
 import OutsourcingDrawer from './OutsourcingDrawer';
 import WarningMessage from '../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { useTranslation } from 'react-i18next';
 const gridOptions = {};
 
 
 function NfrPartsListing(props) {
+    const { showNfrPartListing, activeTab } = props || {};
+    const { t } = useTranslation("Nfr")
     const { nfrDetailsForDiscount } = useSelector(state => state.costing)
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
@@ -59,7 +64,10 @@ function NfrPartsListing(props) {
     const [showWarning, setShowWarning] = useState(false);
     const [outsourcingCostingData, setOutsourcingCostingData] = useState({});
     const { topAndLeftMenuData } = useSelector(state => state.auth);
-
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
+    const [editNfr, setEditNfr] = useState(false)
+    const [fetchData, setFetchData] = useState(false)
     useEffect(() => {
         setloader(true)
         applyPermission(topAndLeftMenuData)
@@ -95,6 +103,7 @@ function NfrPartsListing(props) {
     const getDataList = () => {
         dispatch(getNfrPartDetails(props?.isFromDiscount ? nfrDetailsForDiscount?.rowData?.NfrId : props?.data?.NfrId, (res) => {
             if (res?.data?.DataList?.length > 0) {
+                setFetchData(true)
                 setRowData(StatusTooltip(res?.data?.DataList))
                 let data = [...res?.data?.DataList]
                 let showOutsourcing = false
@@ -125,9 +134,11 @@ function NfrPartsListing(props) {
             Toaster.warning("Please update the technology of this part to create costing of this part.")
             return false
         }
+        setEditNfr(true)
         setIsViewMode(viewMode)
         setEstimationData(rowData)
         setEditPart(true)
+        setEditNfr(true)
         setNFRIdsList({ NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId })
         let obj = {
             ...nfrDetailsForDiscount,
@@ -141,7 +152,16 @@ function NfrPartsListing(props) {
         }
         dispatch(nfrDetailsForDiscountAction(obj))
     }
+    const toggleExtraData = (showTour) => {
 
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 100);
+
+
+    }
     const viewRM = (rowData) => {
         setNFRIdsList({ NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId })
         setTimeout(() => {
@@ -201,7 +221,18 @@ function NfrPartsListing(props) {
         let showPush = rowData?.IsPushedButtonShow && (rowData?.NetLandedCost !== null || rowData?.NetLandedCost !== 0)
         return (
             <>
-                {showOutsourcing && !rowData?.IsRmAndBopActionEditable && < button type="button" className={"View mr-1"} onClick={() => { formToggle(rowData, true) }} disabled={false} title="View"></button >}
+                {(showExtraData && props.rowIndex === 0) && (
+                    <>
+                        < button type="button" id="viewNfrPart_list" className={"View mr-1"} onClick={() => { formToggle(rowData, true) }} disabled={false} title="View"></button >
+                        < button type="button" id="addNfrPart_list" className={"add-out-sourcing mr-1"} onClick={() => { formToggle(rowData, false) }} disabled={false} title="Add"></button >
+                        <button type="button" className={"pushed-action-btn mr-1"} id="pushedNfrToSap" onClick={() => { pushToSap(rowData) }} disabled={!showPush} title="Please add RM/BOP price in master, to add outsourcing cost and push the price on SAP"></button >                    {/* Add more buttons as needed */}
+                        <button title='View RM' id="viewNfrRM_list" className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />
+                        <button title='View' className="View mr-1" id="viewOutSourcing_list" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />
+                        <button title='Edit' className="Edit mr-1" type={'button'} id="editNfr_list" onClick={() => editPartHandler(cellValue, rowData, false)} />
+                        <button title='Associate part with technology' id="associatePartWithTechnology" className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />
+                    </>
+                )}
+                {showOutsourcing && !rowData?.IsRmAndBopActionEditable && < button type="button" id="viewNfrPart_list" className={"View mr-1"} onClick={() => { formToggle(rowData, true) }} disabled={false} title="View"></button >}
                 {showOutsourcing && rowData?.IsRmAndBopActionEditable && < button type="button" className={"add-out-sourcing mr-1"} onClick={() => { formToggle(rowData, false) }} disabled={false} title="Add"></button >}
                 {showOutsourcing && < button type="button" className={"pushed-action-btn mr-1"} onClick={() => { pushToSap(rowData) }} disabled={!showPush} title={`Please add RM/${showBopLabel()} price in master, to add outsourcing cost and push the price on SAP`}></button >}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
@@ -361,6 +392,7 @@ function NfrPartsListing(props) {
             props?.closeDrawer()
         }
         setEditPart(false)
+        setEditNfr(false)
     }
     const defaultColDef = {
         resizable: true,
@@ -394,6 +426,11 @@ function NfrPartsListing(props) {
                             <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
                                 <Col md="3" lg="3" className='mb-2'>
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                    <TourWrapper
+                                        buttonSpecificProp={{ id: "Nfr_Parts_Listing_Tour", onClick: toggleExtraData }}
+                                        stepsSpecificProp={{
+                                            steps: Steps(t, { activeTab, editNfr, showNfrPartListing }).NFR_lISTING
+                                        }} />
                                 </Col>
                                 <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
                                     {
@@ -408,10 +445,10 @@ function NfrPartsListing(props) {
                                                     <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrRefNumber ? rowData[0]?.NfrRefNumber : ''}</p>
                                                 </div>
                                             </div>
-                                            <button type="button" className={"apply ml-1"} onClick={props?.closeDrawer}> <div className={'back-icon'}></div>Back</button>
+                                            <button type="button" id="backNFR_listing" className={"apply ml-1"} onClick={props?.closeDrawer}> <div id="backNFR_listing" className={'back-icon'}></div>Back</button>
                                         </>
                                     }
-                                    <button type="button" className="ml-1 user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                    <button type="button" id="resetNFR_listing" className="ml-1 user-btn" title="Reset Grid" onClick={() => resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>
                                 </Col>
@@ -422,12 +459,12 @@ function NfrPartsListing(props) {
                                     <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                         <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                            <AgGridReact
+                                            {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
-                                                rowData={rowData}
+                                                rowData={rowData && rowData.length > 0 ? showExtraData && fetchData ? [...setLoremIpsum(rowData[0]), ...rowData] : rowData : []}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
@@ -455,8 +492,8 @@ function NfrPartsListing(props) {
                                                 <AgGridColumn field="PlantName" headerName='Plant Name' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PushedOn" headerName='Pushed On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="Status" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                            </AgGridReact>
+                                                {<AgGridColumn field="Status" width={250} cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                            </AgGridReact>}
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
                                         </div>
                                     </div>
@@ -495,7 +532,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrRefNumber} />}
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrRefNumber} showNfrPartListing={showNfrPartListing} activeTab={activeTab} editNfr={editNfr} showExtraData={showExtraData} />}
             {showDrawer &&
                 <DrawerTechnologyUpdate
                     isOpen={showDrawer}

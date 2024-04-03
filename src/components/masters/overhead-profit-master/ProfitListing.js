@@ -669,7 +669,7 @@ function ProfitListing(props) {
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <TourWrapper
-                                            buttonSpecificProp={{ id: "profit_Listing_Tour", onClick: toggleExtraData }}
+                                            buttonSpecificProp={{ id: "Profit_Listing_Tour", onClick: toggleExtraData }}
                                             stepsSpecificProp={{
                                                 steps: Steps(t, { addLimit: false, bulkUpload: false, costMovementButton: false, downloadButton: true, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
                                             }} />

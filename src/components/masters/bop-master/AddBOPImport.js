@@ -1374,16 +1374,17 @@ class AddBOPImport extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} {showBopLabel()} (Import)
-                          <TourWrapper
-                            buttonSpecificProp={{ id: "BOP_Import_form" }}
+                          {!isViewMode && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_BOP_Import_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                isEditFlag: isEditFlag,
                                 showSendForApproval: !this.state.isFinalApprovar,
                                 CBCTypeField: (costingTypeId === CBCTypeId),
 
                                 sourceField: (costingTypeId === VBCTypeId)
                               }).BOP_IMPORT_FORM
-                            }} />
+                            }} />}
                         </h1>
                       </div>
                     </div>
@@ -1487,7 +1488,7 @@ class AddBOPImport extends Component {
                               </div>
                               {!isEditFlag &&
                                 <Button
-                                  id="addBOPDomestic_categoryToggle"
+                                  id="addBOPImport_categoryToggle"
                                   onClick={this.categoryToggler}
                                   className={"right"}
                                   variant="plus-icon-square"
@@ -1662,7 +1663,7 @@ class AddBOPImport extends Component {
                                   </div>
                                   {!isEditFlag && (
                                     <Button
-                                      id="addBOPDomestic_vendorToggle"
+                                      id="addBOPImport_vendorToggle"
                                       onClick={this.vendorToggler}
                                       className={"right"}
                                       variant="plus-icon-square"

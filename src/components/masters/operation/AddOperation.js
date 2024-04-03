@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getCodeBySplitting, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number, hashValidation } from "../../../helper/validation";
+import { required, getCodeBySplitting, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number, hashValidation, checkForNull, checkForDecimalAndNull } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, focusOnError, renderTextInputField } from "../../layout/FormInputs";
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, } from '../../../actions/Common';
@@ -35,6 +35,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
+import TooltipCustom from '../../common/Tooltip';
 
 const selector = formValueSelector('AddOperation');
 
@@ -99,6 +100,7 @@ class AddOperation extends Component {
       detailObject: {},
       CostingTypePermission: false,
       disableSendForApproval: false,
+      isWelding: false
     }
   }
 
@@ -134,6 +136,7 @@ class AddOperation extends Component {
       this.setState({ finalApprovalLoader: false })
     }
     this.getDetail()
+
   }
 
   commonFunction(plantId = "") {
@@ -163,10 +166,8 @@ class AddOperation extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
-    if (prevProps.filedObj !== this.props.filedObj) {
-      const { filedObj } = this.props;
-      if (filedObj && filedObj !== undefined && filedObj.length > 4) {
-      }
+    if (this.props.fieldsObj !== prevProps.fieldsObj && this.state.isWelding === true) {
+      this.calculateRate()
     }
     if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
       this.commonFunction()
@@ -247,7 +248,10 @@ class AddOperation extends Component {
       'vendorName',
       'clientName',
       'Rate',
-      'EffectiveDate'
+      'EffectiveDate',
+      'operationType',
+      'WeldingRate',
+      'Consumption',
     ];
     fieldsToClear.forEach(fieldName => {
       this.props.dispatch(clearFields('AddOperation', false, false, fieldName));
@@ -339,17 +343,39 @@ class AddOperation extends Component {
 
   handleOperationType = (newValue) => {
     if (newValue && newValue !== '') {
+      const fieldsToClear = ['Rate'];
+      fieldsToClear.forEach(fieldName => {
+        this.props.dispatch(clearFields('AddOperation', false, false, fieldName));
+      });
       this.setState({ operationType: newValue, })
       if (String(newValue.label) === 'Surface Treatment') {
-        this.setState({ isSurfaceTreatment: true, isSurfaceTreatmentSelected: true })
+        this.setState({ isSurfaceTreatment: true, isSurfaceTreatmentSelected: true, isWelding: false })
+      } else if (String(newValue.label) === "Welding") {
+        this.setState({ isWelding: true, isSurfaceTreatment: false, isSurfaceTreatmentSelected: false })
       } else {
-        this.setState({ isSurfaceTreatment: false, isSurfaceTreatmentSelected: false })
+        this.setState({ isSurfaceTreatment: false, isSurfaceTreatmentSelected: false, isWelding: false })
       }
     } else {
       this.setState({ operationType: [] })
     }
   };
 
+  /**
+  * @method handleRates
+  * @description USE TO HANDLE WELDING MATERIAL RATE AND CONSUMPTION
+  */
+  handleRates = (value, type) => {
+    const operationBasicRate = Number(this.state.DataToChange.OperationBasicRate);
+    const operationConsumption = Number(this.state.DataToChange.OperationConsumption);
+
+    if (type === 'WeldingRate' && Number(value) === operationBasicRate) {
+      this.setState({ IsFinancialDataChanged: false });
+    } else if (type === 'Consumption' && Number(value) === operationConsumption) {
+      this.setState({ IsFinancialDataChanged: false });
+    } else {
+      this.setState({ IsFinancialDataChanged: true });
+    }
+  }
   uomToggler = () => {
     this.setState({ isOpenUOM: true })
   }
@@ -372,9 +398,25 @@ class AddOperation extends Component {
 
   }
 
+  calculateRate = (value) => {
+    const { fieldsObj } = this.props
+    const weldingRate = fieldsObj?.WeldingRate
+    const consumption = fieldsObj?.Consumption
+    let rate = ''; // Initialize rate with default value
+
+    if (weldingRate && !consumption) {
+      rate = weldingRate * 1; // Multiply by 1 if consumption is not present
+    } else if (!weldingRate && consumption) {
+      rate = 1 * consumption; // Multiply by 1 if weldingRate is not present
+    } else if (weldingRate && consumption) {
+      rate = weldingRate * consumption; // Multiply normally if both values are present
+    }
+
+    this.props.change('Rate', checkForDecimalAndNull(rate, getConfigurationKey().NoOfDecimalForPrice));
+  }
+
 
   handleRateChange = (value) => {
-
     if (this.state.isEditFlag && Number(this.state.DataToChange?.Rate) === Number(value?.target?.value)) {
       this.setState({ IsFinancialDataChanged: false })
 
@@ -426,12 +468,17 @@ class AddOperation extends Component {
           this.props.change('Description', Data.Description ? Data.Description : '')
           this.props.change('Rate', Data.Rate ? Data.Rate : '')
           this.props.change('Remark', Data.Remark ? Data.Remark : '')
+          this.props.change('WeldingRate', Data.OperationBasicRate ? Data.OperationBasicRate : '')
+          this.props.change('Consumption', Data.OperationConsumption ? Data.OperationConsumption : '')
+          this.props.change('LabourRatePerUOM', Data.LabourRatePerUOM ? Data.LabourRatePerUOM : '')
           let technologyArray = [];
           Data && Data.Technology.map((item) => {
             technologyArray.push({ Text: item.Technology, Value: item.TechnologyId })
             return technologyArray;
           })
-
+          if (Data?.ForType === 'Welding') {
+            this.setState({ isWelding: true })
+          }
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -722,6 +769,8 @@ class AddOperation extends Component {
       CustomerId: costingTypeId === CBCTypeId ? client.value : '',
       IsDetailedEntry: false,
       ForType: this.state.operationType?.label,
+      OperationBasicRate: values.WeldingRate,
+      OperationConsumption: values.Consumption
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 
@@ -838,17 +887,16 @@ class AddOperation extends Component {
 
   moreDetailsToggler = () => {
 
-    const { filedObj } = this.props
-    const { selectedPlants, operationType, selectedTechnology, UOM, destinationPlant, costingTypeId, isSurfaceTreatment, OperationId } = this.state
-    let isFirstConditionTrue = costingTypeId === ZBCTypeId ? (selectedPlants.length > 0) : false;
-    let isPlant = isFirstConditionTrue || (Object.keys(destinationPlant).length > 0 ? true : false);
-    if (operationType && selectedTechnology.length > 0 && filedObj.OperationName && UOM.label && filedObj.EffectiveDate && isPlant) {
+    const { fieldsObj } = this.props
+    const { selectedPlants, operationType, selectedTechnology, UOM, destinationPlant, isSurfaceTreatment, OperationId } = this.state
+    let isPlant = selectedPlants.length > 0 || destinationPlant.label ? true : false
+    if (operationType && selectedTechnology.length > 0 && fieldsObj.OperationName && UOM.label && fieldsObj.EffectiveDate && isPlant) {
       let obj = {}
       obj.operationType = this.state.operationType
       obj.technology = this.state.selectedTechnology
-      obj.operationName = filedObj.OperationName
-      obj.operationCode = filedObj.OperationCode
-      obj.description = filedObj.Description
+      obj.operationName = fieldsObj.OperationName
+      obj.operationCode = fieldsObj.OperationCode
+      obj.description = fieldsObj.Description
       obj.plants = this.state.selectedPlants
       obj.UOM = this.state.UOM
       obj.vendor = this.state.vendorName
@@ -928,7 +976,7 @@ class AddOperation extends Component {
                     {!data.isCostingDrawer && <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
 
                       {!data.isViewMode && <TourWrapper
-                        buttonSpecificProp={{ id: "Add_Operation_form" }}
+                        buttonSpecificProp={{ id: "Add_Operation_Form" }}
                         stepsSpecificProp={{
                           steps: Steps(t, {
                             showSendForApproval: !this.state.isFinalApprovar,
@@ -993,7 +1041,7 @@ class AddOperation extends Component {
                     </Row>
                     <Row>
 
-                      {getConfigurationKey().IsShowDetailedBreakup && <Col md="3">
+                      {getConfigurationKey().IsShowDetailedOperationBreakup && <Col md="3">
                         <Field
                           name="operationType"
                           type="text"
@@ -1188,16 +1236,51 @@ class AddOperation extends Component {
                           disabled={isViewMode || (isEditFlag && isOperationAssociated)}
                         />
                       </Col>
+                      {this.state.isWelding &&
+                        <>
+                          <Col md="3">
+                            <Field
+                              label={`Welding Material Rate/Kg`}
+                              name={"WeldingRate"}
+                              type="text"
+                              placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderTextInputField}
+                              required={false}
+                              disabled={isViewMode || (isEditFlag && isOperationAssociated)}
+                              onChange={(e) => { this.handleRates(e.target.value, 'WeldingRate') }}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+                          <Col md="3">
+                            <Field
+                              label={`Consumption`}
+                              name={"Consumption"}
+                              type="text"
+                              placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Enter"}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderTextInputField}
+                              required={false}
+                              disabled={isViewMode || (isEditFlag && isOperationAssociated)}
+                              onChange={(e) => { this.handleRates(e.target.value, 'Consumption') }}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+                        </>}
                       <Col md="3">
+                        {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Rate = Welding Material Rate/Kg * Consumption'} />}
                         <Field
                           label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={"Rate"}
                           type="text"
-                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Select"}
-                          validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                          id="rate"
+                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding ? '-' : "Enter"}
+                          validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
                           required={true}
-                          disabled={isViewMode || (isEditFlag && isOperationAssociated)}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
@@ -1260,7 +1343,7 @@ class AddOperation extends Component {
                         </label>
                       </Col>
                       <Col md="4">
-                        {(!isEditFlag || (isEditFlag && this.state.isDetailEntry)) && getConfigurationKey().IsShowDetailedBreakup && < button
+                        {(!isEditFlag || (isEditFlag && this.state.isDetailEntry)) && getConfigurationKey().IsShowDetailedOperationBreakup && < button
                           type="button"
                           id="AddMoreOperation_container"
                           className={'user-btn '}
@@ -1464,7 +1547,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const filedObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant');
+  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption');
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;
@@ -1481,7 +1564,7 @@ function mapStateToProps(state) {
 
   return {
     plantSelectList, UOMSelectList,
-    operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
+    operationData, filterPlantList, vendorWithVendorCodeSelectList, fieldsObj,
     initialValues, initialConfiguration, costingSpecifiTechnology, clientSelectList, userMasterLevelAPI
   }
 }
@@ -1508,7 +1591,7 @@ export default connect(mapStateToProps, {
   getVendorNameByVendorSelectList
 })(reduxForm({
   form: 'AddOperation',
-  touchOnChange: true,
+  // touchOnChange: true,
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },

@@ -211,7 +211,7 @@ function NFRInsightsReport(props) {
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                         <TourWrapper
-                            buttonSpecificProp={{ id: "Simulation_Insights_Report" }}
+                            buttonSpecificProp={{ id: "Nfr_Insight_Report" }}
                             stepsSpecificProp={{
                                 steps: Steps(t, { addButton: false, bulkUpload: false, viewButton: false, EditButton: false, DeleteButton: false, filterButton: false, addLimit: false, costMovementButton: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
                             }} />

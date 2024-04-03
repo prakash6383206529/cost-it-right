@@ -104,7 +104,7 @@ const MasterLevelListing = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {permissions.Edit && <Button id={`levelTechnologyListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, 'Master', rowData)} title={"Edit"} />
+                {permissions.Edit && <Button id={`levelTechnologyListing_edit${props.rowIndex}`} className={"Edit HighestApproval_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, 'Master', rowData)} title={"Edit"} />
                 }
             </>
         )
@@ -156,7 +156,7 @@ const MasterLevelListing = (props) => {
                         <Row className="levellisting-page">
                             <Col md="6" className=""></Col>
                             <Col md="6" className="text-right search-user-block">
-                                <Button id={"masterLevelTyListing_refresh"} className="user-btn" onClick={() => masterResetState()} title={"Reset Grid"} icon={"refresh mr-0"} />
+                                <Button id={"masterLevelTyListing_refresh"} className="user-btn HighestApproval_Refresh" onClick={() => masterResetState()} title={"Reset Grid"} icon={"refresh mr-0"} />
                             </Col>
                         </Row>
 
@@ -164,7 +164,7 @@ const MasterLevelListing = (props) => {
                             <Col className="level-table" md="12 ">
                                 <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0) || state.noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header mt-3 mb-2 d-flex">
-                                        <input ref={masterFilter} type="text" className="form-control table-search" id="filter-text-box-master" placeholder="Search" autoComplete={'off'} onChange={(e) => masterFilterHandler(e)} />
+                                        <input ref={masterFilter} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => masterFilterHandler(e)} />
                                     </div>
                                     <div className={`ag-theme-material`}>
                                         {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

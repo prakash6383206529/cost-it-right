@@ -617,9 +617,8 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
-        if (getConfigurationKey().IsReleaseStrategyConfigured) {
-            //MINDA
-            // if (getConfigurationKey().IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
+        //MINDA
+        if (getConfigurationKey().IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
             let data = []
             selectedRowData && selectedRowData?.map(item => {
                 let obj = {}
@@ -641,17 +640,22 @@ function SimulationApprovalListing(props) {
                     return false
                 } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
                     let obj = {
-                        DepartmentId: res?.data?.Data?.DepartmentId,
+                        DepartmentId: res?.data?.Data?.DepartmentId ? res?.data?.Data?.DepartmentId : selectedRowData[0].DepartmentId ?? EMPTY_GUID,
                         UserId: loggedInUserId(),
-                        TechnologyId: approvalData?.SimulationTechnologyId,
+                        TechnologyId: approvalData?.SimulationTechnologyId ? approvalData?.SimulationTechnologyId : selectedRowData[0].SimulationTechnologyId,
                         Mode: 'simulation',
-                        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId),
-                        plantId: selectedRowData[0].PlantId
+                        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId ? res?.data?.Data?.ApprovalTypeId : selectedRowData[0].ApprovalTypeId),
+                        plantId: selectedRowData[0].PlantId ?? EMPTY_GUID
                     }
                     dispatch(checkFinalUser(obj, res => {
                         if (res && res.data && res.data.Result) {
                             if (res.data?.Data?.IsUserInApprovalFlow === false) {
                                 setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
+                            } else {
+                                if (res.data.Data.IsFinalApprover) {
+                                    setApproveDrawer(true)
+                                    setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
+                                }
                             }
                         }
                     }))

@@ -18,10 +18,15 @@ import NfrSummaryDrawer from './NfrSumaryDrawer';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { useRef } from 'react';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
-
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { useTranslation } from 'react-i18next';
+import LoaderCustom from '../../common/LoaderCustom';
 const gridOptions = {};
 
 function NFRApprovalListing(props) {
+    const { t } = useTranslation("Nfr")
+    const { activeTab } = props || {}
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState([]);
@@ -31,6 +36,8 @@ function NFRApprovalListing(props) {
     const [singleRowData, setSingleRowData] = useState([]);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const agGridRef = useRef(null);
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
     const floatingFilterNfr = {
         maxValue: 12,
         suppressFilterButton: true,
@@ -143,11 +150,24 @@ function NFRApprovalListing(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <Fragment>
-                {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div onClick={() => viewDetails(cell, row)} className={'link'}>{cell}</div>}
+                {(cell === '' || cell === null) ? <div id="view_nfrSummary" className='ml-4'>-</div> : <div onClick={() => viewDetails(cell, row)} className={'link'}>{cell}</div>}
             </Fragment>
         )
     }
+    /**
+           * @method toggleExtraData
+           * @description Handle specific module tour state to display lorem data
+           */
+    const toggleExtraData = (showTour) => {
 
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 200);
+
+
+    }
     const viewDetails = (approvalNumber, row) => {
         setIsOpen(true)
         setSingleRowData(row)
@@ -216,14 +236,20 @@ function NFRApprovalListing(props) {
 
                                 <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${rowData?.length <= 0 ? 'overlay-contain' : ''} `}>
                                     <div className="ag-grid-header d-flex justify-content-between">
-                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <Col md="3" lg="3" className='mb-2'>
+                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            {rowData.length !== 0 && <TourWrapper
+                                                buttonSpecificProp={{ id: "Nfr_Approval_Listing", onClick: toggleExtraData }}
+                                                stepsSpecificProp={{
+                                                    steps: Steps(t, { activeTab }).NFR_lISTING
+                                                }} />}
+                                        </Col>
+                                        <button type="button" id="resetNFR_listing" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
                                     </div>
                                     <div className="ag-theme-material">
-
-                                        <AgGridReact
+                                        {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
@@ -262,7 +288,7 @@ function NFRApprovalListing(props) {
                                             <AgGridColumn field="CreatedByName" headerName=" Created By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field='LastApprovedByName' headerName="Last Approved /Rejected By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterNfr}></AgGridColumn>
-                                        </AgGridReact>
+                                        </AgGridReact>}
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={defaultPageSize} />}
                                     </div>
                                 </div>

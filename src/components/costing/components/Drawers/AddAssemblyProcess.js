@@ -257,12 +257,14 @@ function AddAssemblyProcess(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right">
                 <button
+                  id="AddAssemblyProcess_Cancel"
                   type={'button'}
                   className="reset mr15 cancel-btn"
                   onClick={cancel} >
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
+                  id="AddAssemblyProcess_Save"
                   disabled={CostingViewMode ? true : false}
                   type={'button'}
                   className="submit-button mr15 save-btn"

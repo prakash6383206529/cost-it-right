@@ -707,7 +707,7 @@ function ApprovalListing(props) {
       return false
     }
     // MINDA
-    if (initialConfiguration.IsReleaseStrategyConfigured) {
+    if (initialConfiguration.IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
       let dataList = costingIdObj(selectedRowData)
       let requestObject = {
         "RequestFor": "COSTING",
@@ -856,7 +856,8 @@ function ApprovalListing(props) {
       UserId: loggedInUserId(),
       TechnologyId: selectedRowData[0].TechnologyId,
       Mode: 'costing',
-      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.CostingTypeId)
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.ApprovalTypeId ?? selectedRowData[0]?.CostingTypeId),
+      plantId: selectedRowData[0].PlantId ?? EMPTY_GUID
     }
     dispatch(checkFinalUser(obj, res => {
       if (res && res.data && res.data.Result) {
@@ -1196,6 +1197,7 @@ function ApprovalListing(props) {
           closeDrawer={closeShowApproval}
           anchor={'right'}
           isApprovalisting={true}
+          dataSelected={selectedRowData}
           technologyId={selectedRowData[0].TechnologyId}
           callSapCheckAPI={false}
         />

@@ -17,7 +17,7 @@ import BOMUpload from '../../massUpload/BOMUpload'
 import { useHistory } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
-import { MACHINING } from '../../../config/masterData'
+import { IdForMultiTechnology, MACHINING } from '../../../config/masterData'
 import { BOUGHTOUTPARTSPACING, COMPONENT_PART, PRODUCT_ID, searchCount } from '../../../config/constants'
 import { autoCompleteDropdown } from '../../common/CommonFunctions'
 import { MESSAGES } from '../../../config/message'
@@ -229,7 +229,7 @@ function CostingSummary(props) {
         if (item.Value === '0') return false
         if (item.Value === PRODUCT_ID) return false
         if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
-        if (String(technology?.value) === String(ASSEMBLY) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
+        if (IdForMultiTechnology.includes(String(technology?.value)) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
@@ -471,7 +471,7 @@ function CostingSummary(props) {
                     <Row>
                       <Col md="12" className="mt-3">
                         <div className="left-border">{'Part Details:'}  {<TourWrapper
-                          buttonSpecificProp={{ id: "costing_summary" }}
+                          buttonSpecificProp={{ id: "Costing_Summary" }}
                           stepsSpecificProp={{
                             steps: Steps(t, "costing-summary-page").COSTING_INITIAL
                           }} />}</div>

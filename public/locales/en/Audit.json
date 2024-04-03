@@ -1,0 +1,12 @@
+{
+    "audit": {
+        "search": "Search for specific data from here.",
+        "fromDate": "Click here to choose the start date.",
+        "toDate": "Click here to choose the end date.",
+        "floatingFilterInput": "Here you can search for specific column-wise data.",
+        "floatingFilterButton": "Here you can filter the data based on different conditions.",
+        "filter": "After entering specific data, click here to filter it out.",
+        "download": "Click here to download the entire dataset in Excel format. Alternatively, select specific checkboxes to download only the chosen data in Excel format.",
+        "refresh": "Refresh the grid to update filtered data from here."
+    }
+}

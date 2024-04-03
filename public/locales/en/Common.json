@@ -18,8 +18,8 @@
         },
         "actionButton": {
             "cost-movement": "Check the movement in the cost from here.",
-            "view": "View detailed master data from here.",
-            "edit": "Click here to edit the master data.",
+            "view": "View detailed data from here.",
+            "edit": "Click here to edit the data.",
             "delete": "If the master data is not associated anywhere, you can delete it.",
             "copy": "If data is not associated anywhere, you can copy the particular data.",
             "viewBOM": "View the BOM data from here.",
@@ -45,7 +45,7 @@
             "generateReport": "Generate a report from here.",
             "costing_version": "Click on the costing version to view costing details from here.",
             "rfq_version": "Click on the RFQ version to view RFQ details from here.",
-            "view_details": "Click here to see the user details."
+            "view_details": "Click here if you want to update user details."
         },
         "masterBenchmark": {
             "master": "Select master from here."

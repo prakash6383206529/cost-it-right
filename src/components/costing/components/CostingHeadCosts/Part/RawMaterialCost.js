@@ -1388,8 +1388,8 @@ function RawMaterialCost(props) {
                       {<th>{`Gross Weight`}</th>}
                       {<th>{`Finish Weight`}</th>}
                       {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
-                      {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery (%)`}</th>}
                       {costData?.TechnologyId === PLASTIC && <th>{'Burning Loss Weight'}</th>}
+                      {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery (%)`}</th>}
                       {<th className='scrap-weight'>Scrap Weight </th>}
                       {/* //Add i here for MB+ */}
                       <th className='net-rm-cost' >{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}  </th>

@@ -70,11 +70,7 @@ function BDNonAssociatedSimulation(props) {
         CustomerName: showCompressedColumns ? 100 : 140,
         Plants: showCompressedColumns ? 100 : 140,
         NumberOfPieces: showCompressedColumns ? 100 : 140,
-        BasicRate: showCompressedColumns ? 140 : 140,
-        newBasicRateFormatter: showCompressedColumns ? 140 : 140,
         Percentage: showCompressedColumns ? 100 : 140,
-        OldNetLandedCost: showCompressedColumns ? 120 : 140,
-        NewNetLandedCost: showCompressedColumns ? 120 : 140,
         EffectiveDate: showCompressedColumns ? 90 : 140,
         CostingId: showCompressedColumns ? 90 : 140,
 
@@ -625,15 +621,15 @@ function BDNonAssociatedSimulation(props) {
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" tooltipField='NumberOfPieces' editable='false' headerName="Min Order Quantity" minWidth={columnWidths.NumberOfPieces} ></AgGridColumn>}
 
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`${Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (" + reactLocalStorage.getObject("baseCurrency") + ")"}`} marryChildren={true} width={240}>
-                                                    <AgGridColumn width={columnWidths.BasicRate} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.newBasicRateFormatter} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                    <AgGridColumn width={140} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
+                                                    <AgGridColumn width={140} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {<AgGridColumn width={columnWidths.Percentage} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter'></AgGridColumn>}
 
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`${Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (" + reactLocalStorage.getObject("baseCurrency") + ")"}`} marryChildren={true}>
                                                     {/* <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
-                                                    <AgGridColumn width={columnWidths.OldNetLandedCost} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewNetLandedCost} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" valueGetter={ageValueGetterLanded} colId='NewNetLandedCost'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" valueGetter={ageValueGetterLanded} colId='NewNetLandedCost'></AgGridColumn>
                                                 </AgGridColumn>
 
 

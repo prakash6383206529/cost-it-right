@@ -60,7 +60,6 @@ function UserRegistration(props) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isShowHide, setIsShowHide] = useState(false);
   const [isShowHidePassword, setIsShowHidePassword] = useState(false);
-
   const [primaryContact, setPrimaryContact] = useState(false);
   const [department, setDepartment] = useState([]);
   const [oldDepartment, setOldDepartment] = useState([]);
@@ -147,7 +146,6 @@ function UserRegistration(props) {
   const plantSelectListForDepartment = useSelector(state => state.auth.plantSelectListForDepartment);
 
   const [maxLength, setMaxLength] = useState(maxLength11);
-
   const defaultValues = {
     FirstName: props?.data?.isEditFlag && registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',
     MiddleName: props?.data?.isEditFlag && registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '',
@@ -2388,10 +2386,10 @@ function UserRegistration(props) {
                 <div className="col-md-6">
                   <div className="form-heading mb-0">
                     <h2>{isEditFlag ? 'Update' : 'Add'} {props?.RFQUser ? 'RFQ ' : ''}User <TourWrapper
-                      buttonSpecificProp={{ id: "Add_User_form" }}
+                      buttonSpecificProp={{ id: "Add_User_Form" }}
                       stepsSpecificProp={{
                         steps: Steps(t, {
-                          costingField: acc1, simulationField: acc2, masterField: acc3
+                          costingField: acc1, simulationField: acc2, masterField: acc3, onBoardingField: acc4, RFQUser: props?.RFQUser, isShowPwdField: isShowPwdField, isEditFlag: isEditFlag
                         }).USER_MANAGEMENT
                       }} /></h2>
                   </div>
@@ -2571,7 +2569,7 @@ function UserRegistration(props) {
                         </Col>
                       </>
                     }
-                    {props?.RFQUser && <Col md="3" className="d-flex align-items-center mt-4 pt-2">
+                    {props?.RFQUser && <Col md="3" id="primaryContact_container" className="d-flex align-items-center mt-4 pt-2">
                       <label
                         className={`custom-checkbox`}
                         onChange={onPrimaryContactCheck}
@@ -2640,10 +2638,11 @@ function UserRegistration(props) {
                       </div>}
                     {isShowPwdField &&
                       <>
-                        <div id="password" className="input-group password password-wrapper col-md-3">
+                        <div className="input-group password password-wrapper col-md-3">
                           <PasswordFieldHookForm
                             name="Password"
                             label="Password"
+                            id="AddUser_Password"
                             placeholder="Enter"
                             disableErrorOverflow={true}
                             errors={errors.Password}
@@ -2668,10 +2667,11 @@ function UserRegistration(props) {
                             customClassName={'withBorderPWD'}
                           />
                         </div>
-                        <div id="AddUser_PasswordConfirm" className="input-group col-md-3 password-wrapper">
+                        <div className="input-group col-md-3 password-wrapper">
                           <PasswordFieldHookForm
                             name="passwordConfirm"
                             label="Confirm Password"
+                            id="AddUser_PasswordConfirm"
                             placeholder={'Enter'}
                             errors={errors.passwordConfirm}
                             Controller={Controller}
@@ -3394,7 +3394,7 @@ function UserRegistration(props) {
                               <HeaderTitle title={'Onboarding Approval Level:'} customClass={''} />
                             </Col>
                             <Col md="4" className="text-right">
-                              <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
+                              <button id="AddUser_Permissions_onBoarding" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
 
                                 {acc4 ? (
                                   <i className="fa fa-minus" ></i>
@@ -3443,6 +3443,7 @@ function UserRegistration(props) {
                                   {isOnboardingEditIndex ?
                                     <>
                                       <button
+                                        id="updateUser_onBoarding"
                                         type="button"
                                         className={'btn btn-primary add-button-big'}
                                         onClick={updateOnboardingLevel}
@@ -3456,6 +3457,7 @@ function UserRegistration(props) {
                                     </>
                                     :
                                     <button
+                                      id="addUser_OnBoarding"
                                       type="button"
                                       className={'user-btn add-button-big ml-2'}
                                       onClick={setOnboardingLevel}

@@ -17,7 +17,12 @@ import PermissionsTabIndex from "./PermissionsTabIndex";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import TooltipCustom from "../../common/Tooltip";
 import { TextFieldHookForm } from "../../layout/HookFormInputs";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../TourMessages";
+import { useTranslation } from 'react-i18next'
+
 const Role = (props) => {
+	const { t } = useTranslation("UserRegistration")
 	const dispatch = useDispatch();
 	const {
 		handleSubmit,
@@ -219,7 +224,13 @@ const Role = (props) => {
 					<div className="col-md-12">
 						<div className="shadow-lgg login-formg ">
 							<div className="form-headingg">
-								<h2>{isEditFlag ? "Update Role" : "Add Role"}</h2>
+								<h2>{isEditFlag ? "Update Role" : "Add Role"}
+									<TourWrapper
+										buttonSpecificProp={{ id: "Add_Role_Form" }}
+										stepsSpecificProp={{
+											steps: Steps(t, { isEditFlag: isEditFlag }).ADD_ROLE
+										}} />
+								</h2>
 							</div>
 							<form
 								className="form"
@@ -235,6 +246,7 @@ const Role = (props) => {
 													<span className="asterisk-required">*</span>
 												</div>
 												<TextFieldHookForm
+													id="AddRole_Name"
 													label={"RoleName"}
 													Controller={Controller}
 													control={control}
@@ -293,6 +305,7 @@ const Role = (props) => {
 								<div className="row sf-btn-footer no-gutters justify-content-between bottom-footer">
 									<div className="col-sm-12 text-right bluefooter-butn">
 										<button
+											id="AddRole_Cancel"
 											onClick={cancel}
 											type="button"
 											value="Cancel"
@@ -301,6 +314,7 @@ const Role = (props) => {
 											<div className={"cancel-icon"}></div> Cancel
 										</button>
 										<button
+											id="AddRole_Save"
 											disabled={isSubmitted ? true : false}
 											type="submit"
 											className="user-btn save-btn"

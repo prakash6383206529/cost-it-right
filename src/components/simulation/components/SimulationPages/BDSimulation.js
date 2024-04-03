@@ -74,14 +74,7 @@ function BDSimulation(props) {
         CustomerName: showCompressedColumns ? 120 : 140,
         plantCode: showCompressedColumns ? 120 : 140,
         Quantity: showCompressedColumns ? 120 : 140,
-        BasicRate: showCompressedColumns ? 120 : 120,
-        newBasicRate: showCompressedColumns ? 120 : 120,
-        OldNetLandedCost: showCompressedColumns ? 120 : 120,
-        NewNetLandedCost: showCompressedColumns ? 120 : 120,
         EffectiveDate: showCompressedColumns ? 150 : 150,
-        CostingId: showCompressedColumns ? 170 : 190,
-        OldBoughtOutPartNetLandedCostConversion: showCompressedColumns ? 120 : 120,
-        NewBoughtOutPartNetLandedCostConversion: showCompressedColumns ? 120 : 120,
     };
     useEffect(() => {
         if (isbulkUpload) {
@@ -600,8 +593,8 @@ function BDSimulation(props) {
                                                         ? "Basic Rate (Currency)"
                                                         : `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
                                                 } marryChildren={true} width={240}>
-                                                    <AgGridColumn width={columnWidths.BasicRate} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate" suppressSizeToFit={true}></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.newBasicRate} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                                    <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate" suppressSizeToFit={true}></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
 
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
@@ -613,14 +606,14 @@ function BDSimulation(props) {
                                                         : `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
                                                 } marryChildren={true}>
                                                     {/* {!isImpactedMaster &&<AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
-                                                    <AgGridColumn width={columnWidths.OldNetLandedCost} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost' suppressSizeToFit={true}></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewNetLandedCost} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost' suppressSizeToFit={true}></AgGridColumn>
+                                                    <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost' suppressSizeToFit={true}></AgGridColumn>
+                                                    <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost' suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR BOPIMPORT */}
                                                 {
                                                     String(props?.masterId) === String(BOPIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} marryChildren={true} >
-                                                        <AgGridColumn width={columnWidths.OldBoughtOutPartNetLandedCostConversion} field="OldBoughtOutPartNetLandedCostConversion" tooltipField='OldBoughtOutPartNetLandedCostConversion' editable='false' headerName="Existing" colId='OldBoughtOutPartNetLandedCostConversion'></AgGridColumn>
-                                                        <AgGridColumn width={columnWidths.NewBoughtOutPartNetLandedCostConversion} field="NewBoughtOutPartNetLandedCostConversion" editable='false' headerName="Revised" colId='NewBoughtOutPartNetLandedCostConversion'></AgGridColumn>
+                                                        <AgGridColumn width={120} field="OldBoughtOutPartNetLandedCostConversion" tooltipField='OldBoughtOutPartNetLandedCostConversion' editable='false' headerName="Existing" colId='OldBoughtOutPartNetLandedCostConversion'></AgGridColumn>
+                                                        <AgGridColumn width={120} field="NewBoughtOutPartNetLandedCostConversion" editable='false' headerName="Revised" colId='NewBoughtOutPartNetLandedCostConversion'></AgGridColumn>
                                                     </AgGridColumn>
                                                 }
                                                 {props?.children}

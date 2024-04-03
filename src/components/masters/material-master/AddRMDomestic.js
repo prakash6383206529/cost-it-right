@@ -1579,12 +1579,16 @@ class AddRMDomestic extends Component {
 
     const labelForScrapRate = () => {
       let label = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
+
       if (showScrapKeys?.showCircleJali) {
         label = labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
+
       } else if (showScrapKeys?.showForging) {
         label = labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
+
       } else if (showScrapKeys?.showScrap) {
         label = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
+
       }
       return label
     }
@@ -1604,11 +1608,16 @@ class AddRMDomestic extends Component {
                         <h1>
                           {isViewFlag ? 'View' : isEditFlag ? 'Update' : 'Add'} Raw Material (Domestic)
 
-                          {this.state.showTour && <TourWrapper
-                            buttonSpecificProp={{ id: "RM_domestic_form" }}
+                          {this.state.showTour && !isViewFlag && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_RM_Domestic_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t,
                                 {
+                                  showScrap: showScrapKeys?.showScrap,
+                                  showForging: showScrapKeys?.showForging,
+                                  showCircleJali: showScrapKeys?.showCircleJali,
+                                  isRMAssociated: isRMAssociated,
+                                  isEditFlag: isEditFlag,
                                   showSendForApproval: !this.state.isFinalApprovar,
                                   hasSource: (costingTypeId === ZBCTypeId),
                                   destinationField: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant),
@@ -2050,7 +2059,7 @@ class AddRMDomestic extends Component {
                                 </span>
                               </div>
                             </Col>
-                            {this.state.IsApplyHasDifferentUOM &&
+                            {this.state.IsApplyHasDifferentUOM && !this.props.IsRMAssociated &&
                               <Col md="3" className='dropdown-flex'>
                                 <Field
                                   label="Scrap Rate UOM"
@@ -2079,7 +2088,7 @@ class AddRMDomestic extends Component {
                                   className=""
                                   maxLength="15"
                                   customClassName=" withBorder"
-                                  disabled={isViewFlag}
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 />
                               </Col>
                               <Col md="3">
@@ -2111,7 +2120,7 @@ class AddRMDomestic extends Component {
                                   className=""
                                   maxLength="15"
                                   customClassName=" withBorder"
-                                  disabled={isViewFlag}
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 />
                               </Col></>}
 
@@ -2131,7 +2140,7 @@ class AddRMDomestic extends Component {
                                   maxLength="15"
                                   customClassName=" withBorder"
                                   // onChange={this.handleScrapRate}
-                                  disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                  disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                 />
                               </Col>}
                             {showScrapKeys?.showForging &&
@@ -2150,7 +2159,7 @@ class AddRMDomestic extends Component {
                                     className=""
                                     customClassName=" withBorder"
                                     maxLength="15"
-                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                                 <Col md="3">
@@ -2165,7 +2174,7 @@ class AddRMDomestic extends Component {
                                     className=""
                                     customClassName=" withBorder"
                                     maxLength="15"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                               </>
@@ -2183,7 +2192,7 @@ class AddRMDomestic extends Component {
                                     validate={[required, maxLength15, decimalLengthsix]}
                                     component={renderText}
                                     required={true}
-                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                     className=" "
                                     customClassName=" withBorder"
                                   />
@@ -2197,7 +2206,7 @@ class AddRMDomestic extends Component {
                                     validate={[maxLength15, decimalLengthsix]}
                                     component={renderText}
                                     required={false}
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                     className=" "
                                     customClassName=" withBorder"
                                   />
@@ -2221,7 +2230,7 @@ class AddRMDomestic extends Component {
                                     className=""
                                     maxLength="15"
                                     customClassName=" withBorder"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                                 {/* //RE */}
@@ -2237,7 +2246,7 @@ class AddRMDomestic extends Component {
                                     className=""
                                     maxLength="15"
                                     customClassName=" withBorder"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                               </>)}

@@ -974,7 +974,7 @@ class AddProfit extends Component {
                     <div className="col-md-6">
                       <h1> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Profit Details
                         <TourWrapper
-                          buttonSpecificProp={{ id: "add_profit_form" }}
+                          buttonSpecificProp={{ id: "Add_Profit_Form" }}
                           stepsSpecificProp={{
                             steps: Steps(t,
                               { vendorField: (costingTypeId === VBCTypeId), customerField: (costingTypeId === CBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) }).ADD_PROFIT_DETAILS

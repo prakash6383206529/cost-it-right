@@ -20,7 +20,7 @@
         "viewPieChart": "View the pie chart from here.",
         "viewRMCost": "View detailed Raw Material Cost from here.",
         "viewMultipleTechnology": "View detailed Multiple Technology Cost from here.",
-        "viewBOPCost": "View the detailed Insert from here.",
+        "viewBOPCost": "View the detailed BOP from here.",
         "viewConversionCost": "View detailed conversion cost data here.",
         "viewSurfaceTreatmentCost": "View detailed surface treatment cost data here.",
         "viewOverheadProfitCost": "View detailed overhead, profit, ICC, and rejection data here.",
@@ -61,7 +61,7 @@
     },
     "RMCtabs": {
         "AddRM": "Here you can add your Raw Materials",
-        "AddBOP": "Here you can add your Inserts",
+        "AddBOP": "Here you can add your BOPs",
         "AddProcess": "Here you can add your Processes",
         "AddOperation": "Here you can add your Operations",
         "AddOtherOperation": "Here you can add your Other Operation",
@@ -121,9 +121,9 @@
         "remark": "You can add remarks or note here."
     },
     "BopCost": {
-        "edit": "You can edit the insert from here.",
-        "delete": "You can delete the insert from here.",
-        "bopHanlding": "You can add your insert handling charge from here."
+        "edit": "You can edit the BOP from here.",
+        "delete": "You can delete the BOP from here.",
+        "bopHandling": "You can add your BOP handling charge from here."
     },
     "processCost": {
         "calculator": "You can fill data from calculator for process cost.",
