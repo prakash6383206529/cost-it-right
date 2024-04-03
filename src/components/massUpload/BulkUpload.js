@@ -44,6 +44,8 @@ const bopMasterName = showBopLabel();
 
 class BulkUpload extends Component {
     constructor(props) {
+
+
         super(props);
         this.child = React.createRef()
         this.fileUploadRef = React.createRef();
@@ -216,9 +218,12 @@ class BulkUpload extends Component {
     fileHandler = event => {
         this.setState({ bulkUploadLoader: true })
         let fileObj = event.target.files[0];
+
         let fileHeads = [];
         let uploadfileName = fileObj?.name;
+
         let fileType = uploadfileName?.substr(uploadfileName.indexOf('.'));
+
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
@@ -226,6 +231,7 @@ class BulkUpload extends Component {
             this.setState({ bulkUploadLoader: false })
         } else {
             let data = new FormData()
+
             data.append('file', fileObj)
 
             ExcelRenderer(fileObj, (err, resp) => {
@@ -268,6 +274,7 @@ class BulkUpload extends Component {
                             checkForFileHead = checkForSameFileUpload(RMSpecification, fileHeads)
                             break;
                         case String(BOPDOMESTICBULKUPLOAD):
+
                             //MINDA
                             // case String(INSERTDOMESTICBULKUPLOAD):
 
@@ -419,6 +426,7 @@ class BulkUpload extends Component {
                     let fileData = [];
                     resp.rows.map((val, index) => {
 
+
                         if (index > 0 && val?.length > 0) {
                             // BELOW CODE FOR HANDLE EMPTY CELL VALUE
                             const i = val.findIndex(e => e === undefined);
@@ -432,6 +440,7 @@ class BulkUpload extends Component {
 
                             let obj = {}
                             val.map((el, i) => {
+
 
                                 if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string' && el !== '') {
                                     if (isDateFormatter(el)) {

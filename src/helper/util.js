@@ -1151,6 +1151,7 @@ export const showTitleForActiveToggle = (index) => {
 }
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
 export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = false) => {
+
   let checkForFileHead, array = []
   let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
   const bopMasterName = showBopLabel()
@@ -1174,7 +1175,6 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
-
     }
   }
 
@@ -1185,6 +1185,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
+
 
 // SHOW ALL DATA ON HOVER WHEN DATA INPUT FIELD WILL DISABLE OR VIEW MODE
 export const showDataOnHover = (value) => {
@@ -1396,7 +1397,7 @@ export function setLoremIpsum(obj) {
   return [setLorem(obj)];
 }
 
-// 
+//
 
 // function for % and & issue in the queryparams
 // Utility function to encode query parameters

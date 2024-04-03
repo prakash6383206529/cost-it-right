@@ -137,8 +137,7 @@ function CostReportForm(props) {
     */
     const handleFromDate = (value) => {
         setEffectiveDate(value)
-        setMinDate(value); // Set minDate for To Date picker
-
+        setMinDate(value)
         dispatch(getFormGridData({ ...costReportFormData, fromDate: value }))
         // dispatch(getFormGridData({ ...costReportFormData, EffectiveDate: value }))      //RE
 
@@ -670,7 +669,7 @@ function CostReportForm(props) {
                                     register={register}
                                     defaultValue={vendor.length !== 0 ? vendor : ""}
                                     options={renderListing("Vendor")}
-                                    mandatory={true}
+                                    mandatory={false}
                                     handleChange={handleVendorChange}
                                     // handleChange={() => { }}
                                     errors={errors.vendor}

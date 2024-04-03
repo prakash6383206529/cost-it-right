@@ -639,7 +639,7 @@ function MasterSendForApproval(props) {
             <>
                 <Col md="6">
                     <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Cut Off Price", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                        label={labelWithUOMAndCurrency("Cut Off Price ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                         name={"cutOffPrice"}
                         type="text"
                         Controller={Controller}
@@ -657,7 +657,7 @@ function MasterSendForApproval(props) {
                 {props?.IsImportEntry && <Col md="6">
                     <TooltipCustom id="rm-cut-off-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextCutOffBaseCurrency} />
                     <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Cut Off Price", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                        label={labelWithUOMAndCurrency("Cut Off Price ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                         name={"cutOffPriceBase"}
                         type="text"
                         Controller={Controller}
@@ -677,7 +677,7 @@ function MasterSendForApproval(props) {
 
                 <Col md="6">
                     <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                        label={labelWithUOMAndCurrency("Basic Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                         name={"BasicRateCurrency"}
                         type="text"
                         Controller={Controller}
@@ -694,7 +694,7 @@ function MasterSendForApproval(props) {
                 {props?.IsImportEntry && <Col md="6">
                     <TooltipCustom id="rm-basic-rate-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextBasicRateBaseCurrency} />
                     <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                        label={labelWithUOMAndCurrency("Basic Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                         name={"BasicRateBase"}
                         type="text"
                         Controller={Controller}
@@ -802,7 +802,7 @@ function MasterSendForApproval(props) {
                         <Col md="6">
                             <TooltipCustom id="rm-scrap-rate-selected-currency" tooltipText={props?.toolTipTextObject?.toolTipTextScrapCostBaseCurrencyPerOldUOM} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"ScrapRateCurrency"}
                                 type="text"
                                 Controller={Controller}
@@ -819,7 +819,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-scrap-rate-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"ScrapRateBase"}
                                 type="text"
                                 Controller={Controller}
@@ -839,7 +839,7 @@ function MasterSendForApproval(props) {
                         <Col md="6">
                             <TooltipCustom id="rm-forging-scrap-selected-currency" tooltipText={props?.toolTipTextObject?.toolTipTextForgingScrapCostSelectedCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Forging Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Forging Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"ForgingScrap"}
                                 type="text"
                                 Controller={Controller}
@@ -856,7 +856,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6" className=" mb-3">
                             <TooltipCustom id="rm-forging-scrap-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextForgingScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Forging Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Forging Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"ForgingScrapBase"}
                                 type="text"
                                 Controller={Controller}
@@ -875,7 +875,7 @@ function MasterSendForApproval(props) {
 
                         <Col md="6">
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Machining Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Machining Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"MachiningScrap"}
                                 type="text"
                                 Controller={Controller}
@@ -892,7 +892,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-machining-scrap-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextMachiningScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Machining Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Machining Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"MachiningScrapBase"}
                                 type="text"
                                 Controller={Controller}
@@ -913,7 +913,7 @@ function MasterSendForApproval(props) {
                         <Col md="6">
                             <TooltipCustom id="jali-scrap-cost-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Jali Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Jali Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"JaliScrapCost"}
                                 type="text"
                                 Controller={Controller}
@@ -930,7 +930,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-jali-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextJaliScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Jali Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Jali Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"JaliScrapCostBase"}
                                 type="text"
                                 Controller={Controller}
@@ -949,7 +949,7 @@ function MasterSendForApproval(props) {
 
                         <Col md="6">
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Circle Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Circle Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"CircleScrapCost"}
                                 type="text"
                                 Controller={Controller}
@@ -966,7 +966,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-circle-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextCircleScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Circle Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Circle Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"CircleScrapCostBase"}
                                 type="text"
                                 Controller={Controller}
@@ -987,7 +987,7 @@ function MasterSendForApproval(props) {
 
                         <Col md="6">
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Freight Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"FreightChargeCuurency"}
                                 type="text"
                                 Controller={Controller}
@@ -1004,7 +1004,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-freight-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextFreightCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Freight Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"FreightChargeBase"}
                                 type="text"
                                 Controller={Controller}
@@ -1023,7 +1023,7 @@ function MasterSendForApproval(props) {
 
                         <Col md="6">
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Shearing Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"ShearingCost"}
                                 type="text"
                                 Controller={Controller}
@@ -1040,7 +1040,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-shearing-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextShearingCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Shearing Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"ShearingCostBase"}
                                 type="text"
                                 Controller={Controller}

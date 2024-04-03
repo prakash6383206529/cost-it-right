@@ -514,7 +514,7 @@ function ApprovalSummary(props) {
               <Col md="8">
                 <div className="left-border">
                   {'Approval Workflow (Approval No. '}
-                  {`${approvalData.ApprovalNumber ? approvalData.ApprovalNumber : '-'}) :`}
+                  {`${approvalData.ApprovalNumber ? approvalData.ApprovalNumber : '-'}):`}
                 </div>
               </Col>
               <Col md="4" className="text-right">
