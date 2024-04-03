@@ -303,7 +303,6 @@ function CostingDetails(props) {
   const renderListing = (label) => {
     const temp = []
 
-
     if (label === 'Technology') {
       technologySelectList && technologySelectList.map((item) => {
         if (item.Value === '0') return false        // SPECIFIC FOR RE, HIDE Machining TECHNOLOGY IN COSTING DROPDOWN
@@ -312,6 +311,7 @@ function CostingDetails(props) {
       })
       return temp
     }
+
     if (label === 'PartType') {
       partTypeList && partTypeList.map((item) => {
         if (item.Value === '0') return false
@@ -323,28 +323,6 @@ function CostingDetails(props) {
       })
       return temp
     }
-    if (label === 'PartType') {
-      partTypeList && partTypeList.map((item) => {
-        if (item.Value === '0') return false
-        if (item.Value === PRODUCT_ID) return false
-        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
-        if (IdForMultiTechnology.includes(String(technology?.value)) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp
-    }
-    // if (label === 'PartList') {
-    //   partSelectListByTechnology && partSelectListByTechnology.map((item) => {
-    //     if (item.Value === '0') return false
-    //     temp.push({ label: item.Text, value: item.Value })
-    //     return null
-    //   })
-    //   setPartDropdown(temp)
-
-    //   return temp
-    // }
-
 
   }
 
