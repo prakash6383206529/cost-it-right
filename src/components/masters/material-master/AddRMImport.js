@@ -2387,7 +2387,7 @@ class AddRMImport extends Component {
                                   className=""
                                   maxLength="15"
                                   customClassName=" withBorder"
-                                  disabled={isViewFlag}
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 />
                               </Col>
                               <Col md="3">
@@ -2419,7 +2419,7 @@ class AddRMImport extends Component {
                                   className=""
                                   maxLength="15"
                                   customClassName=" withBorder"
-                                  disabled={isViewFlag}
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 />
                               </Col>
                               <Col md="3">
@@ -2457,7 +2457,7 @@ class AddRMImport extends Component {
                                     maxLength="15"
                                     customClassName=" withBorder"
                                     // onChange={this.handleScrapRate}
-                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col >
                                 <Col md="3">
@@ -2496,7 +2496,7 @@ class AddRMImport extends Component {
                                     className=""
                                     customClassName=" withBorder"
                                     maxLength="15"
-                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
 
@@ -2532,7 +2532,7 @@ class AddRMImport extends Component {
                                     className=""
                                     customClassName=" withBorder"
                                     maxLength="15"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                                 <Col md="3">
@@ -2566,7 +2566,7 @@ class AddRMImport extends Component {
                                     validate={[maxLength15, decimalLengthsix]}
                                     component={renderText}
                                     required={false}
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                     className=" "
                                     customClassName=" withBorder"
                                   />
@@ -2601,7 +2601,7 @@ class AddRMImport extends Component {
                                     validate={[required, maxLength15, decimalLengthsix]}
                                     component={renderText}
                                     required={true}
-                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                     className=" "
                                     customClassName=" withBorder"
                                   />
@@ -2640,7 +2640,7 @@ class AddRMImport extends Component {
                                     className=""
                                     maxLength="15"
                                     customClassName=" withBorder"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                                 <Col md="3">{/* //RE */}
@@ -2675,7 +2675,7 @@ class AddRMImport extends Component {
                                     className=""
                                     maxLength="15"
                                     customClassName=" withBorder"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                                 <Col md="3">{/* //RE */}
