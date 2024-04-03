@@ -181,7 +181,7 @@ class AddBOPDomestic extends Component {
     }, 300);
   }
 
-  commonFunction() {
+  commonFunction(plantId = '') {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -190,7 +190,8 @@ class AddBOPDomestic extends Component {
       DepartmentId: userDetails().DepartmentId,
       UserId: loggedInUserId(),
       Mode: 'master',
-      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
+      plantId: plantId
     }
 
     this.props.checkFinalUser(obj, (res) => {
@@ -509,6 +510,7 @@ class AddBOPDomestic extends Component {
   handlePlant = (e) => {
 
     this.setState({ selectedPlants: e })
+    this.commonFunction(e ? e.value : '')
   }
 
   /**
@@ -1005,6 +1007,7 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
+
     const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice } = this.state;
@@ -1058,11 +1061,18 @@ class AddBOPDomestic extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} {showBopLabel()} (Domestic)
-                          <TourWrapper
-                            buttonSpecificProp={{ id: "BOP_Domestic_form" }}
+                          {!isViewMode && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_BOP_Domestic_Form" }}
+
                             stepsSpecificProp={{
-                              steps: Steps(t).BOP_DOMESTIC_FORM
-                            }} />
+                              steps: Steps(t, {
+                                isEditFlag: isEditFlag,
+                                showSendForApproval: !this.state.isFinalApprovar,
+                                sourceField: (costingTypeId === VBCTypeId),
+                                CBCTypeField: (costingTypeId === CBCTypeId),
+                                conditionCost: (initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId)
+                              }).BOP_DOMESTIC_FORM
+                            }} />}
                         </h1>
                       </div>
                     </div>

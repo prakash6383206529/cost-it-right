@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { getAssemblyPartDataList, deleteAssemblyPart } from "../actions/Part";
@@ -19,8 +19,12 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { filterParams } from "../../common/DateFilter";
 import { PaginationWrapper } from "../../common/commonPagination";
-import { loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import { ApplyPermission } from ".";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
+import { TourStartAction } from "../../../actions/Common";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -39,6 +43,8 @@ const AssemblyPartListing = React.memo((props) => {
   const [tableData, setTableData] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const { t } = useTranslation("common")
+  const tourStartData = useSelector(state => state.comman.tourStartData);
 
   const [state, setState] = useState({
     isEditFlag: false,
@@ -61,7 +67,8 @@ const AssemblyPartListing = React.memo((props) => {
     gridApi: null,
     columnApi: null,
     paginationPageSize: defaultPageSize,
-    openTechnologyUpdateDrawer: false
+    openTechnologyUpdateDrawer: false,
+    render: true,
   });
 
   const permissions = useContext(ApplyPermission);
@@ -165,7 +172,20 @@ const AssemblyPartListing = React.memo((props) => {
 
 
 
+  /**
+               @method toggleExtraData
+               @description Handle specific module tour state to display lorem data
+              */
+  const toggleExtraData = (showTour) => {
+    dispatch(TourStartAction({
+      showExtraData: showTour,
+    }));
+    setState((prevState) => ({ ...prevState, render: false }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, render: true }));
+    }, 100);
 
+  }
   const closeVisualDrawer = () => {
     setState((prevState) => ({
       ...prevState,
@@ -174,50 +194,59 @@ const AssemblyPartListing = React.memo((props) => {
   };
   // 
 
-  const buttonFormatter = useCallback((props) => {
-    const cellValue = props?.value;
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return (
-      <>
-        {permissions.View && (
-          <button
-            title="button"
-            className="hirarchy-btn"
-            type={"button"}
-            onClick={() => visualAdDetails(cellValue)}
-          />
-        )}
-        {permissions.View && (
-          <button
-            title="View"
-            className="View"
-            type={"button"}
-            onClick={() => viewOrEditItemDetails(
-              cellValue,
-              true
-            )}
-          />
-        )}
-        {permissions.Edit && (
-          <button
-            title="Edit"
-            className="Edit"
-            type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, false)}
-          />
-        )}
-        {permissions.Delete && !rowData?.IsAssociate && (
-          <button
-            title="Delete"
-            className="Delete"
-            type={"button"}
-            onClick={() => deleteItem(cellValue)}
-          />
-        )}
-      </>
-    );
-    // eslint-disable-next-line
-  }, []);
+  const buttonFormatter = useMemo(() => {
+    return (props) => {
+      const cellValue = props?.value;
+      const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+      let isDeleteButton = false;
+
+      if (tourStartData.showExtraData && props.rowIndex === 0) {
+        isDeleteButton = true;
+      } else {
+        if (permissions.Delete && !rowData?.IsAssociate) {
+          isDeleteButton = true;
+        }
+      }
+
+      return (
+        <>
+          {permissions.View && (
+            <button
+              title="button"
+              className="hirarchy-btn Tour_List_View_BOM"
+              type={"button"}
+              onClick={() => visualAdDetails(cellValue)}
+            />
+          )}
+          {permissions.View && (
+            <button
+              title="View"
+              className="View Tour_List_View"
+              type={"button"}
+              onClick={() => viewOrEditItemDetails(cellValue, true)}
+            />
+          )}
+          {permissions.Edit && (
+            <button
+              title="Edit"
+              className="Edit Tour_List_Edit"
+              type={"button"}
+              onClick={() => viewOrEditItemDetails(cellValue, false)}
+            />
+          )}
+          {isDeleteButton && (
+            <button
+              title="Delete"
+              className="Delete Tour_List_Delete"
+              type={"button"}
+              onClick={() => deleteItem(cellValue)}
+            />
+          )}
+        </>
+      );
+    };
+  }, [permissions.View, permissions.Edit, tourStartData.showExtraData]);
+
 
 
   const hyphenFormatter = (props) => {
@@ -344,9 +373,9 @@ const AssemblyPartListing = React.memo((props) => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-    if (window.screen.width >= 1600) {
-      state.gridApi.sizeColumnsToFit();
-    }
+    // if (window.screen.width >= 1600) {
+    //   state.gridApi.sizeColumnsToFit();
+    // }
   };
 
   const isFirstColumn = (params) => {
@@ -364,6 +393,7 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
 
+
   return (
     <div
       className={`ag-grid-react p-relative ${permissions.Download ? "show-table-btn" : ""
@@ -378,7 +408,7 @@ const AssemblyPartListing = React.memo((props) => {
               {permissions.Add && (
                 <button
                   type="button"
-                  className={"user-btn mr5"}
+                  className={"user-btn mr5 Tour_List_Add"}
                   title="Add"
                   onClick={displayForm}
                 >
@@ -388,7 +418,7 @@ const AssemblyPartListing = React.memo((props) => {
               {permissions.BulkUpload && (
                 <button
                   type="button"
-                  className={"user-btn mr5"}
+                  className={"user-btn mr5 Tour_List_BulkUpload"}
                   onClick={bulkToggle}
                   title="Bulk Upload"
                 >
@@ -407,7 +437,7 @@ const AssemblyPartListing = React.memo((props) => {
                           : `(${state.dataCount})`
                           }`}
                         type="button"
-                        className={"user-btn mr5"}
+                        className={"user-btn mr5 Tour_List_Download"}
                         onClick={onBtExport}
                       >
                         <div className="download mr-1"></div>
@@ -424,7 +454,7 @@ const AssemblyPartListing = React.memo((props) => {
               )}
               <button
                 type="button"
-                className="user-btn"
+                className="user-btn Tour_List_Reset "
                 title="Reset Grid"
                 onClick={() => resetState()}
               >
@@ -450,6 +480,11 @@ const AssemblyPartListing = React.memo((props) => {
               autoComplete={"off"}
               onChange={(e) => onFilterTextBoxChanged(e)}
             />
+            <TourWrapper
+              buttonSpecificProp={{ id: "Assembly_Part_Listing_Tour", onClick: toggleExtraData }}
+              stepsSpecificProp={{
+                steps: Steps(t, { addLimit: false, costMovementButton: false, updateAssociatedTechnology: false, copyButton: false, status: false, filterButton: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+              }} />
           </div>
           <div
             className={`ag-theme-material ${state.isLoader && "max-loader-height"
@@ -458,12 +493,14 @@ const AssemblyPartListing = React.memo((props) => {
             {state.noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found"
             />
             )}
-            <AgGridReact
+            {(!state.render) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
               style={{ height: '100%', width: '100%' }}
               defaultColDef={defaultColDef}
               floatingFilter={true}
               domLayout="autoHeight"
-              rowData={partsListing}
+              rowData={tourStartData.showExtraData ? [...setLoremIpsum(partsListing[0]), ...partsListing] : partsListing}
+
               pagination={true}
               paginationPageSize={defaultPageSize}
               onGridReady={onGridReady}
@@ -479,69 +516,21 @@ const AssemblyPartListing = React.memo((props) => {
               onFilterModified={onFloatingFilterChanged}
               suppressRowClickSelection={true}
             >
-              <AgGridColumn
-                cellClass="has-checkbox"
-                field="Technology"
-                headerName="Technology"
-                cellRenderer={"checkBoxRenderer"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="BOMNumber"
-                headerName="BOM No."
-              ></AgGridColumn>
-              <AgGridColumn
-                field="PartNumber"
-                headerName="Part No."
-              ></AgGridColumn>
+              <AgGridColumn cellClass="has-checkbox" field="Technology" headerName="Technology" cellRenderer={"checkBoxRenderer"}              ></AgGridColumn>
+              <AgGridColumn field="BOMNumber" headerName="BOM No."              ></AgGridColumn>
+              <AgGridColumn field="PartNumber" headerName="Part No."              ></AgGridColumn>
               <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
               {initialConfiguration?.IsSAPCodeRequired && (
-                <AgGridColumn
-                  field="SAPCode"
-                  headerName="SAP Code"
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
+                <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={"hyphenFormatter"}                ></AgGridColumn>
               )}
-              <AgGridColumn
-                field="NumberOfParts"
-                headerName="No. of Child Parts"
-              ></AgGridColumn>
-              <AgGridColumn
-                field="BOMLevelCount"
-                headerName="BOM Level Count"
-              ></AgGridColumn>
-              <AgGridColumn
-                field="ECNNumber"
-                headerName="ECN No."
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="RevisionNumber"
-                headerName="Revision No."
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="DrawingNumber"
-                headerName="Drawing No."
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="EffectiveDateNew"
-                headerName="Effective Date"
-                cellRenderer={"effectiveDateFormatter"}
-                filter="agDateColumnFilter"
-                filterParams={filterParams}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="PartId"
-                width={250}
-                cellClass="ag-grid-action-container actions-wrapper"
-                headerName="Action"
-                pinned={window.screen.width < 1920 ? "right" : ""}
-                type="rightAligned"
-                floatingFilter={false}
-                cellRenderer={"buttonFormatter"}
-              ></AgGridColumn>
-            </AgGridReact>
+              <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"              ></AgGridColumn>
+              <AgGridColumn field="BOMLevelCount" headerName="BOM Level Count" ></AgGridColumn>
+              <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+              <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+              <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
+              <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}              ></AgGridColumn>
+              <AgGridColumn field="PartId" width={250} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned={window.screen.width < 1920 ? "right" : ""} type="rightAligned" floatingFilter={false} cellRenderer={"buttonFormatter"}              ></AgGridColumn>
+            </AgGridReact>}
 
             {
               <PaginationWrapper

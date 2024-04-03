@@ -1418,7 +1418,7 @@ class AddPower extends Component {
                       <div className="form-heading mb-0">
                         <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Power
                           <TourWrapper
-                            buttonSpecificProp={{ id: "Power_form" }}
+                            buttonSpecificProp={{ id: "Add_Power_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t).ADD_POWER
                             }} />

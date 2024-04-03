@@ -1,0 +1,34 @@
+{
+    "RFQForm": {
+        "Technology": "Click here to select the technology.",
+        "RFQNo": "Click here to select the RFQ number.",
+        "PlantCode": "Click here to select the plant code.",
+        "PartNo": "Click here to select the part number from the list.",
+        "SubmissionDate": "Specify the submission date.",
+        "SOPDate": "Enter the SOP date.",
+        "RMName": "Click here to select the raw material name.",
+        "RMGrade": "Click here to select the raw material grade.",
+        "RMSpecification": "Click here to select the raw material specification.",
+        "AddPart": "Click here to add the part.",
+        "Reset": "Reset the part details.",
+        "VendorCode": "Click here to select the vendor code.",
+        "PointofContact": "Click here to choose who you want to contact.",
+        "AddVendor": "Click here to add the vendor.",
+        "ResetVendor": "Reset the vendor details.",
+        "VisibilityCheckbox": "Check the box to select visibility mode.",
+        "VisibilityMode": "Click here to select the preferred visibility mode.",
+        "Notes": "Enter any additional notes here.",
+        "UploadAttachment": "Attach any necessary documents.",
+        "save": "Click here to save the data. Note that the quotation will not be sent to the vendor.",
+        "cancel": "Click here to return to the RFQ page.",
+        "send": "Click here to send the quotation to the vendor."
+    },
+    "rfqView": {
+        "ViewRfq": "Click on the checkbox to compare the RFQs.",
+        "ViewRfq_reset": "Refresh the grid to update filtered data from here.",
+        "ViewRfq_compare": "Click on the checkbox of the part number to compare the RFQs.",
+        "ViewRfq_back": "Click here to return to the RFQ listing.",
+        "ViewRfq_remarkHistory": "Click here to view the remark history.",
+        "ViewRfq_view": "Click here to view the viewing history."
+    }
+}

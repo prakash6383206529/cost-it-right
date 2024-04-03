@@ -982,6 +982,7 @@ export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+
             callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
@@ -1053,6 +1054,7 @@ export function getCostingBoughtOutPartSimulationList(token, callback) {
                 callback(response)
             }
         }).catch((error) => {
+
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         })
@@ -1108,6 +1110,7 @@ export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraf
                 }
             }
         }).catch((error) => {
+
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         })
@@ -1498,6 +1501,7 @@ export function getMachineRateCostingSimulationList(token, callback) {
 
 // ASSEMBLY TECHNOLOGY
 export function setVendorForSimulation(selectedVendorForSimulation) {
+
     return (dispatch) => {
         dispatch({
             type: SET_SELECTED_VENDOR_SIMULATION,

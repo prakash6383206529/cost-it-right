@@ -909,11 +909,14 @@ class AddAssemblyPart extends Component {
                       <div className="form-heading mb-0">
                         <h1>
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Assembly Part
-                          <TourWrapper
-                            buttonSpecificProp={{ id: "assembly_form" }}
+                          {!isViewMode && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_Assembly_Part_Form" }}
                             stepsSpecificProp={{
-                              steps: Steps(t).ADD_ASSEMBLY_PART
-                            }} />
+                              steps: Steps(t, {
+                                isEditFlag: isEditFlag,
+                                partField: (this.state.convertPartToAssembly)
+                              }).ADD_ASSEMBLY_PART
+                            }} />}
                         </h1>
                       </div>
                     </Col>
@@ -928,7 +931,7 @@ class AddAssemblyPart extends Component {
                       <Row>
                         {!isEditFlag &&
                           <Col md="4" className="switch mb15">
-                            <label className="switch-level">
+                            <label id='AddAssemblyPart_Switch' className="switch-level">
                               <div className={"left-title"}>Add assembly</div>
                               <Switch
                                 onChange={this.onSwitchChange}
@@ -1187,6 +1190,7 @@ class AddAssemblyPart extends Component {
 
                         <Col md="3" className='pt-2'>
                           <button
+                            id="AssemblyPart_Add_BOM"
                             type="button"
                             disabled={false}
                             onClick={this.toggleBOMViewer}

@@ -28,6 +28,10 @@ import _, { debounce } from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
 import { apiErrors } from "../../helper";
+import TourWrapper from "../common/Tour/TourWrapper";
+import { useTranslation } from "react-i18next";
+import { Steps } from "./TourMessages";
+
 
 var CryptoJS = require('crypto-js')
 const gridOptionsTechnology = {}
@@ -44,7 +48,7 @@ const gridOptions = {
 function UserRegistration(props) {
 
   let child = React.createRef();
-
+  const { t } = useTranslation("UserRegistration")
   const [token, setToken] = useState("");
   const [countryCode, setCountryCode] = useState(false);
   const [lowerCaseCheck, setLowerCaseCheck] = useState(false);
@@ -56,7 +60,6 @@ function UserRegistration(props) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isShowHide, setIsShowHide] = useState(false);
   const [isShowHidePassword, setIsShowHidePassword] = useState(false);
-
   const [primaryContact, setPrimaryContact] = useState(false);
   const [department, setDepartment] = useState([]);
   const [oldDepartment, setOldDepartment] = useState([]);
@@ -143,7 +146,6 @@ function UserRegistration(props) {
   const plantSelectListForDepartment = useSelector(state => state.auth.plantSelectListForDepartment);
 
   const [maxLength, setMaxLength] = useState(maxLength11);
-
   const defaultValues = {
     FirstName: props?.data?.isEditFlag && registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',
     MiddleName: props?.data?.isEditFlag && registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '',
@@ -347,33 +349,60 @@ function UserRegistration(props) {
       });
       return temp;
     }
-
     if (label === 'technology') {
-      technologyList && technologyList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
+      const temp = [];
+      technologyList && technologyList?.forEach(item => {
+        if (item?.Value === '0' && !isEditIndex) {
+          temp.push({ label: "Select All", value: item?.Value });
+        } else if (item?.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value });
+        }
       });
-      return temp;
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.Text === "Select All" && temp[0]?.Value === "0";
+
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
+      }
     }
+
 
     if (label === 'heads') {
-      simulationTechnologyList && simulationTechnologyList.map(item => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
+      const temp = [];
+      simulationTechnologyList && simulationTechnologyList.forEach(item => {
+
+        if (item?.Value === '0' && !isSimulationEditIndex) {
+          temp.push({ label: "Select All", value: item?.Value });
+        } else if (item?.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value })
+        }
       });
-      return temp;
-    }
-    if (label === 'masters') {
-      masterList && masterList.map(item => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.Text === "Select All" && temp[0]?.Value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      }
       return temp;
     }
 
+    if (label === 'masters') {
+      const temp = [];
+
+      masterList && masterList.forEach(item => {
+        if (item?.Value === '0' && !isMasterEditIndex) {
+          temp.push({ label: "Select All", value: item?.Value });
+        } else if (item?.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value })
+
+        }
+      });
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.Text === "Select All" && temp[0]?.Value === "0";
+      if (isSelectAllOnly) {
+        return [];
+
+      }
+      return temp;
+    }
     if (label === 'level') {
       const approvalList = (getConfigurationKey().IsAllowMultiSelectApprovalType && !isEditIndex) ? levelList : levelSelectList
       approvalList && approvalList.map(item => {
@@ -432,6 +461,9 @@ function UserRegistration(props) {
     }
     if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster' || label === 'approvalTypeOnboarding') {
       // if (label === 'approvalType') {                 //RE
+      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false) {
+        temp.push({ label: 'Select All', value: '0' });
+      }
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId) || Number(item.Value) === Number(NFRAPPROVALTYPEID)) && label === 'approvalTypeSimulation') return false
@@ -765,24 +797,45 @@ function UserRegistration(props) {
    * @method technologyHandler
    * @description Used to handle 
    */
-  const technologyHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      setTechnology(newValue)
-      setLevel([])
+  const technologyHandler = (newValue) => {
+    const selectedOptions = technologyList
+      .filter((option) => option?.Value !== '0')
+      .map(({ Text, Value }) => ({ label: Text, value: Value }));
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      setTechnology(selectedOptions);
+      setTimeout(() => {
+        setValue('TechnologyId', selectedOptions)
+      }, 100);
+      setLevel([]);
       setValue('LevelId', '')
       setValue('CostingApprovalType', "")
-      emptyLevelDropdown()
+      emptyLevelDropdown();
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+      setTechnology(newValue)
     } else {
       setTechnology([])
+      setValue('TechnologyId', '')
     }
-  };
+  }
 
   /**
    * @method costingApprovalTypeHandler
    * @description Used to handle 
    */
   const costingApprovalTypeHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      const selectedOptions = approvalTypeSelectList
+        .filter((option) => option?.Value !== '0')
+        .map(({ Text, Value }) => ({ label: Text, value: Value }));
+      setCostingApprovalType(selectedOptions);
+      setTimeout(() => {
+        setValue('CostingApprovalType', selectedOptions)
+      }, 100);
+      setLevel([]);
+      setValue('LevelId', '');
+      dispatch(getLevelByTechnology(true, technology.value, newValue.value, res => { }));
+    } else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
       setCostingApprovalType(newValue)
       setLevel([])
       setValue('LevelId', '')
@@ -791,15 +844,27 @@ function UserRegistration(props) {
       }
     } else {
       setCostingApprovalType([])
+      setValue('CostingApprovalType', '')
     }
   };
-
   /**
    * @method simulationApprovalTypeHandler
    * @description Used to handle 
    */
   const simulationApprovalTypeHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      const selectedOptions = approvalTypeSelectList
+        .filter((option) => option?.Value !== '0')
+        .map(({ Text, Value }) => ({ label: Text, value: Value }));
+      setSimulationApprovalType(selectedOptions);
+      setTimeout(() => {
+        setValue('SimulationApprovalType', selectedOptions)
+      }, 100);
+      setSimualtionLevel([]);
+      setValue('SimualtionLevel', '');
+      dispatch(getSimualationLevelByTechnology(true, simulationHeads.value, newValue.value, res => { }));
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
       setSimulationApprovalType(newValue)
       setSimualtionLevel([])
       setValue('simualtionLevel', '')
@@ -808,6 +873,7 @@ function UserRegistration(props) {
       }
     } else {
       setSimulationApprovalType([])
+      setValue('SimulationApprovalType', '')
     }
   };
 
@@ -816,7 +882,19 @@ function UserRegistration(props) {
    * @description Used to handle 
    */
   const masterApprovalTypeHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      const selectedOptions = approvalTypeSelectList
+        .filter((option) => option?.Value !== '0')
+        .map(({ Text, Value }) => ({ label: Text, value: Value }));
+      setMasterApprovalType(selectedOptions);
+      setTimeout(() => {
+        setValue('MasterApprovalType', selectedOptions)
+      }, 100);
+      setMasterLevels([]);
+      setValue('MasterLevel', '');
+      dispatch(getMasterLevelByMasterId(true, master.value, newValue.value, res => { }));
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
       setMasterApprovalType(newValue)
       setMasterLevels([])
       setValue('masterLevel', '')
@@ -825,6 +903,7 @@ function UserRegistration(props) {
       }
     } else {
       setMasterApprovalType([])
+      setValue('MasterApprovalType', '')
     }
   };
 
@@ -849,33 +928,61 @@ function UserRegistration(props) {
    * @description USED TO HANLE SIMULATION HEAD AND CALL HEAD LEVEL API
   */
 
-  const headHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      setSimulationHeads(newValue)
-      setValue('SimulationApprovalType', "")
-      setSimulationApprovalType([])
-      setSimualtionLevel([])
-      setValue('simualtionLevel', '')
-      emptyLevelDropdown()
+  const headHandler = (newValue) => {
+
+    const selectedOptions = simulationTechnologyList
+      .filter((option) => option?.Value !== '0')
+      .map(({ Text, Value }) => ({ label: Text, value: Value }));
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      // Filter out the "Select All" option
+
+      setSimulationHeads(selectedOptions);
+      setTimeout(() => {
+        setValue('Head', selectedOptions);
+      }, 100);
+      setLevel([]);
+      emptyLevelDropdown();
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+      // Set selected options directly
+      setSimulationHeads(newValue);
     } else {
       setSimulationHeads([])
+      // Clear form value when no option is selected
+      setValue('Head', '');
     }
-  };
+  }
 
   /**
    * @method masterHandler
    * @description USED TO HANLE MASTER AND CALL MASTER LEVEL API
   */
   const masterHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      setMaster(newValue)
-      setMasterLevels([])
-      setValue('masterLevel', '')
-      setMasterApprovalType([])
-      setValue('MasterApprovalType', "")
-      emptyLevelDropdown()
+    const selectedOptions = masterList
+      .filter((option) => option?.Value !== '0')
+      .map(({ Text, Value }) => ({ label: Text, value: Value }));
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      // Filter out the "Select All" option
+
+
+      setMaster(selectedOptions);
+      setTimeout(() => {
+        // Set selected options in the form value
+        setValue('Master', selectedOptions);
+      }, 100);
+      setMasterLevels([]);
+      setValue('masterLevel', '');
+      setMasterApprovalType([]);
+      setValue('MasterApprovalType', '');
+      emptyLevelDropdown();
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+      // Set selected options directly
+      setMaster(newValue);
     } else {
-      setSimulationHeads([])
+      setMaster([])
+      // Clear form value when no option is selected
+      setValue('Master', '');
     }
   };
 
@@ -2278,7 +2385,13 @@ function UserRegistration(props) {
               <div className="row">
                 <div className="col-md-6">
                   <div className="form-heading mb-0">
-                    <h2>{isEditFlag ? 'Update' : 'Add'} {props?.RFQUser ? 'RFQ ' : ''}User</h2>
+                    <h2>{isEditFlag ? 'Update' : 'Add'} {props?.RFQUser ? 'RFQ ' : ''}User <TourWrapper
+                      buttonSpecificProp={{ id: "Add_User_Form" }}
+                      stepsSpecificProp={{
+                        steps: Steps(t, {
+                          costingField: acc1, simulationField: acc2, masterField: acc3, onBoardingField: acc4, RFQUser: props?.RFQUser, isShowPwdField: isShowPwdField, isEditFlag: isEditFlag
+                        }).USER_MANAGEMENT
+                      }} /></h2>
                   </div>
                 </div>
                 {isEditFlag && !isShowPwdField && <div className="col-md-6">
@@ -2456,7 +2569,7 @@ function UserRegistration(props) {
                         </Col>
                       </>
                     }
-                    {props?.RFQUser && <Col md="3" className="d-flex align-items-center mt-4 pt-2">
+                    {props?.RFQUser && <Col md="3" id="primaryContact_container" className="d-flex align-items-center mt-4 pt-2">
                       <label
                         className={`custom-checkbox`}
                         onChange={onPrimaryContactCheck}
@@ -2525,10 +2638,11 @@ function UserRegistration(props) {
                       </div>}
                     {isShowPwdField &&
                       <>
-                        <div id="password" className="input-group password password-wrapper col-md-3">
+                        <div className="input-group password password-wrapper col-md-3">
                           <PasswordFieldHookForm
                             name="Password"
                             label="Password"
+                            id="AddUser_Password"
                             placeholder="Enter"
                             disableErrorOverflow={true}
                             errors={errors.Password}
@@ -2557,6 +2671,7 @@ function UserRegistration(props) {
                           <PasswordFieldHookForm
                             name="passwordConfirm"
                             label="Confirm Password"
+                            id="AddUser_PasswordConfirm"
                             placeholder={'Enter'}
                             errors={errors.passwordConfirm}
                             Controller={Controller}
@@ -2802,7 +2917,7 @@ function UserRegistration(props) {
 
                       <div className=" row mb-4">
                         <div className={'col-md-4'}>
-                          <label
+                          <label id="AddUser_Checkbox"
                             className="custom-checkbox"
                             onChange={onPressUserPermission}
                           >
@@ -2839,7 +2954,7 @@ function UserRegistration(props) {
                           <HeaderTitle title={'Costing Approval Level:'} customClass={''} />
                         </Col>
                         <Col md="4" className="text-right">
-                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
+                          <button id="AddUser_Permissions_Costing" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
 
                             {acc1 ? (
                               <i className="fa fa-minus" ></i>
@@ -2921,6 +3036,7 @@ function UserRegistration(props) {
                                 :
                                 <button
                                   type="button"
+                                  id="AddUser_AddCosting"
                                   className={'user-btn add-button-big ml-2'}
                                   onClick={setTechnologyLevel}
                                 ><div className={'plus'}></div>ADD</button>}
@@ -2988,7 +3104,7 @@ function UserRegistration(props) {
                           <HeaderTitle title={'Simulation Approval Level:'} customClass={''} />
                         </Col>
                         <Col md="4" className="text-right">
-                          <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
+                          <button id="AddUser_Permissions_Simulation" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
 
                             {acc2 ? (
                               <i className="fa fa-minus" ></i>
@@ -3070,6 +3186,7 @@ function UserRegistration(props) {
                                 :
                                 <button
                                   type="button"
+                                  id="AddUser_AddSimulation"
                                   className={'user-btn add-button-big ml-2'}
                                   onClick={setSimualtionHeadLevel}
                                 ><div className={'plus'}></div>ADD</button>}
@@ -3129,7 +3246,7 @@ function UserRegistration(props) {
                               <HeaderTitle title={'Master Approval Level:'} customClass={''} />
                             </Col>
                             <Col md="4" className="text-right">
-                              <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
+                              <button id="AddUser_Permissions_Master" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
 
                                 {acc3 ? (
                                   <i className="fa fa-minus" ></i>
@@ -3211,6 +3328,7 @@ function UserRegistration(props) {
                                     :
                                     <button
                                       type="button"
+                                      id="AddUser_AddMaster"
                                       className={'user-btn add-button-big ml-2'}
                                       onClick={setMasterLevel}
                                     ><div className={'plus'}></div>ADD</button>}
@@ -3276,7 +3394,7 @@ function UserRegistration(props) {
                               <HeaderTitle title={'Onboarding Approval Level:'} customClass={''} />
                             </Col>
                             <Col md="4" className="text-right">
-                              <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
+                              <button id="AddUser_Permissions_onBoarding" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
 
                                 {acc4 ? (
                                   <i className="fa fa-minus" ></i>
@@ -3325,6 +3443,7 @@ function UserRegistration(props) {
                                   {isOnboardingEditIndex ?
                                     <>
                                       <button
+                                        id="updateUser_onBoarding"
                                         type="button"
                                         className={'btn btn-primary add-button-big'}
                                         onClick={updateOnboardingLevel}
@@ -3338,6 +3457,7 @@ function UserRegistration(props) {
                                     </>
                                     :
                                     <button
+                                      id="addUser_OnBoarding"
                                       type="button"
                                       className={'user-btn add-button-big ml-2'}
                                       onClick={setOnboardingLevel}
@@ -3402,6 +3522,7 @@ function UserRegistration(props) {
 
                     <button
                       onClick={cancel}
+                      id="AddUser_Cancel"
                       type="submit"
                       value="CANCEL"
                       disabled={isUpdateResponded}
@@ -3412,6 +3533,7 @@ function UserRegistration(props) {
 
                     <button
                       type="button"
+                      id="AddUser_Save"
                       onClick={onSubmit}
                       disabled={isSubmitted || isUpdateResponded ? true : false}
                       className="user-btn save-btn">

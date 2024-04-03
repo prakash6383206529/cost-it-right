@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation, calculateScrapWeight } from '../../../../../helper'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation, calculateScrapWeight, calculatePercentage } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
-import { G, KG, MG, } from '../../../../../config/constants'
+import { DISPLAY_G, DISPLAY_KG, DISPLAY_MG, G } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
 import { nonZero } from '../../../../../helper/validation'
@@ -22,17 +22,17 @@ function Coil(props) {
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
-            case G:
+            case DISPLAY_G:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet)
                 }, 200);
                 break;
-            case KG:
+            case DISPLAY_KG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet * 1000)
                 }, 200);
                 break;
-            case MG:
+            case DISPLAY_MG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeightOfSheet / 1000)
                 }, 200);
@@ -43,15 +43,15 @@ function Coil(props) {
     }
 
     const defaultValues = {
-        StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? checkForDecimalAndNull(WeightCalculatorRequest.StripWidth, localStorage.NoOfDecimalForInputOutput) : '',
-        Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
-        Pitch: WeightCalculatorRequest && WeightCalculatorRequest.Pitch !== null ? checkForDecimalAndNull(WeightCalculatorRequest.Pitch, localStorage.NoOfDecimalForInputOutput) : '',
-        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Cavity, localStorage.NoOfDecimalForInputOutput) : 1,
-        NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
-        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
-        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
-        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, localStorage.NoOfDecimalForInputOutput) : '',
-        scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.RecoveryPercentage !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
+        StripWidth: WeightCalculatorRequest && WeightCalculatorRequest?.StripWidth !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.StripWidth, localStorage.NoOfDecimalForInputOutput) : '',
+        Thickness: WeightCalculatorRequest && WeightCalculatorRequest?.Thickness !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
+        Pitch: WeightCalculatorRequest && WeightCalculatorRequest?.Pitch !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Pitch, localStorage.NoOfDecimalForInputOutput) : '',
+        Cavity: WeightCalculatorRequest && WeightCalculatorRequest?.Cavity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Cavity, localStorage.NoOfDecimalForInputOutput) : 1,
+        NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest?.NetSurfaceArea !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest?.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest?.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, localStorage.NoOfDecimalForInputOutput) : '',
+        scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
     }
 
     const {
@@ -68,25 +68,23 @@ function Coil(props) {
             : [],
     )
     const [dataToSend, setDataToSend] = useState({
-        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
     })
     const [isChangeApplies, setIsChangeApplied] = useState(true)
     const tempOldObj = WeightCalculatorRequest
-    const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
-    const [FinishWeight, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
+    const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '')
+    const [FinishWeight, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     const [isDisable, setIsDisable] = useState(false)
     const [reRender, setRerender] = useState(false)
+    const [scrapWeight, setScrapWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '')
 
     const fieldValues = useWatch({
         control,
-        name: ['StripWidth', 'Thickness', 'Pitch', 'Cavity'],
+        name: ['StripWidth', 'Thickness', 'Pitch', 'Cavity', 'scrapRecoveryPercent'],
     })
-    const scrapWeightValue = useWatch({
-        control,
-        name: ['scrapRecoveryPercent', 'grossWeight', 'finishWeight'],
-    })
+
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -117,28 +115,27 @@ function Coil(props) {
             delete errors.FinishWeight
             setRerender(!reRender)
         }
-        scrapWeightCalculation()
     }, [getValues('GrossWeight'), fieldValues])
 
     useEffect(() => {
         if (!CostingViewMode) {
             scrapWeightCalculation()
         }
-    }, [scrapWeightValue])
+    }, [fieldValues, FinishWeight])
     const setFinishWeight = (e) => {
         const FinishWeight = e.target.value
         switch (UOMDimension.label) {
-            case G:
+            case DISPLAY_G:
                 setTimeout(() => {
                     setFinishWeights(FinishWeight)
                 }, 200);
                 break;
-            case KG:
+            case DISPLAY_KG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeight * 1000)
                 }, 200);
                 break;
-            case MG:
+            case DISPLAY_MG:
                 setTimeout(() => {
                     setFinishWeights(FinishWeight / 1000)
                 }, 200);
@@ -233,7 +230,7 @@ function Coil(props) {
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
             RawMaterialIdRef: rmRowData.RawMaterialId,
             LoggedInUserId: loggedInUserId(),
-            RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeight')) * rmRowData.ScrapRate,
+            RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeight')) * calculatePercentage(getValues('scrapRecoveryPercent')) * rmRowData.ScrapRate,
             UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
             UOMForDimension: UOMDimension ? UOMDimension.label : '',
             Thickness: values.Thickness,
@@ -264,12 +261,12 @@ function Coil(props) {
         setValue('UOMDimension', { label: value.label, value: value.value })
         setUOMDimension(value)
         let grossWeight = GrossWeight
+        let ScrapWeight = scrapWeight
         // let finishWeight = FinishWeightOfSheet
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeight, value.label) }))
-        setTimeout(() => {
-            setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
-            setValue('FinishWeight', checkForDecimalAndNull(setValueAccToUOM(FinishWeight, value.label), localStorage.NoOfDecimalForInputOutput))
-        }, 500);
+        setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
+        setValue('FinishWeight', checkForDecimalAndNull(setValueAccToUOM(FinishWeight, value.label), localStorage.NoOfDecimalForInputOutput))
+        setValue('scrapWeight', checkForDecimalAndNull(setValueAccToUOM(ScrapWeight, value.label), localStorage.NoOfDecimalForInputOutput))
     }
 
     const UnitFormat = () => {
@@ -285,10 +282,11 @@ function Coil(props) {
 
     const scrapWeightCalculation = () => {
         const scrapRecoveryPercent = Number((getValues('scrapRecoveryPercent')))
-        const grossWeight = getValues('GrossWeight')
-        const finishWeight = getValues('FinishWeight')
+        const grossWeight = Number(GrossWeight)
+        const finishWeight = Number(FinishWeight)
         const scrapWeight = calculateScrapWeight(grossWeight, finishWeight, scrapRecoveryPercent)
-        setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
+        setScrapWeight(checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
+        setValue('scrapWeight', checkForDecimalAndNull((setValueAccToUOM(scrapWeight, UOMDimension.label)), localStorage.NoOfDecimalForInputOutput))
     }
 
     /**
@@ -321,7 +319,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -332,7 +330,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Thickness(mm)`}
                                         name={'Thickness'}
                                         Controller={Controller}
@@ -361,7 +359,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -372,7 +370,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Cavity`}
                                         name={'Cavity'}
                                         Controller={Controller}
@@ -381,7 +379,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -396,7 +394,7 @@ function Coil(props) {
                             <hr className="mx-n4 w-auto" />
                             <Row>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={UnitFormat()}
                                         name={'NetSurfaceArea'}
                                         Controller={Controller}
@@ -405,7 +403,7 @@ function Coil(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -434,7 +432,7 @@ function Coil(props) {
 
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={'Gross Weight =  (Density * Thickness * Strip Width * Pitch) / 1000'} />
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={'Gross Weight =  (Density * Thickness * Strip Width * Pitch) / Cavity * 1000'} />
                                     <TextFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}
@@ -452,7 +450,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Finish Weight(${UOMDimension.label})`}
                                         name={'FinishWeight'}
                                         Controller={Controller}

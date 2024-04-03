@@ -17,8 +17,12 @@ import GotGivenSummary from "./GotGivenSummary"
 import Toaster from "../../../common/Toaster"
 import { getClientSelectList } from "../../../masters/actions/Client"
 import { getPlantSelectListByType, getVendorNameByVendorSelectList } from "../../../../actions/Common"
+import TourWrapper from "../../../common/Tour/TourWrapper"
+import { Steps } from "../TourMessages"
+import { useTranslation } from "react-i18next"
 
 const GotGivenReport = (props) => {
+    const { t } = useTranslation("Reports")
     const [runGotGivenReport, setRunGotGivenReport] = useState(false)
     const [product, setProduct] = useState('')
     const [technology, setTechnology] = useState('')
@@ -217,6 +221,11 @@ const GotGivenReport = (props) => {
             {!runGotGivenReport && <div className="container-fluid ">
 
                 <div className="cost-ratio-report">
+                    <TourWrapper
+                        buttonSpecificProp={{ id: "Got_Given_Report" }}
+                        stepsSpecificProp={{
+                            steps: Steps(t).GOTGIVENSUMMARY
+                        }} />
                     <form noValidate >
                         <Row>
 
@@ -327,6 +336,7 @@ const GotGivenReport = (props) => {
 
                             <Col md="3" className="mt-2">
                                 <button
+                                    id="Reset_Button"
                                     type="button"
                                     className={"reset-btn pull-left mt-4"}
                                     onClick={() => resetReport()}>

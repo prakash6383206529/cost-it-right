@@ -33,13 +33,15 @@ import activeRFQ from '../../assests/images/rfqActive.svg'
 import RFQ from '../../assests/images/rfq.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 // import Calculator from "../common/Calculator/component/Calculator";
-import { CBC_COSTING, COSTING, SIMULATION, VBC_COSTING, VERSION, ZBC_COSTING, GUIDE_BUTTON_SHOW } from '../../config/constants';
+import { CBC_COSTING, COSTING, SIMULATION, VBC_COSTING, VERSION, ZBC_COSTING } from '../../config/constants';
 import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
 import { checkForNull } from "../../helper";
 import LanguageDropdown from "../common/Tour/LanguageDropdown";
-import { TourStartAction } from "../../actions/Common";
+import TourWrapper from "../common/Tour/TourWrapper";
+import { Steps } from "./TourMessages";
+import { withTranslation } from "react-i18next";
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -107,6 +109,7 @@ class SideBar extends Component {
           cbc: checkForNull(cbcCostingData?.length) === 0 ? false : true
         }
         reactLocalStorage.setObject('CostingTypePermission', permissionArr)
+
       })
     }
 
@@ -269,6 +272,7 @@ class SideBar extends Component {
             <>
               <li>
                 <Link
+                  id="Dashboard_NavBar"
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
                   to={{
@@ -338,6 +342,7 @@ class SideBar extends Component {
               // }}
               >
                 <Link
+                  id="Master_NavBar"
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
                   onMouseOver={() => this.SetMenu(el.ModuleId)}
@@ -435,6 +440,7 @@ class SideBar extends Component {
             <>
               <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
                 <Link
+                  id="AdditionalMaster_NavBar"
                   key={i}
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
@@ -511,6 +517,7 @@ class SideBar extends Component {
           return (
             <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
               <Link
+                id="Report_NavBar"
                 key={i}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
@@ -571,6 +578,7 @@ class SideBar extends Component {
             <>
               <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
                 <Link
+                  id="Costing_NavBar"
                   key={i}
                   // isActive={location && location.pathname === '/costing' ? true : false}
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
@@ -648,6 +656,7 @@ class SideBar extends Component {
           return (
             <li className={'nav-item dropdown'}>
               <Link
+                id="Simulation_NavBar"
                 key={i}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
@@ -743,7 +752,7 @@ class SideBar extends Component {
               <Link
                 key={i}
                 id={this.getSpecificIdForElement(el)}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''} Users_NavBar`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
                   pathname: el.LandingPageURL,
@@ -784,7 +793,7 @@ class SideBar extends Component {
               <Link
                 key={i}
                 id={this.getSpecificIdForElement(el)}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''} Audit_NavBar`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
                   pathname: "/login-audit",
@@ -822,7 +831,7 @@ class SideBar extends Component {
               <Link
                 key={i}
                 id={this.getSpecificIdForElement(el)}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''} RFQ_NavBar`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
                   pathname: "/rfq-listing",
@@ -859,7 +868,7 @@ class SideBar extends Component {
               <Link
                 key={i}
                 id={this.getSpecificIdForElement(el)}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === 'NFR' ? 'IsActive' : ''}`}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === 'NFR' ? 'IsActive' : ''} NFR_NavBar`}
                 onClick={() => this.setLeftMenu('NFR')}
                 to={{
                   pathname: "/nfr",
@@ -885,20 +894,9 @@ class SideBar extends Component {
     );
   };
 
-  tourStart = () => {
-    const { location, TourStartAction } = this.props;
-    const { showTour } = this.state;
-    this.setState({ showTour: !showTour });
-
-
-    TourStartAction({
-      showTour: !showTour,
-    });
-
-  }
 
   render() {
-    const { userData, moduleSelectList, leftMenuData, topAndLeftMenuData } = this.props;
+    const { userData, moduleSelectList, leftMenuData, topAndLeftMenuData, t } = this.props;
     const { isLoader, isLeftMenuRendered, showTour } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
@@ -934,7 +932,12 @@ class SideBar extends Component {
                   <li className="nav-item d-xl-inline-block">
                     <div className="d-flex align-items-center">
                       <LanguageDropdown />
-                      <button className={`custom-width-26px custom-height-26px ml-1 guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" : "d-none"}`} title={`Guide ${showTour ? "on" : "off"}`} onClick={this.tourStart}></button>
+                      <TourWrapper
+                        buttonSpecificProp={{ id: "Navigation_Bar_Tour" }}
+                        stepsSpecificProp={{
+                          steps: Steps(t, { topAndLeftMenuData }).NAV_BAR
+                        }} />
+
                     </div>
                   </li>
                   <li className="nav-item d-xl-inline-block version">
@@ -1028,5 +1031,6 @@ export default connect(mapStateToProps, {
   getPermissionByUser,
   getMenu,
   getTopAndLeftMenuData,
-  TourStartAction
-})(SideBar)
+
+})(withTranslation(['NavBar'])(SideBar))
+

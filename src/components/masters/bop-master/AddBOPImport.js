@@ -226,7 +226,7 @@ class AddBOPImport extends Component {
     }
   }
 
-  commonFunction() {
+  commonFunction(plantId = '') {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -236,6 +236,7 @@ class AddBOPImport extends Component {
       UserId: loggedInUserId(),
       Mode: 'master',
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
+      plantId: plantId
     }
 
     this.props.checkFinalUser(obj, (res) => {
@@ -719,6 +720,7 @@ class AddBOPImport extends Component {
   */
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
+    this.commonFunction(e.value)
   }
 
   /**
@@ -1317,6 +1319,9 @@ class AddBOPImport extends Component {
   * @description Renders the component
   */
   render() {
+
+
+
     const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject } = this.state;
@@ -1369,11 +1374,17 @@ class AddBOPImport extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} {showBopLabel()} (Import)
-                          <TourWrapper
-                            buttonSpecificProp={{ id: "BOP_Import_form" }}
+                          {!isViewMode && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_BOP_Import_Form" }}
                             stepsSpecificProp={{
-                              steps: Steps(t).BOP_IMPORT_FORM
-                            }} />
+                              steps: Steps(t, {
+                                isEditFlag: isEditFlag,
+                                showSendForApproval: !this.state.isFinalApprovar,
+                                CBCTypeField: (costingTypeId === CBCTypeId),
+
+                                sourceField: (costingTypeId === VBCTypeId)
+                              }).BOP_IMPORT_FORM
+                            }} />}
                         </h1>
                       </div>
                     </div>
@@ -1477,7 +1488,7 @@ class AddBOPImport extends Component {
                               </div>
                               {!isEditFlag &&
                                 <Button
-                                  id="addBOPDomestic_categoryToggle"
+                                  id="addBOPImport_categoryToggle"
                                   onClick={this.categoryToggler}
                                   className={"right"}
                                   variant="plus-icon-square"
@@ -1563,7 +1574,7 @@ class AddBOPImport extends Component {
                                   onChange={this.breakUpHandleChange}
                                 >
                                   Detailed {showBopLabel()}
-                                  < input
+                                  <input
                                     type="checkbox"
                                     checked={isTechnologyVisible}
                                     disabled={isViewMode || isEditFlag ? true : false
@@ -1652,7 +1663,7 @@ class AddBOPImport extends Component {
                                   </div>
                                   {!isEditFlag && (
                                     <Button
-                                      id="addBOPDomestic_vendorToggle"
+                                      id="addBOPImport_vendorToggle"
                                       onClick={this.vendorToggler}
                                       className={"right"}
                                       variant="plus-icon-square"

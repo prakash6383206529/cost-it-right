@@ -326,7 +326,7 @@ class AddRMImport extends Component {
     }
   }
 
-  commonFunction() {
+  commonFunction(plantId = '') {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, RM_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -336,6 +336,7 @@ class AddRMImport extends Component {
       TechnologyId: RM_MASTER_ID,
       Mode: 'master',
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
+      plantId: plantId
     }
 
 
@@ -1078,6 +1079,7 @@ class AddRMImport extends Component {
       costingTypeId: costingHeadFlag,
       vendorName: [],
       vendorLocation: [],
+      singlePlantSelected: null
     });
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
@@ -1733,6 +1735,7 @@ class AddRMImport extends Component {
 
   handleSinglePlant = (newValue) => {
     this.setState({ singlePlantSelected: newValue })
+    this.commonFunction(newValue ? newValue.value : '')
   }
 
   conditionToggle = () => {
@@ -1842,11 +1845,21 @@ class AddRMImport extends Component {
                       <div className="col-md-6">
                         <h2>
                           {isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} Raw Material (Import)
-                          <TourWrapper
-                            buttonSpecificProp={{ id: "RM_Import_form" }}
+                          {!isViewFlag && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_RM_Import_Form" }}
                             stepsSpecificProp={{
-                              steps: Steps(t).ADD_RAW_MATERIAL_IMPORT
-                            }} />
+                              steps: Steps(t, {
+                                isEditFlag: isEditFlag,
+                                showSendForApproval: !this.state.isFinalApprovar,
+                                hasSource: (costingTypeId === ZBCTypeId),
+                                plantField: (costingTypeId === ZBCTypeId),
+                                CBCTypeField: (costingTypeId === CBCTypeId),
+
+                                destinationField: ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)),
+                                sourceField: ((this.state.HasDifferentSource ||
+                                  costingTypeId === VBCTypeId))
+                              }).ADD_RAW_MATERIAL_IMPORT
+                            }} />}
                         </h2>
                       </div>
                     </div>
@@ -2035,7 +2048,7 @@ class AddRMImport extends Component {
                             />
                           </Col>
 
-                          {((costingTypeId === ZBCTypeId) && (
+                          {((costingTypeId === ZBCTypeId && !initialConfiguration.IsMultipleUserAllowForApproval) && (
                             <Col md="3">
                               <Field
                                 label="Plant (Code)"
@@ -2059,7 +2072,7 @@ class AddRMImport extends Component {
                             </Col>)
                           )}
                           {
-                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
+                            ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration.IsMultipleUserAllowForApproval) &&
                             <Col md="3">
                               <Field
                                 label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
@@ -2130,8 +2143,8 @@ class AddRMImport extends Component {
                               </Col>
                               <Col md="3" className='mb-4'>
                                 <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                                <div id="AddRMImport_Vendor" className="d-flex justify-space-between align-items-center async-select">
-                                  <div className="fullinput-icon p-relative">
+                                <div className="d-flex justify-space-between align-items-center async-select">
+                                  <div id="AddRMImport_Vendor" className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                     <AsyncSelect
                                       name="DestinationSupplierId"
@@ -2374,7 +2387,7 @@ class AddRMImport extends Component {
                                   className=""
                                   maxLength="15"
                                   customClassName=" withBorder"
-                                  disabled={isViewFlag}
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 />
                               </Col>
                               <Col md="3">
@@ -2406,7 +2419,7 @@ class AddRMImport extends Component {
                                   className=""
                                   maxLength="15"
                                   customClassName=" withBorder"
-                                  disabled={isViewFlag}
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 />
                               </Col>
                               <Col md="3">
@@ -2444,7 +2457,7 @@ class AddRMImport extends Component {
                                     maxLength="15"
                                     customClassName=" withBorder"
                                     // onChange={this.handleScrapRate}
-                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col >
                                 <Col md="3">
@@ -2483,7 +2496,7 @@ class AddRMImport extends Component {
                                     className=""
                                     customClassName=" withBorder"
                                     maxLength="15"
-                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
 
@@ -2519,7 +2532,7 @@ class AddRMImport extends Component {
                                     className=""
                                     customClassName=" withBorder"
                                     maxLength="15"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                                 <Col md="3">
@@ -2553,7 +2566,7 @@ class AddRMImport extends Component {
                                     validate={[maxLength15, decimalLengthsix]}
                                     component={renderText}
                                     required={false}
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                     className=" "
                                     customClassName=" withBorder"
                                   />
@@ -2588,7 +2601,7 @@ class AddRMImport extends Component {
                                     validate={[required, maxLength15, decimalLengthsix]}
                                     component={renderText}
                                     required={true}
-                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                     className=" "
                                     customClassName=" withBorder"
                                   />
@@ -2627,7 +2640,7 @@ class AddRMImport extends Component {
                                     className=""
                                     maxLength="15"
                                     customClassName=" withBorder"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                                 <Col md="3">{/* //RE */}
@@ -2662,7 +2675,7 @@ class AddRMImport extends Component {
                                     className=""
                                     maxLength="15"
                                     customClassName=" withBorder"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                                 <Col md="3">{/* //RE */}
@@ -2828,7 +2841,7 @@ class AddRMImport extends Component {
                               onChange={this.handleMessageChange}
                               validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                               component={renderTextAreaField}
-                              maxLength="512"
+                              // maxLength="5000"
                               rows="10"
                               disabled={isViewFlag}
 

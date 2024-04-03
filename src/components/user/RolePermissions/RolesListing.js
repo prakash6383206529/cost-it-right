@@ -6,7 +6,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../../helper/util';
+import { checkPermission, searchNocontentFilter, setLoremIpsum, showTitleForActiveToggle } from '../../../helper/util';
 import { ROLE } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -19,9 +19,12 @@ import Switch from "react-switch";
 import ScrollToTop from '../../common/ScrollToTop';
 import { useRef } from 'react';
 import Button from '../../layout/Button';
-
+import { useTranslation } from 'react-i18next'
+import { Steps } from '../../common/Tour/TourMessages';
+import TourWrapper from '../../common/Tour/TourWrapper';
 const gridOptions = {};
 const RolesListing = (props) => {
+  const { t } = useTranslation("common")
   const [state, setState] = useState({
     isEditFlag: false,
     RoleId: '',
@@ -104,14 +107,24 @@ const RolesListing = (props) => {
     const userRoleCheck = userDetails()?.Role
     return (
       <>
-        {!(rowData?.RoleName === 'RFQUser') && !(userRoleCheck === rowData?.RoleName) && EditAccessibility && <Button id={`roleListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />
+        {!(rowData?.RoleName === 'RFQUser') && !(userRoleCheck === rowData?.RoleName) && EditAccessibility && <Button id={`roleListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />
         }
 
         {/* {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />} */}
       </>
     )
   };
+  /**
+            * @method toggleExtraData
+            * @description Handle specific module tour state to display lorem data
+            */
+  const toggleExtraData = (showTour) => {
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+    }, 100);
 
+  }
   const formToggle = () => {
     props.formToggle()
   }
@@ -174,7 +187,7 @@ const RolesListing = (props) => {
     showTitleForActiveToggle(props)
     return (
       <>
-        <label htmlFor="normal-switch" className="normal-switch">
+        <label htmlFor="normal-switch" className="normal-switch Tour_List_Status">
           {/* <span>Switch with default style</span> */}
           <Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!ActivateAccessibility} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
         </label>
@@ -202,11 +215,11 @@ const RolesListing = (props) => {
             <div className="d-flex justify-content-end bd-highlight w100">
               {AddAccessibility &&
                 <div>
-                  <Button id="roletListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
+                  <Button id="roletListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
                 </div>
               }
               <Button
-                id={"roleListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                id={"roleListing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
             </div>
           </Col>
         </Row>
@@ -215,6 +228,11 @@ const RolesListing = (props) => {
             <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                <TourWrapper
+                  buttonSpecificProp={{ id: "Role_listing_Tour", onClick: toggleExtraData }}
+                  stepsSpecificProp={{
+                    steps: Steps(t, { filterButton: false, bulkUpload: false, downloadButton: false, addLimit: false, viewButton: false, DeleteButton: false, costMovementButton: false, copyButton: false, viewBOM: false, updateAssociatedTechnology: false, addAssociation: false, addMaterial: false, generateReport: false, approve: false, reject: false, }).COMMON_LISTING
+                  }} />
               </div>
               <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -223,7 +241,7 @@ const RolesListing = (props) => {
                   floatingFilter={true}
                   domLayout='autoHeight'
                   // columnDefs={c}
-                  rowData={state.tableData}
+                  rowData={state.showExtraData ? [...setLoremIpsum(state.tableData[0]), ...state.tableData] : state.tableData}
                   pagination={true}
                   paginationPageSize={10}
                   onGridReady={onGridReady}

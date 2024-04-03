@@ -7,19 +7,20 @@ import NoContentFound from "../../common/NoContentFound";
 import Switch from "react-switch";
 import BulkUpload from "../../massUpload/BulkUpload";
 import AddVendorDrawer from "./AddVendorDrawer";
-import { checkPermission, searchNocontentFilter, showTitleForActiveToggle, } from "../../../helper/util";
+import { checkPermission, searchNocontentFilter, setLoremIpsum, showTitleForActiveToggle, updateBOPValues, } from "../../../helper/util";
 import { MASTERS, VENDOR, VendorMaster } from "../../../config/constants";
-import { getConfigurationKey, loggedInUserId } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, showBopLabel } from "../../../helper";
 import LoaderCustom from "../../common/LoaderCustom";
 import ReactExport from "react-export-excel";
 import { VENDOR_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
+import PaginationControls from "../../common/Pagination/PaginationControls";
+import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
 import WarningMessage from "../../common/WarningMessage";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import ScrollToTop from "../../common/ScrollToTop";
-import { PaginationWrapper } from "../../common/commonPagination";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import { disabledClass, isResetClick } from "../../../actions/Common";
 import { getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI, } from "../actions/Supplier";
@@ -29,16 +30,23 @@ import { hideMultipleColumnFromExcel } from "../../common/CommonFunctions";
 import { useDispatch, useSelector } from "react-redux";
 import Button from '../../layout/Button';
 import { useRef } from "react";
+import { updateGlobalTake, updatePageNumber, updatePageSize, updateCurrentRowIndex, resetStatePagination } from "../../common/Pagination/paginationAction";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const VendorListing = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation("common")
+
   const searchRef = useRef(null);
   const { supplierDataList, allSupplierDataList } = useSelector((state) => state.supplier);
   const { statusColumnData } = useSelector((state) => state.comman);
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
+  const { currentRowIndex, globalTakes } = useSelector((state) => state.pagination);
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const [state, setState] = useState({
     isEditFlag: false,
@@ -84,11 +92,13 @@ const VendorListing = () => {
     showPopupToggle: false,
     isLoader: false,
     pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-    globalTake: defaultPageSize,
+    // globalTake: defaultPageSize,
     disableFilter: true,
     disableDownload: false,
     noData: false,
     dataCount: 0,
+    render: false,
+    showExtraData: false,
   });
 
   useEffect(() => {
@@ -103,6 +113,8 @@ const VendorListing = () => {
     }, 300);
     return () => {
       dispatch(setSelectedRowForPagination([]));
+      dispatch(resetStatePagination());
+
     };
   }, [topAndLeftMenuData]);
 
@@ -117,9 +129,9 @@ const VendorListing = () => {
     applyPermission(topAndLeftMenuData);
     setTimeout(() => {
       if (statusColumnData?.data) {
-        setState((prevState) => ({ ...prevState, disableFilter: false, warningMessage: true, floatingFilterData: { ...prevState.floatingFilterData, VendorType: statusColumnData.data, }, }));
+        setState((prevState) => ({ ...prevState, warningMessage: true, floatingFilterData: { ...prevState.floatingFilterData, VendorType: statusColumnData.data, }, }));
       } else {
-        setState((prevState) => ({ ...prevState, warningMessage: false, disableFilter: false, floatingFilterData: { ...prevState.floatingFilterData, VendorType: "", }, }));
+        setState((prevState) => ({ ...prevState, warningMessage: false, floatingFilterData: { ...prevState.floatingFilterData, VendorType: "", }, }));
       }
     }, 500);
   }, [topAndLeftMenuData, statusColumnData]);
@@ -191,8 +203,13 @@ const VendorListing = () => {
 
         if (res) {
           if (res && res.status === 204) {
-            setState((prevState) => ({ ...prevState, totalRecordCount: 0, pageNo: 0, }));
+            setState((prevState) => ({
+              ...prevState, totalRecordCount: 0,
+              //  pageNo: 0,
+            }));
+            dispatch(updatePageNumber(0));
           }
+
           if (res && res.data && res.data.DataList.length > 0) {
             setState((prevState) => ({ ...prevState, totalRecordCount: res.data.DataList[0].TotalRecordCount, }));
           }
@@ -290,46 +307,16 @@ const VendorListing = () => {
    * filter data
    */
   const onSearch = () => {
-    setState((prevState) => ({ ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
-    getTableListData(0, state.floatingFilterData, state.globalTake, true);
+    setState((prevState) => ({
+      ...prevState, warningMessage: false,
+      //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0, 
+    }));
+    dispatch(updatePageNumber(1));
+    dispatch(updateCurrentRowIndex(0));
+    getTableListData(0, state.floatingFilterData, globalTakes, true);
   };
 
-  /**
-   * pagination previous function
-   */
-  const onBtPrevious = () => {
-    if (state.pageNo === 1) {
-      return false
-    }
-    if (state.currentRowIndex >= 10) {
-      setState((prevState) => ({ ...prevState, pageNo: state.pageNo - 1, pageNoNew: state.pageNo - 1 }))
-      const previousNo = state.currentRowIndex - 10;
-      getTableListData(previousNo, state.floatingFilterData, state.globalTake, true);
 
-      setState((prevState) => ({ ...prevState, currentRowIndex: previousNo }))
-    };
-  }
-  /**
-     * pagination next function
-     */
-
-  const onBtNext = () => {
-    if (state.pageSize.pageSize50 && state.pageNo >= Math.ceil(state.totalRecordCount / 50)) {
-      return false
-    }
-    if (state.pageSize.pageSize100 && state.pageNo >= Math.ceil(state.totalRecordCount / 100)) {
-      return false
-    }
-    if (state.currentRowIndex < (state.totalRecordCount - 10)) {
-      setState((prevState) => ({ ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1 }))
-      const nextNo = state.currentRowIndex + 10;
-
-      getTableListData(nextNo, state.floatingFilterData, state.globalTake, true);
-
-      setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }))
-    }
-
-  };
 
   /**
    * @method editItemDetails
@@ -346,7 +333,16 @@ const VendorListing = () => {
   const deleteItem = (Id) => {
     setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
   };
-
+  /**
+                 @method toggleExtraData
+                 @description Handle specific module tour state to display lorem data
+                */
+  const toggleExtraData = (showTour) => {
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+    }, 100);
+  }
   /**
    * @method confirmDeleteItem
    * @description confirm delete item
@@ -386,11 +382,11 @@ const VendorListing = () => {
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
-        {ViewAccessibility && (<Button id={`vendorListing_view${props.rowIndex}`} className={"View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
+        {ViewAccessibility && (<Button id={`vendorListing_view${props.rowIndex}`} className={"View Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
         )}
-        {EditAccessibility && (<Button id={`vebdorListing_edit${props.rowIndex}`} className={"mr-1"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
+        {EditAccessibility && (<Button id={`vebdorListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
         )}
-        {DeleteAccessibility && (<Button id={`vendorListing_delete${props.rowIndex}`} className={"mr-1"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
+        {DeleteAccessibility && (<Button id={`vendorListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
         )}
       </>
     );
@@ -473,7 +469,7 @@ const VendorListing = () => {
     showTitleForActiveToggle(props?.rowIndex);
     return (
       <>
-        <label htmlFor="normal-switch" className="normal-switch">
+        <label htmlFor="normal-switch" className="normal-switch Tour_List_Status">
           {/* <span>Switch with default style</span> */}
           <Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!ActivateAccessibility} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
         </label>
@@ -512,7 +508,7 @@ const VendorListing = () => {
     if (type !== "cancel") {
       setTimeout(() => {
         getTableListData(
-          state.currentRowIndex,
+          currentRowIndex,
           state.floatingFilterData,
           100,
           true
@@ -527,7 +523,7 @@ const VendorListing = () => {
    */
   const filterList = () => {
     getTableListData(
-      state.currentRowIndex, state.floatingFilterData, 100, true);
+      currentRowIndex, state.floatingFilterData, 100, true);
   };
 
   const formToggle = () => {
@@ -556,27 +552,7 @@ const VendorListing = () => {
     params.api.paginationGoToPage(0);
   };
 
-  /**
-   * @method onPageSizeChanged
-   * @description on page size change
-   */
-  const onPageSizeChanged = (newPageSize) => {
-    let pageSize, totalRecordCount;
 
-    if (Number(newPageSize) === 10) {
-      pageSize = 10;
-    } else if (Number(newPageSize) === 50) {
-      pageSize = 50;
-    } else if (Number(newPageSize) === 100) {
-      pageSize = 100;
-    }
-    totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
-    getTableListData(
-      state.currentRowIndex, state.floatingFilterData, pageSize, true);
-
-    setState((prevState) => ({ ...prevState, globalTake: pageSize, pageNo: Math.min(state.pageNo, totalRecordCount), pageSize: { pageSize10: pageSize === 10, pageSize50: pageSize === 50, pageSize100: pageSize === 100, }, }));
-    state.gridApi.paginationSetPageSize(Number(newPageSize));
-  };
 
   /**
    * @method resetState
@@ -594,10 +570,20 @@ const VendorListing = () => {
     for (var prop in state.floatingFilterData) {
       state.floatingFilterData[prop] = "";
     }
-    setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
+    setState((prevState) => ({
+      ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false,
+      //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
+    }));
+    dispatch(updatePageNumber(1));
+    dispatch(updateCurrentRowIndex(0));
     getTableListData(0, state.floatingFilterData, 10, true);
     dispatch(setSelectedRowForPagination([]));
-    setState((prevState) => ({ ...prevState, globalTake: 10, dataCount: 0, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, }, }));
+    dispatch(updateGlobalTake(10));
+    dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }));
+    setState((prevState) => ({
+      ...prevState, dataCount: 0,
+      //  globalTake: 10,  pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
+    }));
     if (searchRef.current) {
       searchRef.current.value = '';
     }
@@ -652,10 +638,15 @@ const VendorListing = () => {
   }
   const onBtExport = () => {
     let tempArr = [];
+    const bopMasterName = showBopLabel();
     // tempArr = state.gridApi && state.gridApi?.getSelectedRows();
     tempArr = selectedRowForPagination
 
-    tempArr = tempArr && tempArr.length > 0 ? tempArr : allSupplierDataList ? allSupplierDataList : []; return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
+    tempArr = tempArr && tempArr.length > 0 ? tempArr : allSupplierDataList ? allSupplierDataList : [];
+    //return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
+    const { updatedLabels, updatedTempData } = updateBOPValues(VENDOR_DOWNLOAD_EXCEl, tempArr, bopMasterName)
+
+    return returnExcelColumn(updatedLabels, updatedTempData)
   };
   const returnExcelColumn = (data = [], TempData) => {
     let temp = [];
@@ -727,6 +718,13 @@ const VendorListing = () => {
         <Col md="3">
           {" "}
           <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+          <TourWrapper
+            buttonSpecificProp={{
+              id: "vendor_listing_Tour", onClick: toggleExtraData
+            }}
+            stepsSpecificProp={{
+              steps: Steps(t, { multipleFilter: false, addLimit: false, updateAssociatedTechnology: false, costMovementButton: false, copyButton: false, viewBOM: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+            }} />
         </Col>
         <Col md="9">
           <div className="d-flex justify-content-end bd-highlight w100 ">
@@ -739,14 +737,14 @@ const VendorListing = () => {
               )}
             </div>
             <div className="d-flex">
-              <Button id="vendorListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter}
+              <Button id="vendorListing_filter" className={"mr5 Tour_List_Filter"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter}
               />
-              {AddAccessibility && (<Button id="vendorListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
+              {AddAccessibility && (<Button id="vendorListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus"} />
               )}
-              {BulkUploadAccessibility && (<Button id="vendorListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
+              {BulkUploadAccessibility && (<Button id="vendorListing_bulkUpload" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
               )}
               {DownloadAccessibility && (<>
-                <Button className="mr5" id={"vendorListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                <Button className="mr5 Tour_List_Download" id={"vendorListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                 />
 
                 <ExcelFile filename={"Vendor"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-vendor"} className="p-absolute" />}>
@@ -754,7 +752,7 @@ const VendorListing = () => {
                 </ExcelFile>
               </>
               )}
-              <Button id={"vendorListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+              <Button id={"vendorListing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
             </div>
           </div>
         </Col>
@@ -778,9 +776,10 @@ const VendorListing = () => {
               defaultColDef={defaultColDef}
               floatingFilter={true}
               domLayout="autoHeight"
-              rowData={supplierDataList}
+              rowData={state.showExtraData && supplierDataList ? [...setLoremIpsum(supplierDataList[0]), ...supplierDataList] : supplierDataList}
+
               pagination={true}
-              paginationPageSize={state.globalTake}
+              paginationPageSize={globalTakes}
               onGridReady={onGridReady}
               onFilterModified={onFloatingFilterChanged}
               gridOptions={gridOptions}
@@ -808,32 +807,15 @@ const VendorListing = () => {
             </AgGridReact>
             <div className="button-wrapper">
               {!state.isLoader && (
-                <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />
+                <PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Vendor" />
               )}
-              <div className="d-flex pagination-button-container">
+              <PaginationControls
+                totalRecordCount={state.totalRecordCount}
+                getDataList={getTableListData}
+                floatingFilterData={state.floatingFilterData}
+                module="Vendor"
+              />
 
-                <p><Button id="vebdorListing_previous" variant="previous-btn" disabled={false} onClick={() => onBtPrevious()} /></p>
-
-                {state?.pageSize?.pageSize10 && (
-                  <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
-                    {Math.ceil(state.totalRecordCount / 10)}
-                  </p>
-                )}
-                {state?.pageSize?.pageSize50 && (
-                  <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
-                    {Math.ceil(state.totalRecordCount / 50)}
-                  </p>
-                )}
-                {state?.pageSize?.pageSize100 && (
-                  <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
-                    {Math.ceil(state.totalRecordCount / 100)}
-                  </p>
-                )}
-                <p><Button id="vendorListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-              </div>
             </div>
           </div>
         </div>

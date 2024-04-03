@@ -1,9 +1,9 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useEffect, Fragment, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { getOverheadDataList, deleteOverhead } from '../actions/OverheadProfit';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -17,16 +17,22 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
+import PaginationControls from '../../common/Pagination/PaginationControls';
+import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
+import { updatePageNumber, updateCurrentRowIndex, resetStatePagination } from '../../common/Pagination/paginationAction';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { useTranslation } from 'react-i18next';
+import { Steps } from '../../common/Tour/TourMessages';
+import { ApplyPermission } from '.';
+
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -36,6 +42,9 @@ const gridOptions = {};
 
 function OverheadListing(props) {
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
+    const { t } = useTranslation("common")
+    const permissions = useContext(ApplyPermission);
+
 
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
@@ -45,24 +54,26 @@ function OverheadListing(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [disableFilter, setDisableFilter] = useState(true)
     const [disableDownload, setDisableDownload] = useState(false)
-
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [warningMessage, setWarningMessage] = useState(false)
-    const [globalTake, setGlobalTake] = useState(defaultPageSize)
+    // const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [filterModel, setFilterModel] = useState({});
-    const [pageNo, setPageNo] = useState(1)
-    const [pageNoNew, setPageNoNew] = useState(1)
+    // const [pageNo, setPageNo] = useState(1)
+    // const [pageNoNew, setPageNoNew] = useState(1)
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
-    const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    // const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
-    const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "" })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
     let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const { globalTakes } = useSelector((state) => state.pagination)
+
 
 
     var floatingFilterOverhead = {
@@ -107,6 +118,8 @@ function OverheadListing(props) {
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
         setSelectedRowForPagination([])
+        dispatch(resetStatePagination());
+
     }, [])
 
     useEffect(() => {
@@ -134,7 +147,8 @@ function OverheadListing(props) {
             setIsLoader(false)
             if (res && res.status === 204) {
                 setTotalRecordCount(0)
-                setPageNo(0)
+                dispatch(updatePageNumber(0))
+                // setPageNo(0)
             }
 
             if (res && isPagination === false) {
@@ -240,16 +254,27 @@ function OverheadListing(props) {
         }
     }
 
+    const toggleExtraData = (showTour) => {
 
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 100);
+
+
+    }
     const onSearch = () => {
         setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
-        setPageNo(1)
-        setPageNoNew(1)
-        setCurrentRowIndex(0)
+        dispatch(updatePageNumber(1))
+        dispatch(updateCurrentRowIndex(0))
+        // setPageNo(1)
+        // setPageNoNew(1)
+        // setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
-        getDataList(null, null, null, null, 0, globalTake, true, floatingFilterData)
+        getDataList(null, null, null, null, 0, globalTakes, true, floatingFilterData)
     }
 
 
@@ -270,45 +295,16 @@ function OverheadListing(props) {
 
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
-        setPageNo(1)
-        setPageNoNew(1)
-        setCurrentRowIndex(0)
+        // setPageNo(1)
+        // setPageNoNew(1)
+        // setCurrentRowIndex(0)
         getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
         dispatch(setSelectedRowForPagination([]))
-        setGlobalTake(10)
-        setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        // setGlobalTake(10)
+        dispatch(resetStatePagination())
+        // setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         setDataCount(0)
     }
-
-
-    const onBtPrevious = () => {
-        if (currentRowIndex >= 10) {
-            setPageNo(pageNo - 1)
-            setPageNoNew(pageNo - 1)
-            const previousNo = currentRowIndex - 10;
-            getDataList(null, null, null, null, previousNo, globalTake, true, floatingFilterData)
-            setCurrentRowIndex(previousNo)
-        }
-    }
-
-    const onBtNext = () => {
-
-        if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
-            return false
-        }
-
-        if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
-            return false
-        }
-
-        if (currentRowIndex < (totalRecordCount - 10)) {
-            setPageNo(pageNo + 1)
-            setPageNoNew(pageNo + 1)
-            const nextNo = currentRowIndex + 10;
-            getDataList(null, null, null, null, nextNo, globalTake, true, floatingFilterData)
-            setCurrentRowIndex(nextNo)
-        }
-    };
 
 
     /**
@@ -370,16 +366,15 @@ function OverheadListing(props) {
     const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+        ;
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
-
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -462,37 +457,6 @@ function OverheadListing(props) {
         params.api.paginationGoToPage(0);
     };
 
-
-    const onPageSizeChanged = (newPageSize) => {
-
-        if (Number(newPageSize) === 10) {
-            getDataList(null, null, null, null, currentRowIndex, 10, true, floatingFilterData)
-            setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
-            setGlobalTake(10)
-            setPageNo(pageNoNew)
-        }
-        else if (Number(newPageSize) === 50) {
-            getDataList(null, null, null, null, currentRowIndex, 50, true, floatingFilterData)
-            setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
-            setGlobalTake(50)
-            if (pageNo >= Math.ceil(totalRecordCount / 50)) {
-                setPageNo(Math.ceil(totalRecordCount / 50))
-                getDataList(null, null, null, null, 0, 50, true, floatingFilterData)
-            }
-        }
-        else if (Number(newPageSize) === 100) {
-            getDataList(null, null, null, null, currentRowIndex, 100, true, floatingFilterData)
-            setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
-            setGlobalTake(100)
-            if (pageNo >= Math.ceil(totalRecordCount / 100)) {
-                setPageNo(Math.ceil(totalRecordCount / 100))
-                getDataList(null, null, null, null, 0, 100, true, floatingFilterData)
-            }
-        }
-
-        gridApi.paginationSetPageSize(Number(newPageSize));
-
-    };
 
 
     const onRowSelect = (event) => {
@@ -653,13 +617,13 @@ function OverheadListing(props) {
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div className="warning-message d-flex align-items-center">
                                             {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                            <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                            <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                         </div>
 
                                         {AddAccessibility && (
                                             <button
                                                 type="button"
-                                                className={"user-btn mr5"}
+                                                className={"user-btn mr5 Tour_List_Add"}
                                                 onClick={formToggle}
                                                 title="Add"
                                             >
@@ -670,7 +634,7 @@ function OverheadListing(props) {
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" ></div>
                                                     {/* DOWNLOAD */}
                                                     {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                 </button>
@@ -682,7 +646,7 @@ function OverheadListing(props) {
                                             </>
                                         }
 
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <button type="button" className="user-btn Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
 
@@ -695,16 +659,23 @@ function OverheadListing(props) {
                                 <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <TourWrapper
+                                            buttonSpecificProp={{ id: "Overhead_listing_Tour", onClick: toggleExtraData }}
+                                            stepsSpecificProp={{
+                                                steps: Steps(t, { bulkUpload: false, costMovementButton: false, addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                                            }} />
                                     </div>
                                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                        <AgGridReact
+                                        {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
                                             domLayout='autoHeight'
-                                            rowData={overheadProfitList}
+                                            rowData={showExtraData ? [...setLoremIpsum(overheadProfitList[0]), ...overheadProfitList] : overheadProfitList}
+
                                             pagination={true}
-                                            paginationPageSize={globalTake}
+                                            paginationPageSize={globalTakes}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
                                             noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -728,21 +699,14 @@ function OverheadListing(props) {
                                             <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead}></AgGridColumn>
                                             <AgGridColumn width={215} field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="OverheadBOPPercentage" headerName={`Overhead on ${showBopLabel()}  (%)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="OverheadBOPPercentage" headerName={`Overhead on ${showBopLabel()} (%)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                            <AgGridColumn field="OverheadId" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                                        </AgGridReact>
+                                            <AgGridColumn field="OverheadId" width={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                        </AgGridReact>}
                                         <div className='button-wrapper'>
-                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
-                                            {
-                                                <div className="d-flex pagination-button-container">
-                                                    <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                                                    {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                                                    {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                                                    {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                                    <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
-                                                </div>
+                                            {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="overHeadAndProfits" />}
+                                            {<PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="overHeadAndProfits" />
                                             }
                                         </div>
                                     </div>

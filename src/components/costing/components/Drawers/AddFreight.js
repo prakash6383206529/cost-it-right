@@ -398,7 +398,7 @@ function AddFreight(props) {
                     </label>
                   </Col> */}
                   <Col md="12">
-                    <Label className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
+                    <Label id="Add_FreightType_Full_Truck" className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"
                         name="freightType"
@@ -409,7 +409,7 @@ function AddFreight(props) {
                       />{' '}
                       <span>Full Truck Load</span>
                     </Label>
-                    <Label className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
+                    <Label id="Add_FreightType_Part_Truck" className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"
                         name="freightType"
@@ -420,7 +420,7 @@ function AddFreight(props) {
                       />{' '}
                       <span>Part Truck Load</span>
                     </Label>
-                    <Label className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
+                    <Label id="Add_FreightType_Fixed_Truck" className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"
                         name="freightType"
@@ -431,7 +431,7 @@ function AddFreight(props) {
                       />{' '}
                       <span>Fixed</span>
                     </Label>
-                    <Label className={'pl0 w-auto radio-box mb-0 pb-3'} check>
+                    <Label id="Add_FreightType_Percentage_Truck" className={'pl0 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"
                         name="freightType"
@@ -592,6 +592,7 @@ function AddFreight(props) {
                 <Row className="sf-btn-footer no-gutters justify-content-between ml-0">
                   <div className="col-sm-12 text-right bluefooter-butn">
                     <button
+                      id="AddFreight_Cancel"
                       type={'button'}
                       className="reset mr15 cancel-btn"
                       onClick={cancel} >
@@ -599,6 +600,7 @@ function AddFreight(props) {
                     </button>
 
                     <button
+                      id="AddFreight_Save"
                       type={'submit'}
                       className="submit-button save-btn">
                       <div className={"save-icon"}></div>

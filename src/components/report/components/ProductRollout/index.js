@@ -8,9 +8,12 @@ import DisplayCharts from "./DisplayCharts";
 import MasterUsage from "./MasterUsage";
 import { useMemo } from "react";
 import { useCallback } from "react";
-
+import TourWrapper from "../../../common/Tour/TourWrapper";
+import { Steps } from "../TourMessages";
+import { useTranslation } from "react-i18next"
 const ProductRollout = () => {
     const [modelLandingData, setModelLandingData] = useState({});
+    const { t } = useTranslation("Reports")
 
     const fetchData = (value) => {
         setModelLandingData(value);
@@ -18,7 +21,14 @@ const ProductRollout = () => {
 
     return (
         <div className="product-rollout-container">
-            <h1>Detailed Model/Assy Report</h1>
+            <h1>Detailed Model/Assy Report
+                <TourWrapper
+                    buttonSpecificProp={{ id: "Product_Rollout_Form" }}
+                    stepsSpecificProp={{
+                        steps: Steps(t).ASSYREPORT
+                    }} />
+
+            </h1>
             <Row>
                 <Col md="6">
                     <ModelLanding fetchData={fetchData} />

@@ -9,53 +9,109 @@ import { EMPTY_DATA } from '../../../../config/constants';
 
 function ViewToolCost(props) {
 
-  const { viewToolCost, isPDFShow } = props
+  const { viewToolCost, isPDFShow, isToolCostProcessWise } = props
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const tableData = () => {
+
     return <>
-      <Table className="table cr-brdr-main mt-3 mb-0" size="sm" >
-        <thead>
-          <tr>
-            <th>{`Tool Maintenance Applicability`}</th>
-            <th>{`Maintenance Tool Cost (%)`}</th>
-            <th>{`Cost (Applicability)`}</th>
-            <th>{`Tool Maintenance Cost`}</th>
-            <th>{`Tool Cost`}</th>
-            <th>{`Amortization Quantity (Tool Life)`}</th>
-            <th>{`Tool Amortization Cost`}</th>
-            <th>{`Net Tool Cost`}</th>
-            {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
-          </tr>
-        </thead>
-        <tbody >
-          {
-            viewToolCost &&
-            viewToolCost.map((item, index) => {
-              return (
-                <tr key={index}>
-                  <td>{item?.ToolCostType ? item?.ToolCostType : '-'}</td>
-                  <td>{checkForDecimalAndNull(item.ToolMaintenancePercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
-                  <td>{checkForDecimalAndNull(item.ToolApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                  <td>{item.ToolMaintenanceCost ? checkForDecimalAndNull(item.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                  <td>{item.ToolCost ? checkForDecimalAndNull(item.ToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                  <td>{item.Life ? item.Life : "-"}</td>
-                  <td>{checkForDecimalAndNull(item.ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                  <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                  {initialConfiguration.IsShowCRMHead && <td>{item.ToolCRMHead ? item.ToolCRMHead : '-'}</td>}
+      {
+        isToolCostProcessWise ?
+          <Table className="table cr-brdr-main mt-3 mb-0" size="sm" >
+            <thead>
+              <tr>
+                {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                <th>{`Parent Part Number`}</th>
+                <th>{`Child Part Number`}</th>
+                <th>{`Part Quantity`}</th>
+                <th>{`Part Type`}</th>
+                <th>{`Process/Operation`}</th>
+                <th>{`Process/Operation Type`}</th>
+                <th>{`Process/Operation Quantity`}</th>
+                <th>{`Tool Name`}</th>
+                <th>{`Tool Cost`}</th>
+                <th>{`Quantity`}</th>
+                <th>{`Life/Amortization`}</th>
+                <th>{`Net Tool Cost`}</th>
+              </tr>
+            </thead>
+            <tbody >
+              {
+                viewToolCost &&
+                viewToolCost.map((item, index) => {
+                  return (
+                    <tr key={index}>
+                      {initialConfiguration.IsShowCRMHead && <td>{item.ToolCRMHead ? item.ToolCRMHead : '-'}</td>}
+                      <td>{item?.ParentPartNumber ?? '-'}</td>
+                      <td>{item?.ChildPartNumber ?? '-'}</td>
+                      <td>{item?.PartQuantity ?? '-'}</td>
+                      <td>{item?.PartType ?? '-'}</td>
+                      <td>{item?.ProcessOrOperation ?? '-'}</td>
+                      <td>{item?.ProcessOrOperationType ?? "-"}</td>
+                      <td>{item?.ProcessOrOperationQuantity ?? '-'}</td>
+                      <td>{item?.ToolCategory ?? '-'}</td>
+                      <td>{item?.ToolName ?? '-'}</td>
+                      <td>{checkForDecimalAndNull(item?.ToolCost, initialConfiguration.NoOfDecimalForPrice) ?? '-'}</td>
+                      <td>{item?.Life ?? '-'}</td>
+                      <td>{checkForDecimalAndNull(item?.NetToolCost, initialConfiguration.NoOfDecimalForPrice) ?? '-'}</td>
+
+                    </tr>
+                  )
+                })
+              }
+              {viewToolCost?.length === 0 && (
+                <tr>
+                  <td colSpan={7}>
+                    <NoContentFound title={EMPTY_DATA} />
+                  </td>
                 </tr>
-              )
-            })
-          }
-          {viewToolCost?.length === 0 && (
-            <tr>
-              <td colSpan={7}>
-                <NoContentFound title={EMPTY_DATA} />
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
+              )}
+            </tbody>
+          </Table>
+          :
+          <Table className="table cr-brdr-main mt-3 mb-0" size="sm" >
+            <thead>
+              <tr>
+                <th>{`Tool Maintenance Applicability`}</th>
+                <th>{`Maintenance Tool Cost (%)`}</th>
+                <th>{`Cost (Applicability)`}</th>
+                <th>{`Tool Maintenance Cost`}</th>
+                <th>{`Tool Cost`}</th>
+                <th>{`Amortization Quantity (Tool Life)`}</th>
+                <th>{`Tool Amortization Cost`}</th>
+                <th>{`Net Tool Cost`}</th>
+                {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+              </tr>
+            </thead>
+            <tbody >
+              {
+                viewToolCost &&
+                viewToolCost.map((item, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>{item?.ToolCostType ? item?.ToolCostType : '-'}</td>
+                      <td>{checkForDecimalAndNull(item.ToolMaintenancePercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
+                      <td>{checkForDecimalAndNull(item.ToolApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                      <td>{item.ToolMaintenanceCost ? checkForDecimalAndNull(item.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.ToolCost ? checkForDecimalAndNull(item.ToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.Life ? item.Life : "-"}</td>
+                      <td>{checkForDecimalAndNull(item.ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                      <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      {initialConfiguration.IsShowCRMHead && <td>{item.ToolCRMHead ? item.ToolCRMHead : '-'}</td>}
+                    </tr>
+                  )
+                })
+              }
+              {viewToolCost?.length === 0 && (
+                <tr>
+                  <td colSpan={7}>
+                    <NoContentFound title={EMPTY_DATA} />
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </Table>
+      }
     </>
   }
   /**

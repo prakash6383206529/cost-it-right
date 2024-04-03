@@ -25,6 +25,10 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown, autoCompleteDropdownPart, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { getSelectListPartType } from '../actions/Part'
+import TourWrapper from '../../common/Tour/TourWrapper'
+import { Steps } from './TourMessages'
+import { withTranslation } from 'react-i18next'
+
 const gridOptions = {};
 
 // const initialTableData = [
@@ -361,7 +365,7 @@ class AddVolume extends Component {
     const rowIndex = props?.rowIndex
     return (
       <>
-        <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue, rowIndex)} />
+        <button id='AddVolume_Delete' title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue, rowIndex)} />
       </>
     )
   }
@@ -753,7 +757,7 @@ class AddVolume extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, t } = this.props;
     const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
     const vendorFilterList = async (inputValue) => {
       const { vendorFilter } = this.state
@@ -854,6 +858,12 @@ class AddVolume extends Component {
                               {this.state.isEditFlag
                                 ? "Update Volume"
                                 : "Add Volume"}
+                              <TourWrapper
+                                buttonSpecificProp={{ id: "Add_Volume_Form" }}
+                                stepsSpecificProp={{
+                                  steps: Steps(t,
+                                    { vendorField: (costingTypeId === VBCTypeId), customerField: (costingTypeId === CBCTypeId), plantField: (costingTypeId === ZBCTypeId), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) }).ADD_VOLUME
+                                }} />
                             </h1>
                           </div>
                         </div>
@@ -867,7 +877,7 @@ class AddVolume extends Component {
                         <div className="add-min-height">
                           <Row>
                             <Col md="12">
-                              {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id="Volume_ZeroBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                                 <input
                                   type="radio"
                                   name="costingHead"
@@ -881,7 +891,7 @@ class AddVolume extends Component {
                                 />{" "}
                                 <span>Zero Based</span>
                               </Label>}
-                              {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id="Volume_VendorBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                                 <input
                                   type="radio"
                                   name="costingHead"
@@ -895,7 +905,7 @@ class AddVolume extends Component {
                                 />{" "}
                                 <span>Vendor Based</span>
                               </Label>}
-                              {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                              {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="Volume_CustomerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                                 <input
                                   type="radio"
                                   name="costingHead"
@@ -943,6 +953,7 @@ class AddVolume extends Component {
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                     <AsyncSelect
+                                      id="AddVolume_vendorName"
                                       name="vendorName"
                                       ref={this.myRef}
                                       key={this.state.updateAsyncDropdown}
@@ -1040,6 +1051,7 @@ class AddVolume extends Component {
                               <div className="d-flex justify-space-between align-items-center async-select">
                                 <div className="fullinput-icon p-relative">
                                   <AsyncSelect
+                                    id="AddVolume_PartNumber"
                                     name="PartNumber"
                                     ref={this.myRef}
                                     key={this.state.updateAsyncDropdown}
@@ -1143,6 +1155,7 @@ class AddVolume extends Component {
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                           <div className="col-sm-12 text-right bluefooter-butn">
                             <button
+                              id="Volume_CancelBtn"
                               type={"button"}
                               className="mr15 cancel-btn"
                               onClick={this.cancelHandler}
@@ -1152,6 +1165,7 @@ class AddVolume extends Component {
                               {"Cancel"}
                             </button>
                             <button
+                              id="Volume_SubmitBtn"
                               type="submit"
                               className="user-btn mr5 save-btn"
                               disabled={setDisable}
@@ -1239,5 +1253,5 @@ export default connect(mapStateToProps, {
     form: 'AddVolume',
     enableReinitialize: true,
     touchOnChange: true
-  })(AddVolume),
+  })(withTranslation(['VolumeMaster'])(AddVolume)),
 )

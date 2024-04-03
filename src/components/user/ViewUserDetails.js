@@ -12,6 +12,9 @@ import LoaderCustom from '../common/LoaderCustom';
 import { COSTING, SIMULATION, MASTERS } from '../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import { PaginationWrapper } from '../common/commonPagination';
+import TourWrapper from '../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
 
 
 const gridOptionsTechnology = {}
@@ -284,7 +287,7 @@ class ViewUserDetails extends Component {
   * @description Renders the component
   */
   render() {
-    const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure } = this.props;
+    const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure, t } = this.props;
     const { isTechnologyOpen, department, isMasterOpen, isSimulationOpen, SimulationLevelGrid, MasterLevelGrid, gridApiTechnology, gridApiSimulation, gridApiMaster, OnboardingLevelGrid, gridApiOnboarding, isOnboardingOpen } = this.state;
 
     const departmentName = department ? department.join(", ") : '-';
@@ -312,7 +315,13 @@ class ViewUserDetails extends Component {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{`User Details`}</h3>
+                    <h3>{`User Details`}
+                      <TourWrapper
+                        buttonSpecificProp={{ id: "View_User_Details_Form" }}
+                        stepsSpecificProp={{
+                          steps: Steps(t, { RFQUser: this.props?.RFQUser }).USER_DETAILS
+                        }} />
+                    </h3>
                   </div>
                   <div
                     onClick={(e) => this.toggleDrawer(e)}
@@ -330,6 +339,7 @@ class ViewUserDetails extends Component {
                   <Col md="6">
                     {EditAccessibility && (UserId !== loggedInUserId()) && <button
                       className={'user-btn'}
+                      id="edit_userDetails"
                       onClick={() => this.props.editItemDetails(UserId, false)}
                       type="button">
                       <div className={'edit-icon'}></div>EDIT DETAILS</button>}
@@ -366,7 +376,7 @@ class ViewUserDetails extends Component {
                   {(UserId !== loggedInUserId()) &&
                     < Col md={'12'}>
                       <div className={'left-details'}>Password</div>
-                      <div className={'right-details'}>
+                      <div id="changePassword" className={'right-details'}>
                         {!EditAccessibility ? <span className='encrpt-pwd'>•••••••</span> : <span className='link'
                           onClick={() => this.props.editItemDetails(UserId, true)}
                         >Change Password</span>}
@@ -433,7 +443,7 @@ class ViewUserDetails extends Component {
                               customClass={'technology-level-details'} />
                           </Col>
                           <Col md="2" className='text-right'>
-                            <button onClick={() => this.technologyToggle(COSTING)} className={`btn btn-small-primary-circle ml-1`}>{isTechnologyOpen ? (
+                            <button id="costing_level" onClick={() => this.technologyToggle(COSTING)} className={`btn btn-small-primary-circle ml-1`}>{isTechnologyOpen ? (
                               <i className="fa fa-minus" ></i>
                             ) : (
                               <i className="fa fa-plus"></i>
@@ -500,7 +510,7 @@ class ViewUserDetails extends Component {
                               customClass={'technology-level-details'} />
                           </Col>
                           <Col md="2" className='text-right'>
-                            <button onClick={() => this.technologyToggle(SIMULATION)} className={`btn btn-small-primary-circle ml-1`}>{isSimulationOpen ? (
+                            <button id="simulation_level" onClick={() => this.technologyToggle(SIMULATION)} className={`btn btn-small-primary-circle ml-1`}>{isSimulationOpen ? (
                               <i className="fa fa-minus" ></i>
                             ) : (
                               <i className="fa fa-plus"></i>
@@ -564,7 +574,7 @@ class ViewUserDetails extends Component {
                                 customClass={'technology-level-details'} />
                             </Col>
                             <Col md="2" className='text-right'>
-                              <button onClick={() => this.technologyToggle(MASTERS)} className={`btn btn-small-primary-circle ml-1`}>{isMasterOpen ? (
+                              <button id="master_level" onClick={() => this.technologyToggle(MASTERS)} className={`btn btn-small-primary-circle ml-1`}>{isMasterOpen ? (
                                 <i className="fa fa-minus" ></i>
                               ) : (
                                 <i className="fa fa-plus"></i>
@@ -627,7 +637,7 @@ class ViewUserDetails extends Component {
                               customClass={'technology-level-details'} />
                           </Col>
                           <Col md="2" className='text-right'>
-                            <button onClick={() => this.technologyToggle(ONBOARDING)} className={`btn btn-small-primary-circle ml-1`}>{isOnboardingOpen ? (
+                            <button id="onboarding_level" onClick={() => this.technologyToggle(ONBOARDING)} className={`btn btn-small-primary-circle ml-1`}>{isOnboardingOpen ? (
                               <i className="fa fa-minus" ></i>
                             ) : (
                               <i className="fa fa-plus"></i>
@@ -714,5 +724,4 @@ export default connect(mapStateToProps,
     getUsersSimulationTechnologyLevelAPI,
     getUsersMasterLevelAPI,
     getUsersOnboardingLevelAPI
-  })(ViewUserDetails);
-
+  })(withTranslation(['UserRegistration'])(ViewUserDetails));

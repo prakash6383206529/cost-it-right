@@ -402,6 +402,7 @@ function AddPackaging(props) {
                   </Col> */}
                   {costingData.TechnologyId !== LOGISTICS && <Col md="12">
                     <TextFieldHookForm
+                      id="Add_Packaging_Description"
                       label="Packaging Description"
                       name={'PackagingDescription'}
                       Controller={Controller}
@@ -512,6 +513,7 @@ function AddPackaging(props) {
                     applicability.label !== 'Fixed' &&
                     <Col md="12">
                       <TextFieldHookForm
+                        id="Add_Packaging_Percentage"
                         label="Packaging Percentage"
                         name={'PackagingCostPercentage'}
                         Controller={Controller}
@@ -587,6 +589,7 @@ function AddPackaging(props) {
                 <Row className="sf-btn-footer no-gutters justify-content-between ml-0">
                   <div className="col-sm-12 text-right px-3">
                     <button
+                      id="AddPackaging_Cancel"
                       type={'button'}
                       className="reset mr15 cancel-btn"
                       onClick={cancel} >
@@ -594,6 +597,7 @@ function AddPackaging(props) {
                     </button>
 
                     <button
+                      id="AddPackaging_Save"
                       type={'submit'}
                       className="submit-button  save-btn"
                       onClick={addRow} >

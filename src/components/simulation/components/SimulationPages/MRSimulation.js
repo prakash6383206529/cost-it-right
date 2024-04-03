@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import moment from 'moment';
 import { defaultPageSize, EMPTY_DATA, CBCTypeId } from '../../../../config/constants';
@@ -26,6 +26,7 @@ import { useRef } from 'react';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
 import { MACHINE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { simulationContext } from '..';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -35,6 +36,7 @@ const gridOptions = {
 
 };
 function MRSimulation(props) {
+    const { showEditMaster, handleEditMasterPage, showCompressedColumns, render } = useContext(simulationContext) || {};
     const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation, costingAndPartNo } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -63,7 +65,19 @@ function MRSimulation(props) {
 
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
-
+    const columnWidths = {
+        Technology: showCompressedColumns ? 50 : 190,
+        CostingNumber: showCompressedColumns ? 100 : 190,
+        PartNo: showCompressedColumns ? 100 : 190,
+        MachineName: showCompressedColumns ? 100 : 190,
+        MachineNumber: showCompressedColumns ? 100 : 190,
+        VendorName: showCompressedColumns ? 100 : 190,
+        CustomerName: showCompressedColumns ? 100 : 190,
+        ProcessName: showCompressedColumns ? 100 : 190,
+        ProcessNumber: showCompressedColumns ? 100 : 190,
+        Plant: showCompressedColumns ? 100 : 190,
+        EffectiveDate: showCompressedColumns ? 90 : 190,
+    };
     const cancelVerifyPage = () => {
         setShowVerifyPage(false)
     }
@@ -79,7 +93,12 @@ function MRSimulation(props) {
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
         }
     }, [])
+    useEffect(() => {
 
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditMaster, showverifyPage)
+        }
+    }, [showverifyPage])
     useEffect(() => {
         if (list && list.length > 0) {
             window.screen.width >= 1920 && gridRef.current.api.sizeColumnsToFit();
@@ -115,7 +134,7 @@ function MRSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.NewMachineRate :
-                        <span id={`newRateMachineRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.MachineRate)}>{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
+                        <span id={`newRateMachineRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} netCost_revised`} title={cell && value ? Number(cell) : Number(row.MachineRate)}>{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
                 }
 
             </>
@@ -138,7 +157,7 @@ function MRSimulation(props) {
     const revisedBasicRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text basicRate_revised'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
             </div>
         );
     };
@@ -402,7 +421,7 @@ function MRSimulation(props) {
                                         <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                             <div className='d-flex align-items-center'>
                                                 <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
+                                                <button type="button" className="user-btn float-right mr-2 Tour_List_Reset Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
                                                 <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
@@ -460,7 +479,7 @@ function MRSimulation(props) {
                                                         <label className='mr-1'>Vendor (Code):</label>
                                                         <p className='mr-2' title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
                                                     </div>}
-                                                    <button type="button" id="simulation-back" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                                                    <button type="button" id="simulation-back" className={"apply back_simulationPage"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
                                                 </div>}
                                             </div>
                                         </div>
@@ -492,18 +511,18 @@ function MRSimulation(props) {
                                                 onCellValueChanged={onCellValueChanged}
                                                 enableBrowserTooltips={true}
                                             >
-                                                {!isImpactedMaster && <AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" minWidth={190}></AgGridColumn>}
-                                                {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
-                                                {costingAndPartNo && <AgGridColumn field="PartNo" tooltipField='PartNo' editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
-                                                <AgGridColumn field="MachineName" tooltipField='MachineName' editable='false' headerName="Machine Name" minWidth={140}></AgGridColumn>
-                                                <AgGridColumn field="MachineNumber" tooltipField='MachineNumber' editable='false' headerName="Machine Number" minWidth={140}></AgGridColumn>
-                                                <AgGridColumn field="ProcessName" tooltipField='ProcessName' editable='false' headerName="Process Name" minWidth={140}></AgGridColumn>
-                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn>}
-                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" minWidth={columnWidths.Technology}></AgGridColumn>}
+                                                {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={columnWidths.CostingNumber}></AgGridColumn>}
+                                                {costingAndPartNo && <AgGridColumn field="PartNo" tooltipField='PartNo' editable='false' headerName="Part No" minWidth={columnWidths.PartNo}></AgGridColumn>}
+                                                <AgGridColumn field="MachineName" tooltipField='MachineName' editable='false' headerName="Machine Name" minWidth={columnWidths.MachineName}></AgGridColumn>
+                                                <AgGridColumn field="MachineNumber" tooltipField='MachineNumber' editable='false' headerName="Machine Number" minWidth={columnWidths.MachineNumber}></AgGridColumn>
+                                                <AgGridColumn field="ProcessName" tooltipField='ProcessName' editable='false' headerName="Process Name" minWidth={columnWidths.ProcessName}></AgGridColumn>
+                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName="Vendor (Code)" minWidth={columnWidths.VendorName} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={columnWidths.CustomerName} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {
                                                     !isImpactedMaster &&
                                                     <>
-                                                        <AgGridColumn field="Plant" tooltipField='Plant' editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="Plant" tooltipField='Plant' editable='false' headerName="Plant (Code)" minWidth={columnWidths.Plant} cellRenderer='plantFormatter'></AgGridColumn>
 
                                                     </>
                                                 }
@@ -512,8 +531,9 @@ function MRSimulation(props) {
                                                     <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {props.children}
-                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
+
 
                                             </AgGridReact >}
                                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
@@ -526,7 +546,7 @@ function MRSimulation(props) {
                                 !isImpactedMaster &&
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                        <div className="inputbox date-section mr-3 verfiy-page">
+                                        <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                             <DatePicker
                                                 name="EffectiveDate"
                                                 id="EffectiveDate"
@@ -546,7 +566,7 @@ function MRSimulation(props) {
                                             {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                         </div>
 
-                                        <button onClick={verifySimulation} type="submit" id="verify-btn" className="user-btn mr5 save-btn" disabled={false}>
+                                        <button onClick={verifySimulation} type="submit" id="verify-btn" className="user-btn mr5 save-btn verifySimulation" disabled={false}>
                                             <div className={"Run-icon"}>
                                             </div>{" "}
                                             {"Verify"}

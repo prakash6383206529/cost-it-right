@@ -81,45 +81,68 @@ const parseUserAgent = (userAgent) => {
 };
 
 export function TokenAPI(requestData, callback) {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-
         // Parse the User-Agent string.
         const { brand: browserName, version: browserVersion } = parseUserAgent(window.navigator.userAgent);
-
         // Include the User-Agent details in the requestData object.
         const body = {
             UserName: requestData.username,
             Password: requestData.password,
             RememberMe: requestData.rememberMe || false,
-            IPAddress: '', // This will be populated from the response of ipify.
+            IPAddress: await getLocalIPAddress(), // Fetch local IP using WebRTC
             MacAddress: '', // Populate this field if you have the MAC address, otherwise remove it.
             UserAgent: `${browserName} ${browserVersion}`
         };
-
-
         // Fetch the public IP from a service (if necessary).
-        axios.get('https://api.ipify.org?format=json')
-            .then(response => {
-                body.IPAddress = response.data.ip; // Include the IP address.
+        // axios.get('https://api.ipify.org?format=json')
+        //     .then(response => {
+        //         body.IPAddress = response.data.ip; // Include the IP address.
 
-                // Proceed with the original request now including the IP and User-Agent.
-                axios.post(API.login, body, config()) // Make sure you send a JSON body.
-                    .then((res) => {
-                        if (res && res.status === 200) {
-                            callback(res);
-                        }
-                    }).catch((error) => {
-                        dispatch(getFailure(error));
-                        apiErrors(error);
-                        callback(error);
-                    });
-            }).catch(error => {
+        // Proceed with the original request now including the IP and User-Agent.
+        axios.post(API.login, body, config()) // Make sure you send a JSON body.
+            .then((res) => {
+                if (res && res.status === 200) {
+                    callback(res);
+                }
+            }).catch((error) => {
+                dispatch(getFailure(error));
                 apiErrors(error);
                 callback(error);
             });
+        // }).catch(error => {
+        //     apiErrors(error);
+        //     callback(error);
+        // });
     };
 }
+const getLocalIPAddress = async () => {
+    try {
+        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        const pc = new RTCPeerConnection(rtcConfig);
+        pc.createDataChannel('');
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        let resolved = false;
+        return new Promise((resolve) => {
+            pc.onicecandidate = async (event) => {
+                if (!resolved && event.candidate && event.candidate.candidate) {
+                    const ipRegex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/;
+                    const match = event.candidate.candidate.match(ipRegex);
+                    if (match) {
+                        const localIP = match[0];
+                        resolve(localIP);
+                        resolved = true;
+                        pc.onicecandidate = null; // Unsubscribe from further ICE candidate events
+                    }
+                }
+            };
+        });
+    } catch (error) {
+
+        return null;
+    }
+};
 
 export function AutoSignin(requestData, callback) {
     return (dispatch) => {
@@ -2070,6 +2093,22 @@ export function getUsersOnboardingLevelAPI(UserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}/${ONBOARDINGID}`, config());
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            if (response && response.data && response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+export function getAllApproverList(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllApproverList}?processId=${data.processId}&levelId=${data.levelId}&mode=${data.mode}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {

@@ -7,7 +7,7 @@ import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import { getClientDataList, deleteClient } from "../actions/Client";
 import AddClientDrawer from "./AddClientDrawer";
-import { checkPermission, searchNocontentFilter } from "../../../helper/util";
+import { checkPermission, searchNocontentFilter, setLoremIpsum } from "../../../helper/util";
 import { CLIENT, Clientmaster, MASTERS } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import ReactExport from "react-export-excel";
@@ -20,6 +20,9 @@ import ScrollToTop from "../../common/ScrollToTop";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { loggedInUserId } from "../../../helper";
 import Button from '../../layout/Button';
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -27,6 +30,7 @@ const ExcelFile = ReactExport.ExcelFile;
 const gridOptions = {};
 
 const ClientListing = React.memo(() => {
+  const { t } = useTranslation("common")
 
   const dispatch = useDispatch();
   const searchRef = useRef(null);
@@ -119,11 +123,11 @@ const ClientListing = React.memo(() => {
 
     return (
       <>
-        {ViewAccessibility && (<Button id={`clientListing_View${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
+        {ViewAccessibility && (<Button id={`clientListing_View${props.rowIndex}`} className={"View mr-2 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
         )}
-        {EditAccessibility && (<Button id={`clientListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
+        {EditAccessibility && (<Button id={`clientListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
         )}
-        {DeleteAccessibility && (<Button id={`clientListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
+        {DeleteAccessibility && (<Button id={`clientListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
         )}
       </>
     );
@@ -271,7 +275,16 @@ const ClientListing = React.memo(() => {
     );
   };
 
-
+  /**
+                 @method toggleExtraData
+                 @description Handle specific module tour state to display lorem data
+                */
+  const toggleExtraData = (showTour) => {
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+    }, 100);
+  }
   const onFilterTextBoxChanged = (e) => {
     state.gridApi.setQuickFilter(e.target.value);
   }
@@ -326,7 +339,7 @@ const ClientListing = React.memo(() => {
               <div className="d-flex justify-content-end bd-highlight">
                 {state.AddAccessibility && (
 
-                  <Button id="clientListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
+                  <Button id="clientListing_add" className={"mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus"} />
                 )}
                 {
                   state.DownloadAccessibility &&
@@ -334,7 +347,7 @@ const ClientListing = React.memo(() => {
                     <>
                       <ExcelFile filename={Clientmaster} fileExtension={'.xls'}
                         element={
-                          <Button id={"Excel-Downloads-clientListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                          <Button id={"Excel-Downloads-clientListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
 
                         }>
                         {onBtExport()
@@ -346,7 +359,7 @@ const ClientListing = React.memo(() => {
 
                 }
                 <Button
-                  id={"clientListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                  id={"clientListing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
               </div>
             </Col>
           </Row>
@@ -355,6 +368,11 @@ const ClientListing = React.memo(() => {
         <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0 && !state.isLoader) || noData ? "overlay-contain" : ""}`}>
           <div className="ag-grid-header">
             <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+            <TourWrapper
+              buttonSpecificProp={{ id: "Client_Listing_Tour", onClick: toggleExtraData }}
+              stepsSpecificProp={{
+                steps: Steps(t, { addLimit: false, bulkUpload: false, viewBOM: false, costMovementButton: false, updateAssociatedTechnology: false, copyButton: false, status: false, filterButton: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+              }} />
           </div>
           <div
             className={`ag-theme-material ${state.isLoader && "max-loader-height"}`} >
@@ -364,7 +382,8 @@ const ClientListing = React.memo(() => {
               floatingFilter={true}
               domLayout="autoHeight"
               // columnDefs={c}
-              rowData={clientDataList}
+              rowData={state.showExtraData && clientDataList ? [...setLoremIpsum(clientDataList[0]), ...clientDataList] : clientDataList}
+
               pagination={true}
               paginationPageSize={defaultPageSize}
               onGridReady={onGridReady}
@@ -387,7 +406,7 @@ const ClientListing = React.memo(() => {
               <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
               <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
               <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-              <AgGridColumn field="ClientId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+              <AgGridColumn field="ClientId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
             </AgGridReact>}
             {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
           </div>

@@ -1,0 +1,54 @@
+{
+    "showcaseTable": {
+        "static": {
+            "globalSearch": "Search for specific data from here.",
+            "floatingFilterInput": "Here you can search for specific column-wise data.",
+            "floatingFilterButton": "Here you can filter the data based on different conditions.",
+            "checkBox": "Click on the checkbox to select a particular row.",
+            "link": "This is clickable data; click here to see more details.",
+            "approvalStatus": "Search data by status.",
+            "toggleStatus": "Switch this button to allow or disallow actions."
+        },
+        "mainButton": {
+            "filter": "After entering specific data, click here to filter it out.",
+            "add": "Add new data from here.",
+            "upload": "From here, you can add data in bulk.",
+            "download": "Click here to download the entire dataset in Excel format. Alternatively, select specific checkboxes to download only the chosen data in Excel format.",
+            "refresh": "Refresh the grid to update filtered data from here."
+        },
+        "actionButton": {
+            "cost-movement": "Check the movement in the cost from here.",
+            "view": "View detailed data from here.",
+            "edit": "Click here to edit the data.",
+            "delete": "If the master data is not associated anywhere, you can delete it.",
+            "copy": "If data is not associated anywhere, you can copy the particular data.",
+            "viewBOM": "View the BOM data from here.",
+            "status": "Switch this button to allow or disallow actions.",
+            "updateAssociatedTechnology": "Update the associated technology from here.",
+            "addAssociation": "Add the association from here.",
+            "addMaterial": "Add the material from here.",
+            "approve": "After approving the data, it will show in the costing breakup details.",
+            "reject": "Currently working on it.",
+            "sapDownload": "Download the SAP master in Excel format from here.",
+            "encodedDownload": "Download the encoded master in Excel format from here.",
+            "cancel": "Click here to cancel the rfq.",
+            "viewProcessGroup": "Click here to View the process group."
+        },
+        "master_Listing_Tour": {
+            "searchingBox": "Search for specific data from here.",
+            "addButton": "Add new data from here.",
+            "downloadData": "Click here to download the entire dataset in Excel format. Alternatively, select specific checkboxes to download only the chosen data in Excel format.",
+            "uploadData": "From here, you can add data in bulk.",
+            "resetGrid": "Refresh the grid to update filtered data from here.",
+            "filterData": "After entering specific data, click here to filter it out.",
+            "addLimit": "You can add limits from here.",
+            "generateReport": "Generate a report from here.",
+            "costing_version": "Click on the costing version to view costing details from here.",
+            "rfq_version": "Click on the RFQ version to view RFQ details from here.",
+            "view_details": "Click here if you want to update user details."
+        },
+        "masterBenchmark": {
+            "master": "Select master from here."
+        }
+    }
+}

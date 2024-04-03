@@ -15,6 +15,7 @@ const MasterApprovalTabs = (props) => {
 */
     const toggle = (tab) => {
         if (activeTab !== tab) {
+            // dispatch(resetStatePagination())
             setActiveTab(tab)
         }
     }

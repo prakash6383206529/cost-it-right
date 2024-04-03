@@ -267,7 +267,7 @@ class AuditTab extends Component {
                                                     }
                                                 </td>
                                                 <td className="select-all-block">
-                                                    <label className="custom-checkbox">
+                                                    <label id='RFQ_Specific_SelectAll_Check' className="custom-checkbox">
                                                         {" "}
                                                         {
                                                             <input

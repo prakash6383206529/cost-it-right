@@ -5,6 +5,7 @@ import AsyncSelect from 'react-select/async';
 import LoaderCustom from "../common/LoaderCustom";
 import { SPACEBAR } from "../../config/constants";
 import DatePicker, { ReactDatePicker } from 'react-datepicker'
+import Popup from "reactjs-popup";
 
 export const TextFieldHooks = (input) => {
 
@@ -80,7 +81,7 @@ export const TextFieldHookForm = (field) => {
             hidden={hidden}
             render={({ field: { onChange, onBlur, value } }) => {
               return (
-                <div className={`${isLoader ? "p-relative" : ''}`}>
+                <div className={`${isLoader ? "p-relative" : ''} input-container`}>
                   <input
                     {...field}
                     id={name}
@@ -113,7 +114,7 @@ export const TextFieldHookForm = (field) => {
 
 
 export const PasswordFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, active, touched, error, input, disableErrorOverflow } = field
+  const { id, label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, active, touched, error, input, disableErrorOverflow } = field
   // //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   // const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   // const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -157,7 +158,7 @@ export const PasswordFieldHookForm = (field) => {
 
             return (
               <div className={className}>
-                <div className={inputbox}>
+                <div className={inputbox} id={id ?? ''}>
                   <input
                     maxLength={field.maxLength}
                     onChange={(e) => {
@@ -282,7 +283,7 @@ export const SearchableSelectHookForm = (field) => {
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
-  const className = `${isLoader ? 'p-relative' : ''} ${buttonCross ? 'cross-btn-container' : ''}`
+  const className = `${isLoader ? 'p-relative' : ''} ${buttonCross ? 'cross-btn-container' : ''} input-container`
   let containerId = `${name}_container`;
   let temp = 300;
   if (dropdownHeight < 6) {
@@ -657,7 +658,7 @@ export const AsyncSearchableSelectHookForm = (field) => {
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name } }) => {
           return (
-            <div className={`${isLoader ? "p-relative" : ''} ${buttonCross ? 'cross-btn-container' : ''}`} title={disabled ? value?.label : ''}>
+            <div className={`input-container ${isLoader ? "p-relative" : ''} ${buttonCross ? 'cross-btn-container' : ''}`} title={disabled ? value?.label : ''}>
               <AsyncSelect
                 {...field}
                 {...register}
@@ -768,3 +769,37 @@ export const DateTimePickerHookForm = (field) => {
   )
 }
 
+export const AllApprovalField = (props) => {
+  const { label, mandatory, className, id, approverList, popupButton } = props
+  const InputClassName = `form-control ${className ? className : ""}`;
+  let value = approverList.length !== 0 ? `${approverList[0].label} ${approverList.length > 1 ? '...' : ''}` : '-';
+  return (
+    <>
+      <div className={'form-group'}>
+
+        <label className={label === false ? 'd-none' : ''}>
+          {label}
+          {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        </label>
+        <div id={id ? id : ''} className="approval-container">
+          <input
+            className={InputClassName}
+            disabled={true}
+            placeholder={'-'}
+            value={value}
+            autoComplete={'off'}
+          />
+          {approverList.length > 1 && <Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn" type={'button'}>{popupButton}</button>}
+            position="left center">
+            <ul className="px-1 view-all-list">
+              {approverList && approverList.map((item, index) => {
+                return <li key={item.value}>{index + 1}. {item.label}</li>
+              })}
+            </ul>
+
+          </Popup>}
+        </div>
+      </div>
+    </>
+  )
+}

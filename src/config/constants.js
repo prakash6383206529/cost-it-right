@@ -19,6 +19,11 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.1.100:10152/api/v1`
+// const BASE_URL = `http://10.10.1.100:10162/api/v1`
+
+// const BASE_URL = `http://10.10.1.100:10172/api/v1`
+
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
@@ -624,6 +629,9 @@ export const API = {
   uploadAssemblyCosting: `${BASE_URL}/bulk-costing/save-costing-assembly`,
   uploadWiringHarnessCosting: `${BASE_URL}/bulk-costing/save-costing-wiring-harness`,
   uploadSheetMetal: `${BASE_URL}/bulk-costing/save-costing-sheet-metal-in-mhr-process`,
+  getAssemblyChildPartbyAsmCostingId: `${BASE_URL}/costing/get-assembly-child-parts-by-asmCostingId`,
+  getProcessAndOperationbyCostingId: `${BASE_URL}/costing/get-process-and-operation-by-asmCostingId-or-childCostingId`,
+  getSettledSimulationCostingDetails: `${BASE_URL}/simulation/get-settled-simulation-costing-details`,
 
 
   //COST SUMMARY
@@ -756,7 +764,7 @@ export const API = {
   createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
   approvalPushedOnSap: `${BASE_URL}/ExternalIntegration/create-push-pir-data-request-and-push-pir-data-on-sap`,
   checkSAPPoPrice: `${BASE_URL}/ExternalIntegration/check-sap-po-price`,
-
+  getAllApproverList: `${BASE_URL}/app-approval-system/get-approval-user-details`,
 
   // ApproveReject Drawer final approver
   checkFinalUser: `${BASE_URL}/app-approval-system/final-user-check`,
@@ -1055,7 +1063,7 @@ export const API = {
   createNFRBOMDetails: `${BASE_URL}/nfr/create-nfr-bom-details`,
 
   //MINDA
-  // pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
+  pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
   // getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
   // createPFS2Costing: `${BASE_URL}/nfr/create-pfs2-costing`,
   // getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
@@ -1116,7 +1124,7 @@ export const API = {
   // saveSAPDetail: `${BASE_URL}/sap-sync/save-sap-push-details`,
   // updateSAPDetail: `${BASE_URL}/sap-sync/update-sap-push-details`,
   // getPurcahseOrganisationByPlant: `${BASE_URL}/sap-sync/get-purchase-organization-by-plant-id`,
-  // getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
+  getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
   // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
   // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
 }
@@ -1397,6 +1405,20 @@ export const CORRUGATED_DATA = 'CORRUGATED_DATA';
 export const TOUR_START_DATA = 'TOUR_START_DATA';
 export const GUIDE_BUTTON_SHOW = true;
 
+//PAGINATION CONTROLS
+export const SET_PAGE_NUMBER = 'SET_PAGE_NUMBER';
+export const SET_PAGE_SIZE = 'SET_PAGE_SIZE';
+export const INCREMENT_PAGE = 'INCREMENT_PAGE';
+export const DECREMENT_PAGE = 'DECREMENT_PAGE';
+export const SET_CURRENT_ROW_INDEX = 'SET_CURRENT_ROW_INDEX';
+export const SET_FLOATING_FILTER_DATA = 'SET_FLOATING_FILTER_DATA';
+export const SET_UPDATED_CURRENT_ROW_INDEX = 'SET_UPDATED_CURRENT_ROW_INDEX';
+export const SET_UPDATED_PAGE_SIZE = 'SET_UPDATED_PAGE_SIZE';
+export const SET_UPDATE_GLOBALE_TAKE = 'SET_UPDATE_GLOBALE_TAKE';
+export const SET_UPDATED_PAGE_NUMBER = 'SET_UPDATED_PAGE_NUMBER';
+export const RESET_STATE = 'RESET_STATE';
+export const SET_SKIP = 'SET_SKIP';
+
 //OPERATION
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS'
 export const GET_UNIT_OPERATION_DATA_SUCCESS = 'GET_UNIT_OPERATION_DATA_SUCCESS'
@@ -1510,6 +1532,7 @@ export const SET_BREAKUP_BOP = 'SET_BREAKUP_BOP'
 export const SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API = 'SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API'
 export const SET_COSTING_MODE = 'SET_COSTING_MODE'
 export const COSTING_ACC_OPEN_CLOSE_STATUS = 'COSTING_ACC_OPEN_CLOSE_STATUS'
+export const SET_TOOL_COST_ICC = 'SET_TOOL_COST_ICC'
 
 export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
 
@@ -1836,6 +1859,7 @@ export const PENDING = 'PendingForApproval'
 export const WAITING_FOR_APPROVAL = 'AwaitingApproval'
 export const APPROVED = 'Approved'
 export const REJECTED = 'Rejected'
+export const RETURNED = 'Returned'
 export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
@@ -2078,6 +2102,7 @@ export const VIEW_COSTING_DATA = {
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
+  ScrapRecoveryPercentage: 'Scrap Recovery %',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
   castingWeightExcel: 'Casting Weight',
@@ -2224,6 +2249,10 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
   {
     label: 'Scrap Rate',
     value: 'scrapRate'
+  },
+  {
+    label: 'Scrap Recovery %',
+    value: 'ScrapRecoveryPercentage'
   },
   {
     label: 'Gross Weight',
@@ -2897,4 +2926,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.1.326.1";
+export const VERSION = "V2.2.4";
+
+
+

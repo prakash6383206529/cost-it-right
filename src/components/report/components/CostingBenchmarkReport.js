@@ -19,8 +19,11 @@ import MachineInsights from '../../report/components/BenchMarkReportPages/Machin
 import InsightsBop from '../../report/components/BenchMarkReportPages/InsightsBop'
 import OperationInsights from '../../report/components/BenchMarkReportPages/OperationInsights'
 import LoaderCustom from '../../common/LoaderCustom';
-
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { useTranslation } from 'react-i18next';
 function CostingBenchmarkReport(props) {
+    const { t } = useTranslation("Reports")
 
     const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
@@ -218,7 +221,13 @@ function CostingBenchmarkReport(props) {
                                     </div>
                                 </div>
                             }
-
+                            <TourWrapper
+                                buttonSpecificProp={{
+                                    id: "MasterBenchmark_Listing_Tour"
+                                }}
+                                stepsSpecificProp={{
+                                    steps: Steps(t, { selectedMasterForSimulation }).MASTERBENCHMARK
+                                }} />
                         </Col>
                     </Row>
 

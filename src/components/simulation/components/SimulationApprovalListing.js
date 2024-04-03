@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
-import { allEqual, checkForNull, getConfigurationKey, searchNocontentFilter } from '../../../helper'
+import { allEqual, checkForNull, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from '../../../helper'
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
@@ -25,8 +25,10 @@ import { checkFinalUser, getReleaseStrategyApprovalDetails } from '../../costing
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../../../actions/Common'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
-
-
+import { Steps } from './TourMessages'
+import TourWrapper from '../../common/Tour/TourWrapper'
+import { useTranslation } from 'react-i18next';
+import _ from 'lodash'
 const gridOptions = {};
 function SimulationApprovalListing(props) {
     const { isDashboard } = props
@@ -42,7 +44,7 @@ function SimulationApprovalListing(props) {
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
     const userData = userDetails()
-
+    const { initialConfiguration } = useSelector(state => state.auth)
     const dispatch = useDispatch()
     const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
 
@@ -51,6 +53,9 @@ function SimulationApprovalListing(props) {
     const [simulationDetail, setSimulationDetail] = useState([])
     const [isLoader, setIsLoader] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
+    const { t } = useTranslation("Simulation")
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
 
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [disableFilter, setDisableFilter] = useState(true)
@@ -289,7 +294,17 @@ function SimulationApprovalListing(props) {
         }
     }
 
+    //**  HANDLE TOGGLE EXTRA DATA */
+    const toggleExtraData = (showTour) => {
 
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 100);
+
+
+    }
     const onSearch = () => {
 
         setWarningMessage(false)
@@ -438,11 +453,16 @@ function SimulationApprovalListing(props) {
 
     const buttonFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+        let isDeleteButton = false
+        if (showExtraData && props.rowIndex === 0) {
+            isDeleteButton = true
+        } else if (row.Status === DRAFT) {
+            isDeleteButton = true
+        }
         return (
             <>
-                <button title='View' className="View" type={'button'} onClick={() => viewDetails(row)} />
-                {row.Status === DRAFT && <button title='Delete' className="Delete ml-1" type={'button'} onClick={() => deleteItem(row)} />}
+                <button title='View' id="Simulation_View" className="View" type={'button'} onClick={() => viewDetails(row)} />
+                {isDeleteButton && <button title='Delete' id="Simulation_Delete" className="Delete ml-1" type={'button'} onClick={() => deleteItem(row)} />}
             </>
         )
     }
@@ -514,6 +534,7 @@ function SimulationApprovalListing(props) {
         let tempArrSimulationTechnologyHead = []
         let costingHeadArray = []
         let approvalTypeArray = []
+        let plantIds = []
 
         selectedRows && selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
@@ -525,10 +546,14 @@ function SimulationApprovalListing(props) {
             tempArrSimulationTechnologyHead.push(item?.SimulationTechnologyHead)
             costingHeadArray.push(item?.CostingHead)
             approvalTypeArray.push(item?.ApprovalTypeId)
+            plantIds.push(item.PlantId)
             return null
         })
         selectedRows && dispatch(setMasterForSimulation({ label: selectedRows[0]?.SimulationTechnologyHead, value: selectedRows[0]?.SimulationTechnologyId }))
-
+        if (!allEqual(plantIds) && initialConfiguration.IsMultipleUserAllowForApproval) {
+            Toaster.warning('Plant should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        }
         if (!allEqual(arr)) {
             Toaster.warning('Status should be same for sending multiple costing for approval')
             gridApi.deselectAll()
@@ -592,9 +617,8 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
-        if (getConfigurationKey().IsReleaseStrategyConfigured) {
-            //MINDA
-            // if (getConfigurationKey().IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
+        //MINDA
+        if (getConfigurationKey().IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
             let data = []
             selectedRowData && selectedRowData?.map(item => {
                 let obj = {}
@@ -605,7 +629,7 @@ function SimulationApprovalListing(props) {
                 "RequestFor": "SIMULATION",
                 "TechnologyId": selectedRowData[0]?.SimulationTechnologyId,
                 "LoggedInUserId": loggedInUserId(),
-                "ReleaseStrategyApprovalDetails": data
+                "ReleaseStrategyApprovalDetails": _.uniqBy(data, 'SimulationId')
             }
             dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
                 setReleaseStrategyDetails(res?.data?.Data)
@@ -616,16 +640,22 @@ function SimulationApprovalListing(props) {
                     return false
                 } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
                     let obj = {
-                        DepartmentId: res?.data?.Data?.DepartmentId,
+                        DepartmentId: res?.data?.Data?.DepartmentId ? res?.data?.Data?.DepartmentId : selectedRowData[0].DepartmentId ?? EMPTY_GUID,
                         UserId: loggedInUserId(),
-                        TechnologyId: approvalData?.SimulationTechnologyId,
+                        TechnologyId: approvalData?.SimulationTechnologyId ? approvalData?.SimulationTechnologyId : selectedRowData[0].SimulationTechnologyId,
                         Mode: 'simulation',
-                        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId)
+                        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId ? res?.data?.Data?.ApprovalTypeId : selectedRowData[0].ApprovalTypeId),
+                        plantId: selectedRowData[0].PlantId ?? EMPTY_GUID
                     }
                     dispatch(checkFinalUser(obj, res => {
                         if (res && res.data && res.data.Result) {
                             if (res.data?.Data?.IsUserInApprovalFlow === false) {
                                 setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
+                            } else {
+                                if (res.data.Data.IsFinalApprover) {
+                                    setApproveDrawer(true)
+                                    setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
+                                }
                             }
                         }
                     }))
@@ -633,6 +663,7 @@ function SimulationApprovalListing(props) {
                     setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
                     setApproveDrawer(true)
                 } else if (res?.data?.Result === false) {
+                    Toaster.warning(res?.data?.Message ? res?.data?.Message : 'This user is not in approval cycle')
                     return false
                 } else {
                 }
@@ -644,6 +675,7 @@ function SimulationApprovalListing(props) {
                 TechnologyId: selectedRowData[0]?.SimulationTechnologyId,
                 Mode: 'simulation',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.SimulationHeadId),
+                plantId: selectedRowData[0].PlantId
             }
             setSimulationDetail({ DepartmentId: selectedRowData[0]?.DepartmentId, TokenNo: selectedRowData[0]?.SimulationTokenNumber, Status: selectedRowData[0]?.SimulationStatus, SimulationId: selectedRowData[0]?.SimulationId, SimulationAppliedOn: selectedRowData[0]?.SimulationAppliedOn, EffectiveDate: selectedRowData[0]?.EffectiveDate, IsExchangeRateSimulation: selectedRowData[0]?.IsExchangeRateSimulation })
             dispatch(setMasterForSimulation({ label: selectedRowData[0]?.SimulationTechnologyHead, value: selectedRowData[0]?.SimulationTechnologyId }))
@@ -751,7 +783,25 @@ function SimulationApprovalListing(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
+    /**
+          * @method renderRowData
+          * @description This method is used to render the row data.
+          */
+    const renderRowData = () => {
+        if (isDashboard) {
+            return simualtionApprovalList; // Return simulationApprovalList if isDashboard is true
+        } else {
 
+            if (showExtraData && simualtionApprovalListDraft && simualtionApprovalListDraft.length > 0) {
+
+                return [...setLoremIpsum(simualtionApprovalListDraft[0]), ...simualtionApprovalListDraft]; // Apply the second operation if showExtraData is true
+            } else {
+
+                return simualtionApprovalListDraft; // Return simulationApprovalListDraft if showExtraData is false
+            }
+        }
+
+    }
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
         // effectiveDateRenderer: this.effectiveDateFormatter,
@@ -810,16 +860,24 @@ function SimulationApprovalListing(props) {
                             <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                                 <div className="ag-grid-header">
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                    {!isDashboard && <TourWrapper
+                                        buttonSpecificProp={{
+                                            id: "simulation_approval_listing", onClick: toggleExtraData
+                                        }}
+                                        stepsSpecificProp={{
+                                            steps: Steps(t).SIMULATION_APPROVAL
+                                        }} />}
                                 </div>
                                 <div className="ag-theme-material">
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
-                                    <AgGridReact
+                                    {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
                                         style={{ height: '100%', width: '100%', }}
                                         defaultColDef={defaultColDef}
                                         floatingFilter={true}
                                         domLayout='autoHeight'
                                         // columnDefs={c}
-                                        rowData={isDashboard ? simualtionApprovalList : simualtionApprovalListDraft}
+                                        rowData={renderRowData()}
                                         // columnDefs={colRow}
                                         pagination={true}
                                         paginationPageSize={globalTake}
@@ -861,9 +919,9 @@ function SimulationApprovalListing(props) {
                                         <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
 
                                         {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' tooltipField="TooltipText" cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
-                                        <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
+                                        <AgGridColumn width={115} field="SimulationId" headerName='Actions' pinned="right" type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
-                                    </AgGridReact >
+                                    </AgGridReact >}
 
                                     <div className='button-wrapper'>
                                         {!isLoader && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}

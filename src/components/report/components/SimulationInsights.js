@@ -12,6 +12,10 @@ import DayTime from '../../common/DayTimeWrapper'
 import WarningMessage from '../../common/WarningMessage';
 import SelectRowWrapper from '../../common/SelectRowWrapper'
 import { getSimulationInsightReport } from '../actions/ReportListing';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { useTranslation } from "react-i18next"
+
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -19,8 +23,11 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationInsights(props) {
+  const { t } = useTranslation("common")
 
   const dispatch = useDispatch()
+  const [showExtraData, setShowExtraData] = useState(false)
+  const [render, setRender] = useState(false)
   const [simulationInsightsReport, setSimulationInsight] = useState([])
   const [simulationInsightsReportExcelData, setSimulationInsightsReportExcelData] = useState([])
   const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
@@ -73,7 +80,20 @@ function SimulationInsights(props) {
     browserDatePicker: true,
     minValidYear: 2000,
   };
+  /**
+        * @method toggleExtraData
+        * @description Handle specific module tour state to display lorem data
+        */
+  const toggleExtraData = (showTour) => {
 
+    setRender(true)
+    setTimeout(() => {
+      setShowExtraData(showTour)
+      setRender(false)
+    }, 100);
+
+
+  }
   var filterParamsSecond = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       // var dateAsString = cellValue != null ? DayTime(cellValue).format('MM/DD/YYYY') : '';
@@ -403,11 +423,11 @@ function SimulationInsights(props) {
             <div className="warning-message d-flex align-items-center">
               {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
             </div>
-            <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+            <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+            <button type="button" className="user-btn mr5 Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
               <div className="refresh mr-0"></div>
             </button>
-            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn'}><div className="download"></div>DOWNLOAD</button>}>
+            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn Tour_List_Download'}><div className="download"></div>DOWNLOAD</button>}>
               {onBtExport()}
             </ExcelFile>
           </div>
@@ -415,10 +435,19 @@ function SimulationInsights(props) {
       </Row>
       <div className="ag-grid-react">
         <div className={`ag-grid-wrapper height-width-wrapper ${simulationInsightsReport && simulationInsightsReport?.length <= 0 ? "overlay-contain" : ""}`}>
+
           <div className="ag-grid-header">
+
             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+
             <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
+            <TourWrapper
+              buttonSpecificProp={{ id: "Simulation_Insights_Report", onClick: toggleExtraData }}
+              stepsSpecificProp={{
+                steps: Steps(t, { addButton: false, bulkUpload: false, viewButton: false, EditButton: false, DeleteButton: false, addLimit: false, costMovementButton: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+              }} />
           </div>
+
           <div
             className="ag-theme-material">
             <AgGridReact
@@ -426,6 +455,8 @@ function SimulationInsights(props) {
               floatingFilter={true}
               domLayout='autoHeight'
               columnDefs={tableHeaderColumnDefs}
+              //rowData={showExtraData && simulationInsightsReport.length > 0 ? [...setLoremIpsum(simulationInsightsReport[0]), ...simulationInsightsReport] : simulationInsightsReport}
+
               rowData={simulationInsightsReport}
               pagination={true}
               paginationPageSize={globalTake}

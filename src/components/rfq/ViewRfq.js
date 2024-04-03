@@ -29,10 +29,15 @@ import { hyphenFormatter } from '../masters/masterUtil';
 import _, { isNumber } from 'lodash';
 import CostingDetailSimulationDrawer from '../simulation/components/CostingDetailSimulationDrawer';
 import CostingApproveReject from '../costing/components/approval/CostingApproveReject';
+import TourWrapper from '../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { useTranslation } from 'react-i18next';
 const gridOptions = {};
 
 
 function RfqListing(props) {
+    const { t } = useTranslation("Rfq");
+    const [showCompareButton, setShowCompareButton] = useState(false);
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
@@ -537,7 +542,20 @@ function RfqListing(props) {
             }, 200);
         }
     }
+    const toggleExtraData = (showTour) => {
 
+        if (showTour === true) {
+            setTimeout(() => {
+                setShowCompareButton(true)
+            }, 100);
+        }
+        else {
+            setShowCompareButton(false)
+        }
+
+
+
+    }
     const viewCostingDetail = (rowData) => {
         setIsReportLoader(true)
         if (rowData?.CostingId && Object.keys(rowData?.CostingId).length > 0) {
@@ -592,9 +610,9 @@ function RfqListing(props) {
                 {/* {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />} */}
                 {/* {showActionIcons && <button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => singleApprovalDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
                 {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />} */}
-                {showRemarkHistory && <button title='Remark History' className="btn-history-remark mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }}><div className='history-remark'></div></button>}
+                {showRemarkHistory && <button title='Remark History' id='ViewRfq_remarkHistory' className="btn-history-remark mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }}><div className='history-remark'></div></button>}
                 {showReminderIcon && !rowData?.IsLastSubmissionDateCrossed && rowData?.IsShowReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue, rowData) }}><div className="reminder"><div className="count">{reminderCount}</div></div></button>}
-                {rowData?.CostingId && < button title='View' className="View mr-1" type={'button'} onClick={() => viewCostingDetail(rowData)} />}
+                {rowData?.CostingId && < button title='View' id='ViewRfq_view' className="View mr-1" type={'button'} onClick={() => viewCostingDetail(rowData)} />}
 
             </>
         )
@@ -737,8 +755,11 @@ function RfqListing(props) {
         let temp = []
         let tempObj = {}
         const isApproval = selectedRows.filter(item => item.ShowApprovalButton)
+
+
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
+
         setloader(true)
         setSelectedCostingList([])
         dispatch(getMultipleCostingDetails(costingIdList, (res) => {
@@ -773,6 +794,7 @@ function RfqListing(props) {
     const onRowSelect = (event) => {
         if (event.node.isSelected()) {
             const selectedRowIndex = event.node.rowIndex;
+
             setSelectedRowIndex(selectedRowIndex)
         } else {
             setaddComparisonToggle(false)
@@ -872,6 +894,7 @@ function RfqListing(props) {
     };
 
     const hideSummaryHandler = () => {
+
         setaddComparisonToggle(false)
         setSelectedRowIndex('')
         gridApi.deselectAll()
@@ -885,7 +908,20 @@ function RfqListing(props) {
 
                         <Row className={`filter-row-large`}>
                             <Col md="6" className='d-flex'>
-                                <h3 className='mt-2'>RFQ No. : {data?.QuotationNumber ? data?.QuotationNumber : '-'}</h3>
+                                <h3 className='mt-2'>RFQ No. : {data?.QuotationNumber ? data?.QuotationNumber : '-'}
+                                    <TourWrapper
+                                        buttonSpecificProp={{ id: "View_Rfq_Tour", onClick: toggleExtraData }}
+                                        stepsSpecificProp={{
+                                            steps: Steps(t, {
+                                                compare: isVisibiltyConditionMet,
+                                                view: rowData?.CostingId,
+                                                action: rowData[0]?.IsVisibiltyConditionMet
+                                            }
+                                            ).VIEW_RFQ
+                                        }}
+                                    // onClose={closeTour}  // Pass the closeTour function to be called when the tour is closed
+                                    />
+                                </h3>
                             </Col>
                             <Col md="6" className='d-flex justify-content-end align-items-center mb-2 mt-1'>
                                 <div className='d-flex  align-items-center'><div className='w-min-fit'>Raised By:</div>
@@ -910,11 +946,12 @@ function RfqListing(props) {
                                     (!props.isMasterSummaryDrawer) &&
                                     <>
 
-                                        <button type="button" className="user-btn ml-2" title="Reset Grid" onClick={() => resetState()}>
+                                        <button type="button" className="user-btn ml-2 ViewRfq_reset" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
-                                        {isVisibiltyConditionMet && <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
+                                        {(isVisibiltyConditionMet || showCompareButton) && <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
                                             <button
+                                                id='ViewRfq_compare'
                                                 type="button"
                                                 className={'user-btn comparison-btn ml-1'}
                                                 disabled={addComparisonButton}
@@ -922,7 +959,7 @@ function RfqListing(props) {
                                             >
                                                 <div className="compare-arrows"></div>Compare</button>
                                         </Link>}
-                                        <button type="button" className={"apply ml-1"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                                        <button type="button" id='ViewRfq_back' className={"apply ml-1"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
 
                                     </>
                                 }
@@ -973,7 +1010,7 @@ function RfqListing(props) {
                                             <AgGridColumn field="NetPOPrice" headerName=" Net Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
-                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}

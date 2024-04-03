@@ -13,7 +13,6 @@ import { useEffect } from 'react';
 import { IsPartType, ViewCostingContext } from '../CostingDetails';
 import { useRef } from 'react';
 import { PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
-import { reactLocalStorage } from 'reactjs-localstorage';
 
 function AddAssemblyProcess(props) {
   const { item, isAssemblyTechnology } = props;
@@ -116,7 +115,7 @@ function AddAssemblyProcess(props) {
     dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
     dispatch(gridDataAdded(true))
 
-    let arr = reactLocalStorage.getObject('costingArray')?.filter(element => element?.PartId === item?.PartId)
+    let arr = JSON.parse(sessionStorage.getItem('costingArray'))?.filter(element => element?.PartId === item?.PartId)
     let basicRate = 0
     if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY && !isAssemblyTechnology) {
       basicRate = checkForNull(arr[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
@@ -258,12 +257,14 @@ function AddAssemblyProcess(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right">
                 <button
+                  id="AddAssemblyProcess_Cancel"
                   type={'button'}
                   className="reset mr15 cancel-btn"
                   onClick={cancel} >
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
+                  id="AddAssemblyProcess_Save"
                   disabled={CostingViewMode ? true : false}
                   type={'button'}
                   className="submit-button mr15 save-btn"

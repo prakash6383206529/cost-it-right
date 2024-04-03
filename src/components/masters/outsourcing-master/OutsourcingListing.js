@@ -17,7 +17,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
-import { PaginationWrapper } from '../../common/commonPagination';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import AddOutsourcing from './AddOutsourcing';
@@ -29,6 +28,9 @@ import _ from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import Button from '../../layout/Button';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
+import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
+import PaginationControls from '../../common/Pagination/PaginationControls';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -56,21 +58,22 @@ const OutsourcingListing = (props) => {
     const [disableDownload, setDisableDownload] = useState(false)
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [warningMessage, setWarningMessage] = useState(false)
-    const [globalTake, setGlobalTake] = useState(defaultPageSize)
+    // const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [filterModel, setFilterModel] = useState({});
-    const [pageNo, setPageNo] = useState(1)
-    const [pageNoNew, setPageNoNew] = useState(1)
+    // const [pageNo, setPageNo] = useState(1)
+    // const [pageNoNew, setPageNoNew] = useState(1)
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
-    const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    // const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
-    const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+    // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ OutSourcingName: '', OutSourcingShortName: '' })
     const [gridLoad, setGridLoad] = useState(false);
     const { outsourcingDataList, outsourcingDataListForDownload } = useSelector(state => state.outsourcing);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const { globalTakes } = useSelector((state) => state.pagination)
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -78,6 +81,8 @@ const OutsourcingListing = (props) => {
         getTableListData(0, defaultPageSize, true)
         return () => {
             dispatch(setSelectedRowForPagination([]))
+            dispatch(resetStatePagination());
+
         }
     }, [])
 
@@ -125,7 +130,8 @@ const OutsourcingListing = (props) => {
             if (isPagination === true || isPagination === null) setIsLoader(false)
             if ((res && res.status === 204) || res.length === 0) {
                 setTotalRecordCount(0)
-                setPageNo(0)
+                dispatch(updatePageNumber(0))
+                // setPageNo(0)
             }
             if (res && isPagination === false) {
                 setDisableDownload(false)
@@ -299,45 +305,17 @@ const OutsourcingListing = (props) => {
         params.api.paginationGoToPage(0);
     };
 
-    const onPageSizeChanged = (newPageSize) => {
 
-        if (Number(newPageSize) === 10) {
-            getTableListData(currentRowIndex, 10, true)
-            setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
-            setGlobalTake(10)
-            setPageNo(pageNoNew)
-        }
-        else if (Number(newPageSize) === 50) {
-            getTableListData(currentRowIndex, 50, true)
-            setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
-            setGlobalTake(50)
-            setPageNo(pageNoNew)
-            if (pageNo >= Math.ceil(totalRecordCount / 50)) {
-                setPageNo(Math.ceil(totalRecordCount / 50))
-                getTableListData(0, 50, true)
-            }
-        }
-        else if (Number(newPageSize) === 100) {
-            getTableListData(currentRowIndex, 100, true)
-            setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
-            setGlobalTake(100)
-            if (pageNo >= Math.ceil(totalRecordCount / 100)) {
-                setPageNo(Math.ceil(totalRecordCount / 100))
-                getTableListData(0, 100, true)
-            }
-        }
-
-        gridApi.paginationSetPageSize(Number(newPageSize));
-
-    };
     const onSearch = () => {
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
-        setPageNo(1)
-        setPageNoNew(1)
-        setCurrentRowIndex(0)
+        // setPageNo(1)
+        // setPageNoNew(1)
+        // setCurrentRowIndex(0)
+        dispatch(updatePageNumber(1))
+        dispatch(updateCurrentRowIndex(0))
         gridOptions?.columnApi?.resetColumnState();
-        getTableListData(0, globalTake, true)
+        getTableListData(0, globalTakes, true)
     }
 
     const onRowSelect = (event) => {
@@ -403,34 +381,7 @@ const OutsourcingListing = (props) => {
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
-    const onBtPrevious = () => {
-        if (currentRowIndex >= 10) {
-            setPageNo(pageNo - 1)
-            setPageNoNew(pageNo - 1)
-            const previousNo = currentRowIndex - 10;
-            getTableListData(previousNo, globalTake, true)
-            setCurrentRowIndex(previousNo)
-        }
-    }
 
-    const onBtNext = () => {
-        if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
-            return false
-        }
-
-        if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
-            return false
-        }
-
-        if (currentRowIndex < (totalRecordCount - 10)) {
-            setPageNo(pageNo + 1)
-            setPageNoNew(pageNo + 1)
-            const nextNo = currentRowIndex + 10;
-            getTableListData(nextNo, globalTake, true)
-            // skip, take, isPagination, floatingFilterData, (res)
-            setCurrentRowIndex(nextNo)
-        }
-    };
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
@@ -449,13 +400,15 @@ const OutsourcingListing = (props) => {
         }
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
-        setPageNo(1)
-        setPageNoNew(1)
-        setCurrentRowIndex(0)
+        // setPageNo(1)
+        // setPageNoNew(1)
+        // setCurrentRowIndex(0)
+        dispatch(resetStatePagination())
         getTableListData(0, 10, true)
         dispatch(setSelectedRowForPagination([]))
-        setGlobalTake(10)
-        setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        // setGlobalTake(10)
+        dispatch(updateGlobalTake(10))
+        // setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         setDataCount(0)
         reactLocalStorage.setObject('selectedRow', {})
     }
@@ -539,7 +492,7 @@ const OutsourcingListing = (props) => {
                                 domLayout='autoHeight'
                                 rowData={outsourcingDataList}
                                 pagination={true}
-                                paginationPageSize={globalTake}
+                                paginationPageSize={globalTakes}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -556,15 +509,10 @@ const OutsourcingListing = (props) => {
                                 <AgGridColumn field="OutSourcingId" cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>
                             </AgGridReact>
                             <div className='button-wrapper'>
-                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                                {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="Outsourcing" />}
                                 {
-                                    <div className="d-flex pagination-button-container">
-                                        <p><Button id="outsourcingListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
-                                        {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                                        {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                                        {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                        <p><Button id="outsourcingListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-                                    </div>
+                                    <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="Outsourcing" />
+
                                 }
                             </div>
                         </div>

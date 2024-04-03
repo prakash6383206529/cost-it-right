@@ -21,8 +21,13 @@ import { getSelectListOfMasters } from '../../../simulation/actions/Simulation';
 import CostMovementByMasterReportListing from './CostMovementByMasterReportListing';
 import { getOperationPartSelectList } from '../../../masters/actions/OtherOperation';
 import { getProcessesSelectList } from '../../../masters/actions/MachineMaster';
+import TourWrapper from '../../../common/Tour/TourWrapper';
+import { Steps } from '../TourMessages';
+import { useTranslation } from "react-i18next"
 
 function MasterCostMovement() {
+    const { t } = useTranslation("Reports")
+
     const [fromDate, setFromDate] = useState('')
     const [maxDate, setMaxDate] = useState('')
     const [toDate, setToDate] = useState('')
@@ -237,7 +242,7 @@ function MasterCostMovement() {
             case 5:
                 return (<> <Col md="3">
                     <SearchableSelectHookForm
-                        label={`${showBopLabel()}  No.`}
+                        label={`${showBopLabel()} No.`}
                         name={'BOPId'}
                         placeholder={'Select'}
                         Controller={Controller}
@@ -687,7 +692,13 @@ function MasterCostMovement() {
     }
 
     return <Fragment>
+        <TourWrapper
+            buttonSpecificProp={{ id: "Cost_Movement_Form" }}
+            stepsSpecificProp={{
+                steps: Steps(t).COSTMOVEMENT
+            }} />
         {!reportListing &&
+
             <form onSubmit={handleSubmit(runReport)}>
                 <div className='master-movement-report'>
                     <Row>

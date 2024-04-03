@@ -350,7 +350,7 @@ export const MESSAGES = {
   RMCC_TAB_COSTING_SAVE_SUCCESS: `RM CC ${showBopLabel()} Cost saved successfully.`,
   RMCC_TAB_COSTING_SAVE_SUCCESS_IS_BOP_BREAKUP: 'RM CC Cost saved successfully.',
   COSTING_DELETE_ALERT: 'Are you sure you want to delete costing?',
-  SIMULATION_TOOLCOST_POPUP_MESSAGE: 'Overhead and Profit will not get change if tool cost is included in overhead and profit in a costing. Do you wish to continue?',
+  SIMULATION_TOOLCOST_POPUP_MESSAGE: 'ICC,Overhead and Profit will not get change if tool cost are included in them, respectively, in the costing. Do you wish to continue?',
 
   //RFQ
   RFQ_ADD_SUCCESS: 'RFQ details added successfully',

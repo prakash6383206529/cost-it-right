@@ -59,6 +59,7 @@ import {
   CORRUGATED_DATA,
   COSTING_ACC_OPEN_CLOSE_STATUS,
   GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
+  SET_TOOL_COST_ICC,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2413,7 +2414,7 @@ export function saveBOMLevel(data) {
  */
 export function checkFinalUser(data, callback) {
   return (dispatch) => {
-    const queryParams = `DepartmentId=${data.DepartmentId}&UserId=${data.UserId}&TechnologyId=${data.TechnologyId}&Mode=${data.Mode}&approvalTypeId=${data?.approvalTypeId}`
+    const queryParams = `DepartmentId=${data.DepartmentId}&UserId=${data.UserId}&TechnologyId=${data.TechnologyId}&Mode=${data.Mode}&approvalTypeId=${data?.approvalTypeId}&plantId=${data?.plantId}`
     const request = axios.get(`${API.checkFinalUser}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result) {
@@ -2812,6 +2813,55 @@ export function getExternalIntegrationFgWiseImpactData(data, callback) {
         callback(response)
       }
     }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+
+export function setIncludeToolCostIcc(IsIncluded, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_TOOL_COST_ICC,
+      payload: IsIncluded,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method getAssemblyChildPartbyAsmCostingId
+ * @description To Get part List of all the parts of a BOM
+ */
+export function getAssemblyChildPartbyAsmCostingId(costingId, isAddedBoughtOutPartType = false, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getAssemblyChildPartbyAsmCostingId}?asmCostingId=${costingId}&isAddedBoughtOutPartType=${isAddedBoughtOutPartType}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+/**
+ * @method getProcessAndOperationbyAsmAndChildCostingId
+ * @description To get process and operation by assembly and child costing id
+ */
+export function getProcessAndOperationbyAsmAndChildCostingId(asmCostingId, childCostingId, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getProcessAndOperationbyCostingId}?asmCostingId=${asmCostingId}&childCostingId=${childCostingId}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
       dispatch({ type: API_FAILURE })
       apiErrors(error)
     })

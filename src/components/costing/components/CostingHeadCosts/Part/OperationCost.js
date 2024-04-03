@@ -22,6 +22,7 @@ import Button from '../../../../layout/Button';
 import TourWrapper from '../../../../common/Tour/TourWrapper';
 import { Steps } from '../../TourMessages';
 import { useTranslation } from 'react-i18next';
+import ViewDetailedForms from '../../Drawers/ViewDetailedForms';
 
 let counter = 0;
 function OperationCost(props) {
@@ -50,6 +51,7 @@ function OperationCost(props) {
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext);
   const { t } = useTranslation("Costing")
+  const [openOperationForm, setOpenOperationForm] = useState(false)
   const [tourState, setTourState] = useState({
     steps: []
   })
@@ -346,6 +348,8 @@ function OperationCost(props) {
   * @method render
   * @description Renders the component
   */
+
+
   return (
     <>
       <div className="user-page p-0">
@@ -493,7 +497,7 @@ function OperationCost(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OperationName + index} draggable={CostingViewMode ? false : true}>{item.OperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OperationName + index} draggable={CostingViewMode ? false : true} onClick={() => setOpenOperationForm({ isOpen: true, id: item.OperationId })} className='link'>{item.OperationName}</span> </td>
                             <td>{item.OperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -587,6 +591,7 @@ function OperationCost(props) {
         anchor={'right'}
         Ids={Ids}
       />}
+      {openOperationForm && <ViewDetailedForms data={openOperationForm} formName="Operation" cancel={() => setOpenOperationForm({ isOpen: false, id: '' })} />}
     </ >
   );
 }

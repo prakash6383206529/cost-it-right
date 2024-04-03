@@ -1,7 +1,7 @@
 import { Drawer } from '@material-ui/core';
 import React, { Fragment, useState, useEffect } from 'react'
 import { Col, Row, Table } from 'reactstrap';
-import { SearchableSelectHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
+import { AllApprovalField, SearchableSelectHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../helper';
 import { Controller, useForm } from 'react-hook-form';
 import NoContentFound from '../../common/NoContentFound';
@@ -39,8 +39,9 @@ const ApprovalDrawer = (props) => {
     const [isDisable, setIsDisable] = useState('')
     const [editWarning, setEditWarning] = useState(false)
     const [filterStatus, setFilterStatus] = useState('')
-
+    const [approverIdList, setApproverIdList] = useState([])
     useEffect(() => {
+
         dispatch(getReasonSelectList((res) => { }))
         dispatch(getAllApprovalDepartment((res) => {
             const Data = res?.data?.SelectList
@@ -53,26 +54,31 @@ const ApprovalDrawer = (props) => {
                 DepartmentId: departObj[0]?.Value,
                 TechnologyId: technologyId,
                 ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(NFRTypeId),
+                plantId: props?.PlantId
             }
+            let approverIdListTemp = []
             dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
                 res.data.DataList && res.data.DataList.map((item) => {
                     if (item.Value === '0') return false;
                     if (item.Value === EMPTY_GUID) return false;
                     tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+                    approverIdListTemp.push(item.Value)
                     return null
                 })
                 setApprovalDropDown(tempDropdownList)
+                setApproverIdList(approverIdListTemp)
             }))
         }))
 
         let obj = {}
         obj.DepartmentId = userDetails().DepartmentId
         obj.UserId = loggedInUserId()
-        obj.TechnologyId = nfrData?.TechnologyId
+        obj.TechnologyId = nfrPartDetail?.TechnologyId
         //MINDA
         // obj.TechnologyId = technologyId
         obj.Mode = 'costing'
         obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+        obj.plantId = props?.PlantId
         dispatch(checkFinalUser(obj, (res) => {
             if (res?.data?.Result) {
                 if (res?.data?.Data?.IsFinalApprover) {
@@ -168,6 +174,7 @@ const ApprovalDrawer = (props) => {
                 DepartmentId: newValue.value,
                 TechnologyId: technologyId,
                 ApprovalTypeId: NFRAPPROVALTYPEID,
+                plantId: props?.PlantId
             }
             dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
                 res.data.DataList && res.data.DataList.map((item) => {
@@ -183,11 +190,12 @@ const ApprovalDrawer = (props) => {
                 let obj = {}
                 obj.DepartmentId = userDetails().DepartmentId
                 obj.UserId = loggedInUserId()
-                obj.TechnologyId = nfrData?.TechnologyId
+                obj.TechnologyId = nfrPartDetail?.TechnologyId
                 //MINDA
                 // obj.TechnologyId = technologyId
                 obj.Mode = 'costing'
                 obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+                obj.plantId = props?.PlantId
                 dispatch(checkFinalUser(obj, (res) => {
                     if (res?.data?.Result) {
                         if (res?.data?.Data?.IsFinalApprover) {
@@ -291,13 +299,14 @@ const ApprovalDrawer = (props) => {
                     arrayOfObj.push(obj)
                 }
             })
-
             let req = {
                 "ApproverDepartmentId": getValues("dept")?.value,
                 "ApproverDepartmentName": getValues("dept")?.label,
-                "ApproverLevelId": getValues("approver")?.levelId,
-                "ApproverLevel": getValues("approver")?.levelName,
-                "ApproverId": getValues("approver")?.value,
+                "ApproverLevelId": approvalDropDown[0]?.levelId,
+                "ApproverLevel": approvalDropDown[0]?.levelName,
+                // "ApproverId": getValues("approver")?.value,
+                "ApproverIdList": approverIdList,
+
                 "SenderLevelId": levelDetails?.LevelId,
                 "SenderId": userData?.LoggedInUserId,
                 "ApprovalTypeId": NFRTypeId,
@@ -308,6 +317,10 @@ const ApprovalDrawer = (props) => {
                 "ReasonId": getValues('reason')?.value,
                 "Reason": getValues('reason')?.label,
                 "NfrGroupList": arrayOfObj
+            }
+            if (approverIdList.length === 0) {
+                Toaster.error(MESSAGES.SOME_ERROR)
+                return false
             }
             dispatch(nfrSendToApproverBySender(req, (res) => {
                 if (res?.data?.Result) {
@@ -351,29 +364,36 @@ const ApprovalDrawer = (props) => {
                                     register={register}
                                     defaultValue={""}
                                     options={renderDropdownListing("Dept")}
-                                    disabled={false}
+                                    disabled={initialConfiguration.IsMultipleUserAllowForApproval}
                                     mandatory={true}
                                     handleChange={handleDepartmentChange}
                                 // errors={errors.dept}
                                 />
                             </Col>
                             <Col md={props.hideTable ? 12 : 6}>
-                                <SearchableSelectHookForm
-                                    label={"Approver"}
-                                    name={"approver"}
-                                    placeholder={"Select"}
-                                    Controller={Controller}
-                                    control={control}
-                                    rules={{ required: true }}
-                                    register={register}
-                                    defaultValue={""}
-                                    options={approvalDropDown}
-                                    handleChange={handleApproverChange}
-                                    mandatory={true}
-                                    disabled={false}
-                                // handleChange={handleApproverChange}
-                                // errors={errors.approver}
-                                />
+                                {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                                    <AllApprovalField
+                                        label="Approver"
+                                        approverList={approvalDropDown}
+                                        popupButton="View all"
+                                    />
+                                </> :
+                                    <SearchableSelectHookForm
+                                        label={"Approver"}
+                                        name={"approver"}
+                                        placeholder={"Select"}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        defaultValue={""}
+                                        options={approvalDropDown}
+                                        handleChange={handleApproverChange}
+                                        mandatory={true}
+                                        disabled={initialConfiguration.IsMultipleUserAllowForApproval}
+                                    // handleChange={handleApproverChange}
+                                    // errors={errors.approver}
+                                    />}
                             </Col>
                             <Col md={props.hideTable ? 12 : 6}>
                                 <SearchableSelectHookForm

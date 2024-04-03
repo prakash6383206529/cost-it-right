@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, RECEIVED, RFQ, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
+import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, RECEIVED, REJECTED, RETURNED, RFQ, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -16,12 +16,15 @@ import { PaginationWrapper } from '.././common/commonPagination'
 import { getQuotationList, cancelRfqQuotation } from './actions/rfq';
 import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
-import { checkPermission, searchNocontentFilter, userDetails } from '../../helper';
+import { checkPermission, searchNocontentFilter, setLoremIpsum, userDetails } from '../../helper';
 import DayTime from '../common/DayTimeWrapper';
 import Attachament from '../costing/components/Drawers/Attachament';
 import { useRef } from 'react';
 import SingleDropdownFloationFilter from '../masters/material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick, showQuotationDetails } from '../../actions/Common';
+import TourWrapper from '../common/Tour/TourWrapper';
+import { Steps } from '../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next';
 const gridOptions = {};
 
 
@@ -44,6 +47,9 @@ function RfqListing(props) {
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
     const [deleteId, setDeleteId] = useState('');
+    const { t } = useTranslation("Common");
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const agGridRef = useRef(null);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
@@ -139,6 +145,12 @@ function RfqListing(props) {
                     case SENT:
                         item.tooltipText = 'Costing under the quotation has been sent.'
                         break;
+                    case REJECTED:
+                        item.tooltipText = 'Quotation has been rejected.'
+                        break;
+                    case RETURNED:
+                        item.tooltipText = 'Quotation has been returned.'
+                        break;
                     default:
                         break;
                 }
@@ -159,7 +171,16 @@ function RfqListing(props) {
         dispatch(isResetClick(true, "status"))
         setNoData(false)
     }
+    //**  HANDLE TOGGLE EXTRA DATA */
+    const toggleExtraData = (showTour) => {
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 100);
 
+
+    }
 
     /**
     * @method editItemDetails
@@ -210,9 +231,9 @@ function RfqListing(props) {
 
         return (
             <>
-                {viewAccessibility && <button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {((status !== APPROVED && status !== CANCELLED) && editAccessibility) && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED && status !== RECEIVED) && rowData?.IsShowCancelIcon && <button title='Cancel' className="CancelIcon mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
+                {viewAccessibility && <button title='View' className="View mr-1 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {((status !== APPROVED && status !== CANCELLED) && editAccessibility) && <button title='Edit' className="Edit mr-1 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED && status !== RECEIVED) && rowData?.IsShowCancelIcon && <button title='Cancel' className="CancelIcon mr-1  Tour_List_Cancel" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
     };
@@ -269,6 +290,7 @@ function RfqListing(props) {
             return (
                 <>
                     <div
+                        id='showRfq_detail'
                         onClick={() => viewDetails(row)}
                         className={'link'}
                     >{cell}</div>
@@ -417,6 +439,11 @@ function RfqListing(props) {
 
                                 <Col md="3" lg="3" className='mb-2'>
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                    <TourWrapper
+                                        buttonSpecificProp={{ id: "Rfq_listing_Tour", onClick: toggleExtraData }}
+                                        stepsSpecificProp={{
+                                            steps: Steps(t, { Cancel: true, showRfqDetail: true, filterButton: false, downloadButton: false, bulkUpload: false, DeleteButton: false, costMovementButton: false, addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                                        }} />
                                 </Col>
                                 <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
                                     {
@@ -427,7 +454,7 @@ function RfqListing(props) {
                                                 <>
                                                     {addAccessibility && (<button
                                                         type="button"
-                                                        className={"user-btn mr5"}
+                                                        className={"user-btn mr5 Tour_List_Add"}
                                                         onClick={formToggle}
                                                         title="Add"
                                                     >
@@ -439,7 +466,7 @@ function RfqListing(props) {
                                             </div>
 
                                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                                <div className="refresh mr-0"></div>
+                                                <div className="refresh mr-0 Tour_List_Reset"></div>
                                             </button>
                                         </>
                                     }
@@ -457,7 +484,8 @@ function RfqListing(props) {
                                                 floatingFilter={true}
                                                 ref={agGridRef}
                                                 domLayout='autoHeight'
-                                                rowData={rowData}
+                                                rowData={showExtraData ? [...setLoremIpsum(rowData[0]), ...rowData] : rowData}
+
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
@@ -489,7 +517,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
-                                                {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />

@@ -122,8 +122,8 @@ function AddAssemblyOperation(props) {
       return item1
     })
     let isTopRowAssemblyClicked = false
-    let arr = reactLocalStorage.getObject('costingArray')?.filter(element => element?.PartType === 'Assembly')
-    let arrST = reactLocalStorage.getObject('surfaceCostingArray')?.filter(element => element?.PartType === 'Assembly')
+    let arr = JSON.parse(sessionStorage.getItem('costingArray'))?.filter(element => element?.PartType === 'Assembly')
+    let arrST = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))?.filter(element => element?.PartType === 'Assembly')
     if (arr[0]?.PartType === 'Assembly') {
       isTopRowAssemblyClicked = true
     }
@@ -298,12 +298,14 @@ function AddAssemblyOperation(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right">
                 <button
+                  id="AddAssemblyOperation_Cancel"
                   type={'button'}
                   className="reset mr15 cancel-btn"
                   onClick={cancel} >
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
+                  id="AddAssemblyOperation_Save"
                   disabled={(CostingViewMode || IsLocked)}
                   type={'button'}
                   className="submit-button mr15 save-btn"

@@ -19,29 +19,35 @@ import WarningMessage from "../../common/WarningMessage";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import DayTime from "../../common/DayTimeWrapper";
 import _ from "lodash";
-import { PaginationWrapper } from "../../common/commonPagination";
+import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
+import PaginationControls from '../../common/Pagination/PaginationControls';
+import { updateGlobalTake, updatePageNumber, updatePageSize, updateCurrentRowIndex, resetStatePagination } from "../../common/Pagination/paginationAction";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
-import { loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import { disabledClass } from "../../../actions/Common";
 import { ApplyPermission } from ".";
 import Button from "../../layout/Button";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const IndivisualPartListing = (props) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation("common")
 
   const [state, setState] = useState({
-    pageNo: 1,
+    // pageNo: 1,
     gridApi: null,
     showPopup: false,
     gridColumnApi: null,
     dataCount: 0,
     totalRecordCount: 1,
-    currentRowIndex: 0,
-    pageNoNew: 1,
-    globalTake: defaultPageSize,
+    // currentRowIndex: 0,
+    // pageNoNew: 1,
+    // globalTake: defaultPageSize,
     isLoader: true,
     disableDownload: false,
     noData: false,
@@ -50,21 +56,26 @@ const IndivisualPartListing = (props) => {
     warningMessage: false,
     searchText: "",
     isFilterButtonClicked: false,
-    pageSize: { pageSize10: true, pageSize50: false, pageSize100: false, },
+    // : { pageSize10: true, pageSize50: false, pageSize100: false, },
     floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "", },
     tableData: [],
     isBulkUpload: false,
     deletedId: "",
+    render: false,
+    showExtraData: false,
   });
   const [searchText, setSearchText] = useState('');
   const { newPartsListing, allNewPartsListing } = useSelector((state) => state.part);
   const { initialConfiguration } = useSelector((state) => state.auth);
+  const { currentRowIndex, globalTakes } = useSelector((state) => state.pagination);
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const permissions = useContext(ApplyPermission);
   useEffect(() => {
     getTableListData(0, defaultPageSize, state.floatingFilterData, true);
     return () => {
-      dispatch(setSelectedRowForPagination([]));
+      dispatch(setSelectedRowForPagination([]))
+      dispatch(resetStatePagination());
+      ;
     };
   }, []);
 
@@ -94,9 +105,18 @@ const IndivisualPartListing = (props) => {
         setState((prevState) => ({ ...prevState, noData: false }));
 
         if (res.status === 202) {
-          setState((prevState) => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }));
+          setState((prevState) => ({
+            ...prevState, totalRecordCount: 0,
+            // pageNo: 0
+          }));
+          dispatch(updatePageNumber(0));
         } else if (res.status === 204 && (!res.data || res.data === "")) {
-          setState((prevState) => ({ ...prevState, /* noData: true, */ tableData: [], pageNo: 0, totalRecordCount: 0, isFilterButtonClicked: false }))
+          setState((prevState) => ({
+            ...prevState, /* noData: true, */ tableData: [],
+            // pageNo: 0, 
+            totalRecordCount: 0, isFilterButtonClicked: false
+          }))
+          dispatch(updatePageNumber(0));
 
         } else if (res.status === 200 && res.data && res.data.DataList) {
           let Data = res.data.DataList;
@@ -113,7 +133,6 @@ const IndivisualPartListing = (props) => {
             button && button.click();
           }, 500);
         }
-
         if (res) {
           let isReset = true
           setTimeout(() => {
@@ -131,10 +150,11 @@ const IndivisualPartListing = (props) => {
 
         setState((prevState) => ({
           ...prevState,
-          totalRecordCount: res.data && res.data.DataList[0].TotalRecordCount || 0,
-          tableData: res.data.DataList || [],
+          totalRecordCount: (res.data && res.data.DataList && res.data.DataList[0]?.TotalRecordCount) || 0,
+          tableData: res.data?.DataList || [],
           isFilterButtonClicked: false
-        }))
+        }));
+
         setTimeout(() => {
           setState((prevState) => ({
             ...prevState, isFilterButtonClicked: false,
@@ -215,10 +235,14 @@ const IndivisualPartListing = (props) => {
 
 
   const onSearch = () => {
-    setState((prevState) => ({ ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0 }));
-    getTableListData(0, state.globalTake, state.floatingFilterData, true);
+    setState((prevState) => ({
+      ...prevState, warningMessage: false,
+      //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0 
+    }));
+    dispatch(updatePageNumber(1));
+    dispatch(updateCurrentRowIndex(0))
+    getTableListData(0, globalTakes, state.floatingFilterData, true);
   };
-
 
   const resetState = () => {
     setState((prevState) => ({
@@ -242,78 +266,34 @@ const IndivisualPartListing = (props) => {
     for (var prop in state.floatingFilterData) {
       state.floatingFilterData[prop] = "";
     }
+    dispatch(updatePageNumber(1));
+    dispatch(updateCurrentRowIndex(0))
     setState((prevState) => ({
       ...prevState,
       floatingFilterData: state.floatingFilterData,
       warningMessage: false,
-      pageNo: 1,
-      pageNoNew: 1,
-      currentRowIndex: 0,
+      // pageNo: 1,
+      // pageNoNew: 1,
+      // currentRowIndex: 0,
     }));
 
     getTableListData(0, 10, state.floatingFilterData, true);
     dispatch(setSelectedRowForPagination([]));
-
+    dispatch(updateGlobalTake(10))
+    dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
     setState((prevState) => ({
       ...prevState,
-      globalTake: 10,
+      // globalTake: 10,
       dataCount: 0,
-      pageSize: {
-        ...prevState.pageSize,
-        pageSize10: true,
-        pageSize50: false,
-        pageSize100: false,
-      },
+      // pageSize: {
+      //   ...prevState.pageSize,
+      //   pageSize10: true,
+      //   pageSize50: false,
+      //   pageSize100: false,
+      // },
     }));
     setSearchText(''); // Assuming this state is bound to the input value
 
-  };
-
-  const onBtPrevious = () => {
-    const newPageNo = state.pageNo - 1;
-    if (newPageNo > 0) {
-      const skip = (newPageNo - 1) * state.globalTake;
-      setState((prevState) => ({ ...prevState, pageNo: newPageNo }));
-      getTableListData(skip, state.globalTake, state.floatingFilterData, true);
-    }
-  };
-
-  const onBtNext = () => {
-    const newPageNo = state.pageNo + 1;
-    const totalPages = Math.ceil(state.totalRecordCount / state.globalTake);
-
-    if (newPageNo <= totalPages) {
-      const skip = (newPageNo - 1) * state.globalTake;
-      setState((prevState) => ({ ...prevState, pageNo: newPageNo }));
-      getTableListData(skip, state.globalTake, state.floatingFilterData, true);
-    }
-  };
-
-  const onPageSizeChanged = (newPageSize) => {
-    let pageSize, totalRecordCount;
-
-    if (Number(newPageSize) === 10) {
-      pageSize = 10;
-    } else if (Number(newPageSize) === 50) {
-      pageSize = 50;
-    } else if (Number(newPageSize) === 100) {
-      pageSize = 100;
-    }
-
-    totalRecordCount = Math.ceil(totalRecordCount / pageSize);
-
-    getTableListData(state.currentRowIndex, pageSize, state.floatingFilterData, true);
-    setState((prevState) => ({
-      ...prevState, globalTake: pageSize, pageNo: 1, pageNoNew: Math.min(state.pageNo, totalRecordCount),
-      pageSize: {
-        ...prevState.pageSize,
-        pageSize10: pageSize === 10,
-        pageSize50: pageSize === 50,
-        pageSize100: pageSize === 100,
-      },
-    }));
-
-    state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   const viewOrEditItemDetails = (Id, isViewMode) => {
@@ -338,7 +318,7 @@ const IndivisualPartListing = (props) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
         //getTableListData();
-        getTableListData(state.currentRowIndex, defaultPageSize, state.floatingFilterData, true)
+        getTableListData(currentRowIndex, defaultPageSize, state.floatingFilterData, true)
         setState((prevState) => ({ ...prevState, dataCount: 0 }))
       }
     }));
@@ -366,7 +346,7 @@ const IndivisualPartListing = (props) => {
         {permissions.View && (
           <button
             title="View"
-            className="View"
+            className="View Tour_List_View"
             type={"button"}
             onClick={() => viewOrEditItemDetails(cellValue, rowData)}
           />
@@ -374,7 +354,7 @@ const IndivisualPartListing = (props) => {
         {permissions.View && (
           <button
             title="Edit"
-            className="Edit mr-2"
+            className="Edit mr-2 Tour_List_Edit"
             type={"button"}
             onClick={() => viewOrEditItemDetails(cellValue, false)}
           />
@@ -382,7 +362,7 @@ const IndivisualPartListing = (props) => {
         {permissions.Delete && (
           <button
             title="Delete"
-            className="Delete"
+            className="Delete Tour_List_Delete"
             type={"button"}
             onClick={() => deleteItem(ID.partId)}
           />
@@ -475,7 +455,16 @@ const IndivisualPartListing = (props) => {
     setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }))
     params.api.paginationGoToPage(0);
   };
-
+  /**
+             @method toggleExtraData
+             @description Handle specific module tour state to display lorem data
+            */
+  const toggleExtraData = (showTour) => {
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+    }, 100);
+  }
   const onExcelDownload = () => {
     setState((prevState) => ({ ...prevState, disableDownload: true }));
     dispatch(disabledClass(true));
@@ -676,7 +665,7 @@ const IndivisualPartListing = (props) => {
                 <button
                   title="Filtered data"
                   type="button"
-                  className="user-btn mr5"
+                  className="user-btn mr5 Tour_List_Filter"
                   onClick={() => onSearch()}
                   disabled={state.disableFilter}
                 >
@@ -685,7 +674,7 @@ const IndivisualPartListing = (props) => {
                 {permissions.Add && (
                   <button
                     type="button"
-                    className={"user-btn mr5"}
+                    className={"user-btn mr5 Tour_List_Add"}
                     title="Add"
                     onClick={formToggle}
                   >
@@ -695,7 +684,7 @@ const IndivisualPartListing = (props) => {
                 {permissions.BulkUpload && (
                   <button
                     type="button"
-                    className={"user-btn mr5"}
+                    className={"user-btn mr5 Tour_List_BulkUpload"}
                     onClick={bulkToggle}
                     title="Bulk Upload"
                   >
@@ -704,7 +693,7 @@ const IndivisualPartListing = (props) => {
                 )}
                 {permissions.Download && (
                   <>
-                    <Button className="mr5" id={"individualPartListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                    <Button className="mr5 Tour_List_Download" id={"individualPartListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                     />
                     <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-component-part"} className="p-absolute" />}>
                       {onBtExport()}
@@ -715,7 +704,8 @@ const IndivisualPartListing = (props) => {
 
                 <button
                   type="button"
-                  className="user-btn"
+                  className="user-btn Tour_List_Reset"
+
                   title="Reset Grid"
                   onClick={() => resetState()}
                 >
@@ -732,15 +722,12 @@ const IndivisualPartListing = (props) => {
             }`}
         >
           <div className="ag-grid-header">
-            <input
-              type="text"
-              value={searchText}
-              className="form-control table-search"
-              id="filter-text-box"
-              placeholder="Search"
-              autoComplete={"off"}
-              onChange={onFilterTextBoxChanged}
-            />
+            <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={onFilterTextBoxChanged} />
+            <TourWrapper
+              buttonSpecificProp={{ id: "Indivisual_Part_Listing_Tour", onClick: toggleExtraData }}
+              stepsSpecificProp={{
+                steps: Steps(t, { addLimit: false, costMovementButton: false, updateAssociatedTechnology: false, copyButton: false, viewBOM: false, status: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+              }} />
           </div>
           <div
             className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}
@@ -756,9 +743,10 @@ const IndivisualPartListing = (props) => {
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout="autoHeight"
-                rowData={newPartsListing}
+                rowData={state.showExtraData && newPartsListing ? [...setLoremIpsum(newPartsListing[0]), ...newPartsListing] : newPartsListing}
+
                 pagination={true}
-                paginationPageSize={state.globalTake}
+                paginationPageSize={globalTakes}
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
                 onFilterModified={onFloatingFilterChanged}
@@ -772,105 +760,29 @@ const IndivisualPartListing = (props) => {
                 frameworkComponents={frameworkComponents}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn
-                  field="Technology"
-                  headerName="Technology"
-                  cellRenderer={checkBoxRenderer}
-
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="PartNumber"
-                  headerName="Part No."
-                ></AgGridColumn>
+                <AgGridColumn field="Technology" headerName="Technology" cellRenderer={checkBoxRenderer} ></AgGridColumn>
+                <AgGridColumn field="PartNumber" headerName="Part No." ></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
                 {initialConfiguration?.IsSAPCodeRequired && (
-                  <AgGridColumn
-                    field="SAPCode"
-                    headerName="SAP Code"
-                    cellRenderer={"hyphenFormatter"}
-                  ></AgGridColumn>
+                  <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 )}
-                <AgGridColumn
-                  field="ECNNumber"
-                  headerName="ECN No."
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="RevisionNumber"
-                  headerName="Revision No."
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="DrawingNumber"
-                  headerName="Drawing No."
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="EffectiveDate"
-                  headerName="Effective Date"
-                  cellRenderer={"effectiveDateFormatter"}
-                  filter="agDateColumnFilter"
-                  filterParams={filterParams}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="PartId"
-                  cellClass="ag-grid-action-container"
-                  headerName="Action"
-                  width={160}
-/*                   pinned="right"
- */                  type="rightAligned"
-                  floatingFilter={false}
-                  cellRenderer={"totalValueRenderer"}
-                ></AgGridColumn>
+                <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+                <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
+                <AgGridColumn field="PartId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>
               </AgGridReact>}
             <div className="button-wrapper">
               {!state.isLoader && (
-                <PaginationWrapper
-                  gridApi={state.gridApi}
-                  setPage={onPageSizeChanged}
-                  globalTake={state.globalTake}
-                />
+                <PaginationWrappers gridApi={state.gridApi} totalRecordCount={state.totalRecordCount} getDataList={getTableListData} floatingFilterData={state.floatingFilterData} module="Part" />
               )}
+              <PaginationControls
+                totalRecordCount={state.totalRecordCount}
+                getDataList={getTableListData}
+                floatingFilterData={state.floatingFilterData}
+                module="Part"
+              />
 
-              <div className="d-flex pagination-button-container">
-                <p>
-                  <button
-                    className="previous-btn"
-                    type="button"
-                    disabled={state.pageNo === 1 ? true : false}
-                    onClick={() => onBtPrevious()}
-                  >
-                    {" "}
-                  </button>
-                </p>
-                {state?.pageSize?.pageSize10 && (
-                  <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
-                    {Math.ceil(state.totalRecordCount / 10)}
-                  </p>
-                )}
-                {state?.pageSize?.pageSize50 && (
-                  <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
-                    {Math.ceil(state.totalRecordCount / 50)}
-                  </p>
-                )}
-                {state?.pageSize?.pageSize100 && (
-                  <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
-                    {Math.ceil(state.totalRecordCount / 100)}
-                  </p>
-                )}
-                <p>
-                  <button
-                    className="next-btn"
-                    type="button"
-                    onClick={() => onBtNext()}
-                  >
-                    {" "}
-                  </button>
-                </p>
-              </div>
             </div>
           </div>
         </div>

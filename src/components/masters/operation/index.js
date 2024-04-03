@@ -11,6 +11,7 @@ import { APPROVAL_CYCLE_STATUS_MASTER, OPERATIONS_ID } from '../../../config/con
 // import { APPROVED_STATUS_MASTER, OPERATIONS_ID } from '../../../config/constants';
 import CommonApproval from '../material-master/CommonApproval';
 import { MESSAGES } from '../../../config/message';
+import { resetStatePagination } from '../../common/Pagination/paginationAction';
 
 class OperationsMaster extends Component {
     constructor(props) {
@@ -52,6 +53,7 @@ class OperationsMaster extends Component {
     */
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
+            this.props.resetStatePagination(); // Dispatching the action
             this.setState({
                 activeTab: tab,
                 stopApiCallOnCancel: false
@@ -81,6 +83,8 @@ class OperationsMaster extends Component {
                     <ScrollToTop pointProp="go-to-top" />
                     <Row>
                         <Col>
+                            {/* {Object.keys(permissions).length > 0 && ( */}
+
                             <div>
                                 <Nav tabs className="subtabs mt-0 p-relative">
                                     {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
@@ -108,11 +112,6 @@ class OperationsMaster extends Component {
                                             <OperationListing
                                                 formToggle={this.displayOperationForm}
                                                 getDetails={this.getDetails}
-                                                AddAccessibility={this.state.AddAccessibility}
-                                                EditAccessibility={this.state.EditAccessibility}
-                                                DeleteAccessibility={this.state.DeleteAccessibility}
-                                                BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                                DownloadAccessibility={this.state.DownloadAccessibility}
                                                 isMasterSummaryDrawer={false}
                                                 selectionForListingMasterAPI='Master'
                                                 stopAPICall={this.state.stopAPICall}
@@ -136,6 +135,7 @@ class OperationsMaster extends Component {
 
                                 </TabContent>
                             </div>
+                            {/* )} */}
                         </Col>
                     </Row>
                 </div>
@@ -154,7 +154,9 @@ function mapStateToProps({ auth, comman }) {
     const { disabledClass } = comman;
     return { leftMenuData, loading, topAndLeftMenuData, disabledClass }
 }
+const mapDispatchToProps = (dispatch) => ({
+    resetStatePagination: () => dispatch(resetStatePagination())
+});
 
-
-export default connect(mapStateToProps, {})(OperationsMaster);
+export default connect(mapStateToProps, mapDispatchToProps)(OperationsMaster);
 

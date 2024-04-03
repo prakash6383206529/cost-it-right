@@ -1,0 +1,18 @@
+{
+    "tabs": {
+        "user": "Create, edit, and view users from here.",
+        "roleAndPermission": "Create, edit, and view Roles & Permissions from here."
+    },
+    "highestApprovalLevel": {
+        "costing": "Click here to view the costing with highest approval level.",
+        "simulation": "Click here to view the simulation with highest approval level.",
+        "master": "Click here to view the master with highest approval level.",
+        "onBoarding": "Click here to view the onboarding with highest approval level.",
+        "searchingBox": "Search for specific data from here.",
+        "edit": "Click here to edit the master data.",
+        "refresh": "Refresh the grid to update filtered data from here.",
+        "add": "Add new data from here.",
+        "floatingFilterInput": "Here you can search for specific column-wise data.",
+        "floatingFilterButton": "Here you can filter the data based on different conditions."
+    }
+}
