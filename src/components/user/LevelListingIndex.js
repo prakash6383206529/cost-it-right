@@ -1,13 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import {
-    Row,
-    Col,
-    TabContent,
-    TabPane,
-    Nav,
-    NavItem,
-    NavLink,
-} from 'reactstrap'
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap'
 import classnames from 'classnames'
 import Button from '../layout/Button';
 import CostingLevelListing from './CostingLevel'
@@ -16,10 +8,16 @@ import MasterLevelListing from './MasterLevel'
 import Level from './Level';
 import OnboardingLevelListing from './OnboardingLevel';
 import { getConfigurationKey } from '../../helper';
+import { Steps } from './TourMessages';
+import TourWrapper from "../common/Tour/TourWrapper"
+import { useTranslation } from 'react-i18next'
 
 function ManageLevelTabs(props) {
     const { onRef, permissionData } = props
     const [activeTab, setActiveTab] = useState('1')
+    const { t } = useTranslation("User")
+
+
     const [state, setState] = useState({
         isEditFlag: false,
         isShowForm: false,
@@ -80,8 +78,16 @@ function ManageLevelTabs(props) {
 
                     </Col> */}
                     <Col md="6 d-flex">
-                        <h2 className="manage-level-heading d-flex">{`Highest Level of Approvals`}</h2>
-                        {permissionData.Add && <Button id="levelTechnologyListing_add" className={"user-btn mr5 text-right search-user-block mb-5 "} onClick={mappingToggler} title={"Add"} icon={"plus mr-0"} />}
+                        <h2 className="manage-level-heading d-flex">{`Highest Level of Approvals`}
+                            <TourWrapper
+                                buttonSpecificProp={{
+                                    id: "HightestLevel_Approval_ListingTour"
+                                }}
+                                stepsSpecificProp={{
+                                    steps: Steps(t).HIGHTEST_LEVEL_APPROVAL
+                                }} />
+                        </h2>
+                        {permissionData.Add && <Button id="levelTechnologyListing_add" className={"user-btn mr5 text-right search-user-block mb-5 HighestApproval_Add "} onClick={mappingToggler} title={"Add"} icon={"plus mr-0"} />}
                     </Col>
                 </Row>
                 <Col className="hidepage-size"  >
@@ -89,6 +95,7 @@ function ManageLevelTabs(props) {
                     <Nav tabs className="subtabs mt-0 " >
                         <NavItem>
                             <NavLink
+                                id="levelTechnologyListing_costing"
                                 className={classnames({ active: activeTab === '1' })}
                                 onClick={() => {
                                     toggle('1')
@@ -99,6 +106,7 @@ function ManageLevelTabs(props) {
                         </NavItem>
                         <NavItem>
                             <NavLink
+                                id="levelTechnologyListing_simulation"
                                 className={classnames({ active: activeTab === '2' })}
                                 onClick={() => {
                                     toggle('2')
@@ -109,6 +117,7 @@ function ManageLevelTabs(props) {
                         </NavItem>
                         {getConfigurationKey().IsMasterApprovalAppliedConfigure && <NavItem>
                             <NavLink
+                                id="levelTechnologyListing_master"
                                 className={classnames({ active: activeTab === '3' })}
                                 onClick={() => {
                                     toggle('3')
@@ -119,6 +128,7 @@ function ManageLevelTabs(props) {
                         </NavItem>}
                         {getConfigurationKey().IsShowOnboarding && <NavItem>
                             <NavLink
+                                id="levelTechnologyListing_onboarding"
                                 className={classnames({ active: activeTab === '4' })}
                                 onClick={() => {
                                     toggle('4')

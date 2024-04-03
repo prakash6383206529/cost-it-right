@@ -602,16 +602,18 @@ class AddInterestRate extends Component {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-heading mb-0">
-                      <h1>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Interest RawMaterial <TourWrapper
-                        buttonSpecificProp={{ id: "Add_InterestRate_form" }}
-                        stepsSpecificProp={{
-                          steps: Steps(t, {
-                            vendorField: (costingTypeId === VBCTypeId),
-                            customerField: (costingTypeId === CBCTypeId),
-                            plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate),
-                            destinationPlant: ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant))
-                          }).ADD_INTEREST_RATE
-                        }} /></h1>
+                      <h1>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Interest RawMaterial
+                        {!isViewMode && <TourWrapper
+                          buttonSpecificProp={{ id: "Add_Interest_Rate_Form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t, {
+                              isEditFlag: isEditFlag,
+                              vendorField: (costingTypeId === VBCTypeId),
+                              customerField: (costingTypeId === CBCTypeId),
+                              plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate),
+                              destinationPlant: ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant))
+                            }).ADD_INTEREST_RATE
+                          }} />}</h1>
                     </div>
                   </div>
                 </div>

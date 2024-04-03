@@ -909,13 +909,14 @@ class AddAssemblyPart extends Component {
                       <div className="form-heading mb-0">
                         <h1>
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Assembly Part
-                          <TourWrapper
-                            buttonSpecificProp={{ id: "assembly_form" }}
+                          {!isViewMode && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_Assembly_Part_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                isEditFlag: isEditFlag,
                                 partField: (this.state.convertPartToAssembly)
                               }).ADD_ASSEMBLY_PART
-                            }} />
+                            }} />}
                         </h1>
                       </div>
                     </Col>

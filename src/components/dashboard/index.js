@@ -129,7 +129,7 @@ function Dashboard(props) {
                     <Col md="8"><h3 className="mb-0">Amendments Approval Status {acc2 &&
 
                       <TourWrapper
-                        buttonSpecificProp={{ id: "Dashboard_simulation_form" }}
+                        buttonSpecificProp={{ id: "Dashboard_Simulation_Form" }}
                         stepsSpecificProp={{
                           steps: Steps(t).DASHBOARD_SIMULATION_TAB
                         }} />}
@@ -157,7 +157,7 @@ function Dashboard(props) {
                 <div className={`graph-box w-100 ${acc1 ? "dashboard-height" : ''}`}>
                   <Row>
                     <Col md="8"><h3 className="mb-0">Costings Approval Status  {acc1 && <TourWrapper
-                      buttonSpecificProp={{ id: "Dashboard_costing_form" }}
+                      buttonSpecificProp={{ id: "Dashboard_Costing_Form" }}
                       stepsSpecificProp={{
                         steps: Steps(t).DASHBOARD_COSTING_TAB
                       }} />}</h3></Col>
@@ -183,7 +183,7 @@ function Dashboard(props) {
                   <div className="graph-box w-100">
                     <Row>
                       <Col md="8"><h3 className="mb-0">Masters Approval Status{acc3 && <TourWrapper
-                        buttonSpecificProp={{ id: "Dashboard_master_form" }}
+                        buttonSpecificProp={{ id: "Dashboard_Master_Form" }}
                         stepsSpecificProp={{
                           steps: Steps(t).DASHBOARD_MASTER_TAB
                         }} />}</h3></Col>

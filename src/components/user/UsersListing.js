@@ -11,7 +11,7 @@ import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
 import { handleDepartmentHeader, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
-import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../helper/util';
+import { checkPermission, searchNocontentFilter, setLoremIpsum, showTitleForActiveToggle } from '../../helper/util';
 import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -24,6 +24,9 @@ import { PaginationWrapper } from '../common/commonPagination';
 import ScrollToTop from '../common/ScrollToTop';
 import Button from '../layout/Button';
 import DayTime from '../common/DayTimeWrapper';
+import TourWrapper from '../common/Tour/TourWrapper';
+import { Steps } from '../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -34,6 +37,8 @@ const gridOptions = {};
 const UsersListing = (props) => {
 	const dispatch = useDispatch();
 	const searchRef = useRef(null);
+	const { t } = useTranslation("common")
+
 	const { userDataList, rfqUserList, initialConfiguration, topAndLeftMenuData } = useSelector((state) => state.auth);
 	const [state, setState] = useState({
 		isEditFlag: false,
@@ -60,7 +65,9 @@ const UsersListing = (props) => {
 		row: [],
 		isLoader: false,
 		noData: false,
-		dataCount: 0
+		dataCount: 0,
+		render: false,
+		showExtraData: false
 	});
 	useEffect(() => {
 		getUsersListData(null, null);
@@ -151,6 +158,20 @@ const UsersListing = (props) => {
 		browserDatePicker: true,
 		minValidYear: 2000,
 	};
+	/**
+		  * @method toggleExtraData
+		  * @description Handle specific module tour state to display lorem data
+		  */
+	const toggleExtraData = (showTour) => {
+		// dispatch(TourStartAction({
+		//   showExtraData: showTour,
+		// }));
+		setState((prevState) => ({ ...prevState, render: true }));
+		setTimeout(() => {
+			setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+		}, 100);
+
+	}
 
 	/**
 		* @method getUsersListData
@@ -170,6 +191,7 @@ const UsersListing = (props) => {
 			}
 		}))
 	}
+
 	const onRowSelect = () => {
 		const selectedRows = state.gridApi?.getSelectedRows()
 		setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
@@ -234,7 +256,7 @@ const UsersListing = (props) => {
 		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <Button id={`userListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} />}
+				{EditAccessibility && <Button id={`userListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} />}
 			</div>
 		)
 	}
@@ -261,7 +283,7 @@ const UsersListing = (props) => {
 		showTitleForActiveToggle(props?.rowIndex)
 		return (
 			<>
-				<label htmlFor="normal-switch" className="normal-switch">
+				<label htmlFor="normal-switch" className="normal-switch Tour_List_Status">
 					<Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!ActivateAccessibility} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
 				</label>
 			</>
@@ -277,7 +299,7 @@ const UsersListing = (props) => {
 		const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 		return (
-			<><div onClick={() => viewDetails(row.UserId)} className={'link'}>{cell}</div></>
+			<><div id="view_details" onClick={() => viewDetails(row.UserId)} className={'link'}>{cell}</div></>
 		)
 	}
 
@@ -318,6 +340,18 @@ const UsersListing = (props) => {
 			searchRef.current.value = '';
 		}
 	}
+	const renderRowData = () => {
+		if (props?.RFQUser) {
+			return state.showExtraData ? [...setLoremIpsum(rfqUserList[0]), ...rfqUserList] : rfqUserList;
+		} else {
+			if (state.showExtraData && userDataList && userDataList.length > 0) {
+				return [...setLoremIpsum(userDataList[0]), ...userDataList];
+			} else {
+				return userDataList;
+			}
+		}
+	}
+
 	const onGridReady = (params) => {
 		setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
 		params.api.paginationGoToPage(0);
@@ -363,13 +397,13 @@ const UsersListing = (props) => {
 								{AddAccessibility && (
 									<div>
 										<ExcelFile filename={`${props.RFQUser ? 'RFQ User Listing' : 'User Listing'}`} fileExtension={'.xls'} element={
-											<Button id={"Excel-Downloads-userListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
+											<Button id={"Excel-Downloads-userListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
 											{onBtExport()}
 										</ExcelFile>
-										<Button id="userListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
+										<Button id="userListing_add" className={"mr5 Tour_List_Add "} onClick={formToggle} title={"Add"} icon={"plus"} />
 									</div>
 								)}
-								<Button id={"userListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+								<Button id={"userListing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
 							</div>
 						</Col>
 					</Row>
@@ -377,6 +411,11 @@ const UsersListing = (props) => {
 				{state.isLoader ? <LoaderCustom customClass="loader-center" /> : <div className={`ag-grid-wrapper height-width-wrapper ${(userDataList && userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 					<div className="ag-grid-header">
 						<input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+						<TourWrapper
+							buttonSpecificProp={{ id: "User_listing_Tour", onClick: toggleExtraData }}
+							stepsSpecificProp={{
+								steps: Steps(t, { viewUserDetails: true, filterButton: false, bulkUpload: false, addLimit: false, viewButton: false, DeleteButton: false, costMovementButton: false, copyButton: false, viewBOM: false, updateAssociatedTechnology: false, addAssociation: false, addMaterial: false, generateReport: false, approve: false, reject: false, }).COMMON_LISTING
+							}} />
 					</div>
 					<div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
 						{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -385,7 +424,8 @@ const UsersListing = (props) => {
 							floatingFilter={true}
 							domLayout='autoHeight'
 							// columnDefs={c}
-							rowData={props.RFQUser ? rfqUserList : userDataList}
+							rowData={renderRowData()}
+
 							pagination={true}
 							paginationPageSize={defaultPageSize}
 							onGridReady={onGridReady}
@@ -423,7 +463,7 @@ const UsersListing = (props) => {
 							<AgGridColumn field="ModifiedBy" headerName="Modified By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
 							<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 							<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-							<AgGridColumn field="RoleName" width={120} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+							<AgGridColumn field="RoleName" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 						</AgGridReact>
 						{<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
 					</div>

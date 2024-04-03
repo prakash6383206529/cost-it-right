@@ -76,11 +76,7 @@ function MRSimulation(props) {
         ProcessName: showCompressedColumns ? 100 : 190,
         ProcessNumber: showCompressedColumns ? 100 : 190,
         Plant: showCompressedColumns ? 100 : 190,
-        MachineRate: showCompressedColumns ? 120 : 120,
-        NewMachineRate: showCompressedColumns ? 120 : 120,
         EffectiveDate: showCompressedColumns ? 90 : 190,
-        CostingId: showCompressedColumns ? 90 : 160,
-
     };
     const cancelVerifyPage = () => {
         setShowVerifyPage(false)
@@ -531,8 +527,8 @@ function MRSimulation(props) {
                                                     </>
                                                 }
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Machine Rate" marryChildren={true} >
-                                                    <AgGridColumn width={columnWidths.MachineRate} field="MachineRate" tooltipField='MachineRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewMachineRate} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                                    <AgGridColumn width={120} field="MachineRate" tooltipField='MachineRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {props.children}
                                                 <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>

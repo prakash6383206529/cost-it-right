@@ -1061,17 +1061,18 @@ class AddBOPDomestic extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} {showBopLabel()} (Domestic)
-                          <TourWrapper
-                            buttonSpecificProp={{ id: "BOP_Domestic_form" }}
+                          {!isViewMode && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_BOP_Domestic_Form" }}
 
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                isEditFlag: isEditFlag,
                                 showSendForApproval: !this.state.isFinalApprovar,
                                 sourceField: (costingTypeId === VBCTypeId),
                                 CBCTypeField: (costingTypeId === CBCTypeId),
                                 conditionCost: (initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId)
                               }).BOP_DOMESTIC_FORM
-                            }} />
+                            }} />}
                         </h1>
                       </div>
                     </div>

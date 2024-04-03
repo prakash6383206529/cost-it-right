@@ -167,9 +167,9 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                     <h3>
                       {isEditFlag ? "Update Material" : "Add Material"}
                       <TourWrapper
-                        buttonSpecificProp={{ id: "Material_Type_form" }}
+                        buttonSpecificProp={{ id: "Add_Material_Type_Form" }}
                         stepsSpecificProp={{
-                          steps: Steps(t).ADD_MATERIAL,
+                          steps: Steps(t, { isEditFlag: isEditFlag }).ADD_MATERIAL,
                         }}
                       />
                     </h3>

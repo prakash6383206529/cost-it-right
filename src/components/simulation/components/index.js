@@ -104,7 +104,7 @@ function SimulationTab(props) {
                             </NavLink>
                         </NavItem>}
                         {activeTab === "1" && <TourWrapper
-                            buttonSpecificProp={{ id: "simulation", onClick: toggleExtraData }}
+                            buttonSpecificProp={{ id: "Simulation_Tour", onClick: toggleExtraData }}
                             stepsSpecificProp={{
                                 steps: Steps(t, { activeTab, simulationApplicability, selectedMasterForSimulation, selectedTechnologyForSimulation, isMasterAssociatedWithCosting, selectedVendorForSimulation, showEditMaster, showverifyPage, costingDrawerPage }).SIMULATION
                             }} />}

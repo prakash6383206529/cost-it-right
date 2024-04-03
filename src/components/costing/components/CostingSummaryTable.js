@@ -1920,7 +1920,7 @@ const CostingSummaryTable = (props) => {
                 <div className="left-border">{'Summary'}
                   {props.costingSummaryMainPage && (
                     <TourWrapper
-                      buttonSpecificProp={{ id: "Costing_Summary_form" }}
+                      buttonSpecificProp={{ id: "Costing_Summary_Table" }}
                       stepsSpecificProp={{
                         steps: Steps(t, "", { totalCost: totalCost, showCostingSummaryExcel: downloadAccessibility, viewCostingData: viewCostingData, isSuperAdmin: isSuperAdmin, technology, editButton, viewButton, viewBomButton, viewPieChart: pieChartButton }).COSTING_SUMMARY
                       }}

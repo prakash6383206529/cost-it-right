@@ -143,7 +143,7 @@ export function Steps(t, params, config) {
                 ...(config && config.bopHandling ? [
                     {
                         element: "#Add_BOP_Handling_Charge",
-                        intro: t("RMCtabs.AddBOPHandlingCharge"),
+                        intro: introWithBOPDynamicValue(t("RMCtabs.AddBOPHandlingCharge")),
                     },
                 ] : []),
                 {
@@ -173,7 +173,7 @@ export function Steps(t, params, config) {
 
                     {
                         element: '#Costing_addBOP',
-                        intro: t("RMCtabs.AddBOP"),
+                        intro: introWithBOPDynamicValue(t("RMCtabs.AddBOP")),
                         position: "left"
                     },
 
@@ -419,15 +419,15 @@ export function Steps(t, params, config) {
 
             {
                 element: '#bopCost_edit0',
-                intro: t("RawMaterialCost.edit"),
+                intro: introWithBOPDynamicValue(t("BopCost.edit")),
             },
             {
                 element: '#bopCost_delete0',
-                intro: t("RawMaterialCost.delete"),
+                intro: introWithBOPDynamicValue(t("BopCost.delete")),
             },
             {
                 element: '#bop_handling_charge',
-                intro: introWithBOPDynamicValue(t("RawMaterialCost.bopHanlding")),
+                intro: introWithBOPDynamicValue(t("BopCost.bopHandling")),
             },
         ],
         PROCESS_COST: [
@@ -553,7 +553,7 @@ export function Steps(t, params, config) {
                     },
                     {
                         element: "#view_BOP",
-                        intro: t("costingSummary.viewBOPCost"),
+                        intro: introWithBOPDynamicValue(t("costingSummary.viewBOPCost")),
                     },
 
                     {

@@ -114,7 +114,7 @@ export const TextFieldHookForm = (field) => {
 
 
 export const PasswordFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, active, touched, error, input, disableErrorOverflow } = field
+  const { id, label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, active, touched, error, input, disableErrorOverflow } = field
   // //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   // const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   // const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -158,7 +158,7 @@ export const PasswordFieldHookForm = (field) => {
 
             return (
               <div className={className}>
-                <div className={inputbox}>
+                <div className={inputbox} id={id ?? ''}>
                   <input
                     maxLength={field.maxLength}
                     onChange={(e) => {
