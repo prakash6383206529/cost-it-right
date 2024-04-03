@@ -171,8 +171,7 @@ class AddRMDomestic extends Component {
       showTour: false,
       isDisabled: false, // THIS STATE IS USED TO DISABLE NAME, GRADE, SPEC
       isCodeDisabled: false, // THIS STATE IS USED TO DISABLE CODE,
-      rmCode: [],
-
+      rmCode: []
     }
   }
 
@@ -211,7 +210,6 @@ class AddRMDomestic extends Component {
   allFieldsInfoIcon(setData) {
     const { initialConfiguration } = this.props
     const { showScrapKeys, toolTipTextObject } = this.state
-    console.log('showScrapKeys: ', showScrapKeys);
     let obj = {
       toolTipTextCutOffBaseCurrency: `Cut Off Price (${reactLocalStorage.getObject("baseCurrency")}) = Cut Off Price (${reactLocalStorage.getObject("baseCurrency")}) * Currency Rate (${reactLocalStorage.getObject("baseCurrency")})`,
       toolTipTextBasicRateBaseCurrency: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) * Currency Rate (${reactLocalStorage.getObject("baseCurrency")})`,
