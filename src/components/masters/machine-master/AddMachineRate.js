@@ -1651,7 +1651,7 @@ class AddMachineRate extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Machine Tonnage(Ton)`}
+                            label={`Machine Tonnage (Ton)`}
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={isViewMode ? '-' : 'Enter'}

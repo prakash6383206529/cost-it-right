@@ -476,6 +476,11 @@ class AddOperation extends Component {
             technologyArray.push({ Text: item.Technology, Value: item.TechnologyId })
             return technologyArray;
           })
+          let plantArray = [];
+          Data && Data.Plant.map((item) => {
+            plantArray.push({ Text: item.PlantName, Value: item.PlantId })
+            return plantArray;
+          })
           if (Data?.ForType === 'Welding') {
             this.setState({ isWelding: true })
           }
@@ -487,7 +492,7 @@ class AddOperation extends Component {
               costingTypeId: Data.CostingTypeId,
               selectedTechnology: technologyArray,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
-              selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
+              selectedPlants: plantArray,
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               oldUOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],

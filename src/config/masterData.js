@@ -4322,12 +4322,16 @@ export const OperationSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
+    { label: "OperationType", value: "ForType", },
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "UOM", value: "UOM" },
+    { label: "Consumption", value: "OperationConsumption" },
+    { label: "WeldingMaterialRate/kg", value: "OperationBasicRate" },
+    { label: "Revised WeldingMaterialRate/kg", value: "NewOperationBasicRate" },
     { label: "Rate", value: "Rate" },
     { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -6026,8 +6030,12 @@ export const MACHINE_IMPACT_DOWNLOAD_EXCEl = [
 ]
 
 export const OPERATION_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "Operation Type", value: "ForType", },
     { label: "Operation Name", value: "OperationName", },
     { label: "Operation Code", value: "OperationCode", },
+    { label: "Consumption", value: "OldOperationConsumption", },
+    { label: "Existing Welding Material Rate/Kg", value: "OldOperationBasicRate", },
+    { label: "Revised Welding Material Rate/Kg", value: "NewOperationBasicRate", },
     { label: "Existing Net Rate", value: "OldOperationRate", },
     { label: "Revised Net Rate", value: "NewOperationRate", },
     { label: "Previous Min.", value: "PreviousMinimum", },
