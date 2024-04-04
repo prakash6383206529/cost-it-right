@@ -685,12 +685,12 @@ class BulkUpload extends Component {
             });
 
         }
-        // else if (fileName === 'Operation') {
-        //     this.props.operationBulkUpload(masterUploadData, (res) => {
-        //         this.setState({ setDisable: false })
-        //         this.responseHandler(res)
-        //     });
-        // }
+        else if (fileName === 'Operation') {
+            this.props.operationBulkUpload(masterUploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+        }
         else if (fileName === 'Fuel') {
             this.props.fuelBulkUpload(uploadData, (res) => {
                 this.setState({ setDisable: false })
