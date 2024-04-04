@@ -294,7 +294,8 @@ function AssemblyPart(props) {
       <tr className="costing-highlight-row accordian-row" key={item.PartId}>
         <div style={{ display: 'contents' }} >
           <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
-            <span title={item && item.PartNumber} className={`part-name ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
+            <span title={item && `Part Number: ${item.PartNumber}\nPart Name: ${item.PartName} \nRevision Number: ${item.RevisionNumber ?? '-'}`}
+              className={`part-name ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
               <div className={`${item?.CostingPartDetails?.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
             </span>
           </td>

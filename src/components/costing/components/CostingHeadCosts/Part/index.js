@@ -224,7 +224,7 @@ function PartCompoment(props) {
       <tr className="accordian-row" id={`${item && item.PartNumber}`}>
 
         <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber, item.IsOpen, item?.AssemblyPartNumber)}>
-          <span className={`part-name ${item && item.BOMLevel}`} title={item && `Part Number: ${item.PartNumber}\nPart Name: ${item.PartName}`}>
+          <span className={`part-name ${item && item.BOMLevel}`} title={item && `Part Number: ${item.PartNumber}\nPart Name: ${item.PartName} \nRevision Number: ${item.RevisionNumber ?? '-'}`}>
             {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
         </td>

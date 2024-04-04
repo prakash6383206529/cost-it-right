@@ -43,7 +43,8 @@ function BoughtOutPart(props) {
     <>
       <tr>
         <td className='part-overflow'>
-          <span title={item && item.PartNumber} style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+          <span title={item && `Part Number: ${item.PartNumber}\nPart Name: ${item.PartName}`}
+            style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
             {item && item.PartNumber}
           </span>
         </td>
