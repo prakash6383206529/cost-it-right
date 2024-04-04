@@ -963,11 +963,11 @@ class AddOverhead extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Overhead Details
-                        <TourWrapper
+                        {!isViewMode && <TourWrapper
                           buttonSpecificProp={{ id: "Add_Overhead_Form" }}
                           stepsSpecificProp={{
-                            steps: Steps(t, { vendorField: (costingTypeId === VBCTypeId), customerField: (costingTypeId === CBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) }).ADD_OVERHEADS_DETAILS
-                          }} />
+                            steps: Steps(t, { isEditFlag: isEditFlag, vendorField: (costingTypeId === VBCTypeId), customerField: (costingTypeId === CBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) }).ADD_OVERHEADS_DETAILS
+                          }} />}
                       </h1>
                     </div>
                   </div>

@@ -1,4 +1,6 @@
-export function Steps(t) {
+export function Steps(t, config) {
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+
     return {
         ADD_CLIENT: [
 
@@ -63,7 +65,7 @@ export function Steps(t) {
             },
             {
                 element: "#addClient_Save",
-                intro: t("customer.save"),
+                intro: introMessage,
                 position: 'left'
             },
         ],

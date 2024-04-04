@@ -2,6 +2,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 
 export function Steps(t, config) {
     const showSendForApprovalButton = config?.showSendForApproval !== undefined && config?.showSendForApproval === true
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
 
     return {
         ADD_OPERATION: [
@@ -18,10 +19,10 @@ export function Steps(t, config) {
                 intro: t("operationMaster.Add_operation_customer_based"),
             }] : []),
 
-            {
-                element: "#AddOperation_operationType_container",
-                intro: t("operationMaster.AddOperation_operationType_container"),
-            },
+            // {
+            //     element: "#AddOperation_operationType_container",
+            //     intro: t("operationMaster.AddOperation_operationType_container"),
+            // },
             {
                 element: "#AddOperation_technology_container",
                 intro: t("operationMaster.AddOperation_technology_container"),
@@ -43,7 +44,7 @@ export function Steps(t, config) {
                 element: "#AddOperation_VendorCode",
                 intro: t("operationMaster.AddOperation_VendorCode"),
             },] : []),
-            ...(config && config.vendorField ? [{
+            ...(config && config.vendorField && config?.isEditFlag === false ? [{
 
                 element: "#AddOperation_AddVendorCode",
                 intro: t("operationMaster.AddVendorCode"),
@@ -86,10 +87,10 @@ export function Steps(t, config) {
                 intro: t("operationMaster.AddOperation_SurfaceTreatmentCheckbox"),
             },
 
-            {
-                element: "#AddMoreOperation_container",
-                intro: t("operationMaster.AddMoreOperation_container"),
-            },
+            // {
+            //     element: "#AddMoreOperation_container",
+            //     intro: t("operationMaster.AddMoreOperation_container"),
+            // },
             {
                 element: "#AddOperation_Remark",
                 intro: t("operationMaster.AddOperation_Remark"),
@@ -105,7 +106,7 @@ export function Steps(t, config) {
             ...((showSendForApprovalButton === false) ? [
                 {
                     element: "#AddOperation_Save",
-                    intro: t("operationMaster.AddOperation_Save"),
+                    intro: introMessage,
                     position: 'left'
                 },
             ] : []),

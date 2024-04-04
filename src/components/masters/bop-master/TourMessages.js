@@ -4,6 +4,7 @@ import { showBopLabel } from "../../../helper";
 export function Steps(t, config) {
     const showSendForApprovalButton = config?.showSendForApproval !== undefined && config?.showSendForApproval === true
     const introWithBOPDynamicValue = (intro) => intro.replace(/bop|BOP/gi, showBopLabel());
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
 
     return {
         BOP_DOMESTIC_FORM: [
@@ -27,10 +28,13 @@ export function Steps(t, config) {
                 element: "#AddBOPDomestic_BOPCategory_container",
                 intro: introWithBOPDynamicValue(t("bopDomesticForm.AddBOPDomestic_BOPCategory_container")),
             },
-            {
-                element: "#addBOPDomestic_categoryToggle",
-                intro: t("bopDomesticForm.addBOPDomestic_categoryToggle"),
-            },
+            ...config && config?.isEditFlag === false ? [
+                {
+                    element: "#addBOPDomestic_categoryToggle",
+                    intro: t("bopDomesticForm.addBOPDomestic_categoryToggle"),
+                }
+            ] : [],
+
             {
                 element: "#bop_part_number_form_zero_based",
                 intro: introWithBOPDynamicValue(t("bopDomesticForm.bop_part_number_form_zero_based")),
@@ -58,10 +62,13 @@ export function Steps(t, config) {
                     element: "#bop_vendor_name_form_zero_based",
                     intro: t("bopDomesticForm.bop_vendor_name_form_zero_based"),
                 },
-                {
-                    element: "#addBOPDomestic_vendorToggle",
-                    intro: t("bopDomesticForm.addBOPDomestic_vendorToggle"),
-                },
+                ...config && config?.isEditFlag === false ? [
+                    {
+                        element: "#addBOPDomestic_vendorToggle",
+                        intro: t("bopDomesticForm.addBOPDomestic_vendorToggle"),
+                    }
+                ] : [],
+
             ] : []),
             ...config && config.sourceField ? [{
                 element: "#AddBOPDomestic_Source",
@@ -105,7 +112,7 @@ export function Steps(t, config) {
             ...((showSendForApprovalButton === false) ? [
                 {
                     element: "#AddBOPDomestic_updateSave",
-                    intro: introWithBOPDynamicValue(t("bopDomesticForm.addBOPDomestic_save")),
+                    intro: introMessage,
                 },
             ] : []),
 
@@ -138,10 +145,11 @@ export function Steps(t, config) {
                 element: "#AddBOPImport_BOPCategory_container",
                 intro: introWithBOPDynamicValue(t("bopImportForm.AddBOPImport_BOPCategory_container")),
             },
-            {
-                element: "#addBOPDomestic_categoryToggle",
-                intro: t("bopImportForm.addBOPDomestic_categoryToggle"),
-            },
+            ...config && config?.isEditFlag === false ? [
+                {
+                    element: "#addBOPImport_categoryToggle",
+                    intro: t("bopImportForm.addBOPImport_categoryToggle"),
+                }] : [],
             {
                 element: "#AddBOPImport_BoughtOutPartNumber",
                 intro: introWithBOPDynamicValue(t("bopImportForm.AddBOPImport_BoughtOutPartNumber")),
@@ -170,10 +178,12 @@ export function Steps(t, config) {
                     element: "#AddBOPImport_BOPVendoreName",
                     intro: t("bopImportForm.AddBOPImport_BOPVendoreName"),
                 },
-                {
-                    element: "#addBOPDomestic_vendorToggle",
-                    intro: t("bopImportForm.addBOPDomestic_vendorToggle"),
-                },
+                ...config && config?.isEditFlag === false ? [
+                    {
+                        element: "#addBOPImport_vendorToggle",
+                        intro: t("bopImportForm.addBOPImport_vendorToggle"),
+                    },
+                ] : [],
             ] : []),
             ...config && config.sourceField ? [{
                 element: "#AddBOPImport_Source",
@@ -226,7 +236,7 @@ export function Steps(t, config) {
 
                 {
                     element: "#addBOPIMport_save",
-                    intro: introWithBOPDynamicValue(t("addBOPImport_save")),
+                    intro: introMessage
                 },
             ] : []),
             ...((showSendForApprovalButton === true) ? [
@@ -247,7 +257,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddBOPDomesticCategory_Save",
-                intro: t("bopDomesticCategoryForm.AddBOPDomesticCategory_Save"),
+                intro: introMessage,
             }
         ],
     }

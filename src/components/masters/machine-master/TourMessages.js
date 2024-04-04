@@ -2,6 +2,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 
 export function Steps(t, config) {
     const showSendForApprovalButton = config?.showSendForApproval !== undefined && config?.showSendForApproval === true
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
 
     return {
         ADD_MACHINE_RATE: [
@@ -63,17 +64,18 @@ export function Steps(t, config) {
                 element: "#AddMachineRate_EffectiveDate",
                 intro: t("addMachineRate.AddMachineRate_EffectiveDate"),
             },
-            {
+            ...config && config.isEditFlag === false ? [{
                 element: "#addMoreMachine_Details",
                 intro: t("addMachineRate.AddMoreMachine_Details"),
-            },
+            }] : [],
+
             {
                 element: "#AddMachineRate_ProcessName_container",
                 intro: t("addMachineRate.AddMachineRate_ProcessName_container"),
             },
             {
                 element: "#Add_Machine_Process",
-                intro: t("addMachineRate.AddMachineRate_ProcessName_container"),
+                intro: t("addMachineRate.Add_Machine_Process"),
             },
 
             {
@@ -95,11 +97,11 @@ export function Steps(t, config) {
 
             {
                 element: " #groupName_container",
-                intro: t("addMachineProcessGroup.groupName"),
+                intro: t("addMachineRate.GroupName"),
             },
             {
                 element: ".input-container #process_container",
-                intro: t("addMachineRate.process_container"),
+                intro: t("addMachineRate.Process_container"),
             },
             {
                 element: "#AddMoreDetails_Toggle",
@@ -135,7 +137,7 @@ export function Steps(t, config) {
             ...((showSendForApprovalButton === false) ? [
                 {
                     element: "#AddMachineRate_Save",
-                    intro: t("addMachineRate.AddMachineRate_Save"),
+                    intro: introMessage,
                 }
             ] : []),
         ],
@@ -414,7 +416,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddProcessDrawer_Save",
-                intro: t("addManageProcess.AddProcessDrawer_Save"),
+                intro: introMessage,
             },
 
         ]

@@ -975,10 +975,11 @@ class AddOperation extends Component {
                   <div className="col-md-6">
                     {!data.isCostingDrawer && <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
 
-                      {!data.isViewMode && <TourWrapper
+                      {!isViewMode && <TourWrapper
                         buttonSpecificProp={{ id: "Add_Operation_Form" }}
                         stepsSpecificProp={{
                           steps: Steps(t, {
+                            isEditFlag: isEditFlag,
                             showSendForApproval: !this.state.isFinalApprovar,
                             vendorField: costingTypeId === VBCTypeId, customerField: costingTypeId === CBCTypeId, plantField: (costingTypeId === ZBCTypeId || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure)
                           }).ADD_OPERATION

@@ -3,6 +3,9 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 
 export function Steps(t, config) {
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+    const showSendForApprovalButton = config?.showSendForApproval !== undefined && config?.showSendForApproval === true
+
     return {
         ADD_BUDGET: [
             {
@@ -34,7 +37,6 @@ export function Steps(t, config) {
                 element: ".input-container #clientName_container",
                 intro: t("budgetMater.customer_container"),
             },] : []),
-
 
             {
                 element: ".input-container #PartType_container",
@@ -69,10 +71,14 @@ export function Steps(t, config) {
                 element: "#AddBudget_Cancel",
                 intro: t("budgetMater.AddBudget_Cancel"),
             },
-            {
+            ...((showSendForApprovalButton === true) ? [{
+                element: "#AddBudget_SendForApproval",
+                intro: t("budgetMater.AddBudget_SendForApproval"),
+            }] : []),
+            ...((showSendForApprovalButton === false) ? [{
                 element: "#AddBudget_Save",
-                intro: t("budgetMater.AddBudget_Save"),
-            },
+                intro: introMessage,
+            }] : []),
         ],
     };
 }
