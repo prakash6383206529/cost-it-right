@@ -306,6 +306,7 @@ function RawMaterialCost(props) {
           ScrapRatePerScrapUOMConversion: rowData.ScrapRatePerScrapUOMConversion,
           Currency: rowData.Currency,
           UOMSymbol: rowData.UOMSymbol,
+          ScrapRecoveryPercentage: 100
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
@@ -429,7 +430,7 @@ function RawMaterialCost(props) {
       setTimeout(() => {
         setValue(`${rmGridFields}.${index}.GrossWeight`, '')
         setValue(`${rmGridFields}.${index}.FinishWeight`, '')
-        setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
+        setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 100)
 
       }, 300);
       let tempArr = []
@@ -483,7 +484,7 @@ function RawMaterialCost(props) {
 
       // Recovered scrap weight calculate
       let recoveredScrapWeight;
-      if (isScrapRecoveryPercentageApplied && tempData.ScrapRecoveryPercentage !== undefined && tempData.ScrapRecoveryPercentage !== 0) {
+      if (isScrapRecoveryPercentageApplied) {
         const ScrapRecoveryPercentage = checkForNull(tempData.ScrapRecoveryPercentage);
         recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
         scrapWeight = recoveredScrapWeight
@@ -641,7 +642,7 @@ function RawMaterialCost(props) {
 
       // Recovered scrap weight calculate
       let recoveredScrapWeight;
-      if (isScrapRecoveryPercentageApplied && tempData.ScrapRecoveryPercentage !== undefined && tempData.ScrapRecoveryPercentage !== 0) {
+      if (isScrapRecoveryPercentageApplied) {
         const ScrapRecoveryPercentage = checkForNull(tempData.ScrapRecoveryPercentage);
         recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
         scrapWeight = recoveredScrapWeight
@@ -704,7 +705,7 @@ function RawMaterialCost(props) {
     let tempData = gridData[index]
     setEditCalculation(false)
     setForgingInfoIcon({ ...forgingInfoIcon, [index]: true })
-    if (checkForNull(event.target.value) > 0) {
+    if (checkForNull(event.target.value) >= 0) {
       const ScrapRecoveryPercentage = checkForNull(event.target.value);
 
       const FinishWeight = checkForNull(tempData.FinishWeight);
