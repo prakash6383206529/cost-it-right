@@ -127,6 +127,7 @@ const CostingSummaryTable = (props) => {
   const [editButton, setEditButton] = useState(true)
   const [pieChartButton, setPieChartButton] = useState(false)
   const [viewBomButton, setViewBomButton] = useState(true)
+  const [isScrapRecoveryPercentageApplied, setIsScrapRecoveryPercentageApplied] = useState(false)
 
   const { viewCostingDetailData, viewRejectedCostingDetailData } = useSelector((state) => state.costing)
 
@@ -139,6 +140,10 @@ const CostingSummaryTable = (props) => {
 
 
   }, [viewCostingDetailData, viewRejectedCostingDetailData])
+
+  useEffect(() => {
+    setIsScrapRecoveryPercentageApplied((_.map(viewCostingData, 'IsScrapRecoveryPercentageApplied') || []).some(value => value === true));
+  }, [viewCostingData])
 
   const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
 
@@ -2354,7 +2359,7 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block small-grey-text">RM-Grade</span>
                                     <span className={highlighter("rmRate")}>RM Rate</span>
                                     <span className={highlighter("scrapRate")}>Scrap Rate</span>
-                                    <span className={highlighter("", "scrap-recovery")}>Scrap Recovery %</span>
+                                    {isScrapRecoveryPercentageApplied && <span className={highlighter("", "scrap-recovery")}>Scrap Recovery %</span>}
                                     <span className={highlighter("", "rm-reducer")}>Gross Weight</span>
                                     <span className={highlighter("", "finish-reducer")}>Finish Weight</span>
                                     {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
@@ -2375,9 +2380,9 @@ const CostingSummaryTable = (props) => {
                                           <span className={highlighter("scrapRate")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
                                           </span>
-                                          <span className={highlighter("scrapRate")}>
+                                          {isScrapRecoveryPercentageApplied && <span className={highlighter("scrapRate")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
-                                          </span>
+                                          </span>}
                                           <span className={highlighter("", "rm-reducer")}>
                                             {/* try with component */}
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && reducer(data?.netRMCostView))}>{(data?.netRMCostView && reducer(data?.netRMCostView))}</span> : '')}
