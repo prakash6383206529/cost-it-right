@@ -18,7 +18,10 @@ import { ZBCPLANT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { searchNocontentFilter } from '../../../helper';
+import { searchNocontentFilter, setLoremIpsum } from '../../../helper';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -29,6 +32,7 @@ const ZBCPlantListing = (props) => {
     const dispatch = useDispatch();
     const plantDataList = useSelector((state) => state.plant.plantDataList);
     const { AddAccessibility, DownloadAccessibility, EditAccessibility, DeleteAccessibility, ViewAccessibility, ActivateAccessibility } = props;
+    const { t } = useTranslation("common")
 
 
 
@@ -52,6 +56,8 @@ const ZBCPlantListing = (props) => {
         noData: false,
         dataCount: 0,
         type: '',
+        render: false,
+        showExtraData: false,
 
     });
 
@@ -131,13 +137,13 @@ const ZBCPlantListing = (props) => {
         return (
             <>
                 {ViewAccessibility && (
-                    <button title="View" className="View mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, true)} />
+                    <button title="View" className="View mr-2 Tour_List_View" type="button" onClick={() => viewOrEditItemDetails(cellValue, true)} />
                 )}
                 {EditAccessibility && (
-                    <button title="Edit" className="Edit mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, false)} />
+                    <button title="Edit" className="Edit mr-2 Tour_List_Edit" type="button" onClick={() => viewOrEditItemDetails(cellValue, false)} />
                 )}
                 {DeleteAccessibility && (
-                    <button title="Delete" className="Delete" type="button" onClick={() => deleteItem(cellValue)} />
+                    <button title="Delete" className="Delete Tour_List_Delete" type="button" onClick={() => deleteItem(cellValue)} />
                 )}
             </>
         );
@@ -171,7 +177,7 @@ const ZBCPlantListing = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         return (
-            <label htmlFor="normal-switch" className="normal-switch">
+            <label htmlFor="normal-switch" className="normal-switch Tour_List_Status">
                 <Switch
                     onChange={() => handleChange(cellValue, rowData)}
                     checked={cellValue}
@@ -188,7 +194,16 @@ const ZBCPlantListing = (props) => {
         );
     };
 
-
+    /**
+                   @method toggleExtraData
+                   @description Handle specific module tour state to display lorem data
+                  */
+    const toggleExtraData = (showTour) => {
+        setState((prevState) => ({ ...prevState, render: true }));
+        setTimeout(() => {
+            setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+        }, 100);
+    }
 
     /**
     * @method filterList
@@ -344,7 +359,7 @@ const ZBCPlantListing = (props) => {
                                 {AddAccessibility && (
                                     <button
                                         type="button"
-                                        className={"user-btn mr5"}
+                                        className={"user-btn mr5 Tour_List_Add"}
                                         onClick={formToggle}
                                         title="Add"
                                     >
@@ -354,7 +369,7 @@ const ZBCPlantListing = (props) => {
                                 {
                                     DownloadAccessibility &&
                                     <>
-                                        <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+                                        <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} ><div className="download mr-1"></div>
                                             {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}</button>}>
                                             {onBtExport()}
                                         </ExcelFile>
@@ -362,7 +377,7 @@ const ZBCPlantListing = (props) => {
                                     //   <button type="button" className={"user-btn mr5"} onClick={onBtExport}><div className={"download"} ></div>Download</button>
                                 }
 
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                <button type="button" className="user-btn Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                     <div className="refresh mr-0"></div>
                                 </button>
 
@@ -376,6 +391,13 @@ const ZBCPlantListing = (props) => {
             <div className={`ag-grid-wrapper height-width-wrapper ${(plantDataList && plantDataList?.length <= 0) || state.noData ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                    <TourWrapper
+                        buttonSpecificProp={{
+                            id: "ZBCPlant_listing_Tour", onClick: toggleExtraData
+                        }}
+                        stepsSpecificProp={{
+                            steps: Steps(t, { addLimit: false, filterButton: false, costMovementButton: false, bulkUpload: false, copyButton: false, viewBOM: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                        }} />
                 </div>
                 < div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
                     {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -385,7 +407,8 @@ const ZBCPlantListing = (props) => {
                             floatingFilter={true}
                             domLayout='autoHeight'
                             // columnDefs={c}
-                            rowData={plantDataList}
+                            rowData={state.showExtraData && plantDataList ? [...setLoremIpsum(plantDataList[0]), ...plantDataList] : plantDataList}
+
                             pagination={true}
                             paginationPageSize={defaultPageSize}
                             onGridReady={onGridReady}

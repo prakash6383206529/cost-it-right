@@ -36,7 +36,7 @@ function SAPPushDetail(props) {
     const plantLoaderObj = { isLoader: inputLoader }
 
     useEffect(() => {
-        dispatch(getPlantSelectListByType(ZBC, '', '', () => { }))
+        dispatch(getPlantSelectListByType(ZBC, 'MASTER', '', () => { }))
         if (isEditFlag) {
             dispatch(getSAPDetailById(id, res => {
                 if (res?.data?.Result) {

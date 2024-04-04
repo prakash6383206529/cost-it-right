@@ -10,7 +10,7 @@ import { VOLUME_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import AddVolume from "./AddVolume";
 import BulkUpload from "../../massUpload/BulkUpload";
 import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster, } from "../../../config/constants";
-import { checkPermission, searchNocontentFilter } from "../../../helper/util";
+import { checkPermission, searchNocontentFilter, setLoremIpsum } from "../../../helper/util";
 import LoaderCustom from "../../common/LoaderCustom";
 import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
@@ -19,7 +19,6 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import ScrollToTop from "../../common/ScrollToTop";
 import AddLimit from "./AddLimit";
-import { PaginationWrapper } from "../../common/commonPagination";
 import WarningMessage from "../../common/WarningMessage";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import _ from "lodash";
@@ -30,6 +29,12 @@ import { Drawer } from "@material-ui/core";
 import classnames from "classnames";
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from "../../common/CommonFunctions";
 import Button from "../../layout/Button";
+import PaginationControls from "../../common/Pagination/PaginationControls";
+import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
+import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber } from "../../common/Pagination/paginationAction";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -127,18 +132,19 @@ function VolumeListing(props) {
   const [limit, setLimit] = useState(false);
   const [dataCount, setDataCount] = useState(0);
   const [activeTab, setactiveTab] = useState("1");
+  const [showExtraData, setShowExtraData] = useState(false)
 
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [disableFilter, setDisableFilter] = useState(true); // STATE MADE FOR CHECKBOX SELECTION
   const [warningMessage, setWarningMessage] = useState(false);
-  const [globalTake, setGlobalTake] = useState(defaultPageSize);
+  // const [globalTake, setGlobalTake] = useState(defaultPageSize);
   const [filterModel, setFilterModel] = useState({});
-  const [pageNo, setPageNo] = useState(1);
-  const [pageNoNew, setPageNoNew] = useState(1);
+  // const [pageNo, setPageNo] = useState(1);
+  // const [pageNoNew, setPageNoNew] = useState(1);
   const [totalRecordCount, setTotalRecordCount] = useState(1);
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
-  const [currentRowIndex, setCurrentRowIndex] = useState(0);
-  const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false, });
+  // const [currentRowIndex, setCurrentRowIndex] = useState(0);
+  // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false, });
   const [floatingFilterData, setFloatingFilterData] = useState({
     CostingHead: "",
     Year: "",
@@ -159,13 +165,17 @@ function VolumeListing(props) {
   const [noData, setNoData] = useState(false);
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { volumeDataList, volumeDataListForDownload } = useSelector((state) => state.volume);
+  const { globalTakes } = useSelector((state) => state.pagination);
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const dispatch = useDispatch();
+  const { t } = useTranslation("Common");
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
     getTableListData(0, defaultPageSize, true);
-    return () => { dispatch(setSelectedRowForPagination([])); };
+    return () => {
+      dispatch(setSelectedRowForPagination([]));
+    };
   }, []);
 
   useEffect(() => {
@@ -174,6 +184,7 @@ function VolumeListing(props) {
     setTimeout(() => {
       setIsLoader(false);
     }, 200);
+
   }, [topAndLeftMenuData]);
 
   useEffect(() => {
@@ -181,7 +192,8 @@ function VolumeListing(props) {
       setTotalRecordCount(volumeDataList[0].TotalRecordCount);
     } else {
       setNoData(false);
-    }
+    } // eslint-disable-next-line
+
   }, [volumeDataList]);
 
   /**
@@ -228,7 +240,8 @@ function VolumeListing(props) {
       if (res) {
         if ((res && res.status === 204) || res.length === 0) {
           setTotalRecordCount(0);
-          setPageNo(0);
+          // setPageNo(0);
+          dispatch(updatePageNumber(0));
         }
         let isReset = true;
         setTimeout(() => {
@@ -252,7 +265,11 @@ function VolumeListing(props) {
     })
     );
   };
+  const toggleExtraData = (showTour) => {
+    setShowExtraData(showTour)
 
+
+  }
   /**
    * @method editItemDetails
    * @description confirm edit item
@@ -279,7 +296,7 @@ function VolumeListing(props) {
     dispatch(deleteVolume(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
-        getTableListData(0, globalTake, true);
+        getTableListData(0, globalTakes, true);
         gridApi.deselectAll();
         dispatch(setSelectedRowForPagination([]));
         setDataCount(0);
@@ -310,9 +327,9 @@ function VolumeListing(props) {
     obj.volumeBudgetedId = rowData.VolumeBudgetedId;
     return (
       <>
-        {editAccessibility && (<Button id={`volumeListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />
+        {editAccessibility && (<Button id={`volumeListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />
         )}
-        {deleteAccessibility && (<Button id={`volumeListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(obj)} title={"Delete"} />
+        {deleteAccessibility && (<Button id={`volumeListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(obj)} title={"Delete"} />
         )}
       </>
     );
@@ -334,7 +351,7 @@ function VolumeListing(props) {
     setBulkUploadBtn(false);
     if (type !== "cancel") {
       setTimeout(() => {
-        getTableListData(0, globalTake, true);
+        getTableListData(0, globalTakes, true);
       }, 200);
     }
   };
@@ -346,7 +363,7 @@ function VolumeListing(props) {
     setBulkUploadBtn(false);
     if (type !== "cancel") {
       setTimeout(() => {
-        getTableListData(0, globalTake, true);
+        getTableListData(0, globalTakes, true);
       }, 200);
     }
   };
@@ -427,38 +444,11 @@ function VolumeListing(props) {
     setShowVolumeForm(false);
     setData({ isEditFlag: false, ID: "" });
     setTimeout(() => {
-      if (type === "submit") getTableListData(0, globalTake, true);
+      if (type === "submit") getTableListData(0, globalTakes, true);
     }, 200);
   };
 
-  const onBtPrevious = () => {
-    if (currentRowIndex >= 10) {
-      setPageNo(pageNo - 1);
-      setPageNoNew(pageNo - 1);
-      const previousNo = currentRowIndex - 10;
-      getTableListData(previousNo, globalTake, true);
-      setCurrentRowIndex(previousNo);
-    }
-  };
 
-  const onBtNext = () => {
-    if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
-      return false;
-    }
-
-    if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
-      return false;
-    }
-
-    if (currentRowIndex < totalRecordCount - 10) {
-      setPageNo(pageNo + 1);
-      setPageNoNew(pageNo + 1);
-      const nextNo = currentRowIndex + 10;
-      getTableListData(nextNo, globalTake, true);
-      // skip, take, isPagination, floatingFilterData, (res)
-      setCurrentRowIndex(nextNo);
-    }
-  };
 
   const onGridReady = (params) => {
     setGridApi(params.api);
@@ -466,42 +456,17 @@ function VolumeListing(props) {
     params.api.paginationGoToPage(0);
   };
 
-  const onPageSizeChanged = (newPageSize) => {
-    if (Number(newPageSize) === 10) {
-      getTableListData(currentRowIndex, 10, true);
-      setPageSize((prevState) => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false, }));
-      setGlobalTake(10);
-      setPageNo(pageNoNew);
-    } else if (Number(newPageSize) === 50) {
-      getTableListData(currentRowIndex, 50, true);
-      setPageSize((prevState) => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false, }));
-      setGlobalTake(50);
-      setPageNo(pageNoNew);
-      if (pageNo >= Math.ceil(totalRecordCount / 50)) {
-        setPageNo(Math.ceil(totalRecordCount / 50));
-        getTableListData(0, 50, true);
-      }
-    } else if (Number(newPageSize) === 100) {
-      getTableListData(currentRowIndex, 100, true);
-      setPageSize((prevState) => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false, }));
-      setGlobalTake(100);
-      if (pageNo >= Math.ceil(totalRecordCount / 100)) {
-        setPageNo(Math.ceil(totalRecordCount / 100));
-        getTableListData(0, 100, true);
-      }
-    }
-
-    gridApi.paginationSetPageSize(Number(newPageSize));
-  };
 
   const onSearch = () => {
     setWarningMessage(false);
     setIsFilterButtonClicked(true);
-    setPageNo(1);
-    setPageNoNew(1);
-    setCurrentRowIndex(0);
+    dispatch(updatePageNumber(1));
+    updateCurrentRowIndex(0);
+    // setPageNo(1);
+    // setPageNoNew(1);
+    // setCurrentRowIndex(0);
     gridOptions?.columnApi?.resetColumnState();
-    getTableListData(0, globalTake, true);
+    getTableListData(0, globalTakes, true);
   };
 
   const onFloatingFilterChanged = (value) => {
@@ -570,13 +535,15 @@ function VolumeListing(props) {
 
     setFloatingFilterData(floatingFilterData);
     setWarningMessage(false);
-    setPageNo(1);
-    setPageNoNew(1);
-    setCurrentRowIndex(0);
+    dispatch(updateGlobalTake(10));
+    dispatch(resetStatePagination());
+    // setPageNo(1);
+    // setPageNoNew(1);
+    // setCurrentRowIndex(0);
     getTableListData(0, 10, true);
     dispatch(setSelectedRowForPagination([]));
-    setGlobalTake(10);
-    setPageSize((prevState) => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false, }));
+    // setGlobalTake(10);
+    // setPageSize((prevState) => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false, }));
     setDataCount(0);
   };
 
@@ -685,12 +652,12 @@ function VolumeListing(props) {
                       )}
                     </div>
 
-                    <Button id="volumeListing_filter" className={"user-btn mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
-                    <Button id="volumeListing_addLimit" type="button" className={"user-btn mr5"} onClick={limitHandler} buttonName={"Add Limit"} />
-                    {addAccessibility && (<Button id="volumeListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
-                    {bulkUploadAccessibility && (<Button id="volumeListing_bulkUpload" className={"user-btn mr5"} onClick={BulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />)}
+                    <Button id="volumeListing_filter" className={"user-btn mr5  Tour_List_Filter"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
+                    <Button id="volumeListing_addLimit" type="button" className={"user-btn mr5 Tour_List_Limit"} onClick={limitHandler} buttonName={"Add Limit"} />
+                    {addAccessibility && (<Button id="volumeListing_add" className={"user-btn mr5 Tour_List_Add"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
+                    {bulkUploadAccessibility && (<Button id="volumeListing_bulkUpload" className={"user-btn mr5  Tour_List_BulkUpload"} onClick={BulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />)}
 
-                    {downloadAccessibility && (<>                        <Button className="user-btn mr5" id={"volumeListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                    {downloadAccessibility && (<>                        <Button className="user-btn mr5 Tour_List_Download" id={"volumeListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                       icon={"download mr-1"}
                       buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                     />
@@ -700,7 +667,7 @@ function VolumeListing(props) {
                     </>
                     )}
 
-                    <Button id={"volumeListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                    <Button id={"volumeListing_refresh "} className={"Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
 
                   </div>
                 </Col>
@@ -713,6 +680,14 @@ function VolumeListing(props) {
             >
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+
+                <TourWrapper
+                  buttonSpecificProp={{ id: "Volume_Listing_Tour", onClick: toggleExtraData }}
+                  stepsSpecificProp={{
+                    steps: Steps(t,
+                      { viewButton: false, costMovementButton: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }
+                    ).COMMON_LISTING
+                  }} />
               </div>
               <div
                 className={`ag-theme-material ${isLoader && "max-loader-height"}`}
@@ -724,10 +699,11 @@ function VolumeListing(props) {
                   floatingFilter={true}
                   domLayout="autoHeight"
                   // columnDefs={c}
-                  rowData={volumeDataList}
+                  rowData={showExtraData ? [...setLoremIpsum(volumeDataList[0]), ...volumeDataList] : volumeDataList}
+
                   editable={true}
                   // pagination={true}
-                  paginationPageSize={globalTake}
+                  paginationPageSize={globalTakes}
                   onGridReady={onGridReady}
                   gridOptions={gridOptions}
                   noRowsOverlayComponent={"customNoRowsOverlay"}
@@ -753,32 +729,14 @@ function VolumeListing(props) {
                   <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"                  ></AgGridColumn>
                   {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}
                   <AgGridColumn field="ApprovedQuantity" headerName="Actual Quantity"                  ></AgGridColumn>
-                  <AgGridColumn field="VolumeId" width={120} cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+                  <AgGridColumn field="VolumeId" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                 </AgGridReact >
                 <div className="button-wrapper">
-                  {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                  {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="Volume" />
+                  }
                   {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && (
-                    <div className="d-flex pagination-button-container">
+                    <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="Volume" />
 
-                      <p><Button id="volumeListing_previous" variant="previous-btn" disabled={false} onClick={() => onBtPrevious()} /></p>
-
-                      {pageSize.pageSize10 && (<p className="next-page-pg custom-left-arrow">
-                        Page <span className="text-primary">{pageNo}</span> of{" "}
-                        {Math.ceil(totalRecordCount / 10)}
-                      </p>
-                      )}
-                      {pageSize.pageSize50 && (<p className="next-page-pg custom-left-arrow">
-                        Page <span className="text-primary">{pageNo}</span> of{" "}
-                        {Math.ceil(totalRecordCount / 50)}
-                      </p>
-                      )}
-                      {pageSize.pageSize100 && (<p className="next-page-pg custom-left-arrow">
-                        Page <span className="text-primary">{pageNo}</span> of{" "}
-                        {Math.ceil(totalRecordCount / 100)}
-                      </p>
-                      )}
-                      <p><Button id="volumeListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-                    </div>
                   )}
                 </div>
               </div >

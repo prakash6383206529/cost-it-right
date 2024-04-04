@@ -77,6 +77,7 @@ function ApprovalSummary(props) {
   const [costingIdArray, setCostingIdArray] = useState({})
   const [fgWise, setFgWise] = useState(false)
   const [accDisable, setAccDisable] = useState(false)
+  const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
 
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
@@ -147,6 +148,12 @@ function ApprovalSummary(props) {
         //   CostingIdList: [{ CostingId: "4a3dc510-ae1c-478a-969a-3fa7c1820d62" }, { CostingId: "2d49ced2-dc50-4e63-b2b9-ed74dd44fb24" }],
         //   BestCostId: "24f21230-003d-4c1d-92d2-5d4fb48de80e"
         // }
+        let wholeCostingData = res?.data?.Data?.Costings
+        setDataForFetchingAllApprover({
+          processId: approvalProcessId,
+          levelId: wholeCostingData[0].ApprovalLevelStep[ApprovalLevelStep.length - 1].LevelId,
+          mode: 'Costing'
+        })
         setisRFQ(BestCostAndShouldCostDetails?.BestCostId ? true : false)
         if (BestCostAndShouldCostDetails?.BestCostId) {
           let temp = []
@@ -210,7 +217,8 @@ function ApprovalSummary(props) {
           PartNumber: PartNumber,
           VendorCode: Data.VendorCode,
           VendorName: Data.VendorName,
-          Plant: Data.TypeOfCosting === 'VBC' ? Data.DestinationPlantCode : Data.PlantCode,
+          Plant: Data.DestinationPlantCode ?? '',
+          PlantId: Data.DestinationPlantId ?? EMPTY_GUID,
           DepartmentCode: DepartmentCode,
           NewPOPrice: Data.NewPOPrice,
           EffectiveDate: ApprovalDetails[0].EffectiveDate,
@@ -242,7 +250,8 @@ function ApprovalSummary(props) {
                 UserId: loggedInUserId(),
                 TechnologyId: technologyId,
                 Mode: 'costing',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+                plantId: Data.DestinationPlantId ?? EMPTY_GUID
               }
               dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
@@ -262,7 +271,8 @@ function ApprovalSummary(props) {
             UserId: loggedInUserId(),
             TechnologyId: technologyId,
             Mode: 'costing',
-            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
+            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+            plantId: Data.DestinationPlantId
           }
           dispatch(checkFinalUser(obj, res => {
             if (res && res.data && res.data.Result) {
@@ -504,7 +514,7 @@ function ApprovalSummary(props) {
               <Col md="8">
                 <div className="left-border">
                   {'Approval Workflow (Approval No. '}
-                  {`${approvalData.ApprovalNumber ? approvalData.ApprovalNumber : '-'}) :`}
+                  {`${approvalData.ApprovalNumber ? approvalData.ApprovalNumber : '-'}):`}
                 </div>
               </Col>
               <Col md="4" className="text-right">
@@ -520,7 +530,7 @@ function ApprovalSummary(props) {
               </Col>
             </Row>
             {/* Code for approval workflow */}
-            <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalData.ApprovalNumber} />
+            <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalData.ApprovalNumber} approverData={dataForFetchingAllApprover} />
 
             <Row>
               <Col md="12">
@@ -748,6 +758,7 @@ function ApprovalSummary(props) {
                   isVerifyImpactDrawer={false}
                   fgWiseAccDisable={fgWiseAccDisable}
                   tooltipEffectiveDate={partDetail.EffectiveDate ? DayTime(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
+                  isCosting={true}
                 />
               </Col>
             </Row>}

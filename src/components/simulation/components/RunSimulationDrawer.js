@@ -23,9 +23,14 @@ import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABIL
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import LoaderCustom from '../../common/LoaderCustom';
+import { fetchCostingHeadsAPI } from '../../../actions/Common';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { useTranslation } from 'react-i18next';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, date, simulationTechnologyId } = props
+    const { t } = useTranslation("Simulation")
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { register, control, formState: { errors }, handleSubmit, getValues, setValue } = useForm({
@@ -73,10 +78,18 @@ function RunSimulationDrawer(props) {
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const showCheckBox = !(simulationApplicability?.value === APPLICABILITY_PART_SIMULATION)
+    const [otherCostApplicabilityListing, setOtherCostApplicabilityListing] = useState([])
+    const [remainingApplicabilityListing, setRemainingApplicabilityListing] = useState([])
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
         // dispatch(getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, () => { }))
+        dispatch(fetchCostingHeadsAPI('', true, (res) => {
+            setOtherCostApplicabilityListing(res?.data?.SelectList)
+        }))
+        dispatch(fetchCostingHeadsAPI('', false, (res) => {
+            setRemainingApplicabilityListing(res?.data?.SelectList)
+        }))
 
     }, [])
 
@@ -130,7 +143,7 @@ function RunSimulationDrawer(props) {
         }
     }, [topAndLeftMenuData])
 
-    const costingHead = useSelector(state => state.comman.costingHead)
+    // const costingHead = useSelector(state => state.comman.costingHead)
     const { applicabilityHeadListSimulation } = useSelector(state => state.simulation)
     const toggleDrawer = (event, mode = false) => {
         if (runSimulationDisable) {
@@ -183,6 +196,7 @@ function RunSimulationDrawer(props) {
             setValue('OtherCostPercent', "")
             errors.OtherCostPercent = {}
             setOtherCostApplicability([])
+
         }
 
         if (elementObj.Text === "Additional Discount") {
@@ -498,12 +512,13 @@ function RunSimulationDrawer(props) {
     * @method renderListing
     * @description Used show listing of unit of measurement
     */
-    const renderListing = (label) => {
-
+    const renderListing = (label, type = '') => {
         const temp = [];
 
         if (label === 'Applicability') {
-            costingHead && costingHead.map(item => {
+            let resOfCostingHead = type === 'Additional Other Cost' ? otherCostApplicabilityListing : remainingApplicabilityListing
+
+            resOfCostingHead && resOfCostingHead.map(item => {
                 if (item.Value === '0' || item.Value === '8') return false;
                 if (Number(simulationTechnologyId) === ASSEMBLY_TECHNOLOGY_MASTER) {
                     if (!item.Text.includes('RM')) {
@@ -569,6 +584,11 @@ function RunSimulationDrawer(props) {
                                             <div className={"header-wrapper left"}>
                                                 <h3>
                                                     {"Apply Simulation Applicability"}
+                                                    <TourWrapper
+                                                        buttonSpecificProp={{ id: "Run_Simulation_Drawer" }}
+                                                        stepsSpecificProp={{
+                                                            steps: Steps(t).RunsimulationDrawer
+                                                        }} />
                                                 </h3>
                                             </div>
 
@@ -592,6 +612,7 @@ function RunSimulationDrawer(props) {
                                                             <Col md={`${showCheckBox ? '6' : '8'}`} className='mb-3 check-box-container p-0'>
                                                                 <div class={'custom-check1 d-inline-block drawer-side-input-other'} id={`afpplicability-checkbox_${i}`}>
                                                                     <label
+                                                                        id="simulation_checkbox"
                                                                         className="custom-checkbox mb-0"
                                                                         onChange={() => handleApplicabilityChange(el)}
                                                                     >
@@ -645,7 +666,7 @@ function RunSimulationDrawer(props) {
                                                                                             rules={{ required: false }}
                                                                                             register={register}
                                                                                             defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
-                                                                                            options={renderListing('Applicability')}
+                                                                                            options={renderListing('Applicability', el.Text)}
                                                                                             mandatory={true}
                                                                                             disabled={false}
                                                                                             customClassName={"auto-width"}
@@ -1235,6 +1256,7 @@ function RunSimulationDrawer(props) {
                                                     <Row>
                                                         <div className="input-group col-md-12 mb-3 px-0 m-height-auto" id={`applicability-checkbox_20`}>
                                                             <label
+                                                                id="costing_simulation"
                                                                 className="custom-checkbox mb-0"
                                                                 onChange={() => applyNPV(`NPV`)}
                                                             >

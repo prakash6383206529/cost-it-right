@@ -170,7 +170,7 @@ function AddBOPHandling(props) {
     }
 
     if (handlingChargesChange !== obj.BOPHandlingCharges) {
-      Toaster.success(`${showBopLabel()}  Handling charges saved successfully`)
+      Toaster.success(`${showBopLabel()} Handling charges saved successfully`)
     }
     props.setBOPCostWithAsssembly(obj, item)
     setTimeout(() => {
@@ -187,7 +187,7 @@ function AddBOPHandling(props) {
               <Row className="drawer-heading">
                 <Col className='pl-0'>
                   <div className={'header-wrapper left'}>
-                    <h3>{`Add ${showBopLabel()}  Handling Charge`}</h3>
+                    <h3>{`Add ${showBopLabel()} Handling Charge`}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
@@ -219,7 +219,7 @@ function AddBOPHandling(props) {
 
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={`${showBopLabel()}  Handling Type`}
+                        label={`${showBopLabel()} Handling Type`}
                         name={"BOPHandlingType"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -261,6 +261,7 @@ function AddBOPHandling(props) {
                           disabled={(CostingViewMode || IsLocked) ? true : false}
                         /> :
                         <TextFieldHookForm
+                          id="BOPHandlingPercentage"
                           label="Percentage"
                           name={"BOPHandlingPercentage"}
                           Controller={Controller}
@@ -311,6 +312,7 @@ function AddBOPHandling(props) {
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
                 <div className="col-sm-12 text-left bluefooter-butn">
                   <button
+                    id="AddBopHandlingCharge_Save"
                     type={'button'}
                     disabled={(CostingViewMode || IsLocked) ? true : false}
                     className="submit-button mr5 save-btn"
@@ -320,6 +322,7 @@ function AddBOPHandling(props) {
                   </button>
 
                   <button
+                    id="AddBopHandlingCharge_Cancel"
                     type={'button'}
                     className="reset mr15 cancel-btn"
                     onClick={props.closeDrawer} >

@@ -98,7 +98,7 @@ class AddOverhead extends Component {
       this.props.getRawMaterialNameChild(() => { })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
-    this.props.fetchCostingHeadsAPI('master', res => { });
+    this.props.fetchCostingHeadsAPI('master', false, res => { });
     if (!this.state.isViewMode) {
       this.props.fetchModelTypeAPI('--Model Types--', res => { });
     }
@@ -963,11 +963,11 @@ class AddOverhead extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Overhead Details
-                        <TourWrapper
-                          buttonSpecificProp={{ id: "Overhead_form" }}
+                        {!isViewMode && <TourWrapper
+                          buttonSpecificProp={{ id: "Add_Overhead_Form" }}
                           stepsSpecificProp={{
-                            steps: Steps(t).ADD_OVERHEADS_DETAILS
-                          }} />
+                            steps: Steps(t, { isEditFlag: isEditFlag, vendorField: (costingTypeId === VBCTypeId), customerField: (costingTypeId === CBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) }).ADD_OVERHEADS_DETAILS
+                          }} />}
                       </h1>
                     </div>
                   </div>
@@ -1093,6 +1093,7 @@ class AddOverhead extends Component {
                             <div className='p-relative vendor-loader'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
+                                id="AddOverhead_vendorName"
                                 name="vendorName"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
@@ -1278,7 +1279,7 @@ class AddOverhead extends Component {
                         {!isHideBOP && (
                           <Col md="3">
                             <Field
-                              label={`Overhead on ${showBopLabel()}  (%)`}
+                              label={`Overhead on ${showBopLabel()} (%)`}
                               name={"OverheadBOPPercentage"}
                               type="text"
                               placeholder={isBOP || isViewMode ? "-" : "Enter"}
@@ -1334,7 +1335,8 @@ class AddOverhead extends Component {
                             onChange={this.handleMessageChange}
                             component={renderTextAreaField}
                             validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
-                            maxLength="512"
+                            // maxLength="512"
+                            // maxLength="5000"
                             disabled={isViewMode}
                           />
                         </Col>

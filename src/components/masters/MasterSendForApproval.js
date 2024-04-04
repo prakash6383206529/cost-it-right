@@ -7,7 +7,7 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
-import { TextAreaHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../layout/HookFormInputs'
+import { TextAreaHookForm, SearchableSelectHookForm, TextFieldHookForm, AllApprovalField, } from '../layout/HookFormInputs'
 import Toaster from '../common/Toaster';
 import { getReasonSelectList } from '../costing/actions/Approval';
 import DayTime from '../common/DayTimeWrapper'
@@ -32,6 +32,7 @@ function MasterSendForApproval(props) {
 
 
     const [approvalDropDown, setApprovalDropDown] = useState([])
+    const [approverIdList, setApproverIdList] = useState([])
     const [isDisable, setIsDisable] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
 
@@ -63,15 +64,15 @@ function MasterSendForApproval(props) {
             const departObj = Data && Data.filter(item => item.Value === userDetails().DepartmentId)
 
             setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
-
+            let approverIdListTemp = []
             let obj = {
                 LoggedInUserId: loggedInUserId(),
                 DepartmentId: departObj && departObj[0]?.Value,
                 MasterId: masterId,
                 ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
-                ReasonId: reasonId
+                ReasonId: reasonId,
+                PlantId: approvalObj ? approvalObj.Plant[0].PlantId : props.masterPlantId
             }
-
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
                 const Data = res.data.DataList[1] ? res.data.DataList[1] : []
                 if (Data?.length !== 0) {
@@ -87,9 +88,11 @@ function MasterSendForApproval(props) {
                                 levelId: item.LevelId,
                                 levelName: item.LevelName
                             })
+                            approverIdListTemp.push(item.Value)
                             return null
                         })
                     setApprovalDropDown(tempDropdownList)
+                    setApproverIdList(approverIdListTemp)
                 }
             },),)
         }))
@@ -128,12 +131,14 @@ function MasterSendForApproval(props) {
     const handleDepartmentChange = (value) => {
         setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
         let tempDropdownList = []
+        let approverIdListTemp = []
         let obj = {
             LoggedInUserId: loggedInUserId(), // user id
             DepartmentId: value.value,
             MasterId: masterId,
             ReasonId: '',
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
+            PlantId: approvalObj.PlantId
         }
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -149,9 +154,11 @@ function MasterSendForApproval(props) {
                             levelId: item.LevelId,
                             levelName: item.LevelName
                         })
+                        approverIdListTemp.push(item.Value)
                         return null
                     })
                 setApprovalDropDown(tempDropdownList)
+                setApproverIdList(approverIdListTemp)
             }
         }),
         )
@@ -177,7 +184,8 @@ function MasterSendForApproval(props) {
             senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
             senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
-            senderObj.ApproverId = approver && approver.value ? approver.value : ''
+            // senderObj.ApproverId = approver && approver.value ? approver.value : ''
+            senderObj.ApproverIdList = approverIdList
             senderObj.SenderLevelId = levelDetails?.LevelId
             senderObj.SenderId = loggedInUserId()
             senderObj.SenderLevel = levelDetails?.Level
@@ -243,7 +251,7 @@ function MasterSendForApproval(props) {
                         setIsDisable(false)
                         setIsLoader(false)
                         if (res?.data?.Result) {
-                            Toaster.success(`${showBopLabel()}  has been sent for approval.`)
+                            Toaster.success(`${showBopLabel()} has been sent for approval.`)
                             props.closeDrawer('', 'submit')
                         }
                     }))
@@ -402,7 +410,8 @@ function MasterSendForApproval(props) {
             obj.SenderLevel = levelDetails.Level
             obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
             obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
-            obj.ApproverId = approver && approver.value ? approver.value : ''
+            // obj.ApproverId = approver && approver.value ? approver.value : ''
+            obj.ApproverIdList = approverIdList
             obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
             obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             obj.Remark = remark
@@ -630,7 +639,7 @@ function MasterSendForApproval(props) {
             <>
                 <Col md="6">
                     <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Cut Off Price", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                        label={labelWithUOMAndCurrency("Cut Off Price ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                         name={"cutOffPrice"}
                         type="text"
                         Controller={Controller}
@@ -648,7 +657,7 @@ function MasterSendForApproval(props) {
                 {props?.IsImportEntry && <Col md="6">
                     <TooltipCustom id="rm-cut-off-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextCutOffBaseCurrency} />
                     <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Cut Off Price", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                        label={labelWithUOMAndCurrency("Cut Off Price ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                         name={"cutOffPriceBase"}
                         type="text"
                         Controller={Controller}
@@ -668,7 +677,7 @@ function MasterSendForApproval(props) {
 
                 <Col md="6">
                     <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                        label={labelWithUOMAndCurrency("Basic Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                         name={"BasicRateCurrency"}
                         type="text"
                         Controller={Controller}
@@ -685,7 +694,7 @@ function MasterSendForApproval(props) {
                 {props?.IsImportEntry && <Col md="6">
                     <TooltipCustom id="rm-basic-rate-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextBasicRateBaseCurrency} />
                     <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                        label={labelWithUOMAndCurrency("Basic Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                         name={"BasicRateBase"}
                         type="text"
                         Controller={Controller}
@@ -793,7 +802,7 @@ function MasterSendForApproval(props) {
                         <Col md="6">
                             <TooltipCustom id="rm-scrap-rate-selected-currency" tooltipText={props?.toolTipTextObject?.toolTipTextScrapCostBaseCurrencyPerOldUOM} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"ScrapRateCurrency"}
                                 type="text"
                                 Controller={Controller}
@@ -810,7 +819,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-scrap-rate-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"ScrapRateBase"}
                                 type="text"
                                 Controller={Controller}
@@ -830,7 +839,7 @@ function MasterSendForApproval(props) {
                         <Col md="6">
                             <TooltipCustom id="rm-forging-scrap-selected-currency" tooltipText={props?.toolTipTextObject?.toolTipTextForgingScrapCostSelectedCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Forging Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Forging Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"ForgingScrap"}
                                 type="text"
                                 Controller={Controller}
@@ -847,7 +856,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6" className=" mb-3">
                             <TooltipCustom id="rm-forging-scrap-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextForgingScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Forging Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Forging Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"ForgingScrapBase"}
                                 type="text"
                                 Controller={Controller}
@@ -866,7 +875,7 @@ function MasterSendForApproval(props) {
 
                         <Col md="6">
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Machining Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Machining Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"MachiningScrap"}
                                 type="text"
                                 Controller={Controller}
@@ -883,7 +892,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-machining-scrap-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextMachiningScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Machining Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Machining Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"MachiningScrapBase"}
                                 type="text"
                                 Controller={Controller}
@@ -904,7 +913,7 @@ function MasterSendForApproval(props) {
                         <Col md="6">
                             <TooltipCustom id="jali-scrap-cost-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Jali Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Jali Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"JaliScrapCost"}
                                 type="text"
                                 Controller={Controller}
@@ -921,7 +930,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-jali-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextJaliScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Jali Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Jali Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"JaliScrapCostBase"}
                                 type="text"
                                 Controller={Controller}
@@ -940,7 +949,7 @@ function MasterSendForApproval(props) {
 
                         <Col md="6">
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Circle Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Circle Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"CircleScrapCost"}
                                 type="text"
                                 Controller={Controller}
@@ -957,7 +966,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-circle-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextCircleScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Circle Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Circle Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"CircleScrapCostBase"}
                                 type="text"
                                 Controller={Controller}
@@ -978,7 +987,7 @@ function MasterSendForApproval(props) {
 
                         <Col md="6">
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Freight Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"FreightChargeCuurency"}
                                 type="text"
                                 Controller={Controller}
@@ -995,7 +1004,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-freight-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextFreightCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Freight Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"FreightChargeBase"}
                                 type="text"
                                 Controller={Controller}
@@ -1014,7 +1023,7 @@ function MasterSendForApproval(props) {
 
                         <Col md="6">
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Shearing Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"ShearingCost"}
                                 type="text"
                                 Controller={Controller}
@@ -1031,7 +1040,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-shearing-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextShearingCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Shearing Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"ShearingCostBase"}
                                 type="text"
                                 Controller={Controller}
@@ -1198,24 +1207,31 @@ function MasterSendForApproval(props) {
                                                 mandatory={false}
                                                 handleChange={handleDepartmentChange}
                                                 errors={errors.dept}
-                                                disabled={false}
+                                                disabled={initialConfiguration.IsMultipleUserAllowForApproval}
                                             />
                                         </div>
                                         <div className="input-group form-group col-md-12 input-withouticon">
-                                            <SearchableSelectHookForm
-                                                label={'Approver'}
-                                                name={'approver'}
-                                                placeholder={'Select'}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                options={approvalDropDown}
-                                                mandatory={true}
-                                                handleChange={() => { }}
-                                                disabled={false}
-                                                errors={errors.approver}
-                                            />
+                                            {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                                                <AllApprovalField
+                                                    label="Approver"
+                                                    approverList={approvalDropDown}
+                                                    popupButton="View all"
+                                                />
+                                            </> :
+                                                <SearchableSelectHookForm
+                                                    label={'Approver'}
+                                                    name={'approver'}
+                                                    placeholder={'Select'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    options={approvalDropDown}
+                                                    mandatory={true}
+                                                    handleChange={() => { }}
+                                                    disabled={false}
+                                                    errors={errors.approver}
+                                                />}
                                         </div>
                                     </>
                                 )}

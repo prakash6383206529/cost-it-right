@@ -59,7 +59,7 @@ class AddProfit extends Component {
       isCC: false,
       isBOP: false,
       isProfitPercent: false,
-
+      IsFinancialDataChanged: true,
       isHideProfit: false,
       isHideRM: false,
       isHideCC: false,
@@ -99,7 +99,7 @@ class AddProfit extends Component {
       this.props.getRawMaterialNameChild(() => { })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
-    this.props.fetchCostingHeadsAPI('master', res => { });
+    this.props.fetchCostingHeadsAPI('master', false, res => { });
     if (!this.state.isViewMode) {
       this.props.fetchModelTypeAPI('--Model Types--', res => { });
     }
@@ -973,11 +973,12 @@ class AddProfit extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <h1> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Profit Details
-                        <TourWrapper
-                          buttonSpecificProp={{ id: "add_profit_form" }}
+                        {!isViewMode && <TourWrapper
+                          buttonSpecificProp={{ id: "Add_Profit_Form" }}
                           stepsSpecificProp={{
-                            steps: Steps(t).ADD_PROFIT_DETAILS
-                          }} />
+                            steps: Steps(t,
+                              { isEditFlag: isEditFlag, vendorField: (costingTypeId === VBCTypeId), customerField: (costingTypeId === CBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) }).ADD_PROFIT_DETAILS
+                          }} />}
                       </h1>
                     </div>
                   </div>
@@ -1103,6 +1104,7 @@ class AddProfit extends Component {
                             <div className='p-relative vendor-loader'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
+                                id="addProfit_vendorContainer"
                                 name="vendorName"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
@@ -1291,7 +1293,7 @@ class AddProfit extends Component {
                         {!isHideBOP && (
                           <Col md="3">
                             <Field
-                              label={`Profit on ${showBopLabel()}  (%)`}
+                              label={`Profit on ${showBopLabel()} (%)`}
                               name={"ProfitBOPPercentage"}
                               type="text"
                               placeholder={isBOP || isViewMode ? "-" : "Enter"}
@@ -1346,9 +1348,10 @@ class AddProfit extends Component {
                             customClassName=" textAreaWithBorder"
                             onChange={this.handleMessageChange}
                             validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
-                            //required={true}
+                            required={true}
                             component={renderTextAreaField}
-                            maxLength="512"
+                            // maxLength="512"
+                            // maxLength="5000"
                             disabled={isViewMode}
                           />
                         </Col>

@@ -16,6 +16,10 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import HeaderTitle from '../../common/HeaderTitle';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
+
 const selector = formValueSelector('AddClientDrawer');
 
 
@@ -461,7 +465,7 @@ class AddClientDrawer extends Component {
      * @description Renders the component
      */
     render() {
-        const { handleSubmit, isEditFlag, } = this.props;
+        const { handleSubmit, isEditFlag, t } = this.props;
         const { country, isViewMode, setDisable, isDisableCode } = this.state;
         return (
             <div>
@@ -479,7 +483,13 @@ class AddClientDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Customer</h3>
+                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Customer
+                                                {!isViewMode && <TourWrapper
+                                                    buttonSpecificProp={{ id: "Add_Customer_Form" }}
+                                                    stepsSpecificProp={{
+                                                        steps: Steps(t, { isEditFlag: isEditFlag }).ADD_CLIENT
+                                                    }} />}
+                                            </h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e, 'cancel')}
@@ -535,6 +545,7 @@ class AddClientDrawer extends Component {
                                     </Col>
                                     <Col md="6">
                                         <Field
+                                            id="AddClientDrawer_ClientEmailId"
                                             name="ClientEmailId"
                                             label="Email Id"
                                             component={renderEmailInputField}
@@ -912,6 +923,7 @@ class AddClientDrawer extends Component {
                                         <div className="">
                                             <button
                                                 type={'button'}
+                                                id="addClient_Cancel"
                                                 className="mr15 cancel-btn"
                                                 onClick={this.cancelHandler}
                                                 disabled={setDisable}
@@ -919,6 +931,7 @@ class AddClientDrawer extends Component {
                                                 <div className={'cancel-icon'}></div> {'Cancel'}
                                             </button>
                                             {!isViewMode && <button
+                                                id="addClient_Save"
                                                 type="submit"
                                                 disabled={isViewMode || setDisable}
                                                 className="user-btn save-btn" >
@@ -986,4 +999,4 @@ export default connect(mapStateToProps, {
     form: 'AddClientDrawer',
     enableReinitialize: true,
     touchOnChange: true
-})(AddClientDrawer));
+})(withTranslation(['Client'])(AddClientDrawer)))

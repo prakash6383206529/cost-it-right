@@ -24,6 +24,7 @@ class App extends Component {
     this.props.getLoginPageInit(res => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
+
         reactLocalStorage.setObject('InitialConfiguration', Data)
         let BOPLabel = Data.BOPLabel
         reactLocalStorage.setObject('BOPLabel', BOPLabel)

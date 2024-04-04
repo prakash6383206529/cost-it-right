@@ -1,6 +1,17 @@
-export function Steps(t) {
-        return {
+export function Steps(t, config) {
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+
+    return {
         ADD_ASSEMBLY_PART: [
+            ...config && config.isEditFlag === false ? [{
+                element: "#AddAssemblyPart_Switch",
+                intro: t("addAssemblyPart.AddAssemblyPart_Switch"),
+            }] : [],
+
+            ...(config && config.partField ? [{
+                element: "#AddAssemblyPart_PartNumber",
+                intro: t("addAssemblyPart.AddAssemblyPart_PartNumber"),
+            },] : []),
             {
                 element: "#AddAssemblyPart_BOMNumber",
                 intro: t("addAssemblyPart.AddAssemblyPart_BOMNumber"),
@@ -42,6 +53,10 @@ export function Steps(t) {
                 intro: t("addAssemblyPart.AddAssemblyPart_EffectiveDate"),
             },
             {
+                element: "#AssemblyPart_Add_BOM",
+                intro: t("addAssemblyPart.AssemblyPart_Add_BOM"),
+            },
+            {
                 element: "#AddAssemblyPart_Remark",
                 intro: t("addAssemblyPart.AddAssemblyPart_Remark"),
             },
@@ -55,7 +70,7 @@ export function Steps(t) {
             },
             {
                 element: "#AddAssemblyPart_Save",
-                intro: t("addAssemblyPart.AddAssemblyPart_Save"),
+                intro: introMessage,
                 position: 'left'
             },
         ],
@@ -110,7 +125,7 @@ export function Steps(t) {
             },
             {
                 element: "#AddIndivisualPart_Save",
-                intro: t("addComponentPart.AddIndivisualPart_Save"),
+                intro: introMessage,
                 position: 'left'
             },
         ],
@@ -148,6 +163,11 @@ export function Steps(t) {
                 intro: t("addProductPart.AddIndivisualPart_EffectiveDate"),
             },
             {
+                element: "#AddIndivisualProduct_isImpactCalculation",
+                intro: t("addProductPart.AddIndivisualPart_IsImpactCalculation_container"),
+            },
+
+            {
                 element: "#AddIndivisualPart_Remark",
                 intro: t("addProductPart.AddIndivisualPart_Remark"),
             },
@@ -161,7 +181,7 @@ export function Steps(t) {
             },
             {
                 element: "#AddIndivisualPart_Save",
-                intro: t("addProductPart.AddIndivisualPart_Save"),
+                intro: introMessage,
                 position: 'left'
             },
 

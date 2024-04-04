@@ -157,7 +157,7 @@ export const MESSAGES = {
   UPDATE_BOP_SUCESS: `${showBopLabel()} updated successfully`,
   BOP_DELETE_ALERT: `Are you sure you want to delete this ${showBopLabel()}?`,
   BOP_DELETE_SUCCESS: `${showBopLabel()} deleted successfully`,
-  BOP_BREAKUP_WARNING: `${showBopLabel()} with breakup will be visible in Approval Status tab until that ${showBopLabel()}'s costing is approved.`,
+  BOP_BREAKUP_WARNING: `${showBopLabel()} with breakup will be visible in Approval Status tab until it's costing is approved.`,
 
   //FUEL & POWER MASTER
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
@@ -350,7 +350,7 @@ export const MESSAGES = {
   RMCC_TAB_COSTING_SAVE_SUCCESS: `RM CC ${showBopLabel()} Cost saved successfully.`,
   RMCC_TAB_COSTING_SAVE_SUCCESS_IS_BOP_BREAKUP: 'RM CC Cost saved successfully.',
   COSTING_DELETE_ALERT: 'Are you sure you want to delete costing?',
-  SIMULATION_TOOLCOST_POPUP_MESSAGE: 'Overhead and Profit will not get change if tool cost is included in overhead and profit in a costing. Do you wish to continue?',
+  SIMULATION_TOOLCOST_POPUP_MESSAGE: 'ICC,Overhead and Profit will not get change if tool cost are included in them, respectively, in the costing. Do you wish to continue?',
 
   //RFQ
   RFQ_ADD_SUCCESS: 'RFQ details added successfully',

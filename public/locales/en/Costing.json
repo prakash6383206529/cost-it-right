@@ -1,18 +1,49 @@
 {
     "costingInitial": {
-        "Technology": "Select the Technology",
-        "PartType": "Choose Part Type, once you select technology you will be able to choose part type",
-        "Part": "Choose Part, Once you choose part type you will be able to choose part",
-        "clear": "If you want to clear form you can clear from here"
+        "Technology": "Choose technology from here.",
+        "PartType": "Choose Part Type, once you select technology you will be able to choose part type.",
+        "Part": "Select Part no./Assembly no. here. Currently disabled; it will be enabled after selecting the Technology.",
+        "clear": "Clear selected data here if incorrect."
+    },
+    "costingSummary": {
+        "downloadExcel": "Click here to download the entire data in Excel format. Alternatively, select specific checkboxes to download only the chosen data in Excel format.",
+        "costingDetailedPdf": "Download the detailed costing in PDF format, it will be in tabular form.",
+        "costingDownloadPdf": "Download the costing as PDF from here.",
+        "sendForApproval": "Costing can be sent for approval only if the costing status is in draft.",
+        "addToComparison": "Compare this costing to other costings and Add the Vendor, Plant, and Costing version from the drawer.",
+        "viewBOM": "View the BOM data from here.",
+        "edit": "By clicking here, you can Edit this costing again.",
+        "view": "View the whole data in form.",
+        "add": "Click here to create a New Costing and start the process.",
+        "discard": "Discard the costings you've compared from here.",
+        "changeVersion": "Change the costing version and edit the costing from here.",
+        "viewPieChart": "View the pie chart from here.",
+        "viewRMCost": "View detailed Raw Material Cost from here.",
+        "viewMultipleTechnology": "View detailed Multiple Technology Cost from here.",
+        "viewBOPCost": "View the detailed BOP from here.",
+        "viewConversionCost": "View detailed conversion cost data here.",
+        "viewSurfaceTreatmentCost": "View detailed surface treatment cost data here.",
+        "viewOverheadProfitCost": "View detailed overhead, profit, ICC, and rejection data here.",
+        "viewPackagingFreightCost": "View detailed packaging, freight and rejection data here.",
+        "viewToolCost": "View detailed tool cost data here.",
+        "viewOtherCost": "View detailed Quoted Cost from here.",
+        "costingNotDone": "Costing for this part/assembly has not yet been done. Please select another part."
+    },
+    "costingStepTwo": {
+        "zbc": "Add Zero-Based Costing from here.",
+        "ncc": "Add New Component Costing from here.",
+        "vbc": "Add Vendor-Based Costing from here.",
+        "cbc": "Add Customer-Based Costing from here."
     },
     "vendorCreateCosting": {
-        "editSob": "You can edit SOB here",
-        "version": "If already costing done then you can select your version and edit costing",
-        "createCosting": "Create new Costing",
-        "viewCosting": "View Costing",
-        "editCosting": "Edit Costing",
-        "deleteCosting": "Delete Costing",
-        "discard": "If you want to remove this plant and vendor from list you can remove it from here"
+        "editSob": "You can edit SOB here.",
+        "version": "Here you can see all the version of created costings.",
+        "createCosting": "Click here to create new costing version.",
+        "viewCosting": "View your costings from here.",
+        "editCosting": "Edit your costings from here.",
+        "deleteCosting": "Delete this costing version from here.",
+        "copyCosting": "Copy this costing version from here.",
+        "discard": "Remove the added data from here."
     },
     "costingTabs": {
         "effectiveDate": "Choose the effective date before the create costing",
@@ -33,38 +64,39 @@
         "AddBOP": "Here you can add your BOPs",
         "AddProcess": "Here you can add your Processes",
         "AddOperation": "Here you can add your Operations",
-        "AddOtherOperation": "Here you can add your Other Operation"
+        "AddOtherOperation": "Here you can add your Other Operation",
+        "AddBOPHandlingCharge": "Here you can add your BOP Handling Charge",
+        "EditAssemblyCosting": "You can edit the Assembly costing.",
+        "AssemblyAddOperation": "Add operation for assembly here, and the same applies to sub-assembly as well.",
+        "PartLocked": "Child parts costing are coming from individual costing, please edit there if want to change costing."
     },
     "addSTCost": {
-        "addSt": "Add Surface select from drawer grid"
-    },
-    "addSTCost": {
-        "addSt": "Add Surface select from drawer grid"
+        "addSt": "Add a surface by clicking this button."
     },
     "OverheadProfitTab": {
-        "checkBox1": "if you want to Include Surface Treatment Cost in CC for Overhead and Profit,click on the checkbox",
-        "checkBox2": "if you want to Include Surface Treatment Cost in CC for Rejection,click on the checkbox",
-        "checkBox3": "if you want to Include Tool cost in CC for Overhead and Profit,click on the checkbox",
-        "checkBox4": "if you want to Include Overhead & Profit in ICC,click on the checkbox",
-        "modelType": "Select the model type, basis of the madoel type you will see the overhead and profit data below table",
-        "RejectionApplicability": "Select the applicability",
-        "RejectionPercentage": "Enter the Rejection Percentage",
-        "rejectionRemark": "Add specific remarks",
-        "iccCost": "If you want to add icc cost, please switch the toggle you will see the input fields",
-        "paymentTermCost": "If you want to add Payment Term cost, please switch the toggle you will see the input fields",
-        "refreshButton": "After filled the all data, please refresh for update cost",
-        "overheadCost": "You can see the total cost here",
-        "saveOverheadCost": "After filled data and verify data, don't forget to save data"
+        "checkBox1": "If you want to include Surface Treatment Cost in CC for Overhead and Profit, click on the checkbox.",
+        "checkBox2": "If you want to include Surface Treatment Cost in CC for Rejection, click on the checkbox.",
+        "checkBox3": "If you want to include Tool cost in CC for Overhead and Profit, click on the checkbox.",
+        "checkBox4": "If you want to include Overhead & Profit in ICC, click on the checkbox.",
+        "modelType": "Select the model type. Based on the model type, you will see the overhead and profit data below the table.",
+        "RejectionApplicability": "Select the applicability.",
+        "RejectionPercentage": "Enter the Rejection Percentage.",
+        "rejectionRemark": "Add specific remarks.",
+        "iccCost": "If you wish to add ICC cost, please click the button.",
+        "paymentTermCost": "To add Payment Term cost, click the button to reveal the input fields.",
+        "refreshButton": "After filling all the data, please refresh to update the cost.",
+        "overheadCost": "You can see the total cost here.",
+        "saveOverheadCost": "After filling and verifying the data."
     },
     "PackagingFreightTab": {
-        "AddPackaging": "Add Packaging cost from here ",
-        "AddFreight": "Add Freight cost from here"
+        "AddPackaging": "Add packaging cost from here. ",
+        "AddFreight": "Add freight cost from here."
     },
     "ToolTab": {
-        "switch": "You can swtich the process from here",
-        "MaintananceCostApplicability": "You can choose applicability",
-        "toolMaintainanceApplicability": "You can choose applicability",
-        "maintanencePercentage": "Enter the percentage here",
+        "switch": "You can swtich the process from here.",
+        "MaintananceCostApplicability": "You can choose applicability.",
+        "toolMaintainanceApplicability": "You can choose applicability.",
+        "maintanencePercentage": "Enter the percentage here.",
         "ToolCost": "Enter the tool cost"
     },
     "DiscountTab": {
@@ -77,30 +109,90 @@
         "refreshData": "After the added other cost and condition cost from drawers, please refresh to see the updated total cost.",
         "changeCurrency": "Clicking on the checkbox, you will see the two field one is currency change dropdown and other one is converted cost.",
         "remark": "Add Remarks here.",
-        "attachment": "Add attachments here",
-        "saveData": "please save the data before leave the section",
-        "nextData": "from here, you will go to summary drawer and data will save"
+        "attachment": "Add attachments here.",
+        "saveData": "Please save the data before leave the section.",
+        "nextData": "From here, you will go to summary drawer and data will save."
     },
     "RawMaterialCost": {
-        "calculator": "Add finish weight and gross weight using this calculator",
+        "calculator": "Add finish weight and gross weight using this calculator.",
         "grossWeight": "Add gross weight here.",
         "finishWeight": "Add finish weight here.",
-        "delete": "You can delete the RM from here",
-        "remark": "You can add remarks or note here"
+        "delete": "You can delete the RM from here.",
+        "remark": "You can add remarks or note here."
     },
     "BopCost": {
-        "edit": "You can edit the BOP from here",
-        "delete": "You can delete the BOP from here",
-        "bopHanlding": "You can add your BOP handling charge from here"
+        "edit": "You can edit the BOP from here.",
+        "delete": "You can delete the BOP from here.",
+        "bopHandling": "You can add your BOP handling charge from here."
     },
     "processCost": {
-        "calculator": "You can fill data from calculator for process cost",
-        "delete": "You can delete the process from here",
+        "calculator": "You can fill data from calculator for process cost.",
+        "delete": "You can delete the process from here.",
         "remark": "You can add remarks or notes from here.S"
     },
     "operationCost": {
-        "edit": "You can edit the operation from here",
-        "delete": "You can delete the operation from here",
+        "edit": "You can edit the operation from here.",
+        "delete": "You can delete the operation from here.",
         "remark": "You can add remarks or notes from here."
+    },
+    "BopCostHandlingCharge": {
+        "bop_Cost": "View BOP cost from here.",
+        "bop_Handling_Type": "Select the BOP handling type.",
+        "percentage": "Enter the percentage.",
+        "handling_Charges": "View handling charges from here.",
+        "save": "Click here to save.",
+        "cancel": "Click here to reset the form and go back to the page."
+    },
+    "AddAssemblyOperation": {
+        "add_operation": "Add operation from here.",
+        "save": "Click here to save.",
+        "cancel": "Click here to reset the form and go back to the page."
+    },
+    "AddAssemblyProcess": {
+        "add_process": "Add process from here.",
+        "save": "Click here to save.",
+        "cancel": "Click here to reset the form and go back to the page."
+    },
+    "AddSurfaceTreatment": {
+        "add_Surface_Treatment": "Add surface treatment from here.",
+        "save": "Click here to save.",
+        "cancel": "Click here to reset the form and go back to the page."
+    },
+    "AddPackaging": {
+        "package_Description": "Enter the package description.",
+        "applicability": "Choose the applicability.",
+        "percentage": "Enter the percentage.",
+        "package_Cost": "View package cost from here.",
+        "save": "Click here to save.",
+        "cancel": "Click here to reset the form and go back to the page."
+    },
+    "AddFreight": {
+        "full_Truck_Load": "Select the full truck load.",
+        "part_Truck_Load": "Select the part truck load.",
+        "fixed": "Select the fixed.",
+        "percentage": "Select the percentage.",
+        "rate_Criteria": "Select the rate criteria.",
+        "rate": "View rate from here.",
+        "cost": "View cost from here.",
+        "save": "Click here to save.",
+        "cancel": "Click here to reset the form and go back to the page."
+    },
+    "CostingComparison": {
+        "vendor_code": "Select the vendor code from the dropdown.",
+        "plant_code": "Select the plant code from the dropdown.",
+        "add": "Click here to add.",
+        "cancel": "Click here to reset the form and go back to the page."
+    },
+    "costingApproval": {
+        "searchInput": "Search for specific data from here.",
+        "filterButton": "After entering specific data, click here to filter it out.",
+        "refreshButton": "Refresh the grid to update filtered data from here.",
+        "floating_FilterInput": "Here you can search for specific column-wise data.",
+        "floating_FilterButton": "Here you can filter the data based on different conditions.",
+        "checkBoxButton": "Click on the checkbox to select a particular row.",
+        "costing_Detailed": "Click on the costing number to view detailed costing from here.",
+        "approval_Summary": "Click on the approval number to view approval summary from here.",
+        "sendForApproval": "After selecting the checkbox, you can send it for approval.",
+        "status": "You can filter the costing by status from here."
     }
 }

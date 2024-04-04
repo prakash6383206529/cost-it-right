@@ -275,9 +275,9 @@ class AddProcessDrawer extends Component {
                       <h3>{isEditFlag ? 'Update Process' : 'Add Process'}
 
                         <TourWrapper
-                          buttonSpecificProp={{ id: "Process_form" }}
+                          buttonSpecificProp={{ id: "Add_Process_Form" }}
                           stepsSpecificProp={{
-                            steps: Steps(t).ADD_MANAGE_PROCESS
+                            steps: Steps(t, { isEditFlag: isEditFlag }).ADD_MANAGE_PROCESS
                           }} />
                       </h3>
                     </div>
@@ -307,6 +307,7 @@ class AddProcessDrawer extends Component {
                   </Col>
                   <Col md="12">
                     <Field
+                      id="AddProcessDrawer_ProcessCode"
                       label={`Process Code`}
                       name={'ProcessCode'}
                       type="text"
@@ -334,6 +335,7 @@ class AddProcessDrawer extends Component {
                       {'Cancel'}
                     </button>
                     <button
+                      id="AddProcessDrawer_Save"
                       type="submit"
                       className="user-btn save-btn"
                       disabled={setDisable}

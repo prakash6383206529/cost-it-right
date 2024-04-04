@@ -16,9 +16,13 @@ import { Doughnut } from 'react-chartjs-2';
 import { colorArray } from "../../dashboard/ChartsDashboard"
 import NoContentFound from "../../common/NoContentFound"
 import LoaderCustom from "../../common/LoaderCustom"
+import TourWrapper from "../../common/Tour/TourWrapper"
+import { Steps } from "./TourMessages"
+import { useTranslation } from "react-i18next"
 
 const gridOptions = {}
 function SupplierContributionReport(props) {
+    const { t } = useTranslation("Reports")
 
     const [totalCost, setTotalCost] = useState("")
     const [startDate, setStartDate] = useState('')
@@ -368,6 +372,11 @@ function SupplierContributionReport(props) {
 
         <div className="p-relative">{reportListing &&
             < div className="container-fluid custom-pagination report-listing-page supplier-contribution ag-grid-react" >
+                <TourWrapper
+                    buttonSpecificProp={{ id: "Supplier_Contribution_Form" }}
+                    stepsSpecificProp={{
+                        steps: Steps(t).SUPPLIER_CONTRIBUTION
+                    }} />
                 <form noValidate >
                     {!hideSideBarNavbar && <Row className=" mb-2">
                         <Col md="3" className="form-group mb-0">
@@ -448,12 +457,14 @@ function SupplierContributionReport(props) {
                         </Col>
                         <Col md="3" className="d-flex align-items-center mt-3">
                             <button
+                                id="runReport"
                                 type="button"
                                 className={'user-btn pull-left '}
                                 onClick={() => runReport()}>
                                 <div className='save-icon mr-0'></div>
                             </button>
                             <button
+                                id="resetReport"
                                 type="button"
                                 className={"reset-btn pull-left  ml5"}
                                 onClick={() => resetReport()}>

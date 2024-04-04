@@ -218,7 +218,7 @@ class AddMoreDetails extends Component {
     }
   }
 
-  commonFunction() {
+  commonFunction(plantId = '') {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.CostingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -227,7 +227,8 @@ class AddMoreDetails extends Component {
       DepartmentId: userDetails().DepartmentId,
       UserId: loggedInUserId(),
       Mode: 'master',
-      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.CostingTypeId)
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.CostingTypeId),
+      plantId: plantId
     }
     this.props.checkFinalUser(obj, (res) => {
       if (res?.data?.Result) {
@@ -244,58 +245,60 @@ class AddMoreDetails extends Component {
 
   UNSAFE_componentWillReceiveProps(nextProps) {
 
-    if (nextProps.data !== this.props.data) {
-      const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId, vendorName, client } = nextProps.data;
-      if (Object.keys(selectedPlants)?.length > 0) {
-        this.handlePlants(selectedPlants)
-        if (machineType.value) {
-          const data = {
-            machineTypeId: machineType?.value ? machineType?.value : '',
-            plantId: selectedPlants?.value ? selectedPlants?.value : '',
-            effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : ''
+    setTimeout(() => {
+      if (nextProps.data !== this.props.data) {
+        const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId, vendorName, client } = nextProps.data;
+        if (selectedPlants && Object.keys(selectedPlants)?.length > 0) {
+          this.handlePlants(selectedPlants)
+          if (machineType.value) {
+            const data = {
+              machineTypeId: machineType?.value ? machineType?.value : '',
+              plantId: selectedPlants?.value ? selectedPlants?.value : '',
+              effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : ''
+            }
+            this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
           }
-          this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
         }
+
+        // this.setState({ costingTypeId: costingTypeId, vendorId: vendorName.value ? vendorName.value : '', customerId: client.value ? client.value : '' })
+        this.props.change('MachineName', fieldsObj.MachineName)
+        this.props.change('MachineNumber', fieldsObj.MachineNumber)
+        this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
+        this.props.change('Description', fieldsObj.Description)
+        this.props.change('Specification', fieldsObj.Specification)
+        fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
+
+        setTimeout(() => {
+          this.setState({ selectedPlants: selectedPlants, })
+          setTimeout(() => {
+            if (fieldsObj?.EffectiveDate) {
+              this.handleEffectiveDateChange(fieldsObj?.EffectiveDate)
+              this.setState({ isDateChange: false })
+            }
+            if (Object.keys(machineType)?.length === 0) {
+            } else {
+              this.handleMachineType(machineType)
+            }
+          }, 200);
+        }, 1500);
+
+        this.setState({
+          fieldsObj: fieldsObj,
+          selectedTechnology: selectedTechnology,
+          machineType: machineType,
+          effectiveDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '',
+          minDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '',
+          selectedCustomer: selectedCustomer,
+          selectedVedor: selectedVedor,
+          CostingTypeId: costingTypeId
+        }, () => {
+          // if (machineType && machineType.value) {
+          //   this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
+          // }
+        })
       }
 
-      this.setState({ costingTypeId: costingTypeId, vendorId: vendorName.value ? vendorName.value : '', customerId: client.value ? client.value : '' })
-      this.props.change('MachineName', fieldsObj.MachineName)
-      this.props.change('MachineNumber', fieldsObj.MachineNumber)
-      this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
-      this.props.change('Description', fieldsObj.Description)
-      this.props.change('Specification', fieldsObj.Specification)
-      fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
-
-      setTimeout(() => {
-        this.setState({ selectedPlants: selectedPlants, })
-        setTimeout(() => {
-          if (fieldsObj?.EffectiveDate) {
-            this.handleEffectiveDateChange(fieldsObj?.EffectiveDate)
-            this.setState({ isDateChange: false })
-          }
-          if (Object.keys(machineType)?.length === 0) {
-          } else {
-            this.handleMachineType(machineType)
-          }
-        }, 200);
-      }, 1500);
-
-      this.setState({
-        fieldsObj: fieldsObj,
-        selectedTechnology: selectedTechnology,
-        machineType: machineType,
-        effectiveDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '',
-        minDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '',
-        selectedCustomer: selectedCustomer,
-        selectedVedor: selectedVedor,
-        CostingTypeId: costingTypeId
-      }, () => {
-        // if (machineType && machineType.value) {
-        //   this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
-        // }
-      })
-    }
-
+    }, 800);
   }
 
 
@@ -608,6 +611,7 @@ class AddMoreDetails extends Component {
   */
   handlePlants = (newValue, actionMeta) => {
     const { IsUsesSolarPower, machineFullValue, effectiveDate } = this.state;
+    this.commonFunction(newValue.value)
     const { initialConfiguration, editDetails } = this.props
     let editMode = editDetails.isEditFlag ? editDetails.isEditFlag : false
     if (!editMode) {
@@ -2582,7 +2586,7 @@ class AddMoreDetails extends Component {
    * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration, isMachineAssociated, t } = this.props;
+    const { handleSubmit, initialConfiguration, isMachineAssociated, t, data } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
       isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, CostingTypePermission, disableSendForApproval, tourContainer } = this.state;
     return (
@@ -2593,7 +2597,7 @@ class AddMoreDetails extends Component {
             <div className="row">
               <div className="col-md-12">
                 <div className="shadow-lgg login-formg">
-                  <div className="row">
+                  {!data.isCostingDrawer && <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
                         <h2>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} More Details
@@ -2611,7 +2615,7 @@ class AddMoreDetails extends Component {
                         </h2>
                       </div >
                     </div >
-                  </div >
+                  </div >}
                   <form
                     noValidate
                     className="form"
@@ -4449,7 +4453,7 @@ class AddMoreDetails extends Component {
                             validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                             // required={true}
                             component={renderTextAreaField}
-                            maxLength="512"
+                            // maxLength="512"
                             rows="6"
                           />
                         </Col>
@@ -4515,7 +4519,7 @@ class AddMoreDetails extends Component {
                     </div >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
-                        {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
+                        {disableSendForApproval && !data.isCostingDrawer && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                         <button id="AddMoreDetails_Cancel"
                           type={'button'}
                           className=" mr15 cancel-btn"

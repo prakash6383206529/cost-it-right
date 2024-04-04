@@ -4,7 +4,7 @@ import { useDispatch, useSelector, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
-  setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, isToolDataChange,
+  setComponentToolItemData, saveDiscountOtherCostTab, saveAssemblyPartRowCostingCalculation, isToolDataChange
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
@@ -15,8 +15,7 @@ import { MESSAGES } from '../../../../config/message';
 import { IsPartType, ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-import { defaultPageSize, EMPTY_DATA, WACTypeId, ASSEMBLYNAME } from '../../../../config/constants';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
+import { defaultPageSize, EMPTY_DATA, WACTypeId } from '../../../../config/constants';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -27,7 +26,6 @@ import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../Costi
 import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
 import { debounce } from 'lodash';
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { ASSEMBLY } from '../../../../config/masterData';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 
 function TabToolCost(props) {
@@ -47,13 +45,12 @@ function TabToolCost(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
-  const [processArray, setProcessArray] = useState([])
-  const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const [disableSwitch, setDisableSwitch] = useState(false)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const isPartType = useContext(IsPartType);
+  const [loader, setLoader] = useState(false)
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -74,33 +71,6 @@ function TabToolCost(props) {
   }, [gridData])
 
 
-  useEffect(() => {
-
-    if (RMCCTabData && RMCCTabData.length > 0) {
-      let ProcessCostArray = []
-      let OperationCostArray = []
-
-      if (RMCCTabData[0].PartType === "Assembly") {
-        setDisableSwitch(true)
-      }
-
-      ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
-        if (el?.ProcessList?.length === 0) {
-          return { label: el.ProcessName, value: el.ProcessId };
-        } else {
-          return el.ProcessList && el.ProcessList.map((item) => {
-            return { label: item.ProcessName, value: item.ProcessId };
-          })
-        }
-      })
-      OperationCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
-        return { label: el.OperationName, value: el.OperationId };
-      });
-      setProcessArray(ProcessCostArray)
-      setOperationArray(OperationCostArray)
-    }
-
-  }, [RMCCTabData])
 
 
   useEffect(() => {
@@ -191,7 +161,10 @@ function TabToolCost(props) {
 */
   const setToolCost = (ToolGrid, IsChanged) => {
     let arr = dispatchToolCost(ToolGrid, IsChanged, ToolTabData)
-    dispatch(setToolTabData(arr, () => { }))
+    dispatch(isToolDataChange(IsChanged))
+    dispatch(setToolTabData(arr, () => {
+      dispatch(setComponentToolItemData(arr[0], () => { }))
+    }))
   }
 
   /**
@@ -240,8 +213,15 @@ function TabToolCost(props) {
   useEffect(() => {
 
     if (IsApplicableProcessWise && props.activeTab === '5') {
+      setLoader(true)
       dispatch(getToolsProcessWiseDataListByCostingID(costData.CostingId, (res) => {
-        if (res?.data?.DataList[0]?.ProcessOrOperation) { setGridData(res.data.DataList) }
+        setTimeout(() => {
+          setLoader(false)
+        }, 200);
+        if (res?.data && res?.data?.DataList[0]?.ProcessOrOperation) {
+          setGridData(res.data.DataList)
+
+        }
       }))
     }
 
@@ -331,16 +311,32 @@ function TabToolCost(props) {
   }
 
 
-  const deleteItem = (index, data) => {
-    let tempArr = data && data.filter((el, i) => {
-      if (i === index) return false;
-      return true;
-    })
-    setGridData(tempArr)
-    setToolCost(tempArr)
+  const removeItems = (array, itemToRemove) => {
+    // Determine the key to compare based on ProcessOrOperationType
+    const compareKey = itemToRemove.ProcessOrOperationType === 'Operation' ? 'OperationChildIdRef' : 'ProcessIdRef';
+    // Filter the array
+    return array.filter(item => {
+      // If the operation types don't match, keep the item
+      if (item.ProcessOrOperationType !== itemToRemove.ProcessOrOperationType) return true;
+      // If the ChildPartNumber doesn't match, keep the item
+      if (item.ChildPartNumber !== itemToRemove.ChildPartNumber) return true;
+      // If the relevant ID doesn't match or either is null, keep the item
+      if (item[compareKey] !== itemToRemove[compareKey] || item[compareKey] === null || itemToRemove[compareKey] === null) return true;
+      // Otherwise, filter the item out
+      return false;
+    });
   }
 
+  const deleteItem = (index, data) => {
+    const itemToDelete = data[index];
+    const filteredList = removeItems(data, itemToDelete)
+    setGridData(filteredList);
+    setToolCost(filteredList, true);
+  }
+
+
   const editItem = (index, data) => {
+
 
     let tempArr = data && data.find((el, i) => i === index)
     setEditIndex(index)
@@ -349,32 +345,22 @@ function TabToolCost(props) {
     setDrawerOpen(true)
   }
 
-  // const options = {
-  //   clearSearch: true,
-  //   // noDataText: (ToolsDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-  //   paginationShowsTotal: renderPaginationShowsTotal(),
-  //   prePage: <span className="prev-page-pg"></span>, // Previous page button text
-  //   nextPage: <span className="next-page-pg"></span>, // Next page button text
-  //   firstPage: <span className="first-page-pg"></span>, // First page button text
-  //   lastPage: <span className="last-page-pg"></span>,
-
-  // };
-
   const buttonFormatter = (props) => {
-
+    const rowsToShowButtons = findRowsWithHighestBOMLevel(props?.agGridReact?.props?.rowData);
+    const shouldShowButtons = rowsToShowButtons.has(props.rowIndex);
     return (
       <>
-        <button title='Edit' className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />
-        {!CostingViewMode && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />}
+        {!shouldShowButtons && <div className={`${'lock_icon tooltip-n'}`}><span class="tooltiptext">{`${"This part is already present at multiple level in this BOM. Please go to the lowest level to edit the data."}`}</span></div>}
+        {shouldShowButtons && <button title='Edit' className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />}
+        {(CostingViewMode || shouldShowButtons) && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />}
       </>
     )
   }
 
-  const decimalFormatter = (props) => {
 
+  const decimalFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)
-
   }
 
   const frameworkComponents = {
@@ -384,6 +370,26 @@ function TabToolCost(props) {
   };
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
+  };
+
+  // Function to generate a unique key and find rows with the highest BOMLevel for each unique combination
+  const findRowsWithHighestBOMLevel = (data) => {
+    const itemGroups = data.reduce((acc, item, index) => {
+      // Determine the key based on ProcessOrOperationType
+      const refId = item.ProcessOrOperationType === 'Operation' ? item.OperationChildIdRef : item.ProcessIdRef;
+      const key = `${item.ChildPartNumber}-${refId}`;
+
+      const level = parseInt(item.BOMLevel.substring(1), 10); // Extract numerical part of BOMLevel
+
+      if (!acc[key] || acc[key].highestLevel < level) {
+        acc[key] = { highestIndex: index, highestLevel: level };
+      }
+
+      return acc;
+    }, {});
+
+    // Extract indices of items with the highest BOMLevel in their group
+    return new Set(Object.values(itemGroups).map(group => group.highestIndex));
   };
 
 
@@ -399,37 +405,28 @@ function TabToolCost(props) {
     dispatch(isToolDataChange(true))
   }
 
-  const closeDrawer = (e = '', rowData = {}) => {
-    if (Object.keys(rowData).length > 0) {
-      let rowArray = {
-        IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
-        ToolOperationId: rowData.ToolOperationId,
-        ProcessOrOperation: rowData.ProcessOrOperation,
-        ToolCategory: rowData.ToolCategory,
-        ToolName: rowData.ToolName,
-        Quantity: rowData.Quantity,
-        ToolCost: rowData.ToolCost,
-        Life: rowData.Life,
-        NetToolCost: rowData.NetToolCost,
-        BOMLevel: RMCCTabData && RMCCTabData[0]?.BOMLevel,
-        PartNumber: RMCCTabData && RMCCTabData[0].PartNumber
-      }
+  const closeDrawer = (e = '', rowData = []) => {
+    setLoader(true)
+
+    if (rowData && rowData.length > 0) {
       if (editIndex !== '' && isEditFlag) {
-        let tempArr = Object.assign([...gridData], { [editIndex]: rowArray })
-        setGridData(tempArr)
+        setGridData(rowData)
       } else {
-        let tempArr = [...gridData, rowArray]
+        let tempArr = [...gridData, ...rowData]
         setGridData(tempArr)
       }
       dispatch(gridDataAdded(true))
     }
     setDrawerOpen(false)
+    setTimeout(() => {
+
+      setLoader(false)
+    }, 200);
   }
 
   const disableToggle = (value) => {
     setDisableSwitch(value)
   }
-
   return (
     <>
       <div className="login-container signup-form">
@@ -449,7 +446,7 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={CostingViewMode || disableSwitch}
+                            disabled={CostingViewMode}
                             //disabled={true}
                             background="#4DC771"
                             onColor="#4DC771"
@@ -522,55 +519,62 @@ function TabToolCost(props) {
                   </Row >}
 
                 {
-                  IsApplicableProcessWise &&
-                  <Row>
-                    <Col>
-                      {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
-                      <div className="ag-grid-react">
-                        <div className={`ag-grid-wrapper height-width-wrapper ${gridData && gridData?.length <= 0 ? "overlay-contain" : ""}`}>
-                          <div
-                            className="ag-theme-material">
-                            <AgGridReact
-                              defaultColDef={defaultColDef}
-                              floatingFilter={true}
-                              domLayout='autoHeight'
-                              // columnDefs={c}
-                              rowData={gridData}
-                              pagination={true}
-                              paginationPageSize={defaultPageSize}
-                              onGridReady={onGridReady}
-                              gridOptions={gridOptions}
-                              loadingOverlayComponent={'customLoadingOverlay'}
-                              noRowsOverlayComponent={'customNoRowsOverlay'}
-                              noRowsOverlayComponentParams={{
-                                title: EMPTY_DATA,
-                                imagClass: 'imagClass'
-                              }}
-                              frameworkComponents={frameworkComponents}
-                              suppressRowClickSelection={true}
-                              rowSelection={'multiple'}
-                            >
-                              {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                              {/* <AgGridColumn field="ToolOperationId" headerName=" "></AgGridColumn> */}
-                              <AgGridColumn field="BOMLevel" headerName="BOMLevel"></AgGridColumn>
-                              <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
-                              <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation"></AgGridColumn>
-                              <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
-                              <AgGridColumn field="ToolName" headerName="Tool Name"></AgGridColumn>
-                              <AgGridColumn field="ToolCost" headerName="ToolCost" cellRenderer={'decimalFormatter'}></AgGridColumn>
-                              <AgGridColumn field="Quantity" headerName="Quantity"></AgGridColumn>
-                              <AgGridColumn field="Life" headerName="Life"></AgGridColumn>
-                              {/* NET TOOL COST */}
-                              <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
-                              <AgGridColumn width={160} field="Life" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                            </AgGridReact>
-                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                  loader ? <LoaderCustom /> :
+                    IsApplicableProcessWise &&
+                    <Row>
+                      <Col>
+                        {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
+                        <div className="ag-grid-react">
+                          <div className={`ag-grid-wrapper height-width-wrapper ${gridData && gridData?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <div
+                              className="ag-theme-material">
+                              <AgGridReact
+                                defaultColDef={defaultColDef}
+                                floatingFilter={true}
+                                domLayout='autoHeight'
+                                // columnDefs={c}
+                                rowData={gridData}
+                                pagination={true}
+                                paginationPageSize={defaultPageSize}
+                                onGridReady={onGridReady}
+                                gridOptions={gridOptions}
+                                loadingOverlayComponent={'customLoadingOverlay'}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponentParams={{
+                                  title: EMPTY_DATA,
+                                  imagClass: 'imagClass'
+                                }}
+                                frameworkComponents={frameworkComponents}
+                                suppressRowClickSelection={true}
+                                rowSelection={'multiple'}
+                              >
+                                {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                                {/* <AgGridColumn field="ToolOperationId" headerName=" "></AgGridColumn> */}
+                                {initialConfiguration.IsShowCRMHead && <AgGridColumn field="CRMHead" headerName="CRM Head"></AgGridColumn>}
+                                <AgGridColumn field="BOMLevel" headerName="BOMLevel"></AgGridColumn>
+                                <AgGridColumn field="ParentPartNumber" headerName="Parent Part Number"></AgGridColumn>
+                                <AgGridColumn field="ChildPartNumber" headerName="Child Part Number"></AgGridColumn>
+                                <AgGridColumn field="PartQuantity" headerName="Part Quantity"></AgGridColumn>
+                                <AgGridColumn field="PartType" headerName="Part Type"></AgGridColumn>
+                                <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation"></AgGridColumn>
+                                <AgGridColumn field="ProcessOrOperationType" headerName="Process/Operation Type"></AgGridColumn>
+                                <AgGridColumn field="ProcessOrOperationQuantity" headerName="Process/Operation Quantity"></AgGridColumn>
+                                <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
+                                <AgGridColumn field="ToolName" headerName="Tool Name"></AgGridColumn>
+                                <AgGridColumn field="ToolCost" headerName="Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Quantity" headerName="Quantity"></AgGridColumn>
+                                <AgGridColumn field="Life" headerName="Life/Amortization"></AgGridColumn>
+                                {/* NET TOOL COST */}
+                                <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
+                                <AgGridColumn width={160} field="Life" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                              </AgGridReact>
+                              {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      {/* <--------------------AG Grid convert by 21-10-2021------> */}
-                    </Col >
-                  </Row >}
+                        {/* <--------------------AG Grid convert by 21-10-2021------> */}
+                      </Col >
+                    </Row >}
 
               </form >
             </div >
@@ -603,7 +607,6 @@ function TabToolCost(props) {
           editIndex={editIndex}
           rowObjData={rowObjData}
           anchor={'right'}
-          ProcessOperationArray={[...processArray, ...operationArray]}
           gridData={gridData}
         />
       }

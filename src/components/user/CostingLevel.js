@@ -78,7 +78,7 @@ const CostingLevelListing = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {permissions.Edit && <Button id={`levelTechnologyListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, 'Costing', rowData)} title={"Edit"} />}
+                {permissions.Edit && <Button id={`levelTechnologyListing_edit${props.rowIndex}`} className={"Edit HighestApproval_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, 'Costing', rowData)} title={"Edit"} />}
             </>
         )
     }
@@ -126,7 +126,7 @@ const CostingLevelListing = (props) => {
             <div className='p-relative'>
                 <Row className="levellisting-page">
                     <Col md="6" className="text-right search-user-block">
-                        <Button id={"levelMappingListing_refresh"} className="user-btn" onClick={() => levelMappingResetState()} title={"Reset Grid"} icon={"refresh mr-0"} />
+                        <Button id={"levelMappingListing_refresh"} className="user-btn HighestApproval_Refresh" onClick={() => levelMappingResetState()} title={"Reset Grid"} icon={"refresh mr-0"} />
                     </Col>
                 </Row>
                 <Row className="levellisting-page">

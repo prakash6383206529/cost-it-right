@@ -16,8 +16,11 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { PaginationWrapper } from "../../common/commonPagination";
-import { loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import { ApplyPermission } from ".";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -26,6 +29,8 @@ const gridOptions = {};
 
 const ProcessListing = (props) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation("common")
+
   const [state, setState] = useState({
     isOpenProcessDrawer: false,
     isEditFlag: false,
@@ -41,6 +46,8 @@ const ProcessListing = (props) => {
     isLoader: false,
     noData: false,
     dataCount: 0,
+    render: false,
+    showExtraData: false,
   });
   const permissions = useContext(ApplyPermission);
 
@@ -81,7 +88,7 @@ const ProcessListing = (props) => {
         {permissions.Edit && (
           <button
             title="Edit"
-            className="Edit mr-2"
+            className="Edit mr-2 Tour_List_Edit"
             type={"button"}
             onClick={() => editItemDetails(cellValue, rowData)}
           />
@@ -89,7 +96,7 @@ const ProcessListing = (props) => {
         {permissions.Delete && (
           <button
             title="Delete"
-            className="Delete"
+            className="Delete Tour_List_Delete"
             type={"button"}
             onClick={() => deleteItem(cellValue)}
           />
@@ -160,7 +167,16 @@ const ProcessListing = (props) => {
     setState((prevState) => ({ ...prevState, dataCount: 0 }));
 
   };
-
+  /**
+                 @method toggleExtraData
+                 @description Handle specific module tour state to display lorem data
+                */
+  const toggleExtraData = (showTour) => {
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+    }, 100);
+  }
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       processList.length !== 0 &&
@@ -288,7 +304,7 @@ const ProcessListing = (props) => {
                 {permissions.Add && (
                   <button
                     type="button"
-                    className={"user-btn mr5"}
+                    className={"user-btn mr5 Tour_List_Add"}
                     title="Add"
                     onClick={processToggler}
                   >
@@ -307,7 +323,7 @@ const ProcessListing = (props) => {
                             : "(" + state.dataCount + ")"
                             }`}
                           type="button"
-                          className={"user-btn mr5"}
+                          className={"user-btn mr5 Tour_List_Download"}
                         >
                           <div className="download mr-1"></div>
                           {`${state.dataCount === 0
@@ -323,7 +339,7 @@ const ProcessListing = (props) => {
                 )}
                 <button
                   type="button"
-                  className="user-btn"
+                  className="user-btn Tour_List_Reset "
                   title="Reset Grid"
                   onClick={() => resetState()}
                 >
@@ -351,6 +367,11 @@ const ProcessListing = (props) => {
                 autoComplete={"off"}
                 onChange={(e) => onFilterTextBoxChanged(e)}
               />
+              <TourWrapper
+                buttonSpecificProp={{ id: "Process_Listing_Tour", onClick: toggleExtraData }}
+                stepsSpecificProp={{
+                  steps: Steps(t, { addLimit: false, bulkUpload: false, filterButton: false, costMovementButton: false, viewButton: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                }} />
             </div>
             <div
               className={`ag-theme-material ${state.isLoader && "max-loader-height"
@@ -367,7 +388,8 @@ const ProcessListing = (props) => {
                 floatingFilter={true}
                 domLayout="autoHeight"
                 // columnDefs={c}
-                rowData={processList}
+                rowData={state.showExtraData && processList ? [...setLoremIpsum(processList[0]), ...processList] : processList}
+
                 pagination={true}
                 paginationPageSize={defaultPageSize}
                 onGridReady={onGridReady}

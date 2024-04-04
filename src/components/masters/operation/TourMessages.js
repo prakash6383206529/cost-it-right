@@ -1,4 +1,9 @@
-export function Steps(t) {
+import { reactLocalStorage } from "reactjs-localstorage";
+
+export function Steps(t, config) {
+    const showSendForApprovalButton = config?.showSendForApproval !== undefined && config?.showSendForApproval === true
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+
     return {
         ADD_OPERATION: [
             {
@@ -9,10 +14,15 @@ export function Steps(t) {
                 element: "#Add_operation_vendor_based",
                 intro: t("operationMaster.Add_operation_vendor_based"),
             },
-            {
+            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
                 element: "#Add_operation_customer_based",
                 intro: t("operationMaster.Add_operation_customer_based"),
-            },
+            }] : []),
+
+            // {
+            //     element: "#AddOperation_operationType_container",
+            //     intro: t("operationMaster.AddOperation_operationType_container"),
+            // },
             {
                 element: "#AddOperation_technology_container",
                 intro: t("operationMaster.AddOperation_technology_container"),
@@ -22,13 +32,38 @@ export function Steps(t) {
                 intro: t("operationMaster.AddOperation_OperationName"),
             },
             {
+                element: "#AddOperation_OperationCode",
+                intro: t("operationMaster.AddOperation_OperationCode"),
+            },
+            {
                 element: "#AddOperation_Description",
                 intro: t("operationMaster.AddOperation_Description"),
             },
-            {
-                element: "#AddOperation_Plant_container",
+            ...(config && config.vendorField ? [{
+
+                element: "#AddOperation_VendorCode",
+                intro: t("operationMaster.AddOperation_VendorCode"),
+            },] : []),
+            ...(config && config.vendorField && config?.isEditFlag === false ? [{
+
+                element: "#AddOperation_AddVendorCode",
+                intro: t("operationMaster.AddVendorCode"),
+            },] : []),
+
+            ...(config && config.destinationPlant ? [{
+
+                element: "#AddOperation_DestinationPlant_container",
+                intro: t("operationMaster.AddOperation_DestinationPlant_container"),
+            },] : []),
+            ...(config && config.plantField ? [{
+                element: "#AddOperation_DestinationPlant_container",
                 intro: t("operationMaster.AddOperation_Plant_container"),
-            },
+            },] : []),
+
+            ...(config && config.customerField ? [{
+                element: "#AddOperation_clientName_container",
+                intro: t("operationMaster.AddOperation_Customer_container"),
+            },] : []),
             {
                 element: "#AddOperation_UnitOfMeasurementId_container",
                 intro: t("operationMaster.AddOperation_UnitOfMeasurementId_container"),
@@ -38,13 +73,24 @@ export function Steps(t) {
                 intro: t("operationMaster.AddOperation_Rate"),
             },
             {
+                element: "#AddOperation_LabourRatePerUOM",
+                intro: t("operationMaster.AddOperation_LabourRatePerUOM"),
+            },
+
+            {
                 element: "#AddOperation_EffectiveDate",
                 intro: t("operationMaster.AddOperation_EffectiveDate"),
             },
+
             {
                 element: "#AddOperation_SurfaceTreatmentCheckbox",
                 intro: t("operationMaster.AddOperation_SurfaceTreatmentCheckbox"),
             },
+
+            // {
+            //     element: "#AddMoreOperation_container",
+            //     intro: t("operationMaster.AddMoreOperation_container"),
+            // },
             {
                 element: "#AddOperation_Remark",
                 intro: t("operationMaster.AddOperation_Remark"),
@@ -57,11 +103,20 @@ export function Steps(t) {
                 element: "#AddOperation_Cancel",
                 intro: t("operationMaster.AddOperation_Cancel"),
             },
-            {
-                element: "#AddOperation_SendForApproval",
-                intro: t("operationMaster.AddOperation_SendForApproval"),
-                position: 'left'
-            },
+            ...((showSendForApprovalButton === false) ? [
+                {
+                    element: "#AddOperation_Save",
+                    intro: introMessage,
+                    position: 'left'
+                },
+            ] : []),
+            ...((showSendForApprovalButton === true) ? [
+                {
+                    element: "#AddOperation_SendForApproval",
+                    intro: t("operationMaster.AddOperation_SendForApproval"),
+                    position: 'left'
+                },
+            ] : []),
         ],
     }
 }

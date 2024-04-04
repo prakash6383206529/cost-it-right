@@ -170,7 +170,7 @@ export function Clientbasedcostingdrawer(props) {
 
                             <Row className="px-3">
                                 <Col md="12">
-                                    <h5 className="left-border">${showBopLabel()} Cost</h5>
+                                    <h5 className="left-border">{showBopLabel()} Cost</h5>
                                 </Col>
                                 <Col md="3">
                                     <Field

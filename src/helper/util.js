@@ -817,12 +817,15 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.isIncludeSurfaceTreatmentWithRejection = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection
   obj.isIncludeSurfaceTreatmentWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit
   obj.isIncludeOverheadAndProfitInICC = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeOverheadAndProfitInICC && dataFromAPI?.CostingPartDetails?.IsIncludeOverheadAndProfitInICC
+  obj.isIncludeToolCostInCCForICC = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostInCCForICC && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostInCCForICC
   obj.rawMaterialCostWithCutOff = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff ? dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff : ''
   obj.anyOtherCostTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOtherCost ? dataFromAPI?.CostingPartDetails?.NetOtherCost : '-'
   obj.saNumber = dataFromAPI?.SANumber ?? '-'
   obj.lineNumber = dataFromAPI?.LineNumber ?? '-'
   obj.partType = dataFromAPI?.CostingPartDetails?.Type
   obj.partTypeId = dataFromAPI?.CostingPartDetails?.PartTypeId
+  obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
+  obj.ScrapRecoveryPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ScrapRecoveryPercentage
   temp.push(obj)
   return temp
 }
@@ -1160,8 +1163,13 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
     );
     fileHeads = fileHeads.map(item =>
       item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
+
     );
+
+
   }
+
+
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
     if (hasNote) {
@@ -1169,6 +1177,11 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
     }
   }
+
+  // if (isRm && !fileHeads.includes('Note')) {
+  //   fileHeads.unshift('Note');
+  // }
+
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
@@ -1340,6 +1353,7 @@ export function getValueFromLabel(currency, currencySelectList) {
 }
 // get updated  dynamic bop labels 
 export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '') {
+
   const bopRegex = /BOP|BoughtOutPart/gi;
   const updatedLabels = bopLabels.map(label => ({
     ...label,
@@ -1347,6 +1361,7 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
     value: label.value.replace(bopRegex, bopReplacement),
 
   }));
+
   const updatedTempData = bopData.map(dataItem => {
     const newDataItem = {};
     for (let key in dataItem) {
@@ -1360,8 +1375,29 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
 
   return { updatedLabels, updatedTempData };
 }
+/**
+  * @method setLoremIpsum
+  * @description show lorem ipsum data when stared application tour
+  */
+export function setLoremIpsum(obj) {
+  const setLorem = (input) => {
+    if (Array.isArray(input)) {
+      return input.map(innerItem => Array.isArray(innerItem) ? setLorem(innerItem) : typeof innerItem === 'object' && innerItem !== null ? setLorem(innerItem) : "Lorem Ipsum");
+    } else if (typeof input === 'object' && input !== null) {
+      const newObj = {};
+      Object.keys(input).forEach(key => {
+        newObj[key] = key === 'data' && Array.isArray(input[key]) && input[key].length > 1 ? [setLorem(input[key][0])] : Array.isArray(input[key]) ? setLorem(input[key]) : typeof input[key] === 'object' && input[key] !== null ? setLorem(input[key]) : "Lorem Ipsum";
+      });
+      return newObj;
+    } else {
+      return "Lorem Ipsum";
+    }
+  };
 
-// 
+  return [setLorem(obj)];
+}
+
+//
 
 // function for % and & issue in the queryparams
 // Utility function to encode query parameters

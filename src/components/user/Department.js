@@ -14,7 +14,9 @@ import DayTime from "../common/DayTimeWrapper"
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper";
 import { ZBC } from "../../config/constants";
 import { getPlantSelectListByType } from "../../actions/Common";
-
+import TourWrapper from "../common/Tour/TourWrapper";
+import { Steps } from "./TourMessages";
+import { withTranslation } from "react-i18next";
 
 class Department extends Component {
 	constructor(props) {
@@ -194,7 +196,7 @@ class Department extends Component {
 		}
 	}
 	render() {
-		const { handleSubmit, isEditFlag } = this.props;
+		const { handleSubmit, isEditFlag, t } = this.props;
 		const { isSubmitted } = this.state;
 		return (
 			<div>
@@ -209,7 +211,14 @@ class Department extends Component {
 								<Row className="drawer-heading">
 									<Col>
 										<div className={'header-wrapper left'}>
-											<h3>{isEditFlag ? `Update ${handleDepartmentHeader()}` : `Add ${handleDepartmentHeader()}`}</h3>
+											<h3>{isEditFlag ? `Update ${handleDepartmentHeader()}` : `Add ${handleDepartmentHeader()}`}
+												<TourWrapper
+													buttonSpecificProp={{ id: "Add_Department_Form" }}
+													stepsSpecificProp={{
+														steps: Steps(t, { isEditFlag: isEditFlag }).ADD_COMPANY
+													}} />
+											</h3>
+
 										</div>
 										<div
 											onClick={(e) => this.toggleDrawer(e, 'cancel')}
@@ -273,6 +282,7 @@ class Department extends Component {
 													className="reset mr15 cancel-btn"
 												/> */}
 												<button
+													id="AddDepartment_Cancel"
 													//disabled={pristine || submitting}
 													onClick={this.cancel}
 													type="button"
@@ -286,6 +296,7 @@ class Department extends Component {
 													className="submit-button mr5 save-btn"
 												/> */}
 												<button
+													id="AddDepartment_Save"
 													type="submit"
 													disabled={isSubmitted ? true : false}
 													className="user-btn save-btn"
@@ -350,4 +361,4 @@ export default connect(mapStateToProps, {
 	onSubmitFail: errors => {
 		focusOnError(errors);
 	},
-})(Department));
+})(withTranslation(['UserRegistration'])(Department)));

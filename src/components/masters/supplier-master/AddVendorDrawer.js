@@ -707,11 +707,11 @@ class AddVendorDrawer extends Component {
                                     <Col>
                                         <div className={'header-wrapper left'}>
                                             <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor
-                                                <TourWrapper
-                                                    buttonSpecificProp={{ id: "Vendor_form" }}
+                                                {!isViewMode && <TourWrapper
+                                                    buttonSpecificProp={{ id: "Add_Vendor_Drawer" }}
                                                     stepsSpecificProp={{
-                                                        steps: Steps(t).VENDOR_FORM
-                                                    }} />
+                                                        steps: Steps(t, { isEditFlag: isEditFlag }).VENDOR_FORM
+                                                    }} />}
                                             </h3>
                                         </div>
                                         <div

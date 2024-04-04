@@ -269,7 +269,7 @@ function PipdReportListing(props) {
             "Total": "190"
         },
         {
-            "Name": `${showBopLabel()}  Cost`,
+            "Name": `${showBopLabel()} Cost`,
             "PriceType": "Price Decrease",
             "1/3/2022": "0",
             "1/4/2022": "0",

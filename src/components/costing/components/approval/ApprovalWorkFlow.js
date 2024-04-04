@@ -1,16 +1,48 @@
 import DayTime from '../../../common/DayTimeWrapper'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { APPROVED, REJECTED, PENDING } from '../../../../config/constants'
+import { useDispatch, useSelector } from 'react-redux'
+import Popup from 'reactjs-popup'
+import { getAllApproverList } from '../../../../actions/auth/AuthActions'
 
 function ApprovalWorkFlow(props) {
-  const { approvalLevelStep } = props
-
-
-
+  const { approvalLevelStep, approverData } = props
+  const { initialConfiguration } = useSelector(state => state.auth)
+  const [approverList, setApproverList] = useState([])
   // const [approval, setApproval] = useState([])
+  const dispatch = useDispatch()
   useEffect(() => {
-    //setApproval(approvalLevelStep)
-  }, [])
+    if (initialConfiguration.IsMultipleUserAllowForApproval && approverData && approverData.processId) {
+      let data = {
+        processId: approverData.processId,
+        levelId: approverData.levelId,
+        mode: approverData.mode
+      }
+      dispatch(getAllApproverList(data, res => {
+        if (res && res.data) {
+          setApproverList(res.data.DataList)
+        }
+      }))
+    }
+  }, [approverData])
+  const approverListUI = () => {
+    switch (approverList.length) {
+      case 0:
+        return 'toto'
+      case 1:
+        return approverList[0].UserName;
+      default:
+        return <Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn" type={'button'}>{'View All'}</button>}
+          position="right center">
+          <ul className="px-1 view-all-list">
+            {approverList && approverList.map((item, index) => {
+              return <li key={item.UserId}>{index + 1}. {item.UserName}</li>
+            })}
+          </ul>
+
+        </Popup>
+    }
+  }
   /* TODO SORTING OF LEVEL ACC TO DATA*/
   return approvalLevelStep &&
     <div className="row process workflow-row">
@@ -53,7 +85,7 @@ function ApprovalWorkFlow(props) {
                     </div>
                     <div className="right">
                       <span className="">{item.Title}</span>
-                      <p className="">{item.ApprovedBy ? item.ApprovedBy : '-'}</p>
+                      <p className="">{(item.ApprovedBy && item.ApprovedBy !== '-') ? item.ApprovedBy : initialConfiguration.IsMultipleUserAllowForApproval ? approverListUI() : '-'}</p>
                     </div>
                   </div>
                   {/* top */}

@@ -7,7 +7,7 @@ import { ListForPartCost, optionsForDelta } from '../../../../../config/masterDa
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import Toaster from '../../../../common/Toaster';
-import { getCostingForMultiTechnology, getEditPartCostDetails, getSettledCostingDetails, saveSettledCostingDetails, setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
+import { getCostingForMultiTechnology, getEditPartCostDetails, getSettledCostingDetails, getSettledSimulationCostingDetails, saveSettledCostingDetails, setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import _ from 'lodash';
@@ -15,7 +15,7 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
-import { CBCTypeId, EMPTY_DATA, VBCTypeId, WACTypeId } from '../../../../../config/constants';
+import { AWAITING_APPROVAL_ID, CBCTypeId, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID, VBCTypeId, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
 
@@ -36,6 +36,7 @@ function EditPartCost(props) {
     const { costingForMultiTechnology } = useSelector(state => state.subAssembly)
     const costData = useContext(costingInfoContext);
     const { ToolTabData, OverheadProfitTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, RMCCTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
+    const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
     const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
         mode: 'onChange',
@@ -124,7 +125,14 @@ function EditPartCost(props) {
         } else {
             isViewMode = false
         }
-        dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, isViewMode, res => { }))
+        const tempData = viewCostingData[props.index]
+        if (props.simulationMode && String(tempData.CostingHeading) === String("New Costing") && (Number(tempData.SimulationStatusId) === Number(REJECTEDID) || Number(tempData.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData.SimulationStatusId) === Number(AWAITING_APPROVAL_ID))) {
+            dispatch(getSettledSimulationCostingDetails(props?.SimulationId, props?.tabAssemblyIndividualPartDetail?.CostingId, isViewMode, (res) => {
+
+            }))
+        } else {
+            dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, isViewMode, res => { }))
+        }
         // dispatch(getEditPartCostDetails(obj, res => { }))
         return () => {
             gridData && gridData.map((item, index) => {

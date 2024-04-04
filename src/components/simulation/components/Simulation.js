@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
@@ -26,7 +26,6 @@ import { allEqual, applyEditCondSimulation, checkForNull, checkPermission, getFi
 import ERSimulation from './SimulationPages/ERSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
 import { ProcessListingSimulation } from './ProcessListingSimulation';
-import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
@@ -37,18 +36,20 @@ import AssemblySimulationListing from './AssemblySimulationListing';
 import { getVendorNameByVendorSelectList } from '../../../actions/Common';
 import VerifySimulation from './VerifySimulation';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, hideColumnFromExcel } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, hideColumnFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
 import BDNonAssociatedSimulation from './SimulationPages/BDNonAssociatedSimulation';
 import TooltipCustom from '../../common/Tooltip';
 import { getClientSelectList } from '../../masters/actions/Client';
 import Toaster from '../../common/Toaster';
+import { simulationContext } from '.';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 export const ApplyPermission = React.createContext();
 function Simulation(props) {
+    const { handleEditMasterPage, showTour } = useContext(simulationContext) || {};
 
     const { register, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -56,7 +57,6 @@ function Simulation(props) {
     })
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
-
     const [master, setMaster] = useState([])
     const [technology, setTechnology] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
@@ -164,7 +164,11 @@ function Simulation(props) {
             setShowEditTable(false)
         }
     }, [showMasterList])
-
+    useEffect(() => {
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditTable);
+        }
+    }, [showEditTable]);
     const { topAndLeftMenuData } = useSelector((state) => state.auth);
 
     useEffect(() => {
@@ -192,6 +196,7 @@ function Simulation(props) {
         setValue('Technology', '')
         setValue('Vendor', '')
         setValue('token', '')
+        dispatch(setVendorForSimulation(''))
         setIsTechnologyDisable(false)
         dispatch(setMasterForSimulation(value))
         dispatch(setTechnologyForSimulation(''))
@@ -281,10 +286,11 @@ function Simulation(props) {
     }
 
     const handleTechnologyChange = (value) => {
+
         if ((checkForNull(value?.value) === ASSEMBLY && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS)) {
             setTechnology(value)
             setShowMasterList(false)
-            // dispatch(setTechnologyForSimulation(value))                //RE
+            dispatch(setTechnologyForSimulation(value))
             setShowTokenDropdown(false)
             setVendor('')
             setValue('Vendor', '')
@@ -397,7 +403,7 @@ function Simulation(props) {
         dispatch(setTokenForSimulation(value))
     }
 
-    const returnExcelColumn = (data = [], TempData) => {
+    const returnExcelColumn = (data = [], TempData, isOperation = false) => {
         let templateArray
         if (!reactLocalStorage.getObject('CostingTypePermission').cbc) {
             templateArray = hideColumnFromExcel(data, 'CustomerName')
@@ -405,6 +411,11 @@ function Simulation(props) {
             templateArray = hideColumnFromExcel(data, 'Percentage')
         } else {
             templateArray = data
+        }
+        if (isOperation && TempData && TempData[0]?.ForType !== 'Welding') {
+            templateArray = hideMultipleColumnFromExcel(data, ["OperationConsumption", "OperationBasicRate", "NewOperationBasicRate"])
+        } else if (isOperation && TempData && TempData[0]?.ForType === 'Welding') {
+            templateArray = hideMultipleColumnFromExcel(data, ["NewRate"])
         }
         let temp = []
         temp = TempData && TempData.map((item) => {
@@ -654,6 +665,7 @@ function Simulation(props) {
 
 
     const renderColumn = (fileName) => {
+        console.log('tableData: ', tableData);
         switch (fileName) {
             case RMDOMESTIC:
                 return returnExcelColumn(RMDomesticSimulation, tableData ? tableData : [])
@@ -664,7 +676,7 @@ function Simulation(props) {
             case SURFACETREATMENT:
                 return returnExcelColumn(SurfaceTreatmentSimulation, tableData && tableData.length > 0 ? tableData : [])
             case OPERATIONS:
-                return returnExcelColumn(OperationSimulation, tableData && tableData.length > 0 ? tableData : [])
+                return returnExcelColumn(OperationSimulation, tableData && tableData.length > 0 ? tableData : [], true)
             case MACHINERATE:
                 return returnExcelColumn(MachineRateSimulation, tableData && tableData.length > 0 ? tableData : [])
             case BOPDOMESTIC:
@@ -824,6 +836,7 @@ function Simulation(props) {
         let flag = true;
         let vendorFlag = true;
         let plantFlag = true;
+        let operationTypeFlag = true;
         if (length === 0 || length === undefined || length === null) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
@@ -1044,6 +1057,11 @@ function Simulation(props) {
                             setEditWarning(true);
                             plantFlag = false
                         }
+                        if (element.ForType !== Data[index - 1].ForType) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Operation Type')
+                            setEditWarning(true);
+                            operationTypeFlag = false
+                        }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
@@ -1056,6 +1074,8 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                } if (flag === false && operationTypeFlag === false) {
+                    (length !== 0) && setFilterStatus('Please filter out the Operation Type')
                 }
                 break;
             case String(MACHINERATE):
@@ -1614,7 +1634,7 @@ function Simulation(props) {
 
                     {
                         showMasterList && !partType &&
-                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
+                        <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer ${showTour ? '' : 'sticky-btn-footer'}`}>
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
                                     {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}

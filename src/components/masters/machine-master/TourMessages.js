@@ -1,6 +1,10 @@
-export function Steps(t){
-    
-    return{
+import { reactLocalStorage } from "reactjs-localstorage";
+
+export function Steps(t, config) {
+    const showSendForApprovalButton = config?.showSendForApproval !== undefined && config?.showSendForApproval === true
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+
+    return {
         ADD_MACHINE_RATE: [
             {
                 element: "#AddMachineRate_zeroBased",
@@ -10,18 +14,36 @@ export function Steps(t){
                 element: "#AddMachineRate_vendorBased",
                 intro: t("addMachineRate.AddMachineRate_vendorBased"),
             },
-            {
+            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
+
                 element: "#AddMachineRate_customerBased",
                 intro: t("addMachineRate.AddMachineRate_customerBased"),
-            },
+            }] : []),
             {
                 element: "#AddMachineRate_technology_container",
                 intro: t("addMachineRate.AddMachineRate_technology_container"),
             },
+            ...(config && config.vendorField ? [{
+                element: "#AddMachineRate_vendorName",
+                intro: t("addMachineRate.AddMachineRate_Vendor_container"),
+            },] : []),
+
             {
                 element: "#AddMachineRate_Plant_container",
                 intro: t("addMachineRate.AddMachineRate_Plant_container"),
             },
+
+            ...(config && config.customerField ? [{
+
+                element: "#AddMachineRate_clientName_container",
+                intro: t("addMachineRate.AddMachineRate_customerNamer_container"),
+            },] : []),
+
+            {
+                element: "#AddMachineRate_MachineNumber",
+                intro: t("addMachineRate.AddMachineRate_MachineNumber_container"),
+            },
+
             {
                 element: "#AddMachineRate_Specification",
                 intro: t("addMachineRate.AddMachineRate_Specification"),
@@ -42,12 +64,84 @@ export function Steps(t){
                 element: "#AddMachineRate_EffectiveDate",
                 intro: t("addMachineRate.AddMachineRate_EffectiveDate"),
             },
-            {
+            ...config && config.isEditFlag === false ? [{
                 element: "#addMoreMachine_Details",
-                intro: t("addMachineRate.addMoreMachine_Details"),
+                intro: t("addMachineRate.AddMoreMachine_Details"),
+            }] : [],
+
+            {
+                element: "#AddMachineRate_ProcessName_container",
+                intro: t("addMachineRate.AddMachineRate_ProcessName_container"),
             },
+            {
+                element: "#Add_Machine_Process",
+                intro: t("addMachineRate.Add_Machine_Process"),
+            },
+
+            {
+                element: "#AddMachineRate_UOM_container",
+                intro: t("addMachineRate.AddMachineRate_UOM_container"),
+            },
+            {
+                element: "#AddMachineRate_MachineRate",
+                intro: t("addMachineRate.AddMachineRate_MachineRate"),
+            },
+            {
+                element: "#AddMachineRate_addmore",
+                intro: t("addMachineRate.AddMachineRate_addmore"),
+            },
+            {
+                element: "#AddMachineRate_reset",
+                intro: t("addMachineRate.AddMachineRate_reset"),
+            },
+
+            {
+                element: " #groupName_container",
+                intro: t("addMachineRate.GroupName"),
+            },
+            {
+                element: ".input-container #process_container",
+                intro: t("addMachineRate.Process_container"),
+            },
+            {
+                element: "#AddMoreDetails_Toggle",
+                intro: t("addMachineRate.AddMoreDetails_Toggle"),
+            },
+            {
+                element: "#AddMoreDetails_ProcessGroup_Add",
+                intro: t("addMachineRate.AddMoreDetails_ProcessGroup_Add")
+            },
+            {
+                element: "#addGroupProcess_Reset",
+                intro: t("addMachineRate.AddProcessGroup_reset")
+            },
+
+            {
+                element: "#AddMachineRate_Remark",
+                intro: t("addMachineRate.AddMachineRate_Remark"),
+            },
+            {
+                element: "#AddMachineRate_UploadFiles",
+                intro: t("addMachineRate.AddMachineRate_UploadFiles"),
+            },
+            {
+                element: "#AddMachineRate_Cancel",
+                intro: t("addMachineRate.AddMachineRate_Cancel"),
+            },
+            ...((showSendForApprovalButton === true) ? [
+                {
+                    element: "#AddMachineRate_SendForApproval",
+                    intro: t("addMachineRate.AddMachineRate_SendForApproval"),
+                },
+            ] : []),
+            ...((showSendForApprovalButton === false) ? [
+                {
+                    element: "#AddMachineRate_Save",
+                    intro: introMessage,
+                }
+            ] : []),
         ],
-        ADD_MACHINERATE_MORE_PROCESS:[
+        ADD_MACHINERATE_MORE_PROCESS: [
             {
                 element: "#AddMachineRate_ProcessName_container",
                 intro: t("addMachineRateMoreProcess.AddMachineRate_ProcessName_container"),
@@ -99,7 +193,7 @@ export function Steps(t){
             {
                 element: "#AddMachineRate_SendForApproval",
                 intro: t("addMachineRateMoreProcess.AddMachineRate_SendForApproval"),
-                position:'left'
+                position: 'left'
             },
         ],
         ADD_MACHINE_MORE_RATE_DETAILS: [
@@ -152,7 +246,7 @@ export function Steps(t){
                 intro: t("addMachineRateMoreDetails.AddMoreDetails_EffectiveDate"),
             },
         ],
-        ADD_MACHINE_LOAN_AND_INTEREST:[
+        ADD_MACHINE_LOAN_AND_INTEREST: [
             {
                 element: "#AddMoreDetails_LoanPercentage",
                 intro: t("addLoanInterest.AddMoreDetails_LoanPercentage"),
@@ -196,7 +290,7 @@ export function Steps(t){
             {
                 element: "#AddDetails_DateOfPurchase",
                 intro: t("addDepreciation.AddDetails_DateOfPurchase"),
-            },        
+            },
         ],
         ADD_VARIABLE_COST: [
             {
@@ -234,7 +328,7 @@ export function Steps(t){
                 intro: t("addMachinePower.AddMoreDetails_PowerRatingPerKW"),
             },
         ],
-        ADD_MACHINE_LABOUR:[
+        ADD_MACHINE_LABOUR: [
             {
                 element: "#AddMoreDetails_LabourTypeIds_container",
                 intro: t("addMachineLabour.AddMoreDetails_LabourTypeIds_container"),
@@ -248,7 +342,7 @@ export function Steps(t){
                 intro: t("addMachineLabour.AddMoreDetails_Labour_Add"),
             },
         ],
-        ADD_MACHINE_PROCESS:[
+        ADD_MACHINE_PROCESS: [
             {
                 element: "#AddMoreDetails_ProcessName_container",
                 intro: t("addMachineProcess.AddMoreDetails_ProcessName_container"),
@@ -270,7 +364,7 @@ export function Steps(t){
                 intro: t("addMachineProcess.AddMoreDetails_Process_Add"),
             },
         ],
-        ADD_MACHINE_PROCESS_GROUP:[
+        ADD_MACHINE_PROCESS_GROUP: [
             {
                 element: "#groupName_container",
                 intro: t("addMachineProcessGroup.groupName"),
@@ -302,19 +396,29 @@ export function Steps(t){
             {
                 element: "#AddMoreDetails_SendForApproval",
                 intro: t("addMachineProcessGroup.AddMoreDetails_SendForApproval"),
-                position:'left'
+                position: 'left'
             },
-            
+
         ],
-       ADD_MANAGE_PROCESS:[
-        {
-            element: "#AddProcessDrawer_ProcessName",
-            intro: t("addManageProcess.AddProcessDrawer_ProcessName"),
-        },
-        {
-            element: "#AddProcessDrawer_Cancel",
-            intro: t("addManageProcess.AddProcessDrawer_Cancel"),
-        },
-       ] 
+        ADD_MANAGE_PROCESS: [
+            {
+                element: "#AddProcessDrawer_ProcessName",
+                intro: t("addManageProcess.AddProcessDrawer_ProcessName"),
+            },
+            {
+                element: "#AddProcessDrawer_ProcessCode",
+                intro: t("addManageProcess.AddProcessDrawer_ProcessCode"),
+            },
+
+            {
+                element: "#AddProcessDrawer_Cancel",
+                intro: t("addManageProcess.AddProcessDrawer_Cancel"),
+            },
+            {
+                element: "#AddProcessDrawer_Save",
+                intro: introMessage,
+            },
+
+        ]
     }
 }

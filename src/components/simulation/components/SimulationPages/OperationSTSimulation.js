@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { CBCTypeId, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
@@ -23,6 +23,7 @@ import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
 import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { simulationContext } from '..';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -32,6 +33,8 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
+    const { showEditMaster, handleEditMasterPage, showCompressedColumns } = useContext(simulationContext) || {};
+
     const { list, isbulkUpload, rowCount, isImpactedMaster, lastRevision, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -59,7 +62,19 @@ function OperationSTSimulation(props) {
     const dispatch = useDispatch()
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const columnWidths = {
+        CostingHead: showCompressedColumns ? 50 : 190,
+        OperationName: showCompressedColumns ? 100 : 190,
+        OperationCode: showCompressedColumns ? 100 : 190,
+        Technology: showCompressedColumns ? 100 : 190,
+        VendorCode: showCompressedColumns ? 100 : 190,
+        VendorName: showCompressedColumns ? 100 : 190,
+        PlantCode: showCompressedColumns ? 100 : 190,
+        CustomerName: showCompressedColumns ? 100 : 140,
+        EffectiveDate: showCompressedColumns ? 90 : 190,
 
+
+    };
     const cancelVerifyPage = () => {
         setShowVerifyPage(false)
     }
@@ -82,33 +97,65 @@ function OperationSTSimulation(props) {
             let maxDate = getMaxDate(list)
             setMaxDate(maxDate?.EffectiveDate)
         }
+        list && list?.map(item => {
+            item.NewRate = item.Rate
+            return null
+        })
     }, [list])
+    useEffect(() => {
 
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditMaster, showverifyPage)
+        }
+    }, [showverifyPage])
 
-    const newRateFormatter = (props) => {
+    // const newRateFormatter = (props) => {
+    //     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    //     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+    //     const value = beforeSaveCell(cell)
+    //     let valueShow
+    //     if (lastRevision) {
+    //         if (row.IsSurfaceTreatmenOperation === true) {
+    //             valueShow = row.NewSurfaceTreatmentRatePerUOM
+    //         } else if (row.IsSurfaceTreatmenOperation === false) {
+    //             valueShow = row.NewOperationBasicRate
+    //         }
+    //     } else {
+    //         valueShow = row.NewOperationRate
+    //     }
+    //     return (
+    //         <>
+    //             {
+    //                 isImpactedMaster ?
+    //                     valueShow ://NewNetOperationCost
+    //                     <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.OperationBasicRate)}>{cell && value ? Number(cell) : Number(row.OperationBasicRate)} </span>
+    //             }
+
+    //         </>
+    //     )
+    // }
+    const newWeldingRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const value = beforeSaveCell(cell)
-        let valueShow
-        if (lastRevision) {
-            if (row.IsSurfaceTreatmenOperation === true) {
-                valueShow = row.NewSurfaceTreatmentRatePerUOM
-            } else if (row.IsSurfaceTreatmenOperation === false) {
-                valueShow = row.NewOperationBasicRate
-            }
-        } else {
-            valueShow = row.NewOperationRate
-        }
+
         return (
             <>
                 {
-                    isImpactedMaster ?
-                        valueShow ://NewNetOperationCost
-                        <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.Rate)}>{cell && value ? Number(cell) : Number(row.Rate)} </span>
+                    row.ForType !== "Welding" ?
+                        '-' ://NewNetOperationCost
+                        <span id={`newOperationRate-${props.rowIndex}`} className={`${!isImpactedMaster ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.OperationBasicRate)}>{cell && value ? Number(cell) : Number(row.OperationBasicRate)} </span>
                 }
 
             </>
         )
+    }
+    const ageValueGetterRate = (params) => {
+        let row = params.data
+        row.NewRate = row.ForType === 'Welding' ? row?.NewOperationBasicRate * row?.OperationConsumption : ''
+        return row.NewRate
     }
 
     const onFloatingFilterChanged = (value) => {
@@ -137,11 +184,38 @@ function OperationSTSimulation(props) {
                 {
                     isImpactedMaster ?
                         valueShow :
-                        <span title={cell && value ? Number(cell) : Number(row.Rate)}>{cell && value ? Number(cell) : Number(row.Rate)} </span>
+                        <span title={cell && value ? Number(cell) : Number(row.NewRate)}>{cell && value ? Number(cell) : Number(row.NewRate)} </span>
                 }
 
             </>
         )
+    }
+    const rateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        let valueShow
+        if (lastRevision) {
+            if (row.IsSurfaceTreatmenOperation === true) {
+                valueShow = row.NewSurfaceTreatmentRatePerUOM
+            } else if (row.IsSurfaceTreatmenOperation === false) {
+                valueShow = row.NewOperationBasicRate
+            }
+        } else {
+            valueShow = row.NewOperationRate
+        }
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        valueShow ://NewNetOperationCost
+                        <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.NewRate)}>{cell && value ? Number(cell) : Number(row.NewRate)} </span>
+
+                }
+
+            </>
+        )
+
     }
 
     const vendorFormatter = (props) => {
@@ -181,17 +255,18 @@ function OperationSTSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const revisedBasicRateHeader = (props) => {
+    const revisedRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>}</span>
+                <span className='ag-header-cell-text basicRate_revised'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>}</span>
             </div>
         );
     };
+
     /**
-  * @method beforeSaveCell
-  * @description CHECK FOR ENTER NUMBER IN CELL
-  */
+    * @method beforeSaveCell
+    * @description CHECK FOR ENTER NUMBER IN CELL
+    */
     const beforeSaveCell = (props) => {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
@@ -278,12 +353,19 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
     }
-
+    const oldBasicRateFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return isImpactedMaster ? row?.OldOperationBasicRate : row?.OperationBasicRate
+    }
+    const consumptionFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return isImpactedMaster ? row?.OldOperationConsumption : row?.OperationConsumption
+    }
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
-        newRateFormatter: newRateFormatter,
+        newWeldingRateFormatter: newWeldingRateFormatter,
         statusFormatter: statusFormatter,
         NewcostFormatter: NewcostFormatter,
         OldcostFormatter: OldcostFormatter,
@@ -292,8 +374,11 @@ function OperationSTSimulation(props) {
         plantFormatter: plantFormatter,
         costingHeadFormatter: costingHeadFormatter,
         customerFormatter: customerFormatter,
-        revisedBasicRateHeader: revisedBasicRateHeader,
-        nullHandler: props.nullHandler && props.nullHandler
+        revisedRateHeader: revisedRateHeader,
+        nullHandler: props.nullHandler && props.nullHandler,
+        rateFormatter: rateFormatter,
+        oldBasicRateFormatter: oldBasicRateFormatter,
+        consumptionFormatter: consumptionFormatter
     };
 
 
@@ -333,11 +418,15 @@ function OperationSTSimulation(props) {
 
         let tempArr = []
         arr && arr.map(item => {
-
             let tempObj = {}
             tempObj.OperationId = item.OperationId
             tempObj.OldOperationRate = Number(item.Rate)
             tempObj.NewOperationRate = Number(item.NewRate)
+            tempObj.OldOperationBasicRate = Number(item.OperationBasicRate)
+            tempObj.NewOperationBasicRate = Number(item.NewOperationBasicRate)
+            tempObj.OldOperationConsumption = Number(item.OperationConsumption)
+            tempObj.NewOperationConsumption = Number(item.OperationConsumption)
+
 
             tempArr.push(tempObj)
             return null
@@ -384,6 +473,11 @@ function OperationSTSimulation(props) {
             </ExcelSheet>);
     }
 
+
+    function getOperationTypes(list) {
+        return list.map(item => item.ForType);
+    }
+    const operationTypes = getOperationTypes(list);
     return (
         <div>
             <div className={`ag-grid-react`}>
@@ -398,13 +492,13 @@ function OperationSTSimulation(props) {
                                         <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                             <div className='d-flex align-items-center'>
                                                 <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
+                                                <button type="button" className="user-btn float-right mr-2 Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
-                                                <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
+                                                {(props.lastRevision || isImpactedMaster) && < ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                     {onBtExport()}
-                                                </ExcelFile>
+                                                </ExcelFile>}
                                             </div>
 
                                             <div className='d-flex justify-content-end bulk-upload-row'>
@@ -459,7 +553,7 @@ function OperationSTSimulation(props) {
                                                         <p title={list[0].VendorName} className='mr-2'>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
 
                                                     </div>}
-                                                    <button type="button" className={"apply"} id="simulation-back" onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
+                                                    <button type="button" className={"apply back_simulationPage"} id="simulation-back" onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
                                                 </div>}
                                             </div>
                                         </div>
@@ -491,15 +585,24 @@ function OperationSTSimulation(props) {
                                             // frameworkComponents={frameworkComponents}
                                             >
                                                 {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190} cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
+                                                <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'} minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationName" tooltipField='OperationName' editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" tooltipField='OperationCode' editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
                                                 {!isImpactedMaster && <><AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" minWidth={190}></AgGridColumn></>}
                                                 {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn></>}
                                                 {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} tooltipField={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn></>}
                                                 {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
+                                                {operationTypes.includes('Welding') && <AgGridColumn field="OperationConsumption" editable='false' headerName="Consumption" minWidth={190} cellRenderer='consumptionFormatter'></AgGridColumn>}
+                                                {operationTypes.includes('Welding') && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={320} headerName="Welding Material Rate/Kg" marryChildren={true} >
+                                                    <AgGridColumn minWidth={150} field="" editable={false} headerName="Existing" colId="oldOperationBasicRate" cellRenderer='oldBasicRateFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} field="NewOperationBasicRate" editable={isImpactedMaster ? false : true} headerName="Revised" colId='newOperationBasicRate' headerComponent={'revisedRateHeader'} cellRenderer='newWeldingRateFormatter'></AgGridColumn>
+                                                </AgGridColumn>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
-                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
-                                                    <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer='oldRateFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} editable={operationTypes.includes('Welding') || isImpactedMaster ? false : true} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedRateHeader'} cellRenderer='rateFormatter' valueGetter={ageValueGetterRate}
+                                                    >
+
+                                                    </AgGridColumn>
                                                 </AgGridColumn>
                                                 {props.children}
                                                 <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
@@ -516,7 +619,7 @@ function OperationSTSimulation(props) {
                                 !isImpactedMaster &&
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                        <div className="inputbox date-section mr-3 verfiy-page">
+                                        <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                             <DatePicker
                                                 name="EffectiveDate"
                                                 id='EffectiveDate'
@@ -535,7 +638,7 @@ function OperationSTSimulation(props) {
                                             />
                                             {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                         </div>
-                                        <button onClick={verifySimulation} type="button" id="verify-btn" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                        <button onClick={verifySimulation} type="button" id="verify-btn" className="user-btn mr5 save-btn verifySimulation" disabled={isDisable}>
                                             <div className={"Run-icon"}>
                                             </div>{" "}
                                             {"Verify"}

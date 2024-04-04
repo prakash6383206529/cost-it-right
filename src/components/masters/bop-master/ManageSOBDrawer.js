@@ -209,7 +209,7 @@ function ManageSOBDrawer(props) {
     reset()
     dispatch(updateBOPSOBVendors(data, (res) => {
       if (res && res.data && res.data.Result) {
-        Toaster.success(`${showBopLabel()}  Vendors SOB updated successfully.`)
+        Toaster.success(`${showBopLabel()} Vendors SOB updated successfully.`)
         props.closeDrawer('a', 'submit')
       }
     }))
@@ -331,7 +331,7 @@ function ManageSOBDrawer(props) {
 
                       {
                         GridData && <tr className="sob-background">
-                          <td>{`${showBopLabel()}  Cost`}</td>
+                          <td>{`${showBopLabel()} Cost`}</td>
                           <td>{''}</td>
                           <td>{`Net Cost (Weighted Average):`}</td>
                           <td>{`${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>

@@ -311,19 +311,19 @@ function ProfitSimulation(props) {
                 Toaster.warning('Please fill CC');
                 return false
             } else if (tempBOP !== 0) {
-                Toaster.warning(`Please fill ${showBopLabel()} `);
+                Toaster.warning(`Please fill ${showBopLabel()}`);
                 return false
             } else if (tempRMCC !== 0) {
                 Toaster.warning('Please fill both RM and CC or Profit Percentage');
                 return false
             } else if (tempRMBOP !== 0) {
-                Toaster.warning(`Please fill both RM and ${showBopLabel()}  or Profit Percentage`);
+                Toaster.warning(`Please fill both RM and ${showBopLabel()} or Profit Percentage`);
                 return false
             } else if (tempBOPCC !== 0) {
-                Toaster.warning(`Please fill both ${showBopLabel()}  and CC or Profit Percentage`);
+                Toaster.warning(`Please fill both ${showBopLabel()} and CC or Profit Percentage`);
                 return false
             } else if (tempRMCCBOP !== 0) {
-                Toaster.warning(`Please fill all values RM, CC and ${showBopLabel()}  or Profit Percentage`);
+                Toaster.warning(`Please fill all values RM, CC and ${showBopLabel()} or Profit Percentage`);
                 return false
             }
         }

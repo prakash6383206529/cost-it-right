@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap } from '../../../costing/actions/Approval'
-import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
+import { TextAreaHookForm, SearchableSelectHookForm, AllApprovalField } from '../../../layout/HookFormInputs'
 import { formatRMSimulationObject, getCodeBySplitting, getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { APPROVER, EMPTY_GUID, FILE_URL, REASON_ID, INR } from '../../../../config/constants'
@@ -67,6 +67,7 @@ function ApproveRejectDrawer(props) {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const SAPData = useSelector(state => state.approval.SAPObj)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const [approverIdList, setApproverIdList] = useState([])
 
   const approverAPICall = (departmentId, technology, approverTypeId) => {
 
@@ -75,7 +76,8 @@ function ApproveRejectDrawer(props) {
       DepartmentId: departmentId && departmentId,
       TechnologyId: technology,
       ReasonId: reasonId,
-      ApprovalTypeId: approverTypeId
+      ApprovalTypeId: approverTypeId,
+      plantId: approvalData.plantId
     }
     dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
       const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -222,9 +224,10 @@ function ApproveRejectDrawer(props) {
             // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
             TechnologyId: item,
             ReasonId: 0,
-            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId)
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
+            plantId: approvalData.plantId ?? EMPTY_GUID
           }
-
+          let approverIdListTemp = []
           dispatch(getAllSimulationApprovalList(obj, (res) => {
             // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
             // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
@@ -239,9 +242,11 @@ function ApproveRejectDrawer(props) {
                 levelId: item.LevelId,
                 levelName: item.LevelName
               })
+              approverIdListTemp.push(item.Value)
               return null
             })
             approverDropdownValue.push(tempDropdownList)
+            setApproverIdList(approverIdListTemp)
             let allObjVal = []
 
             for (let v = 0; v < approverDropdownValue.length; v++) {
@@ -292,7 +297,8 @@ function ApproveRejectDrawer(props) {
           //NEED TO MAKE THIS 2   
           TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
           ReasonId: 0,
-          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId)
+          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
+          plantId: approvalData.plantId ?? EMPTY_GUID
         }
 
         dispatch(getAllSimulationApprovalList(obj, (res) => {
@@ -471,7 +477,7 @@ function ApproveRejectDrawer(props) {
           SenderLevel: levelDetails.Level,
           ApproverDepartmentId: dept && dept.value ? dept.value : '',
           ApproverDepartmentName: dept && dept.label ? dept.label : '',
-          Approver: approver && approver.value ? approver.value : '',
+          ApproverIdList: approver && approver.value ? approver.value : '',
           ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
           ApproverLevel: approver && approver.levelName ? approver.levelName : '',
           Remark: remark,
@@ -581,7 +587,8 @@ function ApproveRejectDrawer(props) {
             SenderLevelId: levelDetails.LevelId,
             SenderLevel: levelDetails.Level,
             SenderId: userLoggedIn,
-            ApproverId: approver && approver.value ? approver.value : '',
+            // ApproverId: approver && approver.value ? approver.value : '',
+            ApproverIdList: approverIdList,
             ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
             ApproverLevel: approver && approver.levelName ? approver.levelName : '',
             Remark: remark,
@@ -602,7 +609,8 @@ function ApproveRejectDrawer(props) {
           SenderLevelId: levelDetails.LevelId,
           SenderLevel: levelDetails.Level,
           SenderId: userLoggedIn,
-          ApproverId: approver && approver.value ? approver.value : '',
+          // ApproverId: approver && approver.value ? approver.value : '',
+          ApproverIdList: approverIdList,
           ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
           ApproverLevel: approver && approver.levelName ? approver.levelName : '',
           Remark: remark,
@@ -633,7 +641,8 @@ function ApproveRejectDrawer(props) {
         senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
         senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
         senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
-        senderObj.ApproverId = approver && approver.value ? approver.value : ''
+        // senderObj.ApproverId = approver && approver.value ? approver.value : ''
+        senderObj.ApproverIdList = approverIdList
         senderObj.SenderLevelId = levelDetails?.LevelId
         senderObj.SenderLevel = levelDetails?.Level
         senderObj.SenderId = userLoggedIn
@@ -808,6 +817,7 @@ function ApproveRejectDrawer(props) {
         DepartmentId: value.value,
         TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
         ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
+        plantId: approvalData.plantId
       }
     } else {
     }
@@ -1032,23 +1042,30 @@ function ApproveRejectDrawer(props) {
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
-                      <SearchableSelectHookForm
-                        label={'Approver'}
-                        name={'approver'}
-                        placeholder={'Select'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        //defaultValue={isEditFlag ? plantName : ''}
-                        options={approvalDropDown}
-                        mandatory={true}
-                        handleChange={() => { }}
-                        disabled={disableSR}
-                        //MINDA
-                        // disabled={!(userData.Department.length > 1 && reasonId !== REASON_ID) || disableSR ? true : false}
-                        errors={errors.approver}
-                      />
+                      {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                        <AllApprovalField
+                          label="Approver"
+                          approverList={approvalDropDown}
+                          popupButton="View all"
+                        />
+                      </> :
+                        <SearchableSelectHookForm
+                          label={'Approver'}
+                          name={'approver'}
+                          placeholder={'Select'}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          //defaultValue={isEditFlag ? plantName : ''}
+                          options={approvalDropDown}
+                          mandatory={true}
+                          handleChange={() => { }}
+                          disabled={disableSR}
+                          //MINDA
+                          // disabled={!(userData.Department.length > 1 && reasonId !== REASON_ID) || disableSR ? true : false}
+                          errors={errors.approver}
+                        />}
                     </div>
                   </>
                 )}
@@ -1077,23 +1094,30 @@ function ApproveRejectDrawer(props) {
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
-                      <SearchableSelectHookForm
-                        label={'Approver'}
-                        name={'approver'}
-                        placeholder={'Select'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        //defaultValue={isEditFlag ? plantName : ''}
-                        options={approvalDropDown}
-                        mandatory={true}
-                        handleChange={() => { }}
-                        errors={errors.approver}
-                        disabled={disableSR}
-                      //MINDA
-                      // disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
-                      />
+                      {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                        <AllApprovalField
+                          label="Approver"
+                          approverList={approvalDropDown}
+                          popupButton="View all"
+                        />
+                      </> :
+                        <SearchableSelectHookForm
+                          label={'Approver'}
+                          name={'approver'}
+                          placeholder={'Select'}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          //defaultValue={isEditFlag ? plantName : ''}
+                          options={approvalDropDown}
+                          mandatory={true}
+                          handleChange={() => { }}
+                          errors={errors.approver}
+                          disabled={disableSR}
+                        //MINDA
+                        // disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
+                        />}
                     </div>
                     {
                       type === 'Sender' &&

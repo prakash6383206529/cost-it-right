@@ -20,10 +20,13 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
 import { PaginationWrapper } from "../../common/commonPagination";
-import { searchNocontentFilter } from "../../../helper";
+import { searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
 import { useRef } from "react";
+import TourWrapper from "../../common/Tour/TourWrapper";
+import { Steps } from "../../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -33,6 +36,8 @@ const RMListing = (props) => {
   const searchRef = useRef(null);
   const { rawMaterialTypeDataList } = useSelector((state) => state.material);
   const permissions = useContext(ApplyPermission);
+  const { t } = useTranslation("common")
+
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -47,6 +52,8 @@ const RMListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+    render: false,
+    showExtraData: false
   });
   useEffect(() => {
     getListData();
@@ -132,7 +139,16 @@ const RMListing = (props) => {
     );
     setState((prevState) => ({ ...prevState, showPopup: false }));
   };
-
+  /**
+    * @method toggleExtraData
+   * @description Handle specific module tour state to display lorem data
+   */
+  const toggleExtraData = (showTour) => {
+    setState((prevState) => ({ ...prevState, render: true, showExtraData: showTour }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, render: false }));
+    }, 100);
+  }
   const onPopupConfirm = () => {
     confirmDelete(state.deletedId);
   };
@@ -156,26 +172,32 @@ const RMListing = (props) => {
    * @description show and hide edit and delete
    */
   const buttonFormatter = (props) => {
+    const { showExtraData } = state
     const cellValue = props?.valueFormatted
       ? props.valueFormatted
       : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    let isEditbale = false
+    let isDeleteButton = false
+    isEditbale = permissions.Edit;
+    isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete);
 
     return (
       <>
-        {permissions.Edit && (
+        {isEditbale && (
           <Button
             title="Edit"
             variant="Edit"
             id={`addSpecificationList_edit${props?.rowIndex}`}
-            className="mr-2"
+            className="mr-2 Tour_List_Edit"
             onClick={() => editItemDetails(cellValue, rowData)}
           />
         )}
-        {permissions.Delete && (
+        {isDeleteButton && (
           <Button
             title="Delete"
             variant="Delete"
+            className={"Tour_List_Delete"}
             id={`addSpecificationList_delete${props?.rowIndex}`}
             onClick={() => deleteItem(cellValue)}
           />
@@ -271,7 +293,7 @@ const RMListing = (props) => {
 
 
   };
-  const { isOpen, isEditFlag, ID, noData } = state;
+  const { isOpen, isEditFlag, ID, noData, showExtraData, render } = state;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -299,10 +321,10 @@ const RMListing = (props) => {
       <Row className="pt-4 no-filter-row">
         <Col md={6} className="text-right search-user-block pr-0">
           {permissions.Add && (
-            <Button id="rmSpecification_addAssociation" className="mr5" onClick={openAssociationModel} title="Add Association" icon="plus mr-0 ml5" buttonName="A" />
+            <Button id="rmSpecification_addAssociation" className="mr5 Tour_List_AddAssociation" onClick={openAssociationModel} title="Add Association" icon="plus mr-0 ml5" buttonName="A" />
           )}
           {permissions.Add && (
-            <Button id="rmSpecification_addMaterial" className="mr5" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
+            <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
           )}
           {permissions.Download && (
             <>
@@ -311,7 +333,7 @@ const RMListing = (props) => {
                   filename={"Rm Material"}
                   fileExtension={".xls"}
                   element={
-                    <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                    <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                   }
                 >
                   {onBtExport()}
@@ -319,7 +341,7 @@ const RMListing = (props) => {
               </>
             </>
           )}
-          <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+          <Button id={"rmSpecification_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
         </Col>
       </Row>
 
@@ -334,14 +356,12 @@ const RMListing = (props) => {
               }`}
           >
             <div className="ag-grid-header">
-              <input
-                ref={searchRef}
-                type="text"
-                className="form-control table-search"
-                id="filter-text-box"
-                placeholder="Search"
-                autoComplete={"off"}
-                onChange={(e) => onFilterTextBoxChanged(e)}
+              <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+              <TourWrapper
+                buttonSpecificProp={{ id: "RM_Listing_Tour", onClick: toggleExtraData }}
+                stepsSpecificProp={{
+                  steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, bulkUpload: false, addButton: false, filterButton: false, costMovementButton: false, viewButton: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                }}
               />
             </div>
             <div
@@ -354,12 +374,14 @@ const RMListing = (props) => {
                   customClassName="no-content-found"
                 />
               )}
-              <AgGridReact
+              {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout="autoHeight"
                 // columnDefs={c}
-                rowData={rawMaterialTypeDataList}
+                rowData={showExtraData && rawMaterialTypeDataList ? [...setLoremIpsum(rawMaterialTypeDataList[0]), ...rawMaterialTypeDataList] : rawMaterialTypeDataList}
+
                 pagination={true}
                 paginationPageSize={defaultPageSize}
                 onGridReady={onGridReady}
@@ -381,8 +403,8 @@ const RMListing = (props) => {
                 <AgGridColumn field="Density"></AgGridColumn>
                 <AgGridColumn field="RMName" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                 <AgGridColumn field="RMGrade" headerName="Grade" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
-              </AgGridReact>
+                <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+              </AgGridReact>}
               {
                 <PaginationWrapper
                   gridApi={state.gridApi}

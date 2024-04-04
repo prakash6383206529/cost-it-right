@@ -150,7 +150,7 @@ export function approvedCostingByApprover(requestData, callback) {
     return (dispatch) => {
         axios.post(API.approvedCostingByApprover, requestData, config())
             .then((response) => {
-                if ((response && response.status === 200) || response?.data?.Result) {
+                if ((response && response?.status === 200) || response?.data?.Result) {
                     callback(response);
                 } else {
                     dispatch({ type: API_FAILURE })

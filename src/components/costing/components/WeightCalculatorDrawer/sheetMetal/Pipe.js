@@ -4,15 +4,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
-  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, calculateScrapWeight, percentageLimitValidation
+  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, calculateScrapWeight, percentageLimitValidation, calculatePercentage
 } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
-import { G, KG, MG, STD, } from '../../../../../config/constants'
+import { DISPLAY_G, DISPLAY_KG, DISPLAY_MG, G, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
@@ -33,17 +33,17 @@ function Pipe(props) {
 
   const convert = (FinishWeightOfSheet, dimmension) => {
     switch (dimmension) {
-      case G:
+      case DISPLAY_G:
         setTimeout(() => {
           setFinishWeights(FinishWeightOfSheet)
         }, 200);
         break;
-      case KG:
+      case DISPLAY_KG:
         setTimeout(() => {
           setFinishWeights(FinishWeightOfSheet * 1000)
         }, 200);
         break;
-      case MG:
+      case DISPLAY_MG:
         setTimeout(() => {
           setFinishWeights(FinishWeightOfSheet / 1000)
         }, 200);
@@ -57,24 +57,24 @@ function Pipe(props) {
 
   const defaultValues = {
 
-    OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== null ? checkForDecimalAndNull(WeightCalculatorRequest.OuterDiameter, localStorage.NoOfDecimalForInputOutput) : '',
-    Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
-    InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.InnerDiameter !== null ? checkForDecimalAndNull(WeightCalculatorRequest.InnerDiameter, localStorage.NoOfDecimalForInputOutput) : '',
-    SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfSheet, localStorage.NoOfDecimalForInputOutput) : '',
-    PartLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfPart !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfPart, localStorage.NoOfDecimalForInputOutput) : '',
-    NumberOfPartsPerSheet: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfPartsPerSheet, localStorage.NoOfDecimalForInputOutput) : '',
-    ScrapLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfScrap !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfScrap, localStorage.NoOfDecimalForInputOutput) : '',
-    WeightofSheet: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfSheetInUOM, localStorage.NoOfDecimalForInputOutput) : '',
-    WeightofPart: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfPartInUOM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfPartInUOM, localStorage.NoOfDecimalForInputOutput) : '',
-    WeightofScrap: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfScrapInUOM !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfScrapInUOM, localStorage.NoOfDecimalForInputOutput) : '',
-    NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
-    GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
-    FinishWeightOfSheet: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
-    cuttingAllowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.CuttingAllowance, localStorage.NoOfDecimalForInputOutput) : '',
-    partLengthWithAllowance: WeightCalculatorRequest && WeightCalculatorRequest.PartLengthWithAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PartLengthWithAllowance, localStorage.NoOfDecimalForInputOutput) : '',
-    endPieceAllowance: WeightCalculatorRequest && WeightCalculatorRequest.EndPieceAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.EndPieceAllowance, localStorage.NoOfDecimalForInputOutput) : '',
-    scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, localStorage.NoOfDecimalForInputOutput) : '',
-    scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.RecoveryPercentage !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
+    OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest?.OuterDiameter !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.OuterDiameter, localStorage.NoOfDecimalForInputOutput) : '',
+    Thickness: WeightCalculatorRequest && WeightCalculatorRequest?.Thickness !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
+    InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest?.InnerDiameter !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.InnerDiameter, localStorage.NoOfDecimalForInputOutput) : '',
+    SheetLength: WeightCalculatorRequest && WeightCalculatorRequest?.LengthOfSheet !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfSheet, localStorage.NoOfDecimalForInputOutput) : '',
+    PartLength: WeightCalculatorRequest && WeightCalculatorRequest?.LengthOfPart !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfPart, localStorage.NoOfDecimalForInputOutput) : '',
+    NumberOfPartsPerSheet: WeightCalculatorRequest && WeightCalculatorRequest?.NumberOfPartsPerSheet !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NumberOfPartsPerSheet, localStorage.NoOfDecimalForInputOutput) : '',
+    ScrapLength: WeightCalculatorRequest && WeightCalculatorRequest?.LengthOfScrap !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.LengthOfScrap, localStorage.NoOfDecimalForInputOutput) : '',
+    WeightofSheet: WeightCalculatorRequest && WeightCalculatorRequest?.WeightOfSheetInUOM !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfSheetInUOM, localStorage.NoOfDecimalForInputOutput) : '',
+    WeightofPart: WeightCalculatorRequest && WeightCalculatorRequest?.WeightOfPartInUOM !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfPartInUOM, localStorage.NoOfDecimalForInputOutput) : '',
+    WeightofScrap: WeightCalculatorRequest && WeightCalculatorRequest?.WeightOfScrapInUOM !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.WeightOfScrapInUOM, localStorage.NoOfDecimalForInputOutput) : '',
+    NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest?.NetSurfaceArea !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetSurfaceArea, localStorage.NoOfDecimalForInputOutput) : '',
+    GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest?.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, localStorage.NoOfDecimalForInputOutput) : '',
+    FinishWeightOfSheet: WeightCalculatorRequest && WeightCalculatorRequest?.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, localStorage.NoOfDecimalForInputOutput) : '',
+    cuttingAllowance: WeightCalculatorRequest && WeightCalculatorRequest?.CuttingAllowance !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.CuttingAllowance, localStorage.NoOfDecimalForInputOutput) : '',
+    partLengthWithAllowance: WeightCalculatorRequest && WeightCalculatorRequest?.PartLengthWithAllowance !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.PartLengthWithAllowance, localStorage.NoOfDecimalForInputOutput) : '',
+    endPieceAllowance: WeightCalculatorRequest && WeightCalculatorRequest?.EndPieceAllowance !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.EndPieceAllowance, localStorage.NoOfDecimalForInputOutput) : '',
+    scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest?.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, localStorage.NoOfDecimalForInputOutput) : '',
+    scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
   }
 
   const {
@@ -105,6 +105,8 @@ function Pipe(props) {
   const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
   const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
   const [isDisable, setIsDisable] = useState(false)
+  const [scrapWeight, setScrapWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== null ? WeightCalculatorRequest.ScrapWeight : '')
+
   let fields = IsolateReRender(control)
   let fieldValues = {
     OuterDiameter: fields && fields[0],
@@ -118,15 +120,20 @@ function Pipe(props) {
 
   const values = useWatch({
     control,
-    name: ['scrapRecoveryPercent', 'grossWeight', 'FinishWeightOfSheet', 'cuttingAllowance', 'PartLength'],
+    name: ['scrapRecoveryPercent', 'cuttingAllowance', 'PartLength'],
   })
 
   useEffect(() => {
     if (!CostingViewMode) {
-      scrapWeightCalculation()
       calculateLengthOfPart()
     }
   }, [values])
+
+  useEffect(() => {
+    if (!CostingViewMode) {
+      scrapWeightCalculation()
+    }
+  }, [values, GrossWeight, FinishWeightOfSheet])
 
   useEffect(() => {
     //UNIT TYPE ID OF DIMENSIONS
@@ -187,17 +194,17 @@ function Pipe(props) {
       return false
     }
     switch (UOMDimension.label) {
-      case G:
+      case DISPLAY_G:
         setTimeout(() => {
           setFinishWeights(FinishWeightOfSheet)
         }, 200);
         break;
-      case KG:
+      case DISPLAY_KG:
         setTimeout(() => {
           setFinishWeights(FinishWeightOfSheet * 1000)
         }, 200);
         break;
-      case MG:
+      case DISPLAY_MG:
         setTimeout(() => {
           setFinishWeights(FinishWeightOfSheet / 1000)
         }, 200);
@@ -243,6 +250,7 @@ function Pipe(props) {
       setValue('NumberOfPartsPerSheet', parseInt(NumberParts))
       const updatedValue = dataToSend
       updatedValue.NumberOfPartsPerSheet = parseInt(NumberParts)
+      updatedValue.NumberOfPartsPerSheetWithDecimal = NumberParts
       setDataToSend(updatedValue)
     }
   }
@@ -252,11 +260,11 @@ function Pipe(props) {
    * @description CALCULATE LENGTH OF SCRAP
    */
   const calculateLengthofScrap = () => {
-    const scrapLength = checkForNull(fieldValues.SheetLength % fieldValues.PartLength)
     const updatedValue = dataToSend
-    updatedValue.ScrapLength = scrapLength
+    const remainder = updatedValue.NumberOfPartsPerSheetWithDecimal % 1
+    updatedValue.ScrapLength = remainder
     setDataToSend(updatedValue)
-    setValue('ScrapLength', checkForDecimalAndNull(scrapLength, localStorage.NoOfDecimalForInputOutput))
+    setValue('ScrapLength', checkForDecimalAndNull(remainder, localStorage.NoOfDecimalForInputOutput))
   }
 
   /**
@@ -313,7 +321,6 @@ function Pipe(props) {
       ScrapLength: dataToSend.ScrapLength,
       ExtraVariable: '',
     }
-    // const ScrapWeight = getWeightOfScrap(data)
     const ScrapWeight = getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.ScrapLength)
     const updatedValue = dataToSend
     updatedValue.WeightofScrap = ScrapWeight
@@ -363,28 +370,27 @@ function Pipe(props) {
    * @description SET GROSS WEIGHT
    */
   const setGrossWeight = () => {
-    let WeightofPart
     let WeightofSheet
     let NumberOfPartsPerSheet
     let grossWeight
     const updatedValue = dataToSend
     if (rmRowData.RawMaterialCategory === STD) {
-      WeightofPart = setValueAccToUOM(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
-      setGrossWeights(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
-      updatedValue.GrossWeight = WeightofPart
-      updatedValue.newGrossWeight = WeightofPart
+      grossWeight = checkForNull(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
+      setGrossWeights(grossWeight)
+      updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
+      updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
       setDataToSend(updatedValue)
     } else {
       // WeightofPart = setValueAccToUOM(dataToSend.WeightofPart, UOMDimension.label)
-      WeightofSheet = setValueAccToUOM(dataToSend.WeightofSheet, UOMDimension.label)
+      WeightofSheet = getValues('WeightofSheet')
       NumberOfPartsPerSheet = Number(getValues('NumberOfPartsPerSheet'))
       grossWeight = checkForNull(WeightofSheet / NumberOfPartsPerSheet)
       setGrossWeights(grossWeight)
-      updatedValue.GrossWeight = grossWeight
-      updatedValue.newGrossWeight = grossWeight
+      updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
+      updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
       setDataToSend(updatedValue)
     }
-    setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+    setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
   }
 
   /**
@@ -458,7 +464,7 @@ function Pipe(props) {
       CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
       RawMaterialIdRef: rmRowData.RawMaterialId,
       LoggedInUserId: loggedInUserId(),
-      RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeightOfSheet')) * rmRowData.ScrapRate,
+      RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeightOfSheet')) * calculatePercentage(getValues('scrapRecoveryPercent')) * rmRowData.ScrapRate,
       UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
       UOMForDimension: UOMDimension ? UOMDimension.label : '',
       OuterDiameter: values.OuterDiameter,
@@ -500,11 +506,11 @@ function Pipe(props) {
     setValue('UOMDimension', { label: value.label, value: value.value })
     setUOMDimension(value)
     let grossWeight = GrossWeight
+    let ScrapWeight = scrapWeight
     setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
-    setTimeout(() => {
-      setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
-      setValue('FinishWeightOfSheet', checkForDecimalAndNull(setValueAccToUOM(FinishWeightOfSheet, value.label), localStorage.NoOfDecimalForInputOutput))
-    }, 500);
+    setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
+    setValue('FinishWeightOfSheet', checkForDecimalAndNull(setValueAccToUOM(FinishWeightOfSheet, value.label), localStorage.NoOfDecimalForInputOutput))
+    setValue('scrapWeight', checkForDecimalAndNull(setValueAccToUOM(ScrapWeight, value.label), localStorage.NoOfDecimalForInputOutput))
   }
 
   const UnitFormat = () => {
@@ -518,10 +524,11 @@ function Pipe(props) {
   };
   const scrapWeightCalculation = () => {
     const scrapRecoveryPercent = Number((getValues('scrapRecoveryPercent')))
-    const grossWeight = getValues('GrossWeight')
-    const finishWeight = getValues('FinishWeightOfSheet')
+    const grossWeight = Number(GrossWeight)
+    const finishWeight = Number(FinishWeightOfSheet)
     const scrapWeight = calculateScrapWeight(grossWeight, finishWeight, scrapRecoveryPercent)
-    setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
+    setScrapWeight(checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
+    setValue('scrapWeight', checkForDecimalAndNull((setValueAccToUOM(scrapWeight, UOMDimension.label)), localStorage.NoOfDecimalForInputOutput))
   }
   const calculateLengthOfPart = () => {
     const LengthOfPart = Number(getValues('PartLength'))
@@ -534,9 +541,10 @@ function Pipe(props) {
    * @description Renders the component
    */
   const tooltipMessageForSheetWeight = (value) => {
-    return <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * Length of {value} {value === 'Part' ? 'including allownace' : ''})/1000</div>
+    return <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * Length of {value} {value === 'Part' ? 'including allowance' : ''})/1000</div>
   }
-  const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part including allownace) + {isOneSide ? '(π * Inner Diameter * Length of Part including allownace) +' : ''} (π / 2 * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>))</div>
+  const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part including allowance) + {isOneSide ? '(π * Inner Diameter * Length of Part including allowance) +' : ''} (π / 2 * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>))</div>
+  const lengthOfScrapTooltipMessage = <div>Length of Scrap = Remainder of no. of parts/Sheet <br /> (No. of Parts/Sheet = {checkForDecimalAndNull(dataToSend.NumberOfPartsPerSheetWithDecimal, localStorage.NoOfDecimalForInputOutput)})</div>
   return (
     <>
       <div className="user-page p-0">
@@ -563,7 +571,7 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                      validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -574,7 +582,7 @@ function Pipe(props) {
                   />
                 </Col >
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Thickness(mm)`}
                     name={'Thickness'}
                     Controller={Controller}
@@ -644,7 +652,7 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                      validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -664,7 +672,7 @@ function Pipe(props) {
                     mandatory={false}
                     rules={{
                       required: false,
-                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                      validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -677,7 +685,7 @@ function Pipe(props) {
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part-with-allowance'} tooltipText="Length of Part including  allowance = (Length of Part + Cutting Allowance)" />
                   <TextFieldHookForm
-                    label={`Length of Part including  allowance(mm)`}
+                    label={`Length of Part including allowance(mm)`}
                     name={'partLengthWithAllowance'}
                     Controller={Controller}
                     control={control}
@@ -687,7 +695,7 @@ function Pipe(props) {
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
-                    customClassName={'withBorder'}
+                    customClassName={'withBorder label-fit'}
                     errors={errors.partLengthWithAllowance}
                     disabled={true}
                   />
@@ -702,7 +710,7 @@ function Pipe(props) {
                     mandatory={false}
                     rules={{
                       required: false,
-                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                      validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -713,7 +721,7 @@ function Pipe(props) {
                   />
                 </Col >
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = ((Length(Sheet)-End Piece Allowance) / Length of Part including allownace)" />
+                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = ((Length(Sheet)-End Piece Allowance) / Length of Part including allowance)" />
                   <TextFieldHookForm
                     label="No. of Parts/Sheet"
                     name={'NumberOfPartsPerSheet'}
@@ -731,7 +739,7 @@ function Pipe(props) {
                   />
                 </Col >
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = Remainder of no. of parts/Sheet" />
+                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText={lengthOfScrapTooltipMessage} />
                   <TextFieldHookForm
                     label={`Length of Scrap(mm)`}
                     name={'ScrapLength'}
@@ -900,7 +908,7 @@ function Pipe(props) {
                   />
                 </Col >
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Finish Weight(${UOMDimension.label})`}
                     name={'FinishWeightOfSheet'}
                     Controller={Controller}

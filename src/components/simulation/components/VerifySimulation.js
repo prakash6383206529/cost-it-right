@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,11 +19,14 @@ import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_RM_SIMULATION, ASSEMBLY_TEC
 import DayTime from '../../common/DayTimeWrapper';
 import DatePicker from "react-datepicker";
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { simulationContext } from '.';
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
 
 function VerifySimulation(props) {
+    const { showEditMaster, showverifyPage, costingDrawerPage, handleEditMasterPage, showTour } = useContext(simulationContext) || {};
+
     const { cancelVerifyPage, token, assemblyTechnology, isCombinedProcess } = props
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [effectiveDate, setEffectiveDate] = useState('')
@@ -65,7 +68,12 @@ function VerifySimulation(props) {
 
     // const isAssemblyCosting = true
     const dispatch = useDispatch()
+    useEffect(() => {
 
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditMaster, showverifyPage, costingPage)
+        }
+    }, [costingPage, cancelVerifyPage])
     useEffect(() => {
         if (token) {
             verifyCostingList()
@@ -517,7 +525,7 @@ function VerifySimulation(props) {
 
     useEffect(() => {
         if (verifyList && verifyList.length > 0) {
-            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+            // window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
         }
     }, [verifyList])
 
@@ -750,7 +758,7 @@ function VerifySimulation(props) {
         if (!isMasterAssociatedWithCosting) {
             params.api.sizeColumnsToFit();
         } else {
-            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+            window.screen.width >= 1921 && params.api.sizeColumnsToFit();
         }
     };
 
@@ -770,7 +778,7 @@ function VerifySimulation(props) {
         if (!isMasterAssociatedWithCosting && isBOPDomesticOrImport) {
             gridRef.current.api.sizeColumnsToFit();
         } else {
-            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+            // window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
         }
     }
 
@@ -797,7 +805,10 @@ function VerifySimulation(props) {
         partTypeFormatter: partTypeFormatter,
         combinedProcessCostFormatter: combinedProcessCostFormatter
     };
-
+    function getOperationTypes(list) {
+        return list && list?.map(item => item.ForType);
+    }
+    const operationTypes = getOperationTypes(verifyList);
     return (
         <>
             {
@@ -831,7 +842,7 @@ function VerifySimulation(props) {
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        <button type="button" className={"apply"} id="verfiy-simulation-back" onClick={cancelVerifyPage}> <div className={'back-icon'}></div>Back</button>
+                                        <button type="button" className={"apply back_verify_page"} id="verfiy-simulation-back" onClick={cancelVerifyPage}> <div className={'back-icon'}></div>Back</button>
                                     </div >
                                     <div className="ag-theme-material p-relative">
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
@@ -870,15 +881,18 @@ function VerifySimulation(props) {
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" tooltipField="RMGrade" headerName="Grade" ></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={145} field="ProcessName" tooltipField="ProcessName" headerName="Process Name"></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={150} field="MachineNumber" tooltipField="MachineNumber" headerName="Machine Number"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" tooltipField="BoughtOutPartCode" headerName={`${showBopLabel()}  Number`} cellRenderer={"bopNumberFormatter"}></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField="BoughtOutPartName" cellRenderer='BoughtOutPartName' headerName={`${showBopLabel()}  Name`}></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" tooltipField="BoughtOutPartCode" headerName={`${showBopLabel()} Number`} cellRenderer={"bopNumberFormatter"}></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField="BoughtOutPartName" cellRenderer='BoughtOutPartName' headerName={`${showBopLabel()} Name`}></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" tooltipField="OperationCode" headerName="Operation Code"></AgGridColumn>}
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" tooltipField="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                                             <AgGridColumn width={120} field="PlantName" tooltipField="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                                             {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn width={130} field="POPrice" tooltipField="POPrice" headerName={`Existing Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='priceFormatter'></AgGridColumn>}
-
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="ForType" headerName="Operation Type" minWidth={190}></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={185} field="OldOperationConsumption" tooltipField="OldOperationRate" headerName="Consumption"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="OldOperationBasicRate" tooltipField="OldOperationRate" headerName="Existing Welding Material Rate/kg"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName="Revised Welding Material Rate/kg"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 
@@ -922,7 +936,7 @@ function VerifySimulation(props) {
                             </div >
                         </Col >
                     </Row >
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
+                    <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer ${showTour ? '' : 'sticky-btn-footer'}`}>
                         <div className="col-sm-12 text-right bluefooter-butn run-simulation">
                             {/* {!isAssemblyCosting && */}
                             {/* <button onClick={runSimulation} type="submit" disabled={hideRunButton || runSimulationPermission} className="user-btn mr5 save-btn"                    > */}

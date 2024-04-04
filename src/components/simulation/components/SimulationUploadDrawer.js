@@ -242,8 +242,8 @@ class SimulationUploadDrawer extends Component {
 
                         case Number(OPERATIONS):
                         case Number(SURFACETREATMENT):
-                            const r_index = header_row.indexOf("Rate");
-                            const rr_index = header_row.indexOf("RevisedRate");
+                            const r_index = header_row.indexOf("Rate") > 0 ? header_row.indexOf("Rate") : header_row.indexOf("WeldingMaterialRate/kg");
+                            const rr_index = header_row.indexOf("RevisedRate") > 0 ? header_row.indexOf("RevisedRate") : header_row.indexOf("Revised WeldingMaterialRate/kg");
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
@@ -262,6 +262,14 @@ class SimulationUploadDrawer extends Component {
                                             }
                                             if (fileHeads[i] === 'RevisedRate') {
                                                 obj["NewRate"] = el;
+                                            } else if (fileHeads[i] === 'OperationType') {
+                                                obj["ForType"] = el;
+                                            } else if (fileHeads[i] === 'Consumption') {
+                                                obj["OperationConsumption"] = el;
+                                            } else if (fileHeads[i] === 'WeldingMaterialRate/kg') {
+                                                obj["OperationBasicRate"] = el;
+                                            } else if (fileHeads[i] === 'Revised WeldingMaterialRate/kg') {
+                                                obj["NewOperationBasicRate"] = el;
                                             } else {
                                                 obj[fileHeads[i]] = el;
                                             }
@@ -269,7 +277,6 @@ class SimulationUploadDrawer extends Component {
                                         })
                                         fileData.push(obj)
                                         obj = {}
-
                                     }
                                 }
                                 return null;

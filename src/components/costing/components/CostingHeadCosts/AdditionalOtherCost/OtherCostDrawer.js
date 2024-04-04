@@ -4,17 +4,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs';
-import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, WACTypeId } from '../../../../../config/constants';
 import { checkForDecimalAndNull, checkWhiteSpaces, number, decimalNumberLimit6, percentageLimitValidation, hashValidation, calculatePercentage, checkForNull, removeBOPfromApplicability } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { ViewCostingContext } from '../../CostingDetails';
-import { STRINGMAXLENGTH } from '../../../../../config/masterData';
+import { IdForMultiTechnology, STRINGMAXLENGTH } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import _ from 'lodash'
 import Toaster from '../../../../common/Toaster';
 import { setOtherCostData } from '../../../actions/Costing';
 import OtherCostTable from './OtherCostTable';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 
 function OtherCostDrawer(props) {
 
@@ -40,7 +42,7 @@ function OtherCostDrawer(props) {
     const costData = useContext(costingInfoContext);
     const CostingViewMode = useContext(ViewCostingContext);
 
-    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
+    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData } = useSelector(state => state.costing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costingHead = useSelector(state => state.comman.costingHead)
     const [isEdit, setIsEdit] = useState(false);
@@ -51,17 +53,33 @@ function OtherCostDrawer(props) {
     const [editIndex, setEditIndex] = useState('')
     const [otherCost, setOtherCost] = useState('')
     const [applicabilityCost, setApplicabilityCost] = useState('')
-
-    const fieldValues = useWatch({
+    // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+    const fieldValuesForPercent = useWatch({
         control,
         name: ['PercentageOtherCost', 'OtherCostApplicability'],
     })
+    const fieldValuesForFixed = useWatch({
+        control,
+        name: ['ApplicabilityCost'],
+    })
 
     useEffect(() => {
+        setValue('ApplicabilityCost', '')
         if (!CostingViewMode) {
             findApplicabilityCost()
         }
-    }, [fieldValues])
+    }, [fieldValuesForPercent])
+    useEffect(() => {
+        if (!CostingViewMode && getValues('OtherCostApplicability')?.label === 'Fixed') {
+            findApplicabilityCost()
+        }
+    }, [fieldValuesForFixed])
+
+    useEffect(() => {
+        let request = partType ? 'multiple technology assembly' : ''
+        dispatch(fetchCostingHeadsAPI(request, true, (res) => { }))
+    }, [])
 
     /**
     * @method renderListing
@@ -108,6 +126,7 @@ function OtherCostDrawer(props) {
         }
 
         setOtherCostApplicability(value)
+        setValue('ApplicabilityCost', '')
     }
 
     /**
@@ -235,6 +254,7 @@ function OtherCostDrawer(props) {
         setValue('PercentageOtherCost', '')
         setValue('OtherCostDescription', '')
         setValue('AnyOtherCost', '')
+        setValue('ApplicabilityCost', '')
         setOtherCostApplicability([])
         setOtherCost(0)
         setEditIndex('')
@@ -252,6 +272,18 @@ function OtherCostDrawer(props) {
         setValue('OtherCostDescription', editObj.OtherCostDescription)
         setValue('AnyOtherCost', editObj.AnyOtherCost)
         setValue('crmHeadOtherCost', { label: editObj.CRMHead, value: index })
+        if (editObj?.OtherCostApplicability === 'Fixed') {
+            setTimeout(() => {
+                setValue('ApplicabilityCost', editObj?.ApplicabilityCost)
+                setApplicabilityCost(editObj?.ApplicabilityCost)
+            }, 100);
+        } else {
+            setTimeout(() => {
+                setValue('ApplicabilityCost', checkForDecimalAndNull(editObj?.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice))
+                setApplicabilityCost(editObj?.ApplicabilityCost)
+            }, 100);
+        }
+
         setOtherCostType({ label: editObj.OtherCostApplicability !== 'Fixed' ? 'Percentage' : editObj.OtherCostApplicability, value: editObj.OtherCostApplicability !== 'Fixed' ? 'Percentage' : editObj.OtherCostApplicability })
         setOtherCostApplicability({ label: editObj.OtherCostApplicability, value: editObj.OtherCostApplicabilityId })
         setEditIndex(index)
@@ -272,15 +304,14 @@ function OtherCostDrawer(props) {
     const findApplicabilityCost = () => {
         const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.ProcessCostTotal + headerCosts?.OperationCostTotal
         const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation
-
         const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
         const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
         const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
-
         let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
         const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
         const percent = getValues('PercentageOtherCost')
-
+        const overheadAndProfitTabDataValue = OverheadProfitTabData && OverheadProfitTabData[0]?.CostingPartDetails
+        const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
 
         let totalCost = ''
         switch (otherCostApplicability?.label) {
@@ -288,41 +319,95 @@ function OtherCostDrawer(props) {
             case 'Part Cost':
                 totalCost = headerCosts.NetRawMaterialsCost * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetRawMaterialsCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
                 break;
             case 'BOP':
                 totalCost = headerCosts.NetBoughtOutPartCost * calculatePercentage(percent)
                 setApplicabilityCost(headerCosts.NetBoughtOutPartCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
                 break;
             case 'RM + CC':
             case 'Part Cost + CC':
                 totalCost = (RMCC) * calculatePercentage(percent)
                 setApplicabilityCost(RMCC)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
                 break;
             case 'BOP + CC':
                 totalCost = BOPCC * calculatePercentage(percent)
                 setApplicabilityCost(BOPCC)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
                 break;
             case 'CC':
                 totalCost = (ConversionCostForCalculation) * calculatePercentage(percent)
                 setApplicabilityCost(ConversionCostForCalculation)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration.NoOfDecimalForPrice))
                 break;
             case 'RM + CC + BOP':
             case 'Part Cost + CC + BOP':
                 totalCost = (RMBOPCC) * calculatePercentage(percent)
                 setApplicabilityCost(RMBOPCC)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice))
                 break;
             case 'RM + BOP':
             case 'Part Cost + BOP':
                 totalCost = (RMBOP) * calculatePercentage(percent)
                 setApplicabilityCost(RMBOP)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
                 break;
             case 'Net Cost':
                 totalCost = (totalTabCost) * calculatePercentage(percent)
                 setApplicabilityCost(totalTabCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(totalTabCost, initialConfiguration.NoOfDecimalForPrice))
+                break;
+            case 'Surface Treatment Cost':
+                totalCost = (dataList?.NetSurfaceTreatmentCost) * calculatePercentage(percent)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(dataList?.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice))
+                setApplicabilityCost(dataList?.NetSurfaceTreatmentCost)
+                break;
+            case 'Overhead Cost':
+                totalCost = (overheadAndProfitTabDataValue?.OverheadCost) * calculatePercentage(percent)
+                setApplicabilityCost(overheadAndProfitTabDataValue?.OverheadCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.OverheadCost, initialConfiguration.NoOfDecimalForPrice))
+                break;
+            case 'Profit Cost':
+                totalCost = (overheadAndProfitTabDataValue?.ProfitCost) * calculatePercentage(percent)
+                setApplicabilityCost(overheadAndProfitTabDataValue?.ProfitCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.ProfitCost, initialConfiguration.NoOfDecimalForPrice))
+                break;
+            case 'Rejection Cost':
+                totalCost = (overheadAndProfitTabDataValue?.RejectionCost) * calculatePercentage(percent)
+                setApplicabilityCost(overheadAndProfitTabDataValue?.RejectionCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.RejectionCost, initialConfiguration.NoOfDecimalForPrice))
+                break;
+            case 'ICC Cost':
+                totalCost = (overheadAndProfitTabDataValue?.ICCCost) * calculatePercentage(percent)
+                setApplicabilityCost(overheadAndProfitTabDataValue?.ICCCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.ICCCost, initialConfiguration.NoOfDecimalForPrice))
+                break;
+            case 'Payment terms Cost':
+                totalCost = (overheadAndProfitTabDataValue?.PaymentTermCost) * calculatePercentage(percent)
+                setApplicabilityCost(overheadAndProfitTabDataValue?.PaymentTermCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(overheadAndProfitTabDataValue?.PaymentTermCost, initialConfiguration.NoOfDecimalForPrice))
+                break;
+            case 'Packaging Cost':
+                totalCost = (packageAndFreightTabData?.CostingPartDetails?.PackagingNetCost) * calculatePercentage(percent)
+                setApplicabilityCost(packageAndFreightTabData?.CostingPartDetails?.PackagingNetCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(packageAndFreightTabData?.CostingPartDetails?.PackagingNetCost, initialConfiguration.NoOfDecimalForPrice))
+                break;
+            case 'Freight Cost':
+                totalCost = (packageAndFreightTabData?.CostingPartDetails?.FreightNetCost) * calculatePercentage(percent)
+                setApplicabilityCost(packageAndFreightTabData?.CostingPartDetails?.FreightNetCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(packageAndFreightTabData?.CostingPartDetails?.FreightNetCost, initialConfiguration.NoOfDecimalForPrice))
+                break;
+            case 'Tool Cost':
+                totalCost = (dataList?.ToolCost) * calculatePercentage(percent)
+                setApplicabilityCost(dataList?.ToolCost)
+                setValue('ApplicabilityCost', checkForDecimalAndNull(dataList?.ToolCost, initialConfiguration.NoOfDecimalForPrice))
                 break;
             default:
-                totalCost = getValues('AnyOtherCost')
+                totalCost = getValues('ApplicabilityCost')
                 setApplicabilityCost(totalCost)
+                setValue('AnyOtherCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
                 break;
         }
         setValue('AnyOtherCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -444,6 +529,28 @@ function OtherCostDrawer(props) {
                                                 disabled={CostingViewMode || !(otherCostType && otherCostType.value === 'Percentage') ? true : false}
                                             />
                                         </Col>}
+                                    {
+                                        <Col md="4">
+                                            <TextFieldHookForm
+                                                label={`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                                name={`ApplicabilityCost`}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={true}
+                                                rules={{
+                                                    required: false,
+                                                }}
+                                                handleChange={(e) => {
+                                                    e.preventDefault();
+                                                }}
+                                                defaultValue={""}
+                                                className=""
+                                                customClassName={"withBorder"}
+                                                errors={errors?.ApplicabilityCost}
+                                                disabled={(CostingViewMode || Object.keys(otherCostType).length === 0 || (otherCostType && otherCostType?.value === 'Percentage')) ? true : false}
+                                            />
+                                        </Col>}
 
                                     <Col md="4">
                                         {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="drawer-other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
@@ -466,7 +573,7 @@ function OtherCostDrawer(props) {
                                             className=""
                                             customClassName={"withBorder"}
                                             errors={errors.AnyOtherCost}
-                                            disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
+                                            disabled={true}
                                         />
 
                                     </Col>

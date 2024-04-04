@@ -18,7 +18,9 @@ import { AUDIT_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import ReactExport from 'react-export-excel';
 import Button from '../layout/Button';
 import DatePicker from 'react-datepicker'
-
+import { Steps } from './TourMessages';
+import TourWrapper from "../common/Tour/TourWrapper"
+import { useTranslation } from 'react-i18next';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -26,6 +28,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function LoginAudit(props) {
+    const { t } = useTranslation("Audit");
     const [state, setState] = useState({
         // auditDataList: [],
         isLoader: false,
@@ -610,12 +613,14 @@ function LoginAudit(props) {
                             <Row className={`filter-row-large blue-before pb-3`}>
                                 <Col md="7" lg="7" className='d-flex'>
                                     <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+
                                     <div className='date-range-container'>
 
                                         <div className="d-flex align-items-center">
                                             <label>From Date:</label>
                                             <div className="inputbox date-section ml-2">
                                                 <DatePicker
+                                                    id="Audit_List_FromDate"
                                                     selected={fromDate}
                                                     onChange={handleFromDateChange}
                                                     showMonthDropdown
@@ -624,7 +629,7 @@ function LoginAudit(props) {
                                                     isClearable
                                                     maxDate={toDate}
                                                     dateFormat="dd/MM/yyyy"
-                                                    placeholderText="From date"
+                                                    placeholderText="select date"
                                                     className="form-control"
                                                     autoComplete="off"
                                                 />
@@ -635,6 +640,7 @@ function LoginAudit(props) {
                                             <label>To Date:</label>
                                             <div className="inputbox date-section ml-2">
                                                 <DatePicker
+                                                    id="Audit_List_ToDate"
                                                     selected={toDate}
                                                     onChange={handleToDateChange}
                                                     showMonthDropdown
@@ -643,7 +649,7 @@ function LoginAudit(props) {
                                                     isClearable
                                                     minDate={fromDate}
                                                     dateFormat="dd/MM/yyyy"
-                                                    placeholderText="To date"
+                                                    placeholderText="select date"
                                                     className="form-control"
                                                     autoComplete="off"
                                                     disabled={!fromDate} // Disable if fromDate is not selected
@@ -651,18 +657,25 @@ function LoginAudit(props) {
 
                                             </div>
                                         </div>
+                                        <TourWrapper
+                                            buttonSpecificProp={{ id: "Login_Audit_Page" }}
+                                            stepsSpecificProp={{
+                                                steps: Steps(t).AUDIT_LISTING
+                                            }} />
                                     </div>
 
                                 </Col>
+
                                 <Col md="5" lg="5" className="d-flex justify-content-end">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div className="warning-message d-flex align-items-center">
                                             {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                            <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                            <button id="Audit_List_Filter" disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                             {state.DownloadAccessibility &&
                                                 <>
                                                     <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button"
                                                         onClick={onExcelDownload}
+                                                        id="Audit_List_Download"
                                                         className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                         {/* DOWNLOAD */}
                                                         {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
@@ -674,7 +687,7 @@ function LoginAudit(props) {
                                                     </ExcelFile>
                                                 </>
                                             }
-                                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>  <div className="refresh mr-0"></div> </button>
+                                            <button type="button" id="Audit_List_Reset" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>  <div className="refresh mr-0"></div> </button>
                                         </div>
 
                                     </div>

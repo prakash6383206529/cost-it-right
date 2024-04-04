@@ -58,7 +58,7 @@ function SimulationApproveReject(props) {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const SAPData = useSelector(state => state.approval.SAPObj)
-
+  const [approverIdList, setApproverIdList] = useState([])
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
 
@@ -231,9 +231,10 @@ function SimulationApproveReject(props) {
             // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
             TechnologyId: item,
             ReasonId: 0,
-            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId)
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
+            plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : EMPTY_GUID
           }
-
+          let approverIdListTemp = []
           dispatch(getAllSimulationApprovalList(obj, (res) => {
             // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
             // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
@@ -248,9 +249,12 @@ function SimulationApproveReject(props) {
                 levelId: item.LevelId,
                 levelName: item.LevelName
               })
+              approverIdListTemp.push(item.Value)
               return null
             })
+            setApproverIdList(approverIdListTemp)
             approverDropdownValue.push(tempDropdownList)
+
             let allObjVal = []
 
             for (let v = 0; v < approverDropdownValue.length; v++) {
@@ -309,8 +313,9 @@ function SimulationApproveReject(props) {
           DepartmentId: departId,
           //NEED TO MAKE THIS 2   
           TechnologyId: technologyIdTemp,
-          ReasonId: 0,
-          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(appTypeId)
+          ReasonId: selectedRowData && selectedRowData[0].ReasonId ? selectedRowData[0].ReasonId : 0,
+          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData && selectedRowData[0]?.ApprovalTypeId ? selectedRowData[0]?.ApprovalTypeId : appTypeId),
+          plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : EMPTY_GUID
         }
         dispatch(getAllSimulationApprovalList(obj, (res) => {
           const Data = res?.data?.DataList[1] ? res?.data?.DataList[1] : []
@@ -328,6 +333,7 @@ function SimulationApproveReject(props) {
             })
           }
           let tempDropdownList = []
+          let approverIdListTemp = []
           res?.data?.DataList && res?.data?.DataList?.map((item) => {
             if (item?.Value === '0') return false;
             tempDropdownList?.push({
@@ -336,9 +342,11 @@ function SimulationApproveReject(props) {
               levelId: item?.LevelId,
               levelName: item?.LevelName
             })
+            approverIdListTemp.push(item.Value)
             return null
           })
           setApprovalDropDown(tempDropdownList)
+          setApproverIdList(approverIdListTemp)
           if ((tempDropdownList[0]?.value === EMPTY_GUID || tempDropdownList.length === 0) && type !== 'Reject' && !IsFinalLevel) {
             setShowWarningMessage(true)
             setApprovalDropDown([])
@@ -396,7 +404,8 @@ function SimulationApproveReject(props) {
           SenderLevelId: levelDetails.LevelId,
           SenderLevel: levelDetails.Level,
           SenderId: userLoggedIn,
-          ApproverId: approver && approver.value ? approver.value : '',
+          // ApproverId: approver && approver.value ? approver.value : '',
+          ApproverIdList: approverIdList,
           ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
           ApproverLevel: approver && approver.levelName ? approver.levelName : '',
           Remark: remark,
@@ -417,7 +426,8 @@ function SimulationApproveReject(props) {
         SenderLevelId: levelDetails.LevelId,
         SenderLevel: levelDetails.Level,
         SenderId: userLoggedIn,
-        ApproverId: approver && approver.value ? approver.value : '',
+        // ApproverId: approver && approver.value ? approver.value : '',
+        ApproverIdList: approverIdList,
         ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
         ApproverLevel: approver && approver.levelName ? approver.levelName : '',
         Remark: remark,
@@ -449,6 +459,7 @@ function SimulationApproveReject(props) {
       senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
       senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
       senderObj.ApproverId = approver && approver.value ? approver.value : ''
+      senderObj.ApproverIdList = approverIdList
       senderObj.SenderLevelId = levelDetails?.LevelId
       senderObj.SenderLevel = levelDetails?.Level
       senderObj.SenderId = userLoggedIn
@@ -524,7 +535,8 @@ function SimulationApproveReject(props) {
         UserId: loggedInUserId(),
         TechnologyId: technologyId,
         Mode: 'simulation',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId)
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId),
+        plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : EMPTY_GUID
       }
       dispatch(checkFinalUser(requestObj, res => {
         if (res && res.data && res.data.Result) {

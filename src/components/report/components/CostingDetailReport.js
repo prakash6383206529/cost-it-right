@@ -15,7 +15,7 @@ import { ReportMaster, ReportSAPMaster, EMPTY_DATA, defaultPageSize } from '../.
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber, handleDepartmentHeader, showBopLabel, getConfigurationKey } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber, handleDepartmentHeader, showBopLabel, getConfigurationKey, setLoremIpsum } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingHeadsAPI } from '../../../actions/Common'
@@ -25,13 +25,19 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { hideMultipleColumnFromExcel } from '../../common/CommonFunctions'
+import TourWrapper from '../../common/Tour/TourWrapper'
+import { Steps } from '../../common/Tour/TourMessages'
+import { useTranslation } from 'react-i18next'
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function ReportListing(props) {
-
+    const { t } = useTranslation("common")
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [searchButtonClicked, setSearchButtonClicked] = useState(false);
     const [filterModel, setFilterModel] = useState({});
@@ -175,7 +181,7 @@ function ReportListing(props) {
     }, [statusColumnData])
 
     useEffect(() => {
-        dispatch(fetchCostingHeadsAPI('master', res => {
+        dispatch(fetchCostingHeadsAPI('master', false, res => {
             if (res) {
                 let temp = []
                 res?.data?.SelectList && res?.data?.SelectList.map((item) => {
@@ -220,6 +226,7 @@ function ReportListing(props) {
             <>
                 {row.Status !== "CreatedByAssembly" ?
                     <div
+                        id="showcosting_detail"
                         onClick={() => viewDetails(row.UserId, cell, row)}
                         className={'link'}
                     >{cell}</div>
@@ -584,7 +591,16 @@ function ReportListing(props) {
         filterClick = false
 
     }
+    //**  HANDLE TOGGLE EXTRA DATA */
+    const toggleExtraData = (showTour) => {
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 100);
 
+
+    }
     const onSearch = () => {
         setIsFilterButtonClicked(true)
         setWarningMessage(false)
@@ -927,7 +943,13 @@ function ReportListing(props) {
 
     return (
         <div className="container-fluid custom-pagination report-listing-page ag-grid-react">
-
+            <TourWrapper
+                buttonSpecificProp={{
+                    id: "Report_Listing_Tour", onClick: toggleExtraData
+                }}
+                stepsSpecificProp={{
+                    steps: Steps(t, { sapDownloadButton: true, encodedDownloadButton: true, showcostingDetail: true, searchFilter: false, addButton: false, costMovementButton: false, bulkUpload: false, EditButton: false, DeleteButton: false, viewButton: false, addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                }} />
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
                 {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
                 <Row className="pt-4 mt-1 blue-before">
@@ -939,11 +961,11 @@ function ReportListing(props) {
                             <div className="warning-message d-flex align-items-center">
                                 {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
-                            <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                            <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                            <button type="button" className="user-btn mr5 Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn'}><div className="download mr-1"></div>
+                            <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn Tour_List_Download'}><div className="download mr-1"></div>
                                 {/* DOWNLOAD */}
                                 {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                             </button>
@@ -1009,12 +1031,12 @@ function ReportListing(props) {
 
                     <div className={`ag-theme-material report-grid mt-2 ${isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                        <AgGridReact
+                        {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
                             style={{ height: '100%', width: '100%' }}
                             domLayout="autoHeight"
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
-                            rowData={reportListingData}
+                            rowData={showExtraData ? [...setLoremIpsum(reportListingData[0]), ...reportListingData] : reportListingData}
                             pagination={true}
                             onFilterModified={onFloatingFilterChanged}
                             paginationPageSize={globalTake}
@@ -1055,7 +1077,7 @@ function ReportListing(props) {
                             <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='rmHyperLinkFormatter'></AgGridColumn>
                             <AgGridColumn field='NetRawMaterialsCost' headerName='Part Cost/Pc' cellRenderer='partCostFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialRemark' headerName='RM Remark' cellRenderer='remarkFormatter'></AgGridColumn>
-                            <AgGridColumn field='NetBoughtOutPartCost' headerName={`Net ${showBopLabel()}  Cost`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                            <AgGridColumn field='NetBoughtOutPartCost' headerName={`Net ${showBopLabel()} Cost`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetProcessCost' headerName='Net Process Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetOperationCost' headerName='Net Operation Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetConversionCost' headerName='Net Conversion Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
@@ -1105,7 +1127,7 @@ function ReportListing(props) {
                             {showSaLineNumber() && <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn width={"240px"} field="DisplayStatus" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer={'statusFormatter'} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>
 
-                        </AgGridReact>
+                        </AgGridReact>}
                         <div className='button-wrapper'>
                             {!isLoader && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
                             <div className="d-flex pagination-button-container">

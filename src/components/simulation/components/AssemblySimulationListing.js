@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../common/DayTimeWrapper'
 import { CBCTypeId, EMPTY_DATA, VBCTypeId } from '../../../config/constants';
@@ -19,10 +19,13 @@ import VerifySimulation from './VerifySimulation';
 import DatePicker from "react-datepicker";
 import { getMaxDate } from '../SimulationUtils';
 import WarningMessage from '../../common/WarningMessage';
+import { simulationContext } from '.';
 
 const gridOptions = {};
 
 function AssemblySimulationListing(props) {
+    const { showEditMaster, costingDrawerPage, handleEditMasterPage } = useContext(simulationContext) || {};
+
     const { isbulkUpload, isImpactedMaster, technology } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -59,7 +62,12 @@ function AssemblySimulationListing(props) {
 
         dispatch(getAllMultiTechnologyCostings(obj, (res) => { }))
     }, [])
+    useEffect(() => {
 
+        if (handleEditMasterPage) {
+            handleEditMasterPage(showEditMaster, showverifyPage, costingDrawerPage)
+        }
+    }, [showverifyPage])
     useEffect(() => {
         if (multiTechnologyCostinig && multiTechnologyCostinig.length > 0) {
             window.screen.width >= 1920 && gridRef.current.api.sizeColumnsToFit();
@@ -313,7 +321,7 @@ function AssemblySimulationListing(props) {
                         {!isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                    <div className="inputbox date-section mr-3 verfiy-page">
+                                    <div id="assembly_effective_date" className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                         <DatePicker
                                             name="EffectiveDate"
                                             id="EffectiveDate"
@@ -332,11 +340,11 @@ function AssemblySimulationListing(props) {
                                         />
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div>
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
+                                    <button type={"button"} id="assembly_cancel" className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
-                                    <button onClick={verifySimulation} type="submit" id="verify-btn" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                    <button onClick={verifySimulation} id="assembly_verify" type="submit" className="user-btn mr5 save-btn verifySimulation" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}

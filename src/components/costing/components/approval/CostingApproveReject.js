@@ -44,7 +44,7 @@ function CostingApproveReject(props) {
   const [finalLevelUser, setFinalLevelUser] = useState(false);
   const [showMessage, setShowMessage] = useState()
   const [disableReleaseStrategy, setDisableReleaseStrategy] = useState(false)
-
+  const [approverIdList, setApproverIdList] = useState([])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   useEffect(() => {
@@ -75,7 +75,7 @@ function CostingApproveReject(props) {
             approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId, dataInFieldTemp)
           } else {
             setDisableReleaseStrategy(false)
-            approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId), dataInFieldTemp)
+            approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.approvalData[0].ApprovalTypeId ?? props?.costingTypeId), dataInFieldTemp)
             // MINDA
             // approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, props?.costingTypeId, dataInFieldTemp)
           }
@@ -92,7 +92,8 @@ function CostingApproveReject(props) {
       DepartmentId: departmentId && departmentId,
       TechnologyId: technology,
       ReasonId: reasonId,
-      ApprovalTypeId: approverTypeId
+      ApprovalTypeId: approverTypeId,
+      plantId: approvalData[0].PlantId ?? EMPTY_GUID
     }
     dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
       const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -104,6 +105,7 @@ function CostingApproveReject(props) {
       }
       setDataInFields(dataInFieldTemp)
       let tempDropdownList = []
+      let approverIdListTemp = []
       res.data.DataList && res.data.DataList.map((item) => {
         if (item.Value === '0') return false;
         if (item.Value === EMPTY_GUID) {
@@ -113,9 +115,11 @@ function CostingApproveReject(props) {
           setShowWarningMessage(false)
         }
         tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+        approverIdListTemp.push(item.Value)
         return null
       })
       setApprovalDropDown(tempDropdownList)
+      setApproverIdList(approverIdListTemp)
     }))
   }
 
@@ -257,7 +261,8 @@ function CostingApproveReject(props) {
         SenderLevel: levelDetails.Level,
         ApproverDepartmentId: dept && dept.value ? dept.value : '',
         ApproverDepartmentName: dept && dept.label ? dept.label : '',
-        Approver: approver && approver.value ? approver.value : '',
+        // Approver: approver && approver.value ? approver.value : '',
+        ApproverIdList: approverIdList,
         ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
         ApproverLevel: approver && approver.levelName ? approver.levelName : '',
         Remark: remark,
@@ -330,6 +335,7 @@ function CostingApproveReject(props) {
       DepartmentId: value.value,
       TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
       ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
+      plantId: approvalData[0].PlantId ?? EMPTY_GUID
     }
     let dataInFieldTemp = {
       ...dataInFields,
