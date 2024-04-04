@@ -1135,7 +1135,7 @@ export function getToolsProcessWiseDataListByCostingID(CostingId, callback) {
     });
     const request = axios.get(`${API.getToolsProcessWiseDataListByCostingID}/${CostingId}`, config());
     request.then((response) => {
-      if (response.data.Result) {
+      if (response.data.Result || response.status === 204) {
         let TabData = response.data.DataList;
         dispatch({
           type: SET_TOOL_PROCESS_WISE_DATALIST,
