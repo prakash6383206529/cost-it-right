@@ -9,7 +9,7 @@
         "master": "Click here to view the master with highest approval level.",
         "onBoarding": "Click here to view the onboarding with highest approval level.",
         "searchingBox": "Search for specific data from here.",
-        "edit": "Click here to edit the master data.",
+        "edit": "Click here to edit the data.",
         "refresh": "Refresh the grid to update filtered data from here.",
         "add": "Add new data from here.",
         "floatingFilterInput": "Here you can search for specific column-wise data.",

@@ -1,8 +1,8 @@
 {
     "costingInitial": {
         "Technology": "Choose technology from here.",
-        "PartType": "Choose Part Type, once you select technology you will be able to choose part type.",
-        "Part": "Select Part no./Assembly no. here. Currently disabled; it will be enabled after selecting the Technology.",
+        "PartType": "Choose part Type, once you select technology you will be able to choose part type.",
+        "Part": "Choose part no./assembly no. here. Currently disabled; it will be enabled after selecting the Technology.",
         "clear": "Clear selected data here if incorrect."
     },
     "costingSummary": {
@@ -10,35 +10,35 @@
         "costingDetailedPdf": "Download the detailed costing in PDF format, it will be in tabular form.",
         "costingDownloadPdf": "Download the costing as PDF from here.",
         "sendForApproval": "Costing can be sent for approval only if the costing status is in draft.",
-        "addToComparison": "Compare this costing to other costings and Add the Vendor, Plant, and Costing version from the drawer.",
+        "addToComparison": "Compare this costing to other costings and add the vendor, plant, and costing version from the drawer.",
         "viewBOM": "View the BOM data from here.",
-        "edit": "By clicking here, you can Edit this costing again.",
+        "edit": "By clicking here, you can edit this costing again.",
         "view": "View the whole data in form.",
-        "add": "Click here to create a New Costing and start the process.",
+        "add": "Click here to create a new costing and start the process.",
         "discard": "Discard the costings you've compared from here.",
         "changeVersion": "Change the costing version and edit the costing from here.",
         "viewPieChart": "View the pie chart from here.",
-        "viewRMCost": "View detailed Raw Material Cost from here.",
-        "viewMultipleTechnology": "View detailed Multiple Technology Cost from here.",
+        "viewRMCost": "View detailed raw material Cost from here.",
+        "viewMultipleTechnology": "View detailed multiple technology Cost from here.",
         "viewBOPCost": "View the detailed BOP from here.",
         "viewConversionCost": "View detailed conversion cost data here.",
         "viewSurfaceTreatmentCost": "View detailed surface treatment cost data here.",
         "viewOverheadProfitCost": "View detailed overhead, profit, ICC, and rejection data here.",
-        "viewPackagingFreightCost": "View detailed packaging, freight and rejection data here.",
+        "viewPackagingFreightCost": "View detailed packaging, freight, and rejection data here.",
         "viewToolCost": "View detailed tool cost data here.",
         "viewOtherCost": "View detailed Quoted Cost from here.",
         "costingNotDone": "Costing for this part/assembly has not yet been done. Please select another part."
     },
     "costingStepTwo": {
-        "zbc": "Add Zero-Based Costing from here.",
-        "ncc": "Add New Component Costing from here.",
-        "vbc": "Add Vendor-Based Costing from here.",
-        "cbc": "Add Customer-Based Costing from here."
+        "zbc": "Add zero-based costing from here.",
+        "ncc": "Add new component costing from here.",
+        "vbc": "Add vendor-based costing from here.",
+        "cbc": "Add customer-based costing from here."
     },
     "vendorCreateCosting": {
         "editSob": "You can edit SOB here.",
-        "version": "Here you can see all the version of created costings.",
-        "createCosting": "Click here to create new costing version.",
+        "version": "Here you can see all the versions of created costings.",
+        "createCosting": "Click here to create a new costing version.",
         "viewCosting": "View your costings from here.",
         "editCosting": "Edit your costings from here.",
         "deleteCosting": "Delete this costing version from here.",
@@ -47,40 +47,40 @@
     },
     "costingTabs": {
         "effectiveDate": "Choose the effective date before the create costing",
-        "RMC_tabs": "You can add your all RMC Cost in below tab.",
-        "Surface_Treatment_tabs": "You can add your Surface Treatment Cost in below tab.",
-        "Overheads_Profits_tabs": "You can add your Overhead & Profit Cost in below tab.",
-        "Packaging_Freight_tabs": "You can add your Packaging & Freight Cost in below tab.",
-        "Tool_tabs": "You can add your Tool Cost in below tab.",
-        "Discount_Other_tabs": "You can add your Discount & Other Cost in below tab."
+        "RMC_tabs": "You can add your all RMC cost in below tab.",
+        "Surface_Treatment_tabs": "You can add your surface treatment cost in below tab.",
+        "Overheads_Profits_tabs": "You can add your overhead & profit cost in below tab.",
+        "Packaging_Freight_tabs": "You can add your packaging & freight cost in below tab.",
+        "Tool_tabs": "You can add your tool cost in below tab.",
+        "Discount_Other_tabs": "You can add your discount & other cost in below tab."
     },
     "Hints": {
         "partHint": "Click on the arrow for creating and view RMC data",
-        "overheadHint": "Click on the arrow for adding and view Overhead & Profit data",
-        "surfaceTreamentButton": "Click on the button, for adding Surface Treatment"
+        "overheadHint": "Click on the arrow for adding and view overhead & profit data",
+        "surfaceTreamentButton": "Click on the button, for adding surface treatment"
     },
     "RMCtabs": {
-        "AddRM": "Here you can add your Raw Materials",
+        "AddRM": "Here you can add your raw materials",
         "AddBOP": "Here you can add your BOPs",
-        "AddProcess": "Here you can add your Processes",
-        "AddOperation": "Here you can add your Operations",
-        "AddOtherOperation": "Here you can add your Other Operation",
-        "AddBOPHandlingCharge": "Here you can add your BOP Handling Charge",
-        "EditAssemblyCosting": "You can edit the Assembly costing.",
+        "AddProcess": "Here you can add your processes",
+        "AddOperation": "Here you can add your operations",
+        "AddOtherOperation": "Here you can add your other operation",
+        "AddBOPHandlingCharge": "Here you can add your BOP handling charge",
+        "EditAssemblyCosting": "You can edit the assembly costing.",
         "AssemblyAddOperation": "Add operation for assembly here, and the same applies to sub-assembly as well.",
         "PartLocked": "Child parts costing are coming from individual costing, please edit there if want to change costing."
     },
     "addSTCost": {
         "addSt": "Add a surface by clicking this button."
     },
-    "OverheadProfitTab": {
-        "checkBox1": "If you want to include Surface Treatment Cost in CC for Overhead and Profit, click on the checkbox.",
-        "checkBox2": "If you want to include Surface Treatment Cost in CC for Rejection, click on the checkbox.",
-        "checkBox3": "If you want to include Tool cost in CC for Overhead and Profit, click on the checkbox.",
-        "checkBox4": "If you want to include Overhead & Profit in ICC, click on the checkbox.",
+    "overheadProfitTab": {
+        "checkBox1": "If you want to include surface treatment cost in CC for overhead and profit, click on the checkbox.",
+        "checkBox2": "If you want to include surface treatment cost in CC for rejection, click on the checkbox.",
+        "checkBox3": "If you want to include tool cost in CC for overhead and profit, click on the checkbox.",
+        "checkBox4": "If you want to include overhead & profit in ICC, click on the checkbox.",
         "modelType": "Select the model type. Based on the model type, you will see the overhead and profit data below the table.",
         "RejectionApplicability": "Select the applicability.",
-        "RejectionPercentage": "Enter the Rejection Percentage.",
+        "RejectionPercentage": "Enter the rejection percentage.",
         "rejectionRemark": "Add specific remarks.",
         "iccCost": "If you wish to add ICC cost, please click the button.",
         "paymentTermCost": "To add Payment Term cost, click the button to reveal the input fields.",
@@ -146,17 +146,17 @@
     "AddAssemblyOperation": {
         "add_operation": "Add operation from here.",
         "save": "Click here to save.",
-        "cancel": "Click here to reset the form and go back to the page."
+        "cancel": "Click here to cancel."
     },
     "AddAssemblyProcess": {
         "add_process": "Add process from here.",
         "save": "Click here to save.",
-        "cancel": "Click here to reset the form and go back to the page."
+        "cancel": "Click here to cancel."
     },
     "AddSurfaceTreatment": {
         "add_Surface_Treatment": "Add surface treatment from here.",
         "save": "Click here to save.",
-        "cancel": "Click here to reset the form and go back to the page."
+        "cancel": "Click here to cancel."
     },
     "AddPackaging": {
         "package_Description": "Enter the package description.",
@@ -164,7 +164,7 @@
         "percentage": "Enter the percentage.",
         "package_Cost": "View package cost from here.",
         "save": "Click here to save.",
-        "cancel": "Click here to reset the form and go back to the page."
+        "cancel": "Click here to cancel."
     },
     "AddFreight": {
         "full_Truck_Load": "Select the full truck load.",
@@ -175,13 +175,13 @@
         "rate": "View rate from here.",
         "cost": "View cost from here.",
         "save": "Click here to save.",
-        "cancel": "Click here to reset the form and go back to the page."
+        "cancel": "Click here to cancel."
     },
     "CostingComparison": {
         "vendor_code": "Select the vendor code from the dropdown.",
         "plant_code": "Select the plant code from the dropdown.",
         "add": "Click here to add.",
-        "cancel": "Click here to reset the form and go back to the page."
+        "cancel": "Click here to cancel."
     },
     "costingApproval": {
         "searchInput": "Search for specific data from here.",
