@@ -298,12 +298,14 @@ function AddAssemblyOperation(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right">
                 <button
+                  id="AddAssemblyOperation_Cancel"
                   type={'button'}
                   className="reset mr15 cancel-btn"
                   onClick={cancel} >
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
+                  id="AddAssemblyOperation_Save"
                   disabled={(CostingViewMode || IsLocked)}
                   type={'button'}
                   className="submit-button mr15 save-btn"

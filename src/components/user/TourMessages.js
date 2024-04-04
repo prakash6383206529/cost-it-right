@@ -1,6 +1,9 @@
-export function Steps(t, config) {
-    const userManagementArray = [
+import { getConfigurationKey } from "../../helper";
 
+export function Steps(t, config) {
+    const introMessage = config && config.isEditFlag === true ? t("saveUpdateButton.Update_Button") : t("saveUpdateButton.Save_Button");
+
+    const userManagementArray = [
         {
             element: "#FirstName_container",
             intro: t("userManagement.AddUser_FirstName"),
@@ -13,14 +16,29 @@ export function Steps(t, config) {
             element: "#Mobile_container",
             intro: t("userManagement.AddUser_Mobile"),
         },
-        {
-            element: "#PhoneNumber_container",
-            intro: t("userManagement.AddUser_PhoneNumber"),
+        ...(config && config.RFQUser === true ? [{
+            element: ".input-container #Vendor_container",
+            intro: t("userManagement.AddUser_Vendor"),
         },
         {
-            element: "#Extension_container",
-            intro: t("userManagement.AddUser_Extension"),
+            element: ".input-container #Reporter_container",
+            intro: t("userManagement.AddUser_PointOfContact"),
         },
+        {
+            element: "#primaryContact_container",
+            intro: t("userManagement.AddUser_primaryContact"),
+        },
+        ] : []),
+        ...(config && config.RFQUser === false ? [
+            {
+                element: "#PhoneNumber_container",
+                intro: t("userManagement.AddUser_PhoneNumber"),
+            },
+            {
+                element: "#Extension_container",
+                intro: t("userManagement.AddUser_Extension"),
+            },
+        ] : []),
         {
             element: "#EmailAddress_container",
             intro: t("userManagement.AddUser_Email"),
@@ -29,14 +47,15 @@ export function Steps(t, config) {
             element: "#UserName_container",
             intro: t("userManagement.AddUser_UserName"),
         },
-        {
-            element: "#password",
-            intro: t("userManagement.AddUser_Password"),
-        },
-        {
-            element: "#AddUser_PasswordConfirm",
-            intro: t("userManagement.AddUser_ConfirmPassword"),
-        },
+        ...config && config?.isShowPwdField === true ? [
+            {
+                element: "#AddUser_Password",
+                intro: t("userManagement.AddUser_Password"),
+            },
+            {
+                element: "#AddUser_PasswordConfirm",
+                intro: t("userManagement.AddUser_ConfirmPassword"),
+            }] : [],
         {
             element: "#AddressLine1_container",
             intro: t("userManagement.AddUser_Address1"),
@@ -46,20 +65,25 @@ export function Steps(t, config) {
             intro: t("userManagement.AddUser_Address2"),
         },
         {
-            element: "#CityId_container",
+            element: ".input-container #CityId_container",
             intro: t("userManagement.AddUser_City"),
         },
         {
             element: "#ZipCode_container",
             intro: t("userManagement.AddUser_ZipCode"),
         },
-        {
-            element: "#RoleId_container",
+        ...(config && config.RFQUser === false ? [{
+
+            element: ".input-container #RoleId_container",
             intro: t("userManagement.AddUser_Role"),
         },
         {
-            element: "#DepartmentId_container",
+            element: ".input-container #DepartmentId_container",
             intro: t("userManagement.AddUser_Company"),
+        },
+        {
+            element: ".input-container #plant_container",
+            intro: t("userManagement.AddUser_plant"),
         },
         {
             element: "#AddUser_Checkbox",
@@ -70,20 +94,20 @@ export function Steps(t, config) {
             intro: t("userManagement.AddUser_Permissions_Costing"),
         },
         ...(config && config.costingField ? [{
-            element: "#TechnologyId_container",
+            element: ".input-container #TechnologyId_container",
             intro: t("userManagement.AddUser_Technology"),
         },
         {
-            element: '#CostingApprovalType_container',
+            element: '.input-container #CostingApprovalType_container',
             intro: t("userManagement.AddUser_ApprovalType"),
         },
         {
-            element: "#LevelId_container",
+            element: ".input-container #LevelId_container",
             intro: t("userManagement.AddUser_Level"),
         },
         {
             element: "#AddUser_AddCosting",
-            intro: t("userManagement.AddUser_AddCosting"),
+            intro: t("userManagement.AddUser_AddApprovalType") + " Costing approval type",
         }
         ] : []),
         {
@@ -91,42 +115,61 @@ export function Steps(t, config) {
             intro: t("userManagement.AddUser_Permissions_Simulation"),
         },
         ...(config && config.simulationField ? [{
-            element: "#Head_container",
+            element: ".input-container #Head_container",
             intro: t("userManagement.AddUser_Head"),
         },
         {
-            element: '#SimulationApprovalType_container',
+            element: '.input-container #SimulationApprovalType_container',
             intro: t("userManagement.AddUser_ApprovalType"),
         },
         {
-            element: "#simualtionLevel_container",
+            element: ".input-container #simualtionLevel_container",
             intro: t("userManagement.AddUser_Level"),
         },
         {
             element: "#AddUser_AddSimulation",
-            intro: t("userManagement.AddUser_AddSimulation"),
+            intro: t("userManagement.AddUser_AddApprovalType") + " Simulation approval type",
         }
         ] : []),
         {
             element: "#AddUser_Permissions_Master",
             intro: t("userManagement.AddUser_Permissions_Master"),
         },
+        {
+            element: "#AddUser_Permissions_onBoarding",
+            intro: t("userManagement.AddUser_Permissions_onBoarding"),
+        },
         ...(config && config.masterField ? [{
-            element: "#Master_container",
+            element: ".input-container #Master_container",
             intro: t("userManagement.AddUser_Master"),
         },
         {
-            element: '#MasterApprovalType_container',
+            element: '.input-container #MasterApprovalType_container',
             intro: t("userManagement.AddUser_ApprovalType"),
         },
         {
-            element: "#masterLevel_container",
+            element: ".input-container #masterLevel_container",
             intro: t("userManagement.AddUser_Level"),
         },
         {
             element: "#AddUser_AddMaster",
-            intro: t("userManagement.AddUser_AddMaster"),
+            intro: t("userManagement.AddUser_AddApprovalType") + " Master approval type",
         }
+        ] : []),
+        ...(config && config.onBoardingField ? [{
+            element: ".input-container #OnboardingApprovalType_container",
+            intro: t("userManagement.AddUser_ApprovalType"),
+        },
+        {
+            element: '.input-container #onboardingLevel_container',
+            intro: t("userManagement.AddUser_Level"),
+        },
+
+        {
+            element: "#addUser_OnBoarding",
+            intro: t("userManagement.AddUser_AddApprovalType") + " Onboarding approval type",
+        }
+        ] : []),
         ] : []),
         {
             element: "#AddUser_Cancel",
@@ -134,25 +177,62 @@ export function Steps(t, config) {
         },
         {
             element: "#AddUser_Save",
-            intro: t("userManagement.AddUser_Save"),
+            intro: introMessage,
         },
+
+
     ];
+    const userDetails = [
+        {
+            element: "#edit_userDetails",
+            intro: t("userManagement.user_EditDetails"),
+        },
+        {
+            element: "#changePassword",
+            intro: t("userManagement.user_changePassword"),
+        },
+        ...(config && config.RFQUser === false ? [{
+
+            element: "#costing_level",
+            intro: t("userManagement.user_ViewCostingLevels"),
+        },
+        {
+            element: "#simulation_level",
+            intro: t("userManagement.user_ViewSimulationLevels"),
+        },
+        {
+            element: "#master_level",
+            intro: t("userManagement.user_ViewMasterLevels"),
+        },
+
+        {
+            element: "#onboarding_level",
+            intro: t("userManagement.user_ViewOnBoardingLevels"),
+        }
+        ] : [])
+    ]
     const addCompany = [
         {
-            element: "#AddCompany_Name",
+            element: "#Department_DepartmentName",
             intro: t("addCompany.AddCompany_Name"),
         },
         {
-            element: "#AddCompany_Code",
+            element: "#Department_DepartmentCode",
             intro: t("addCompany.AddCompany_Code"),
         },
         {
-            element: "#AddCompany_Cancel",
-            intro: t("addCompany.AddCompany_Cancel"),
+            element: "#Department_plant_container",
+            intro: t("addCompany.AddCompany_PlantCode"),
         },
         {
-            element: "#AddCompany_Save",
-            intro: t("addCompany.AddCompany_Save"),
+            element: "#AddDepartment_Cancel",
+            intro: t("addCompany.AddCompany_Cancel"),
+        },
+
+
+        {
+            element: "#AddDepartment_Save",
+            intro: introMessage,
         }
     ];
     const addRole = [
@@ -209,7 +289,7 @@ export function Steps(t, config) {
         },
         {
             element: "#AddRole_Save",
-            intro: t("addRole.AddRole_Save"),
+            intro: introMessage,
         }
     ];
     const AddlevelMapping = [
@@ -224,6 +304,10 @@ export function Steps(t, config) {
         {
             element: "#AddApproval_MasterLevel",
             intro: t("approvalForm.AddApproval_MasterLevel"),
+        },
+        {
+            element: "#AddApproval_OnBoardingLevel",
+            intro: t("approvalForm.AddApproval_OnBoardingLevel"),
         },
         {
             element: "#Level_ApprovalType_container",
@@ -243,15 +327,65 @@ export function Steps(t, config) {
         },
         {
             element: "#AddApproval_Save",
-            intro: t("approvalForm.AddApproval_Save"),
+            intro: introMessage,
         },
     ];
+    const HightestLevel_Approval = [
+        {
+            element: "#levelTechnologyListing_costing",
+            intro: t("highestApprovalLevel.costing"),
+        },
+        {
+            element: "#levelTechnologyListing_simulation",
+            intro: t("highestApprovalLevel.simulation"),
+        },
+        {
+            element: "#levelTechnologyListing_master",
+            intro: t("highestApprovalLevel.master"),
+        },
+        ...(getConfigurationKey().IsShowOnboarding ? [
+            {
+                element: "#levelTechnologyListing_onboarding",
+                intro: t("highestApprovalLevel.onBoarding"),
+            }] : []),
+        {
+            element: "#levelTechnologyListing_add",
+            intro: t("highestApprovalLevel.add"),
+        },
+        {
+            element: "#filter-text-box",
+            intro: t("highestApprovalLevel.searchingBox"),
+        },
+        {
+            element: ".ag-text-field-input",
+            intro: t("highestApprovalLevel.floatingFilterInput"),
+        },
+        {
+            element: ".ag-floating-filter-button",
+            intro: t("highestApprovalLevel.floatingFilterButton"),
+        },
+        {
+            element: ".HighestApproval_Refresh",
+            intro: t("highestApprovalLevel.refresh"),
+        },
+
+        {
+            element: ".HighestApproval_Edit",
+            intro: t("highestApprovalLevel.edit"),
+        },
+
+
+
+    ];
+
 
 
     return {
         USER_MANAGEMENT: userManagementArray,
+        USER_DETAILS: userDetails,
         ADD_COMPANY: addCompany,
         ADD_ROLE: addRole,
-        ADD_LEVEL_MAPPING: AddlevelMapping
+        ADD_LEVEL_MAPPING: AddlevelMapping,
+        HIGHTEST_LEVEL_APPROVAL: HightestLevel_Approval
     };
 }

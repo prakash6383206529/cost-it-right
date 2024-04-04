@@ -30,11 +30,12 @@ export function renderActionCommon(actions, parentIndex, thisRef, moduleName) {
                 return <td></td>
             }
             if (item.ActionId !== el && index === actions.length - 1 && value === true) { return false }
+            const className = `${moduleName.replace(/\s/g, '_').toLowerCase()}_Toggle_Message`;
 
             return (
                 <td className="text-center">
                     {
-                        <label htmlFor="normal-switch" className="normal-switch">
+                        <label id="" htmlFor="normal-switch" className={`normal-switch ${className}`}>
                             <Switch
                                 onChange={() => thisRef.actionCheckHandler(parentIndex, index, actions)}
                                 checked={item.IsChecked}

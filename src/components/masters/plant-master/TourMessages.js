@@ -1,4 +1,6 @@
 export function Steps(t, config) {
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+
     return {
         Add_ZBCPlant_FORM: [
 
@@ -53,7 +55,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddZBCPlantRate_Save",
-                intro: t("addZBCPlantRate.AddZBCPlantRate_Save"),
+                intro: introMessage,
             },
 
         ],

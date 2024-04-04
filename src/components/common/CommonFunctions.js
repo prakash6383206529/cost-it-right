@@ -201,3 +201,82 @@ export const checkMasterCreateByCostingPermission = (isBulkupload = false) => {
     return true;
 }
 
+
+export const OperationFileData = (fileData) => {
+    fileData.forEach(obj => {
+        switch (obj.ForType) {
+            case 'Welding':
+                obj.MaterialWireCRMHead = obj['MaterialWireCRMHead/NiRateCrmHead'];
+                obj.MaterialWireRate = obj['MaterialWireRate/NiRate']
+                obj.MaterialWireConsumption = obj['MaterialWireConsumption/NiRateConsumption']
+                obj.MaterialGasCRMHead = obj['MaterialGasCRMHead/NiScrapCrmHead']
+                obj.MaterialGasRate = obj['MaterialGasRate/NiScrapRate']
+                obj.MaterialGasConsumption = obj['MaterialGasConsumption/NiScrapRateConsumption']
+                obj.PowerElectricityRate = obj['PowerElectricityRate/PowerElectricityCost'];
+                delete obj['PowerElectricityRate/PowerElectricityCost'];
+                delete obj['MaterialWireCRMHead/NiRateCrmHead'];
+                delete obj['MaterialWireRate/NiRate']
+                delete obj['MaterialWireConsumption/NiRateConsumption']
+                delete obj['MaterialGasCRMHead/NiScrapCrmHead'];
+                delete obj['MaterialGasRate/NiScrapRate'];
+                delete obj['MaterialGasConsumption/NiScrapRateConsumption'];
+                break;
+            case 'Ni Cr Plating':
+                obj.NiOfficeExpCrmHead = obj['ConsumableCRMHead/NiOfficeExpCrmHead'];
+                obj.NiOfficeExp = obj['ConsumableCost/NiOfficeExp'];
+                obj.AdditionalChemicalCostCrmHead = obj['ConsumableWaterCRMHead/AdditionalChemicalCostCrmHead'];
+                obj.AdditionalChemicalCost = obj['ConsumableWaterCost/AdditionalChemicalCost'];
+                obj.CETPChargeCrmHead = obj['ConsumableJigStrippingCRMHead/CETPChargeCrmHead'];
+                obj.CETPCharge = obj['ConsumableJigStrippingCost/CETPCharge'];
+                obj.FixedCostCrmHead = obj['StatuatoryAndLicenseCRMHead/FixedCostCrmHead'];
+                obj.FixedCost = obj['StatuatoryAndLicenseCost/FixedCost'];
+                obj.NiRateCrmHead = obj['MaterialWireCRMHead/NiRateCrmHead'];
+                obj.NiRate = obj['MaterialWireRate/NiRate']
+                obj.NiRateConsumption = obj['MaterialWireConsumption/NiRateConsumption']
+                obj.NiScrapCrmHead = obj['MaterialGasCRMHead/NiScrapCrmHead']
+                obj.NiScrapRate = obj['MaterialGasRate/NiScrapRate']
+                obj.NiScrapRateConsumption = obj['MaterialGasConsumption/NiScrapRateConsumption']
+                obj.PowerElectricityRate = obj['PowerElectricityRate/PowerElectricityCost'];
+                delete obj['PowerElectricityRate/PowerElectricityCost'];
+                delete obj['ConsumableCRMHead/NiOfficeExpCrmHead'];
+                delete obj['ConsumableCost/NiOfficeExp'];
+                delete obj['ConsumableWaterCRMHead/AdditionalChemicalCostCrmHead'];
+                delete obj['ConsumableWaterCost/AdditionalChemicalCost'];
+                delete obj['ConsumableJigStrippingCRMHead/CETPChargeCrmHead'];
+                delete obj['ConsumableJigStrippingCost/CETPCharge'];
+                delete obj['StatuatoryAndLicenseCRMHead/FixedCostCrmHead'];
+                delete obj['StatuatoryAndLicenseCost/FixedCost'];
+                delete obj['MaterialWireCRMHead/NiRateCrmHead'];
+                delete obj['MaterialWireRate/NiRate']
+                delete obj['MaterialWireConsumption/NiRateConsumption']
+                delete obj['MaterialGasCRMHead/NiScrapCrmHead'];
+                delete obj['MaterialGasRate/NiScrapRate'];
+                delete obj['MaterialGasConsumption/NiScrapRateConsumption'];
+                break;
+            case 'Surface Treatment':
+            case 'Other Operation':
+                obj.ConsumableCRMHead = obj['ConsumableCRMHead/NiOfficeExpCrmHead'];
+                obj.ConsumableCost = obj['ConsumableCost/NiOfficeExp'];
+                obj.ConsumableWaterCRMHead = obj['ConsumableWaterCRMHead/AdditionalChemicalCostCrmHead'];
+                obj.ConsumableWaterCost = obj['ConsumableWaterCost/AdditionalChemicalCost'];
+                obj.ConsumableJigStrippingCRMHead = obj['ConsumableJigStrippingCRMHead/CETPChargeCrmHead'];
+                obj.ConsumableJigStrippingCost = obj['ConsumableJigStrippingCost/CETPCharge'];
+                obj.StatuatoryAndLicenseCRMHead = obj['StatuatoryAndLicenseCRMHead/FixedCostCrmHead'];
+                obj.StatuatoryAndLicenseCost = obj['StatuatoryAndLicenseCost/FixedCost'];
+                obj.PowerElectricityCost = obj['PowerElectricityRate/PowerElectricityCost'];
+                delete obj['ConsumableCRMHead/NiOfficeExpCrmHead'];
+                delete obj['ConsumableCost/NiOfficeExp'];
+                delete obj['ConsumableWaterCRMHead/AdditionalChemicalCostCrmHead'];
+                delete obj['ConsumableWaterCost/AdditionalChemicalCost'];
+                delete obj['ConsumableJigStrippingCRMHead/CETPChargeCrmHead'];
+                delete obj['ConsumableJigStrippingCost/CETPCharge'];
+                delete obj['StatuatoryAndLicenseCRMHead/FixedCostCrmHead'];
+                delete obj['StatuatoryAndLicenseCost/FixedCost'];
+                delete obj['PowerElectricityRate/PowerElectricityCost'];
+                break;
+            default:
+                break;
+        }
+    });
+    return fileData;
+}

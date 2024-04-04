@@ -24,11 +24,15 @@ import { useRef } from 'react';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 import Button from '../../layout/Button';
 import CreateManualNFR from './CreateManualNFR';
-
+import { useTranslation } from 'react-i18next';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
 const gridOptions = {};
 
 
 function NfrListing(props) {
+    const { activeTab } = props
+    const { t } = useTranslation("Nfr")
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
@@ -54,6 +58,9 @@ function NfrListing(props) {
     const [isHover, setIsHover] = useState(false)
     const [showAddNFRDrawer, setShowAddNFRDrawer] = useState(false)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const [showExtraData, setShowExtraData] = useState(false)
+    const [render, setRender] = useState(false)
+    const [showNfrPartListing, setShowNfrPartListing] = useState(false)
     const agGridRef = useRef(null);
 
     const floatingFilterNfr = {
@@ -134,7 +141,7 @@ function NfrListing(props) {
             rowData: rowData,
             Id: Id
         }
-
+        setShowNfrPartListing(true)
         setSelectedPartData(rowData)
         setNfrId(rowData?.NfrNumber)
         let obj = { ...nfrDetailsForDiscount, rowData: rowData }
@@ -176,18 +183,28 @@ function NfrListing(props) {
 
         return (
             <>
-                {<button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {<button title='Delete' className="Delete mr-1" type={'button'} onClick={() => deleteItemDetails(rowData)} />}
+                {<button title='View' className="View mr-1" id="viewNfr_list" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {<button title='Delete' className="Delete mr-1" id="deleteNfr_list" type={'button'} onClick={() => deleteItemDetails(rowData)} />}
             </>
         )
     };
 
+    const toggleExtraData = (showTour) => {
 
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 200);
+
+
+    }
     const closeDrawer = () => {
         setAddRfqData({})
         setAddRfq(false)
         getDataList()
         setIsEdit(false)
+        setShowNfrPartListing(false)
 
     }
 
@@ -358,14 +375,20 @@ function NfrListing(props) {
 
                                 <Col md="3" lg="3" className='mb-2'>
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                    <TourWrapper
+                                        buttonSpecificProp={{ id: "Nfr_Listing_Tour", onClick: toggleExtraData }}
+                                        stepsSpecificProp={{
+                                            steps: Steps(t, { activeTab }).NFR_lISTING
+                                        }} />
                                 </Col>
 
                                 <Col md="9" className="mb-3 d-flex justify-content-end">
                                     {true && (<Button id="nfr_add" className={"mr5"} onClick={addNFRFunction} title={"Add"} icon={"plus"} />)}
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                    <button type="button" className="user-btn " id="resetNFR_listing" title="Reset Grid" onClick={() => resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>
                                     <button
+                                        id="fetchNFR_btn"
                                         type="button"
                                         className={'secondary-btn ml-1'}
                                         title="Fetch"
@@ -414,7 +437,7 @@ function NfrListing(props) {
                                                 <AgGridColumn field="NumberOfParts" headerName='No. of Parts' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="ApprovedOn" headerName='Approved On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" cellClass="text-center" headerName="Status" headerClass="justify-content-center" minWidth={170} cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterNfr}></AgGridColumn>
-                                                {<AgGridColumn field="Status" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                {<AgGridColumn field="Status" width={180} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                             </AgGridReact >
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
                                         </div >
@@ -441,6 +464,9 @@ function NfrListing(props) {
                 nfrDataFromAdd={props?.location?.state}
                 isFromDiscount={props?.isFromDiscount}
                 changeIsFromDiscount={props?.changeIsFromDiscount}
+                showExtraData={showExtraData}
+                showNfrPartListing={showNfrPartListing}
+                activeTab={activeTab}
             />}
 
             {showAddNFRDrawer && <CreateManualNFR

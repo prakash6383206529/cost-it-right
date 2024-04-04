@@ -293,7 +293,7 @@ class SimulationTab extends Component {
                                 <tr>
                                     <th>{`Module`}</th>
                                     <th className="select-all-block pr-2">
-                                        <label className="custom-checkbox align-middle text-left">
+                                        <label id="Simulation_SelectAll_Check" className="custom-checkbox align-middle text-left" >
                                             <input
                                                 type="checkbox"
                                                 value={"All"}
@@ -334,7 +334,7 @@ class SimulationTab extends Component {
                                                         </label>
                                                     }
                                                 </td>
-                                                <td className="select-all-block"><label className="custom-checkbox">
+                                                <td className="select-all-block"><label className="custom-checkbox" id='Simulation_Specific_SelectAll_Check'>
                                                     {" "}
                                                     {
                                                         <input

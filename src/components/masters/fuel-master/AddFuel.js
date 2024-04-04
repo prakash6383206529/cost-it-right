@@ -806,7 +806,7 @@ class AddFuel extends Component {
                       <div className="col-md-6">
                         <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Fuel
                           <TourWrapper
-                            buttonSpecificProp={{ id: "Add_fuel_form" }}
+                            buttonSpecificProp={{ id: "Add_Fuel_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t).ADD_FUEL
                             }} />

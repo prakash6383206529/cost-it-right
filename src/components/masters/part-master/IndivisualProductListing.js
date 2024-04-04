@@ -390,7 +390,7 @@ const IndivisualProductListing = (props) => {
             onChange={(e) => onFilterTextBoxChanged(e)}
           />
           <TourWrapper
-            buttonSpecificProp={{ id: "IndividualProduct_Listing_Tour", onClick: toggleExtraData }}
+            buttonSpecificProp={{ id: "Individual_Product_Listing_Tour", onClick: toggleExtraData }}
             stepsSpecificProp={{
               steps: Steps(t, { addLimit: false, filterButton: false, costMovementButton: false, viewBOM: false, updateAssociatedTechnology: false, copyButton: false, status: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
             }} />

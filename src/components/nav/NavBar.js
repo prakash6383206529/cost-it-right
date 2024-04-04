@@ -33,7 +33,7 @@ import activeRFQ from '../../assests/images/rfqActive.svg'
 import RFQ from '../../assests/images/rfq.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 // import Calculator from "../common/Calculator/component/Calculator";
-import { CBC_COSTING, COSTING, SIMULATION, VBC_COSTING, VERSION, ZBC_COSTING, GUIDE_BUTTON_SHOW } from '../../config/constants';
+import { CBC_COSTING, COSTING, SIMULATION, VBC_COSTING, VERSION, ZBC_COSTING } from '../../config/constants';
 import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
@@ -933,7 +933,7 @@ class SideBar extends Component {
                     <div className="d-flex align-items-center">
                       <LanguageDropdown />
                       <TourWrapper
-                        buttonSpecificProp={{ id: "Navigation_Bar" }}
+                        buttonSpecificProp={{ id: "Navigation_Bar_Tour" }}
                         stepsSpecificProp={{
                           steps: Steps(t, { topAndLeftMenuData }).NAV_BAR
                         }} />

@@ -1579,12 +1579,16 @@ class AddRMDomestic extends Component {
 
     const labelForScrapRate = () => {
       let label = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
+
       if (showScrapKeys?.showCircleJali) {
         label = labelWithUOMAndCurrency("Jali Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
+
       } else if (showScrapKeys?.showForging) {
         label = labelWithUOMAndCurrency("Forging Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
+
       } else if (showScrapKeys?.showScrap) {
         label = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))
+
       }
       return label
     }
@@ -1604,11 +1608,16 @@ class AddRMDomestic extends Component {
                         <h1>
                           {isViewFlag ? 'View' : isEditFlag ? 'Update' : 'Add'} Raw Material (Domestic)
 
-                          {this.state.showTour && <TourWrapper
-                            buttonSpecificProp={{ id: "RM_domestic_form" }}
+                          {this.state.showTour && !isViewFlag && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_RM_Domestic_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t,
                                 {
+                                  showScrap: showScrapKeys?.showScrap,
+                                  showForging: showScrapKeys?.showForging,
+                                  showCircleJali: showScrapKeys?.showCircleJali,
+                                  isRMAssociated: isRMAssociated,
+                                  isEditFlag: isEditFlag,
                                   showSendForApproval: !this.state.isFinalApprovar,
                                   hasSource: (costingTypeId === ZBCTypeId),
                                   destinationField: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant),
@@ -1999,7 +2008,7 @@ class AddRMDomestic extends Component {
                           <>
                             <Col md="3">
                               <Field
-                                label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                label={labelWithUOMAndCurrency("Cut Off Price ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                 name={"cutOffPrice"}
                                 type="text"
                                 placeholder={(isViewFlag || !this.state.IsFinancialDataChanged) ? '-' : "Enter"}
@@ -2015,7 +2024,7 @@ class AddRMDomestic extends Component {
 
                             <Col md="3">
                               <Field
-                                label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                label={labelWithUOMAndCurrency("Basic Rate ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                 name={"BasicRateBaseCurrency"}
                                 type="text"
                                 placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
@@ -2050,7 +2059,7 @@ class AddRMDomestic extends Component {
                                 </span>
                               </div>
                             </Col>
-                            {this.state.IsApplyHasDifferentUOM &&
+                            {this.state.IsApplyHasDifferentUOM && !this.props.IsRMAssociated &&
                               <Col md="3" className='dropdown-flex'>
                                 <Field
                                   label="Scrap Rate UOM"
@@ -2079,7 +2088,7 @@ class AddRMDomestic extends Component {
                                   className=""
                                   maxLength="15"
                                   customClassName=" withBorder"
-                                  disabled={isViewFlag}
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 />
                               </Col>
                               <Col md="3">
@@ -2111,7 +2120,7 @@ class AddRMDomestic extends Component {
                                   className=""
                                   maxLength="15"
                                   customClassName=" withBorder"
-                                  disabled={isViewFlag}
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 />
                               </Col></>}
 
@@ -2119,7 +2128,7 @@ class AddRMDomestic extends Component {
                               <Col md="3">
                                 {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrencyPerOldUOM} />}
                                 <Field
-                                  label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                  label={labelWithUOMAndCurrency("Scrap Rate ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                   name={"ScrapRateBaseCurrency"}
                                   id="scrap-rate-base-currency"
                                   type="text"
@@ -2131,7 +2140,7 @@ class AddRMDomestic extends Component {
                                   maxLength="15"
                                   customClassName=" withBorder"
                                   // onChange={this.handleScrapRate}
-                                  disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                  disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                 />
                               </Col>}
                             {showScrapKeys?.showForging &&
@@ -2139,7 +2148,7 @@ class AddRMDomestic extends Component {
                                 <Col md="3">
                                   {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="forging-scrap-cost-base-currency" width={'450px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrencyPerOldUOM} />}
                                   <Field
-                                    label={labelWithUOMAndCurrency("Forging Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                    label={labelWithUOMAndCurrency("Forging Scrap Rate ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                     name={"ForgingScrap"}
                                     type="text"
                                     id="forging-scrap-cost-base-currency"
@@ -2150,12 +2159,12 @@ class AddRMDomestic extends Component {
                                     className=""
                                     customClassName=" withBorder"
                                     maxLength="15"
-                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                                 <Col md="3">
                                   <Field
-                                    label={labelWithUOMAndCurrency("Machining Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                    label={labelWithUOMAndCurrency("Machining Scrap Rate ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                     name={"MachiningScrap"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
@@ -2165,7 +2174,7 @@ class AddRMDomestic extends Component {
                                     className=""
                                     customClassName=" withBorder"
                                     maxLength="15"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                               </>
@@ -2175,7 +2184,7 @@ class AddRMDomestic extends Component {
                                 <Col md="3">
                                   {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />}
                                   <Field
-                                    label={labelWithUOMAndCurrency("Jali Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                    label={labelWithUOMAndCurrency("Jali Scrap Rate ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                     name={"JaliScrapCost"}
                                     type="text"
                                     id="jali-scrap-cost-base-currency"
@@ -2183,21 +2192,21 @@ class AddRMDomestic extends Component {
                                     validate={[required, maxLength15, decimalLengthsix]}
                                     component={renderText}
                                     required={true}
-                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
+                                    disabled={isViewFlag || this.state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                     className=" "
                                     customClassName=" withBorder"
                                   />
                                 </Col>
                                 <Col md="3">
                                   <Field
-                                    label={labelWithUOMAndCurrency("Circle Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                    label={labelWithUOMAndCurrency("Circle Scrap Rate ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                     name={"CircleScrapCost"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[maxLength15, decimalLengthsix]}
                                     component={renderText}
                                     required={false}
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                     className=" "
                                     customClassName=" withBorder"
                                   />
@@ -2211,7 +2220,7 @@ class AddRMDomestic extends Component {
                               <>
                                 <Col md="3">
                                   <Field
-                                    label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                    label={labelWithUOMAndCurrency("Freight Cost ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                     name={"FreightCharge"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
@@ -2221,13 +2230,13 @@ class AddRMDomestic extends Component {
                                     className=""
                                     maxLength="15"
                                     customClassName=" withBorder"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                                 {/* //RE */}
                                 <Col md="3">
                                   <Field
-                                    label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                    label={labelWithUOMAndCurrency("Shearing Cost ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                     name={"ShearingCost"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
@@ -2237,7 +2246,7 @@ class AddRMDomestic extends Component {
                                     className=""
                                     maxLength="15"
                                     customClassName=" withBorder"
-                                    disabled={isViewFlag}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                   />
                                 </Col>
                               </>)}
@@ -2245,7 +2254,7 @@ class AddRMDomestic extends Component {
                               <Col md="3">
                                 <TooltipCustom disabledIcon={true} width={"350px"} id="rm-basic-price" tooltipText={this.basicPriceTitle()} />
                                 <Field
-                                  label={labelWithUOMAndCurrency("Basic Price", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                  label={labelWithUOMAndCurrency("Basic Price ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                   name={"BasicPriceCurrency"}
                                   type="text"
                                   id="rm-basic-price"
@@ -2264,7 +2273,7 @@ class AddRMDomestic extends Component {
                                 <div className='d-flex align-items-center'>
                                   <div className='w-100'>
                                     <Field
-                                      label={labelWithUOMAndCurrency("Condition Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                      label={labelWithUOMAndCurrency("Condition Cost ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                       name={"FinalConditionCostBaseCurrency"}
                                       type="text"
                                       placeholder={"-"}
@@ -2291,7 +2300,7 @@ class AddRMDomestic extends Component {
                             <Col md="3">
                               <TooltipCustom disabledIcon={true} id="bop-net-cost-currency" tooltipText={this.netCostTitle()} />
                               <Field
-                                label={labelWithUOMAndCurrency("Net Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                label={labelWithUOMAndCurrency("Net Cost ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                 name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
                                 type="text"
                                 id="bop-net-cost-currency"

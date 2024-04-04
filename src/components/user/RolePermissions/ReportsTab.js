@@ -257,7 +257,7 @@ class ReportsTab extends Component {
                 <tr>
                   <th>{`Module`}</th>
                   <th className="select-all-block pr-2">
-                    <label className="custom-checkbox align-middle text-left">
+                    <label id='Report_SelectAll_Check' className="custom-checkbox align-middle text-left">
                       <input
                         type="checkbox"
                         value={"All"}
@@ -298,7 +298,7 @@ class ReportsTab extends Component {
                           }
                         </td>
                         <td className="select-all-block">
-                          <label className="custom-checkbox">
+                          <label id='Report_Specific_SelectAll_Check' className="custom-checkbox">
                             {" "}
                             {
                               <input

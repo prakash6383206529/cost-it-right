@@ -724,7 +724,7 @@ const IndivisualPartListing = (props) => {
           <div className="ag-grid-header">
             <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={onFilterTextBoxChanged} />
             <TourWrapper
-              buttonSpecificProp={{ id: "IndivisualPart_Listing_Tour", onClick: toggleExtraData }}
+              buttonSpecificProp={{ id: "Indivisual_Part_Listing_Tour", onClick: toggleExtraData }}
               stepsSpecificProp={{
                 steps: Steps(t, { addLimit: false, costMovementButton: false, updateAssociatedTechnology: false, copyButton: false, viewBOM: false, status: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
               }} />

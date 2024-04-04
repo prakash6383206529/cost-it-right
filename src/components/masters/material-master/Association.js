@@ -171,7 +171,7 @@ class Association extends Component {
                                             <h3>
                                                 {"Add Association"}
                                                 <TourWrapper
-                                                    buttonSpecificProp={{ id: "Association_Type_form" }}
+                                                    buttonSpecificProp={{ id: "Add_Association_Form" }}
                                                     stepsSpecificProp={{
                                                         steps: Steps(t).ADD_RM_ASSOCIATION,
                                                     }}

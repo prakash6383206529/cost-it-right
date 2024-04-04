@@ -525,7 +525,7 @@ function VerifySimulation(props) {
 
     useEffect(() => {
         if (verifyList && verifyList.length > 0) {
-            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+            // window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
         }
     }, [verifyList])
 
@@ -758,7 +758,7 @@ function VerifySimulation(props) {
         if (!isMasterAssociatedWithCosting) {
             params.api.sizeColumnsToFit();
         } else {
-            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+            window.screen.width >= 1921 && params.api.sizeColumnsToFit();
         }
     };
 
@@ -778,7 +778,7 @@ function VerifySimulation(props) {
         if (!isMasterAssociatedWithCosting && isBOPDomesticOrImport) {
             gridRef.current.api.sizeColumnsToFit();
         } else {
-            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+            // window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
         }
     }
 
@@ -805,7 +805,10 @@ function VerifySimulation(props) {
         partTypeFormatter: partTypeFormatter,
         combinedProcessCostFormatter: combinedProcessCostFormatter
     };
-
+    function getOperationTypes(list) {
+        return list && list?.map(item => item.ForType);
+    }
+    const operationTypes = getOperationTypes(verifyList);
     return (
         <>
             {
@@ -886,7 +889,10 @@ function VerifySimulation(props) {
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" tooltipField="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                                             <AgGridColumn width={120} field="PlantName" tooltipField="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                                             {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn width={130} field="POPrice" tooltipField="POPrice" headerName={`Existing Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='priceFormatter'></AgGridColumn>}
-
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="ForType" headerName="Operation Type" minWidth={190}></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={185} field="OldOperationConsumption" tooltipField="OldOperationRate" headerName="Consumption"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="OldOperationBasicRate" tooltipField="OldOperationRate" headerName="Existing Welding Material Rate/kg"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName="Revised Welding Material Rate/kg"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 

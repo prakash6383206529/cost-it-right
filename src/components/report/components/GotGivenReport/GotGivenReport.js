@@ -222,7 +222,7 @@ const GotGivenReport = (props) => {
 
                 <div className="cost-ratio-report">
                     <TourWrapper
-                        buttonSpecificProp={{ id: "Add_Costing_form" }}
+                        buttonSpecificProp={{ id: "Got_Given_Report" }}
                         stepsSpecificProp={{
                             steps: Steps(t).GOTGIVENSUMMARY
                         }} />

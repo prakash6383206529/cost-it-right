@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
@@ -61,7 +61,7 @@ const OperationListing = (props) => {
         selectedRowDataAnalytics: [],
         inRangeDate: [],
         //states for pagination purpose
-        floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '' },
+        floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '', ForType: '' },
         warningMessage: false,
         filterModel: {},
         totalRecordCount: 0,
@@ -368,7 +368,7 @@ const OperationListing = (props) => {
 
     const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = { isEditFlag: true, ID: Id, toggleForm: true, isViewMode: isViewMode }
-        props.getDetails(data, rowData?.IsOperationAssociated);
+        props?.getDetails(data, rowData?.IsOperationAssociated);
     }
 
     /**
@@ -411,6 +411,7 @@ const OperationListing = (props) => {
     * @description Renders buttons
     */
     const { permissionData } = state;
+    const { benchMark } = props
     const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -426,11 +427,16 @@ const OperationListing = (props) => {
 
         return (
             <>
-                <Button id={`operationListing_movement${props.rowIndex}`} className={"cost-movement Tour_List_Cost_Movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
-
-                {permissionData?.View && <Button id={`operationListing_view${props.rowIndex}`} className={"View Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
-                {isEditable && <Button id={`operationListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
-                {isDeleteButton && <Button id={`operationListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+                {benchMark && (
+                    <Button id={`operationListing_movement${props.rowIndex}`} className={"cost-movement Tour_List_Cost_Movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
+                )}
+                {(!benchMark) && (
+                    <>
+                        {permissionData?.View && <Button id={`operationListing_view${props.rowIndex}`} className={"View Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
+                        {isEditable && <Button id={`operationListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
+                        {isDeleteButton && <Button id={`operationListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+                    </>
+                )}
             </>
         )
     };
@@ -877,6 +883,7 @@ const OperationListing = (props) => {
 
                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                             {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>}
+                            <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>
                             <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="Plants" headerName="Plant (Code)" ></AgGridColumn>

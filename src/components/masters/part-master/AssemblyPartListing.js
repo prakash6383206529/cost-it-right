@@ -481,7 +481,7 @@ const AssemblyPartListing = React.memo((props) => {
               onChange={(e) => onFilterTextBoxChanged(e)}
             />
             <TourWrapper
-              buttonSpecificProp={{ id: "AssemblyPart_Listing_Tour", onClick: toggleExtraData }}
+              buttonSpecificProp={{ id: "Assembly_Part_Listing_Tour", onClick: toggleExtraData }}
               stepsSpecificProp={{
                 steps: Steps(t, { addLimit: false, costMovementButton: false, updateAssociatedTechnology: false, copyButton: false, status: false, filterButton: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
               }} />

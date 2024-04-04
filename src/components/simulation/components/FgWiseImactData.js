@@ -13,35 +13,32 @@ export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
     const dispatch = useDispatch()
-    const { SimulationId, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, fgWiseAccDisable, headerName, dataForAssemblyImpact, impactType, tooltipEffectiveDate } = props
+    const { SimulationId, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, fgWiseAccDisable, headerName, dataForAssemblyImpact, impactType, tooltipEffectiveDate, isSimulation, isCosting } = props
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.costing.impactData)
 
     useEffect(() => {
-        let obj = {
-            "SimulationId": SimulationId ? SimulationId : EMPTY_GUID,
-            ...costingIdArray
-        }
-        if (((costingIdArray && Object.keys(costingIdArray).length > 0) || SimulationId)) {
-            setLoader(true)
-            fgWiseAccDisable(true)
+        if (((isSimulation && SimulationId) || (isCosting && costingIdArray))) {
+            setLoader(true);
+            fgWiseAccDisable(true);
+
+            let obj = {
+                "SimulationId": SimulationId ? SimulationId : EMPTY_GUID,
+                ...costingIdArray
+            };
 
             dispatch(getExternalIntegrationFgWiseImpactData(obj, (res) => {
-                if (res && res?.data && res?.data?.Result) {
-                    setshowTableData(true)
+                if (res && res.data && res.data.Result) {
+                    setshowTableData(true);
+                } else if (res?.response?.status !== 200) {
+                    setshowTableData(false);
                 }
-                else if (res?.response?.status !== 200) {
-                    setshowTableData(false)
-                } else {
-                    setLoader(false)
-                    fgWiseAccDisable(false)
-                }
-                setLoader(false)
-                fgWiseAccDisable(false)
-            }))
+                setLoader(false);
+                fgWiseAccDisable(false);
+            }));
         }
-    }, [SimulationId, costingIdArray])
+    }, [isSimulation, isCosting, SimulationId]);
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 

@@ -1,5 +1,4 @@
 import React from 'react';
-
 export function Steps(t, config) {
     let filterButton = true
     let addButton = true
@@ -20,18 +19,12 @@ export function Steps(t, config) {
     let approve = true
     let reject = true
     let multipleFilter = true
-    let sapDownloadButton = false
-    let encodedDownloadButton = false
     let showcostingDetail = false
     let searchFilter = true
     let showRfqDetail = false
     let Cancel = false
     let viewProcessGroup = false
     let viewUserDetails = false
-
-
-
-
     if (config) {
         filterButton = config.filterButton !== undefined ? config.filterButton : true;
         addButton = config.addButton !== undefined ? config.addButton : true;
@@ -61,65 +54,6 @@ export function Steps(t, config) {
 
     }
     return {
-
-        NAVBAR: [
-            {
-                element: ".language-dropdown",
-                intro: "testing mesage",
-            },
-            {
-                element: ".dashboard",
-                intro: t('navbar.dashboard'),
-            },
-            {
-                element: ".masters",
-                intro: t('navbar.masters'),
-            },
-            {
-                element: ".costing",
-                intro: t("navbar.costing"),
-            },
-            {
-                element: ".rfq",
-                intro: t("navbar.rfq"),
-            },
-        ],
-        DASHBOARD_SIMULATION_TAB: [
-            {
-                element: "#dashboard_simulation_Pending_For_Approval",
-                intro: t("dashboard.simulationApproval.dashboard_simulation_Pending_For_Approval"),
-            },
-            {
-                element: "#dashboard_simulation_Awaiting_Approval",
-                intro: t("dashboard.simulationApproval.dashboard_simulation_Awaiting_Approval"),
-            },
-            {
-                element: "#dashboard_simulation_Rejected",
-                intro: t("dashboard.simulationApproval.dashboard_simulation_Rejected"),
-            },
-            {
-                element: "#dashboard_simulation_Approved",
-                intro: t("dashboard.simulationApproval.dashboard_simulation_Approved"),
-            },
-        ],
-        DASHBOARD_COSTING_TAB: [
-            {
-                element: "#dashboard_simulation_Pending_For_Approval",
-                intro: t("dashboard.simulationApproval.dashboard_simulation_Pending_For_Approval"),
-            },
-            {
-                element: "#dashboard_simulation_Awaiting_Approval",
-                intro: t("dashboard.simulationApproval.dashboard_simulation_Awaiting_Approval"),
-            },
-            {
-                element: "#dashboard_simulation_Rejected",
-                intro: t("dashboard.simulationApproval.dashboard_simulation_Rejected"),
-            },
-            {
-                element: "#dashboard_simulation_Approved",
-                intro: t("dashboard.simulationApproval.dashboard_simulation_Approved"),
-            },
-        ],
         SHOWCASE_TABLE: [
             {
                 element: "#filter-text-box",
@@ -155,8 +89,6 @@ export function Steps(t, config) {
             },
         ],
         COMMON_LISTING: [
-
-
             ...(searchFilter ? [
                 {
                     element: "#filter-text-box",
@@ -350,62 +282,3 @@ export function Steps(t, config) {
     }
 }
 
-export const tableShowCaseSteps = (t, props) => {
-    const { mainButtons, actionButtons, options, headerName } = props;
-
-    const staticSteps = [
-        {
-            element: "#filter-text-box",
-            intro: t("showcaseTable.static.globalSearch"),
-        },
-        {
-            element: ".showcase-container .ag-text-field-input",
-            intro: t("showcaseTable.static.floatingFilterInput"),
-        },
-        {
-            element: ".showcase-container .ag-floating-filter-button",
-            intro: t("showcaseTable.static.floatingFilterButton"),
-        },
-    ]
-    if (options.checkBox) {
-        staticSteps.push({
-            element: ".showcase-container .has-checkbox .ag-checkbox",
-            intro: t("showcaseTable.static.checkBox"),
-        })
-    }
-    if (options.firstColumnLink) {
-        staticSteps.push({
-            element: ".showcase-container #link_0",
-            intro: t("showcaseTable.static.link")
-        })
-    }
-    if (headerName.includes('Status')) {
-        if (options.isApprovalFlow) {
-            staticSteps.push({
-                element: ".showcase-container #link_0",
-                intro: t("showcaseTable.static.approvalStatus"),
-            },)
-        } else {
-            staticSteps.push({
-                element: ".showcase-container #switch_0",
-                intro: t("showcaseTable.static.toggleStatus"),
-            },)
-        }
-    }
-    const mainButtonArr = [];
-    const actionButtonArr = [];
-    mainButtons && mainButtons.map(item => {
-        let obj = {};
-        obj.element = `#showcase_${item.toLowerCase()}`
-        obj.intro = `${t(`showcaseTable.mainButton.${item.toLowerCase()}`)}`
-        mainButtonArr.push(obj)
-    })
-    actionButtons && actionButtons.map(item => {
-        let obj = {};
-        obj.element = `#table_showcase_${item.toLowerCase()}`
-        obj.intro = `${t(`showcaseTable.actionButton.${item.toLowerCase()}`)}`
-        actionButtonArr.push(obj)
-    })
-    let finalArr = [...staticSteps, ...mainButtonArr, ...actionButtonArr]
-    return finalArr;
-}

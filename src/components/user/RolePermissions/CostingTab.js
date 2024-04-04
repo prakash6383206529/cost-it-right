@@ -274,7 +274,7 @@ class CostingTab extends Component {
                   <tr>
                     <th>{`Module`}</th>
                     <th className="select-all-block pr-2">
-                      <label className="custom-checkbox align-middle">
+                      <label id='Costing_SelectAll_Check' className="custom-checkbox align-middle">
                         <input
                           type="checkbox"
                           value={"All"}
@@ -322,7 +322,7 @@ class CostingTab extends Component {
                               }
                             </td>
                             <td className="select-all-block">
-                              <label className="custom-checkbox">
+                              <label id='Costing_Specific_SelectAll_Check' className="custom-checkbox">
                                 {
                                   <input
                                     type="checkbox"

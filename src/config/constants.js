@@ -21,9 +21,7 @@ export const config = () => {
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10162/api/v1`
-
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
-
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
@@ -1979,7 +1977,7 @@ export const HEAD_WISE_COSTING_GOT_GIVEN = "Head Wise Costing Got Given"
 export const PLANT_HEAD_WISE = "Plant Head Wise"
 export const CUSTOMER_POAM_IMPACT = "Customer POAM Impact"
 export const OUTSOURCING = "Outsourcing"
-export const INSIGHT_SIMULATION_REPORT = "Simulation Insights Report"
+export const INSIGHT_SIMULATION_REPORT = "Simulation Insights"
 export const NFR_INSIGHT_DETAILS = 'NFR Insights' //MINDA
 export const lOGIN_AUDIT = 'Login Audit'
 
@@ -2921,7 +2919,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.2.2";
+export const VERSION = "V2.2.1";
 
 
 

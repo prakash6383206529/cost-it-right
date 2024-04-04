@@ -1027,8 +1027,7 @@ export const ZBCOperation = [
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
     { label: 'Technology', value: 'Technology' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
-    { label: 'VendorPlant', value: 'VendorPlant' },
-    { label: 'ForType', value: 'ForType' },
+    { label: 'OperationType', value: 'OperationType' },
     { label: 'MaterialGasCRMHead/NiScrapCrmHead', value: 'MaterialGasCRMHead' },
     { label: 'MaterialGasRate/NiScrapRate', value: 'MaterialGasRate' },
     { label: 'MaterialGasConsumption/NiScrapRateConsumption', value: 'MaterialGasConsumption' },
@@ -1039,8 +1038,6 @@ export const ZBCOperation = [
     { label: 'PowerElectricityRate', value: 'PowerElectricityRate' },
     { label: 'PowerElectricityConsumption', value: 'PowerElectricityConsumption' },
     { label: 'LabourCRMHead', value: 'LabourCRMHead' },
-    { label: 'LabourManPowerRate', value: 'LabourManPowerRate' },
-    { label: 'LabourManPowerConsumption', value: 'LabourManPowerConsumption' },
     { label: 'LabourManPowerCost', value: 'LabourManPowerCost' },
     { label: 'LabourStaffCRMHead', value: 'LabourStaffCRMHead' },
     { label: 'LabourStaffCost', value: 'LabourStaffCost' },
@@ -1062,7 +1059,6 @@ export const ZBCOperation = [
     { label: 'DepriciationCost', value: 'DepriciationCost' },
     { label: 'OtherOperationCRMHead', value: 'OtherOperationCRMHead' },
     { label: 'OtherOperationCode', value: 'OtherOperationCode' },
-    { label: 'OtherOperationIdRef', value: 'OtherOperationIdRef' },
     { label: 'OtherOperationCost', value: 'OtherOperationCost' },
     { label: 'StatuatoryAndLicenseCRMHead/FixedCostCrmHead', value: 'StatuatoryAndLicenseCRMHead' },
     { label: 'StatuatoryAndLicenseCost/FixedCost', value: 'StatuatoryAndLicenseCost' },
@@ -1078,13 +1074,16 @@ export const ZBCOperation = [
     { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
 ]
 export const ZBCOperationSmallForm = [
-
+    { label: "Note", value: "Note" },
     { label: 'Technology', value: 'Technology', }, //*
+    { label: 'OperationType', value: 'OperationType', },
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
     { label: 'Description', value: 'Description', },
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
+    { label: 'WeldingMaterialRate/kg', value: 'WeldingRate', },
+    { label: 'Consumption', value: 'Consumption', },
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
@@ -1096,12 +1095,16 @@ export const ZBCOperationSmallForm = [
 
 export const ZBCOperationTempData = [
     {
+        "Note": "When the 'OperationType' is Welding, the rate will be automatically calculated based on the values in the 'WeldingMaterialRate/kg' and 'Consumption' columns.",
         'Technology': 'Sheet Metal',
+        'OperationType': 'Surface Treatment',
         'OperationName': 'Crushing',
         'OperationCode': '101',
         'Description': 'Description Text',
-        'PlantCode': 'Systematix01',
+        'PlantCode': 'PLT-A',
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        'WeldingRate': 10,
+        'Consumption': 20,
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "SurfaceTreatmentOperation": "Yes or No",
@@ -1109,8 +1112,6 @@ export const ZBCOperationTempData = [
         'Remark': 'Remark Text',
         "DestinationPlantCode": "PLT-A",
         "LabourRatePerUOM": "0.5",
-        "VendorPlant": "Plant B",
-        "ForType": "Surface Treatment",
         "MaterialGasCRMHead": "Argon",
         "MaterialGasRate": "10",
         "MaterialGasConsumption": "5",
@@ -1121,8 +1122,6 @@ export const ZBCOperationTempData = [
         "PowerElectricityRate": "0.5",
         "PowerElectricityConsumption": "100",
         "LabourCRMHead": "Manpower",
-        "LabourManPowerRate": "20",
-        "LabourManPowerConsumption": "10",
         "LabourManPowerCost": "200",
         "LabourStaffCRMHead": "Supervisor",
         "LabourStaffCost": "100",
@@ -1144,7 +1143,6 @@ export const ZBCOperationTempData = [
         "DepriciationCost": "30",
         "OtherOperationCRMHead": "Other Operations",
         "OtherOperationCode": "OTH",
-        "OtherOperationIdRef": "123",
         "OtherOperationCost": "50",
         "StatuatoryAndLicenseCRMHead": "License",
         "StatuatoryAndLicenseCost": "20",
@@ -1160,21 +1158,22 @@ export const ZBCOperationTempData = [
 
     },
     {
-        "DestinationPlantCode": "HOU-123",
-        'PlantCode': 'Systematix01',
+        "DestinationPlantCode": "PLT-A",
+        'PlantCode': 'PLT-A',
+        "OperationType": "Welding",
         "OperationName": "Assembly",
         'OperationCode': '101',
         "Description": "Final product assembly",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "LabourRate": "25.50",
         "SurfaceTreatmentOperation": "Yes or No",
+        "WeldingRate": "10.00",
+        "Consumption": "10.00",
         "Rate": "100.00",
         "LabourRatePerUOM": "2.00",
         'Technology': 'Plastic',
         "Remark": "Quality control passed",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "VendorPlant": "Mexico City",
-        "ForType": "Surface Treatment",
         "MaterialGasCRMHead": "Argon Gas",
         "MaterialGasRate": "2.50",
         "MaterialGasConsumption": "15",
@@ -1185,8 +1184,6 @@ export const ZBCOperationTempData = [
         "PowerElectricityRate": "0.15",
         "PowerElectricityConsumption": "200",
         "LabourCRMHead": "Labor",
-        "LabourManPowerRate": "22.50",
-        "LabourManPowerConsumption": "8",
         "LabourManPowerCost": "180.00",
         "LabourStaffCRMHead": "Supervisor",
         "LabourStaffCost": "150.00",
@@ -1208,7 +1205,6 @@ export const ZBCOperationTempData = [
         "DepriciationCost": "50.00",
         "OtherOperationCRMHead": "Other",
         "OtherOperationCode": "OTH-789",
-        "OtherOperationIdRef": "ABC-123",
         "OtherOperationCost": "75.00",
         "StatuatoryAndLicenseCRMHead": "Permits",
         "StatuatoryAndLicenseCost": "20.00",
@@ -1224,21 +1220,22 @@ export const ZBCOperationTempData = [
     },
 
     {
-        "DestinationPlantCode": "PLT-B",
-        'PlantCode': 'Systematix01',
+        "DestinationPlantCode": "PLT-A",
+        'PlantCode': 'PLT-A',
+        "OperationType": "Surface Treatment",
         "OperationName": "Molding",
         'OperationCode': '101',
         "Description": "Injection molding process",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "LabourRate": "40",
         "SurfaceTreatmentOperation": "Yes or No",
+        "WeldingRate": "10",
+        "Consumption": "10",
         "Rate": "150",
         "LabourRatePerUOM": "0.3",
         "Technology": "Rubber",
         "Remark": "Avoid moisture",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "VendorPlant": "Plant C",
-        "ForType": "Surface Treatment",
         "MaterialGasCRMHead": "Nitrogen",
         "MaterialGasRate": "8",
         "MaterialGasConsumption": "10",
@@ -1249,8 +1246,6 @@ export const ZBCOperationTempData = [
         "PowerElectricityRate": "0.6",
         "PowerElectricityConsumption": "120",
         "LabourCRMHead": "Manpower",
-        "LabourManPowerRate": "25",
-        "LabourManPowerConsumption": "8",
         "LabourManPowerCost": "200",
         "LabourStaffCRMHead": "Engineer",
         "LabourStaffCost": "150",
@@ -1272,7 +1267,6 @@ export const ZBCOperationTempData = [
         "DepriciationCost": "25",
         "OtherOperationCRMHead": "Other Operations",
         "OtherOperationCode": "OTH",
-        "OtherOperationIdRef": "456",
         "OtherOperationCost": "60",
         "StatuatoryAndLicenseCRMHead": "License",
         "StatuatoryAndLicenseCost": "25",
@@ -1301,15 +1295,12 @@ export const VBCOperation = [
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
-    { label: 'Rate', value: 'Rate' },
     { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
     { label: 'Technology', value: 'Technology' },
     { label: 'Remark', value: 'Remark' },
     { label: 'Plant', value: 'Plant' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
-    { label: 'VendorPlant', value: 'VendorPlant' },
-    { label: 'CustomerId', value: 'CustomerId' },
-    { label: 'ForType', value: 'ForType' },
+    { label: 'OperationType', value: 'OperationType' },
     { label: 'MaterialGasCRMHead/NiScrapCrmHead', value: 'MaterialGasCRMHead' },
     { label: 'MaterialGasRate/NiScrapRate', value: 'MaterialGasRate' },
     { label: 'MaterialGasConsumption/NiScrapRateConsumption', value: 'MaterialGasConsumption' },
@@ -1320,8 +1311,6 @@ export const VBCOperation = [
     { label: 'PowerElectricityRate', value: 'PowerElectricityRate' },
     { label: 'PowerElectricityConsumption', value: 'PowerElectricityConsumption' },
     { label: 'LabourCRMHead', value: 'LabourCRMHead' },
-    { label: 'LabourManPowerRate', value: 'LabourManPowerRate' },
-    { label: 'LabourManPowerConsumption', value: 'LabourManPowerConsumption' },
     { label: 'LabourManPowerCost', value: 'LabourManPowerCost' },
     { label: 'LabourStaffCRMHead', value: 'LabourStaffCRMHead' },
     { label: 'LabourStaffCost', value: 'LabourStaffCost' },
@@ -1344,7 +1333,6 @@ export const VBCOperation = [
     { label: 'DepriciationCost', value: 'DepriciationCost' },
     { label: 'OtherOperationCRMHead', value: 'OtherOperationCRMHead' },
     { label: 'OtherOperationCode', value: 'OtherOperationCode' },
-    { label: 'OtherOperationIdRef', value: 'OtherOperationIdRef' },
     { label: 'OtherOperationCost', value: 'OtherOperationCost' },
     { label: 'StatuatoryAndLicenseCRMHead/FixedCostCrmHead', value: 'StatuatoryAndLicenseCRMHead' },
     { label: 'StatuatoryAndLicenseCost/FixedCost', value: 'StatuatoryAndLicenseCost' },
@@ -1361,13 +1349,17 @@ export const VBCOperation = [
 
 ]
 export const VBCOperationSmallForm = [
+    { label: "Note", value: "Note" },
     { label: 'Technology', value: 'Technology', }, //*
+    { label: 'OperationType', value: 'OperationType', },
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
     { label: 'Description', value: 'Description', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
+    { label: 'WeldingMaterialRate/kg', value: 'WeldingRate', },
+    { label: 'Consumption', value: 'Consumption', },
     { label: 'Rate', value: 'Rate', }, //
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
@@ -1378,13 +1370,17 @@ export const VBCOperationSmallForm = [
 
 export const VBCOperationTempData = [
     {
+        "Note": "When the 'OperationType' is Welding, the rate will be automatically calculated based on the values in the 'WeldingMaterialRate/kg' and 'Consumption' columns.",
         'Technology': 'Sheet Metal',
+        'OperationType': 'Welding',
         'OperationName': 'Crushing',
         'OperationCode': '101',
         'Description': 'Description Text',
         'VendorCode': 'Vendor123',
         'DestinationPlantCode': "1032",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        'WeldingRate': 10,
+        'Consumption': 20,
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "SurfaceTreatmentOperation": "Yes or No",
@@ -1392,8 +1388,6 @@ export const VBCOperationTempData = [
         'Remark': 'Remark',
         "LabourRatePerUOM": 20,
         "Plant": 'Plant A',
-        "VendorPlant": 'Vendor Plant A',
-        "CustomerId": 'C-123',
         'Operation Type': 'Type A',
         "MaterialGasCRMHead": 'Material Gas',
         "MaterialGasRate": 5,
@@ -1405,8 +1399,6 @@ export const VBCOperationTempData = [
         "PowerElectricityRate": 0.5,
         "PowerElectricityConsumption": 20,
         "LabourCRMHead": 'Labour',
-        "LabourManPowerRate": 10,
-        "LabourManPowerConsumption": 10,
         "LabourManPowerCost": 100,
         "LabourStaffCRMHead": 'Staff',
         "LabourStaffCost": 50,
@@ -1428,7 +1420,6 @@ export const VBCOperationTempData = [
         "DepriciationCost": 20,
         "OtherOperationCRMHead": 'Other',
         "OtherOperationCode": 'O-002',
-        "OtherOperationIdRef": 'Ref-123',
         "OtherOperationCost": 75,
         "StatuatoryAndLicenseCRMHead": 'Statutory and License',
         "StatuatoryAndLicenseCost": 35,
@@ -1442,16 +1433,18 @@ export const VBCOperationTempData = [
         "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1500',
-        "ForType": 'Welding'
     },
     {
         'Technology': 'Rubber',
+        'OperationType': 'Surface Treatment',
         'OperationName': 'Drilling',
         'OperationCode': '102',
         'Description': 'Description Text',
         'VendorCode': 'Vendor456',
-        'DestinationPlantCode': "1234",
+        'DestinationPlantCode': "1032",
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
+        'WeldingRate': 15,
+        'Consumption': 25,
         'Rate': 30,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "SurfaceTreatmentOperation": "Yes or No",
@@ -1459,8 +1452,6 @@ export const VBCOperationTempData = [
         'Remark': 'Remark',
         "LabourRatePerUOM": 24,
         "Plant": 'Plant B',
-        "VendorPlant": 'Vendor Plant B',
-        "CustomerId": 'C-789',
         'Operation Type': 'Type B',
         "MaterialGasCRMHead": 'Material Gas',
         "MaterialGasRate": 6,
@@ -1472,8 +1463,6 @@ export const VBCOperationTempData = [
         "PowerElectricityRate": 0.6,
         "PowerElectricityConsumption": 25,
         "LabourCRMHead": 'Labour',
-        "LabourManPowerRate": 12,
-        "LabourManPowerConsumption": 8,
         "LabourManPowerCost": 96,
         "LabourStaffCRMHead": 'Staff',
         "LabourStaffCost": 60,
@@ -1495,7 +1484,6 @@ export const VBCOperationTempData = [
         "DepriciationCost": 15,
         "OtherOperationCRMHead": 'Other',
         "OtherOperationCode": 'O-003',
-        "OtherOperationIdRef": 'Ref-456',
         "OtherOperationCost": 65,
         "StatuatoryAndLicenseCRMHead": 'Statutory and License',
         "StatuatoryAndLicenseCost": 30,
@@ -1509,16 +1497,18 @@ export const VBCOperationTempData = [
         "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1200',
-        "ForType": 'Welding'
     },
     {
         'Technology': 'Plastic',
+        'OperationType': 'Surface Treatment',
         'OperationName': 'Trimming',
         'OperationCode': '103',
         'Description': 'Description Text',
         'VendorCode': 'Vendor456',
-        'DestinationPlantCode': '1010',
+        'DestinationPlantCode': '1032',
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
+        'WeldingRate': 20,
+        'Consumption': 30,
         'Rate': 35,
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'SurfaceTreatmentOperation': "Yes or No",
@@ -1526,8 +1516,6 @@ export const VBCOperationTempData = [
         'Remark': 'Remark',
         'LabourRatePerUOM': 25,
         'Plant': 'Plant B',
-        'VendorPlant': 'Vendor Plant B',
-        'CustomerId': 'C-456',
         'Operation Type': 'Type B',
         'MaterialGasCRMHead': 'Material Gas',
         'MaterialGasRate': 2,
@@ -1539,8 +1527,6 @@ export const VBCOperationTempData = [
         'PowerElectricityRate': 0.4,
         'PowerElectricityConsumption': 15,
         'LabourCRMHead': 'Labour',
-        'LabourManPowerRate': 8,
-        'LabourManPowerConsumption': 12,
         'LabourManPowerCost': 96,
         'LabourStaffCRMHead': 'Staff',
         'LabourStaffCost': 30,
@@ -1562,7 +1548,6 @@ export const VBCOperationTempData = [
         'DepriciationCost': 15,
         'OtherOperationCRMHead': 'Other',
         'OtherOperationCode': 'O-001',
-        'OtherOperationIdRef': 'Ref-456',
         'OtherOperationCost': 45,
         'StatuatoryAndLicenseCRMHead': 'Statutory and License',
         'StatuatoryAndLicenseCost': 20,
@@ -1576,7 +1561,6 @@ export const VBCOperationTempData = [
         'IsIncludeInterestRateAndDepriciationInRejectionAndProfit': "Yes or No",
         'InterestAndDepriciationCRMHead': 'Interest',
         "InterestAndDepriciationCost": '1200',
-        "ForType": 'Welding'
     }
 ]
 /**
@@ -1592,13 +1576,12 @@ export const CBCOperation = [
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
-    { label: 'Rate', value: 'Rate' },
     { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
     { label: 'Technology', value: 'Technology' },
     { label: 'Remark', value: 'Remark' },
     { label: 'Plant', value: 'Plant' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
-    { label: 'ForType', value: 'ForType' },
+    { label: 'OperationType', value: 'OperationType' },
     { label: 'MaterialGasCRMHead/NiScrapCrmHead', value: 'MaterialGasCRMHead' },
     { label: 'MaterialGasRate/NiScrapRate', value: 'MaterialGasRate' },
     { label: 'MaterialGasConsumption/NiScrapRateConsumption', value: 'MaterialGasConsumption' },
@@ -1609,8 +1592,6 @@ export const CBCOperation = [
     { label: 'PowerElectricityRate', value: 'PowerElectricityRate' },
     { label: 'PowerElectricityConsumption', value: 'PowerElectricityConsumption' },
     { label: 'LabourCRMHead', value: 'LabourCRMHead' },
-    { label: 'LabourManPowerRate', value: 'LabourManPowerRate' },
-    { label: 'LabourManPowerConsumption', value: 'LabourManPowerConsumption' },
     { label: 'LabourManPowerCost', value: 'LabourManPowerCost' },
     { label: 'LabourStaffCRMHead', value: 'LabourStaffCRMHead' },
     { label: 'LabourStaffCost', value: 'LabourStaffCost' },
@@ -1632,7 +1613,6 @@ export const CBCOperation = [
     { label: 'DepriciationCost', value: 'DepriciationCost' },
     { label: 'OtherOperationCRMHead', value: 'OtherOperationCRMHead' },
     { label: 'OtherOperationCode', value: 'OtherOperationCode' },
-    { label: 'OtherOperationIdRef', value: 'OtherOperationIdRef' },
     { label: 'OtherOperationCost', value: 'OtherOperationCost' },
     { label: 'StatuatoryAndLicenseCRMHead/FixedCostCrmHead', value: 'StatuatoryAndLicenseCRMHead' },
     { label: 'StatuatoryAndLicenseCost/FixedCost', value: 'StatuatoryAndLicenseCost' },
@@ -1649,14 +1629,17 @@ export const CBCOperation = [
 
 ]
 export const CBCOperationSmallForm = [
-
+    { label: "Note", value: "Note" }, //*
     { label: 'Technology', value: 'Technology', }, //*
+    { label: 'OperationType', value: 'OperationType', },
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
     { label: 'Description', value: 'Description', },
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
+    { label: 'WeldingMaterialRate/kg', value: 'WeldingRate', },
+    { label: 'Consumption', value: 'Consumption', },
     { label: 'Rate', value: 'Rate', }, //
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
@@ -1667,13 +1650,17 @@ export const CBCOperationSmallForm = [
 export const CBCOperationTempData = [
 
     {
+        "Note": "When the 'OperationType' is Welding, the rate will be automatically calculated based on the values in the 'WeldingMaterialRate/kg' and 'Consumption' columns.",
         'Technology': 'Sheet Metal',
+        'OperationType': 'Welding',
         'OperationName': 'Crushing',
         "OperationCode": "10001",
         'Description': 'Description Text',
         "CustomerCode": "C-10008",
         'DestinationPlantCode': "1032",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        "WeldingRate": 10,
+        "Consumption": 1000,
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "SurfaceTreatmentOperation": "Yes or No",
@@ -1692,8 +1679,6 @@ export const CBCOperationTempData = [
         "PowerElectricityRate": "0.15",
         "PowerElectricityConsumption": "5",
         "LabourCRMHead": "Labour",
-        "LabourManPowerRate": "20",
-        "LabourManPowerConsumption": "2",
         "LabourManPowerCost": "40",
         "LabourStaffCRMHead": "Staff",
         "LabourStaffCost": "25",
@@ -1715,7 +1700,6 @@ export const CBCOperationTempData = [
         "DepriciationCost": "30",
         "OtherOperationCRMHead": "Other Operation",
         "OtherOperationCode": "OTH001",
-        "OtherOperationIdRef": "OTHER123",
         "OtherOperationCost": "20",
         "StatuatoryAndLicenseCRMHead": "Statutory and License",
         "StatuatoryAndLicenseCost": "5",
@@ -1729,18 +1713,20 @@ export const CBCOperationTempData = [
         "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1500',
-        "ForType": 'Welding'
     },
 
 
     {
         'Technology': 'Plastic',
+        'OperationType': 'Welding',
         'OperationName': 'Molding',
         'OperationCode': '10002',
         'Description': 'Description Text 2',
         'CustomerCode': 'C-10009',
-        'DestinationPlantCode': '1042',
+        'DestinationPlantCode': '1032',
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
+        'WeldingMaterialRate/kg': 15,
+        'Consumption': 2000,
         'Rate': 70,
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'SurfaceTreatmentOperation': "Yes or No",
@@ -1759,8 +1745,6 @@ export const CBCOperationTempData = [
         'PowerElectricityRate': '0.20',
         'PowerElectricityConsumption': '7',
         'LabourCRMHead': 'Labour',
-        'LabourManPowerRate': '25',
-        'LabourManPowerConsumption': '3',
         'LabourManPowerCost': '75',
         'LabourStaffCRMHead': 'Staff',
         'LabourStaffCost': '30',
@@ -1782,7 +1766,6 @@ export const CBCOperationTempData = [
         'DepriciationCost': '40',
         'OtherOperationCRMHead': 'Other Operation',
         'OtherOperationCode': 'OTH002',
-        'OtherOperationIdRef': 'OTHER456',
         'OtherOperationCost': '25',
         'StatuatoryAndLicenseCRMHead': 'Statutory and License',
         'StatuatoryAndLicenseCost': '10',
@@ -1796,15 +1779,17 @@ export const CBCOperationTempData = [
         'IsIncludeInterestRateAndDepriciationInRejectionAndProfit': "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1500',
-        "ForType": 'Welding'
     }, {
         'Technology': 'Rubber',
+        'OperationType': 'SurfaceTreatment',
         'OperationName': 'Sintering',
         'OperationCode': '10003',
         'Description': 'Description Text 3',
         'CustomerCode': 'C-10010',
-        'DestinationPlantCode': '2031',
+        'DestinationPlantCode': '1032',
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
+        'WeldingRate': 20,
+        'Consumption': 3000,
         'Rate': 90,
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'SurfaceTreatmentOperation': "Yes or No",
@@ -1823,8 +1808,6 @@ export const CBCOperationTempData = [
         'PowerElectricityRate': '0.25',
         'PowerElectricityConsumption': '10',
         'LabourCRMHead': 'Labour',
-        'LabourManPowerRate': '30',
-        'LabourManPowerConsumption': '4',
         'LabourManPowerCost': '120',
         'LabourStaffCRMHead': 'Staff',
         'LabourStaffCost': '40',
@@ -1846,7 +1829,6 @@ export const CBCOperationTempData = [
         'DepriciationCost': '50',
         'OtherOperationCRMHead': 'Other Operation',
         'OtherOperationCode': 'OTH003',
-        'OtherOperationIdRef': 'OTHER789',
         'OtherOperationCost': '30',
         'StatuatoryAndLicenseCRMHead': 'Statutory and License',
         'StatuatoryAndLicenseCost': '15',
@@ -1860,7 +1842,6 @@ export const CBCOperationTempData = [
         'IsIncludeInterestRateAndDepriciationInRejectionAndProfit': "Yes or No",
         "InterestAndDepriciationCRMHead": "Interest",
         "InterestAndDepriciationCost": '1900',
-        "ForType": 'Welding'
     }
 ]
 /**
@@ -4220,7 +4201,7 @@ export const AcceptableSheetMetalUOM = ['Kilogram', 'Gram', 'Milligram']
 export const MULTIPLERMTECHNOLOGY = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15, 23]
 
 export function isMultipleRMAllow(technology) {
-    const allowedMultipleRM = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15, 23, 20]
+    const allowedMultipleRM = [1, 4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15, 23, 20]
     return allowedMultipleRM.includes(technology);
 }
 
@@ -4341,12 +4322,16 @@ export const OperationSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
+    { label: "OperationType", value: "ForType", },
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "UOM", value: "UOM" },
+    { label: "Consumption", value: "OperationConsumption" },
+    { label: "WeldingMaterialRate/kg", value: "OperationBasicRate" },
+    { label: "Revised WeldingMaterialRate/kg", value: "NewOperationBasicRate" },
     { label: "Rate", value: "Rate" },
     { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -6045,8 +6030,12 @@ export const MACHINE_IMPACT_DOWNLOAD_EXCEl = [
 ]
 
 export const OPERATION_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "Operation Type", value: "ForType", },
     { label: "Operation Name", value: "OperationName", },
     { label: "Operation Code", value: "OperationCode", },
+    { label: "Consumption", value: "OldOperationConsumption", },
+    { label: "Existing Welding Material Rate/Kg", value: "OldOperationBasicRate", },
+    { label: "Revised Welding Material Rate/Kg", value: "NewOperationBasicRate", },
     { label: "Existing Net Rate", value: "OldOperationRate", },
     { label: "Revised Net Rate", value: "NewOperationRate", },
     { label: "Previous Min.", value: "PreviousMinimum", },

@@ -28,7 +28,6 @@ class App extends Component {
         reactLocalStorage.setObject('InitialConfiguration', Data)
         let BOPLabel = Data.BOPLabel
         reactLocalStorage.setObject('BOPLabel', BOPLabel)
-
         let costingHeadsList = Data.CostingHeadsList
         let costingHeadsListArray = costingHeadsList.split(",")
 

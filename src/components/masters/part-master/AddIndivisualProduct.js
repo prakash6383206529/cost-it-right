@@ -374,11 +374,11 @@ class AddIndivisualProduct extends Component {
                                                 <div className="form-heading mb-0">
                                                     <h1>
                                                         {this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add "} Product
-                                                        <TourWrapper
-                                                            buttonSpecificProp={{ id: "product_form" }}
+                                                        {!isViewMode && <TourWrapper
+                                                            buttonSpecificProp={{ id: "Add_Indivisual_Product_Form" }}
                                                             stepsSpecificProp={{
-                                                                steps: Steps(t).ADD_PRODUCT_PART
-                                                            }} />
+                                                                steps: Steps(t, { isEditFlag: isEditFlag }).ADD_PRODUCT_PART
+                                                            }} />}
                                                     </h1>
                                                 </div>
                                             </Col>

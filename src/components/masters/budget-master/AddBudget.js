@@ -794,19 +794,19 @@ function AddBudget(props) {
                                             <div className="col-md-6">
                                                 <div className="form-heading mb-0">
                                                     <h1>
-                                                        {isEditFlag
-                                                            ? "Update Budget"
-                                                            : "Add Budget"}
-                                                        <TourWrapper
-                                                            buttonSpecificProp={{ id: "Add_Budget_form" }}
+                                                        {isViewMode ? 'View' : isEditFlag ? 'Update' : 'Add'} Budget
+                                                        {!isViewMode && <TourWrapper
+                                                            buttonSpecificProp={{ id: "Add_Budget_Form" }}
                                                             stepsSpecificProp={{
                                                                 steps: Steps(t, {
+                                                                    showSendForApproval: !isFinalApprover,
+                                                                    isEditFlag: isEditFlag,
                                                                     customerField: (costingTypeId === CBCTypeId),
                                                                     vendorField: (costingTypeId === VBCTypeId),
                                                                     plantField: (costingTypeId === ZBCTypeId),
                                                                     destinationPlant: ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant))
                                                                 }).ADD_BUDGET
-                                                            }} />
+                                                            }} />}
                                                     </h1>
                                                 </div>
                                             </div>
@@ -1235,7 +1235,7 @@ function AddBudget(props) {
 
                                                     {!isFinalApprover ?
                                                         <button type="submit"
-                                                            id='AddBudget_Save'
+                                                            id='AddBudget_SendForApproval'
                                                             className="user-btn approval-btn save-btn mr5"
                                                             disabled={setDisable || disableSendForApproval || isViewMode}
                                                         >
@@ -1245,6 +1245,7 @@ function AddBudget(props) {
                                                         :
                                                         <button
                                                             type="submit"
+                                                            id="AddBudget_Save"
                                                             className="user-btn mr5 save-btn"
                                                             disabled={setDisable || disableSendForApproval || isViewMode}
                                                         >

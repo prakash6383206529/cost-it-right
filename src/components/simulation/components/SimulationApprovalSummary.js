@@ -9,20 +9,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
     SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, BOPGridForTokenSummary, InitialGridForTokenSummary,
     LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary,
-    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, CPGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, MRGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, ASSEMBLY_TECHNOLOGY, ASSEMBLY_TECHNOLOGY_MASTER, IdForMultiTechnology, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING, SIMULATIONAPPROVALSUMMARYDOWNLOADER
+    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, CPGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, MRGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, ASSEMBLY_TECHNOLOGY_MASTER, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING, SIMULATIONAPPROVALSUMMARYDOWNLOADER
 } from '../../../config/masterData';
-import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
+import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, COMBINED_PROCESS, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBC, VBCTypeId, CBCTypeId, ZBCTypeId, } from '../../../config/constants';
+import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, ZBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails, getCodeBySplitting, handleDepartmentHeader, showSaLineNumber, showBopLabel } from '../../../helper';
-import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, handleDepartmentHeader, showSaLineNumber, showBopLabel } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { checkFinalUser, getReleaseStrategyApprovalDetails, setCostingViewData } from '../../costing/actions/Costing';
+import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
@@ -48,10 +46,6 @@ import { hideColumnFromExcel, hideMultipleColumnFromExcel } from '../../common/C
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
-import { pushAPI } from '../../simulation/actions/Simulation'
-import { MESSAGES } from '../../../config/message';
-import AttachmentSec from '../../costing/components/approval/AttachmentSec'
-import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -59,8 +53,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
-    // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
-    const { isbulkUpload, type, approvalData } = props;
+    const { isbulkUpload } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
@@ -86,8 +79,6 @@ function SimulationApprovalSummary(props) {
     const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
     const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
     // const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
-    const [pushButton, setPushButton] = useState(false)
-    const [oldCostingList, setOldCostingList] = useState([])
     const [showPushDrawer, setShowPushDrawer] = useState(false)
 
 
@@ -132,7 +123,6 @@ function SimulationApprovalSummary(props) {
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const isCombinedProcess = String(SimulationTechnologyId) === COMBINED_PROCESS;
-    const [isDisabled, setIsDisabled] = useState(false);
     const { initialConfiguration } = useSelector(state => state.auth)
 
     const dispatch = useDispatch()
@@ -150,6 +140,7 @@ function SimulationApprovalSummary(props) {
     const [accDisable, setAccDisable] = useState(false)
     const [technologyName, setTechnologyName] = useState('')
     const [plantId, setPlantId] = useState(null)
+    const [count, setCount] = useState(0)
     const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
     const headers = {
         NetCost: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
@@ -157,14 +148,8 @@ function SimulationApprovalSummary(props) {
 
     const [costingIdArray, setCostingIdArray] = useState({})
 
-    const userLoggedIn = loggedInUserId()
 
     useEffect(() => {
-        dispatch(getTechnologySelectList(() => {
-        }))
-        dispatch(getPlantSelectListByType(ZBC, "SIMULATION", '', () => {
-        }))
-
         const reqParams = {
             approvalTokenNumber: approvalNumber,
             approvalId: approvalId,
@@ -310,7 +295,7 @@ function SimulationApprovalSummary(props) {
             // }
 
         }))
-    }, [plantId])
+    }, [])
 
     useEffect(() => {
         // CHECK IF THERE IS NO DATA FOR EACH MASTER IN LAST REVISION DATA
@@ -353,7 +338,8 @@ function SimulationApprovalSummary(props) {
     useEffect(() => {
         // if (costingList?.length > 0 && effectiveDate) {
         setLoader(false)
-        if (effectiveDate && costingList && simulationDetail?.SimulationId) {
+        if (count === 0 && effectiveDate && costingList && simulationDetail?.SimulationId) {
+            setCount(1)
             if (costingList && costingList?.length > 0 && effectiveDate && Object.keys('simulationDetail'?.length > 0) && simulationDetail?.SimulationHeadId === VBCTypeId) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
                     const structureOfData = {
@@ -1150,7 +1136,7 @@ function SimulationApprovalSummary(props) {
                             <Col md="8">
                                 <div className="left-border">
                                     {'Approval Workflow (Token No. '}
-                                    {`${simulationDetail && simulationDetail?.Token ? simulationDetail?.Token : '-'}) :`}
+                                    {`${simulationDetail && simulationDetail?.Token ? simulationDetail?.Token : '-'}):`}
                                 </div >
                             </Col >
                             <Col md="4" className="text-right">
@@ -1436,7 +1422,7 @@ function SimulationApprovalSummary(props) {
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName={`Existing ${showBopLabel()} ${isMasterAssociatedWithCosting ? 'Cost' : 'Rate'}`} cellRenderer='oldBOPFormatter' ></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName={`Revised ${showBopLabel()} Cost`} cellRenderer='newBOPFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && !isMasterAssociatedWithCosting && <AgGridColumn width={140} field="PercentageChange" headerName="Percentage" cellRenderer='percentageFormatter'></AgGridColumn>}
-                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName={`Variance ({showBopLabel()} Cost)`} cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName={`Variance (${showBopLabel()} Cost)`} cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="OldNetProcessCost" headerName="Existing Net Process Cost" cellRenderer='processFormatter' ></AgGridColumn>}
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NewNetProcessCost" headerName="Revised Net Process Cost" cellRenderer='processFormatter' ></AgGridColumn>}

@@ -1,6 +1,8 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 
 export function Steps(t, config) {
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+
     return {
         ADD_INTEREST_RATE: [
 
@@ -79,7 +81,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddInterestRate_Save",
-                intro: t("InterestRate.AddInterestRate_Save"),
+                intro: introMessage,
             },
         ],
     };

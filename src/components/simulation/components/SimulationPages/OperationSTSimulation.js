@@ -24,7 +24,6 @@ import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
 import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
-import LoaderCustom from '../../../common/LoaderCustom';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -34,7 +33,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { showEditMaster, handleEditMasterPage, showCompressedColumns, render } = useContext(simulationContext) || {};
+    const { showEditMaster, handleEditMasterPage, showCompressedColumns } = useContext(simulationContext) || {};
 
     const { list, isbulkUpload, rowCount, isImpactedMaster, lastRevision, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
@@ -72,10 +71,8 @@ function OperationSTSimulation(props) {
         VendorName: showCompressedColumns ? 100 : 190,
         PlantCode: showCompressedColumns ? 100 : 190,
         CustomerName: showCompressedColumns ? 100 : 140,
-        Rate: showCompressedColumns ? 120 : 120,
-        NewRate: showCompressedColumns ? 120 : 120,
         EffectiveDate: showCompressedColumns ? 90 : 190,
-        CostingId: showCompressedColumns ? 90 : 160,
+
 
     };
     const cancelVerifyPage = () => {
@@ -100,6 +97,10 @@ function OperationSTSimulation(props) {
             let maxDate = getMaxDate(list)
             setMaxDate(maxDate?.EffectiveDate)
         }
+        list && list?.map(item => {
+            item.NewRate = item.Rate
+            return null
+        })
     }, [list])
     useEffect(() => {
 
@@ -108,30 +109,53 @@ function OperationSTSimulation(props) {
         }
     }, [showverifyPage])
 
-    const newRateFormatter = (props) => {
+    // const newRateFormatter = (props) => {
+    //     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    //     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+    //     const value = beforeSaveCell(cell)
+    //     let valueShow
+    //     if (lastRevision) {
+    //         if (row.IsSurfaceTreatmenOperation === true) {
+    //             valueShow = row.NewSurfaceTreatmentRatePerUOM
+    //         } else if (row.IsSurfaceTreatmenOperation === false) {
+    //             valueShow = row.NewOperationBasicRate
+    //         }
+    //     } else {
+    //         valueShow = row.NewOperationRate
+    //     }
+    //     return (
+    //         <>
+    //             {
+    //                 isImpactedMaster ?
+    //                     valueShow ://NewNetOperationCost
+    //                     <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.OperationBasicRate)}>{cell && value ? Number(cell) : Number(row.OperationBasicRate)} </span>
+    //             }
+
+    //         </>
+    //     )
+    // }
+    const newWeldingRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const value = beforeSaveCell(cell)
-        let valueShow
-        if (lastRevision) {
-            if (row.IsSurfaceTreatmenOperation === true) {
-                valueShow = row.NewSurfaceTreatmentRatePerUOM
-            } else if (row.IsSurfaceTreatmenOperation === false) {
-                valueShow = row.NewOperationBasicRate
-            }
-        } else {
-            valueShow = row.NewOperationRate
-        }
+
         return (
             <>
                 {
-                    isImpactedMaster ?
-                        valueShow ://NewNetOperationCost
-                        <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.Rate)}>{cell && value ? Number(cell) : Number(row.Rate)} </span>
+                    row.ForType !== "Welding" ?
+                        '-' ://NewNetOperationCost
+                        <span id={`newOperationRate-${props.rowIndex}`} className={`${!isImpactedMaster ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.OperationBasicRate)}>{cell && value ? Number(cell) : Number(row.OperationBasicRate)} </span>
                 }
 
             </>
         )
+    }
+    const ageValueGetterRate = (params) => {
+        let row = params.data
+        row.NewRate = row.ForType === 'Welding' ? row?.NewOperationBasicRate * row?.OperationConsumption : ''
+        return row.NewRate
     }
 
     const onFloatingFilterChanged = (value) => {
@@ -160,11 +184,38 @@ function OperationSTSimulation(props) {
                 {
                     isImpactedMaster ?
                         valueShow :
-                        <span title={cell && value ? Number(cell) : Number(row.Rate)}>{cell && value ? Number(cell) : Number(row.Rate)} </span>
+                        <span title={cell && value ? Number(cell) : Number(row.NewRate)}>{cell && value ? Number(cell) : Number(row.NewRate)} </span>
                 }
 
             </>
         )
+    }
+    const rateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        let valueShow
+        if (lastRevision) {
+            if (row.IsSurfaceTreatmenOperation === true) {
+                valueShow = row.NewSurfaceTreatmentRatePerUOM
+            } else if (row.IsSurfaceTreatmenOperation === false) {
+                valueShow = row.NewOperationBasicRate
+            }
+        } else {
+            valueShow = row.NewOperationRate
+        }
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        valueShow ://NewNetOperationCost
+                        <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.NewRate)}>{cell && value ? Number(cell) : Number(row.NewRate)} </span>
+
+                }
+
+            </>
+        )
+
     }
 
     const vendorFormatter = (props) => {
@@ -204,17 +255,18 @@ function OperationSTSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const revisedBasicRateHeader = (props) => {
+    const revisedRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
                 <span className='ag-header-cell-text basicRate_revised'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>}</span>
             </div>
         );
     };
+
     /**
-  * @method beforeSaveCell
-  * @description CHECK FOR ENTER NUMBER IN CELL
-  */
+    * @method beforeSaveCell
+    * @description CHECK FOR ENTER NUMBER IN CELL
+    */
     const beforeSaveCell = (props) => {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
@@ -301,12 +353,19 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
     }
-
+    const oldBasicRateFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return isImpactedMaster ? row?.OldOperationBasicRate : row?.OperationBasicRate
+    }
+    const consumptionFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return isImpactedMaster ? row?.OldOperationConsumption : row?.OperationConsumption
+    }
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
-        newRateFormatter: newRateFormatter,
+        newWeldingRateFormatter: newWeldingRateFormatter,
         statusFormatter: statusFormatter,
         NewcostFormatter: NewcostFormatter,
         OldcostFormatter: OldcostFormatter,
@@ -315,8 +374,11 @@ function OperationSTSimulation(props) {
         plantFormatter: plantFormatter,
         costingHeadFormatter: costingHeadFormatter,
         customerFormatter: customerFormatter,
-        revisedBasicRateHeader: revisedBasicRateHeader,
-        nullHandler: props.nullHandler && props.nullHandler
+        revisedRateHeader: revisedRateHeader,
+        nullHandler: props.nullHandler && props.nullHandler,
+        rateFormatter: rateFormatter,
+        oldBasicRateFormatter: oldBasicRateFormatter,
+        consumptionFormatter: consumptionFormatter
     };
 
 
@@ -356,11 +418,15 @@ function OperationSTSimulation(props) {
 
         let tempArr = []
         arr && arr.map(item => {
-
             let tempObj = {}
             tempObj.OperationId = item.OperationId
             tempObj.OldOperationRate = Number(item.Rate)
             tempObj.NewOperationRate = Number(item.NewRate)
+            tempObj.OldOperationBasicRate = Number(item.OperationBasicRate)
+            tempObj.NewOperationBasicRate = Number(item.NewOperationBasicRate)
+            tempObj.OldOperationConsumption = Number(item.OperationConsumption)
+            tempObj.NewOperationConsumption = Number(item.OperationConsumption)
+
 
             tempArr.push(tempObj)
             return null
@@ -407,6 +473,11 @@ function OperationSTSimulation(props) {
             </ExcelSheet>);
     }
 
+
+    function getOperationTypes(list) {
+        return list.map(item => item.ForType);
+    }
+    const operationTypes = getOperationTypes(list);
     return (
         <div>
             <div className={`ag-grid-react`}>
@@ -424,10 +495,10 @@ function OperationSTSimulation(props) {
                                                 <button type="button" className="user-btn float-right mr-2 Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
-                                                <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
+                                                {(props.lastRevision || isImpactedMaster) && < ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                     {onBtExport()}
-                                                </ExcelFile>
+                                                </ExcelFile>}
                                             </div>
 
                                             <div className='d-flex justify-content-end bulk-upload-row'>
@@ -488,50 +559,56 @@ function OperationSTSimulation(props) {
                                         </div>
                                         <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                            {list &&
-                                                (render ? <LoaderCustom customClass="loader-center" /> : (<AgGridReact
+                                            {list && <AgGridReact
+                                                ref={gridRef}
+                                                floatingFilter={true}
+                                                style={{ height: '100%', width: '100%' }}
+                                                defaultColDef={defaultColDef}
+                                                domLayout='autoHeight'
+                                                // columnDefs={c}
+                                                rowData={list}
+                                                pagination={true}
+                                                paginationPageSize={defaultPageSize}
+                                                onGridReady={onGridReady}
+                                                gridOptions={gridOptions}
+                                                // loadingOverlayComponent={'customLoadingOverlay'}
+                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                noRowsOverlayComponentParams={{
+                                                    title: EMPTY_DATA,
+                                                }}
+                                                frameworkComponents={frameworkComponents}
+                                                stopEditingWhenCellsLoseFocus={true}
+                                                suppressColumnVirtualisation={true}
+                                                rowSelection={'multiple'}
+                                                onFilterModified={onFloatingFilterChanged}
+                                                enableBrowserTooltips={true}
+                                            // frameworkComponents={frameworkComponents}
+                                            >
+                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190} cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
+                                                <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'} minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="OperationName" tooltipField='OperationName' editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="OperationCode" tooltipField='OperationCode' editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
+                                                {!isImpactedMaster && <><AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" minWidth={190}></AgGridColumn></>}
+                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn></>}
+                                                {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} tooltipField={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn></>}
+                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
+                                                {operationTypes.includes('Welding') && <AgGridColumn field="OperationConsumption" editable='false' headerName="Consumption" minWidth={190} cellRenderer='consumptionFormatter'></AgGridColumn>}
+                                                {operationTypes.includes('Welding') && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={320} headerName="Welding Material Rate/Kg" marryChildren={true} >
+                                                    <AgGridColumn minWidth={150} field="" editable={false} headerName="Existing" colId="oldOperationBasicRate" cellRenderer='oldBasicRateFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} field="NewOperationBasicRate" editable={isImpactedMaster ? false : true} headerName="Revised" colId='newOperationBasicRate' headerComponent={'revisedRateHeader'} cellRenderer='newWeldingRateFormatter'></AgGridColumn>
+                                                </AgGridColumn>}
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
+                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer='oldRateFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} editable={operationTypes.includes('Welding') || isImpactedMaster ? false : true} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedRateHeader'} cellRenderer='rateFormatter' valueGetter={ageValueGetterRate}
+                                                    >
 
-                                                    ref={gridRef}
-                                                    floatingFilter={true}
-                                                    style={{ height: '100%', width: '100%' }}
-                                                    defaultColDef={defaultColDef}
-                                                    domLayout='autoHeight'
-                                                    // columnDefs={c}
-                                                    rowData={list}
-                                                    pagination={true}
-                                                    paginationPageSize={defaultPageSize}
-                                                    onGridReady={onGridReady}
-                                                    gridOptions={gridOptions}
-                                                    // loadingOverlayComponent={'customLoadingOverlay'}
-                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                    noRowsOverlayComponentParams={{
-                                                        title: EMPTY_DATA,
-                                                    }}
-                                                    frameworkComponents={frameworkComponents}
-                                                    stopEditingWhenCellsLoseFocus={true}
-                                                    suppressColumnVirtualisation={true}
-                                                    rowSelection={'multiple'}
-                                                    onFilterModified={onFloatingFilterChanged}
-                                                    enableBrowserTooltips={true}
-                                                // frameworkComponents={frameworkComponents}
-                                                >
-                                                    {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' width={columnWidths.CostingHead} cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
-                                                    <AgGridColumn field="OperationName" tooltipField='OperationName' editable='false' headerName="Operation Name" width={columnWidths.OperationName}></AgGridColumn>
-                                                    <AgGridColumn field="OperationCode" tooltipField='OperationCode' editable='false' headerName="Operation Code" width={columnWidths.OperationCode}></AgGridColumn>
-                                                    {!isImpactedMaster && <><AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" width={columnWidths.Technology}></AgGridColumn></>}
-                                                    {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName="Vendor (Code)" width={columnWidths.VendorCode} cellRenderer='vendorFormatter'></AgGridColumn></>}
-                                                    {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} tooltipField={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" width={columnWidths.PlantCode} cellRenderer='plantFormatter'></AgGridColumn></>}
-                                                    {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
-                                                    <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
-                                                        <AgGridColumn width={columnWidths.Rate} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
-                                                        <AgGridColumn width={columnWidths.NewRate} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                     </AgGridColumn>
-                                                    {props.children}
-                                                    <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' width={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                                    <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
+                                                </AgGridColumn>
+                                                {props.children}
+                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
-
-                                                </AgGridReact>))}
+                                            </AgGridReact>}
                                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
                                     </div>

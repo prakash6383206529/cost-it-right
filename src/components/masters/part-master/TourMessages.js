@@ -1,10 +1,13 @@
 export function Steps(t, config) {
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+
     return {
         ADD_ASSEMBLY_PART: [
-            {
+            ...config && config.isEditFlag === false ? [{
                 element: "#AddAssemblyPart_Switch",
                 intro: t("addAssemblyPart.AddAssemblyPart_Switch"),
-            },
+            }] : [],
+
             ...(config && config.partField ? [{
                 element: "#AddAssemblyPart_PartNumber",
                 intro: t("addAssemblyPart.AddAssemblyPart_PartNumber"),
@@ -67,7 +70,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddAssemblyPart_Save",
-                intro: t("addAssemblyPart.AddAssemblyPart_Save"),
+                intro: introMessage,
                 position: 'left'
             },
         ],
@@ -122,7 +125,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddIndivisualPart_Save",
-                intro: t("addComponentPart.AddIndivisualPart_Save"),
+                intro: introMessage,
                 position: 'left'
             },
         ],
@@ -178,7 +181,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddIndivisualPart_Save",
-                intro: t("addProductPart.AddIndivisualPart_Save"),
+                intro: introMessage,
                 position: 'left'
             },
 

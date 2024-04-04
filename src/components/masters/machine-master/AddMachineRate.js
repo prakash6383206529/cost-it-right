@@ -1422,17 +1422,17 @@ class AddMachineRate extends Component {
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
                         <h2> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Machine Rate
-                          <TourWrapper
-                            buttonSpecificProp={{ id: "MachineRate_form" }}
+                          {!isViewMode && <TourWrapper
+                            buttonSpecificProp={{ id: "Add_Machine_Rate_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t, {
                                 showSendForApproval: !this.state.isFinalApprovar,
-
+                                isEditFlag: isEditFlag,
                                 vendorField: (costingTypeId === VBCTypeId),
                                 customerField: (costingTypeId === CBCTypeId)
                               }
                               ).ADD_MACHINE_RATE
-                            }} />
+                            }} />}
 
                         </h2>
                       </div >
@@ -1651,7 +1651,7 @@ class AddMachineRate extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Machine Tonnage(Ton)`}
+                            label={`Machine Tonnage (Ton)`}
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={isViewMode ? '-' : 'Enter'}

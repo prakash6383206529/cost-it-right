@@ -266,7 +266,7 @@ class NfrTab extends Component {
                                                     }
                                                 </td>
                                                 <td className="select-all-block">
-                                                    <label className="custom-checkbox">
+                                                    <label id='NFR_Specific_SelectAll_Check' className="custom-checkbox">
                                                         {" "}
                                                         {
                                                             <input

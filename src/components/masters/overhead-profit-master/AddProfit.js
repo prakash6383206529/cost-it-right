@@ -59,7 +59,7 @@ class AddProfit extends Component {
       isCC: false,
       isBOP: false,
       isProfitPercent: false,
-
+      IsFinancialDataChanged: true,
       isHideProfit: false,
       isHideRM: false,
       isHideCC: false,
@@ -973,12 +973,12 @@ class AddProfit extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <h1> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Profit Details
-                        <TourWrapper
-                          buttonSpecificProp={{ id: "add_profit_form" }}
+                        {!isViewMode && <TourWrapper
+                          buttonSpecificProp={{ id: "Add_Profit_Form" }}
                           stepsSpecificProp={{
                             steps: Steps(t,
-                              { vendorField: (costingTypeId === VBCTypeId), customerField: (costingTypeId === CBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) }).ADD_PROFIT_DETAILS
-                          }} />
+                              { isEditFlag: isEditFlag, vendorField: (costingTypeId === VBCTypeId), customerField: (costingTypeId === CBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) }).ADD_PROFIT_DETAILS
+                          }} />}
                       </h1>
                     </div>
                   </div>

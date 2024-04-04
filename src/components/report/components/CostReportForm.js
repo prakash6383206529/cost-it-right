@@ -137,8 +137,7 @@ function CostReportForm(props) {
     */
     const handleFromDate = (value) => {
         setEffectiveDate(value)
-        setMinDate(value); // Set minDate for To Date picker
-
+        setMinDate(value)
         dispatch(getFormGridData({ ...costReportFormData, fromDate: value }))
         // dispatch(getFormGridData({ ...costReportFormData, EffectiveDate: value }))      //RE
 
@@ -497,7 +496,7 @@ function CostReportForm(props) {
         <>
             <div className="cost-ratio-report">
                 <TourWrapper
-                    buttonSpecificProp={{ id: "Add_Costing_form" }}
+                    buttonSpecificProp={{ id: "Add_Cost_Report_Form" }}
                     stepsSpecificProp={{
                         steps: Steps(t, { plantWiseGotGiven: props?.plantWiseGotGiven, gotGiven: props?.gotGiven, effectiveDate: props?.effectiveDate, dateHide: props?.dateHide, hideAddtable: props?.hideAddtable, showVendor: props?.showVendor, customerPoamSummary: customerPoamSummary, showCustomer: props?.showCustomer }).COST_REPORT_FORM
                     }} />
@@ -666,11 +665,11 @@ function CostReportForm(props) {
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
-                                    rules={{ required: false }}
+                                    rules={{ required: props.isSaleAndPurchase ? true : false }} // Agar props.isSaleAndPurchase true hai, to required false hoga, warna true hoga
                                     register={register}
                                     defaultValue={vendor.length !== 0 ? vendor : ""}
                                     options={renderListing("Vendor")}
-                                    mandatory={true}
+                                    mandatory={props.isSaleAndPurchase ? true : false}
                                     handleChange={handleVendorChange}
                                     // handleChange={() => { }}
                                     errors={errors.vendor}

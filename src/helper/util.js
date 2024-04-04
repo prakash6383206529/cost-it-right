@@ -825,6 +825,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.partType = dataFromAPI?.CostingPartDetails?.Type
   obj.partTypeId = dataFromAPI?.CostingPartDetails?.PartTypeId
   obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
+  obj.ScrapRecoveryPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ScrapRecoveryPercentage
   temp.push(obj)
   return temp
 }
@@ -1150,6 +1151,7 @@ export const showTitleForActiveToggle = (index) => {
 }
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
 export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = false) => {
+
   let checkForFileHead, array = []
   let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
   const bopMasterName = showBopLabel()
@@ -1173,7 +1175,6 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
-
     }
   }
 
@@ -1184,6 +1185,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
+
 
 // SHOW ALL DATA ON HOVER WHEN DATA INPUT FIELD WILL DISABLE OR VIEW MODE
 export const showDataOnHover = (value) => {
@@ -1378,14 +1380,24 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
   * @description show lorem ipsum data when stared application tour
   */
 export function setLoremIpsum(obj) {
-  const newObj = {};
-  Object.keys(obj).forEach(key => {
-    newObj[key] = "Lorem Ipsum";
-  });
-  return [newObj];
+  const setLorem = (input) => {
+    if (Array.isArray(input)) {
+      return input.map(innerItem => Array.isArray(innerItem) ? setLorem(innerItem) : typeof innerItem === 'object' && innerItem !== null ? setLorem(innerItem) : "Lorem Ipsum");
+    } else if (typeof input === 'object' && input !== null) {
+      const newObj = {};
+      Object.keys(input).forEach(key => {
+        newObj[key] = key === 'data' && Array.isArray(input[key]) && input[key].length > 1 ? [setLorem(input[key][0])] : Array.isArray(input[key]) ? setLorem(input[key]) : typeof input[key] === 'object' && input[key] !== null ? setLorem(input[key]) : "Lorem Ipsum";
+      });
+      return newObj;
+    } else {
+      return "Lorem Ipsum";
+    }
+  };
+
+  return [setLorem(obj)];
 }
 
-// 
+//
 
 // function for % and & issue in the queryparams
 // Utility function to encode query parameters

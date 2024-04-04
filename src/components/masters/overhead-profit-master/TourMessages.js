@@ -4,6 +4,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 
 export function Steps(t, config) {
     const introWithBOPDynamicValue = (intro) => intro.replace(/bop|BOP/gi, showBopLabel());
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
 
     return {
         ADD_OVERHEADS_DETAILS: [
@@ -82,7 +83,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddOverhead_Save",
-                intro: t("overheadsdMaster.AddOverhead_Save"),
+                intro: introMessage,
                 position: 'left'
             },
         ],
@@ -163,7 +164,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddProfit_Save",
-                intro: t("overheadsProfits.AddProfit_Save"),
+                intro: introMessage,
                 position: 'left'
             },
         ],

@@ -8,7 +8,7 @@ import { MESSAGES } from '../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey, handleDepartmentHeader } from '../../helper/auth';
-import { checkPermission, searchNocontentFilter } from '../../helper/util';
+import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../helper/util';
 import Department from './Department';
 import { DEPARTMENT } from '../../config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -19,9 +19,14 @@ import LoaderCustom from '../common/LoaderCustom';
 import { PaginationWrapper } from '../common/commonPagination';
 import ScrollToTop from '../common/ScrollToTop';
 import Button from '../layout/Button';
+import TourWrapper from '../common/Tour/TourWrapper';
+import { Steps } from '../common/Tour/TourMessages';
+import { useTranslation } from 'react-i18next'
 
 const gridOptions = {};
 const DepartmentsListing = () => {
+  const { t } = useTranslation("common")
+
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -127,7 +132,13 @@ const DepartmentsListing = () => {
     }));
     setState((prevState) => ({ ...prevState, showPopup: false }))
   }
+  const toggleExtraData = (showTour) => {
+    setState((prevState) => ({ ...prevState, render: true }));
+    setTimeout(() => {
+      setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
+    }, 100);
 
+  }
   /**
    * @method buttonFormatter
    * @description Renders buttons
@@ -141,8 +152,8 @@ const DepartmentsListing = () => {
 
     return (
       <>
-        {EditAccessibility && <Button id={`departmentListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />}
-        {DeleteAccessibility && <Button id={`departmentListing_delete${props.rowIndex}`} className={"Delete m15"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+        {EditAccessibility && <Button id={`departmentListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />}
+        {DeleteAccessibility && <Button id={`departmentListing_delete${props.rowIndex}`} className={"Delete m15 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
   };
@@ -187,9 +198,9 @@ const DepartmentsListing = () => {
         <Row className="pt-4 no-filter-row">
           <Col md="6" className="filter-block"></Col>
           <Col md="6" className="text-right search-user-block pr-0">
-            {AddAccessibility && (<>    <Button id="departmentListing_add" className={"mr5"} onClick={openModel} title={"Add"} icon={"plus"} />              </>
+            {AddAccessibility && (<>    <Button id="departmentListing_add" className={"mr5 Tour_List_Add"} onClick={openModel} title={"Add"} icon={"plus"} />              </>
             )}
-            <Button id={"clientListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+            <Button id={"clientListing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
           </Col>
 
         </Row>
@@ -199,6 +210,11 @@ const DepartmentsListing = () => {
             <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                <TourWrapper
+                  buttonSpecificProp={{ id: "Department_listing_Tour", onClick: toggleExtraData }}
+                  stepsSpecificProp={{
+                    steps: Steps(t, { filterButton: false, bulkUpload: false, downloadButton: false, addLimit: false, viewButton: false, DeleteButton: false, costMovementButton: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addAssociation: false, addMaterial: false, generateReport: false, approve: false, reject: false, }).COMMON_LISTING
+                  }} />
               </div>
               <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -207,7 +223,7 @@ const DepartmentsListing = () => {
                   floatingFilter={true}
                   domLayout='autoHeight'
                   // columnDefs={c}
-                  rowData={state.tableData}
+                  rowData={state.showExtraData ? [...setLoremIpsum(state.tableData[0]), ...state.tableData] : state.tableData}
                   pagination={true}
                   paginationPageSize={defaultPageSize}
                   onGridReady={onGridReady}

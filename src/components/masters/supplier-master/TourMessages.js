@@ -1,4 +1,6 @@
-export function Steps(t) {
+export function Steps(t, config) {
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+
     return {
         VENDOR_FORM: [
             {
@@ -59,7 +61,7 @@ export function Steps(t) {
             },
             {
                 element: "#AddVendorDrawer_Save",
-                intro: t("vendorForm.AddVendorDrawer_Save"),
+                intro: introMessage,
             }
         ],
     }
