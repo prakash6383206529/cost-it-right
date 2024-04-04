@@ -3,10 +3,10 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize, CBCTypeId, FORGINGNAME } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize, CBCTypeId, FORGINGNAME } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting, getAllSimulatedBoughtOutPart, setTechnologyForSimulation } from '../actions/Simulation';
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, showSaLineNumber, userDetails, userTechnologyLevelDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, showSaLineNumber, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -33,7 +33,6 @@ import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { getUsersSimulationTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 import WarningMessage from '../../common/WarningMessage';
 import { hideColumnFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -1734,7 +1733,7 @@ function CostingSimulation(props) {
                                                     {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" tooltipField='NewNetSurfaceTreatmentCost' headerName='Revised Net ST Cost' cellRenderer="newNetSTFormatter"></AgGridColumn>}
                                                     {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" tooltipField='NetSurfaceTreatmentCostVariance' headerName='Variance (ST Cost)' cellRenderer='varianceSTFormatter' ></AgGridColumn>}
 
-
+                                                    {(isOperation || showOperationColumn) && <AgGridColumn width={185} field="ForType" headerName="Operation Type" minWidth={190}></AgGridColumn>}
                                                     {((isOperation || showOperationColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="Quantity" tooltipField='Quantity' headerName='Quantity' cellRenderer='operQuantityFormatter'  ></AgGridColumn>}
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OldOperationRate" tooltipField='OldOperationRate' headerName='Existing Oper Rate' cellRenderer="operQuantityFormatter" ></AgGridColumn>}
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="NewOperationRate" tooltipField='NewOperationRate' headerName='Revised Oper Rate' cellRenderer="operQuantityFormatter"></AgGridColumn>}
