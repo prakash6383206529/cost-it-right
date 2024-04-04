@@ -1849,6 +1849,10 @@ class AddRMImport extends Component {
                             buttonSpecificProp={{ id: "Add_RM_Import_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                showScrap: showScrapKeys?.showScrap,
+                                showForging: showScrapKeys?.showForging,
+                                showCircleJali: showScrapKeys?.showCircleJali,
+                                isRMAssociated: isRMAssociated,
                                 isEditFlag: isEditFlag,
                                 showSendForApproval: !this.state.isFinalApprovar,
                                 hasSource: (costingTypeId === ZBCTypeId),

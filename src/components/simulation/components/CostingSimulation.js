@@ -277,11 +277,15 @@ function CostingSimulation(props) {
     }, [SimulationTechnologyIdState, amendmentDetails.SimulationHeadId, plantId])
     useEffect(() => {
 
-        if (handleEditMasterPage) {
-            handleEditMasterPage(showEditMaster, showverifyPage, props.costingPage)
+        if (props?.isFromApprovalListing === true) {
 
+            handleEditMasterPage(true, true, true);
+        } else {
+            handleEditMasterPage(showEditMaster, showverifyPage, props.costingPage);
         }
-    }, [handleEditMasterPage])
+    }, [handleEditMasterPage, props?.isFromApprovalListing]);
+
+
     useEffect(() => {
         // TO CHECK IF ANY OF THE RECORD HAS ASSEMBLY ROW
         let count = 0

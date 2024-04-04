@@ -1,6 +1,7 @@
 
 import { reactLocalStorage } from "reactjs-localstorage";
 export function Steps(t, config) {
+    const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
 
     return {
         ADD_VOLUME: [
@@ -60,7 +61,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#Volume_SubmitBtn",
-                intro: t("VolumeMaster.AddVolume_Save"),
+                intro: introMessage,
             },
         ]
     }
