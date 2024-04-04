@@ -665,11 +665,11 @@ function CostReportForm(props) {
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
-                                    rules={{ required: false }}
+                                    rules={{ required: props.isSaleAndPurchase ? true : false }} // Agar props.isSaleAndPurchase true hai, to required false hoga, warna true hoga
                                     register={register}
                                     defaultValue={vendor.length !== 0 ? vendor : ""}
                                     options={renderListing("Vendor")}
-                                    mandatory={false}
+                                    mandatory={props.isSaleAndPurchase ? true : false}
                                     handleChange={handleVendorChange}
                                     // handleChange={() => { }}
                                     errors={errors.vendor}
