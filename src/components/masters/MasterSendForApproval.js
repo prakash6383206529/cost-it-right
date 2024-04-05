@@ -185,7 +185,7 @@ function MasterSendForApproval(props) {
             senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
             // senderObj.ApproverId = approver && approver.value ? approver.value : ''
-            senderObj.ApproverIdList = approverIdList
+            senderObj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
             senderObj.SenderLevelId = levelDetails?.LevelId
             senderObj.SenderId = loggedInUserId()
             senderObj.SenderLevel = levelDetails?.Level
@@ -411,7 +411,7 @@ function MasterSendForApproval(props) {
             obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
             obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
             // obj.ApproverId = approver && approver.value ? approver.value : ''
-            obj.ApproverIdList = approverIdList
+            obj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
             obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
             obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             obj.Remark = remark

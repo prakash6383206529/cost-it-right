@@ -162,7 +162,6 @@ export function PaginationWrappers(props) {
             // }
         }
         if (props?.isApproval) {
-            // console.log('props?.isApproval: ', props?.isApproval);
             // Apply approval logic
             gridApi.paginationSetPageSize(numericPageSize);
             props?.isPageNoChange('master');

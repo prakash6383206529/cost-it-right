@@ -696,10 +696,10 @@ function ApprovalSummary(props) {
                         {approvalDetails.EffectiveDate !== null ? DayTime(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
                       </td>
                       {approvalDetails.CostingTypeId !== NCCTypeId && <td>
-                        {approvalDetails.AnnualImpact !== null ? checkForDecimalAndNull(approvalDetails.AnnualImpact, getConfigurationKey.NoOfDecimalForPrice) : '-'}
+                        {approvalDetails.AnnualImpact !== null ? checkForDecimalAndNull(approvalDetails.AnnualImpact, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}
                       </td>}
                       {approvalDetails.CostingTypeId !== NCCTypeId && <td>
-                        {approvalDetails.ImpactOfTheYear !== null ? checkForDecimalAndNull(approvalDetails.ImpactOfTheYear, getConfigurationKey.NoOfDecimalForPrice) : '-'}
+                        {approvalDetails.ImpactOfTheYear !== null ? checkForDecimalAndNull(approvalDetails.ImpactOfTheYear, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}
                       </td>}
                     </tr>
 
