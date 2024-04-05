@@ -311,8 +311,6 @@ export function getApprovalList(filterData, skip, take, isPagination, obj, callb
  * @description approving the request by approve
  */
 export function approvalRequestByApprove(data, callback) {
-  console.log('data: ', data);
-  debugger
   return (dispatch) => {
     const request = axios.post(API.approveCostingByApprover, data, config())
     request
