@@ -372,7 +372,7 @@ function RfqListing(props) {
     }
     const returnDetailsClick = (Id, rowData = {}) => {
         if (selectedCostingList?.length === 0) {
-            Toaster.warning("Select at least one costing to reject")
+            Toaster.warning("Select at least one costing to return")
             return false
         }
         const arrayOfObjects = [...viewCostingData]
