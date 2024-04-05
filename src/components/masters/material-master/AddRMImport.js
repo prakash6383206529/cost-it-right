@@ -317,7 +317,7 @@ class AddRMImport extends Component {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
         if (!(data.isEditFlag || data.isViewFlag)) {
           setTimeout(() => {
-            this.commonFunction()
+            this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
           }, 100);
         }
       })
@@ -326,7 +326,7 @@ class AddRMImport extends Component {
     }
   }
 
-  commonFunction(plantId = '') {
+  commonFunction(plantId = EMPTY_GUID) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, RM_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })

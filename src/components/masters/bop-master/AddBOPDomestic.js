@@ -172,7 +172,7 @@ class AddBOPDomestic extends Component {
       if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
         this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
           setTimeout(() => {
-            this.commonFunction()
+            this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
           }, 100);
         })
       } else {
@@ -181,7 +181,7 @@ class AddBOPDomestic extends Component {
     }, 300);
   }
 
-  commonFunction(plantId = '') {
+  commonFunction(plantId = EMPTY_GUID) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -216,7 +216,7 @@ class AddBOPDomestic extends Component {
       this.handleCalculation()
     }
     if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-      this.commonFunction()
+      this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
     }
   }
   componentWillUnmount() {
