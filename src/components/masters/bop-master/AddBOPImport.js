@@ -218,7 +218,7 @@ class AddBOPImport extends Component {
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction()
+          this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
         }, 100);
       })
     } else {
@@ -226,7 +226,7 @@ class AddBOPImport extends Component {
     }
   }
 
-  commonFunction(plantId = '') {
+  commonFunction(plantId = EMPTY_GUID) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -274,8 +274,8 @@ class AddBOPImport extends Component {
         this.handleCalculation()
       }
       if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-        if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
-          this.commonFunction()
+        if (!(this.props.data.isViewMode)) {
+          this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
         }
       }
     }
@@ -545,12 +545,12 @@ class AddBOPImport extends Component {
             }, () => {
               setTimeout(() => {
                 this.setInStateToolTip()
-                this.setState({ isLoader: false, isCallCalculation: false })
                 this.toolTipNetCost({ label: Data.Currency, value: Data.CurrencyId })
                 this.toolTipBasicPrice({ label: Data.Currency, value: Data.CurrencyId })
                 if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-                  this.commonFunction()
+                  this.commonFunction(plantObj.value)
                 }
+                this.setState({ isLoader: false, isCallCalculation: false })
               }, 500)
             })
             // if (!this.state.isViewMode && Data.NetLandedCostConversion === 0) {

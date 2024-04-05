@@ -305,7 +305,7 @@ const ApprovalDrawer = (props) => {
                 "ApproverLevelId": approvalDropDown[0]?.levelId,
                 "ApproverLevel": approvalDropDown[0]?.levelName,
                 // "ApproverId": getValues("approver")?.value,
-                "ApproverIdList": approverIdList,
+                "ApproverIdList": initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [getValues("approver")?.value],
 
                 "SenderLevelId": levelDetails?.LevelId,
                 "SenderId": userData?.LoggedInUserId,
