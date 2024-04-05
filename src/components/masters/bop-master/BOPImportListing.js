@@ -503,6 +503,7 @@ const BOPImportListing = (props) => {
    * @method buttonFormatter
    * @description Renders buttons
    */
+  const { benchMark } = props
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted
       ? props.valueFormatted
@@ -527,29 +528,34 @@ const BOPImportListing = (props) => {
         <Button
           id={`bopimporting_movement${props.rowIndex}`}
           className="cost-movement Tour_List_Cost_Movement" title="Cost Movement" type={"button"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} />
-        {permissions?.View && (
-          <Button
-            id={`bopImportingListing_View${props.rowIndex}`}
-            title="View" className="View Tour_List_View" variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
 
-        )}
-        {isEditable && (
+        {(!benchMark) && (
+          <>
+            {permissions?.View && (
+              <Button
+                id={`bopImportingListing_View${props.rowIndex}`}
+                title="View" className="View Tour_List_View" variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
+
+            )}
+            {isEditable && (
 
 
-          <Button id={`bopImportingListing_Edit${props.rowIndex}`} title={"Edit"} className={"Edit Tour_List_Edit"} variant={"Edit"} type={"button"} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
-          />
-        )}
-        {isDeleteButton && (
+              <Button id={`bopImportingListing_Edit${props.rowIndex}`} title={"Edit"} className={"Edit Tour_List_Edit"} variant={"Edit"} type={"button"} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
+              />
+            )}
+            {isDeleteButton && (
 
-          <Button
-            id={`bopImportingListing_Delete${props.rowIndex}`}
-            title={"Delete"}
-            className={"Delete Tour_List_Delete"}
-            variant={"Delete"}
-            type={"button"}
-            onClick={() => deleteItem(cellValue)}
-          />
+              <Button
+                id={`bopImportingListing_Delete${props.rowIndex}`}
+                title={"Delete"}
+                className={"Delete Tour_List_Delete"}
+                variant={"Delete"}
+                type={"button"}
+                onClick={() => deleteItem(cellValue)}
+              />
 
+            )}
+          </>
         )}
       </>
     );

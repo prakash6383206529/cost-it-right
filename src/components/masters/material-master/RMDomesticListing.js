@@ -456,13 +456,13 @@ function RMDomesticListing(props) {
     * @method buttonFormatter
     * @description Renders buttons
     */
+    const { benchMark } = props
+
     const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
         let isDeleteButton = false
-
-
         if (EditAccessibility) {
             isEditbale = true
         } else {
@@ -486,27 +486,32 @@ function RMDomesticListing(props) {
                     onClick={() => showAnalytics(cellValue, rowData)}
                     title={"Cost Movement"}
                 />
-                {ViewRMAccessibility && <Button
-                    id={`rmDomesticListing_view${props.rowIndex}`}
-                    className={"mr-1 Tour_List_View"}
-                    variant="View"
-                    onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
-                    title={"View"}
-                />}
-                {isEditbale && <Button
-                    id={`rmDomesticListing_edit${props.rowIndex}`}
-                    className={"mr-1 Tour_List_Edit"}
-                    variant="Edit"
-                    onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
-                    title={"Edit"}
-                />}
-                {isDeleteButton && <Button
-                    id={`rmDomesticListing_delete${props.rowIndex}`}
-                    className={"mr-1 Tour_List_Delete"}
-                    variant="Delete"
-                    onClick={() => deleteItem(cellValue)}
-                    title={"Delete"}
-                />}
+
+                {(!benchMark) && (
+                    <>
+                        {ViewRMAccessibility && <Button
+                            id={`rmDomesticListing_view${props.rowIndex}`}
+                            className={"mr-1 Tour_List_View"}
+                            variant="View"
+                            onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
+                            title={"View"}
+                        />}
+                        {isEditbale && <Button
+                            id={`rmDomesticListing_edit${props.rowIndex}`}
+                            className={"mr-1 Tour_List_Edit"}
+                            variant="Edit"
+                            onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
+                            title={"Edit"}
+                        />}
+                        {isDeleteButton && <Button
+                            id={`rmDomesticListing_delete${props.rowIndex}`}
+                            className={"mr-1 Tour_List_Delete"}
+                            variant="Delete"
+                            onClick={() => deleteItem(cellValue)}
+                            title={"Delete"}
+                        />}
+                    </>
+                )}
             </>
         )
     };
