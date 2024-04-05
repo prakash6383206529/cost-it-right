@@ -11,9 +11,12 @@
         "AddVendorDrawer_StateId_container": "Select the state from the dropdown.",
         "AddVendorDrawer_CityId_container": "Select the city from the dropdown.",
         "AddVendorDrawer_ZipCode": "Enter the postal code.",
-        "AddVendorDrawer_AddressLine1": "Enter the address line 1 if necessary.",
-        "AddVendorDrawer_AddressLine2": "Enter the address line 2 if necessary.",
-        "AddVendorDrawer_Cancel": "Click here to go-back to the vendor listing.",
-        "AddVendorDrawer_Save": "Click here to save the vendor."
+        "AddVendorDrawer_AddressLine1": "Enter the primary address.",
+        "AddVendorDrawer_AddressLine2": "Enter the secondary address.",
+        "AddVendorDrawer_Cancel": "Click here to cancel."
+    },
+    "DynamicActionControl": {
+        "save_Button": "Click here to save.",
+        "update_Button": "Click here to update."
     }
 }

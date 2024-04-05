@@ -23,7 +23,7 @@
         "update_Estimation": "Click here to update Estimation",
         "reset_Estimation": "Click here to reset Details",
         "cancel_Estimation": "Click here to cancel Update details",
-        "cancel": "Click here to cancel and go back.",
+        "cancel": "Click here to cancel.",
         "save": "Click here to save the NFR.",
         "sendForApproval": "Click here to send the NFR for approval.",
         "costingVersion": "Here you can see all the versions of created costings.",
@@ -39,15 +39,15 @@
     },
     "addNfr": {
         "nfr_version": "Specify the version of the NFR.",
-        "product_code": "Click here to select the product code.",
+        "product_code": "Click here to select the product code from the dropdown.",
         "plant": "Click here to select the plant code.",
         "header_material": "Specify the header material for the NFR.",
-        "uom": "Click here to select the unit of measurement(UOM).",
+        "uom": "Click here to select the unit of measurement(UOM) from the dropdown.",
         "quantity": "Enter the quantity associated with the NFR.",
         "parttype": "Click here to select the part type.",
         "reset": "Click here to reset the NFR.",
         "add": "Click here to add the NFR part.",
-        "cancel": "Click here to cancel and go back to the NFR.",
+        "cancel": "Click here to cancel.",
         "submit": "Click here to submit the NFR."
     }
 }

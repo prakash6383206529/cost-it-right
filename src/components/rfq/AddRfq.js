@@ -5,7 +5,7 @@ import { Row, Col, Tooltip, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
-import { addDays, loggedInUserId } from '../.././helper';
+import { addDays, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
 import { Component, EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -87,6 +87,7 @@ function AddRfq(props) {
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
     const [dateAndTime, setDateAndTime] = useState('')
+    console.log('dateAndTime: ', dateAndTime);
     const [minHours, setMinHours] = useState(currentHours)
     const [minMinutes, setMinMinutes] = useState(currentMinutes)
     const [isConditionalVisible, setIsConditionalVisible] = useState(false)
@@ -541,7 +542,7 @@ function AddRfq(props) {
         obj.VisibilityDuration = getValues('Time')
         obj.LastSubmissionDate = DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss')
         obj.VendorList = vendorList
-
+        obj.Timezone = getTimeZone()
         let temppartArr = []
         let partIdList = _.uniq(_.map(list, 'PartId'))
         partIdList && partIdList?.map((item) => {

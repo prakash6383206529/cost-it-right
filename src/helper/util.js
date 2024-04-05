@@ -1406,3 +1406,11 @@ export function encodeQueryParams(params) {
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&');
 }
+/**
+  * @method getTimeZone
+  * @description get time zone
+  */
+export function getTimeZone() {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+

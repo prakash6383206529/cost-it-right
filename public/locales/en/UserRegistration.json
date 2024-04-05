@@ -42,7 +42,7 @@
     "AddCompany_Name": "Enter the company name.",
     "AddCompany_Code": "Enter the company code.",
     "AddCompany_PlantCode": "Click here to select plant code from the dropdown.",
-    "AddCompany_Cancel": "Click here to cancel and go back to the company listing page.",
+    "AddCompany_Cancel": "Click here to cancel.",
     "AddCompany_Save": "Click here to save.",
     "AddCompany_Update": "Click here to update."
   },
@@ -59,7 +59,7 @@
     "RFQ": "Click on this RFQ to change or update permissions.",
     "NFR": "Click on this NFR to change or update permissions.",
     "audit": "Click on this audit to change or update permissions.",
-    "AddRole_Cancel": "Click here to cancel and go back to the roles and permissions listing page.",
+    "AddRole_Cancel": "Click here to cancel.",
     "AddRole_Save": "Click here to save.",
     "AddRole_Update": "Click here to update."
   },
@@ -71,7 +71,7 @@
     "AddApproval_ApprovalType_Required": "Click here to select the approval type.",
     "AddApproval_TechnologyHeads": "Click here to select the technology/heads.",
     "AddApproval_HighestApprovalLevel": "Click here to select the highest approval level.",
-    "AddApproval_Cancel": "Click here to cancel and go back to the listing page.",
+    "AddApproval_Cancel": "Click here to cancel.",
     "AddApproval_Save": "Click here to save.",
     "AddApproval_Update": "Click here to update."
   },
@@ -81,7 +81,7 @@
     "action": "Toggle this switch to allow or disallow action permissions."
   },
   "saveUpdateButton": {
-    "Save_Button": "Click here to save and return to the listing page.",
-    "Update_Button": "Click here to update and return to the listing page."
+    "Save_Button": "Click here to save.",
+    "Update_Button": "Click here to update."
   }
 }

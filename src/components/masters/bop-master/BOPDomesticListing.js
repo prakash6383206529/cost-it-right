@@ -446,8 +446,8 @@ const BOPDomesticListing = (props) => {
   * @method buttonFormatter
   * @description Renders buttons
   */
+  const { benchMark } = props
   const buttonFormatter = (props) => {
-    const { showExtraData } = state
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     let isEditbale = false
@@ -469,9 +469,14 @@ const BOPDomesticListing = (props) => {
     return (
       <>
         <Button id={`bopDomesticListing_movement${props.rowIndex}`} className={"mr-1 Tour_List_Cost_Movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
-        {permissions?.View && <Button id={`bopDomesticListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
-        {isEditbale && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
-        {isDeleteButton && <Button id={`bopDomesticListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+
+        {(!benchMark) && (
+          <>
+            {permissions?.View && <Button id={`bopDomesticListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
+            {isEditbale && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
+            {isDeleteButton && <Button id={`bopDomesticListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+          </>
+        )}
       </>
     )
   };
