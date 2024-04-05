@@ -1339,30 +1339,7 @@ export function setEmptyExistingSupplierData(callback) {
   }
 }
 
-/**
- * @method getZBCCostingSelectListByPart
- * @description get ZBC Costing Select List By Part
- */
-export function getZBCCostingSelectListByPart(PartId, SupplierId, UserId, callback,) {
-  return (dispatch) => {
-    dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getZBCCostingSelectListByPart}/${PartId}/${SupplierId}/${UserId}`, config(),)
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_ZBC_COSTING_SELECTLIST_BY_PART,
-          payload: response.data.SelectList,
-        })
-        callback(response)
-      } else {
-        Toaster.error(MESSAGES.SOME_ERROR)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
-  }
-}
+
 
 /**
  * @method createPartWithSupplier
