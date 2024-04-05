@@ -665,7 +665,6 @@ function Simulation(props) {
 
 
     const renderColumn = (fileName) => {
-        console.log('tableData: ', tableData);
         switch (fileName) {
             case RMDOMESTIC:
                 return returnExcelColumn(RMDomesticSimulation, tableData ? tableData : [])
@@ -1058,9 +1057,11 @@ function Simulation(props) {
                             plantFlag = false
                         }
                         if (element.ForType !== Data[index - 1].ForType) {
-                            (Data.length !== 0) && setFilterStatus('Please filter out the Operation Type')
-                            setEditWarning(true);
-                            operationTypeFlag = false
+                            setTimeout(() => {
+                                (Data.length !== 0) && setFilterStatus('Please filter out the Operation Type')
+                                setEditWarning(true);
+                                operationTypeFlag = false
+                            }, 200);
                         }
                     }
                 });

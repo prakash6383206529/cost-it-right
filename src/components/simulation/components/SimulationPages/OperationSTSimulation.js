@@ -154,7 +154,7 @@ function OperationSTSimulation(props) {
     }
     const ageValueGetterRate = (params) => {
         let row = params.data
-        row.NewRate = row.ForType === 'Welding' ? row?.NewOperationBasicRate * row?.OperationConsumption : ''
+        row.NewRate = row.ForType === 'Welding' ? row?.NewOperationBasicRate * row?.OperationConsumption : row.NewRate
         return row.NewRate
     }
 
