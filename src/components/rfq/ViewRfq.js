@@ -913,7 +913,11 @@ function RfqListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (cellValue != null && cellValue !== '' && cellValue !== undefined) ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
+    const dateTimeFormatter = (props) => {
 
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY  hh:mm') : '-';
+    }
     const isRowSelectable = rowNode => rowNode.data ? rowNode?.data?.ShowCheckBox : false;
 
 
@@ -956,6 +960,7 @@ function RfqListing(props) {
         customNoRowsOverlay: NoContentFound,
         seperateHyphenFormatter: seperateHyphenFormatter,
         valuesFloatingFilter: SingleDropdownFloationFilter,
+        dateTimeFormatter: dateTimeFormatter,
     }
 
     const closeSendForApproval = (e = '', type) => {
@@ -1087,7 +1092,7 @@ function RfqListing(props) {
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
                                             <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={dateFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityDate" width={"300px"} headerName='Visibility Date' cellRenderer={dateTimeFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
