@@ -377,4 +377,9 @@ export const MESSAGES = {
   NFR_PUSHED: 'NFR is pushed successfully',
   BOP_RM_PUSHED: 'Pushed successfully to SAP',
 
+  //VENDOR MANAGEMENT
+  VENDOR_APPROVED: 'Are you sure you want to  unblock this classification',
+  VENDOR_REJECTED: 'Are you sure you want to  block this classification',
+  LPS_RATING_APPROVED: 'Are you sure you want to  unblock this LPS rating',
+  LPS_RATING_REJECTED: 'Are you sure you want to  block this LPS rating',
 }
