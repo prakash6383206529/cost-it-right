@@ -82,6 +82,7 @@ function RfqListing(props) {
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
     const { initialConfiguration } = useSelector(state => state.auth)
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
+    const [disableApproveButton, setDisableApproveButton] = useState(false)
     const agGridRef = useRef(null);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
 
@@ -119,6 +120,8 @@ function RfqListing(props) {
             }
         }))
         const isApproval = arr.filter(item => item.ShowApprovalButton)
+        const disableApproveButton = isApproval.some(item => item.status === 'Return');
+        setDisableApproveButton(disableApproveButton);
         setDisableApproveRejectButton(isApproval.length > 0)
     }, [viewCostingData])
 
@@ -1243,14 +1246,15 @@ function RfqListing(props) {
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Reject'}
                     </button>
-                    <button
-                        type="button"
-                        className="approve-button mr5 approve-hover-btn"
-                        onClick={() => approveDetails("", selectedRows)}
-                    >
-                        <div className={'save-icon'}></div>
-                        {'Approve'}
-                    </button>
+                    {disableApproveButton &&
+                        <button
+                            type="button"
+                            className="approve-button mr5 approve-hover-btn"
+                            onClick={() => approveDetails("", selectedRows)}
+                        >
+                            <div className={'save-icon'}></div>
+                            {'Approve'}
+                        </button>}
                 </div>
             </Row>}
             {
