@@ -292,7 +292,7 @@ function ApprovalSummary(props) {
               Kschl: item.CostingConditionNumber,
               Datab: DayTime(responseData.EffectiveDate).format('YYYY-MM-DD'),
               Datbi: DayTime('9999-12-31').format('YYYY-MM-DD'),
-              Kbetr: item.ConditionType === "Percentage" ? item?.Percentage : item?.ConditionCost,
+              Kbetr: item.ConditionType === "Percentage" ? item?.Percentage : item.ConditionType === "Quantity" ? item.ConditionCostPerQuantity : item?.ConditionCost,
               Konwa: INR,
               Kpein: item?.ConditionQuantity ? String(item?.ConditionQuantity) : "1",
               Kmein: "NO",
