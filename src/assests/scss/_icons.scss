@@ -475,14 +475,14 @@
 }
 
 .guide-bulb {
-    @include icons("../../images/guide-off.png", 26px, 26px);
+    @include icons("../../images/guide-off.png", 22px, 22px);
     border-radius: 5px;
     vertical-align: middle;
 }
 
 .guide-bulb-on {
     @extend .guide-bulb;
-    @include icons("../../images/guide-bulb-on.svg", 26px, 26px);
+    @include icons("../../images/guide-bulb-on.svg", 22px, 22px);
 }
 
 .CalculatorIcon:disabled,

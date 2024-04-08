@@ -47,9 +47,7 @@ function RfqListing(props) {
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
     const [showPopup, setShowPopup] = useState(false)
-
     const [selectedCostings, setSelectedCostings] = useState([])
-
     const [addRfq, setAddRfq] = useState(false);
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
@@ -84,6 +82,7 @@ function RfqListing(props) {
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
     const { initialConfiguration } = useSelector(state => state.auth)
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
+    const [disableApproveButton, setDisableApproveButton] = useState(false)
     const agGridRef = useRef(null);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
 
@@ -121,6 +120,8 @@ function RfqListing(props) {
             }
         }))
         const isApproval = arr.filter(item => item.ShowApprovalButton)
+        const disableApproveButton = isApproval.some(item => item.status === 'Return');
+        setDisableApproveButton(disableApproveButton);
         setDisableApproveRejectButton(isApproval.length > 0)
     }, [viewCostingData])
 
@@ -136,28 +137,9 @@ function RfqListing(props) {
                 return false;
             }
             let uniqueShouldCostId = [];
-            let temp = []
             res?.data?.DataList && res?.data?.DataList.map(item => {
                 let unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'))
                 uniqueShouldCostId.push(...unique)
-                if (item.IsActive === false) {
-                    item.Status = "Cancelled"
-                }
-
-                item.tooltipText = ''
-                switch (item.CostingStatus) {
-                    case PENDING:
-                        item.tooltipText = ''
-                        break;
-                    case HISTORY:
-                        item.tooltipText = ''
-                        break;
-                    default:
-                        break;
-                }
-                temp.push(item)
-                return null
-
             })
             setUniqueShouldCostingId(uniqueShouldCostId)
 
@@ -934,7 +916,11 @@ function RfqListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (cellValue != null && cellValue !== '' && cellValue !== undefined) ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
+    const dateTimeFormatter = (props) => {
 
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY  hh:mm') : '-';
+    }
     const isRowSelectable = rowNode => rowNode.data ? rowNode?.data?.ShowCheckBox : false;
 
 
@@ -977,6 +963,7 @@ function RfqListing(props) {
         customNoRowsOverlay: NoContentFound,
         seperateHyphenFormatter: seperateHyphenFormatter,
         valuesFloatingFilter: SingleDropdownFloationFilter,
+        dateTimeFormatter: dateTimeFormatter,
     }
 
     const closeSendForApproval = (e = '', type) => {
@@ -1108,14 +1095,14 @@ function RfqListing(props) {
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
                                             <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={dateFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityDate" width={"300px"} headerName='Visibility Date' cellRenderer={dateTimeFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
                                             <AgGridColumn field="NetPOPrice" headerName=" Net Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
-                                            {/* <AgGridColumn width={350} field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn> */}
+                                            <AgGridColumn width={350} field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
                                             {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
@@ -1259,14 +1246,15 @@ function RfqListing(props) {
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Reject'}
                     </button>
-                    <button
-                        type="button"
-                        className="approve-button mr5 approve-hover-btn"
-                        onClick={() => approveDetails("", selectedRows)}
-                    >
-                        <div className={'save-icon'}></div>
-                        {'Approve'}
-                    </button>
+                    {disableApproveButton &&
+                        <button
+                            type="button"
+                            className="approve-button mr5 approve-hover-btn"
+                            onClick={() => approveDetails("", selectedRows)}
+                        >
+                            <div className={'save-icon'}></div>
+                            {'Approve'}
+                        </button>}
                 </div>
             </Row>}
             {
