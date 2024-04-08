@@ -228,6 +228,8 @@ class SideBar extends Component {
         return this.renderAudit(module, LandingPageURL);
       case "NFR":
         return this.renderNFR(module, LandingPageURL);
+      case "Vendor Management":
+        return this.renderVendorManagement(module, LandingPageURL);
       case "RFQ":
         if (getConfigurationKey().IsRFQConfigured) {
           return this.renderRFQ(module, LandingPageURL);
@@ -894,6 +896,58 @@ class SideBar extends Component {
     );
   };
 
+  /**
+   * @method renderSupplierManagement
+   * @description Render Supplier Management.
+   */
+
+  renderVendorManagement = (module) => {
+    const { topAndLeftMenuData } = this.props;
+    return (
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          return (
+            <li key={i}>
+              <Link
+                id={this.getSpecificIdForElement(el)}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: el.LandingPageURL,
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "Vendor Management",
+                    PageURL: el.LandingPageURL,
+                  },
+                }}
+              >
+                {/* <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeSupplierManagement : supplierManagementImg}
+                  alt={module + " icon"}
+                /> */}
+                <span className="vendor-classification">{el.ModuleName}</span>
+              </Link>
+            </li>
+          );
+        }
+        return null;
+      })
+    );
+  };
+
+  tourStart = () => {
+    const { location, TourStartAction } = this.props;
+    const { showTour } = this.state;
+    this.setState({ showTour: !showTour });
+
+
+    TourStartAction({
+      showTour: !showTour,
+    });
+
+  }
 
   render() {
     const { userData, moduleSelectList, leftMenuData, topAndLeftMenuData, t } = this.props;

@@ -78,6 +78,10 @@ import ResetPassword from './login/ResetPassword'
 import LoginAudit from './audit/LoginAudit'
 import SAPDetailList from './masters/sap-detail/SAPDetailList'
 import NFRInsightsReport from './report/components/NFRInsightReportFolder/NFRInsightReport'
+import VendorManagement from './vendorManagement'
+import LPSRating from './vendorManagement/LpsRating'
+import ApprovalListing from './vendorManagement/ApprovalListing'
+import InitiateUnblocking from './vendorManagement/InitiateUnblocking'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -405,7 +409,10 @@ class Main extends Component {
                     <Route path="/sap-push-detail" component={SAPDetailList} />
                     <Route path="/nfr-insights-details" component={AuthMiddleware(NFRInsightsReport, NFR_INSIGHT_DETAILS)} />
                     <Route path="/login-audit" component={AuthMiddleware(LoginAudit, lOGIN_AUDIT)} />
-
+                    <Route path="/vendor-classification" component={VendorManagement} />
+                    <Route path="/lps-rating" component={LPSRating} />
+                    <Route path="/approval-listing" component={ApprovalListing} />
+                    <Route path='/initiate-unblocking' component={InitiateUnblocking} />
 
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}

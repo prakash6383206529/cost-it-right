@@ -1916,6 +1916,7 @@ export const USERS = 'Users'
 export const AUDIT = 'Audit'
 export const RFQ = 'RFQ'
 export const ONBOARDING = 'Onboarding'
+export const VENDOR_MANAGEMENT = 'Vendor Management'
 
 //PAGE NAMES
 export const DASHBOARD = 'Dashboard'
@@ -1980,6 +1981,7 @@ export const OUTSOURCING = "Outsourcing"
 export const INSIGHT_SIMULATION_REPORT = "Simulation Insights"
 export const NFR_INSIGHT_DETAILS = 'NFR Insights' //MINDA
 export const lOGIN_AUDIT = 'Login Audit'
+// export const SUPPLIER_MANAGEMENT = 'Supplier Management'
 
 //export const SIMULATION_HISTORY = 'Simulation History'
 
@@ -2631,6 +2633,7 @@ export const ReportMaster = "Report-rate"
 export const ReportSAPMaster = "SAP-Excel Download"//MINDA
 export const UserListing = "User-Listing"
 export const AuditLisitng = "Audit-Listing"
+export const VendorManagement = "Vendor-Management"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
