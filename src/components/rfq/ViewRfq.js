@@ -47,9 +47,7 @@ function RfqListing(props) {
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
     const [showPopup, setShowPopup] = useState(false)
-
     const [selectedCostings, setSelectedCostings] = useState([])
-
     const [addRfq, setAddRfq] = useState(false);
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
@@ -136,28 +134,9 @@ function RfqListing(props) {
                 return false;
             }
             let uniqueShouldCostId = [];
-            let temp = []
             res?.data?.DataList && res?.data?.DataList.map(item => {
                 let unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'))
                 uniqueShouldCostId.push(...unique)
-                if (item.IsActive === false) {
-                    item.Status = "Cancelled"
-                }
-
-                item.tooltipText = ''
-                switch (item.CostingStatus) {
-                    case PENDING:
-                        item.tooltipText = ''
-                        break;
-                    case HISTORY:
-                        item.tooltipText = ''
-                        break;
-                    default:
-                        break;
-                }
-                temp.push(item)
-                return null
-
             })
             setUniqueShouldCostingId(uniqueShouldCostId)
 
@@ -1115,7 +1094,7 @@ function RfqListing(props) {
                                             <AgGridColumn field="NetPOPrice" headerName=" Net Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
-                                            {/* <AgGridColumn width={350} field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn> */}
+                                            <AgGridColumn width={350} field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
                                             {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
