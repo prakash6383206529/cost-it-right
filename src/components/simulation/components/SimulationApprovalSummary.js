@@ -284,7 +284,7 @@ function SimulationApprovalSummary(props) {
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
                 plantId: plantId
             }
-            if (initialConfiguration.IsMultipleUserAllowForApproval ? plantId : true) {
+            if (initialConfiguration?.IsMultipleUserAllowForApproval ? plantId : true) {
 
                 dispatch(checkFinalUser(obj, res => {
                     if (res && res.data && res.data.Result) {

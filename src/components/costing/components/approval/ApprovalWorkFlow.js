@@ -12,7 +12,7 @@ function ApprovalWorkFlow(props) {
   // const [approval, setApproval] = useState([])
   const dispatch = useDispatch()
   useEffect(() => {
-    if (initialConfiguration.IsMultipleUserAllowForApproval && approverData && approverData.processId) {
+    if (initialConfiguration?.IsMultipleUserAllowForApproval && approverData && approverData.processId) {
       let data = {
         processId: approverData.processId,
         levelId: approverData.levelId,
@@ -87,7 +87,7 @@ function ApprovalWorkFlow(props) {
                     </div>
                     <div className="right">
                       <span className="">{item.Title}</span>
-                      <p className="">{(item.ApprovedBy && item.ApprovedBy !== '-') ? item.ApprovedBy : initialConfiguration.IsMultipleUserAllowForApproval ? approverListUI() : '-'}</p>
+                      <p className="">{(item.ApprovedBy && item.ApprovedBy !== '-') ? item.ApprovedBy : initialConfiguration?.IsMultipleUserAllowForApproval ? approverListUI() : '-'}</p>
                     </div>
                   </div>
                   {/* top */}

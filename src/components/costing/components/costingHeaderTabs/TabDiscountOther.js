@@ -197,7 +197,7 @@ function TabDiscountOther(props) {
   }, [otherCostData])
 
   const costingConditionUI = useMemo(() => {
-    const sum = conditionTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    const sum = conditionTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
     setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
 
     return <Col md="3">

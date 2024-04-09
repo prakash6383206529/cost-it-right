@@ -16,10 +16,10 @@ function ConditionCosting(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     useEffect(() => {
-        const sum = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostConversion), 0);
+        const sum = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostPerQuantityConversion), 0);
         setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
 
-        const sumCurrency = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCost), 0);
+        const sumCurrency = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostPerQuantity), 0);
         setTotalCostCurrency(checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
     }, [props?.tableData])
 
@@ -36,8 +36,8 @@ function ConditionCosting(props) {
                                 {<th>{`Quantity`}</th>}
                                 {isFromImport && <th style={{ minWidth: '100px' }}>{`Cost (${currency?.label})`}</th>}
                                 {<th style={{ minWidth: '100px' }}>{`Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
-                                {isFromImport && <th style={{ minWidth: '100px' }}>{`Cost Per Quantity (${currency?.label})`}</th>}
-                                {<th>{`Cost Per Quantity (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
+                                {isFromImport && <th style={{ minWidth: '100px' }}>{`Cost/Pc (${currency?.label})`}</th>}
+                                {<th>{`Cost/Pc (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
                             </tr>
@@ -72,7 +72,7 @@ function ConditionCosting(props) {
                             )}
                             <tr className='table-footer'>
 
-                                <td colSpan={4} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Cost:' : `Total Cost (${reactLocalStorage.getObject("baseCurrency")}):`}`}</td>
+                                <td colSpan={isFromImport ? 6 : 5} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Cost:' : `Total Cost (${reactLocalStorage.getObject("baseCurrency")}):`}`}</td>
                                 <td colSpan={isFromImport ? 1 : 3}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {isFromMaster ? `(${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")})` : ''}</div></td>
                                 {isFromImport && <>
                                     <td colSpan={4} className="text-left"> {checkForDecimalAndNull(totalCostBase, initialConfiguration.NoOfDecimalForPrice)} ({reactLocalStorage.getObject("baseCurrency")})</td>
