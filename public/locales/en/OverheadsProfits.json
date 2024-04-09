@@ -14,6 +14,7 @@
         "AddOverhead_OverheadMachiningCCPercentage": "Enter the overhead machining CC percentage.",
         "AddOverhead_OverheadBOPPercentage": "Enter the overhead BOP percentage.",
         "AddOverhead_EffectiveDate": "Select the effective date from here.",
+        "AddOverhead_Edit_EffectiveDate": "After you've updated the overhead, make sure to change the effective date accordingly.",
         "AddOverhead_Remark": "Add necessary remarks.",
         "AddOverhead_UploadFiles": "Add necessary attachments.",
         "AddOverhead_Cancel": "Click here to cancel.",

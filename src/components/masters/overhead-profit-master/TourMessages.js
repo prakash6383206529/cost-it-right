@@ -5,42 +5,47 @@ import { reactLocalStorage } from "reactjs-localstorage";
 export function Steps(t, config) {
     const introWithBOPDynamicValue = (intro) => intro.replace(/bop|BOP/gi, showBopLabel());
     const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+    const EffectiveDate = (config && config.isEditFlag === false) ? t("overheadsdMaster.AddOverhead_EffectiveDate") : t("overheadsdMaster.AddOverhead_Edit_EffectiveDate");
 
     return {
         ADD_OVERHEADS_DETAILS: [
-            {
-                element: "#AddOverhead_zerobased",
-                intro: t("overheadsdMaster.AddOverhead_zerobased"),
-            },
-            {
-                element: "#AddOverhead_vendorbased",
-                intro: t("overheadsdMaster.AddOverhead_vendorbased"),
-            },
-            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
-                element: "#AddOverhead_customerbased",
-                intro: t("overheadsdMaster.AddOverhead_customerbased"),
-            }] : []),
+            ...(config && config.isEditFlag === false) ? [
+                {
+                    element: "#AddOverhead_zerobased",
+                    intro: t("overheadsdMaster.AddOverhead_zerobased"),
+                },
+                {
+                    element: "#AddOverhead_vendorbased",
+                    intro: t("overheadsdMaster.AddOverhead_vendorbased"),
+                },
+                ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
+                    element: "#AddOverhead_customerbased",
+                    intro: t("overheadsdMaster.AddOverhead_customerbased"),
+                }] : []),
+            ] : [],
             {
                 element: "#AddOverhead_ModelType_container",
                 intro: t("overheadsdMaster.AddOverhead_ModelType_container"),
             },
-            ...(config && config.vendorField ? [{
-                element: "#AddOverhead_vendorName",
-                intro: t("overheadsdMaster.AddOverhead_Vendor_container"),
-            },] : []),
-            ...(config && config.plantField ? [{
-                element: "#AddOverhead_Plant_container",
-                intro: t("overheadsdMaster.AddOverhead_Plant_container"),
-            },] : []),
-            ...(config && config.destinationPlant ? [{
-                element: "#AddOverhead_DestinationPlant_container",
-                intro: t("overheadsdMaster.AddOverhead_Plant_container"),
-            },] : []),
-            ...(config && config.customerField ? [{
-                element: "#AddOverhead_clientName_container",
-                intro: t("overheadsdMaster.AddOverhead_clientName_container"),
-            }] : []),
+            ...(config && config.isEditFlag === false) ? [
+                ...(config && config.vendorField ? [{
+                    element: "#AddOverhead_vendorName",
+                    intro: t("overheadsdMaster.AddOverhead_Vendor_container"),
+                },] : []),
+                ...(config && config.plantField ? [{
+                    element: "#AddOverhead_Plant_container",
+                    intro: t("overheadsdMaster.AddOverhead_Plant_container"),
+                },] : []),
 
+                ...(config && config.destinationPlant ? [{
+                    element: "#AddOverhead_DestinationPlant_container",
+                    intro: t("overheadsdMaster.AddOverhead_Plant_container"),
+                },] : []),
+                ...(config && config.customerField ? [{
+                    element: "#AddOverhead_clientName_container",
+                    intro: t("overheadsdMaster.AddOverhead_clientName_container"),
+                }] : []),
+            ] : [],
             {
                 element: "#AddOverhead_ApplyPartCheckbox",
                 intro: t("overheadsdMaster.AddOverhead_ApplyPartCheckbox"),
@@ -53,21 +58,22 @@ export function Steps(t, config) {
                 element: "#AddOverhead_OverheadPercentage",
                 intro: t("overheadsdMaster.AddOverhead_OverheadPercentage"),
             },
-            {
-                element: "#AddOverhead_OverheadRMPercentage",
-                intro: t("overheadsdMaster.AddOverhead_OverheadRMPercentage"),
-            },
-            {
-                element: "#AddOverhead_OverheadMachiningCCPercentage",
-                intro: t("overheadsdMaster.AddOverhead_OverheadMachiningCCPercentage"),
-            },
-            {
-                element: "#AddOverhead_OverheadBOPPercentage",
-                intro: introWithBOPDynamicValue(t("overheadsdMaster.AddOverhead_OverheadBOPPercentage")),
-            },
+            ...(config && config.isEditFlag === false) ? [
+                {
+                    element: "#AddOverhead_OverheadRMPercentage",
+                    intro: t("overheadsdMaster.AddOverhead_OverheadRMPercentage"),
+                },
+                {
+                    element: "#AddOverhead_OverheadMachiningCCPercentage",
+                    intro: t("overheadsdMaster.AddOverhead_OverheadMachiningCCPercentage"),
+                },
+                {
+                    element: "#AddOverhead_OverheadBOPPercentage",
+                    intro: introWithBOPDynamicValue(t("overheadsdMaster.AddOverhead_OverheadBOPPercentage")),
+                }] : [],
             {
                 element: "#AddOverhead_EffectiveDate",
-                intro: t("overheadsdMaster.AddOverhead_EffectiveDate"),
+                intro: EffectiveDate,
             },
             {
                 element: "#AddOverhead_Remark",

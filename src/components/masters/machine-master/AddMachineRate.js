@@ -1426,6 +1426,7 @@ class AddMachineRate extends Component {
                             buttonSpecificProp={{ id: "Add_Machine_Rate_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                isMachineAssociated: isMachineAssociated,
                                 showSendForApproval: !this.state.isFinalApprovar,
                                 isEditFlag: isEditFlag,
                                 vendorField: (costingTypeId === VBCTypeId),

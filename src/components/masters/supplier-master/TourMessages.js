@@ -7,14 +7,16 @@ export function Steps(t, config) {
                 element: "#AddVendorDrawer_VendorType_container",
                 intro: t("vendorForm.AddVendorDrawer_VendorType_container"),
             },
-            {
-                element: "#AddVendorDrawer_VendorName",
-                intro: t("vendorForm.AddVendorDrawer_VendorName"),
-            },
-            {
-                element: "#AddVendorDrawer_VendorCode",
-                intro: t("vendorForm.AddVendorDrawer_VendorCode"),
-            },
+            ...(config && config.isEditFlag === false) ? [
+
+                {
+                    element: "#AddVendorDrawer_VendorName",
+                    intro: t("vendorForm.AddVendorDrawer_VendorName"),
+                },
+                {
+                    element: "#AddVendorDrawer_VendorCode",
+                    intro: t("vendorForm.AddVendorDrawer_VendorCode"),
+                }] : [],
             {
                 element: "#AddVendorDrawer_VendorEmail",
                 intro: t("vendorForm.AddVendorDrawer_VendorEmail"),
@@ -31,18 +33,19 @@ export function Steps(t, config) {
                 element: "#AddVendorDrawer_MobileNumber",
                 intro: t("vendorForm.AddVendorDrawer_MobileNumber"),
             },
-            {
-                element: "#AddVendorDrawer_CountryId_container",
-                intro: t("vendorForm.AddVendorDrawer_CountryId_container"),
-            },
-            {
-                element: "#AddVendorDrawer_StateId_container",
-                intro: t("vendorForm.AddVendorDrawer_StateId_container"),
-            },
-            {
-                element: "#AddVendorDrawer_CityId_container",
-                intro: t("vendorForm.AddVendorDrawer_CityId_container"),
-            },
+            ...(config && config.isEditFlag === false) ? [
+                {
+                    element: "#AddVendorDrawer_CountryId_container",
+                    intro: t("vendorForm.AddVendorDrawer_CountryId_container"),
+                },
+                {
+                    element: "#AddVendorDrawer_StateId_container",
+                    intro: t("vendorForm.AddVendorDrawer_StateId_container"),
+                },
+                {
+                    element: "#AddVendorDrawer_CityId_container",
+                    intro: t("vendorForm.AddVendorDrawer_CityId_container"),
+                }] : [],
             {
                 element: "#AddVendorDrawer_ZipCode",
                 intro: t("vendorForm.AddVendorDrawer_ZipCode"),
