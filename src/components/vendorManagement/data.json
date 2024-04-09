@@ -64,6 +64,7 @@
             "RequestDate": "12/03/2023",
             "ReasonForRequest": "LPS Rating Revision Requested",
             "Status": "Pending",
+            "DisplayStatus": "Pending",
             "Action": ""
         },
         {
@@ -75,7 +76,8 @@
             "RequestID": 3456,
             "RequestDate": "12/03/2023",
             "ReasonForRequest": "Vendor Classification Pending",
-            "Status": "Pending",
+            "Status": "Approved",
+            "DisplayStatus": "Approved",
             "Action": ""
         },
         {
@@ -87,7 +89,8 @@
             "RequestID": 4456,
             "RequestDate": "12/03/2023",
             "ReasonForRequest": "Vendor Classification Approved",
-            "Status": "Approved",
+            "Status": "Pending",
+            "DisplayStatus": "Pending",
             "Action": ""
         },
         {
@@ -99,7 +102,8 @@
             "RequestID": 4456,
             "RequestDate": "12/03/2023",
             "ReasonForRequest": "Vendor Classification LPS Rating Rejected",
-            "Status": "Rejected",
+            "Status": "Revision Requested",
+            "DisplayStatus": "Revision Requested",
             "Action": ""
         },
         {
@@ -111,7 +115,8 @@
             "RequestID": 3456,
             "RequestDate": "12/03/2023",
             "ReasonForRequest": "LPS Rating Approve",
-            "Status": "Approved",
+            "Status": "Rejected",
+            "DisplayStatus": "Rejected",
             "Action": ""
         }
     ]
