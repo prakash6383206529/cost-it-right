@@ -6222,6 +6222,7 @@ body {
       .Under.Revision,
       .Received,
       .Open,
+      .Return,
       .ExternalReject,
       [class^="Pending"],
       [class^="Awaiting"],
@@ -8485,6 +8486,8 @@ table.group-process-table {
     right: -20px;
     top: 26%;
     z-index: 2;
+    width: 22px;
+    height: 28px;
   }
 }
 

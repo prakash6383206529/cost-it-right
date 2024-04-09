@@ -559,7 +559,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
-
+  obj.IsShowCheckBoxForApproval = dataFromAPI.IsShowCheckBoxForApproval
   obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
   obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked !== null ? dataFromAPI.IsApprovalLocked : '-'
   obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
