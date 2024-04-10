@@ -24,6 +24,8 @@ import NfrTab from "./NfrTab";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
 import { withTranslation } from "react-i18next";
+// import VendorClassification from "../../vendorManagement/VendorClassification";
+// import VendorManagementTab from "./VendorManagementTab";
 class PermissionsTabIndex extends Component {
     constructor(props) {
         super(props);
@@ -126,16 +128,16 @@ class PermissionsTabIndex extends Component {
         this.setState({
             actionData: Data,
             isLoader: false,
-            dashoard: dashboardObj && dashboardObj.length > 0 ? dashboardObj[0].Pages : [],
-            masters: masterObj && masterObj.length > 0 ? masterObj[0].Pages : [],
-            additionalMasters: additionalMasterObj && additionalMasterObj.length > 0 ? additionalMasterObj[0].Pages : [],
-            costing: costingObj && costingObj.length > 0 ? costingObj[0].Pages : [],
-            simulation: simulationObj && simulationObj.length > 0 ? simulationObj[0].Pages : [],
-            reportAnalytics: reportAnalyticsObj && reportAnalyticsObj.length > 0 ? reportAnalyticsObj[0].Pages : [],
-            user: usersObj && usersObj.length > 0 ? usersObj[0].Pages : [],
-            audit: auditObj && auditObj.length > 0 ? auditObj[0].Pages : [],
-            rfq: rfqObj && rfqObj.length > 0 ? rfqObj[0].Pages : [],
-            nfr: nfrObj && nfrObj.length > 0 ? nfrObj[0].Pages : [],
+            dashoard: dashboardObj && dashboardObj?.length > 0 ? dashboardObj[0].Pages : [],
+            masters: masterObj && masterObj?.length > 0 ? masterObj[0].Pages : [],
+            additionalMasters: additionalMasterObj && additionalMasterObj?.length > 0 ? additionalMasterObj[0].Pages : [],
+            costing: costingObj && costingObj?.length > 0 ? costingObj[0].Pages : [],
+            simulation: simulationObj && simulationObj?.length > 0 ? simulationObj[0].Pages : [],
+            reportAnalytics: reportAnalyticsObj && reportAnalyticsObj?.length > 0 ? reportAnalyticsObj[0].Pages : [],
+            user: usersObj && usersObj?.length > 0 ? usersObj[0].Pages : [],
+            audit: auditObj && auditObj?.length > 0 ? auditObj[0].Pages : [],
+            rfq: rfqObj && rfqObj?.length > 0 ? rfqObj[0].Pages : [],
+            nfr: nfrObj && nfrObj?.length > 0 ? nfrObj[0].Pages : [],
         }, () => {
 
             this.permissionHandler(this.state.dashoard, DASHBOARD_AND_AUDIT)
@@ -187,7 +189,7 @@ class PermissionsTabIndex extends Component {
 
                                 <Nav tabs className="subtabs pr-tab">
                                     {
-                                        this.state.dashoard.length > 0 &&
+                                        this.state.dashoard?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Dashboard" className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                                 Dashboard
@@ -195,7 +197,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.masters.length > 0 &&
+                                        this.state.masters?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Masters" className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                                 Masters
@@ -211,7 +213,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.additionalMasters.length > 0 &&
+                                        this.state.additionalMasters?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="AdditionalMasters" className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                                 Additional Masters
@@ -227,7 +229,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.costing.length > 0 &&
+                                        this.state.costing?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Costing" className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                                                 Costing
@@ -243,7 +245,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.simulation.length > 0 &&
+                                        this.state.simulation?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Simulation" className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                                                 Simulation
@@ -259,7 +261,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.reportAnalytics.length > 0 &&
+                                        this.state.reportAnalytics?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Reports" className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
                                                 Reports
@@ -323,7 +325,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.audit.length > 0 &&
+                                        this.state.audit?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Audit" className={classnames({ active: this.state.activeTab === '10' })} onClick={() => { this.toggle('10'); }}>
                                                 Audit
@@ -339,7 +341,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.vendorManagement.length > 0 &&
+                                        this.state.vendorManagement?.length > 0 &&
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '11' })} onClick={() => { this.toggle('11'); }}>
                                                 Vendor Management
@@ -437,6 +439,14 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
+                                    {/* <TabPane tabId="11">
+                                        <VendorManagementTab
+                                            data={this.state.vendorManagement}
+                                            actionData={this.state.actionData}
+                                            actionSelectList={this.props.actionSelectList}
+                                            permissions={this.permissionHandler}
+                                        />
+                                    </TabPane> */}
 
 
 

@@ -1,10 +1,9 @@
-import { APPROVAL_LISITNG, UPDATE_LPS_RATING_DATA, UPDATE_VENDOR_DATA } from './Action';
-import data from './data.json';
+import { APPROVAL_LISTING, UPDATE_LPS_RATING_DATA, UPDATE_VENDOR_DATA } from './Action';
 
 const initialState = {
     vendorData: [],
     lpsRatingData: [],
-    approvalLisitng: []
+    approvalListing: [] // Corrected the variable name
     // Add other initial state properties if needed
 };
 
@@ -12,23 +11,25 @@ const vendorManagementReducer = (state = initialState, action) => {
     switch (action.type) {
         case UPDATE_VENDOR_DATA:
 
+            console.log('action.type: ', action.type);
             return {
                 ...state,
-                vendorData: data.vendorData
+                vendorData: action.payload
             };
         case UPDATE_LPS_RATING_DATA:
-
+            console.log('action.type: ', action.type);
 
             return {
                 ...state,
-                lpsRatingData: data.lpsRatingData
+                lpsRatingData: action.payload
             };
-        case APPROVAL_LISITNG:
-            console.log('data.approvalLisitng: ', data);
+        case APPROVAL_LISTING:
+            console.log('action.type: ', action.type);
+
             return {
                 ...state,
-                approvalLisitng: data.approvalLisitng
-            }
+                approvalListing: action.payload
+            };
         default:
             return state;
     }

@@ -32,6 +32,7 @@ const VendorClassification = () => {
 
     const dispatch = useDispatch();
     const vendorManagement = useSelector(state => state.vendorManagement.vendorData);
+    console.log('vendorManagement: ', vendorManagement);
 
 
     useEffect(() => {
@@ -42,6 +43,7 @@ const VendorClassification = () => {
     const getTableListData = () => {
         setIsLoader(true)
         dispatch(fetchVendorData(true, (res) => {
+            console.log('res: ', res);
             setIsLoader(false)
             if (res.status === 204 && res.data === '') {
                 setTableData([])

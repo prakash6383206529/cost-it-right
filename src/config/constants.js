@@ -1920,9 +1920,7 @@ export const VENDOR_MANAGEMENT = 'Vendor Management'
 
 //PAGE NAMES
 export const DASHBOARD = 'Dashboard'
-
 export const DASHBOARDWITHGRAPH = 'DashboardWithGraph'
-
 export const RAW_MATERIAL = 'Raw Material'
 export const RAW_MATERIAL_NAME_AND_GRADE = 'Raw Material Name and Grade'
 export const BOP = 'BOP'
@@ -2922,7 +2920,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.2.1";
+export const VERSION = "V2.2.2";
 
 
 
