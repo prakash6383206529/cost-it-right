@@ -136,10 +136,10 @@ function Simulation(props) {
                 setShowVendor(true)
             }
         } else {
+            dispatch(setMasterForSimulation({ label: '', value: '' }))
             dispatch(setTokenForSimulation([]))
         }
         return () => {
-            dispatch(setMasterForSimulation({ label: '', value: '' }))
             reactLocalStorage?.setObject('vendorData', [])
         }
     }, [])
@@ -198,6 +198,8 @@ function Simulation(props) {
     };
 
     const handleMasterChange = (value) => {
+        setCostingHead('')
+        setValue('CostingHead', '')
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         dispatch(setTokenForSimulation([]))
         setMaster(value)
