@@ -24,7 +24,6 @@ import NfrTab from "./NfrTab";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
 import { withTranslation } from "react-i18next";
-
 class PermissionsTabIndex extends Component {
     constructor(props) {
         super(props);
