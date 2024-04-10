@@ -783,7 +783,6 @@ class AddRMDomestic extends Component {
 
             this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
             this.setState({ minEffectiveDate: Data.EffectiveDate })
-            console.log('Data: ', Data);
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
