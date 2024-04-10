@@ -1,4 +1,4 @@
-import { APPROVAL_LISTING, UPDATE_LPS_RATING_DATA, UPDATE_VENDOR_DATA } from './Action';
+import { APPROVAL_LISTING, UPDATE_LPS_RATING_DATA, UPDATE_VENDOR_DATA, UPDATE_VENDOR_DETAIL_DATA, VENDOR_DETAIL_DATA } from './Action';
 
 const initialState = {
     vendorData: [],
@@ -30,6 +30,12 @@ const vendorManagementReducer = (state = initialState, action) => {
                 ...state,
                 approvalListing: action.payload
             };
+        case VENDOR_DETAIL_DATA:
+            console.log('action.type: ', action.type);
+            return {
+                ...state,
+                vendorDetailData: action.payload
+            }
         default:
             return state;
     }

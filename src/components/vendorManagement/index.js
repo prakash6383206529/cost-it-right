@@ -23,7 +23,7 @@ const VendorManagement = () => {
                 <Nav tabs className="subtabs mt-0 mb-3">
                     <NavItem>
                         <NavLink
-                            to="/vendor-classification"
+                            // to="/vendor-classification"
                             className={classnames({ active: activeTab === "1" })}
                             onClick={() => setActiveTab("1")}
                         >

@@ -37,7 +37,7 @@ function RfqListing(props) {
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
-    console.log('rowData: ', rowData);
+
     const [noData, setNoData] = useState(false)
     const [viewRfq, setViewRfq] = useState(false)
     const [viewRfqData, setViewRfqData] = useState("")
@@ -56,7 +56,7 @@ function RfqListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const handleFilterChange = () => {
         if (agGridRef.current) {
-            console.log('agGridRef.current: ', agGridRef.current);
+
             //MINDA
             // setTimeout(() => {
             //     if (!agGridRef.current.rowRenderer.allRowCons.length) {
@@ -96,8 +96,8 @@ function RfqListing(props) {
 
     useEffect(() => {
         if (statusColumnData) {
-            console.log('statusColumnData: ', statusColumnData);
-            console.log('statusColumnData: ', statusColumnData);
+
+
 
             gridApi?.setQuickFilter(statusColumnData?.data);
         }
@@ -129,7 +129,7 @@ function RfqListing(props) {
             let temp = []
             res?.data?.DataList && res?.data?.DataList.map((item) => {
                 if (item.IsActive === false) {
-                    console.log('item.IsActive: ', item.IsActive);
+
 
                     item.Status = "Cancelled"
                 }

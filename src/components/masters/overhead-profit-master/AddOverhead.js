@@ -951,7 +951,6 @@ class AddOverhead extends Component {
         }
       }
     };
-    console.log(costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate, costingTypeId === ZBCTypeId, getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate);
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
