@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL, MASTER_COST_MOVEMENT_REPORT, RESET_PASSWORD, FORGET_PASSWORD, NFR_INSIGHT_DETAILS, INSIGHT_SIMULATION_REPORT, lOGIN_AUDIT
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL, MASTER_COST_MOVEMENT_REPORT, RESET_PASSWORD, FORGET_PASSWORD, NFR_INSIGHT_DETAILS, INSIGHT_SIMULATION_REPORT, lOGIN_AUDIT, VENDOR_MANAGEMENT
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -82,6 +82,7 @@ import VendorManagement from './vendorManagement'
 import LPSRating from './vendorManagement/LpsRating'
 import ApprovalListing from './vendorManagement/ApprovalListing'
 import InitiateUnblocking from './vendorManagement/InitiateUnblocking'
+
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -409,10 +410,15 @@ class Main extends Component {
                     <Route path="/sap-push-detail" component={SAPDetailList} />
                     <Route path="/nfr-insights-details" component={AuthMiddleware(NFRInsightsReport, NFR_INSIGHT_DETAILS)} />
                     <Route path="/login-audit" component={AuthMiddleware(LoginAudit, lOGIN_AUDIT)} />
-                    <Route path="/vendor-classification" component={VendorManagement} />
-                    <Route path="/lps-rating" component={LPSRating} />
-                    <Route path="/approval-listing" component={ApprovalListing} />
-                    <Route path='/initiate-unblocking' component={InitiateUnblocking} />
+                    <Route path="/vendor-classification" component={AuthMiddleware(VendorManagement, VENDOR_MANAGEMENT)} />
+                    <Route path="/lps-rating" component={AuthMiddleware(LPSRating)} />
+                    <Route path="/supplier-management/approval-listing" component={AuthMiddleware(ApprovalListing)} />
+                    <Route path='/initiate-unblocking' component={AuthMiddleware(InitiateUnblocking)} />
+                    {/* <Route path='/initiate-unblocking/vendor-classification' component={UnblockClassification} />
+                    <Route path='/initiate-unblocking/vendor-lps' component={UnblockClassificationLps} />
+                    <Route path='/initiate-unblocking/lps-rating' component={UnblockLPSRating} /> */}
+
+
 
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}

@@ -65,6 +65,7 @@
             "ReasonForRequest": "LPS Rating Revision Requested",
             "Status": "Pending",
             "DisplayStatus": "Pending",
+            "RequestedBy": "User A",
             "Action": ""
         },
         {
@@ -78,6 +79,7 @@
             "ReasonForRequest": "Vendor Classification Pending",
             "Status": "Approved",
             "DisplayStatus": "Approved",
+            "RequestedBy": "User B",
             "Action": ""
         },
         {
@@ -91,6 +93,7 @@
             "ReasonForRequest": "Vendor Classification Approved",
             "Status": "Pending",
             "DisplayStatus": "Pending",
+            "RequestedBy": "User C",
             "Action": ""
         },
         {
@@ -104,6 +107,7 @@
             "ReasonForRequest": "Vendor Classification LPS Rating Rejected",
             "Status": "Revision Requested",
             "DisplayStatus": "Revision Requested",
+            "RequestedBy": "User D",
             "Action": ""
         },
         {
@@ -117,7 +121,77 @@
             "ReasonForRequest": "LPS Rating Approve",
             "Status": "Rejected",
             "DisplayStatus": "Rejected",
+            "RequestedBy": "User E",
             "Action": ""
+        }
+    ],
+    "vendorDetailData": [
+        {
+            "sno": 1,
+            "VendorName": "Vendor 1",
+            "VendorCode": "V1",
+            "VendorCategory": "Category A",
+            "Division": "Division 1",
+            "VendorClassification": "Strategic",
+            "LPSRating": 4,
+            "ApprovalForSupplier": true,
+            "ApprovalForLPSRating": true,
+            "Plant": [
+                {
+                    "sno": 1,
+                    "Plant": "Plant 1"
+                }
+            ]
+        },
+        {
+            "sno": 2,
+            "VendorName": "Vendor 2",
+            "VendorCode": "V2",
+            "VendorCategory": "Category B",
+            "Division": "Division 3",
+            "Plant": [
+                {
+                    "sno": 1,
+                    "Plant": "Plant 2"
+                },
+                {
+                    "sno": 2,
+                    "Plant": "Plant 3"
+                }
+            ],
+            "VendorClassification": "Transactional",
+            "LPSRating": 2,
+            "ApprovalForSupplier": false,
+            "ApprovalForLPSRating": true,
+            "ApprovalDate": "2024-04-09",
+            "ApprovedBy": "Jane Smith"
+        },
+        {
+            "sno": 3,
+            "VendorName": "Vendor 3",
+            "VendorCode": "V3",
+            "VendorCategory": "Category C",
+            "Division": "Division 2",
+            "Plant": [
+                {
+                    "sno": 1,
+                    "Plant": "Plant 4"
+                },
+                {
+                    "sno": 2,
+                    "Plant": "Plant 5"
+                },
+                {
+                    "sno": 3,
+                    "Plant": "Plant 6"
+                }
+            ],
+            "VendorClassification": "Challenger",
+            "LPSRating": 3,
+            "ApprovalForSupplier": true,
+            "ApprovalForLPSRating": false,
+            "ApprovalDate": "2024-04-08",
+            "ApprovedBy": "Bob Johnson"
         }
     ]
 }

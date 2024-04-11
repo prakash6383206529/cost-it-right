@@ -96,6 +96,9 @@ function RfqListing(props) {
 
     useEffect(() => {
         if (statusColumnData) {
+
+
+
             gridApi?.setQuickFilter(statusColumnData?.data);
         }
     }, [statusColumnData])
