@@ -87,7 +87,6 @@ function AddRfq(props) {
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
     const [dateAndTime, setDateAndTime] = useState('')
-    console.log('dateAndTime: ', dateAndTime);
     const [minHours, setMinHours] = useState(currentHours)
     const [minMinutes, setMinMinutes] = useState(currentMinutes)
     const [isConditionalVisible, setIsConditionalVisible] = useState(false)

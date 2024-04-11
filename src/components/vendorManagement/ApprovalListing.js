@@ -57,19 +57,27 @@ const ApprovalListing = (props) => {
         dispatch(fetchApprovalList()); // Fetch approvals when the component mounts
     }, []);
     const hyperLinkableFormatter = (props) => {
-
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        // return (
-        //     <>
-        //         <div
-        //             id={`Costing_Approval_Costing_Id_${props?.rowIndex}`}
-        //             onClick={() => viewDetailCostingID(row.UserId, cell, row)}
-        //             className={'link'}
-        //         >{cell}</div>
-        //     </>
-        // )
-    }
+
+        // Assuming you have the viewDetailCostingID function available
+        const viewDetailCostingID = (userId, cell, row) => {
+            // Implement your logic to handle the hyperlink behavior here
+            // For example, you can navigate to a new page or open a modal
+        };
+
+        return (
+            <>
+                <div
+                    id={`Costing_Approval_Costing_Id_${props?.rowIndex}`}
+                    onClick={() => viewDetailCostingID(row.UserId, cell, row)}
+                    className={'link'}
+                >
+                    {cell}
+                </div>
+            </>
+        );
+    };
     const dateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
@@ -222,7 +230,6 @@ const ApprovalListing = (props) => {
 
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        console.log('cell: ', cell);
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         return <div className={cell}>{row.DisplayStatus}</div>
@@ -360,7 +367,7 @@ const ApprovalListing = (props) => {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         // linkableFormatter: linkableFormatter,
-        // hyperLinkableFormatter: hyperLinkableFormatter,
+        hyperLinkableFormatter: hyperLinkableFormatter,
         lastApprovalFormatter: lastApprovalFormatter,
         statusFilter: SingleDropdownFloationFilter,
         basicRateFormatter: basicRateFormatter
@@ -446,13 +453,13 @@ const ApprovalListing = (props) => {
                                                 // isRowSelectable={isRowSelectable}
                                                 enableBrowserTooltips={true}
                                             >
-                                                <AgGridColumn field="sno" headerName="S no."  ></AgGridColumn>
+                                                <AgGridColumn field="RequestID" headerName="Token Id" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
                                                 <AgGridColumn field="Plant" headerName='Plant'></AgGridColumn>
                                                 <AgGridColumn field="VendorCode" headerName="Vendor Code"></AgGridColumn>
                                                 <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>
                                                 <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
-                                                <AgGridColumn field="RequestID" headerName="Request ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
-                                                <AgGridColumn field="RequestDate" cellRenderer='dateFormatter' headerName="RequestDate" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                <AgGridColumn field="RequestDate" cellRenderer='dateFormatter' headerName="Requested On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                <AgGridColumn field="RequestedBy" headerName="Last Approved/Rejected By" cellRenderer={"lastApprovalFormatter"}></AgGridColumn>
                                                 {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                             </AgGridReact>
                                             <div className='button-wrapper'>
