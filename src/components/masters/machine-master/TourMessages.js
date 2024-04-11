@@ -3,46 +3,49 @@ import { reactLocalStorage } from "reactjs-localstorage";
 export function Steps(t, config) {
     const showSendForApprovalButton = config?.showSendForApproval !== undefined && config?.showSendForApproval === true
     const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+    const EffectiveDate = (config && config.isEditFlag === false) ? t("addMachineRate.AddMachineRate_EffectiveDate") : t("addMachineRate.AddMachineRate_Edit_EffectiveDate");
 
     return {
         ADD_MACHINE_RATE: [
-            {
-                element: "#AddMachineRate_zeroBased",
-                intro: t("addMachineRate.AddMachineRate_zeroBased"),
-            },
-            {
-                element: "#AddMachineRate_vendorBased",
-                intro: t("addMachineRate.AddMachineRate_vendorBased"),
-            },
-            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
+            ...(!(config && config.isEditFlag === true)) ? [
+                {
+                    element: "#AddMachineRate_zeroBased",
+                    intro: t("addMachineRate.AddMachineRate_zeroBased"),
+                },
+                {
+                    element: "#AddMachineRate_vendorBased",
+                    intro: t("addMachineRate.AddMachineRate_vendorBased"),
+                },
+                ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
 
-                element: "#AddMachineRate_customerBased",
-                intro: t("addMachineRate.AddMachineRate_customerBased"),
-            }] : []),
-            {
-                element: "#AddMachineRate_technology_container",
-                intro: t("addMachineRate.AddMachineRate_technology_container"),
-            },
-            ...(config && config.vendorField ? [{
-                element: "#AddMachineRate_vendorName",
-                intro: t("addMachineRate.AddMachineRate_Vendor_container"),
-            },] : []),
+                    element: "#AddMachineRate_customerBased",
+                    intro: t("addMachineRate.AddMachineRate_customerBased"),
+                }] : []),
+                {
+                    element: "#AddMachineRate_technology_container",
+                    intro: t("addMachineRate.AddMachineRate_technology_container"),
+                },
+                ...(config && config.vendorField ? [{
+                    element: "#AddMachineRate_vendorName",
+                    intro: t("addMachineRate.AddMachineRate_Vendor_container"),
+                },] : []),
 
-            {
-                element: "#AddMachineRate_Plant_container",
-                intro: t("addMachineRate.AddMachineRate_Plant_container"),
-            },
+                {
+                    element: "#AddMachineRate_Plant_container",
+                    intro: t("addMachineRate.AddMachineRate_Plant_container"),
+                },
 
-            ...(config && config.customerField ? [{
+                ...(config && config.customerField ? [{
 
-                element: "#AddMachineRate_clientName_container",
-                intro: t("addMachineRate.AddMachineRate_customerNamer_container"),
-            },] : []),
+                    element: "#AddMachineRate_clientName_container",
+                    intro: t("addMachineRate.AddMachineRate_customerNamer_container"),
+                },] : []),
 
-            {
-                element: "#AddMachineRate_MachineNumber",
-                intro: t("addMachineRate.AddMachineRate_MachineNumber_container"),
-            },
+                {
+                    element: "#AddMachineRate_MachineNumber",
+                    intro: t("addMachineRate.AddMachineRate_MachineNumber_container"),
+                },
+            ] : [],
 
             {
                 element: "#AddMachineRate_Specification",
@@ -60,41 +63,46 @@ export function Steps(t, config) {
                 element: "#AddMachineRate_TonnageCapacity",
                 intro: t("addMachineRate.AddMachineRate_TonnageCapacity"),
             },
-            {
-                element: "#AddMachineRate_EffectiveDate",
-                intro: t("addMachineRate.AddMachineRate_EffectiveDate"),
-            },
-            ...config && config.isEditFlag === false ? [{
-                element: "#addMoreMachine_Details",
-                intro: t("addMachineRate.AddMoreMachine_Details"),
-            }] : [],
 
-            {
-                element: "#AddMachineRate_ProcessName_container",
-                intro: t("addMachineRate.AddMachineRate_ProcessName_container"),
-            },
-            {
-                element: "#Add_Machine_Process",
-                intro: t("addMachineRate.Add_Machine_Process"),
-            },
+            ...(config && config?.isMachineAssociated === false) || (config && config?.isEditFlag === false) ? [
+                {
+                    element: "#AddMachineRate_EffectiveDate",
+                    intro: EffectiveDate,
+                },
+                ...config && config.isEditFlag === false ? [{
+                    element: "#addMoreMachine_Details",
+                    intro: t("addMachineRate.AddMoreMachine_Details"),
+                }] : [],
 
-            {
-                element: "#AddMachineRate_UOM_container",
-                intro: t("addMachineRate.AddMachineRate_UOM_container"),
-            },
-            {
-                element: "#AddMachineRate_MachineRate",
-                intro: t("addMachineRate.AddMachineRate_MachineRate"),
-            },
-            {
-                element: "#AddMachineRate_addmore",
-                intro: t("addMachineRate.AddMachineRate_addmore"),
-            },
-            {
-                element: "#AddMachineRate_reset",
-                intro: t("addMachineRate.AddMachineRate_reset"),
-            },
-
+                {
+                    element: "#AddMachineRate_ProcessName_container",
+                    intro: t("addMachineRate.AddMachineRate_ProcessName_container"),
+                },
+                {
+                    element: "#Add_Machine_Process",
+                    intro: t("addMachineRate.Add_Machine_Process"),
+                },
+            ] : [],
+            ...((config && config.isEditFlag === false)) ? [
+                {
+                    element: "#AddMachineRate_UOM_container",
+                    intro: t("addMachineRate.AddMachineRate_UOM_container"),
+                },
+                {
+                    element: "#AddMachineRate_MachineRate",
+                    intro: t("addMachineRate.AddMachineRate_MachineRate"),
+                },
+            ] : [],
+            ...(config && config?.isMachineAssociated === false) || (config && config?.isEditFlag === false) ? [
+                {
+                    element: "#AddMachineRate_addmore",
+                    intro: t("addMachineRate.AddMachineRate_addmore"),
+                },
+                {
+                    element: "#AddMachineRate_reset",
+                    intro: t("addMachineRate.AddMachineRate_reset"),
+                },
+            ] : [],
             {
                 element: " #groupName_container",
                 intro: t("addMachineRate.GroupName"),

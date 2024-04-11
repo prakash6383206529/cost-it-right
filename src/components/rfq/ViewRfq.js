@@ -1246,7 +1246,7 @@ function RfqListing(props) {
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Reject'}
                     </button>
-                    {disableApproveButton &&
+                    {(disableApproveButton === false) &&
                         <button
                             type="button"
                             className="approve-button mr5 approve-hover-btn"

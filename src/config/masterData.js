@@ -7941,8 +7941,9 @@ export const statusDropdownforRfq = [
     { label: "Cancelled", value: "6" },
     { label: "Rejected", value: "7" },
     { label: "Returned", value: "8" },
-    { label: 'PendingForApproval', value: 2 },
-    { label: 'History', value: 5 },
+    { label: 'PendingForApproval', value: "9" },
+    { label: 'History', value: "10" },
+    { label: 'NotSelected', value: "11" },
 ]
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },
