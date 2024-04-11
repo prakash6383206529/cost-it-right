@@ -120,7 +120,8 @@ function RfqListing(props) {
             }
         }))
         const isApproval = arr.filter(item => item.ShowApprovalButton)
-        const disableApproveButton = isApproval.some(item => item.status === 'Return');
+        console.log('isApproval: ', isApproval);
+        const disableApproveButton = isApproval.some(item => item.Status === 'Returned');
         setDisableApproveButton(disableApproveButton);
         setDisableApproveRejectButton(isApproval.length > 0)
     }, [viewCostingData])
