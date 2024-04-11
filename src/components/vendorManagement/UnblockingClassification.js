@@ -6,11 +6,11 @@ const UnblockClassification = () => {
     const [reason, setReason] = useState('');
     const [deviationDuration, setDeviationDuration] = useState('');
     const [remark, setRemark] = useState('');
-    console.log('unblock classification', reason, deviationDuration, remark);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         // Handle submission for Vendor Classification
-        console.log('Submitting Vendor Classification:', reason, deviationDuration, remark);
+
     };
 
     return (

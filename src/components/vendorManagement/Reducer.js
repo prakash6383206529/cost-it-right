@@ -11,27 +11,27 @@ const vendorManagementReducer = (state = initialState, action) => {
     switch (action.type) {
         case UPDATE_VENDOR_DATA:
 
-            console.log('action.type: ', action.type);
+
             return {
                 ...state,
                 vendorData: action.payload
             };
         case UPDATE_LPS_RATING_DATA:
-            console.log('action.type: ', action.type);
+
 
             return {
                 ...state,
                 lpsRatingData: action.payload
             };
         case APPROVAL_LISTING:
-            console.log('action.type: ', action.type);
+
 
             return {
                 ...state,
                 approvalListing: action.payload
             };
         case VENDOR_DETAIL_DATA:
-            console.log('action.type: ', action.type);
+
             return {
                 ...state,
                 vendorDetailData: action.payload

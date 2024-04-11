@@ -41,7 +41,7 @@ const InitiateUnblocking = () => {
         if (selectedVendor) {
             const filteredVendorDetails = vendorDetailData?.filter((vendor) => vendor.VendorCode === selectedVendor.value);
             setFilteredVendor(filteredVendorDetails);
-            console.log('filteredVendorDetails: ', filteredVendorDetails);
+
         }
     }, [selectedVendor, vendorDetailData]);
 
