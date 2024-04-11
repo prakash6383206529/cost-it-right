@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, HISTORY, NCCTypeId, PENDING, VBCTypeId, } from '../.././config/constants'
+import { EMPTY_DATA, RETURNED, NCCTypeId, VBCTypeId, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -32,7 +32,6 @@ import CostingApproveReject from '../costing/components/approval/CostingApproveR
 import TourWrapper from '../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
-import { APPROVED, CANCELLED, DRAFT, FILE_URL, RECEIVED, REJECTED, RETURNED, RFQ, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
 import { getGridHeight } from '../../actions/Common';
 import SingleDropdownFloationFilter from '../masters/material-master/SingleDropdownFloationFilter';
 
@@ -120,7 +119,7 @@ function RfqListing(props) {
             }
         }))
         const isApproval = arr.filter(item => item.ShowApprovalButton)
-        const disableApproveButton = isApproval.some(item => item.Status === 'Returned');
+        const disableApproveButton = isApproval.some(item => String(item.Status) === String(RETURNED));
         setDisableApproveButton(disableApproveButton);
         setDisableApproveRejectButton(isApproval.length > 0)
     }, [viewCostingData])
