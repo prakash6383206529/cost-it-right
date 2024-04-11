@@ -8,10 +8,11 @@ export function Steps(t, config) {
                 element: "#AddZBCPlant_PlantName",
                 intro: t("addZBCPlantRate.AddZBCPlantRate_Plant_Name"),
             },
-            {
-                element: "#AddZBCPlant_PlantCode",
-                intro: t("addZBCPlantRate.AddZBCPlantRate_Plant_Code"),
-            },
+            ...(config && config.isEditFlag === false) ? [
+                {
+                    element: "#AddZBCPlant_PlantCode",
+                    intro: t("addZBCPlantRate.AddZBCPlantRate_Plant_Code"),
+                }] : [],
             {
                 element: "#AddZBCPlant_CompanyName_container",
                 intro: t("addZBCPlantRate.AddZBCPlantRate_Company_Code"),
@@ -33,18 +34,19 @@ export function Steps(t, config) {
                 element: "#AddZBCPlant_AddressLine2",
                 intro: t("addZBCPlantRate.AddZBCPlantRate_Address2"),
             },
-            {
-                element: "#AddZBCPlant_CountryId_container",
-                intro: t("addZBCPlantRate.AddZBCPlantRate_Country"),
-            },
-            {
-                element: "#AddZBCPlant_StateId_container",
-                intro: t("addZBCPlantRate.AddZBCPlantRate_State"),
-            },
-            {
-                element: "#AddZBCPlant_CityId_container",
-                intro: t("addZBCPlantRate.AddZBCPlantRate_City"),
-            },
+            ...(config && config.isEditFlag === false) ? [
+                {
+                    element: "#AddZBCPlant_CountryId_container",
+                    intro: t("addZBCPlantRate.AddZBCPlantRate_Country"),
+                },
+                {
+                    element: "#AddZBCPlant_StateId_container",
+                    intro: t("addZBCPlantRate.AddZBCPlantRate_State"),
+                },
+                {
+                    element: "#AddZBCPlant_CityId_container",
+                    intro: t("addZBCPlantRate.AddZBCPlantRate_City"),
+                }] : [],
             {
                 element: "#AddZBCPlant_ZipCode",
                 intro: t("addZBCPlantRate.AddZBCPlantRate_ZipCode"),

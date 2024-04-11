@@ -10,7 +10,7 @@
         "AddVendorDrawer_CountryId_container": "Select the country from the dropdown.",
         "AddVendorDrawer_StateId_container": "Select the state from the dropdown.",
         "AddVendorDrawer_CityId_container": "Select the city from the dropdown.",
-        "AddVendorDrawer_ZipCode": "Enter the postal code.",
+        "AddVendorDrawer_ZipCode": "Enter the zip code.",
         "AddVendorDrawer_AddressLine1": "Enter the primary address.",
         "AddVendorDrawer_AddressLine2": "Enter the secondary address.",
         "AddVendorDrawer_Cancel": "Click here to cancel."

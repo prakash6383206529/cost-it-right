@@ -1378,6 +1378,7 @@ class AddBOPImport extends Component {
                             buttonSpecificProp={{ id: "Add_BOP_Import_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                isBOPAssociated: isBOPAssociated,
                                 isEditFlag: isEditFlag,
                                 showSendForApproval: !this.state.isFinalApprovar,
                                 CBCTypeField: (costingTypeId === CBCTypeId),

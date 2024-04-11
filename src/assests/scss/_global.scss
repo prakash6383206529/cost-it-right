@@ -2768,7 +2768,8 @@ td,
   .Approved,
   .Rejected,
   .History,
-  .Return,
+  .Returned,
+  .NotSelected,
   .ApprovedBySimulation,
   .ApprovedByAssembly,
   .ApprovedByASMSimulation,
@@ -2815,6 +2816,7 @@ td,
     background-color: #4dc771;
   }
 
+  .NotSelected,
   .History {
     background-color: #c2cbe8;
   }
@@ -2822,7 +2824,7 @@ td,
   .Rejected,
   .RejectedBySystem,
   .Cancelled,
-  .Return {
+  .Returned {
     background-color: #fc5774;
   }
 
