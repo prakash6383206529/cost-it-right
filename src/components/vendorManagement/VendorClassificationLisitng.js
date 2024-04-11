@@ -14,7 +14,7 @@ import { EMPTY_DATA } from '../../config/constants';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 
-const VendorClassification = () => {
+const VendorClassificationListing = () => {
     const [renderState, setRenderState] = useState(true);
     const [isLoader, setIsLoader] = useState(false);
     const [tableData, setTableData] = useState([]);
@@ -168,7 +168,7 @@ const VendorClassification = () => {
                             suppressRowClickSelection={true}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn>
+                            {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
                             <AgGridColumn field="classification" headerName="Vendor Classification"></AgGridColumn>
                             <AgGridColumn field="lastUpdatedOn" headerName="Last Updated On"></AgGridColumn>
                             <AgGridColumn field="lastUpdatedBy" headerName="Last Updated By"></AgGridColumn>
@@ -187,4 +187,4 @@ const VendorClassification = () => {
     );
 };
 
-export default VendorClassification;
+export default VendorClassificationListing;

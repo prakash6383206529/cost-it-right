@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import {
     getModuleSelectList, getActionHeadsSelectList, getModuleActionInit,
 } from "../../../actions/auth/AuthActions";
+import { VENDOR_MANAGEMENT } from '../../../config/constants';
 // Update the import path
 
 
@@ -35,9 +36,44 @@ class VendorManagementTab extends Component {
             })
         }
     }
+    getRolePermission = () => {
+        this.setState({ isLoader: true });
+        this.props.getModuleActionInit((res) => {
+            if (res && res.data && res.data.Data) {
 
+                let Data = res.data.Data;
+                let Modules = res.data.Data;
+
+                this.setState({
+                    actionData: Data,
+                    Modules: Modules,
+                    isLoader: false,
+                })
+            }
+        })
+    }
+    renderActionHeads = (actionHeads) => {
+        const { actionData } = this.state;
+        console.log('actionData: ', actionData);
+        let actionNames = actionData && actionData.find(el => el.ModuleName === VENDOR_MANAGEMENT)
+        if (actionNames !== undefined) {
+            return actionHeads && actionHeads.map((item, index) => {
+                if (item.Value === 0) return false;
+                if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
+                    return (
+                        <th className="crud-label">
+                            <div className={item.Text}></div>
+                            {item.Text}
+                        </th>
+                    )
+                }
+                return null
+            })
+        }
+    }
     // Rest of the component methods remain unchanged...
 }
+
 
 const mapStateToProps = (state, ownProps) => {
     const { vendorManagement } = state;

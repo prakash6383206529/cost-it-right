@@ -2075,6 +2075,8 @@ export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
 export const RESET_PASSWORD = '/reset-password'
 export const FORGET_PASSWORD = '/forget-password'
+export const SUPPLIER_MANAGEMENT = '/vendor-classification'
+export const lOGIN_AUDITS = '/login-audit'
 export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
 
 

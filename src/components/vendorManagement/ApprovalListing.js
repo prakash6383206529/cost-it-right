@@ -25,13 +25,8 @@ const ApprovalListing = (props) => {
     const loggedUser = loggedInUserId()
     const { isApproval, isDashboard } = props;
     const [loader, setloader] = useState(false);
-    const [approvalData, setApprovalData] = useState('')
-    const [selectedRowData, setSelectedRowData] = useState([]);
-    const [approveDrawer, setApproveDrawer] = useState(false)
-    const [openDraftDrawer, setOpenDraftDrawer] = useState(false)
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
-    const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [isOpen, setIsOpen] = useState(false)
