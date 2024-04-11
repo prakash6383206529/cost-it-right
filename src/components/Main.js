@@ -412,7 +412,7 @@ class Main extends Component {
                     <Route path="/login-audit" component={AuthMiddleware(LoginAudit, lOGIN_AUDIT)} />
                     <Route path="/vendor-classification" component={AuthMiddleware(VendorManagement, VENDOR_MANAGEMENT)} />
                     <Route path="/lps-rating" component={AuthMiddleware(LPSRating)} />
-                    <Route path="/approval-listing" component={AuthMiddleware(ApprovalListing)} />
+                    <Route path="/supplier-management/approval-listing" component={AuthMiddleware(ApprovalListing)} />
                     <Route path='/initiate-unblocking' component={AuthMiddleware(InitiateUnblocking)} />
                     {/* <Route path='/initiate-unblocking/vendor-classification' component={UnblockClassification} />
                     <Route path='/initiate-unblocking/vendor-lps' component={UnblockClassificationLps} />

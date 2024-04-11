@@ -6,8 +6,13 @@ import { Controller, useForm } from 'react-hook-form';
 import { SearchableSelectHookForm, TextAreaHookForm } from '../layout/HookFormInputs';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllReasonAPI } from '../masters/actions/ReasonMaster';
+import { useHistory } from 'react-router-dom';
+
 
 const SendForApproval = (props) => {
+  const history = useHistory();
+  const [isLoader, setIsLoader] = useState(false)
+
   const { mandatoryRemark } = props
   const dispatch = useDispatch()
   const { register, control, formState: { errors } } = useForm({
@@ -17,12 +22,12 @@ const SendForApproval = (props) => {
   const [reasonOption, setReasonOption] = useState([])
   const [selectedReason, setSelectedReason] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
-  console.log('reasonOption: ', reasonOption);
+
   const {
     isOpen,
-    toggleDrawer,
+    // toggleDrawer,
     viewApprovalData,
-    onSubmit,
+    // onSubmit,
     isDisable,
     isDisableSubmit,
     Approval
@@ -30,42 +35,50 @@ const SendForApproval = (props) => {
   } = props;
   useEffect(() => {
     dispatch(getAllReasonAPI(true, (res) => {
+      setIsLoader(true)
       if (res.data.Result) {
         setReasonOption(res.data.DataList);
         // Set selected reason to the first option by default
         setSelectedReason(res.data.DataList[0] || null);
       }
+      setIsLoader(false)
     }));
   }, [dispatch]);
-  console.log(Approval);
-  const handleDrawerClose = () => {
-    setSelectedReason(null); // Reset selected reason
-    setSelectedMonth(null); // Reset selected month
-    toggleDrawer(); // Close the drawer
-  };
 
-  const handleCancel = () => {
-    setSelectedReason(null); // Reset selected reason
-    setSelectedMonth(null); // Reset selected month
-    toggleDrawer(); // Close the drawer
-  };
+
+  const toggleDrawer = (event) => {
+    if (isDisable) {
+      return false
+    }
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return
+    }
+    // dispatch(setCostingApprovalData([]))
+    props.closeDrawer('', 'Cancel')
+  }
+
+
 
   const handleSubmit = () => {
     setSelectedReason(null); // Reset selected reason
     setSelectedMonth(null); // Reset selected month
-    onSubmit(); // Call the submit function
-    toggleDrawer(); // Close the drawer
+    props.closeDrawer('', 'Cancel'); // Close the drawer
+    history.push('/supplier-management/approval-listing'); // Redirect to the approval listing page
   };
+
 
 
   const handleMonthChange = (selectedMonth) => {
     // Do something with the selected month, such as updating state or setting a value
-    console.log('Selected month:', selectedMonth);
+
   };
 
   const handleReasonChange = (selectedReason) => {
     // Do something with the selected reason, such as updating state or setting a value
-    console.log('Selected reason:', selectedReason);
+
   };
 
   return (
@@ -80,8 +93,8 @@ const SendForApproval = (props) => {
                   <h3>{"Send for Approval"}</h3>
                 </div>
                 <div
-                  onClick={handleDrawerClose}
-                  disabled={isDisable}
+                  onClick={(e) => toggleDrawer(e)}
+                  disabled={isLoader}
                   className={"close-button right"}
                 ></div>
               </Col>
@@ -195,7 +208,7 @@ const SendForApproval = (props) => {
                   </Col>
                   <Col md="6">
                     <SearchableSelectHookForm
-                      label={'Deviation Duration For Classification'}
+                      label={'Duration'}
                       name={'DeviationDurationForClassification'}
                       placeholder={'Select'}
                       Controller={Controller}
@@ -242,21 +255,26 @@ const SendForApproval = (props) => {
                 md="12"
                 className="d-flex justify-content-end align-items-center"
               >
-                <Button
+                <button
                   className="cancel-btn mr-2"
                   type={"button"}
-                  onClick={handleCancel} // Handle cancel
+                  onClick={toggleDrawer}
+                // className="reset mr15 cancel-btn"
                 >
+                  <div className={'cancel-icon'}></div>
                   {"Cancel"}
-                </Button>
-                <Button
+                </button>
+                <button
                   className="btn btn-primary save-btn"
                   type="button"
+                  // className="submit-button save-btn"
+                  // disabled={(isDisable || isFinalApproverShow)}
                   disabled={isDisable || isDisableSubmit}
-                  onClick={handleSubmit} // Handle submit
+                  onClick={handleSubmit}
                 >
+                  <div className={'save-icon'}></div>
                   {"Submit"}
-                </Button>
+                </button>
               </Col>
             </Row>
           </div>

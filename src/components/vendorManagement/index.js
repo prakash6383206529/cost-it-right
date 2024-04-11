@@ -51,7 +51,7 @@ const VendorManagement = () => {
                     </NavItem>
                     <NavItem>
                         <NavLink
-                            to="/approval-listing"
+                            to="/supplier-management/approval-listing"
                             className={classnames({ active: activeTab === "4" })}
                             onClick={() => setActiveTab("4")}
                         >

@@ -22,8 +22,7 @@ const InitiateUnblocking = () => {
     const [unblockComponent, setUnblockComponent] = useState(null); // State variable to hold the component to render
     const vendorDetailData = useSelector((state) => state.vendorManagement.vendorDetailData);
     const [openDraftDrawer, setOpenDraftDrawer] = useState(false); // State variable to control the opening of the approval drawer
-    const [isLPSRatingApproval, setisLPSRatingApproval] = useState(false);
-    const [isClassificationApproval, setisClassificationApproval] = useState(false);
+
     const [filteredVendor, setFilteredVendor] = useState([]);
 
 
@@ -35,8 +34,8 @@ const InitiateUnblocking = () => {
     const handleVendorChange = (selectedValue) => {
         setSelectedVendor(selectedValue);
         setSelectedPlant(null); // Reset selected plant when a new vendor is selected
-
     };
+
 
     useEffect(() => {
         if (selectedVendor) {
@@ -127,7 +126,7 @@ const InitiateUnblocking = () => {
                                                                         control={control}
                                                                         rules={{ required: false }}
                                                                         register={register}
-                                                                        defaultValue={selectedPlant}
+                                                                        defaultValue={'select'}
                                                                         options={vendorDetailData.find(vendor => vendor.VendorCode === selectedVendor.value)?.Plant.map((plant) => ({ label: plant.Plant, value: plant.sno }))}
                                                                         mandatory={false}
                                                                         handleChange={handlePlantChange}
