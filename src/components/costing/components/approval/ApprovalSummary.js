@@ -78,7 +78,7 @@ function ApprovalSummary(props) {
   const [fgWise, setFgWise] = useState(false)
   const [accDisable, setAccDisable] = useState(false)
   const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
-  const [rejectType, setRejectType] = useState('');
+  const [approvalType, setApprovalType] = useState('');
   const [isRFQCostingApproval, setIsRFQCostingApproval] = useState(false);
 
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
@@ -311,7 +311,7 @@ function ApprovalSummary(props) {
   }
   const handleRejectOrReturn = (type) => {
     setRejectDrawer(true);
-    setRejectType(type);
+    setApprovalType(type);
   };
   const closeDrawer = (e = '', type) => {
     if (type === 'submit') {
@@ -913,7 +913,7 @@ function ApprovalSummary(props) {
       {
         rejectDrawer && (
           <CostingApproveReject
-            type={rejectType}
+            type={approvalType}
             isOpen={rejectDrawer}
             approvalData={[approvalData]}
             closeDrawer={closeDrawer}

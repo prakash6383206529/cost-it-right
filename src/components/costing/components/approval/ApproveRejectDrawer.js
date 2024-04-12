@@ -484,6 +484,7 @@ function ApproveRejectDrawer(props) {
           IsApproved: type === 'Approve' ? true : false,
           IsFinalApprovalProcess: false, //ASK THIS CONDITION WITH KAMAL SIR
           IsRFQCostingSendForApproval: false,
+          IsReturn: type === 'Return' ? true : false,
 
         })
         return null;
