@@ -56,8 +56,9 @@ function AssemblySimulationListing(props) {
         let obj = {
             technologyId: technology?.value,
             vendorId: props?.isCustomer ? null : selectedVendorForSimulation?.value,
-            costingTypeId: props?.isCustomer ? CBCTypeId : VBCTypeId,
+            costingTypeId: props?.costingHead?.value,
             customerId: props?.isCustomer ? selectedVendorForSimulation?.value : null,
+            plantId: props?.plant?.value,
         }
 
         dispatch(getAllMultiTechnologyCostings(obj, (res) => { }))
