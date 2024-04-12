@@ -138,7 +138,7 @@ function MasterSendForApproval(props) {
             MasterId: masterId,
             ReasonId: '',
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
-            PlantId: approvalObj.PlantId
+            PlantId: approvalObj.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID
         }
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : []
