@@ -783,7 +783,6 @@ class AddRMDomestic extends Component {
 
             this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
             this.setState({ minEffectiveDate: Data.EffectiveDate })
-            console.log('Data: ', Data);
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
@@ -1363,7 +1362,7 @@ class AddRMDomestic extends Component {
     this.setState({ isVendorNameNotSelected: false, isEditBuffer: false })
 
     let plantArray = []
-    if (costingTypeId === VBCTypeId) {
+    if (costingTypeId === VBCTypeId || this.props.initialConfiguration.IsMultipleUserAllowForApproval) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
     } else if (costingTypeId === ZBCTypeId) {
       selectedPlants && selectedPlants.map((item) => {

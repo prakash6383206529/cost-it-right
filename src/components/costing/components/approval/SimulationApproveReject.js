@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAllApprovalUserFilterByDepartment, getReasonSelectList, } from '../../../costing/actions/Approval'
-import { formatRMSimulationObject, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
+import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { BOPIMPORT, EMPTY_GUID, EXCHNAGERATE, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, checkSAPPoPrice } from '../../../simulation/actions/Simulation'
@@ -157,7 +157,10 @@ function SimulationApproveReject(props) {
       setLevelDetails(levelDetailsTemp)
       getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
     } else {
-      Toaster.warning("You don't have permission to send simulation for approval.")
+      if (getConfigurationKey().IsReleaseStrategyConfigured && props?.showApprovalTypeDropdown) {
+        Toaster.warning("You don't have permission to send simulation for approval.")
+        setApprovalDropDown([])
+      }
     }
   }
 

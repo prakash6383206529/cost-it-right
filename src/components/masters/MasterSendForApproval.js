@@ -71,7 +71,7 @@ function MasterSendForApproval(props) {
                 MasterId: masterId,
                 ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
                 ReasonId: reasonId,
-                PlantId: approvalObj ? approvalObj.Plant[0].PlantId : props.masterPlantId
+                PlantId: approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID
             }
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
                 const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -138,7 +138,7 @@ function MasterSendForApproval(props) {
             MasterId: masterId,
             ReasonId: '',
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
-            PlantId: approvalObj.PlantId
+            PlantId: approvalObj.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID
         }
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : []
