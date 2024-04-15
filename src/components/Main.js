@@ -241,6 +241,7 @@ class Main extends Component {
         location.pathname === USER_PATH ||
         location.pathname === RFQ_LISTING ||
         location.pathname === PRODUCT_ROLLOUT ||
+        location.pathname === SUPPLIER_MANAGEMENT ||
         location.pathname === NFR_LISTING ? 'w-100' : ''
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
