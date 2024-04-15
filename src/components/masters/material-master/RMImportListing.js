@@ -883,7 +883,7 @@ function RMImportListing(props) {
           <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
             <Col md="3" lg="3">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-              {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+              {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
                 buttonSpecificProp={{ id: "RM_Import_Listing_Tour", onClick: toggleExtraData }}
                 stepsSpecificProp={{
                   steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
