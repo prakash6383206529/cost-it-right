@@ -529,7 +529,7 @@ const SendForApproval = (props) => {
       let temp = []
 
       viewApprovalData.map((data) => {
-
+        console.log(selectedApprover, "selectedApprover");
 
         let tempObj = {}
         tempObj.ApprovalProcessSummaryId = data.ApprovalProcessSummaryId
@@ -607,7 +607,7 @@ const SendForApproval = (props) => {
         ApproverLevelId: selectedApproverLevelId.levelId,
         ApproverLevel: selectedApproverLevelId.levelName,
         // ApproverId: selectedApprover,
-        ApproverIdList: approverIdList,
+        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [selectedApprover],
         // ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
         // ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
         // ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
