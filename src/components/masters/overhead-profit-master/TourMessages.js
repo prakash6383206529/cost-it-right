@@ -5,6 +5,10 @@ import { reactLocalStorage } from "reactjs-localstorage";
 export function Steps(t, config) {
     const introWithBOPDynamicValue = (intro) => intro.replace(/bop|BOP/gi, showBopLabel());
     const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+    const OverheadPercentage = (config && config.isEditFlag === false) ? t("overheadsdMaster.AddOverhead_OverheadPercentage") : t("overheadsdMaster.AddOverhead_EditOverheadPercentage");
+    const OverheadRMPercentage = (config && config.isEditFlag === false) ? t("overheadsdMaster.AddOverhead_OverheadRMPercentage") : t("overheadsdMaster.AddOverhead_EditOverheadRMPercentage");
+    const OverheadMachiningCCPercentage = (config && config.isEditFlag === false) ? t("overheadsdMaster.AddOverhead_OverheadMachiningCCPercentage") : t("overheadsdMaster.AddOverhead_EditOverheadMachiningCCPercentage");
+    const OverheadBOPPercentage = (config && config.isEditFlag === false) ? introWithBOPDynamicValue(t("overheadsdMaster.AddOverhead_OverheadBOPPercentage")) : introWithBOPDynamicValue(t("overheadsdMaster.AddOverhead_EditOverheadBOPPercentage"));
     const EffectiveDate = (config && config.isEditFlag === false) ? t("overheadsdMaster.AddOverhead_EffectiveDate") : t("overheadsdMaster.AddOverhead_Edit_EffectiveDate");
 
     return {
@@ -54,23 +58,37 @@ export function Steps(t, config) {
                 element: "#AddOverhead_OverheadApplicability_container",
                 intro: t("overheadsdMaster.AddOverhead_OverheadApplicability_container"),
             },
-            {
-                element: "#AddOverhead_OverheadPercentage",
-                intro: t("overheadsdMaster.AddOverhead_OverheadPercentage"),
-            },
-            ...(config && config.isEditFlag === false) ? [
-                {
-                    element: "#AddOverhead_OverheadRMPercentage",
-                    intro: t("overheadsdMaster.AddOverhead_OverheadRMPercentage"),
-                },
-                {
-                    element: "#AddOverhead_OverheadMachiningCCPercentage",
-                    intro: t("overheadsdMaster.AddOverhead_OverheadMachiningCCPercentage"),
-                },
-                {
-                    element: "#AddOverhead_OverheadBOPPercentage",
-                    intro: introWithBOPDynamicValue(t("overheadsdMaster.AddOverhead_OverheadBOPPercentage")),
-                }] : [],
+            ...(config && !(config.isHideOverhead) ? [
+                ...config && !config.isOverheadPercent ? [
+                    {
+                        element: "#AddOverhead_OverheadPercentage",
+                        intro: OverheadPercentage,
+                    }] : [],
+            ] : []),
+
+            ...(config && config.isEditFlag === true) ? [
+                ...(!config.isHideRM) ? [
+                    ...config && !config.isRM ? [
+                        {
+                            element: "#AddOverhead_OverheadRMPercentage",
+                            intro: OverheadRMPercentage,
+                        }] : []
+                ] : [],
+                ...(!config.isHideCC) ? [
+                    ...config && !config.isCC ? [
+                        {
+                            element: "#AddOverhead_OverheadMachiningCCPercentage",
+                            intro: OverheadMachiningCCPercentage,
+                        }] : []
+                ] : [],
+                ...(!config.isHideBOP) ? [
+                    ...config && !config.isBOP ? [
+                        {
+                            element: "#AddOverhead_OverheadBOPPercentage",
+                            intro: OverheadBOPPercentage,
+                        }] : []
+                ] : [],
+            ] : [],
             {
                 element: "#AddOverhead_EffectiveDate",
                 intro: EffectiveDate,

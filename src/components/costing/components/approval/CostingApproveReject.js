@@ -269,7 +269,8 @@ function CostingApproveReject(props) {
         IsApproved: type === 'Approve' ? true : false,
         IsFinalApprovalProcess: false,
         IsRFQCostingSendForApproval: false,
-        ApprovalTypeId: ele.ApprovalTypeId
+        ApprovalTypeId: ele.ApprovalTypeId,
+        IsReturn: type === 'Return' ? true : false,
 
       })
       return null;

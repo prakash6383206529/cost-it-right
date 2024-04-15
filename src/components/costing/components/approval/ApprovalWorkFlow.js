@@ -12,7 +12,7 @@ function ApprovalWorkFlow(props) {
   // const [approval, setApproval] = useState([])
   const dispatch = useDispatch()
   useEffect(() => {
-    if (initialConfiguration.IsMultipleUserAllowForApproval && approverData && approverData.processId) {
+    if (initialConfiguration?.IsMultipleUserAllowForApproval && approverData && approverData.processId) {
       let data = {
         processId: approverData.processId,
         levelId: approverData.levelId,
