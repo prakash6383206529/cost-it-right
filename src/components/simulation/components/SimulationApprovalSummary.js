@@ -139,7 +139,7 @@ function SimulationApprovalSummary(props) {
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
     const [accDisable, setAccDisable] = useState(false)
     const [technologyName, setTechnologyName] = useState('')
-    const [plantId, setPlantId] = useState(null)
+    const [simulationData, setSimulationData] = useState(null)
     const [count, setCount] = useState(0)
     const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
     const headers = {
@@ -161,7 +161,7 @@ function SimulationApprovalSummary(props) {
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
                 SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
             let uniqueArr
-            setPlantId(SimulatedCostingList[0].PlantId)
+            setSimulationData(res?.data?.Data)
             setDataForFetchingAllApprover({
                 processId: SimulationApprovalProcessId,
                 levelId: SimulationSteps[SimulationSteps.length - 1].LevelId,
@@ -268,35 +268,35 @@ function SimulationApprovalSummary(props) {
             //         }
             //     }))
             // } else {
-            let technologyIdTemp = SimulationTechnologyId
-            if (res?.data?.Data?.IsExchangeRateSimulation) {
-                if (String(SimulationTechnologyId) === String(RMIMPORT) || String(SimulationTechnologyId) === String(BOPIMPORT)) {
+        }))
+    }, [])
+    useEffect(() => {
+        if (simulationData && Object.keys(simulationData)?.length > 0) {
+            let technologyIdTemp = simulationData?.SimulationTechnologyId
+            if (simulationData?.IsExchangeRateSimulation) {
+                if (String(simulationData?.SimulationTechnologyId) === String(RMIMPORT) || String(simulationData?.SimulationTechnologyId) === String(BOPIMPORT)) {
                     technologyIdTemp = EXCHNAGERATE
                 }
             } else {
-                technologyIdTemp = SimulationTechnologyId
+                technologyIdTemp = simulationData?.SimulationTechnologyId
             }
             let obj = {
-                DepartmentId: DepartmentId,
+                DepartmentId: simulationData.DepartmentId,
                 UserId: loggedInUserId(),
                 TechnologyId: technologyIdTemp,
                 Mode: 'simulation',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
-                plantId: plantId
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(simulationData.SimulationHeadId),
+                plantId: simulationData?.SimulatedCostingList[0]?.PlantId
             }
-            if (initialConfiguration.IsMultipleUserAllowForApproval ? plantId : true) {
-
+            if (initialConfiguration?.IsMultipleUserAllowForApproval ? simulationData?.SimulatedCostingList[0]?.PlantId : true) {
                 dispatch(checkFinalUser(obj, res => {
                     if (res && res.data && res.data.Result) {
                         setFinalLevelUser(res.data.Data.IsFinalApprover)
                     }
                 }))
             }
-            // }
-
-        }))
-    }, [])
-
+        }
+    }, [simulationData])
     useEffect(() => {
         // CHECK IF THERE IS NO DATA FOR EACH MASTER IN LAST REVISION DATA
         let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&

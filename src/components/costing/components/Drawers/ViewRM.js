@@ -11,6 +11,7 @@ import 'reactjs-popup/dist/index.css'
 import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, } from '../../actions/CostWorking'
 import { Row, Col, Table } from 'reactstrap'
 import TooltipCustom from '../../../common/Tooltip';
+import _ from 'lodash';
 
 function ViewRM(props) {
 
@@ -23,13 +24,16 @@ function ViewRM(props) {
   const [index, setIndex] = useState('')
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const [calciData, setCalciData] = useState({})
+  const [isScrapRecoveryApplied, setIsScrapRecoveryApplied] = useState(false)
   const masterBatchList = viewCostingData[props.index].CostingMasterBatchRawMaterialCostResponse
   const RMDivisor = (viewCostingData[props?.index]?.CostingPartDetails?.RMDivisor !== null) ? viewCostingData[props?.index]?.CostingPartDetails?.RMDivisor : 0;
   useEffect(() => {
     setViewRM(viewRMData)
   }, [])
 
-
+  useEffect(() => {
+    setIsScrapRecoveryApplied((_.map(viewRM, 'IsScrapRecoveryPercentageApplied') || []).some(value => value === true));
+  }, [viewRM])
 
   const setCalculatorData = (res, index) => {
     if (res && res.data && res.data.Data) {
@@ -186,7 +190,7 @@ function ViewRM(props) {
               <th>{`RM Name -Grade`}</th>
               <th>{`RM Rate`}</th>
               <th>{`Scrap Rate`}</th>
-              <th>{`Scrap Recovery (%)`}</th>
+              {isScrapRecoveryApplied && <th>{`Scrap Recovery (%)`}</th>}
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`Finish Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
@@ -210,7 +214,7 @@ function ViewRM(props) {
                   <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.RMName}>{item.RMName}</span></td>
                   <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
-                  <td>{checkForDecimalAndNull(item.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
+                  {isScrapRecoveryApplied && <td>{checkForDecimalAndNull(item.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>}
                   <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>

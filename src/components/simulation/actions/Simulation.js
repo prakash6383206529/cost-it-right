@@ -57,6 +57,7 @@ import {
     SET_SIMULATION_APPLICABILITY,
     SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT,
     SET_SELECTED_CUSTOMER_SIMULATION,
+    GET_SELECTLIST_COSTING_HEADS,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1514,15 +1515,13 @@ export function getAllMultiTechnologyCostings(obj, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllMultiTechnologyCostings}?technologyId=${obj?.technologyId}&vendorId=${obj?.vendorId}&costingTypeId=${obj?.costingTypeId}&customerId=${obj?.customerId}`, config());
+        const request = axios.get(`${API.getAllMultiTechnologyCostings}?technologyId=${obj?.technologyId}&vendorId=${obj?.vendorId ? obj?.vendorId : ''}&costingTypeId=${obj?.costingTypeId ? obj?.costingTypeId : ''}&customerId=${obj?.customerId ? obj?.customerId : ''}&plantId=${obj?.plantId ? obj?.plantId : ''}`, config());
         request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_ALL_MULTI_TECHNOLOGY_COSTING,
-                    payload: response?.data?.DataList,
-                });
-                callback(response);
-            }
+            dispatch({
+                type: GET_ALL_MULTI_TECHNOLOGY_COSTING,
+                payload: response?.status === 204 ? [] : response?.data?.DataList,
+            });
+            callback(response);
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
@@ -1746,4 +1745,24 @@ export function checkSAPPoPrice(simulationId, costingId, callback) {
             apiErrors(error);
         })
     }
+}
+
+export function getCostingHeadsList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getCostingHeadsList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SELECTLIST_COSTING_HEADS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
 }

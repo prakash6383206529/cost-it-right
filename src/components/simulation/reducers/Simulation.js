@@ -30,7 +30,8 @@ import {
     SET_BOP_ASSOCIATION,
     SET_SIMULATION_APPLICABILITY,
     SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT,
-    SET_SELECTED_CUSTOMER_SIMULATION
+    SET_SELECTED_CUSTOMER_SIMULATION,
+    GET_SELECTLIST_COSTING_HEADS
 
 } from '../../../config/constants';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
@@ -304,6 +305,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 selectedCustomerSimulation: action.payload
+            }
+        case GET_SELECTLIST_COSTING_HEADS:
+            return {
+                ...state,
+                loading: false,
+                selectListCostingHead: action.payload
             }
         default:
             return state;

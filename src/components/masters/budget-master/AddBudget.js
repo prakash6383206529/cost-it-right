@@ -124,16 +124,18 @@ function AddBudget(props) {
             approvalTypeId: costingTypeId,
             plantId: plantId,
         }
-        dispatch(checkFinalUser(obj, res => {
-            if (res.data?.Result) {
-                setIsFinalApprover(res.data?.Data?.IsFinalApprover)
-                if (res.data?.Data?.IsUserInApprovalFlow === false) {
-                    setDisableSendForApproval(true)
-                } else {
-                    setDisableSendForApproval(false)
+        if (initialConfiguration.IsMasterApprovalAppliedConfigure) {
+            dispatch(checkFinalUser(obj, res => {
+                if (res.data?.Result) {
+                    setIsFinalApprover(res.data?.Data?.IsFinalApprover)
+                    if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                        setDisableSendForApproval(true)
+                    } else {
+                        setDisableSendForApproval(false)
+                    }
                 }
-            }
-        }))
+            }))
+        }
     }
     useEffect(() => {
         if (userMasterLevelAPI) {
