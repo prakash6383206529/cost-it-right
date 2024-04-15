@@ -1130,7 +1130,7 @@ function SimulationApprovalSummary(props) {
                     {!loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${!loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
                         {getConfigurationKey()?.IsSAPConfigured && costingList[0]?.CostingId && <ErrorMessage isCosting={false} approvalNumber={approvalNumber} />}
-                        <h2 className="heading-main">Approval Summary</h2>
+                        <h2 className="heading-main">Approval Summary43</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
                         <Row>
                             <Col md="8">

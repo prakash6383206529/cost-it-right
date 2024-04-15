@@ -4,6 +4,7 @@ import Button from '../../layout/Button';
 import { decrementPage, incrementPage, skipUpdate, updateCurrentRowIndex } from './paginationAction';
 
 const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData, module }) => {
+    console.log('totalRecordCount: ', totalRecordCount);
     const { pageNo, pageSize, currentRowIndex } = useSelector((state) => state.pagination);
     const dispatch = useDispatch();
     let pageSizeValue;
@@ -52,6 +53,9 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
                 getDataList(newSkip, pageSizeValue, true)
                 break;
             case 'Approval':
+                getDataList(newSkip, pageSizeValue, true, floatingFilterData, true)
+                break;
+            case 'SupplierManangement':
                 getDataList(newSkip, pageSizeValue, true, floatingFilterData, true)
                 break;
             // audit             getDataList(skip, pageSize, true, filterDataObj);

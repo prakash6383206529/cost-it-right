@@ -7,7 +7,7 @@ import { fetchVendorDetailData } from './Action';
 import { Col, Row, Table } from 'reactstrap';
 import Button from '../layout/Button';
 import { useHistory } from "react-router-dom";
-import SendForApproval from './SendForApproval';
+import SendForApproval from './approval/SendForApproval';
 
 const InitiateUnblocking = () => {
     let history = useHistory();
@@ -184,6 +184,7 @@ const InitiateUnblocking = () => {
                                                             <td>{vendor.VendorClassification}</td>
                                                             <td>{vendor.LPSRating}</td>
                                                             <td>{vendor.VendorCode}</td>
+                                                            {/* <td>{vendor.Plant}</td> */}
                                                         </tr>
                                                     )
                                                 }

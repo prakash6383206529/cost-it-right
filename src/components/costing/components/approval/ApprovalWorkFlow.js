@@ -6,6 +6,7 @@ import Popup from 'reactjs-popup'
 import { getAllApproverList } from '../../../../actions/auth/AuthActions'
 
 function ApprovalWorkFlow(props) {
+
   const { approvalLevelStep, approverData } = props
   const { initialConfiguration } = useSelector(state => state.auth)
   const [approverList, setApproverList] = useState([])
@@ -14,9 +15,9 @@ function ApprovalWorkFlow(props) {
   useEffect(() => {
     if (initialConfiguration.IsMultipleUserAllowForApproval && approverData && approverData.processId) {
       let data = {
-        processId: approverData.processId,
-        levelId: approverData.levelId,
-        mode: approverData.mode
+        processId: approverData?.processId,
+        levelId: approverData?.levelId,
+        mode: approverData?.mode
       }
       dispatch(getAllApproverList(data, res => {
         if (res && res.data) {
@@ -26,7 +27,7 @@ function ApprovalWorkFlow(props) {
     }
   }, [approverData])
   const approverListUI = () => {
-    switch (approverList.length) {
+    switch (approverList?.length) {
       case 0:
         return 'toto'
       case 1:
@@ -35,8 +36,8 @@ function ApprovalWorkFlow(props) {
         return <Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn" type={'button'}>{'View All'}</button>}
           position="right center">
           <ul className="px-1 view-all-list">
-            {approverList && approverList.map((item, index) => {
-              return <li key={item.UserId}>{index + 1}. {item.UserName}</li>
+            {approverList && approverList?.map((item, index) => {
+              return <li key={item?.UserId}>{index + 1}. {item?.UserName}</li>
             })}
           </ul>
 
@@ -77,26 +78,26 @@ function ApprovalWorkFlow(props) {
           return (
             <>
               <div key={index} className="col-lg-3 col-md-6 col-sm-12 mb-4">
-                <div className={`card-border  ${item.Title.split(' ')[0] === REJECTED ? 'card-red' : item.Title.split(' ')[0] === APPROVED ? 'card-green' : item.Status === PENDING ? 'card-yellow' : ''}`}>
+                <div className={`card-border  ${item?.Title.split(' ')[0] === REJECTED ? 'card-red' : item?.Title.split(' ')[0] === APPROVED ? 'card-green' : item?.Status === PENDING ? 'card-yellow' : ''}`}>
                   <div className="top d-flex">
                     <div className="left text-center">
-                      <b>{item.Level ? item.Level.split('-')[1] : 0}</b>
+                      <b>{item?.Level ? item?.Level.split('-')[1] : 0}</b>
                       <span className="d-block">Level</span>
                     </div>
                     <div className="right">
-                      <span className="">{item.Title}</span>
-                      <p className="">{(item.ApprovedBy && item.ApprovedBy !== '-') ? item.ApprovedBy : initialConfiguration.IsMultipleUserAllowForApproval ? approverListUI() : '-'}</p>
+                      <span className="">{item?.Title}</span>
+                      <p className="">{(item?.ApprovedBy && item?.ApprovedBy !== '-') ? item?.ApprovedBy : initialConfiguration.IsMultipleUserAllowForApproval ? approverListUI() : '-'}</p>
                     </div>
                   </div>
                   {/* top */}
                   <div className="bottom">
                     <div className="d-flex mb-1">
                       <span className="small-grey-text left">Date:</span>
-                      <span className=" right">{item.Date ? DayTime(item.Date).format('DD/MM/YYYY') : '-'}</span>
+                      <span className=" right">{item?.Date ? DayTime(item?.Date).format('DD/MM/YYYY') : '-'}</span>
                     </div>
                     <div className="d-flex">
                       <span className="small-grey-text left">Remark:</span>
-                      <span className=" right  remark-wrapper" title={item.Comments}>{item.Comments ? item.Comments : '-'}</span>
+                      <span className=" right  remark-wrapper" title={item?.Comments}>{item?.Comments ? item?.Comments : '-'}</span>
                     </div>
                   </div>
                   {/* bottom */}

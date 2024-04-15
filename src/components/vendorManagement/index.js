@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { Container, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import ApprovalListing from './ApprovalListing';
 import InitiateUnblocking from './InitiateUnblocking';
 import VendorClassificationListing from './VendorClassificationLisitng';
 import LpsRatingListing from './LpsRatingLisitng';
+import { useHistory } from "react-router-dom";
 
 const VendorManagement = () => {
+    let history = useHistory();
     const [activeTab, setActiveTab] = useState("1");
 
     const toggle = (tab) => {
@@ -29,7 +30,7 @@ const VendorManagement = () => {
                                 className={classnames({ active: activeTab === "1" })}
                                 onClick={() => setActiveTab("1")}
                             >
-                                Vendor Classification Status
+                                Supplier Classification Status
                             </NavLink>
                         </NavItem>
                         <NavItem>
@@ -46,7 +47,8 @@ const VendorManagement = () => {
                             <NavLink
                                 to="/initiate-unblocking"
                                 className={classnames({ active: activeTab === "3" })}
-                                onClick={() => setActiveTab("3")}
+                                onClick={() => setActiveTab("3")
+                                }
                             >
                                 Initiate Unblocking
                             </NavLink>
@@ -55,7 +57,8 @@ const VendorManagement = () => {
                             <NavLink
                                 to="/supplier-management/approval-listing"
                                 className={classnames({ active: activeTab === "4" })}
-                                onClick={() => setActiveTab("4")}
+                                onClick={() => setActiveTab("4")
+                                }
                             >
                                 Approval Status
                             </NavLink>
@@ -102,7 +105,7 @@ const VendorManagement = () => {
                     </TabContent>
 
                 </div>
-            </div>
+            </div >
         </>
 
     );

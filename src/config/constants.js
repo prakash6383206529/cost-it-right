@@ -1980,7 +1980,8 @@ export const INSIGHT_SIMULATION_REPORT = "Simulation Insights"
 export const NFR_INSIGHT_DETAILS = 'NFR Insights' //MINDA
 export const lOGIN_AUDIT = 'Login Audit'
 // export const SUPPLIER_MANAGEMENT = 'Supplier Management'
-
+export const INITIATE_UNBLOCKING = 'Initiate Unblocking'
+export const LPS_RATING = 'LPS Rating'
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
@@ -2077,6 +2078,7 @@ export const RESET_PASSWORD = '/reset-password'
 export const FORGET_PASSWORD = '/forget-password'
 export const SUPPLIER_MANAGEMENT = '/vendor-classification'
 export const lOGIN_AUDITS = '/login-audit'
+export const SUPPLIER_APPROVAL_SUMMARY = '/supplier-approval-summary'
 export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
 
 

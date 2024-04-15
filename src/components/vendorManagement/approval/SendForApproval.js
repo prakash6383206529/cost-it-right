@@ -1,15 +1,17 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Col, Row } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import Button from '../layout/Button';
+import Button from '../../layout/Button';
 import { Controller, useForm } from 'react-hook-form';
-import { SearchableSelectHookForm, TextAreaHookForm } from '../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllReasonAPI } from '../masters/actions/ReasonMaster';
+import { getAllReasonAPI } from '../../masters/actions/ReasonMaster';
 import { useHistory } from 'react-router-dom';
+import { handleDepartmentHeader } from '../../../helper';
 
 
 const SendForApproval = (props) => {
+
   const history = useHistory();
   const [isLoader, setIsLoader] = useState(false)
 
@@ -99,6 +101,8 @@ const SendForApproval = (props) => {
                 ></div>
               </Col>
             </Row>
+
+
             {viewApprovalData &&
               viewApprovalData.map((data, index) => (
                 <div className="" key={index}>
@@ -108,11 +112,42 @@ const SendForApproval = (props) => {
             {Approval[0]?.ApprovalForSupplier && (<div className="">
               <Row>
                 <Col md="12">
-                  <div className="left-border">{`Vendor Classification`}</div>
+                  <div className="left-border">{`Supplier Classification`}</div>
                 </Col>
               </Row>
               <form>
                 {/* Form fields */}
+                <Row>
+                  <Col md="6">
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={`${handleDepartmentHeader()}`}
+                        name={"dept"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        mandatory={true}
+                        errors={errors.dept}
+                      />
+                    </div>
+                  </Col >
+                  <Col md="6">
+                    <SearchableSelectHookForm
+                      label="Approver"
+                      name="approver"
+                      placeholder="Select"
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue=""
+                      mandatory={true}
+                    />
+                  </Col>
+                </Row>
                 <Row>
                   <Col md="6">
                     <SearchableSelectHookForm
@@ -121,11 +156,11 @@ const SendForApproval = (props) => {
                       placeholder={'Select'}
                       Controller={Controller}
                       control={control}
-                      rules={{ required: false }}
+                      rules={{ required: true }}
                       register={register}
                       defaultValue={selectedReason}
                       options={reasonOption?.map((reason) => ({ label: reason.Reason, value: reason.ReasonId }))} // Call mapApprovalOptions with the label
-                      mandatory={false}
+                      mandatory={true}
                       handleChange={handleReasonChange}
                       errors={errors.Masters}
                     />
@@ -147,7 +182,7 @@ const SendForApproval = (props) => {
                           value: i + 1
                         }))
                       }
-                      mandatory={false}
+                      mandatory={true}
                       handleChange={handleMonthChange}
                       errors={errors.Masters}
                     />
@@ -160,8 +195,11 @@ const SendForApproval = (props) => {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={mandatoryRemark ? true : false}
-                      rules={{ required: mandatoryRemark ? true : false }}
+                      rules={{ required: false }}
+                      mandatory={true}
+
+                      // mandatory={mandatoryRemark ? true : false}
+                      // rules={{ required: mandatoryRemark ? true : false }}
                       handleChange={() => { }}
                       defaultValue={""}
                       className=""
@@ -190,17 +228,48 @@ const SendForApproval = (props) => {
                 {/* Form fields */}
                 <Row>
                   <Col md="6">
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={`${handleDepartmentHeader()}`}
+                        name={"dept"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        mandatory={true}
+                        errors={errors.dept}
+                      />
+                    </div>
+                  </Col >
+                  <Col md="6">
+                    <SearchableSelectHookForm
+                      label="Approver"
+                      name="approver"
+                      placeholder="Select"
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue=""
+                      mandatory={true}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md="6">
                     <SearchableSelectHookForm
                       label={'Select Reason'}
                       name={'SelectReason'}
                       placeholder={'Select'}
                       Controller={Controller}
                       control={control}
-                      rules={{ required: false }}
+                      rules={{ required: true }}
                       register={register}
                       defaultValue={selectedReason}
                       options={reasonOption?.map((reason) => ({ label: reason.Reason, value: reason.ReasonId }))} // Call mapApprovalOptions with the label
-                      mandatory={false}
+                      mandatory={true}
                       handleChange={handleReasonChange}
                       errors={errors.Masters}
                     />
@@ -212,20 +281,17 @@ const SendForApproval = (props) => {
                       name={'DeviationDurationForClassification'}
                       placeholder={'Select'}
                       Controller={Controller}
+                      required={true}
                       control={control}
-                      rules={{ required: true }}
                       register={register}
-                      defaultValue={selectedMonth}
-                      options={
-                        Array.from({ length: 12 }, (_, i) => ({
-                          label: `${i + 1} Month(s)`,
-                          value: i + 1
-                        }))
-                      }
-                      mandatory={false}
-                      handleChange={handleMonthChange}
+                      options={[{ label: "1 month", value: 1 }]} // "1 month" ke jagah "1 MONTH" likha hua hai
+                      defaultValue={{ label: "1 month", value: 1 }} // Default value bhi "1 month" hona chahiye
+                      mandatory={true}
                       errors={errors.Masters}
+                      disabledOptions={[1]}
                     />
+
+
 
                   </Col>
                   <Col md="12">
@@ -236,8 +302,11 @@ const SendForApproval = (props) => {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={mandatoryRemark ? true : false}
-                        rules={{ required: mandatoryRemark ? true : false }}
+                        mandatory={true}
+
+                        // mandatory={mandatoryRemark ? true : false}
+                        rules={{ required: true }}
+                        // rules={{ required: mandatoryRemark ? true : false }}
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
@@ -264,17 +333,16 @@ const SendForApproval = (props) => {
                   <div className={'cancel-icon'}></div>
                   {"Cancel"}
                 </button>
-                <button
+                <Button
                   className="btn btn-primary save-btn"
-                  type="button"
-                  // className="submit-button save-btn"
+                  type="submit"
                   // disabled={(isDisable || isFinalApproverShow)}
                   disabled={isDisable || isDisableSubmit}
                   onClick={handleSubmit}
                 >
                   <div className={'save-icon'}></div>
                   {"Submit"}
-                </button>
+                </Button>
               </Col>
             </Row>
           </div>

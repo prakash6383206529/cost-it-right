@@ -54,7 +54,7 @@ class VendorManagementTab extends Component {
     }
     renderActionHeads = (actionHeads) => {
         const { actionData } = this.state;
-        console.log('actionData: ', actionData);
+
         let actionNames = actionData && actionData.find(el => el.ModuleName === VENDOR_MANAGEMENT)
         if (actionNames !== undefined) {
             return actionHeads && actionHeads.map((item, index) => {
