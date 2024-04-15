@@ -24,7 +24,6 @@
         "AddBOPDomestic_Remark": "Add necessary remarks.",
         "bop_file_upload_form_zero_based": "Add necessary attachments.",
         "AddBOPDomestic_cancel": "Click here to cancel.",
-        "addBOPDomestic_save": "Click here to save the BOP.",
         "AddBOPDomestic_sendForApproval": "Click here to send the BOP for approval."
     },
     "bopImportForm": {

@@ -18,7 +18,7 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { setFerrousCalculatorReset } from '../../../actions/CostWorking'
 import { gridDataAdded, isDataChange, setMasterBatchObj, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, isMultipleRMAllow, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, } from '../../../../../config/masterData'
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING } from '../../../../../config/masterData'
 import _, { debounce } from 'lodash'
@@ -251,7 +251,7 @@ function RawMaterialCost(props) {
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
       let tempArray = []
-      if (isMultipleRMAllow(costData?.TechnologyId)) {
+      if (item?.IsMultipleRMApplied) {
         let rowArray = rowData && rowData.map(el => {
           return {
             RMName: `${el.RawMaterial} - ${el.RMGrade}`,
@@ -306,6 +306,7 @@ function RawMaterialCost(props) {
           ScrapRatePerScrapUOMConversion: rowData.ScrapRatePerScrapUOMConversion,
           Currency: rowData.Currency,
           UOMSymbol: rowData.UOMSymbol,
+          ScrapRecoveryPercentage: 100
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
@@ -429,7 +430,7 @@ function RawMaterialCost(props) {
       setTimeout(() => {
         setValue(`${rmGridFields}.${index}.GrossWeight`, '')
         setValue(`${rmGridFields}.${index}.FinishWeight`, '')
-        setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
+        setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 100)
 
       }, 300);
       let tempArr = []
@@ -483,7 +484,7 @@ function RawMaterialCost(props) {
 
       // Recovered scrap weight calculate
       let recoveredScrapWeight;
-      if (isScrapRecoveryPercentageApplied && tempData.ScrapRecoveryPercentage !== undefined && tempData.ScrapRecoveryPercentage !== 0) {
+      if (isScrapRecoveryPercentageApplied) {
         const ScrapRecoveryPercentage = checkForNull(tempData.ScrapRecoveryPercentage);
         recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
         scrapWeight = recoveredScrapWeight
@@ -641,7 +642,7 @@ function RawMaterialCost(props) {
 
       // Recovered scrap weight calculate
       let recoveredScrapWeight;
-      if (isScrapRecoveryPercentageApplied && tempData.ScrapRecoveryPercentage !== undefined && tempData.ScrapRecoveryPercentage !== 0) {
+      if (isScrapRecoveryPercentageApplied) {
         const ScrapRecoveryPercentage = checkForNull(tempData.ScrapRecoveryPercentage);
         recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
         scrapWeight = recoveredScrapWeight
@@ -704,7 +705,7 @@ function RawMaterialCost(props) {
     let tempData = gridData[index]
     setEditCalculation(false)
     setForgingInfoIcon({ ...forgingInfoIcon, [index]: true })
-    if (checkForNull(event.target.value) > 0) {
+    if (checkForNull(event.target.value) >= 0) {
       const ScrapRecoveryPercentage = checkForNull(event.target.value);
 
       const FinishWeight = checkForNull(tempData.FinishWeight);
@@ -1203,7 +1204,7 @@ function RawMaterialCost(props) {
       isShow = true;
     }
 
-    if (costData && (isMultipleRMAllow(costData?.TechnologyId))) {
+    if (costData && (item?.IsMultipleRMApplied)) {
       isShow = true;
     }
     return isShow;
@@ -1762,6 +1763,7 @@ function RawMaterialCost(props) {
             IsApplyMasterBatch={IsApplyMasterBatch}
             Ids={Ids}
             rmNameList={rmNameList}
+            item={item}
           />
         )
       }

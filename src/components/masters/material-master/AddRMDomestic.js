@@ -280,7 +280,7 @@ class AddRMDomestic extends Component {
     if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction()
+          this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
         }, 100);
       })
     } else {
@@ -304,14 +304,14 @@ class AddRMDomestic extends Component {
       this.calculateNetCost()
     }
     if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-      this.commonFunction()
+      this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
     }
   }
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
   }
 
-  commonFunction(plantId = '') {
+  commonFunction(plantId = EMPTY_GUID) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, RM_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -808,6 +808,7 @@ class AddRMDomestic extends Component {
               showExtraCost: showScrapKeys?.showCircleJali,
               rmCode: { label: Data.RawMaterialCode, value: Data.RMSpec },
             }, () => this.setState({ isLoader: false, showTour: true }))
+
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
               item.meta = {}
@@ -1361,7 +1362,7 @@ class AddRMDomestic extends Component {
     this.setState({ isVendorNameNotSelected: false, isEditBuffer: false })
 
     let plantArray = []
-    if (costingTypeId === VBCTypeId) {
+    if (costingTypeId === VBCTypeId || this.props.initialConfiguration.IsMultipleUserAllowForApproval) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
     } else if (costingTypeId === ZBCTypeId) {
       selectedPlants && selectedPlants.map((item) => {

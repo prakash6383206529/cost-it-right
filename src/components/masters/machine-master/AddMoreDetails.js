@@ -230,16 +230,18 @@ class AddMoreDetails extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.CostingTypeId),
       plantId: plantId
     }
-    this.props.checkFinalUser(obj, (res) => {
-      if (res?.data?.Result) {
-        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
-      }
-      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
-        this.setState({ disableSendForApproval: true })
-      } else {
-        this.setState({ disableSendForApproval: false })
-      }
-    })
+    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+        }
+        if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+          this.setState({ disableSendForApproval: true })
+        } else {
+          this.setState({ disableSendForApproval: false })
+        }
+      })
+    }
     this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
   }
 
@@ -4530,7 +4532,7 @@ class AddMoreDetails extends Component {
 
                         {
                           !isViewMode && <>
-                            {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
+                            {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) && !CostingTypePermission ?
                               <button id="AddMoreDetails_SendForApproval" type="submit"
                                 class="user-btn approval-btn save-btn mr5"
 

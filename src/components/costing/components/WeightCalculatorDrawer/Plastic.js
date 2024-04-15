@@ -303,9 +303,9 @@ function Plastic(props) {
 
               <Row className={'mt25'}>
                 <Col md="3" >
-                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Total Gross Weight = (Gross Weight + Runner Weight + Other Loss Weight)'} />
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Input Weight = (Gross Weight + Runner Weight + Other Loss Weight)'} />
                   <TextFieldHookForm
-                    label={`Total Gross Weight(Kg)`}
+                    label={`Input Weight(Kg)`}
                     name={'grossWeight'}
                     id={'gross-weight-plastic'}
                     Controller={Controller}
@@ -345,7 +345,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Total Gross weight - Finish Weight)'} />
+                  <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Input Weight - Finish Weight)'} />
                   <TextFieldHookForm
                     label={`Scrap Weight(Kg)`}
                     name={'scrapWeight'}
@@ -384,7 +384,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={'RM Cost = (Total Gross Weight * RM Rate + Burning Allowance)'} />
+                  <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={'RM Cost = (Input Weight * RM Rate + Burning Allowance)'} />
                   <TextFieldHookForm
                     label={`RM Cost`}
                     name={'rmCost'}

@@ -116,6 +116,9 @@ function ApproveRejectUI(props) {
       if (getValues('ApprovalType') === '' || !getValues('ApprovalType')) {
         Toaster.warning("Please select approval type")
         return
+      } else if (approvalDropDown.length === 0) {
+        Toaster.warning("You don't have permission to send simulation for approval.")
+        return
       }
     }
     onSubmit();
@@ -386,7 +389,7 @@ function ApproveRejectUI(props) {
                           disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                           errors={errors.approver}
                         />}
-                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `This user is not in the approval cycle for the ${getValues('ApprovalType')} approval type. Please contact the admin to add an approver for the ${getValues('ApprovalType')} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`} />}
+                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : initialConfiguration.IsMultipleUserAllowForApproval ? "There are no further highest level users associated with this company. Kindly contact the admin team for support." : `This user is not in the approval cycle for the ${getValues('ApprovalType')} approval type. Please contact the admin to add an approver for the ${getValues('ApprovalType')} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`} />}
                     </div>
                   </>
                 )}
@@ -415,7 +418,7 @@ function ApproveRejectUI(props) {
                       {initialConfiguration.IsMultipleUserAllowForApproval ? <>
                         <AllApprovalField
                           label="Approver"
-                          approverList={approvalDropDown}
+                          approverList={getConfigurationKey().IsReleaseStrategyConfigured && showApprovalTypeDropdown ? getValues('ApprovalType') ? approvalDropDown : [] : approvalDropDown}
                           popupButton="View all"
                         />
                       </> :

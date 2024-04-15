@@ -1022,6 +1022,7 @@ export const API = {
   simulationUploadFileByCategory: `${BASE_URL}/simulation/simulation-file-upload-with-form-data`,          						//RE
   simulationUploadFtp: `${BASE_URL}/simulation/simulation-file-upload-on-ftp`,          						//RE
   getSimualtionInsightReport: `${BASE_URL}/app-simulation-approval-system/get-simulation-insights`,
+  getCostingHeadsList: `${BASE_URL}/configuration/get-costing-heads`,
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
@@ -1812,6 +1813,7 @@ export const SET_BOP_ASSOCIATION = 'SET_BOP_ASSOCIATION'
 export const SET_SIMULATION_APPLICABILITY = 'SET_SIMULATION_APPLICABILITY'
 export const SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT = 'SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT'
 export const SET_SELECTED_CUSTOMER_SIMULATION = 'SET_SELECTED_CUSTOMER_SIMULATION'
+export const GET_SELECTLIST_COSTING_HEADS = 'GET_SELECTLIST_COSTING_HEADS'
 
 // ASSEMBLY TECHNOLOGY
 export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'

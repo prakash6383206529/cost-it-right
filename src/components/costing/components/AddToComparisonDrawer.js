@@ -556,7 +556,7 @@ function AddToComparisonDrawer(props) {
           obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
           obj.ScrapRecoveryPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ScrapRecoveryPercentage
           obj.IsShowCheckBoxForApproval = dataFromAPI?.IsShowCheckBoxForApproval
-
+          obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.IsScrapRecoveryPercentageApplied
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 
