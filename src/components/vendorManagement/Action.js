@@ -67,3 +67,19 @@ export const fetchVendorDetailData = () => {
         }
     }
 }
+
+export const UPDATE_APPROVAL_DATA = 'UPDATE_APPROVAL_DATA';
+export const fetchApprovalData = () => {
+    return async dispatch => {
+
+        try {
+            // Simulating API call with static JSON data
+            dispatch({
+                type: UPDATE_APPROVAL_DATA,
+                payload: data.approvalSummary // Assuming vendorData is present in your JSON file
+            });
+        } catch (error) {
+            // Handle error if needed
+        }
+    }
+}

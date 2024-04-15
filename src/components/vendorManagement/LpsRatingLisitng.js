@@ -13,12 +13,11 @@ import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import LoaderCustom from '../common/LoaderCustom';
 
-const LPSRating = () => {
+const LpsRatingListing = () => {
     const [isLoader, setIsLoader] = useState(false);
     const [showPopupToggle, setShowPopupToggle] = useState(false);
     const [cellValue, setCellValue] = useState('');
     const [cellData, setCellData] = useState('');
-    const [ActivateAccessibility, setActivateAccessibility] = useState(false);
 
 
     const dispatch = useDispatch();
@@ -136,7 +135,7 @@ const LPSRating = () => {
                                 suppressRowClickSelection={true}
                                 frameworkComponents={frameworkComponents}
                             >
-                                <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn>
+                                {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
                                 <AgGridColumn field="lpsRating" headerName="LPS Rating"></AgGridColumn>
                                 <AgGridColumn field="status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                             </AgGridReact>
@@ -157,4 +156,4 @@ const LPSRating = () => {
     );
 };
 
-export default LPSRating;
+export default LpsRatingListing;

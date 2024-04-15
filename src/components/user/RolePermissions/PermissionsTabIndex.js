@@ -24,6 +24,7 @@ import NfrTab from "./NfrTab";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
 import { withTranslation } from "react-i18next";
+import VendorManagementTab from "./VendorManagementTab";
 class PermissionsTabIndex extends Component {
     constructor(props) {
         super(props);
@@ -439,10 +440,10 @@ class PermissionsTabIndex extends Component {
                                     </TabPane>
                                     {/* <TabPane tabId="11">
                                         <VendorManagementTab
-                                            data={this.state.vendorManagement}
-                                            actionData={this.state.actionData}
-                                            actionSelectList={this.props.actionSelectList}
-                                            permissions={this.permissionHandler}
+                                        // data={this.state.vendorManagement}
+                                        // actionData={this.state.actionData}
+                                        // actionSelectList={this.props.actionSelectList}
+                                        // permissions={this.permissionHandler}
                                         />
                                     </TabPane> */}
 

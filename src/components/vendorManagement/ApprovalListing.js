@@ -16,6 +16,10 @@ import { dashboardTabLock, isResetClick } from '../../actions/Common';
 import { Redirect } from 'react-router'
 import { PaginationWrappers } from '../common/Pagination/PaginationWrappers';
 import PaginationControls from '../common/Pagination/PaginationControls';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize } from '../common/Pagination/paginationAction';
+import { setSelectedRowForPagination } from '../simulation/actions/Simulation';
+import ApprovalSummaryPage from './approval/ApprovalSummaryPage';
 
 const gridOptions = {};
 
@@ -25,57 +29,89 @@ const ApprovalListing = (props) => {
     const loggedUser = loggedInUserId()
     const { isApproval, isDashboard } = props;
     const [loader, setloader] = useState(false);
-    const [approvalData, setApprovalData] = useState('')
-    const [selectedRowData, setSelectedRowData] = useState([]);
-    const [approveDrawer, setApproveDrawer] = useState(false)
-    const [openDraftDrawer, setOpenDraftDrawer] = useState(false)
-    const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
-    const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
     const [gridApi, setGridApi] = useState(null);
-    const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [isOpen, setIsOpen] = useState(false)
+    // const [gridColumnApi, setGridColumnApi] = useState(null);
+    // const [isOpen, setIsOpen] = useState(false)
     const [showPopup, setShowPopup] = useState(false)
-
+    const [pageNoNew, setPageNoNew] = useState(1)
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [disableFilter, setDisableFilter] = useState(true)
     const [warningMessage, setWarningMessage] = useState(false)
-    const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [filterModel, setFilterModel] = useState({});
-    const [pageNo, setPageNo] = useState(1)
-    const [pageNoNew, setPageNoNew] = useState(1)
-    const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
-    const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [noData, setNoData] = useState(false)
-    const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+    const [showDrawer, setShowDrawer] = useState(false); // State to control drawer visibility
+    const [totalRecordCount, setTotalRecordCount] = useState(0)
+    const { globalTakes } = useSelector((state) => state.pagination);
+    const [token, setToken] = useState(null)
+    const [approvalData, setApprovalData] = useState('')
+    const { selectedRowForPagination } = useSelector((state => state.simulation))
+
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPriceNew: "", OldPOPriceNew: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
     const approvalListing = useSelector(state => state?.vendorManagement?.approvalListing); // assuming approvals and isLoading are stored in the redux state
 
+    useEffect(() => {
+        reactLocalStorage.setObject('selectedRow', {})
+        if (!props.stopApiCallOnCancel) {
+            return () => {
+                dispatch(setSelectedRowForPagination([]))
+                dispatch(resetStatePagination());
+
+                reactLocalStorage.setObject('selectedRow', {})
+            }
+        }
+    }, [])
 
     useEffect(() => {
         dispatch(fetchApprovalList()); // Fetch approvals when the component mounts
     }, []);
+
+    useEffect(() => {
+        if (approvalListing?.length > 0) {
+            setTotalRecordCount(approvalListing[0].TotalRecordCount)
+        }
+        else {
+            setNoData(false)
+        }
+
+    }, [approvalListing])
+    const handleTokenIdClick = (ApprovalNumber) => {
+
+        // Function to handle click event on Token Id
+
+        // setToken(ApprovalNumber);
+        setApprovalData(ApprovalNumber)
+        // Open the drawer here
+        setShowDrawer(true);
+        return (
+            <ApprovalSummaryPage
+                ApprovalData={"1212"}
+                approvalListing={approvalListing}
+            //   approvalProcessId={approvalProcessId ? approvalProcessId : '1'}
+            />
+        )
+    };
     const hyperLinkableFormatter = (props) => {
+
+        if (selectedRowForPagination?.length > 0) {
+            selectedRowForPagination.map((item) => {
+
+                if (item.CostingId === props.node.data.CostingId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+
+        }
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        // Assuming you have the viewDetailCostingID function available
-        const viewDetailCostingID = (userId, cell, row) => {
-            // Implement your logic to handle the hyperlink behavior here
-            // For example, you can navigate to a new page or open a modal
-        };
 
         return (
-            <>
-                <div
-                    id={`Costing_Approval_Costing_Id_${props?.rowIndex}`}
-                    onClick={() => viewDetailCostingID(row.UserId, cell, row)}
-                    className={'link'}
-                >
-                    {cell}
-                </div>
-            </>
+            <Fragment>
+                {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div id={`Costing_Approval_No_${props?.rowIndex}`} onClick={() => handleTokenIdClick(row.ApprovalNumber)} className={'link'}>{cell}</div>}
+            </Fragment >
         );
     };
     const dateFormatter = (props) => {
@@ -243,13 +279,16 @@ const ApprovalListing = (props) => {
         return !cell ? '-' : checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice);
     }
     const onSearch = () => {
-
+        setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
-        setPageNo(1)
-        setCurrentRowIndex(0)
+        // setPageNo(1)
+        dispatch(updatePageNumber(1))
+        setPageNoNew(1)
+        dispatch(updateCurrentRowIndex(10))
+        // setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
-        getDataList("", "", "", "", 0, globalTake, true, floatingFilterData)
+        getDataList("", "", "", "", 0, globalTakes, true, floatingFilterData)
     }
 
     const resetState = () => {
@@ -266,12 +305,15 @@ const ApprovalListing = (props) => {
         }
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
-        setPageNo(1)
-        setCurrentRowIndex(0)
+        dispatch(updatePageNumber(1))
+        dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
+
         // dispatch(setSelectedRowForPagination([]))
         getDataList("", "", "", "", 0, 10, true, floatingFilterData)
-        setGlobalTake(10)
-        setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        dispatch(updateCurrentRowIndex(10))
+        dispatch(updateGlobalTake(10))
+
+
     }
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
@@ -330,7 +372,9 @@ const ApprovalListing = (props) => {
     const closePopUp = () => {
         setShowPopup(false)
     }
-
+    const closeDrawer = () => {
+        setShowDrawer(false);
+    };
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -372,18 +416,7 @@ const ApprovalListing = (props) => {
         statusFilter: SingleDropdownFloationFilter,
         basicRateFormatter: basicRateFormatter
     };
-    if (showApprovalSumary === true) {
 
-        return <Redirect
-            to={{
-                pathname: "/approval-listing",
-                // state: {
-                //     approvalNumber: approvalData.approvalNumber,
-                //     approvalProcessId: approvalData.approvalProcessId
-                // }
-            }}
-        />
-    }
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -392,12 +425,24 @@ const ApprovalListing = (props) => {
         // headerCheckboxSelection: isFirstColumn,
         // checkboxSelection: isFirstColumn
     };
+
+
+    if (showDrawer === true) {
+        return (
+            <Redirect
+                to={{
+                    pathname: "/supplier-approval-summary",
+                    state: { approvalToken: approvalData, data: approvalListing }
+                }}
+            />
+        );
+    }
     return (
         <Fragment>
             {!showApprovalSumary && <> {
                 <div className={` ${!isApproval && 'container-fluid'} approval-listing-page ${loader ? 'dashboard-loader' : ''}`} id={'approval-go-to-top'}>
                     {(loader) ? <LoaderCustom customClass="loader-center" /> : <div>
-                        {<ScrollToTop pointProp={"approval-go-to-top"} />}
+                        {/* {<ScrollToTop pointProp={"approval-go-to-top"} />} */}
                         <form noValidate>
                             <Row className="pt-4 blue-before">
                                 <Col md="6" lg="6" className="search-user-block mb-3">
@@ -435,7 +480,7 @@ const ApprovalListing = (props) => {
                                                 pagination={true}
                                                 floatingFilter={true}
 
-                                                paginationPageSize={globalTake}
+                                                paginationPageSize={globalTakes}
                                                 // onGridReady={onGridReady}
                                                 gridOptions={gridOptions}
                                                 //loadingOverlayComponent={'customLoadingOverlay'}
@@ -453,10 +498,11 @@ const ApprovalListing = (props) => {
                                                 // isRowSelectable={isRowSelectable}
                                                 enableBrowserTooltips={true}
                                             >
-                                                <AgGridColumn field="RequestID" headerName="Token Id" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
+                                                <AgGridColumn field="ApprovalNumber" headerName="Token Id" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
+                                                <AgGridColumn field="ReasonForRequest" headerName='Type'></AgGridColumn>
                                                 <AgGridColumn field="Plant" headerName='Plant'></AgGridColumn>
-                                                <AgGridColumn field="VendorCode" headerName="Vendor Code"></AgGridColumn>
-                                                <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>
+                                                <AgGridColumn field="VendorCode" headerName="Supplier Code"></AgGridColumn>
+                                                <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Supplier (Code)"></AgGridColumn>
                                                 <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
                                                 <AgGridColumn field="RequestDate" cellRenderer='dateFormatter' headerName="Requested On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="RequestedBy" headerName="Last Approved/Rejected By" cellRenderer={"lastApprovalFormatter"}></AgGridColumn>
@@ -464,9 +510,10 @@ const ApprovalListing = (props) => {
                                             </AgGridReact>
                                             <div className='button-wrapper'>
                                                 {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />}
-                                                <PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />
+                                                {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                                                    <PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RM" />
 
-
+                                                }
 
                                             </div>
 
@@ -483,7 +530,9 @@ const ApprovalListing = (props) => {
                         </Row>
                     </div >}
                 </div >
-            }</>
+            }
+
+            </>
             }
 
         </Fragment >

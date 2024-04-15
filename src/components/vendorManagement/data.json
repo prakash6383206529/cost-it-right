@@ -60,9 +60,9 @@
             "VendorCode": 1234,
             "VendorName": "TechSoft Ltd",
             "Category": "BOM",
-            "RequestID": 2323,
+            "ApprovalNumber": 2323,
             "RequestDate": "12/03/2023",
-            "ReasonForRequest": "LPS Rating Revision Requested",
+            "ReasonForRequest": "LPS",
             "Status": "Pending",
             "DisplayStatus": "Pending",
             "RequestedBy": "User A",
@@ -74,9 +74,9 @@
             "VendorCode": 1235,
             "VendorName": "Royal Gear",
             "Category": "BOM",
-            "RequestID": 3456,
+            "ApprovalNumber": 3456,
             "RequestDate": "12/03/2023",
-            "ReasonForRequest": "Vendor Classification Pending",
+            "ReasonForRequest": "Classification",
             "Status": "Approved",
             "DisplayStatus": "Approved",
             "RequestedBy": "User B",
@@ -88,9 +88,9 @@
             "VendorCode": 1264,
             "VendorName": "Softude",
             "Category": "BOM",
-            "RequestID": 4456,
+            "ApprovalNumber": 4456,
             "RequestDate": "12/03/2023",
-            "ReasonForRequest": "Vendor Classification Approved",
+            "ReasonForRequest": "Classification",
             "Status": "Pending",
             "DisplayStatus": "Pending",
             "RequestedBy": "User C",
@@ -102,11 +102,11 @@
             "VendorCode": 1237,
             "VendorName": "Serotech Ltd",
             "Category": "BOM",
-            "RequestID": 4456,
+            "ApprovalNumber": 4456,
             "RequestDate": "12/03/2023",
-            "ReasonForRequest": "Vendor Classification LPS Rating Rejected",
+            "ReasonForRequest": "Classification & LPS",
             "Status": "Revision Requested",
-            "DisplayStatus": "Revision Requested",
+            "DisplayStatus": "Returned",
             "RequestedBy": "User D",
             "Action": ""
         },
@@ -116,9 +116,9 @@
             "VendorCode": 1284,
             "VendorName": "Aspron",
             "Category": "BOM",
-            "RequestID": 3456,
+            "ApprovalNumber": 3456,
             "RequestDate": "12/03/2023",
-            "ReasonForRequest": "LPS Rating Approve",
+            "ReasonForRequest": "LPS",
             "Status": "Rejected",
             "DisplayStatus": "Rejected",
             "RequestedBy": "User E",
@@ -192,6 +192,51 @@
             "ApprovalForLPSRating": false,
             "ApprovalDate": "2024-04-08",
             "ApprovedBy": "Bob Johnson"
+        }
+    ],
+    "approvalSummary": [
+        {
+            "approvalNo": 1000187,
+            "approverData": {
+                "mode": "Costing",
+                "processId": "597d5107-67a9-4104-87ca-7add6428ec4a",
+                "levelId": "4af8cee2-269c-41f4-9835-dd642b900e8c"
+            },
+            "approvalLevelStep": [
+                {
+                    "Title": "Initiated by:",
+                    "Level": "Level-2",
+                    "LevelId": "5e9619a9-7ce7-47b6-aad7-8f2ecb8fdc5e",
+                    "ApprovedBy": "shreya  (shreya2)",
+                    "Status": "Approved",
+                    "Comments": "",
+                    "Date": "2024-04-10T09:14:08.26",
+                    "FlowStepSequence": 0,
+                    "Remark": ""
+                },
+                {
+                    "ApprovedBy": "O.M.  (OM1)",
+                    "Comments": "",
+                    "Date": "2024-04-10T09:14:08.26",
+                    "FlowStepSequence": 0,
+                    "Level": "Level-1",
+                    "LevelId": "5419173e-85e8-4eeb-97eb-fc379de5fb20",
+                    "Remark": "",
+                    "Status": "Approved",
+                    "Title": "Initiated by:"
+                },
+                {
+                    "Title": "Approved by:",
+                    "Level": "Level-3",
+                    "LevelId": "4af8cee2-269c-41f4-9835-dd642b900e8c",
+                    "ApprovedBy": "mansi  (mansi1302)",
+                    "Status": "Approved",
+                    "Comments": "",
+                    "Date": "2024-04-10T09:14:08.26",
+                    "FlowStepSequence": 0,
+                    "Remark": ""
+                }
+            ]
         }
     ]
 }
