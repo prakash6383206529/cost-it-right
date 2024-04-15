@@ -4,7 +4,6 @@ import Button from '../../layout/Button';
 import { decrementPage, incrementPage, skipUpdate, updateCurrentRowIndex } from './paginationAction';
 
 const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData, module }) => {
-    console.log('totalRecordCount: ', totalRecordCount);
     const { pageNo, pageSize, currentRowIndex } = useSelector((state) => state.pagination);
     const dispatch = useDispatch();
     let pageSizeValue;

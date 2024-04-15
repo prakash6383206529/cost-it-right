@@ -171,6 +171,7 @@ const InitiateUnblocking = () => {
                                                 <th>Vendor Classification</th>
                                                 <th>LPS Rating</th>
                                                 <th>Vendor Code</th>
+                                                <th>Plant</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -184,8 +185,10 @@ const InitiateUnblocking = () => {
                                                             <td>{vendor.VendorClassification}</td>
                                                             <td>{vendor.LPSRating}</td>
                                                             <td>{vendor.VendorCode}</td>
-                                                            {/* <td>{vendor.Plant}</td> */}
-                                                        </tr>
+                                                            <td>{vendor.Plant.map((plant, index) => (
+                                                                // Display plants separated by comma except for the last one
+                                                                index === vendor.Plant.length - 1 ? plant.Plant : `${plant.Plant}, `
+                                                            ))}</td>                                                        </tr>
                                                     )
                                                 }
                                                 return null;
