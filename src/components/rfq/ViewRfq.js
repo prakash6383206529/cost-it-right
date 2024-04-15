@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, RETURNED, NCCTypeId, VBCTypeId, } from '../.././config/constants'
+import { EMPTY_DATA, RETURNED, RECEIVED, NCCTypeId, VBCTypeId, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -34,6 +34,7 @@ import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
 import { getGridHeight } from '../../actions/Common';
 import SingleDropdownFloationFilter from '../masters/material-master/SingleDropdownFloationFilter';
+import WarningMessage from '../common/WarningMessage';
 
 const gridOptions = {};
 
@@ -81,10 +82,11 @@ function RfqListing(props) {
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
     const { initialConfiguration } = useSelector(state => state.auth)
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
-    const [disableApproveButton, setDisableApproveButton] = useState(false)
+    const [costingsDifferentStatus, setCostingsDifferentStatus] = useState(false)
     const agGridRef = useRef(null);
+    const [matchedStatus, setMatchedStatus] = useState([])
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
-
+    let arr = []
 
     useEffect(() => {
         getDataList()
@@ -112,7 +114,6 @@ function RfqListing(props) {
     }, [statusColumnData])
     useEffect(() => {
         let filteredArr = _.map(viewCostingData, 'costingId')
-        let arr = []
         filteredArr.map(item => selectedRows.filter(el => {
             if (el.CostingId === item) {
                 arr.push(el)
@@ -120,9 +121,9 @@ function RfqListing(props) {
         }))
         const isApproval = arr.filter(item => item.ShowApprovalButton)
         const disableApproveButton = isApproval.some(item => String(item.Status) === String(RETURNED));
-        setDisableApproveButton(disableApproveButton);
         setDisableApproveRejectButton(isApproval.length > 0)
-    }, [viewCostingData])
+
+    }, [viewCostingData, selectedCostingList, selectedRows])
 
     /**
     * @method hideForm
@@ -644,8 +645,28 @@ function RfqListing(props) {
     }
 
     const checkCostingSelected = (list, index) => {
-        setIndex(index)
-        setSelectedCostingList(list)
+        setIndex(index);
+        setSelectedCostingList(list);
+        let filteredArr = _.map(viewCostingData, 'costingId');
+        let arr = [];
+        filteredArr.map(item => selectedRows.filter(el => {
+            if (el.CostingId === item) {
+                arr.push(el);
+            }
+        }));
+
+        const matchedStatus = list.map(selectedItem => {
+            const matchedItem = arr.find(item => item.CostingId === selectedItem);
+            return matchedItem ? matchedItem.Status : null;
+        });
+        setMatchedStatus(matchedStatus);
+        const uniqueStatuses = new Set(matchedStatus);
+        if (uniqueStatuses.size > 1) {
+            setCostingsDifferentStatus(true);
+            Toaster.warning('Actions cannot be performed on costings with different statuses.');
+        } else {
+            setCostingsDifferentStatus(false);
+        }
     }
 
     /**
@@ -1214,6 +1235,7 @@ function RfqListing(props) {
                                 compareButtonPressed={compareButtonPressed}
                                 showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
                                 selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
+                                costingsDifferentStatus={costingsDifferentStatus}
                             />
                         )}
                     </div>
@@ -1236,26 +1258,32 @@ function RfqListing(props) {
 
             </div >
             {addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0 && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
+                {costingsDifferentStatus && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Actions cannot be performed on costings with different statuses.'} />}
                 <div className="col-sm-12 text-right bluefooter-butn">
-                    <button type={'button'} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
+                    <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Return'}
                     </button>
-                    <button type={'button'} className="mr5 approve-reject-btn" onClick={() => rejectDetailsClick("", selectedRows)} >
+                    <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => rejectDetailsClick("", selectedRows)} >
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Reject'}
                     </button>
-                    {(disableApproveButton === false) &&
+                    {(matchedStatus.length === 0 || matchedStatus.includes(RECEIVED)) && (
                         <button
+                            disabled={costingsDifferentStatus}
                             type="button"
                             className="approve-button mr5 approve-hover-btn"
                             onClick={() => approveDetails("", selectedRows)}
                         >
                             <div className={'save-icon'}></div>
                             {'Approve'}
-                        </button>}
+                        </button>
+                    )}
+
+
                 </div>
-            </Row>}
+
+            </Row >}
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }
