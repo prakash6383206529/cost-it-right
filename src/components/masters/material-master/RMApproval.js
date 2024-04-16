@@ -44,7 +44,10 @@ function RMApproval(props) {
             LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
             LoggedInUserId: loggedInUserId()
         }
+        console.log('obj: ', obj);
         dispatch(masterFinalLevelUser(obj, (res) => {
+            console.log('obj: ', obj);
+            console.log('res: ', res);
             if (res.data.Result) {
                 setIsFinalApprover(res.data.Data.IsFinalApprovar)
             }
@@ -198,7 +201,6 @@ function RMApproval(props) {
   * @description Renders Name link
   */
     const linkableFormatter = (props) => {
-
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 

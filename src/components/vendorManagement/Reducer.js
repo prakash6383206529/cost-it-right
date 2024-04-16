@@ -5,6 +5,7 @@ const initialState = {
     lpsRatingData: [],
     approvalListing: [], // Corrected the variable name,
     approvalSummary: [],
+    supplierDetailData: [],
     // Add other initial state properties if needed
 };
 
@@ -35,7 +36,7 @@ const vendorManagementReducer = (state = initialState, action) => {
 
             return {
                 ...state,
-                vendorDetailData: action.payload
+                supplierDetailData: action.payload
             }
         case UPDATE_APPROVAL_DATA:
 
