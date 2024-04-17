@@ -21,7 +21,7 @@ const LpsRatingListing = () => {
 
 
     const dispatch = useDispatch();
-    const lpsRatingData = useSelector(state => state.vendorManagement.lpsRatingData);
+    const lpsRatingData = useSelector(state => state.supplierManagement.lpsRatingData);
 
 
     useEffect(() => {

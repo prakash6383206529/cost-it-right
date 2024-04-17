@@ -76,8 +76,8 @@ class VendorManagementTab extends Component {
 
 
 const mapStateToProps = (state, ownProps) => {
-    const { vendorManagement } = state;
-    const { moduleSelectList, actionSelectList, loading } = vendorManagement;
+    const { supplierManagement } = state;
+    const { moduleSelectList, actionSelectList, loading } = supplierManagement;
     let initialValues = {};
 
     return { loading, initialValues, moduleSelectList, actionSelectList };

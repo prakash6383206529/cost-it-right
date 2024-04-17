@@ -9,7 +9,7 @@ const initialState = {
     // Add other initial state properties if needed
 };
 
-const vendorManagementReducer = (state = initialState, action) => {
+const supplierManagementReducer = (state = initialState, action) => {
     switch (action.type) {
         case UPDATE_VENDOR_DATA:
 
@@ -51,4 +51,4 @@ const vendorManagementReducer = (state = initialState, action) => {
     }
 };
 
-export default vendorManagementReducer;
+export default supplierManagementReducer;

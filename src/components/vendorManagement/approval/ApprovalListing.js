@@ -37,7 +37,7 @@ function ApprovalListing(props) {
 
     const [disableFilter, setDisableFilter] = useState(true)
     const [warningMessage, setWarningMessage] = useState(false)
-    const approvalList = useSelector(state => state?.vendorManagement?.approvalListing); // assuming approvals and isLoading are stored in the redux state
+    const approvalList = useSelector(state => state?.supplierManagement?.approvalListing); // assuming approvals and isLoading are stored in the redux state
 
     const [gridApi, setGridApi] = useState(null);     // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
     const [gridColumnApi, setGridColumnApi] = useState(null);   // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
@@ -76,9 +76,9 @@ function ApprovalListing(props) {
             LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
             LoggedInUserId: loggedInUserId()
         }
-        console.log('obj: ', obj);
+
         dispatch(checkFinalUser(obj, (res) => {
-            console.log('res: ', res);
+
 
             if (res.data.Result) {
                 setIsFinalApprover(res.data.Data.IsFinalApprovar)
@@ -255,9 +255,10 @@ function ApprovalListing(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 
+
         return (
             <Fragment>
-                <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId, row.ReasonForRequest)} className={row.Status !== DRAFT ? 'link' : ''}>
+                <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId, row.ReasonForRequest)} className='link'>
                     {row.ApprovalNumber || row.ApprovalNumber === 0 ? row.ApprovalNumber : "-"}
                 </div>
             </Fragment>
@@ -286,8 +287,10 @@ function ApprovalListing(props) {
 
 
     const isRowSelectable = (rowNode) => {
-        return rowNode?.data?.Status === DRAFT;
+        console.log('rowNode: ', rowNode);
+        return rowNode?.data?.Status === PENDING;
     };
+
     const resetState = debounce(() => {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
@@ -308,8 +311,11 @@ function ApprovalListing(props) {
         params.api.sizeColumnsToFit();
     };
     const isFirstColumn = (params) => {
+        console.log('params: ', params);
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        console.log('displayedColumns: ', displayedColumns);
         var thisIsFirstColumn = displayedColumns[0] === params.column;
+        console.log('thisIsFirstColumn: ', thisIsFirstColumn);
 
         return thisIsFirstColumn;
     }
@@ -445,7 +451,7 @@ function ApprovalListing(props) {
                                         }}
                                         frameworkComponents={frameworkComponents}
                                         suppressRowClickSelection={true}
-                                        rowSelection={'multiple'}
+                                        // rowSelection={'multiple'}
                                         onSelectionChanged={onRowSelect}
                                         isRowSelectable={isRowSelectable}
                                     >
@@ -488,20 +494,7 @@ function ApprovalListing(props) {
                         masterId={SUPPLIER_MANAGEMENT_ID}
                     />
                 }
-                {
-                    approvalDrawer &&
-                    <ApproveRejectDrawer
-                        isOpen={approvalDrawer}
-                        closeDrawer={closeApprovalDrawer}
-                        isEditFlag={false}
-                        masterId={SUPPLIER_MANAGEMENT_ID}
-                        type={'Sender'}
-                        anchor={"right"}
-                        isBulkUpload={true}
-                        approvalData={selectedRowData}
 
-                    />
-                }
             </div>
         </Fragment>
 

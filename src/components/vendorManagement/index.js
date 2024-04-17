@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import InitiateUnblocking from './InitiateUnblocking';
-import VendorClassificationListing from './VendorClassificationLisitng';
 import LpsRatingListing from './LpsRatingLisitng';
 import { useHistory } from "react-router-dom";
 import ApprovalListing from './approval/ApprovalListing';
+import SupplierClassificationListing from './SupplierClassificationLisitng';
 const VendorManagement = () => {
     let history = useHistory();
     const [activeTab, setActiveTab] = useState("1");
@@ -67,7 +67,7 @@ const VendorManagement = () => {
 
                         {Number(activeTab) === 1 &&
                             <TabPane tabId="1">
-                                <VendorClassificationListing
+                                <SupplierClassificationListing
                                     toggle={toggle}
 
 

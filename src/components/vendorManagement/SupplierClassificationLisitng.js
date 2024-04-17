@@ -14,7 +14,7 @@ import { EMPTY_DATA } from '../../config/constants';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 
-const VendorClassificationListing = () => {
+const SupplierClassificationListing = () => {
     const [renderState, setRenderState] = useState(true);
     const [isLoader, setIsLoader] = useState(false);
     const [tableData, setTableData] = useState([]);
@@ -31,7 +31,7 @@ const VendorClassificationListing = () => {
 
 
     const dispatch = useDispatch();
-    const vendorManagement = useSelector(state => state.vendorManagement.vendorData);
+    const supplierManagement = useSelector(state => state.supplierManagement.vendorData);
 
 
 
@@ -160,7 +160,7 @@ const VendorClassificationListing = () => {
                             // defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout='autoHeight'
-                            rowData={vendorManagement}
+                            rowData={supplierManagement}
                             onGridReady={onGridReady}
                             // gridOptions={gridOptions}
                             // noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -172,7 +172,7 @@ const VendorClassificationListing = () => {
                             frameworkComponents={frameworkComponents}
                         >
                             {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
-                            <AgGridColumn field="classification" headerName="Vendor Classification"></AgGridColumn>
+                            <AgGridColumn field="classification" headerName="Supplier Classification"></AgGridColumn>
                             <AgGridColumn field="lastUpdatedOn" headerName="Last Updated On"></AgGridColumn>
                             <AgGridColumn field="lastUpdatedBy" headerName="Last Updated By"></AgGridColumn>
                             <AgGridColumn field="status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
@@ -190,4 +190,4 @@ const VendorClassificationListing = () => {
     );
 };
 
-export default VendorClassificationListing;
+export default SupplierClassificationListing;

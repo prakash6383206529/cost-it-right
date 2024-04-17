@@ -17,7 +17,7 @@ const InitiateUnblocking = () => {
     const [selectedVendor, setSelectedVendor] = useState(null);
     const [selectedPlant, setSelectedPlant] = useState(null);
     const [unblockComponent, setUnblockComponent] = useState(null); // State variable to hold the component to render
-    const supplierDetailData = useSelector((state) => state.vendorManagement.supplierDetailData);
+    const supplierDetailData = useSelector((state) => state.supplierManagement.supplierDetailData);
     console.log('supplierDetailData: ', supplierDetailData);
     const [openDraftDrawer, setOpenDraftDrawer] = useState(false); // State variable to control the opening of the approval drawer
 
