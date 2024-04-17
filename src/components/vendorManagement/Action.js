@@ -54,13 +54,13 @@ export const fetchApprovalList = () => {
     };
 };
 export const VENDOR_DETAIL_DATA = 'VENDOR_DETAIL_DATA';
-export const fetchVendorDetailData = () => {
+export const fetchSupplierDetailData = () => {
     return async dispatch => {
         try {
             // Simulating API call with static JSON data
             dispatch({
                 type: VENDOR_DETAIL_DATA,
-                payload: data.vendorDetailData // Assuming vendorData is present in your JSON file
+                payload: data.supplierDetailData // Assuming vendorData is present in your JSON file
             });
         } catch (error) {
             // Handle error if needed

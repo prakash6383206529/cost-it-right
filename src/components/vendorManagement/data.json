@@ -2,21 +2,21 @@
     "vendorData": [
         {
             "sno": 1,
-            "classification": "Challenger",
+            "classification": "Strategic",
             "status": true,
             "lastUpdatedOn": "2024-04-05",
             "lastUpdatedBy": "User A"
         },
         {
             "sno": 2,
-            "classification": "Strategic",
+            "classification": "Challenger",
             "status": false,
             "lastUpdatedOn": "2024-04-04",
             "lastUpdatedBy": "User B"
         },
         {
             "sno": 3,
-            "classification": "Active Disengagement",
+            "classification": "Transactional",
             "status": true,
             "lastUpdatedOn": "2024-04-03",
             "lastUpdatedBy": "User C"
@@ -30,7 +30,7 @@
         },
         {
             "sno": 5,
-            "classification": "Transactional",
+            "classification": "Active Disengagement",
             "status": false,
             "lastUpdatedOn": "2024-04-01",
             "lastUpdatedBy": "User E"
@@ -40,28 +40,34 @@
         {
             "sno": 1,
             "lpsRating": "LPS 1",
-            "status": true
+            "status": true,
+            "lastUpdatedOn": "2024-04-04",
+            "lastUpdatedBy": "User Bq"
         },
         {
             "sno": 2,
             "lpsRating": "LPS 2",
-            "status": false
+            "status": false,
+            "lastUpdatedOn": "2024-04-04",
+            "lastUpdatedBy": "User Ba"
         },
         {
             "sno": 3,
             "lpsRating": "LPS 3",
-            "status": true
+            "status": true,
+            "lastUpdatedOn": "2024-04-04",
+            "lastUpdatedBy": "User Bd"
         }
     ],
     "approvalListing": [
         {
-            "sno": 1,
+            "SupplierID": 1,
             "Plant": "Plan X",
             "VendorCode": 1234,
             "VendorName": "TechSoft Ltd",
             "Category": "BOM",
             "ApprovalNumber": 2323,
-            "RequestDate": "12/03/2023",
+            "EffectiveDate": "12/03/2023",
             "ReasonForRequest": "LPS",
             "Status": "Pending",
             "DisplayStatus": "Pending",
@@ -69,13 +75,13 @@
             "Action": ""
         },
         {
-            "sno": 2,
+            "SupplierID": 2,
             "Plant": "Plan Y",
             "VendorCode": 1235,
             "VendorName": "Royal Gear",
             "Category": "BOM",
             "ApprovalNumber": 3456,
-            "RequestDate": "12/03/2023",
+            "EffectiveDate": "12/03/2023",
             "ReasonForRequest": "Classification",
             "Status": "Approved",
             "DisplayStatus": "Approved",
@@ -83,13 +89,13 @@
             "Action": ""
         },
         {
-            "sno": 3,
+            "SupplierID": 3,
             "Plant": "Plan Y",
             "VendorCode": 1264,
             "VendorName": "Softude",
             "Category": "BOM",
             "ApprovalNumber": 4456,
-            "RequestDate": "12/03/2023",
+            "EffectiveDate": "12/03/2023",
             "ReasonForRequest": "Classification",
             "Status": "Pending",
             "DisplayStatus": "Pending",
@@ -97,27 +103,27 @@
             "Action": ""
         },
         {
-            "sno": 4,
+            "SupplierID": 4,
             "Plant": "Plan X",
             "VendorCode": 1237,
             "VendorName": "Serotech Ltd",
             "Category": "BOM",
             "ApprovalNumber": 4456,
-            "RequestDate": "12/03/2023",
+            "EffectiveDate": "12/03/2023",
             "ReasonForRequest": "Classification & LPS",
-            "Status": "Revision Requested",
+            "Status": "Returned",
             "DisplayStatus": "Returned",
             "RequestedBy": "User D",
             "Action": ""
         },
         {
-            "sno": 5,
+            "SupplierID": 5,
             "Plant": "Plan Y",
             "VendorCode": 1284,
             "VendorName": "Aspron",
             "Category": "BOM",
             "ApprovalNumber": 3456,
-            "RequestDate": "12/03/2023",
+            "EffectiveDate": "12/03/2023",
             "ReasonForRequest": "LPS",
             "Status": "Rejected",
             "DisplayStatus": "Rejected",
@@ -125,73 +131,120 @@
             "Action": ""
         }
     ],
-    "vendorDetailData": [
+    "supplierDetailData": [
         {
             "sno": 1,
-            "VendorName": "Vendor 1",
-            "VendorCode": "V1",
-            "VendorCategory": "Category A",
+            "SupplierName": "Supplier 1",
+            "SupplierCode": "S1",
+            "SupplierCategory": "Category A",
             "Division": "Division 1",
-            "VendorClassification": "Strategic",
-            "LPSRating": 4,
-            "ApprovalForSupplier": true,
-            "ApprovalForLPSRating": true,
             "Plant": [
                 {
                     "sno": 1,
-                    "Plant": "Plant 1"
+                    "Plant": "Plant 1",
+                    "SupplierClassification": "Strategic",
+                    "LPSRating": 4,
+                    "ApprovalForSupplier": true,
+                    "ApprovalForLPSRating": true
                 }
             ]
         },
         {
             "sno": 2,
-            "VendorName": "Vendor 2",
-            "VendorCode": "V2",
-            "VendorCategory": "Category B",
+            "SupplierName": "Supplier 2",
+            "SupplierCode": "S2",
+            "SupplierCategory": "Category B",
             "Division": "Division 3",
             "Plant": [
                 {
                     "sno": 1,
-                    "Plant": "Plant 2"
+                    "Plant": "Plant 2",
+                    "SupplierClassification": "Transactional",
+                    "LPSRating": 2,
+                    "ApprovalForSupplier": false,
+                    "ApprovalForLPSRating": true,
+                    "ApprovalDate": "2024-04-09",
+                    "ApprovedBy": "Jane Smith"
                 },
                 {
                     "sno": 2,
-                    "Plant": "Plant 3"
+                    "Plant": "Plant 3",
+                    "SupplierClassification": "Transactional",
+                    "LPSRating": 2,
+                    "ApprovalForSupplier": false,
+                    "ApprovalForLPSRating": true,
+                    "ApprovalDate": "2024-04-09",
+                    "ApprovedBy": "Jane Smith"
                 }
-            ],
-            "VendorClassification": "Transactional",
-            "LPSRating": 2,
-            "ApprovalForSupplier": false,
-            "ApprovalForLPSRating": true,
-            "ApprovalDate": "2024-04-09",
-            "ApprovedBy": "Jane Smith"
+            ]
         },
         {
             "sno": 3,
-            "VendorName": "Vendor 3",
-            "VendorCode": "V3",
-            "VendorCategory": "Category C",
+            "SupplierName": "Supplier 3",
+            "SupplierCode": "S3",
+            "SupplierCategory": "Category C",
             "Division": "Division 2",
             "Plant": [
                 {
                     "sno": 1,
-                    "Plant": "Plant 4"
+                    "Plant": "Plant 4",
+                    "SupplierClassification": "Challenger",
+                    "LPSRating": 3,
+                    "ApprovalForSupplier": true,
+                    "ApprovalForLPSRating": false,
+                    "ApprovalDate": "2024-04-08",
+                    "ApprovedBy": "Bob Johnson"
                 },
                 {
                     "sno": 2,
-                    "Plant": "Plant 5"
+                    "Plant": "Plant 5",
+                    "SupplierClassification": "Challenger",
+                    "LPSRating": 3,
+                    "ApprovalForSupplier": true,
+                    "ApprovalForLPSRating": false,
+                    "ApprovalDate": "2024-04-08",
+                    "ApprovedBy": "Bob Johnson"
                 },
                 {
                     "sno": 3,
-                    "Plant": "Plant 6"
+                    "Plant": "Plant 6",
+                    "SupplierClassification": "Challenger",
+                    "LPSRating": 3,
+                    "ApprovalForSupplier": true,
+                    "ApprovalForLPSRating": false,
+                    "ApprovalDate": "2024-04-08",
+                    "ApprovedBy": "Bob Johnson"
                 }
-            ],
-            "VendorClassification": "Challenger",
-            "LPSRating": 3,
-            "ApprovalForSupplier": true,
-            "ApprovalForLPSRating": false,
-            "ApprovalDate": "2024-04-08",
-            "ApprovedBy": "Bob Johnson"
+            ]
+        },
+        {
+            "sno": 4,
+            "SupplierName": "Supplier 4",
+            "SupplierCode": "S4",
+            "SupplierCategory": "Category D",
+            "Division": "Division 3",
+            "Plant": [
+                {
+                    "sno": 1,
+                    "Plant": "Plant 7",
+                    "SupplierClassification": "Transactional",
+                    "LPSRating": 2,
+                    "ApprovalForSupplier": true,
+                    "ApprovalForLPSRating": true,
+                    "ApprovalDate": "2024-04-09",
+                    "ApprovedBy": "Jane Smith"
+                },
+                {
+                    "sno": 2,
+                    "Plant": "Plant 8",
+                    "SupplierClassification": "Transactional",
+                    "LPSRating": 2,
+                    "ApprovalForSupplier": false,
+                    "ApprovalForLPSRating": true,
+                    "ApprovalDate": "2024-04-09",
+                    "ApprovedBy": "Jane Smith"
+                }
+            ]
         }
     ],
     "approvalSummary": [

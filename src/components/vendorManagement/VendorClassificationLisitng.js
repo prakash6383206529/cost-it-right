@@ -92,11 +92,14 @@ const VendorClassificationListing = () => {
         setShowPopupToggle(true);
     }
     const statusButtonFormatter = (props) => {
+        console.log('props: ', props);
 
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        console.log('cellValue: ', cellValue);
 
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        console.log('rowData: ', rowData);
 
         // if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex)
@@ -109,9 +112,9 @@ const VendorClassificationListing = () => {
                         checked={cellValue}
                         // disabled={!ActivateAccessibility}
                         background="#ff6600"
-                        onColor="#4DC771"
+                        onColor="#FC5774"
                         onHandleColor="#ffffff"
-                        offColor="#FC5774"
+                        offColor="#4DC771"
                         id="normal-switch"
                         height={24}
                         className={cellValue ? "active-switch" : "inactive-switch"}
