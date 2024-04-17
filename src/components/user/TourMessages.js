@@ -4,6 +4,11 @@ export function Steps(t, config) {
     const introMessage = config && config.isEditFlag === true ? t("saveUpdateButton.Update_Button") : t("saveUpdateButton.Save_Button");
 
     const userManagementArray = [
+        ...(config && config.isEditFlag === true) ? [
+            {
+                element: "#Change_Password",
+                intro: t("userManagement.AddUser_ChangePassword"),
+            }] : [],
         {
             element: "#FirstName_container",
             intro: t("userManagement.AddUser_FirstName"),
@@ -16,18 +21,20 @@ export function Steps(t, config) {
             element: "#Mobile_container",
             intro: t("userManagement.AddUser_Mobile"),
         },
-        ...(config && config.RFQUser === true ? [{
-            element: ".input-container #Vendor_container",
-            intro: t("userManagement.AddUser_Vendor"),
-        },
-        {
-            element: ".input-container #Reporter_container",
-            intro: t("userManagement.AddUser_PointOfContact"),
-        },
-        {
-            element: "#primaryContact_container",
-            intro: t("userManagement.AddUser_primaryContact"),
-        },
+
+        ...(config && config.RFQUser === true ? [
+            ...(config && config.isEditFlag === false) ? [{
+                element: ".input-container #Vendor_container",
+                intro: t("userManagement.AddUser_Vendor"),
+            }] : [],
+            {
+                element: ".input-container #Reporter_container",
+                intro: t("userManagement.AddUser_PointOfContact"),
+            },
+            {
+                element: "#primaryContact_container",
+                intro: t("userManagement.AddUser_primaryContact"),
+            },
         ] : []),
         ...(config && config.RFQUser === false ? [
             {
@@ -39,14 +46,15 @@ export function Steps(t, config) {
                 intro: t("userManagement.AddUser_Extension"),
             },
         ] : []),
-        {
-            element: "#EmailAddress_container",
-            intro: t("userManagement.AddUser_Email"),
-        },
-        {
-            element: "#UserName_container",
-            intro: t("userManagement.AddUser_UserName"),
-        },
+        ...(config && config.isEditFlag === false) ? [
+            {
+                element: "#EmailAddress_container",
+                intro: t("userManagement.AddUser_Email"),
+            },
+            {
+                element: "#UserName_container",
+                intro: t("userManagement.AddUser_UserName"),
+            }] : [],
         ...config && config?.isShowPwdField === true ? [
             {
                 element: "#AddUser_Password",
@@ -293,30 +301,31 @@ export function Steps(t, config) {
         }
     ];
     const AddlevelMapping = [
-        {
-            element: "#AddApproval_CostingLevel",
-            intro: t("approvalForm.AddApproval_CostingLevel"),
-        },
-        {
-            element: "#AddApproval_SimulationLevel",
-            intro: t("approvalForm.AddApproval_SimulationLevel"),
-        },
-        {
-            element: "#AddApproval_MasterLevel",
-            intro: t("approvalForm.AddApproval_MasterLevel"),
-        },
-        {
-            element: "#AddApproval_OnBoardingLevel",
-            intro: t("approvalForm.AddApproval_OnBoardingLevel"),
-        },
-        {
-            element: "#Level_ApprovalType_container",
-            intro: t("approvalForm.AddApproval_ApprovalType_Required"),
-        },
-        {
-            element: "#Level_TechnologyId_container",
-            intro: t("approvalForm.AddApproval_TechnologyHeads"),
-        },
+        ...(config && config.isEditFlag === false) ? [
+            {
+                element: "#AddApproval_CostingLevel",
+                intro: t("approvalForm.AddApproval_CostingLevel"),
+            },
+            {
+                element: "#AddApproval_SimulationLevel",
+                intro: t("approvalForm.AddApproval_SimulationLevel"),
+            },
+            {
+                element: "#AddApproval_MasterLevel",
+                intro: t("approvalForm.AddApproval_MasterLevel"),
+            },
+            {
+                element: "#AddApproval_OnBoardingLevel",
+                intro: t("approvalForm.AddApproval_OnBoardingLevel"),
+            },
+            {
+                element: "#Level_ApprovalType_container",
+                intro: t("approvalForm.AddApproval_ApprovalType_Required"),
+            },
+            {
+                element: "#Level_TechnologyId_container",
+                intro: t("approvalForm.AddApproval_TechnologyHeads"),
+            }] : [],
         {
             element: "#Level_LevelId_container",
             intro: t("approvalForm.AddApproval_HighestApprovalLevel"),

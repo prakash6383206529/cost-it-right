@@ -1,5 +1,6 @@
 {
   "userManagement": {
+    "AddUser_ChangePassword": "Click here to change password.",
     "AddUser_FirstName": "Enter the user's first name.",
     "AddUser_LastName": "Enter the user's last name.",
     "AddUser_Mobile": "Enter the user's mobile number.",
