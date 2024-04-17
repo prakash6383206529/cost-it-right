@@ -4,13 +4,14 @@ import Drawer from '@material-ui/core/Drawer';
 import Button from '../../layout/Button';
 import { Controller, useForm } from 'react-hook-form';
 import { SearchableSelectHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { getAllReasonAPI } from '../../masters/actions/ReasonMaster';
 import { useHistory } from 'react-router-dom';
 import { handleDepartmentHeader } from '../../../helper';
 
 
 const SendForApproval = (props) => {
+  console.log('props: ', props, props.Approval?.ApprovalForSupplier, props.Approval?.ApprovalForLPSRating);
 
   const history = useHistory();
   const [isLoader, setIsLoader] = useState(false)
@@ -41,7 +42,7 @@ const SendForApproval = (props) => {
       if (res.data.Result) {
         setReasonOption(res.data.DataList);
         // Set selected reason to the first option by default
-        setSelectedReason(res.data.DataList[0] || null);
+        setSelectedReason(res.data.DataList || null);
       }
       setIsLoader(false)
     }));
@@ -109,7 +110,7 @@ const SendForApproval = (props) => {
                   {/* Rendering approval data */}
                 </div>
               ))}
-            {Approval[0]?.ApprovalForSupplier && (<div className="">
+            {Approval?.ApprovalForSupplier && (<div className="">
               <Row>
                 <Col md="12">
                   <div className="left-border">{`Supplier Classification`}</div>
@@ -218,7 +219,7 @@ const SendForApproval = (props) => {
                   {/* Rendering approval data */}
                 </div>
               ))}
-            {Approval[0]?.ApprovalForLPSRating && (<div className="">
+            {Approval?.ApprovalForLPSRating && (<div className="">
               <Row>
                 <Col md="12">
                   <div className="left-border">{`LPS Rating`}</div>
@@ -290,9 +291,6 @@ const SendForApproval = (props) => {
                       errors={errors.Masters}
                       disabledOptions={[1]}
                     />
-
-
-
                   </Col>
                   <Col md="12">
                     <Col md="12">
@@ -303,7 +301,6 @@ const SendForApproval = (props) => {
                         control={control}
                         register={register}
                         mandatory={true}
-
                         // mandatory={mandatoryRemark ? true : false}
                         rules={{ required: true }}
                         // rules={{ required: mandatoryRemark ? true : false }}

@@ -6,7 +6,6 @@ import Popup from 'reactjs-popup'
 import { getAllApproverList } from '../../../../actions/auth/AuthActions'
 
 function ApprovalWorkFlow(props) {
-
   const { approvalLevelStep, approverData } = props
   const { initialConfiguration } = useSelector(state => state.auth)
   const [approverList, setApproverList] = useState([])
@@ -45,6 +44,9 @@ function ApprovalWorkFlow(props) {
           </Popup>
         </>
     }
+  }
+  if (!approvalLevelStep || !props.approvalNo || !approverData) {
+    return null;
   }
   /* TODO SORTING OF LEVEL ACC TO DATA*/
   return approvalLevelStep &&

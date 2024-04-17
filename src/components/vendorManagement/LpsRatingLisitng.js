@@ -62,11 +62,8 @@ const LpsRatingListing = () => {
     }
 
     const statusButtonFormatter = (props) => {
-
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
         // if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex)
         return (
@@ -78,9 +75,9 @@ const LpsRatingListing = () => {
                         checked={cellValue}
                         // disabled={!ActivateAccessibility}
                         background="#ff6600"
-                        onColor="#4DC771"
+                        onColor="#FC5774"
                         onHandleColor="#ffffff"
-                        offColor="#FC5774"
+                        offColor="#4DC771"
                         id="normal-switch"
                         height={24}
                         className={cellValue ? "active-switch" : "inactive-switch"}
@@ -137,6 +134,8 @@ const LpsRatingListing = () => {
                             >
                                 {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
                                 <AgGridColumn field="lpsRating" headerName="LPS Rating"></AgGridColumn>
+                                <AgGridColumn field="lastUpdatedOn" headerName="Last Updated On"></AgGridColumn>
+                                <AgGridColumn field="lastUpdatedBy" headerName="Last Updated By"></AgGridColumn>
                                 <AgGridColumn field="status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                             </AgGridReact>
                         }

@@ -1919,6 +1919,7 @@ export const AUDIT = 'Audit'
 export const RFQ = 'RFQ'
 export const ONBOARDING = 'Onboarding'
 export const VENDOR_MANAGEMENT = 'Vendor Management'
+export const APPROVAL_LISTING = 'Approval Listing'
 
 //PAGE NAMES
 export const DASHBOARD = 'Dashboard'
@@ -2667,6 +2668,7 @@ export const BOP_MASTER_ID = 2
 export const OPERATIONS_ID = 3
 export const MACHINE_MASTER_ID = 4
 export const BUDGET_ID = 5
+export const SUPPLIER_MANAGEMENT_ID = 6
 
 
 //approve reject drawer
@@ -2926,7 +2928,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.2.3";
+export const VERSION = "V2.2.4";
 
 
 

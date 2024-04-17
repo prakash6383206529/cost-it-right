@@ -3,15 +3,12 @@ import ScrollToTop from '../common/ScrollToTop';
 import { SearchableSelectHookForm } from '../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchVendorDetailData } from './Action';
+import { fetchSupplierDetailData } from './Action';
 import { Col, Row, Table } from 'reactstrap';
 import Button from '../layout/Button';
-import { useHistory } from "react-router-dom";
 import SendForApproval from './approval/SendForApproval';
 
 const InitiateUnblocking = () => {
-    let history = useHistory();
-
     const dispatch = useDispatch();
     const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
@@ -20,14 +17,15 @@ const InitiateUnblocking = () => {
     const [selectedVendor, setSelectedVendor] = useState(null);
     const [selectedPlant, setSelectedPlant] = useState(null);
     const [unblockComponent, setUnblockComponent] = useState(null); // State variable to hold the component to render
-    const vendorDetailData = useSelector((state) => state.vendorManagement.vendorDetailData);
+    const supplierDetailData = useSelector((state) => state.vendorManagement.supplierDetailData);
+    console.log('supplierDetailData: ', supplierDetailData);
     const [openDraftDrawer, setOpenDraftDrawer] = useState(false); // State variable to control the opening of the approval drawer
 
-    const [filteredVendor, setFilteredVendor] = useState([]);
+    const [filteredPlant, setFilteredPlant] = useState([]);
 
 
     useEffect(() => {
-        dispatch(fetchVendorDetailData());
+        dispatch(fetchSupplierDetailData());
     }, [dispatch]);
 
 
@@ -39,12 +37,15 @@ const InitiateUnblocking = () => {
 
 
     useEffect(() => {
-        if (selectedVendor) {
-            const filteredVendorDetails = vendorDetailData?.filter((vendor) => vendor.VendorCode === selectedVendor.value);
-            setFilteredVendor(filteredVendorDetails);
-
+        if (selectedVendor && selectedPlant) {
+            const selectedVendorDetails = supplierDetailData?.find((vendor) => vendor.SupplierCode === selectedVendor.value);
+            if (selectedVendorDetails) {
+                const selectedPlantData = selectedVendorDetails.Plant.find((plant) => plant.Plant === selectedPlant.label);
+                console.log('selectedPlantData: ', selectedPlantData);
+                setFilteredPlant(selectedPlantData);
+            }
         }
-    }, [selectedVendor, vendorDetailData]);
+    }, [selectedVendor, selectedPlant, supplierDetailData]);
 
 
     const handlePlantChange = (selectedValue) => {
@@ -54,12 +55,11 @@ const InitiateUnblocking = () => {
         setOpenDraftDrawer(true); // Open the approval drawer when the "Next" button is clicked
         // Remaining logic for navigation can be added here if needed
     };
-
+    console.log(selectedPlant);
     return (
         <div className="container-fluid">
             <ScrollToTop pointProp={"go-to-top"} />
             <div className='intiate-unblocking-container'>
-                <h2>Initiate Unblocking</h2>
                 <Row >
                     <Col md="3">
                         <div className="form-group">
@@ -73,8 +73,8 @@ const InitiateUnblocking = () => {
                                 isClearable={true}
                                 register={register}
                                 defaultValue={selectedVendor}
-                                options={vendorDetailData?.map((vendor) => ({ label: vendor.VendorName, value: vendor.VendorCode }))}
-                                mandatory={false}
+                                options={supplierDetailData?.map((vendor) => ({ label: vendor.SupplierName, value: vendor.SupplierCode }))}
+                                mandatory={true}
                                 handleChange={handleVendorChange}
                                 errors={errors.Masters}
                             />
@@ -93,8 +93,8 @@ const InitiateUnblocking = () => {
                                     rules={{ required: false }}
                                     register={register}
                                     defaultValue={'select'}
-                                    options={vendorDetailData.find(vendor => vendor.VendorCode === selectedVendor.value)?.Plant.map((plant) => ({ label: plant.Plant, value: plant.sno }))}
-                                    mandatory={false}
+                                    options={supplierDetailData.find(vendor => vendor.SupplierCode === selectedVendor.value)?.Plant.map((plant) => ({ label: plant.Plant, value: plant.sno }))}
+                                    mandatory={true}
                                     handleChange={handlePlantChange}
                                     errors={errors.Masters}
                                 />
@@ -102,53 +102,43 @@ const InitiateUnblocking = () => {
                         </Col>
                     )}
 
-                    {selectedVendor && (
+                    {selectedVendor && selectedPlant && (
                         <>
-                            {vendorDetailData.map((vendor) => {
-                                if (vendor.VendorCode === selectedVendor.value) {
+                            {supplierDetailData.map((vendor) => {
+                                if (vendor.SupplierCode === selectedVendor.value) {
+                                    const selectedPlantData = vendor.Plant.find((plant) => plant.Plant === selectedPlant.label);
+
                                     return (
                                         <div key={vendor.sno}>
                                             <div className="vendor-details">
                                                 <Row>
-
                                                     <Col md="3">
                                                         <div className="approval-section mb-2 mt-2">
                                                             <div className="left-border">Approval for</div>
                                                             <div className="approval-checkboxes">
-                                                                <label id="vendorClassification_Checkbox"
-                                                                    className={`custom-checkbox disabled`}
-                                                                //   onChange={this.onPressSurfaceTreatment}
-                                                                >
-                                                                    Vendor Classification
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={vendor.ApprovalForSupplier}
-                                                                        disabled={false}
-                                                                    />
-                                                                    <span
-                                                                        className=" before-box"
-                                                                        checked={vendor.ApprovalForSupplier}
-                                                                    // onChange={this.onPressSurfaceTreatment}
-                                                                    />
-                                                                </label>
+                                                                {selectedPlantData && (
+                                                                    <div key={selectedPlantData.sno}>
+                                                                        <label id={`vendorClassification_Checkbox_${selectedPlantData.sno}`} className={`custom-checkbox disabled`}>
+                                                                            Vendor Classification
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={selectedPlantData.ApprovalForSupplier}
+                                                                                disabled={false}
+                                                                            />
+                                                                            <span className=" before-box" checked={selectedPlantData.ApprovalForSupplier} />
+                                                                        </label>
 
-                                                                <label id="LPS_Checkbox"
-                                                                    className={`custom-checkbox disabled`}
-                                                                //   onChange={this.onPressSurfaceTreatment}
-                                                                >
-                                                                    LPS Rating
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={vendor.ApprovalForLPSRating}
-                                                                        disabled={false}
-                                                                    />
-                                                                    <span
-                                                                        className=" before-box"
-                                                                        checked={vendor.ApprovalForLPSRating}
-                                                                    // onChange={this.onPressSurfaceTreatment}
-                                                                    />
-                                                                </label>
-
+                                                                        <label id={`LPS_Checkbox_${selectedPlantData.sno}`} className={`custom-checkbox disabled`}>
+                                                                            LPS Rating
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={selectedPlantData.ApprovalForLPSRating}
+                                                                                disabled={false}
+                                                                            />
+                                                                            <span className=" before-box" checked={selectedPlantData.ApprovalForLPSRating} />
+                                                                        </label>
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </Col>
@@ -159,6 +149,7 @@ const InitiateUnblocking = () => {
                                 }
                                 return null;
                             })}
+
                             <Col md="12">
                                 <div className="left-border">{'Vendor Details:'}</div>
                                 <div>
@@ -175,24 +166,31 @@ const InitiateUnblocking = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {vendorDetailData.map((vendor) => {
-                                                if (vendor.VendorCode === selectedVendor.value) {
-                                                    return (
-                                                        <tr key={vendor.sno}>
-                                                            <td>{vendor.VendorName}</td>
-                                                            <td>{vendor.Division}</td>
-                                                            <td>{vendor.VendorCategory}</td>
-                                                            <td>{vendor.VendorClassification}</td>
-                                                            <td>{vendor.LPSRating}</td>
-                                                            <td>{vendor.VendorCode}</td>
-                                                            <td>{vendor.Plant.map((plant, index) => (
-                                                                // Display plants separated by comma except for the last one
-                                                                index === vendor.Plant.length - 1 ? plant.Plant : `${plant.Plant}, `
-                                                            ))}</td>                                                        </tr>
-                                                    )
+                                            {supplierDetailData.map((vendor) => {
+                                                if (vendor.SupplierCode === selectedVendor.value) {
+                                                    if (vendor?.Plant?.length > 0) {
+                                                        // Filter the Plant array to get the details of the selected plant
+                                                        const selectedPlants = vendor?.Plant?.find((plant) => plant.Plant === selectedPlant.label);
+                                                        console.log('selectedPlant: ', selectedPlants);
+
+                                                        if (selectedPlants) {
+                                                            return (
+                                                                <tr key={selectedPlants.sno}>
+                                                                    <td>{vendor.SupplierName}</td>
+                                                                    <td>{vendor.Division}</td>
+                                                                    <td>{vendor.SupplierCategory}</td>
+                                                                    <td>{selectedPlants.SupplierClassification}</td>
+                                                                    <td>{selectedPlants.LPSRating}</td>
+                                                                    <td>{vendor.SupplierCode}</td>
+                                                                    <td>{selectedPlants.Plant}</td>
+                                                                </tr>
+                                                            );
+                                                        }
+                                                    }
                                                 }
                                                 return null;
                                             })}
+
                                         </tbody>
                                     </Table>
 
@@ -227,7 +225,7 @@ const InitiateUnblocking = () => {
                     closeDrawer={() => setOpenDraftDrawer(false)}
                     anchor={'right'}
                     isApprovalisting={true}
-                    Approval={filteredVendor} // Pass LPS Rating approval status
+                    Approval={filteredPlant} // Pass LPS Rating approval status
                 // Add other props as needed
                 />
             )}
