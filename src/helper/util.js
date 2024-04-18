@@ -1115,6 +1115,7 @@ export const labelWithUOMAndUOM = (label, UOM, ScrapUOM) => {
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
 export const showTitleForActiveToggle = (index) => {
+  console.log('index: ', index);
   setTimeout(() => {
     let titleActive = document.getElementsByClassName("active-switch")[index];
 
@@ -1148,6 +1149,34 @@ export const showTitleForActiveToggle = (index) => {
     }
 
     titleInactive?.setAttribute('title', 'Inactive');
+    let titleBlocked = document.getElementsByClassName("blocked-switch")[index];
+    if (titleBlocked === undefined || titleBlocked == null) {
+      let rowIndex = index
+      let array = Array.from(String(rowIndex), Number)
+      if (array.length === 1) {
+        rowIndex = array[0]
+      } else if (array.length === 2) {
+        rowIndex = array[1]
+      } else {
+        rowIndex = array[2]
+      }
+      titleBlocked = document.getElementsByClassName("blocked-switch")[rowIndex];
+    }
+    let titleUnblocked = document.getElementsByClassName("unblocked-switch")[index];
+    if (titleUnblocked === undefined || titleUnblocked == null) {
+      let rowIndex = index
+      let array = Array.from(String(rowIndex), Number)
+      if (array.length === 1) {
+        rowIndex = array[0]
+      } else if (array.length === 2) {
+        rowIndex = array[1]
+      } else {
+        rowIndex = array[2]
+      }
+      titleUnblocked = document.getElementsByClassName("unblocked-switch")[rowIndex];
+    }
+
+
   }, 500);
 }
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK

@@ -13,13 +13,14 @@ export const config = () => {
     'Access-From': 'WEB',
     'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   }
+  console.log('headers: ', headers);
   return { headers }
 }
 
 
 // DEVELOPMENT
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-const BASE_URL = `http://10.10.11.208:3030/api/v1`
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.11.208:3030/api/v1`
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10162/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
@@ -1997,7 +1998,7 @@ export const OUTSOURCING = "Outsourcing"
 export const INSIGHT_SIMULATION_REPORT = "Simulation Insights"
 export const NFR_INSIGHT_DETAILS = 'NFR Insights' //MINDA
 export const lOGIN_AUDIT = 'Login Audit'
-// export const SUPPLIER_MANAGEMENT = 'Supplier Management'
+export const VENDOR_CLASSIFICATION = 'Vendor Classification'
 export const INITIATE_UNBLOCKING = 'Initiate Unblocking'
 export const LPS_RATING = 'LPS Rating'
 //export const SIMULATION_HISTORY = 'Simulation History'

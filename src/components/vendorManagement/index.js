@@ -14,6 +14,7 @@ const VendorManagement = () => {
         if (activeTab !== tab) setActiveTab(tab);
     }
 
+
     return (
         <>
             <div className="user-page container-fluid costing-main-container">

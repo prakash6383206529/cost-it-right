@@ -6,13 +6,15 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import { fetchVendorData, getVendorClassificationListing, updateClassificationStatus } from './Action';
 import Toaster from '../common/Toaster';
 import Switch from "react-switch";
-import { loggedInUserId, showTitleForActiveToggle } from '../../helper';
+import { checkPermission, loggedInUserId, showTitleForActiveToggle } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
 import { Col, Row } from 'reactstrap';
 import NoContentFound from '../common/NoContentFound';
-import { EMPTY_DATA } from '../../config/constants';
+import { EMPTY_DATA, VENDOR_CLASSIFICATION, VENDOR_MANAGEMENT } from '../../config/constants';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
+import DayTime from '../common/DayTimeWrapper';
+const gridOptions = {};
 
 const SupplierClassificationListing = () => {
     const [renderState, setRenderState] = useState(true);
@@ -21,17 +23,18 @@ const SupplierClassificationListing = () => {
     const [showPopupToggle, setShowPopupToggle] = useState(false)
     const [cellValue, setCellValue] = useState('');
     const [cellData, setCellData] = useState('');
-    const [ActivateAccessibility, setActivateAccessibility] = useState(false);
     const [noData, setNoData] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
-    const [gridLoad, setGridLoad] = useState(false);
+    const [ActivateAccessibility, setActivateAccessibility] = useState(false);
 
 
 
 
 
     const dispatch = useDispatch();
-    const supplierManagement = useSelector(state => state.supplierManagement.vendorData);
+    const supplierManagement = useSelector(state => state?.supplierManagement?.vendorData) || [];
+    console.log('supplierManagement: ', supplierManagement);
+
 
 
 
@@ -40,21 +43,33 @@ const SupplierClassificationListing = () => {
         getTableListData()
 
     }, [dispatch]);
+    const applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            isLoader(true)
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === VENDOR_MANAGEMENT);
+            const accessData = Data && Data.Pages.find((el) => el.PageName === VENDOR_CLASSIFICATION)
+            const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+            if (permissionData !== undefined) {
+                setActivateAccessibility(permissionData && permissionData.Activate ? permissionData.Activate : false);
+            }
+        }
+    }
+
     const getTableListData = () => {
         setIsLoader(true)
         dispatch(getVendorClassificationListing(true, (res) => {
-            console.log('res: ', res);
+
 
             setIsLoader(false)
-            if (res.status === 204 && res.data === '') {
+            if (res?.status === 204 && res?.data === '') {
                 setTableData([])
                 setIsLoader(false)
-            } else if (res && res.data && res.data.DataList) {
-                let Data = res.data.DataList
+            } else if (res && res?.data && res?.data?.DataList) {
+                let Data = res?.data?.DataList
                 setTableData(Data)
                 setIsLoader(false)
                 setRenderState(!renderState)
-                setCellValue(Data.map(row => row.updatedStatus === 'Active'));
+                setCellValue(Data?.map(row => row.updatedStatus === 'Active'));
 
             } else {
                 setTableData([])
@@ -64,11 +79,11 @@ const SupplierClassificationListing = () => {
     }
     const confirmDeactivateItem = (data, cell) => {
         dispatch(updateClassificationStatus(data, res => {
-            if (res && res.data && res.data.Result) {
+            if (res && res?.data && res?.data?.Result) {
                 if (cell === true) {
-                    Toaster.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES?.CLASSIFICATION_UNBLOCK_SUCCESSFULLY)
                 } else {
-                    Toaster.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES?.CLASSIFICATION_BLOCK_SUCCESSFULLY)
                 }
                 getTableListData()
                 // setDataCount(0)
@@ -77,31 +92,27 @@ const SupplierClassificationListing = () => {
         setShowPopupToggle(false)
     }
     const onPopupConfirmToggle = () => {
-        // Confirm toggle and update status
-        confirmDeactivateItem(cellData);
+        // Handle popup confirmation toggle
+        confirmDeactivateItem(cellData, cellValue)
     }
     const handleChange = (cell, row, index) => {
+        var cellValue = cell === "Unblocked" ? 0 : 1
+        const statusId = cellValue === 0 ? 1 : 0;
         let data = {
-            Id: row.ReasonId,
+            ClassificationId: row.ClassificationId,
+            StatusId: statusId, // Toggle the status
             LoggedInUserId: loggedInUserId(),
-            IsActive: !cell, // Toggle the status
         }
-        // Update the cellData state
-        let updatedCellData = [...cellData];
-        updatedCellData[index] = data;
-        setCellData(updatedCellData);
+        console.log('data: ', data);
+
+        setCellData(data);
+        setCellValue(cell)
+
         setShowPopupToggle(true);
     }
     const statusButtonFormatter = (props) => {
-        console.log('props: ', props);
-
-
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        console.log('cellValue: ', cellValue);
-
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log('rowData: ', rowData);
-
         // if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex)
         return (
@@ -110,7 +121,7 @@ const SupplierClassificationListing = () => {
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => handleChange(cellValue, rowData)}
-                        checked={cellValue}
+                        checked={cellValue === "Unblocked" ? false : true}
                         // disabled={!ActivateAccessibility}
                         background="#ff6600"
                         onColor="#FC5774"
@@ -118,19 +129,17 @@ const SupplierClassificationListing = () => {
                         offColor="#4DC771"
                         id="normal-switch"
                         height={24}
-                        className={cellValue ? "active-switch" : "inactive-switch"}
+                        className={cellValue ? "blocked-switch" : "unblocked-switch"}
                     />
                 </label>
             </>
         )
     }
-
-    // const defaultColDef = {
-    //     resizable: true,
-    //     // filter: true,
-    //     sortable: false,
-    //     headerCheckboxSelectionFilteredOnly: true,
-    // };
+    const defaultColDef = {
+        resizable: true,
+        // filter: true,
+        sortable: false,
+    };
     const onGridReady = (params) => {
         // setGridApi(params.api)
         // setGridColumnApi(params.columnApi)
@@ -143,9 +152,16 @@ const SupplierClassificationListing = () => {
         setShowPopup(false)
         setShowPopupToggle(false)
     }
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
+
+
     const frameworkComponents = {
 
-        statusButtonFormatter: statusButtonFormatter
+        statusButtonFormatter: statusButtonFormatter,
+        effectiveDateFormatter: effectiveDateFormatter
     };
     return (
         <>
@@ -158,12 +174,12 @@ const SupplierClassificationListing = () => {
                     <div className={`ag-theme-material`}>
                         {/* {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />} */}
                         <AgGridReact
-                            // defaultColDef={defaultColDef}
+                            defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout='autoHeight'
                             rowData={supplierManagement}
                             onGridReady={onGridReady}
-                            // gridOptions={gridOptions}
+                            gridOptions={gridOptions}
                             // noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,
@@ -174,8 +190,8 @@ const SupplierClassificationListing = () => {
                         >
                             {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
                             <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
-                            <AgGridColumn field="LastUpdatedOn" headerName="Last Updated On"></AgGridColumn>
-                            <AgGridColumn field="LastUpdatedBy" headerName="Last Updated By"></AgGridColumn>
+                            <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
+                            <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
                             <AgGridColumn field="ClassificationStatus" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
                     </div>

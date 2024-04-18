@@ -4,21 +4,28 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import { fetchLPSRatingData, getlpsratingListing, updateLPSRatingStatus } from './Action';
-import { loggedInUserId, showTitleForActiveToggle } from '../../helper';
+import { checkPermission, loggedInUserId, showTitleForActiveToggle } from '../../helper';
 import Switch from "react-switch";
 import { Col, Row } from 'reactstrap';
 import NoContentFound from '../common/NoContentFound';
-import { EMPTY_DATA } from '../../config/constants';
+import { EMPTY_DATA, LPS_RATING, VENDOR_MANAGEMENT } from '../../config/constants';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import LoaderCustom from '../common/LoaderCustom';
 import Toaster from '../common/Toaster';
+import DayTime from '../common/DayTimeWrapper';
 
 const LpsRatingListing = () => {
     const [isLoader, setIsLoader] = useState(false);
     const [showPopupToggle, setShowPopupToggle] = useState(false);
     const [cellValue, setCellValue] = useState('');
     const [cellData, setCellData] = useState('');
+    const [ActivateAccessibility, setActivateAccessibility] = useState(false);
+    const [noData, setNoData] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+
+
+
 
 
 
@@ -26,9 +33,11 @@ const LpsRatingListing = () => {
     const lpsRatingData = useSelector(state => state.supplierManagement.lpsRatingData);
 
 
+
     useEffect(() => {
         // setIsLoader(true);
-        dispatch(fetchLPSRatingData(true, (res) => {
+        applyPermission()
+        dispatch(getlpsratingListing(true, (res) => {
             setIsLoader(false);
             if (res.status === 204 && res.data === '') {
                 setCellValue([]);
@@ -38,6 +47,17 @@ const LpsRatingListing = () => {
             }
         }));
     }, [dispatch]);
+    const applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            isLoader(true)
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === VENDOR_MANAGEMENT);
+            const accessData = Data && Data.Pages.find((el) => el.PageName === LPS_RATING)
+            const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+            if (permissionData !== undefined) {
+                setActivateAccessibility(permissionData && permissionData.Activate ? permissionData.Activate : false);
+            }
+        }
+    }
 
     const confirmApprovalStatus = (data) => {
         // Handle confirm approval status
@@ -46,46 +66,53 @@ const LpsRatingListing = () => {
 
     const onPopupConfirmToggle = () => {
         // Handle popup confirmation toggle
-        confirmDeactivateItem(cellData);
+        confirmDeactivateItem(cellData, cellValue)
     }
     const getTableListData = () => {
         setIsLoader(true)
         dispatch(getlpsratingListing(true, (res) => {
-            console.log('res: ', res)
+
             setIsLoader(false)
         }))
     }
     const confirmDeactivateItem = (data, cell) => {
+        console.log('data, cell: ', data, cell);
+
         dispatch(updateLPSRatingStatus(data, res => {
+            console.log('res: ', res);
             if (res && res.data && res.data.Result) {
-                if (cell === true) {
-                    Toaster.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
+                if (cell === "Unblocked") {
+                    Toaster.success(MESSAGES.LPSRATING_UNBLOCKED_SUCCESSFULLY)
                 } else {
-                    Toaster.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.LPSRATING_BLOCKED_SUCCESSFULLY)
                 }
-                getTableListData()
-                // setDataCount(0)
+                dispatch(getlpsratingListing(true))                // setDataCount(0)
             }
         }))
         setShowPopupToggle(false)
     }
 
     const handleChange = (cell, row, index) => {
+        var cellValue = cell === "Unblocked" ? 0 : 1
+        const statusId = cellValue === 0 ? 1 : 0;
         let data = {
-            Id: row.ReasonId,
+            LPSRatingId: row.LPSRatingId,
+            StatusId: statusId, // Toggle the status
             LoggedInUserId: loggedInUserId(),
-            IsActive: !cell, // Toggle the status
         }
-        // Update the cellData state
-        let updatedCellData = [...cellData];
-        updatedCellData[index] = data;
-        setCellData(updatedCellData);
+        console.log('data: ', data);
+
+        setCellData(data);
+        setCellValue(cell)
+
         setShowPopupToggle(true);
     }
 
     const statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         // if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex)
         return (
@@ -94,7 +121,7 @@ const LpsRatingListing = () => {
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => handleChange(cellValue, rowData)}
-                        checked={cellValue}
+                        checked={cellValue === "Unblocked" ? false : true}
                         // disabled={!ActivateAccessibility}
                         background="#ff6600"
                         onColor="#FC5774"
@@ -102,7 +129,7 @@ const LpsRatingListing = () => {
                         offColor="#4DC771"
                         id="normal-switch"
                         height={24}
-                        className={cellValue ? "active-switch" : "inactive-switch"}
+                        className={cellValue ? "blocked-switch" : "unblocked-switch"}
                     />
                 </label>
             </>
@@ -123,10 +150,14 @@ const LpsRatingListing = () => {
         // agGridRef.current = params.api;
         params.api.sizeColumnsToFit();
     };
-
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
     const frameworkComponents = {
 
-        statusButtonFormatter: statusButtonFormatter
+        statusButtonFormatter: statusButtonFormatter,
+        effectiveDateFormatter: effectiveDateFormatter
     };
 
     return (
@@ -155,10 +186,10 @@ const LpsRatingListing = () => {
                                 frameworkComponents={frameworkComponents}
                             >
                                 {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
-                                <AgGridColumn field="lpsRating" headerName="LPS Rating"></AgGridColumn>
-                                <AgGridColumn field="lastUpdatedOn" headerName="Last Updated On"></AgGridColumn>
-                                <AgGridColumn field="lastUpdatedBy" headerName="Last Updated By"></AgGridColumn>
-                                <AgGridColumn field="status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                                <AgGridColumn field="LPSRatingName" headerName="LPS Rating"></AgGridColumn>
+                                <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
+                                <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
+                                <AgGridColumn field="LPSRatingStatus" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                             </AgGridReact>
                         }
                         {!isLoader && (!lpsRatingData || lpsRatingData.length === 0) &&

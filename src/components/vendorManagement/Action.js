@@ -1,5 +1,5 @@
-import { API, API_FAILURE, LPS_RATING_DATA, UPDATE_LPS_RATING_STATUS, UPDATE_VENDOR_CLASSIFICATION_STATUS, VENDOR_CLASSIFICATION_DATA } from '../../config/constants';
-import { apiErrors } from '../../helper';
+import { API, API_FAILURE, API_REQUEST, API_SUCCESS, LPS_RATING_DATA, UPDATE_LPS_RATING_STATUS, UPDATE_VENDOR_CLASSIFICATION_STATUS, VENDOR_CLASSIFICATION_DATA, config } from '../../config/constants';
+import { apiErrors, loggedInUserId, userDetails } from '../../helper';
 import data from './data.json';
 import axios from 'axios';
 export const UPDATE_VENDOR_DATA = 'UPDATE_VENDOR_DATA';
@@ -89,28 +89,29 @@ export const fetchApprovalData = () => {
 
 
 
-export const getVendorClassificationListing = (callback) => {
-    return async dispatch => {
-        try {
-            const response = await axios.get(API.getVendorClassificationList);
-            console.log('response: ', response);
-            dispatch({
-                type: VENDOR_CLASSIFICATION_DATA,
-                payload: response.status === 200 ? response.data : null
+export const getVendorClassificationListing = () => {
+    return dispatch => {
+        axios.get(`${API.getVendorClassificationList}`, config())
+            .then(response => {
+                console.log('response: ', response);
+                dispatch({
+                    type: VENDOR_CLASSIFICATION_DATA,
+                    payload: response.status === 200 ? response.data : null
+                });
+            })
+
+            .catch(error => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                // callback(error);
             });
-            callback(response);
-        } catch (error) {
-            dispatch({ type: API_FAILURE });
-            callback(error);
-            apiErrors(error);
-        }
     };
 };
 
 export const getlpsratingListing = (callback) => {
     return async dispatch => {
         try {
-            const response = await axios.get(API.getVendorLpsRatingList);
+            const response = await axios.get(`${API.getVendorLpsRatingList}`, config());
             console.log('response: ', response);
             dispatch({
                 type: LPS_RATING_DATA,
@@ -125,40 +126,36 @@ export const getlpsratingListing = (callback) => {
 };
 
 
-export const updateClassificationStatus = (classificationData, callback = () => { }) => {
-    return async dispatch => {
-        try {
-            const response = await axios.put(API.updateClassificationStatus, classificationData);
-            console.log('Update Classification Status Response: ', response);
-            dispatch({
-                type: UPDATE_VENDOR_CLASSIFICATION_STATUS,
-                payload: response.status === 200 ? response.data : null
+export function updateClassificationStatus(requestData, callback) {
+    console.log('requestData, callback: ', requestData, callback);
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.vendorClassificationStatusUpdate}`, requestData, config())
+            .then((response) => {
+                console.log('response: ', response);
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
             });
-            callback(null, response.data); // Callback with data on success
-        } catch (error) {
-            console.error('Error updating Classification Status:', error);
-            dispatch({ type: API_FAILURE });
-            callback(error); // Callback with error on failure
-        }
     };
-};
+}
 
-export const updateLPSRatingStatus = (lpsRatingData, callback = () => { }) => {
-    return async dispatch => {
-        try {
-            const response = await axios.put(API.updateLPSRatingStatus, lpsRatingData);
-            console.log('Update LPS Rating Status Response: ', response);
-            dispatch({
-                type: UPDATE_LPS_RATING_STATUS,
-                payload: response.status === 200 ? response.data : null
+
+export function updateLPSRatingStatus(requestData, callback) {
+    console.log('requestData, callback: ', requestData, callback);
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.lpsRatingStatusUpdate}`, requestData, config())
+            .then((response) => {
+                console.log('response: ', response);
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
             });
-            callback(null, response.data); // Callback with data on success
-        } catch (error) {
-            console.error('Error updating LPS Rating Status:', error);
-            dispatch({ type: API_FAILURE });
-            callback(error); // Callback with error on failure
-        }
     };
-};
-
+}
 

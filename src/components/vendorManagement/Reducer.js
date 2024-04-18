@@ -13,16 +13,16 @@ const initialState = {
 const supplierManagementReducer = (state = initialState, action) => {
     switch (action.type) {
         case VENDOR_CLASSIFICATION_DATA:
-            console.log('action: ', action);
+            console.log('action: ', action.payload);
             return {
                 ...state,
-                vendorData: action.payload
+                vendorData: action.payload.DataList
             };
         case LPS_RATING_DATA:
             console.log('action: ', action);
             return {
                 ...state,
-                lpsRatingData: action.payload
+                lpsRatingData: action.payload.DataList
             };
         case UPDATE_VENDOR_CLASSIFICATION_STATUS:
             console.log('action: ', action);
