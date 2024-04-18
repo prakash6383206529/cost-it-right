@@ -851,7 +851,7 @@ function RMDomesticListing(props) {
                     <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-4'}`}>
                         <Col md="3" lg="3" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                            {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+                            {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
                                 buttonSpecificProp={{
                                     id: "RMDomestic_Listing_Tour", onClick: toggleExtraData
                                 }}

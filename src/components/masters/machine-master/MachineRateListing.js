@@ -699,7 +699,7 @@ const MachineRateListing = (props) => {
         <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large ${(props.isSimulation || props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
           <Col md="3" lg="3">
             <input type="text" className="form-control table-search" value={searchText} id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={onFilterTextBoxChanged} />
-            {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+            {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
               buttonSpecificProp={{
                 id: "MachineRate_Listing_Tour",
                 onClick: toggleExtraData

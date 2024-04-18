@@ -931,7 +931,7 @@ const BOPImportListing = (props) => {
                   className={`pt-4  ${props?.benchMark ? "zindex-2" : "filter-row-large"} ${props.isSimulation ? "simulation-filter zindex-0" : ""}`}                >
                   <Col md="3" lg="3">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
-                    {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+                    {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
                       buttonSpecificProp={{ id: "BOP_Importing_Listing_Tour", onClick: toggleExtraData }}
                       stepsSpecificProp={{
                         steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING

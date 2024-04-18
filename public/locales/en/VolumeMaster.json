@@ -10,6 +10,8 @@
         "AddVolume_PartType": "Select the part type from the dropdown.",
         "AddVolume_PartNumber": "Select the part no. (revision no.) from the dropdown.",
         "AddVolume_Year": "Select the year.",
+        "AddVolume_actual_Quantity": "Click here to enter the quantity.",
+        "AddVolume_Edit_actual_Quantity": "Double-click to edit the quantity.",
         "AddVolume_Delete": "Click here to delete.",
         "AddVolume_Cancel": "Click here to cancel."
     },

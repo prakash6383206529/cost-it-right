@@ -28,6 +28,7 @@ export function Steps(t, config) {
             {
                 element: "#ViewRfq_back",
                 intro: t("rfqView.ViewRfq_back"),
+                position: "left",
             },
             ...config && config?.action ? [
                 {

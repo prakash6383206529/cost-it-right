@@ -11,9 +11,12 @@
         "AddInterestRate_ClientCode": "Select customer (code) from the dropdown.",
         "AddInterestRate_ICCApplicability": "Select ICC applicability from the dropdown.",
         "AddInterestRate_AnnualICC": "Enter annual ICC percentage.",
+        "AddInterestRate_Edit_AnnualICC": "Update annual ICC percentage, make sure to change the effective date accordingly.",
         "AddInterestRate_PaymentTermsApplicability": "Select payment terms applicability from the dropdown.",
         "AddInterestRate_RepaymentPeriod": "Enter repayment period in days.",
+        "AddInterestRate_Edit_RepaymentPeriod": "Update repayment period, make sure to change the effective date accordingly.",
         "AddInterestRate_PaymentTermPercent": "Enter payment term percentage.",
+        "AddInterestRate_Edit_PaymentTermPercent": "Update payment term percentage, make sure to change the effective date accordingly.",
         "AddInterestRate_EffectiveDate": "Select effective date from the calendar.",
         "AddInterestRate_Cancel": "Click here to cancel.",
         "AddInterestRate_Save": "Click here to save the interest rate."

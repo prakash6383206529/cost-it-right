@@ -7,7 +7,7 @@
             "checkBox": "Click on the checkbox to select a particular row.",
             "link": "This is clickable data; click here to see more details.",
             "approvalStatus": "Search data by status.",
-            "toggleStatus": "Switch this button to allow or disallow actions."
+            "toggleStatus": "Toggle this button to activate and deactivate the role."
         },
         "mainButton": {
             "filter": "After entering specific data, click here to filter it out.",
