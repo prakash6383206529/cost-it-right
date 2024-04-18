@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
-import { fetchVendorData } from './Action';
+import { fetchVendorData, getVendorClassificationListing, updateClassificationStatus } from './Action';
 import Toaster from '../common/Toaster';
 import Switch from "react-switch";
 import { loggedInUserId, showTitleForActiveToggle } from '../../helper';
@@ -36,13 +36,14 @@ const SupplierClassificationListing = () => {
 
 
     useEffect(() => {
-        dispatch(fetchVendorData());
+        dispatch(getVendorClassificationListing());
         getTableListData()
 
     }, [dispatch]);
     const getTableListData = () => {
         setIsLoader(true)
-        dispatch(fetchVendorData(true, (res) => {
+        dispatch(getVendorClassificationListing(true, (res) => {
+            console.log('res: ', res);
 
             setIsLoader(false)
             if (res.status === 204 && res.data === '') {
@@ -62,17 +63,17 @@ const SupplierClassificationListing = () => {
         }))
     }
     const confirmDeactivateItem = (data, cell) => {
-        // dispatch(activeInactiveReasonStatus(data, res => {
-        //   if (res && res.data && res.data.Result) {
-        //     if (cell === true) {
-        //       Toaster.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
-        //     } else {
-        //       Toaster.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
-        //     }
-        //     getTableListData()
-        //     setDataCount(0)
-        //   }
-        // }))
+        dispatch(updateClassificationStatus(data, res => {
+            if (res && res.data && res.data.Result) {
+                if (cell === true) {
+                    Toaster.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
+                } else {
+                    Toaster.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
+                }
+                getTableListData()
+                // setDataCount(0)
+            }
+        }))
         setShowPopupToggle(false)
     }
     const onPopupConfirmToggle = () => {
@@ -172,10 +173,10 @@ const SupplierClassificationListing = () => {
                             frameworkComponents={frameworkComponents}
                         >
                             {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
-                            <AgGridColumn field="classification" headerName="Supplier Classification"></AgGridColumn>
-                            <AgGridColumn field="lastUpdatedOn" headerName="Last Updated On"></AgGridColumn>
-                            <AgGridColumn field="lastUpdatedBy" headerName="Last Updated By"></AgGridColumn>
-                            <AgGridColumn field="status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
+                            <AgGridColumn field="LastUpdatedOn" headerName="Last Updated On"></AgGridColumn>
+                            <AgGridColumn field="LastUpdatedBy" headerName="Last Updated By"></AgGridColumn>
+                            <AgGridColumn field="ClassificationStatus" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
                     </div>
                 </div>}

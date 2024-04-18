@@ -1,4 +1,5 @@
-import { APPROVAL_LISTING, UPDATE_APPROVAL_DATA, UPDATE_LPS_RATING_DATA, UPDATE_VENDOR_DATA, UPDATE_VENDOR_DETAIL_DATA, VENDOR_DETAIL_DATA } from './Action';
+import { LPS_RATING_DATA, UPDATE_LPS_RATING_STATUS, UPDATE_VENDOR_CLASSIFICATION_STATUS, VENDOR_CLASSIFICATION_DATA } from '../../config/constants';
+import { APPROVAL_LISTING, UPDATE_APPROVAL_DATA, VENDOR_DETAIL_DATA } from './Action';
 
 const initialState = {
     vendorData: [],
@@ -11,23 +12,31 @@ const initialState = {
 
 const supplierManagementReducer = (state = initialState, action) => {
     switch (action.type) {
-        case UPDATE_VENDOR_DATA:
-
-
+        case VENDOR_CLASSIFICATION_DATA:
+            console.log('action: ', action);
             return {
                 ...state,
                 vendorData: action.payload
             };
-        case UPDATE_LPS_RATING_DATA:
-
-
+        case LPS_RATING_DATA:
+            console.log('action: ', action);
             return {
                 ...state,
                 lpsRatingData: action.payload
             };
+        case UPDATE_VENDOR_CLASSIFICATION_STATUS:
+            console.log('action: ', action);
+            return {
+                ...state,
+                classificationData: action.payload
+            }
+        case UPDATE_LPS_RATING_STATUS:
+            console.log('action: ', action);
+            return {
+                ...state,
+                lpsRatingData: action.payload
+            }
         case APPROVAL_LISTING:
-
-
             return {
                 ...state,
                 approvalListing: action.payload

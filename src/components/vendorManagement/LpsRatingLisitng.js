@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
-import { fetchLPSRatingData } from './Action';
+import { fetchLPSRatingData, getlpsratingListing, updateLPSRatingStatus } from './Action';
 import { loggedInUserId, showTitleForActiveToggle } from '../../helper';
 import Switch from "react-switch";
 import { Col, Row } from 'reactstrap';
@@ -12,12 +12,14 @@ import { EMPTY_DATA } from '../../config/constants';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import LoaderCustom from '../common/LoaderCustom';
+import Toaster from '../common/Toaster';
 
 const LpsRatingListing = () => {
     const [isLoader, setIsLoader] = useState(false);
     const [showPopupToggle, setShowPopupToggle] = useState(false);
     const [cellValue, setCellValue] = useState('');
     const [cellData, setCellData] = useState('');
+
 
 
     const dispatch = useDispatch();
@@ -44,9 +46,29 @@ const LpsRatingListing = () => {
 
     const onPopupConfirmToggle = () => {
         // Handle popup confirmation toggle
-        confirmApprovalStatus(cellData);
+        confirmDeactivateItem(cellData);
     }
-
+    const getTableListData = () => {
+        setIsLoader(true)
+        dispatch(getlpsratingListing(true, (res) => {
+            console.log('res: ', res)
+            setIsLoader(false)
+        }))
+    }
+    const confirmDeactivateItem = (data, cell) => {
+        dispatch(updateLPSRatingStatus(data, res => {
+            if (res && res.data && res.data.Result) {
+                if (cell === true) {
+                    Toaster.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
+                } else {
+                    Toaster.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
+                }
+                getTableListData()
+                // setDataCount(0)
+            }
+        }))
+        setShowPopupToggle(false)
+    }
 
     const handleChange = (cell, row, index) => {
         let data = {

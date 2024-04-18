@@ -18,7 +18,8 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `http://10.10.11.208:3030/api/v1`
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10162/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
@@ -1113,6 +1114,12 @@ export const API = {
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
 
+  //vendor management
+  getVendorClassificationList: `${BASE_URL}/vendor/get-classifications-status`,
+  getVendorLpsRatingList: `${BASE_URL}/vendor/get-lpsratings-status`,
+  vendorClassificationStatusUpdate: `${BASE_URL}/vendor/update-classification-status`,
+  lpsRatingStatusUpdate: `${BASE_URL}/vendor/update-lpsrating-status`,
+
   // NFR
   getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
   getNfrAnnualForecastQuantity: `${BASE_URL}/rfq-quotation/get-nfr-annual-forecast-quantity`,
@@ -1127,6 +1134,14 @@ export const API = {
   // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
   // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
 }
+//VENDOR MANAGEMENT
+
+export const VENDOR_CLASSIFICATION_DATA = 'VENDOR_CLASSIFICATION_DATA';
+export const LPS_RATING_DATA = 'LPS_RATING_DATA';
+export const UPDATE_VENDOR_CLASSIFICATION_STATUS = 'UPDATE_VENDOR_CLASSIFICATION_STATUS';
+export const UPDATE_LPS_RATING_STATUS = 'UPDATE_LPS_RATING_STATUS';
+
+
 
 //Api constants
 export const API_REQUEST = 'API_REQUEST'

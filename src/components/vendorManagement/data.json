@@ -1,36 +1,36 @@
 {
     "vendorData": [
         {
-            "sno": 1,
-            "classification": "Strategic",
-            "status": true,
+            "ClassificationId": 1,
+            "ClassificationName": "Strategic",
+            "ClassificationStatus": true,
             "lastUpdatedOn": "2024-04-05",
             "lastUpdatedBy": "User A"
         },
         {
-            "sno": 2,
-            "classification": "Challenger",
+            "ClassificationId": 2,
+            "ClassificationName": "Challenger",
             "status": false,
             "lastUpdatedOn": "2024-04-04",
             "lastUpdatedBy": "User B"
         },
         {
-            "sno": 3,
-            "classification": "Transactional",
+            "ClassificationId": 3,
+            "ClassificationName": "Transactional",
             "status": true,
             "lastUpdatedOn": "2024-04-03",
             "lastUpdatedBy": "User C"
         },
         {
-            "sno": 4,
-            "classification": "No New Business",
+            "ClassificationId": 4,
+            "ClassificationName": "No New Business",
             "status": false,
             "lastUpdatedOn": "2024-04-02",
             "lastUpdatedBy": "User D"
         },
         {
-            "sno": 5,
-            "classification": "Active Disengagement",
+            "ClassificationId": 5,
+            "ClassificationName": "Active Disengagement",
             "status": false,
             "lastUpdatedOn": "2024-04-01",
             "lastUpdatedBy": "User E"
