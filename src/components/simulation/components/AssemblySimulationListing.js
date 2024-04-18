@@ -112,7 +112,7 @@ function AssemblySimulationListing(props) {
             "SimulationTechnologyId": checkForNull(selectedMasterForSimulation?.value),
             "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
             "LoggedInUserId": loggedInUserId(),
-            "SimulationHeadId": props?.isCustomer ? CBCTypeId : VBCTypeId
+            "SimulationHeadId": props?.costingHead?.value
         }
 
         dispatch(draftSimulationMultiTechnology(obj, res => {
