@@ -39,6 +39,7 @@ const SupplierClassificationListing = () => {
 
 
     useEffect(() => {
+        applyPermission()
         dispatch(getVendorClassificationListing());
         getTableListData()
 
@@ -80,10 +81,10 @@ const SupplierClassificationListing = () => {
     const confirmDeactivateItem = (data, cell) => {
         dispatch(updateClassificationStatus(data, res => {
             if (res && res?.data && res?.data?.Result) {
-                if (cell === true) {
-                    Toaster.success(MESSAGES?.CLASSIFICATION_UNBLOCK_SUCCESSFULLY)
-                } else {
+                if (cell === "Blocked") {
                     Toaster.success(MESSAGES?.CLASSIFICATION_BLOCK_SUCCESSFULLY)
+                } else {
+                    Toaster.success(MESSAGES?.CLASSIFICATION_UNBLOCK_SUCCESSFULLY)
                 }
                 getTableListData()
                 // setDataCount(0)

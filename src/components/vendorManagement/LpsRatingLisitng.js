@@ -82,9 +82,9 @@ const LpsRatingListing = () => {
             console.log('res: ', res);
             if (res && res.data && res.data.Result) {
                 if (cell === "Unblocked") {
-                    Toaster.success(MESSAGES.LPSRATING_UNBLOCKED_SUCCESSFULLY)
-                } else {
                     Toaster.success(MESSAGES.LPSRATING_BLOCKED_SUCCESSFULLY)
+                } else {
+                    Toaster.success(MESSAGES.LPSRATING_UNBLOCKED_SUCCESSFULLY)
                 }
                 dispatch(getlpsratingListing(true))                // setDataCount(0)
             }
