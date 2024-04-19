@@ -323,8 +323,8 @@ export const trimFourDecimalPlace = (floatValue) => {
 
 export const trimDecimalPlace = (floatValue, decimalPlaces) => {
     if (floatValue !== null && !isNaN(floatValue)) {
-        const roundedValue = new BigNumber(floatValue).decimalPlaces(decimalPlaces);
-        return roundedValue.toNumber();
+        const roundedValue = new BigNumber(floatValue)?.decimalPlaces(decimalPlaces);
+        return roundedValue && roundedValue?.toNumber();
     }
     return floatValue;
 };

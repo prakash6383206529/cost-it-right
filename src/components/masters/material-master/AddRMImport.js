@@ -317,7 +317,7 @@ class AddRMImport extends Component {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
         if (!(data.isEditFlag || data.isViewFlag)) {
           setTimeout(() => {
-            this.commonFunction()
+            this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
           }, 100);
         }
       })
@@ -326,7 +326,7 @@ class AddRMImport extends Component {
     }
   }
 
-  commonFunction(plantId = '') {
+  commonFunction(plantId = EMPTY_GUID) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, RM_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -339,17 +339,18 @@ class AddRMImport extends Component {
       plantId: plantId
     }
 
-
-    this.props.checkFinalUser(obj, (res) => {
-      if (res?.data?.Result) {
-        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
-      }
-      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
-        this.setState({ disableSendForApproval: true })
-      } else {
-        this.setState({ disableSendForApproval: false })
-      }
-    })
+    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+        }
+        if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+          this.setState({ disableSendForApproval: true })
+        } else {
+          this.setState({ disableSendForApproval: false })
+        }
+      })
+    }
     this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
   }
 

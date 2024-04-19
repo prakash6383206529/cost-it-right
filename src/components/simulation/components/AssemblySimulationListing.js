@@ -56,8 +56,9 @@ function AssemblySimulationListing(props) {
         let obj = {
             technologyId: technology?.value,
             vendorId: props?.isCustomer ? null : selectedVendorForSimulation?.value,
-            costingTypeId: props?.isCustomer ? CBCTypeId : VBCTypeId,
+            costingTypeId: props?.costingHead?.value,
             customerId: props?.isCustomer ? selectedVendorForSimulation?.value : null,
+            plantId: props?.plant?.value,
         }
 
         dispatch(getAllMultiTechnologyCostings(obj, (res) => { }))
@@ -111,7 +112,7 @@ function AssemblySimulationListing(props) {
             "SimulationTechnologyId": checkForNull(selectedMasterForSimulation?.value),
             "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
             "LoggedInUserId": loggedInUserId(),
-            "SimulationHeadId": props?.isCustomer ? CBCTypeId : VBCTypeId
+            "SimulationHeadId": props?.costingHead?.value
         }
 
         dispatch(draftSimulationMultiTechnology(obj, res => {

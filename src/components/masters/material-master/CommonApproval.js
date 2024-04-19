@@ -599,19 +599,30 @@ function CommonApproval(props) {
                 setLevelDetails(levelDetailsTemp)
             }))
 
-            let costingHead = selectedRowData[0]?.CostingHead
-            let valid = true
+            let costingHead = selectedRowData[0]?.CostingHead;
+            let plantId = selectedRowData[0]?.MasterApprovalPlantId
+            let checkPlantIdSame = true;
+            let checkCostingHeadSame = true
             selectedRowData.map((item) => {
                 if (item.CostingHead !== costingHead) {
-                    valid = false
+                    checkCostingHeadSame = false
+                    return false
+                }
+                if (item.MasterApprovalPlantId !== plantId) {
+                    checkPlantIdSame = false
                     return false
                 }
                 return null
             })
-            if (valid) {
-                setApprovalDrawer(true)
-            } else {
+            if (!checkCostingHeadSame) {
                 Toaster.warning('Please select token with same costing head.')
+                return;
+            } else if (!(initialConfiguration.IsMultipleUserAllowForApproval ? checkPlantIdSame : true)) {
+                Toaster.warning('Please select token with same plant.')
+                return;
+            }
+            else {
+                setApprovalDrawer(true)
             }
         }
         else {
@@ -983,6 +994,7 @@ function CommonApproval(props) {
                     type={'Sender'}
                     anchor={"right"}
                     isBulkUpload={true}
+                    masterPlantId={selectedRowData[0]?.MasterApprovalPlantId}
                     approvalData={selectedRowData}
                     levelDetails={levelDetails}
                     costingTypeId={selectedRowData[0]?.CostingTypeId}

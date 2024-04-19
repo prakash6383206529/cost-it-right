@@ -164,7 +164,7 @@ class AddMachineRate extends Component {
       if (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
         this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
           setTimeout(() => {
-            this.commonFunction()
+            this.commonFunction(this.state.selectedPlants.value)
           }, 100);
         })
       } else {
@@ -216,7 +216,7 @@ class AddMachineRate extends Component {
     this.getDetails()
   }
 
-  commonFunction(plantId = "") {
+  commonFunction(plantId = EMPTY_GUID) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -248,7 +248,7 @@ class AddMachineRate extends Component {
     const { initialConfiguration } = this.props
     if (!this.props.data.isViewFlag) {
       if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
-        this.commonFunction()
+        this.commonFunction(this.state.selectedPlants.value)
       }
     }
   }

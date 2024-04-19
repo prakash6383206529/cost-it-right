@@ -292,7 +292,7 @@ function ApprovalSummary(props) {
               Kschl: item.CostingConditionNumber,
               Datab: DayTime(responseData.EffectiveDate).format('YYYY-MM-DD'),
               Datbi: DayTime('9999-12-31').format('YYYY-MM-DD'),
-              Kbetr: item.ConditionType === "Percentage" ? item?.Percentage : item?.ConditionCost,
+              Kbetr: item.ConditionType === "Percentage" ? item?.Percentage : item.ConditionType === "Quantity" ? item.ConditionCostPerQuantity : item?.ConditionCost,
               Konwa: INR,
               Kpein: item?.ConditionQuantity ? String(item?.ConditionQuantity) : "1",
               Kmein: "NO",
@@ -696,10 +696,10 @@ function ApprovalSummary(props) {
                         {approvalDetails.EffectiveDate !== null ? DayTime(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
                       </td>
                       {approvalDetails.CostingTypeId !== NCCTypeId && <td>
-                        {approvalDetails.AnnualImpact !== null ? checkForDecimalAndNull(approvalDetails.AnnualImpact, getConfigurationKey.NoOfDecimalForPrice) : '-'}
+                        {approvalDetails.AnnualImpact !== null ? checkForDecimalAndNull(approvalDetails.AnnualImpact, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}
                       </td>}
                       {approvalDetails.CostingTypeId !== NCCTypeId && <td>
-                        {approvalDetails.ImpactOfTheYear !== null ? checkForDecimalAndNull(approvalDetails.ImpactOfTheYear, getConfigurationKey.NoOfDecimalForPrice) : '-'}
+                        {approvalDetails.ImpactOfTheYear !== null ? checkForDecimalAndNull(approvalDetails.ImpactOfTheYear, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}
                       </td>}
                     </tr>
 

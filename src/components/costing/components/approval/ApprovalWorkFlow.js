@@ -12,7 +12,7 @@ function ApprovalWorkFlow(props) {
   // const [approval, setApproval] = useState([])
   const dispatch = useDispatch()
   useEffect(() => {
-    if (initialConfiguration.IsMultipleUserAllowForApproval && approverData && approverData.processId) {
+    if (initialConfiguration?.IsMultipleUserAllowForApproval && approverData && approverData.processId) {
       let data = {
         processId: approverData.processId,
         levelId: approverData.levelId,
@@ -32,15 +32,17 @@ function ApprovalWorkFlow(props) {
       case 1:
         return approverList[0].UserName;
       default:
-        return <Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn" type={'button'}>{'View All'}</button>}
-          position="right center">
-          <ul className="px-1 view-all-list">
-            {approverList && approverList.map((item, index) => {
-              return <li key={item.UserId}>{index + 1}. {item.UserName}</li>
-            })}
-          </ul>
-
-        </Popup>
+        return <>
+          {approverList[0].UserName},<Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn pl-1" type={'button'}><p>+{approverList.length - 1}</p></button>}
+            position="bottom center">
+            <ul className="px-1 view-all-list">
+              {approverList && approverList.map((item, index) => {
+                if (index === 0) return false
+                return <li key={item.UserId}> {item.UserName}</li>
+              })}
+            </ul>
+          </Popup>
+        </>
     }
   }
   /* TODO SORTING OF LEVEL ACC TO DATA*/
@@ -85,7 +87,7 @@ function ApprovalWorkFlow(props) {
                     </div>
                     <div className="right">
                       <span className="">{item.Title}</span>
-                      <p className="">{(item.ApprovedBy && item.ApprovedBy !== '-') ? item.ApprovedBy : initialConfiguration.IsMultipleUserAllowForApproval ? approverListUI() : '-'}</p>
+                      <p className="">{(item.ApprovedBy && item.ApprovedBy !== '-') ? item.ApprovedBy : initialConfiguration?.IsMultipleUserAllowForApproval ? approverListUI() : '-'}</p>
                     </div>
                   </div>
                   {/* top */}

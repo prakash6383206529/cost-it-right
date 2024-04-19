@@ -126,20 +126,20 @@ class AddOperation extends Component {
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
     }
+    this.getDetail()
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction()
+          this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
         }, 100);
       })
     } else {
       this.setState({ finalApprovalLoader: false })
     }
-    this.getDetail()
 
   }
 
-  commonFunction(plantId = "") {
+  commonFunction(plantId = EMPTY_GUID) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, OPERATIONS_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -172,7 +172,7 @@ class AddOperation extends Component {
       this.calculateRate()
     }
     if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
-      this.commonFunction()
+      this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
     }
   }
   componentWillUnmount() {

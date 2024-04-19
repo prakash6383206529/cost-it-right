@@ -73,7 +73,7 @@ function MasterSendForApproval(props) {
                 MasterId: masterId,
                 ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
                 ReasonId: reasonId,
-                PlantId: approvalObj ? approvalObj.Plant[0].PlantId : props.masterPlantId
+                PlantId: approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID
             }
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
                 const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -143,7 +143,7 @@ function MasterSendForApproval(props) {
             MasterId: masterId,
             ReasonId: '',
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
-            PlantId: approvalObj.PlantId
+            PlantId: approvalObj.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID
         }
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -190,7 +190,7 @@ function MasterSendForApproval(props) {
             senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
             // senderObj.ApproverId = approver && approver.value ? approver.value : ''
-            senderObj.ApproverIdList = approverIdList
+            senderObj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
             senderObj.SenderLevelId = levelDetails?.LevelId
             senderObj.SenderId = loggedInUserId()
             senderObj.SenderLevel = levelDetails?.Level
@@ -416,7 +416,7 @@ function MasterSendForApproval(props) {
             obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
             obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
             // obj.ApproverId = approver && approver.value ? approver.value : ''
-            obj.ApproverIdList = approverIdList
+            obj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
             obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
             obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             obj.Remark = remark

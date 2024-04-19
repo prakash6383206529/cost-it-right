@@ -588,7 +588,7 @@ function ApproveRejectDrawer(props) {
             SenderLevel: levelDetails.Level,
             SenderId: userLoggedIn,
             // ApproverId: approver && approver.value ? approver.value : '',
-            ApproverIdList: approverIdList,
+            ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
             ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
             ApproverLevel: approver && approver.levelName ? approver.levelName : '',
             Remark: remark,
@@ -610,7 +610,7 @@ function ApproveRejectDrawer(props) {
           SenderLevel: levelDetails.Level,
           SenderId: userLoggedIn,
           // ApproverId: approver && approver.value ? approver.value : '',
-          ApproverIdList: approverIdList,
+          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
           ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
           ApproverLevel: approver && approver.levelName ? approver.levelName : '',
           Remark: remark,
@@ -642,7 +642,7 @@ function ApproveRejectDrawer(props) {
         senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
         senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
         // senderObj.ApproverId = approver && approver.value ? approver.value : ''
-        senderObj.ApproverIdList = approverIdList
+        senderObj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
         senderObj.SenderLevelId = levelDetails?.LevelId
         senderObj.SenderLevel = levelDetails?.Level
         senderObj.SenderId = userLoggedIn
