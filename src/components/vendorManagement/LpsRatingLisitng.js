@@ -76,10 +76,10 @@ const LpsRatingListing = () => {
         }))
     }
     const confirmDeactivateItem = (data, cell) => {
-        console.log('data, cell: ', data, cell);
+
 
         dispatch(updateLPSRatingStatus(data, res => {
-            console.log('res: ', res);
+
             if (res && res.data && res.data.Result) {
                 if (cell === "Unblocked") {
                     Toaster.success(MESSAGES.LPSRATING_BLOCKED_SUCCESSFULLY)

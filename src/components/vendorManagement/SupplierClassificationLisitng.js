@@ -33,7 +33,7 @@ const SupplierClassificationListing = () => {
 
     const dispatch = useDispatch();
     const supplierManagement = useSelector(state => state?.supplierManagement?.vendorData) || [];
-    console.log('supplierManagement: ', supplierManagement);
+
 
 
 
@@ -103,7 +103,7 @@ const SupplierClassificationListing = () => {
             StatusId: statusId, // Toggle the status
             LoggedInUserId: loggedInUserId(),
         }
-        console.log('data: ', data);
+
 
         setCellData(data);
         setCellValue(cell)

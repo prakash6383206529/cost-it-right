@@ -18,7 +18,7 @@ const InitiateUnblocking = () => {
     const [selectedPlant, setSelectedPlant] = useState(null);
     const [unblockComponent, setUnblockComponent] = useState(null); // State variable to hold the component to render
     const supplierDetailData = useSelector((state) => state.supplierManagement.supplierDetailData);
-    console.log('supplierDetailData: ', supplierDetailData);
+
     const [openDraftDrawer, setOpenDraftDrawer] = useState(false); // State variable to control the opening of the approval drawer
 
     const [filteredPlant, setFilteredPlant] = useState([]);
@@ -41,7 +41,7 @@ const InitiateUnblocking = () => {
             const selectedVendorDetails = supplierDetailData?.find((vendor) => vendor.SupplierCode === selectedVendor.value);
             if (selectedVendorDetails) {
                 const selectedPlantData = selectedVendorDetails.Plant.find((plant) => plant.Plant === selectedPlant.label);
-                console.log('selectedPlantData: ', selectedPlantData);
+
                 setFilteredPlant(selectedPlantData);
             }
         }
@@ -55,7 +55,7 @@ const InitiateUnblocking = () => {
         setOpenDraftDrawer(true); // Open the approval drawer when the "Next" button is clicked
         // Remaining logic for navigation can be added here if needed
     };
-    console.log(selectedPlant);
+
     return (
         <div className="container-fluid">
             <ScrollToTop pointProp={"go-to-top"} />
@@ -171,7 +171,7 @@ const InitiateUnblocking = () => {
                                                     if (vendor?.Plant?.length > 0) {
                                                         // Filter the Plant array to get the details of the selected plant
                                                         const selectedPlants = vendor?.Plant?.find((plant) => plant.Plant === selectedPlant.label);
-                                                        console.log('selectedPlant: ', selectedPlants);
+
 
                                                         if (selectedPlants) {
                                                             return (

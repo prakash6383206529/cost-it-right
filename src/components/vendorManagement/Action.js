@@ -93,7 +93,7 @@ export const getVendorClassificationListing = () => {
     return dispatch => {
         axios.get(`${API.getVendorClassificationList}`, config())
             .then(response => {
-                console.log('response: ', response);
+
                 dispatch({
                     type: VENDOR_CLASSIFICATION_DATA,
                     payload: response.status === 200 ? response.data : null
@@ -112,7 +112,7 @@ export const getlpsratingListing = (callback) => {
     return async dispatch => {
         try {
             const response = await axios.get(`${API.getVendorLpsRatingList}`, config());
-            console.log('response: ', response);
+
             dispatch({
                 type: LPS_RATING_DATA,
                 payload: response.status === 200 ? response.data : null
@@ -127,12 +127,12 @@ export const getlpsratingListing = (callback) => {
 
 
 export function updateClassificationStatus(requestData, callback) {
-    console.log('requestData, callback: ', requestData, callback);
+
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.put(`${API.vendorClassificationStatusUpdate}`, requestData, config())
             .then((response) => {
-                console.log('response: ', response);
+
                 dispatch({ type: API_SUCCESS });
                 callback(response);
             }).catch((error) => {
@@ -144,12 +144,12 @@ export function updateClassificationStatus(requestData, callback) {
 
 
 export function updateLPSRatingStatus(requestData, callback) {
-    console.log('requestData, callback: ', requestData, callback);
+
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.put(`${API.lpsRatingStatusUpdate}`, requestData, config())
             .then((response) => {
-                console.log('response: ', response);
+
                 dispatch({ type: API_SUCCESS });
                 callback(response);
             }).catch((error) => {

@@ -529,7 +529,7 @@ const SendForApproval = (props) => {
       let temp = []
 
       viewApprovalData.map((data) => {
-        console.log(selectedApprover, "selectedApprover");
+
 
         let tempObj = {}
         tempObj.ApprovalProcessSummaryId = data.ApprovalProcessSummaryId

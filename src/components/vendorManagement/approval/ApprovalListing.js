@@ -287,7 +287,7 @@ function ApprovalListing(props) {
 
 
     const isRowSelectable = (rowNode) => {
-        console.log('rowNode: ', rowNode);
+
         return rowNode?.data?.Status === PENDING;
     };
 
@@ -311,11 +311,11 @@ function ApprovalListing(props) {
         params.api.sizeColumnsToFit();
     };
     const isFirstColumn = (params) => {
-        console.log('params: ', params);
+
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
-        console.log('displayedColumns: ', displayedColumns);
+
         var thisIsFirstColumn = displayedColumns[0] === params.column;
-        console.log('thisIsFirstColumn: ', thisIsFirstColumn);
+
 
         return thisIsFirstColumn;
     }

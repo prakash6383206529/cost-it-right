@@ -11,7 +11,7 @@ import { handleDepartmentHeader } from '../../../helper';
 
 
 const SendForApproval = (props) => {
-  console.log('props: ', props, props.Approval?.ApprovalForSupplier, props.Approval?.ApprovalForLPSRating);
+
 
   const history = useHistory();
   const [isLoader, setIsLoader] = useState(false)

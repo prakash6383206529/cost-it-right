@@ -13,7 +13,7 @@ export const config = () => {
     'Access-From': 'WEB',
     'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   }
-  console.log('headers: ', headers);
+
   return { headers }
 }
 

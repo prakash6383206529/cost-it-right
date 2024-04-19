@@ -1115,7 +1115,7 @@ export const labelWithUOMAndUOM = (label, UOM, ScrapUOM) => {
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
 export const showTitleForActiveToggle = (index) => {
-  console.log('index: ', index);
+
   setTimeout(() => {
     let titleActive = document.getElementsByClassName("active-switch")[index];
 
