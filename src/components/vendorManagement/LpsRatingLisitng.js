@@ -93,15 +93,12 @@ const LpsRatingListing = () => {
     }
 
     const handleChange = (cell, row, index) => {
-        var cellValue = cell === "Unblocked" ? 0 : 1
-        const statusId = cellValue === 0 ? 1 : 0;
+        const statusId = cell === 0 ? 1 : 0;
         let data = {
             LPSRatingId: row.LPSRatingId,
             StatusId: statusId, // Toggle the status
             LoggedInUserId: loggedInUserId(),
         }
-        console.log('data: ', data);
-
         setCellData(data);
         setCellValue(cell)
 
@@ -110,9 +107,7 @@ const LpsRatingListing = () => {
 
     const statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
         // if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex)
         return (
@@ -121,7 +116,7 @@ const LpsRatingListing = () => {
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => handleChange(cellValue, rowData)}
-                        checked={cellValue === "Unblocked" ? false : true}
+                        checked={cellValue}
                         // disabled={!ActivateAccessibility}
                         background="#ff6600"
                         onColor="#FC5774"
@@ -189,7 +184,7 @@ const LpsRatingListing = () => {
                                 <AgGridColumn field="LPSRatingName" headerName="LPS Rating"></AgGridColumn>
                                 <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
                                 <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
-                                <AgGridColumn field="LPSRatingStatus" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                             </AgGridReact>
                         }
                         {!isLoader && (!lpsRatingData || lpsRatingData.length === 0) &&
@@ -199,7 +194,7 @@ const LpsRatingListing = () => {
                 </div>}
 
                 {showPopupToggle &&
-                    <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.LPS_RATING_REJECTED : MESSAGES.LPS_RATING_APPROVED}`} />
+                    <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.LPS_RATING_APPROVED : MESSAGES.LPS_RATING_REJECTED}`} />
                 }
             </div>
 

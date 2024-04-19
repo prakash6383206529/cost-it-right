@@ -50,11 +50,11 @@ const ApproveRejectDrawer = (props) => {
                         {/* {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />} */}
 
                         <Row className="drawer-heading">
-                            <Col>
-                                <div className={"header-wrapper right"}>
-                                    <h3>{`${props.type === 'Sender' ? 'Send For Approval' : `${props.type} Supplier`}`}</h3>
+                            <Col className='px-0'>
+                                <div className={"header-wrapper right d-flex justify-content-between"}>
+                                    <h3>{`${props.type === 'Sender' ? 'Send For Approval' : `${props.type} Unblocking`}`}</h3>
+                                    <div onClick={toggleDrawer} disabled={props.isLoader} className={"close-button right"}></div>
                                 </div>
-                                <div onClick={toggleDrawer} disabled={props.isLoader} className={"close-button right"}></div>
                             </Col>
                         </Row>
                         <Row>

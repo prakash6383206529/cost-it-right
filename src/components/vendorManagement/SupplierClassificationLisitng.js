@@ -81,7 +81,7 @@ const SupplierClassificationListing = () => {
     const confirmDeactivateItem = (data, cell) => {
         dispatch(updateClassificationStatus(data, res => {
             if (res && res?.data && res?.data?.Result) {
-                if (cell === "Blocked") {
+                if (cell === 0) {
                     Toaster.success(MESSAGES?.CLASSIFICATION_BLOCK_SUCCESSFULLY)
                 } else {
                     Toaster.success(MESSAGES?.CLASSIFICATION_UNBLOCK_SUCCESSFULLY)
@@ -97,8 +97,7 @@ const SupplierClassificationListing = () => {
         confirmDeactivateItem(cellData, cellValue)
     }
     const handleChange = (cell, row, index) => {
-        var cellValue = cell === "Unblocked" ? 0 : 1
-        const statusId = cellValue === 0 ? 1 : 0;
+        const statusId = cell === 0 ? 1 : 0;
         let data = {
             ClassificationId: row.ClassificationId,
             StatusId: statusId, // Toggle the status
@@ -122,7 +121,7 @@ const SupplierClassificationListing = () => {
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => handleChange(cellValue, rowData)}
-                        checked={cellValue === "Unblocked" ? false : true}
+                        checked={cellValue}
                         // disabled={!ActivateAccessibility}
                         background="#ff6600"
                         onColor="#FC5774"
@@ -193,13 +192,13 @@ const SupplierClassificationListing = () => {
                             <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
                             <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
                             <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
-                            <AgGridColumn field="ClassificationStatus" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
                     </div>
                 </div>}
 
                 {
-                    showPopupToggle && <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.VENDOR_REJECTED : MESSAGES.VENDOR_APPROVED}`} />
+                    showPopupToggle && <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.VENDOR_APPROVED : MESSAGES.VENDOR_REJECTED}`} />
                 }
             </div>
 
