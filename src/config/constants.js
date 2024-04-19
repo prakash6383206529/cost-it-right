@@ -532,7 +532,6 @@ export const API = {
   createPartWithSupplier: `${BASE_URL}/costing-sheet-metal/add-part-with-supplier`,
   createNewCosting: `${BASE_URL}/costing-sheet-metal/create`,
   getCostingDetailsById: `${BASE_URL}/costing-sheet-metal/get-costing-details-by-id`,
-  getZBCCostingSelectListByPart: `${BASE_URL}/costing-sheet-metal/get-costing-select-list-by-part`,
   getCostingTechnologySelectList: `${BASE_URL}/costing/get-technology-select-list`,
   getPartInfo: `${BASE_URL}/masters-part/get-part-info`,
   checkPartWithTechnology: `${BASE_URL}/costing/check-part-with-technology`,
@@ -2758,6 +2757,7 @@ export const statusOptionsCosting = _.sortBy([
   { label: "POUpdated", value: "14" },
   { label: "Pushed", value: "13" },
   { label: "Rejected", value: "4" },
+  { label: "Returned", value: "15" },
   { label: "Approved", value: "3" },
 ]
   , ({ label }) => label.toLowerCase());

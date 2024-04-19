@@ -128,7 +128,7 @@
     "processCost": {
         "calculator": "You can fill data from calculator for process cost.",
         "delete": "You can delete the process from here.",
-        "remark": "You can add remarks or notes from here.S"
+        "remark": "You can add remarks or notes from here."
     },
     "operationCost": {
         "edit": "You can edit the operation from here.",

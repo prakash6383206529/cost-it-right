@@ -30,7 +30,7 @@
     "AddUser_Permissions_Master": "Click here to add user-specific permissions for master type approval.",
     "AddUser_Permissions_onBoarding": "Click here to add user-specific permissions for onboarding type approval.",
     "AddUser_Master": "Select the master for user approval.",
-    "AddUser_Cancel": "Cancel the form and go back to the user listing page.",
+    "AddUser_Cancel": "Click here to cancel.",
     "AddUser_AddApprovalType": "Click on the 'Add' button to add a level of user for the",
     "user_changePassword": "Click here to change the password.",
     "user_EditDetails": "Click here to edit the user details.",
@@ -43,9 +43,7 @@
     "AddCompany_Name": "Enter the company name.",
     "AddCompany_Code": "Enter the company code.",
     "AddCompany_PlantCode": "Click here to select plant code from the dropdown.",
-    "AddCompany_Cancel": "Click here to cancel.",
-    "AddCompany_Save": "Click here to save.",
-    "AddCompany_Update": "Click here to update."
+    "AddCompany_Cancel": "Click here to cancel."
   },
   "addRole": {
     "AddRole_Name": "Enter role name.",
@@ -60,9 +58,7 @@
     "RFQ": "Click on this RFQ to change or update permissions.",
     "NFR": "Click on this NFR to change or update permissions.",
     "audit": "Click on this audit to change or update permissions.",
-    "AddRole_Cancel": "Click here to cancel.",
-    "AddRole_Save": "Click here to save.",
-    "AddRole_Update": "Click here to update."
+    "AddRole_Cancel": "Click here to cancel."
   },
   "approvalForm": {
     "AddApproval_CostingLevel": "Click here to select the highest approval level of costing for different technologies and approval types.",
@@ -72,9 +68,7 @@
     "AddApproval_ApprovalType_Required": "Click here to select the approval type.",
     "AddApproval_TechnologyHeads": "Click here to select the technology/heads.",
     "AddApproval_HighestApprovalLevel": "Click here to select the highest approval level.",
-    "AddApproval_Cancel": "Click here to cancel.",
-    "AddApproval_Save": "Click here to save.",
-    "AddApproval_Update": "Click here to update."
+    "AddApproval_Cancel": "Click here to cancel."
   },
   "addRoleComponent": {
     "select_all": "Click the checkbox to select all permissions for all modules.",
