@@ -1566,14 +1566,14 @@ class AddRMImport extends Component {
     this.setState({ isVendorNameNotSelected: false, isEditBuffer: false })
 
     let plantArray = []
-    if (costingTypeId === VBCTypeId) {
-      plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
-    } else {
-      selectedPlants && selectedPlants.map((item) => {
-        plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
-        return plantArray
-      })
-    }
+    // if (costingTypeId === VBCTypeId) {
+    plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
+    // } else {
+    //   selectedPlants && selectedPlants.map((item) => {
+    //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+    //     return plantArray
+    //   })
+    // }
     let cbcPlantArray = []
     if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
       cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
