@@ -786,7 +786,7 @@ const OperationListing = (props) => {
                     <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation || props.benchMark ? "zindex-0" : ""}`}>
                         <Col md="3" lg="3">
                             <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                            {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+                            {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
                                 buttonSpecificProp={{ id: "Operation_Listing_Tour", onClick: toggleExtraData }}
                                 stepsSpecificProp={{
                                     steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING

@@ -9,8 +9,11 @@ export function Steps(t, config) {
     const OverheadRMPercentage = (config && config.isEditFlag === false) ? t("overheadsdMaster.AddOverhead_OverheadRMPercentage") : t("overheadsdMaster.AddOverhead_EditOverheadRMPercentage");
     const OverheadMachiningCCPercentage = (config && config.isEditFlag === false) ? t("overheadsdMaster.AddOverhead_OverheadMachiningCCPercentage") : t("overheadsdMaster.AddOverhead_EditOverheadMachiningCCPercentage");
     const OverheadBOPPercentage = (config && config.isEditFlag === false) ? introWithBOPDynamicValue(t("overheadsdMaster.AddOverhead_OverheadBOPPercentage")) : introWithBOPDynamicValue(t("overheadsdMaster.AddOverhead_EditOverheadBOPPercentage"));
-    const EffectiveDate = (config && config.isEditFlag === false) ? t("overheadsdMaster.AddOverhead_EffectiveDate") : t("overheadsdMaster.AddOverhead_Edit_EffectiveDate");
-
+    const EffectiveDate = (config && config.isEditFlag === false) ? t("DynamicActionControl.effectiveDate") : t("DynamicActionControl.edit_EffectiveDate");
+    const ProfitPercentage = (config && config.isEditFlag === false) ? t("overheadsProfits.AddProfit_ProfitPercentage") : t("overheadsProfits.AddOverhead_EditProfitPercentage");
+    const ProfitRMPercentage = (config && config.isEditFlag === false) ? t("overheadsProfits.AddProfit_ProfitRMPercentage") : t("overheadsProfits.AddOverhead_EditProfitRMPercentage");
+    const ProfitMachiningCCPercentage = (config && config.isEditFlag === false) ? t("overheadsProfits.AddProfit_ProfitMachiningCCPercentage") : t("overheadsProfits.AddOverhead_EditProfitMachiningCCPercentage");
+    const ProfitBOPPercentage = (config && config.isEditFlag === false) ? introWithBOPDynamicValue(t("overheadsProfits.AddProfit_ProfitBOPPercentage")) : introWithBOPDynamicValue(t("overheadsProfits.AddOverhead_EditOverheadBOPPercentage"));
     return {
         ADD_OVERHEADS_DETAILS: [
             ...(config && config.isEditFlag === false) ? [
@@ -66,29 +69,28 @@ export function Steps(t, config) {
                     }] : [],
             ] : []),
 
-            ...(config && config.isEditFlag === true) ? [
-                ...(!config.isHideRM) ? [
-                    ...config && !config.isRM ? [
-                        {
-                            element: "#AddOverhead_OverheadRMPercentage",
-                            intro: OverheadRMPercentage,
-                        }] : []
-                ] : [],
-                ...(!config.isHideCC) ? [
-                    ...config && !config.isCC ? [
-                        {
-                            element: "#AddOverhead_OverheadMachiningCCPercentage",
-                            intro: OverheadMachiningCCPercentage,
-                        }] : []
-                ] : [],
-                ...(!config.isHideBOP) ? [
-                    ...config && !config.isBOP ? [
-                        {
-                            element: "#AddOverhead_OverheadBOPPercentage",
-                            intro: OverheadBOPPercentage,
-                        }] : []
-                ] : [],
+            ...(!config.isHideRM) ? [
+                ...config && !config.isRM ? [
+                    {
+                        element: "#AddOverhead_OverheadRMPercentage",
+                        intro: OverheadRMPercentage,
+                    }] : []
             ] : [],
+            ...(!config.isHideCC) ? [
+                ...config && !config.isCC ? [
+                    {
+                        element: "#AddOverhead_OverheadMachiningCCPercentage",
+                        intro: OverheadMachiningCCPercentage,
+                    }] : []
+            ] : [],
+            ...(!config.isHideBOP) ? [
+                ...config && !config.isBOP ? [
+                    {
+                        element: "#AddOverhead_OverheadBOPPercentage",
+                        intro: OverheadBOPPercentage,
+                    }] : []
+            ] : [],
+
             {
                 element: "#AddOverhead_EffectiveDate",
                 intro: EffectiveDate,
@@ -112,39 +114,43 @@ export function Steps(t, config) {
             },
         ],
         ADD_PROFIT_DETAILS: [
-            {
-                element: "#AddProfit_zeroBased",
-                intro: t("overheadsProfits.AddProfit_zeroBased"),
-            },
-            {
-                element: "#AddProfit_vendorBased",
-                intro: t("overheadsProfits.AddProfit_vendorBased"),
-            },
-            ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
-                element: "#AddProfit_customerBased",
-                intro: t("overheadsProfits.AddProfit_customerBased"),
-            }] : []),
+            ...(config && config.isEditFlag === false) ? [
+                {
+                    element: "#AddProfit_zeroBased",
+                    intro: t("overheadsProfits.AddProfit_zeroBased"),
+                },
+                {
+                    element: "#AddProfit_vendorBased",
+                    intro: t("overheadsProfits.AddProfit_vendorBased"),
+                },
+                ...(reactLocalStorage.getObject('CostingTypePermission').cbc ? [{
+                    element: "#AddProfit_customerBased",
+                    intro: t("overheadsProfits.AddProfit_customerBased"),
+                }] : []),
+            ] : [],
             {
                 element: "#AddProfit_ModelType_container",
                 intro: t("overheadsProfits.AddProfit_ModelType_container"),
             },
-            ...(config && config.vendorField ? [{
-                element: "#addProfit_vendorContainer",
-                intro: t("overheadsProfits.addProfit_vendorContainer"),
-            },] : []),
-            ...(config && config.plantField ? [{
-                element: "#AddProfit_Plant_container",
-                intro: t("overheadsProfits.AddProfit_Plant_container"),
-            },] : []),
-            ...(config && config.destinationPlant ? [{
-                element: "#AddProfit_DestinationPlant_container",
-                intro: t("overheadsProfits.AddProfit_Plant_container"),
-            },] : []),
-            ...(config && config.customerField ? [{
-                element: "#AddProfit_clientName_container",
-                intro: t("overheadsProfits.AddProfit_clientName_container"),
-            }] : []),
+            ...(config && config.isEditFlag === false) ? [
+                ...(config && config.vendorField ? [{
+                    element: "#addProfit_vendorContainer",
+                    intro: t("overheadsProfits.addProfit_vendorContainer"),
+                },] : []),
+                ...(config && config.plantField ? [{
+                    element: "#AddProfit_Plant_container",
+                    intro: t("overheadsProfits.AddProfit_Plant_container"),
+                },] : []),
 
+                ...(config && config.destinationPlant ? [{
+                    element: "#AddProfit_DestinationPlant_container",
+                    intro: t("overheadsProfits.AddProfit_Plant_container"),
+                },] : []),
+                ...(config && config.customerField ? [{
+                    element: "#AddProfit_clientName_container",
+                    intro: t("overheadsProfits.AddProfit_clientName_container"),
+                }] : []),
+            ] : [],
 
             {
                 element: "#AddProfit_ApplyPartCheckbox",
@@ -154,25 +160,38 @@ export function Steps(t, config) {
                 element: "#AddProfit_ProfitApplicabilityId_container",
                 intro: t("overheadsProfits.AddProfit_ProfitApplicabilityId_container"),
             },
-            {
-                element: "#AddProfit_ProfitPercentage",
-                intro: t("overheadsProfits.AddProfit_ProfitPercentage"),
-            },
-            {
-                element: "#AddProfit_ProfitRMPercentage",
-                intro: t("overheadsProfits.AddProfit_ProfitRMPercentage"),
-            },
-            {
-                element: "#AddProfit_ProfitMachiningCCPercentage",
-                intro: t("overheadsProfits.AddProfit_ProfitMachiningCCPercentage"),
-            },
-            {
-                element: "#AddProfit_ProfitBOPPercentage",
-                intro: introWithBOPDynamicValue(t("overheadsProfits.AddProfit_ProfitBOPPercentage")),
-            },
+            ...(config && !(config.isHideProfit) ? [
+                ...config && !config.isProfitPercent ? [
+                    {
+                        element: "#AddProfit_ProfitPercentage",
+                        intro: ProfitPercentage,
+                    },] : [],
+            ] : []),
+            ...(!config.isHideRM) ? [
+                ...config && !config.isRM ? [
+                    {
+                        element: "#AddProfit_ProfitRMPercentage",
+                        intro: ProfitRMPercentage,
+                    }] : []
+            ] : [],
+            ...(!config.isHideCC) ? [
+                ...config && !config.isCC ? [
+                    {
+                        element: "#AddProfit_ProfitMachiningCCPercentage",
+                        intro: ProfitMachiningCCPercentage,
+                    }] : []
+            ] : [],
+            ...(!config.isHideBOP) ? [
+                ...config && !config.isBOP ? [
+                    {
+                        element: "#AddProfit_ProfitBOPPercentage",
+                        intro: ProfitBOPPercentage,
+                    }] : []
+            ] : [],
+
             {
                 element: "#AddProfit_EffectiveDate",
-                intro: t("overheadsProfits.AddProfit_EffectiveDate"),
+                intro: EffectiveDate,
             },
             {
                 element: "#AddProfit_Remark",

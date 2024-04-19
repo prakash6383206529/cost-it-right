@@ -2395,7 +2395,7 @@ function UserRegistration(props) {
                   </div>
                 </div>
                 {isEditFlag && !isShowPwdField && <div className="col-md-6">
-                  <Button className={'user-btn'} onClick={() => setIsShowPwdField(!isShowPwdField)} >Change Password</Button>
+                  <Button id={"Change_Password"} className={'user-btn'} onClick={() => setIsShowPwdField(!isShowPwdField)} >Change Password</Button>
                 </div>}
               </div>
               <form noValidate className="manageuser form" onKeyDown={(e) => { handleKeyDown(e, onSubmit); }}>

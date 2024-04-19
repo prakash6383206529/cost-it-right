@@ -561,11 +561,11 @@ function BudgetListing(props) {
                         <div className={`ag-grid-wrapper height-width-wrapper  ${(volumeDataList && volumeDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                <TourWrapper
+                                {(!props?.isMasterSummaryDrawer) && <TourWrapper
                                     buttonSpecificProp={{ id: "Budget_Listing_Tour", onClick: toggleExtraData }}
                                     stepsSpecificProp={{
                                         steps: Steps(t, { addLimit: false, costMovementButton: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
-                                    }} />
+                                    }} />}
                             </div>
                             <div className={`ag-theme-material ${isLoader && !props?.isMasterSummaryDrawer && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

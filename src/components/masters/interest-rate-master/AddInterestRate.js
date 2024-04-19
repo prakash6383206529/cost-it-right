@@ -607,6 +607,8 @@ class AddInterestRate extends Component {
                           buttonSpecificProp={{ id: "Add_Interest_Rate_Form" }}
                           stepsSpecificProp={{
                             steps: Steps(t, {
+                              PaymentTermsApplicability: this.state.PaymentTermsApplicability,
+                              ICCApplicability: this.state.ICCApplicability,
                               isEditFlag: isEditFlag,
                               vendorField: (costingTypeId === VBCTypeId),
                               customerField: (costingTypeId === CBCTypeId),
