@@ -50,6 +50,7 @@ import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from './TourMessages'
 import { useTranslation } from 'react-i18next';
+import AdditionalTcoInfo from './CostingHeadCosts/AdditionalOtherCost/ViewTcoDetail'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -2985,6 +2986,7 @@ const CostingSummaryTable = (props) => {
                                 })}
                             </tr>
                           }
+                          <AdditionalTcoInfo isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} />
                           {/* {
                           initialConfiguration?.IsShowNpvCost && <tr>
                             <td>
