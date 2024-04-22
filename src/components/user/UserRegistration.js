@@ -13,7 +13,7 @@ import {
 } from "../../actions/auth/AuthActions";
 import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
-import { getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
+import { IsSendMailToPrimaryContact, getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
 import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, NCCTypeId, NFRAPPROVALTYPEID, ONBOARDINGID, ONBOARDINGNAME, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
@@ -2467,7 +2467,23 @@ function UserRegistration(props) {
                         customClassName={'withBorder'}
                       />
                     </div>
-
+                    {props?.RFQUser && IsSendMailToPrimaryContact() && <Col md="3" id="primaryContact_container" className="d-flex align-items-center mt-4 pt-2">
+                      <label
+                        className={`custom-checkbox`}
+                        onChange={onPrimaryContactCheck}
+                      >
+                        Primary Contact
+                        <input
+                          type="checkbox"
+                          checked={primaryContact}
+                        />
+                        <span
+                          className=" before-box"
+                          checked={primaryContact}
+                          onChange={onPrimaryContactCheck}
+                        />
+                      </label>
+                    </Col>}
                     {!props?.RFQUser ? <div className="col-md-3">
                       <div className="row form-group">
                         <div className="Phone phoneNumber col-md-8">
@@ -2569,23 +2585,7 @@ function UserRegistration(props) {
                         </Col>
                       </>
                     }
-                    {props?.RFQUser && <Col md="3" id="primaryContact_container" className="d-flex align-items-center mt-4 pt-2">
-                      <label
-                        className={`custom-checkbox`}
-                        onChange={onPrimaryContactCheck}
-                      >
-                        Primary Contact
-                        <input
-                          type="checkbox"
-                          checked={primaryContact}
-                        />
-                        <span
-                          className=" before-box"
-                          checked={primaryContact}
-                          onChange={onPrimaryContactCheck}
-                        />
-                      </label>
-                    </Col>}
+
                   </div>
 
                   <HeaderTitle
