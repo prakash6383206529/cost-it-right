@@ -397,20 +397,28 @@ export function fileUploadOperation(data, callback) {
 /**
  * @method checkAndGetOperationCode
  * @description CHECK AND GET OPERATION CODE
- */
-export function checkAndGetOperationCode(code, name, callback) {
+ */export function checkAndGetOperationCode(code, name, callback) {
     return (dispatch) => {
         const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', config());
         request.then((response) => {
-            if (response && response.status === 200) {
+            if (response && (response.status === 200 || response.status === 202)) {
                 callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            if (error.response && error.response.status === 412) {
+                // Handle the 412 status code here
+                callback(error.response); // Pass the response to the callback function
+            } else {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            }
         });
     };
 }
+
 
 
 /**
