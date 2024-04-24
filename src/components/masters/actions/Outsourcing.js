@@ -110,6 +110,7 @@ export function getAllOutsourcing(obj, isPagination, skip, take, callback) {
  * @description active Inactive Status
  */
 export function activeInactiveOutsourcingStatus(requestData, callback) {
+
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.put(`${API.activeInactiveOutsourcingStatus}`, requestData, config())

@@ -1,19 +1,24 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Col, Row } from 'reactstrap';
+import { Col, Container, Row } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '../../layout/Button';
 import { Controller, useForm } from 'react-hook-form';
-import { SearchableSelectHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
-import { useDispatch } from 'react-redux';
+import { AllApprovalField, SearchableSelectHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { handleDepartmentHeader } from '../../../helper';
+import { getConfigurationKey, handleDepartmentHeader } from '../../../helper';
+import WarningMessage from '../../common/WarningMessage';
 
 const ApproveRejectDrawer = (props) => {
     const history = useHistory();
+    const [approvalDropDown, setApprovalDropDown] = useState([])
+
     const dispatch = useDispatch();
     const [showPopup, setShowPopup] = useState(false)
+    const [showWarningMessage, setShowWarningMessage] = useState(false)
 
     const [isDisable, setIsDisable] = useState(false)
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     const { register, control, formState: { errors }, handleSubmit } = useForm({
         mode: 'onChange',
@@ -40,18 +45,21 @@ const ApproveRejectDrawer = (props) => {
     return (
         <Fragment>
             <Drawer anchor={props.anchor} open={props.isOpen}>
-                <div className="container">
-                    <div className={"drawer-wrapper layout-width-400px"}>
+                <Container >
+                    <div className={"drawer-wrapper"}>
+                        {/* {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />} */}
+
                         <Row className="drawer-heading">
-                            <Col>
-                                <div className={"header-wrapper right"}>
-                                    <h3>{props.type === "Approve" ? "Send for Approval" : "Send for Rejection"}</h3>
+                            <Col className='px-0'>
+                                <div className={"header-wrapper right d-flex justify-content-between"}>
+                                    <h3>{`${props.type === 'Sender' ? 'Send For Approval' : `${props.type} Unblocking`}`}</h3>
+                                    <div onClick={toggleDrawer} disabled={props.isLoader} className={"close-button right"}></div>
                                 </div>
-                                <div onClick={toggleDrawer} disabled={props.isLoader} className={"close-button right"}></div>
                             </Col>
                         </Row>
-                        {props.type === "Approve" && (
-                            <Row>
+                        <Row>
+                            {props.type === "Approve" && (
+
                                 <Col md="12">
                                     <div className="input-group form-group col-md-12 input-withouticon">
                                         <SearchableSelectHookForm
@@ -66,21 +74,36 @@ const ApproveRejectDrawer = (props) => {
                                             mandatory={true}
                                             errors={errors.dept}
                                         />
+                                        {showWarningMessage && <WarningMessage dClass={"mr-2"} message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
+
                                     </div>
-                                    <SearchableSelectHookForm
-                                        label="Approver"
-                                        name="approver"
-                                        placeholder="Select"
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        defaultValue=""
-                                        mandatory={true}
-                                    />
+                                    <div className="input-group form-group col-md-12 input-withouticon">
+                                        {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                                            <AllApprovalField
+                                                label="Approver"
+                                                approverList={approvalDropDown}
+                                                popupButton="View all"
+                                            />
+                                        </> :
+                                            <SearchableSelectHookForm
+                                                label="Approver"
+                                                name="approver"
+                                                placeholder="Select"
+                                                Controller={Controller}
+                                                options={approvalDropDown}
+
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                defaultValue=""
+                                                mandatory={true}
+                                            />}
+                                    </div>
                                 </Col>
-                            </Row>
-                        )}
+
+                            )}
+                        </Row>
+
                         <Row>
                             <Col md="12">
                                 <TextAreaHookForm
@@ -124,7 +147,7 @@ const ApproveRejectDrawer = (props) => {
                             </div>
                         </Row>
                     </div>
-                </div>
+                </Container>
             </Drawer>
         </Fragment>
     );

@@ -1,4 +1,7 @@
+import { API, API_FAILURE, API_REQUEST, API_SUCCESS, LPS_RATING_DATA, UPDATE_LPS_RATING_STATUS, UPDATE_VENDOR_CLASSIFICATION_STATUS, VENDOR_CLASSIFICATION_DATA, config } from '../../config/constants';
+import { apiErrors, loggedInUserId, userDetails } from '../../helper';
 import data from './data.json';
+import axios from 'axios';
 export const UPDATE_VENDOR_DATA = 'UPDATE_VENDOR_DATA';
 
 export const fetchVendorData = () => {
@@ -83,3 +86,76 @@ export const fetchApprovalData = () => {
         }
     }
 }
+
+
+
+export const getVendorClassificationListing = () => {
+    return dispatch => {
+        axios.get(`${API.getVendorClassificationList}`, config())
+            .then(response => {
+
+                dispatch({
+                    type: VENDOR_CLASSIFICATION_DATA,
+                    payload: response.status === 200 ? response.data : null
+                });
+            })
+
+            .catch(error => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                // callback(error);
+            });
+    };
+};
+
+export const getlpsratingListing = (callback) => {
+    return async dispatch => {
+        try {
+            const response = await axios.get(`${API.getVendorLpsRatingList}`, config());
+
+            dispatch({
+                type: LPS_RATING_DATA,
+                payload: response.status === 200 ? response.data : null
+            });
+        } catch (error) {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        }
+    };
+};
+
+
+export function updateClassificationStatus(requestData, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.vendorClassificationStatusUpdate}`, requestData, config())
+            .then((response) => {
+
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+
+export function updateLPSRatingStatus(requestData, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.lpsRatingStatusUpdate}`, requestData, config())
+            .then((response) => {
+
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+

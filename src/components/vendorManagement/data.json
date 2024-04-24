@@ -1,36 +1,36 @@
 {
     "vendorData": [
         {
-            "sno": 1,
-            "classification": "Strategic",
-            "status": true,
+            "ClassificationId": 1,
+            "ClassificationName": "Strategic",
+            "ClassificationStatus": true,
             "lastUpdatedOn": "2024-04-05",
             "lastUpdatedBy": "User A"
         },
         {
-            "sno": 2,
-            "classification": "Challenger",
+            "ClassificationId": 2,
+            "ClassificationName": "Challenger",
             "status": false,
             "lastUpdatedOn": "2024-04-04",
             "lastUpdatedBy": "User B"
         },
         {
-            "sno": 3,
-            "classification": "Transactional",
+            "ClassificationId": 3,
+            "ClassificationName": "Transactional",
             "status": true,
             "lastUpdatedOn": "2024-04-03",
             "lastUpdatedBy": "User C"
         },
         {
-            "sno": 4,
-            "classification": "No New Business",
+            "ClassificationId": 4,
+            "ClassificationName": "No New Business",
             "status": false,
             "lastUpdatedOn": "2024-04-02",
             "lastUpdatedBy": "User D"
         },
         {
-            "sno": 5,
-            "classification": "Active Disengagement",
+            "ClassificationId": 5,
+            "ClassificationName": "Active Disengagement",
             "status": false,
             "lastUpdatedOn": "2024-04-01",
             "lastUpdatedBy": "User E"
@@ -66,10 +66,11 @@
             "VendorCode": 1234,
             "VendorName": "TechSoft Ltd",
             "Category": "BOM",
+            "ApprovalProcessId": 1,
             "ApprovalNumber": 2323,
             "EffectiveDate": "12/03/2023",
             "ReasonForRequest": "LPS",
-            "Status": "Pending",
+            "Status": "PendingForApproval",
             "DisplayStatus": "Pending",
             "RequestedBy": "User A",
             "Action": ""
@@ -79,6 +80,7 @@
             "Plant": "Plan Y",
             "VendorCode": 1235,
             "VendorName": "Royal Gear",
+            "ApprovalProcessId": 2,
             "Category": "BOM",
             "ApprovalNumber": 3456,
             "EffectiveDate": "12/03/2023",
@@ -93,11 +95,12 @@
             "Plant": "Plan Y",
             "VendorCode": 1264,
             "VendorName": "Softude",
+            "ApprovalProcessId": 3,
             "Category": "BOM",
             "ApprovalNumber": 4456,
             "EffectiveDate": "12/03/2023",
             "ReasonForRequest": "Classification",
-            "Status": "Pending",
+            "Status": "PendingForApproval",
             "DisplayStatus": "Pending",
             "RequestedBy": "User C",
             "Action": ""
@@ -107,6 +110,7 @@
             "Plant": "Plan X",
             "VendorCode": 1237,
             "VendorName": "Serotech Ltd",
+            "ApprovalProcessId": 4,
             "Category": "BOM",
             "ApprovalNumber": 4456,
             "EffectiveDate": "12/03/2023",
@@ -121,6 +125,7 @@
             "Plant": "Plan Y",
             "VendorCode": 1284,
             "VendorName": "Aspron",
+            "ApprovalProcessId": 5,
             "Category": "BOM",
             "ApprovalNumber": 3456,
             "EffectiveDate": "12/03/2023",
