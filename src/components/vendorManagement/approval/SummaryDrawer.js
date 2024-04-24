@@ -14,7 +14,7 @@ const ApprovalSummaryPage = (props) => {
     const [rejectDrawer, setRejectDrawer] = useState(false)
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [loader, setLoader] = useState(false);
-    const approvalSummary = useSelector(state => state?.vendorManagement?.approvalSummary); // assuming approvals and isLoading are stored in the redux state
+    const approvalSummary = useSelector(state => state?.supplierManagement?.approvalSummary); // assuming approvals and isLoading are stored in the redux state
 
 
     useEffect(() => {
@@ -90,6 +90,7 @@ const ApprovalSummaryPage = (props) => {
                                     <th>Approval For Duration</th>
                                     <th>Requested By
                                     </th>
+                                    <td >Remarks</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -103,22 +104,12 @@ const ApprovalSummaryPage = (props) => {
                                     <td>User</td>
                                     <td>12 Months</td>
                                     <td>Ram Singh</td>
+                                    <td>...</td>
                                 </tr>
-                                <tr>
-
-                                    <td >Remarks</td>
-                                </tr>
-
-
-                                {/* Add more rows here with dynamic data */}
                             </tbody>
-
-
-
 
                         </Table>
                     </div>
-
                     {/* Send for approval button */}
                     <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
                         <div className="col-sm-12 text-right bluefooter-butn ml-0">

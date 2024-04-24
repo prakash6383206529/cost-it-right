@@ -24,7 +24,7 @@ import TaxReducer from './reducers/Tax';
 import OutsourcingReducer from './reducers/Outsourcing';
 import AuditReducer from '../audit/reducers/AuditLisitng';
 import paginationReducer from '../common/Pagination/paginationReducer';
-import vendorManagementReducer from '../vendorManagement/Reducer';
+import supplierManagementReducer from '../vendorManagement/Reducer';
 
 const mainReducer = {
   part: partReducer,
@@ -53,6 +53,6 @@ const mainReducer = {
   outsourcing: OutsourcingReducer,
   audit: AuditReducer,
   pagination: paginationReducer,
-  vendorManagement: vendorManagementReducer
+  supplierManagement: supplierManagementReducer
 }
 export default mainReducer;

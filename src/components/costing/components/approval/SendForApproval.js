@@ -545,7 +545,7 @@ const SendForApproval = (props) => {
 
         // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
         // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
-        tempObj.ApproverIdList = approverIdList
+        tempObj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [selectedApprover]
         tempObj.SenderLevelId = levelDetails.LevelId
         tempObj.SenderLevel = levelDetails.Level
         tempObj.SenderId = userData.LoggedInUserId
@@ -607,7 +607,7 @@ const SendForApproval = (props) => {
         ApproverLevelId: selectedApproverLevelId.levelId,
         ApproverLevel: selectedApproverLevelId.levelName,
         // ApproverId: selectedApprover,
-        ApproverIdList: approverIdList,
+        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [selectedApprover],
         // ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
         // ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
         // ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
