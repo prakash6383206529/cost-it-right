@@ -125,19 +125,25 @@ class AddOperation extends Component {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     }
     this.getDetail()
+
+  }
+
+  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+    const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
+          this.commonFunction(plantId)
         }, 100);
       })
     } else {
       this.setState({ finalApprovalLoader: false })
     }
-
   }
+
 
   commonFunction(plantId = EMPTY_GUID) {
     let levelDetailsTemp = []
@@ -483,6 +489,7 @@ class AddOperation extends Component {
             plantArray.push({ Text: item.PlantName, Value: item.PlantId })
             return plantArray;
           })
+          this.finalUserCheckAndMasterLevelCheckFunction(plantArray[0].Value)
           if (Data?.ForType === 'Welding') {
             this.setState({ isWelding: true })
           }
