@@ -160,16 +160,26 @@ export function getClientSelectList(callback) {
  * @description CHECK AND GET CUSTOMER CODE
  */
 export function checkAndGetCustomerCode(code, name, callback) {
+    console.log('code, name, callback: ', code, name, callback);
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.checkAndGetCustomerCode}?customerCode=${code}&customerName=${name}`, config());
+        const request = axios.post(`${API.checkAndGetCustomerCode}?customerCode=${code}&customerName=${name}`, config());
         request.then((response) => {
-            if (response && response.status === 200) {
+            console.log('response: ', response);
+            if (response && (response.status === 200 || response.status === 20)) {
                 callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            if (error.response && error.response.status === 412) {
+                // Handle the 412 status code here
+                callback(error.response); // Pass the response to the callback function
+            } else {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            }
         });
     };
 }
