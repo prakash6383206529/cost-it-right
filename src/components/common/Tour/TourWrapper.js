@@ -1,4 +1,3 @@
-// TourWrapper.js
 import React, { useEffect, useState } from "react";
 import { Steps, Hints } from "intro.js-react";
 import 'intro.js/introjs.css';
@@ -44,6 +43,23 @@ const GuidedSteps = ({ showTour, onExit, steps, hints, initialHintEnable, onChan
 const TourWrapper = ({ buttonSpecificProp, stepsSpecificProp }) => {
     const [showTour, setShowTour] = useState(false);
     const [hintEnable, setHintEnable] = useState(false)
+
+    useEffect(() => {
+        // Add event listeners to all buttons in the component
+        const buttons = document.querySelectorAll('button');
+
+        buttons.forEach(button => {
+            if (showTour) {
+                button.style.pointerEvents = 'none';
+            } else {
+                button.style.pointerEvents = 'auto';
+            }
+
+        });
+
+    }, [showTour]);
+
+
 
     const handleClick = () => {
         buttonSpecificProp.onClick && buttonSpecificProp.onClick(true);
