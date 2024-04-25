@@ -102,7 +102,6 @@ function AddNfr(props) {
     const [nfrPartNumber, setNfrPartNumber] = useState('')
     const [partName, setPartName] = useState('')
     const [isFinalLevelApprover, setIsFinalLevelApprover] = useState('')
-
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -863,11 +862,12 @@ function AddNfr(props) {
             {(loader && <LoaderCustom customClass="pdf-loader" />)}
             {props.showAddNfr && <div>
                 <div className='mb-2 d-flex justify-content-between'>
-                    <h1>Create Estimation
+
+                    <h1>{isViewEstimation ? "View" : "Update"} Estimation
                         <TourWrapper
                             buttonSpecificProp={{ id: "Add_Nfr_Form", onClick: toggleExtraData }}
                             stepsSpecificProp={{
-                                steps: Steps(t, { showNfrPartListing, activeTab, editNfr, isRowEdited }).NFR_lISTING
+                                steps: Steps(t, { rowData, isViewEstimation, showNfrPartListing, activeTab, editNfr, isRowEdited }).NFR_lISTING
                             }} />
                     </h1>
                     <button type="button" id="back_addNfrPart" className={"apply mt-1"} onClick={onBackButton}>
@@ -1018,6 +1018,7 @@ function AddNfr(props) {
                                             <td>{dataItem?.label}</td>
 
                                             <td><SearchableSelectHookForm
+                                                id="CostingVersion_container"
                                                 label={""}
                                                 name={`${indexInside}.CostingVersion`}
                                                 placeholder={"Select"}
