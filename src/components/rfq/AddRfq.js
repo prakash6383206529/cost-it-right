@@ -5,7 +5,7 @@ import { Row, Col, Tooltip, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
-import { addDays, getTimeZone, loggedInUserId } from '../.././helper';
+import { IsSendQuotationToPointOfContact, addDays, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
 import { Component, EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -1691,23 +1691,25 @@ function AddRfq(props) {
                                         </Col>
 
                                         <Col md="3">
-                                            <SearchableSelectHookForm
-                                                label={"Point of Contact"}
-                                                name={"contactPerson"}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                                options={renderListing("reporter")}
-                                                mandatory={true}
-                                                // handleChange={handleDestinationPlantChange}
-                                                handleChange={() => { }}
-                                                errors={errors.contactPerson}
-                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
-                                                isLoading={plantLoaderObj}
-                                            />
+                                            {IsSendQuotationToPointOfContact() && (
+                                                <SearchableSelectHookForm
+                                                    label={"Point of Contact"}
+                                                    name={"contactPerson"}
+                                                    placeholder={"Select"}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                                                    options={renderListing("reporter")}
+                                                    mandatory={true}
+                                                    // handleChange={handleDestinationPlantChange}
+                                                    handleChange={() => { }}
+                                                    errors={errors.contactPerson}
+                                                    disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                    isLoading={plantLoaderObj}
+                                                />
+                                            )}
                                         </Col>
                                         <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
@@ -1759,8 +1761,8 @@ function AddRfq(props) {
                                                                 frameworkComponents={frameworkComponents}
                                                             >
                                                                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
-
-                                                                <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>
+                                                                {IsSendQuotationToPointOfContact() && (
+                                                                    <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
                                                                 <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
                                                                 <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                             </AgGridReact>
