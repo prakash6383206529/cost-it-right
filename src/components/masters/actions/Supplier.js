@@ -16,7 +16,7 @@ import {
     GET_VENDOR_TYPE_BOP_SELECTLIST,
     config
 } from '../../../config/constants';
-import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
+import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 
@@ -63,24 +63,22 @@ export function getSupplierDataList(skip, obj, take, isPagination, callback) {
 
     return (dispatch) => {
 
-        // var queryParams = `isApplyPagination=${isPagination}`;
-        // var queryParams2 = `take=${take}`
-        // var queryParams1 = `skip=${skip}`
-        var queryParams = `isApplyPagination=${isPagination}&take=${take}&skip=${skip}`;
-
-        const QueryParams = encodeQueryParamsAndLog({
+        var queryParams = `isApplyPagination=${isPagination}`;
+        var queryParams2 = `take=${take}`
+        var queryParams1 = `skip=${skip}`
+        const QueryParams = encodeQueryParams({
             vendorType: obj?.VendorType !== null && obj?.VendorType !== undefined ? obj?.VendorType : "",
-            vendorName: obj?.VendorName !== null && obj?.VendorName !== undefined ? obj?.VendorName : "",
+            vendorName: obj?.VendorName != null && obj?.VendorName !== undefined ? obj?.VendorName : "",
             country: obj?.Country != null || obj?.Country !== "" ? obj?.Country : "",
-            vendorCode: obj?.VendorCode !== null || obj?.VendorCode !== "" ? obj?.VendorCode : "",
-            city: obj?.City !== null || obj?.City !== "" ? obj?.City : "",
-            state: obj?.State !== null || obj?.State !== "" ? obj?.State : "",
+            vendorCode: obj?.VendorCode != null || obj?.VendorCode !== "" ? obj?.VendorCode : "",
+            city: obj?.City != null || obj?.City !== "" ? obj?.City : "",
+            state: obj?.State != null || obj?.State !== "" ? obj?.State : "",
             isCriticalVendor: obj?.IsCriticalVendor ? obj.IsCriticalVendor : "",
             vendorTechnology: obj?.VendorTechnology ? obj?.VendorTechnology : "",
-            vendorPlant: obj?.VendorPlant ? obj?.VendorPlant : ""
+            vendorPlant: obj?.VendorPlant ? obj?.VendorPlant : "",
+
         });
-        // const QueryParams = `vendorType=${obj?.VendorType !== null && obj?.VendorType !== undefined ? obj?.VendorType : ""}&vendorName=${obj?.VendorName != null && obj?.VendorName !== undefined ? obj?.VendorName : ""}&country=${obj?.Country != null || obj?.Country !== "" ? obj?.Country : ""}&vendorCode=${obj?.VendorCode !== null || obj?.VendorCode !== "" ? obj?.VendorCode : ""}&city=${obj?.City !== null || obj?.City !== "" ? obj?.City : ""}&state=${obj?.State !== null || obj?.State !== "" ? obj?.State : ""}&isCriticalVendor=${obj?.IsCriticalVendor ? obj.IsCriticalVendor : ""}&vendorTechnology=${obj?.VendorTechnology ? obj?.VendorTechnology : ""}&vendorPlant=${obj?.VendorPlant ? obj?.VendorPlant : ""}`
-        const request = axios.get(`${API.getAllSupplierAPI}?${queryParams}&${QueryParams}`, config());
+        const request = axios.get(`${API.getAllSupplierAPI}?${queryParams}&${queryParams1}&${queryParams2}&${QueryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -107,6 +105,7 @@ export function getSupplierDataList(skip, obj, take, isPagination, callback) {
         });
     };
 }
+
 
 /**
  * @method getSupplierByIdAPI

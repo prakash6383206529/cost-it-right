@@ -99,11 +99,14 @@ export function getPartData(PartId, callback) {
  */
 export function getPartDataList(skip, take, obj, isPagination, callback) {
     return (dispatch) => {
-        var queryParams = `isApplyPagination=${isPagination}&take=${take}&skip=${skip}`;
+        const baseQueryParams = `isApplyPagination=${isPagination}&take=${take}&skip=${skip}`;
 
-        var queryParams1 = encodeQueryParamsAndLog({
+        var additionalQueryParams = encodeQueryParams({
             effectiveDate: obj?.newDate !== null && obj?.newDate !== undefined ? obj?.newDate : "", partNumber: obj.PartNumber !== null && obj.PartNumber !== "" ? obj.PartNumber : "", partName: obj.PartName !== null && obj.PartName !== "" ? obj.PartName : "", ecnNumber: obj.ECNNumber !== null && obj.ECNNumber !== "" ? obj.ECNNumber : "", revisionNumber: obj.RevisionNumber !== null && obj.RevisionNumber !== "" ? obj.RevisionNumber : "", drawingNumber: obj.DrawingNumber !== null && obj.DrawingNumber !== "" ? obj.DrawingNumber : "", technology: obj.Technology ? obj.Technology : "", sapCode: obj.SAPCode ? obj.SAPCode : ""
-        }); const request = axios.get(`${API.getPartDataList}?${queryParams}&${queryParams1}`, config());
+        });
+        const queryParams = `${baseQueryParams}&${additionalQueryParams}`;
+
+        const request = axios.get(`${API.getPartDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response?.data?.Result === true || response.status === 204) {
 

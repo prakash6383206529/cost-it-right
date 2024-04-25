@@ -13,7 +13,7 @@ import {
     GET_OVERHEAD_PROFIT_SUCCESS_ALL,
     config
 } from '../../../config/constants';
-import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
+import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -233,7 +233,16 @@ export function getOverheadDataList(data, skip, take, isPagination, obj, callbac
 export function getProfitDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&profit_applicability_type_id=${data.profit_applicability_type_id}&model_type_id=${data.model_type_id}&CostingHead=${obj.CostingHead ? obj.CostingHead : ""}&VendorName=${obj.VendorName ? obj.VendorName : ""}&ClientName=${obj.ClientName ? obj.ClientName : ""}&ModelType=${obj.ModelType ? obj.ModelType : ""}&ProfitApplicability=${obj.ProfitApplicabilityType ? obj.ProfitApplicabilityType : ""}&ProfitApplicabilityPercentage=${obj.ProfitPercentage ? obj.ProfitPercentage : ""}&ProfitOnRMPercentage=${obj.ProfitRMPercentage ? obj.ProfitRMPercentage : ""}&ProfitOnBOPPercentage=${obj.ProfitBOPPercentage ? obj.ProfitBOPPercentage : ""}&ProfitOnCCPercentage=${obj.ProfitMachiningCCPercentage ? obj.ProfitMachiningCCPercentage : ""}&EffectiveDate=${obj.EffectiveDateNew ? obj.EffectiveDateNew : ""}&Plant=${obj.PlantName ? obj.PlantName : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&RawMaterialName=${obj.RawMaterialName !== undefined ? obj.RawMaterialName : ''}&RawMaterialGrade=${obj.RawMaterialGrade !== undefined ? obj.RawMaterialGrade : ''}&TechnologyName=${obj.TechnologyName !== undefined ? obj.TechnologyName : ''}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}`
+        const queryParams = encodeQueryParamsAndLog({
+            costing_head: obj.costing_head, vendor_id: obj.vendor_id, profit_applicability_type_id: obj.profit_applicability_type_id, model_type_id: obj.model_type_id,
+            CostingHead: obj.CostingHead, VendorName: obj.VendorName, ClientName: obj.ClientName, ModelType: obj.ModelType,
+            ProfitApplicability: obj.ProfitApplicability, ProfitApplicabilityPercentage: obj.ProfitPercentage, ProfitOnRMPercentage: obj.ProfitRMPercentage, ProfitOnBOPPercentage: obj.ProfitBOPPercentage,
+            ProfitOnCCPercentage: obj.ProfitMachiningCCPercentage, EffectiveDate: obj.EffectiveDateNew, Plant: obj.PlantName, applyPagination: isPagination,
+            skip: skip, take: take, CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '', RawMaterialName: obj.RawMaterialName !== undefined ? obj.RawMaterialName : '',
+            RawMaterialGrade: obj.RawMaterialGrade !== undefined ? obj.RawMaterialGrade : '', TechnologyName: obj.TechnologyName !== undefined ? obj.TechnologyName : '',
+            IsCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false,
+            IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc, IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc
+        });
         axios.get(`${API.getProfitDataList}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
