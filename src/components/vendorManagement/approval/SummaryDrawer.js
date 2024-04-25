@@ -56,7 +56,7 @@ const ApprovalSummaryPage = (props) => {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`Master Summary (Token No.${approvalSummary?.approvalNo}):`}</h3>
+                                    <h3>{`Approval Summary (Token No.${approvalSummary?.approvalNo}):`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
