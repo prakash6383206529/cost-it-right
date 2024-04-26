@@ -255,7 +255,7 @@ class AddRMDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    const { data, initialConfiguration } = this.props
+    const { data } = this.props
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     this.props.getUOMSelectList(() => { })
     if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
@@ -276,18 +276,22 @@ class AddRMDomestic extends Component {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     }
+  }
+
+  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+    const { initialConfiguration } = this.props
     if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
+          this.commonFunction(plantId)
         }, 100);
       })
     } else {
       this.setState({ finalApprovalLoader: false })
     }
   }
-
   setInStateToolTip() {
     const obj = { ...this.state.toolTipTextObject, netCostCurrency: this.netCostTitle(), basicPriceCurrency: this.basicPriceTitle() }
     this.setState({ toolTipTextObject: obj })
@@ -782,7 +786,9 @@ class AddRMDomestic extends Component {
               CalculatedFactor: Data?.CalculatedFactor,
             })
             this.checkTechnology({ label: Data.TechnologyName, value: Data.TechnologyId })
-
+            if (!data.isViewFlag) {
+              this.finalUserCheckAndMasterLevelCheckFunction(Data.DestinationPlantId)
+            }
             this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
             this.setState({ minEffectiveDate: Data.EffectiveDate })
             this.setState({
