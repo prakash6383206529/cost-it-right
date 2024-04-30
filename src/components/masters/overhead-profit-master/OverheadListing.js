@@ -380,8 +380,12 @@ function OverheadListing(props) {
     * @description Renders buttons
     */
     const effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        let value = cell.value != null ? DayTime(cell.value).format('DD/MM/YYYY') : '';
-        return value
+        if (showExtraData) {
+            return "Lorem Ipsum";
+        } else {
+            let value = cell.value != null ? DayTime(cell.value).format('DD/MM/YYYY') : '';
+            return value
+        }
     }
 
     /**

@@ -488,8 +488,12 @@ const OperationListing = (props) => {
     // }
 
     const effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted || props?.value || '-';
-        return cellValue !== '-' ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+        if (state?.showExtraData) {
+            return "Lorem Ipsum";
+        } else {
+            const cellValue = props?.valueFormatted || props?.value || '-';
+            return cellValue !== '-' ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+        }
     }
 
     const renderPlantFormatter = (props) => {
