@@ -427,6 +427,12 @@ export function fileUploadOperation(data, callback) {
  * @description CHECK AND GET OPERATION CODE
  */export function checkAndGetOperationCode(code, name, callback) {
     return (dispatch) => {
+        //code is not deployed yet for the object in 153 thats y commented this
+        // const requestBody = {
+        //     operationName: name,
+        //     operationCode: code
+        // };
+        // const request = axios.post(`${API.checkAndGetOperationCode}`, requestBody, config());
         const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', config());
         request.then((response) => {
             if (response && (response.status === 200 || response.status === 202)) {
