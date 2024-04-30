@@ -25,7 +25,7 @@ const selector = formValueSelector('AddClientDrawer');
 
 class AddClientDrawer extends Component {
     constructor(props) {
-        console.log('props: ', props);
+
         super(props);
         this.state = {
             isEditFlag: false,
@@ -65,7 +65,7 @@ class AddClientDrawer extends Component {
         this.getDetail()
         if (getConfigurationKey().IsShowPOSeriesInCustomerMaster) {
             this.props.getPoamStatusSelectList(() => { })
-        } console.log(initialConfiguration);
+        }
 
     }
 
@@ -399,7 +399,7 @@ class AddClientDrawer extends Component {
     }, 600);
 
     // checkUniqCodeByName = debounce((e) => {
-    //     console.log('e: ', e);
+    //     
     //     this.setState({ companyName: e.target.value })
     //     this.props.checkAndGetCustomerCode(this.state.companyCode, e.target.value, res => {
     //         if (res && res.data && res.data.Result === false) {
@@ -423,7 +423,7 @@ class AddClientDrawer extends Component {
                         this.setState({ isDisableCode: true })
                     }
                     else {
-                        console.log('in else 1');
+
 
                         this.setState({ isDisableCode: false })
                         this.props.change('CompanyCode', '');
@@ -433,7 +433,7 @@ class AddClientDrawer extends Component {
             });
         }
         else {
-            console.log('in else');
+
             // this.setState({ isDisableCode: true })
             this.props.checkAndGetCustomerCode(this.state.companyCode, e.target.value, res => {
                 if (res && res.data && res.data.Result === false) {
