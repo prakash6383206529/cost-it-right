@@ -163,10 +163,17 @@ export function checkAndGetCustomerCode(code, name, callback) {
     console.log('code, name, callback: ', code, name, callback);
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(`${API.checkAndGetCustomerCode}?customerCode=${code}&customerName=${name}`, config());
+        const requestBody = {
+            customerName: name,
+            customerCode: code
+        };
+        console.log('checkAndGetCustomerCode: ', API.checkAndGetCustomerCode, code, name);
+        const request = axios.post(`${API.checkAndGetCustomerCode}`, requestBody, config());
+        console.log('request: ', request);
         request.then((response) => {
             console.log('response: ', response);
-            if (response && (response.status === 200 || response.status === 20)) {
+            if (response && (response.status === 200 || response.status === 202)) {
+                console.log('response: ', response);
                 callback(response);
             }
         }).catch((error) => {
