@@ -115,6 +115,7 @@ function AddRfq(props) {
     const [plant, setPlant] = useState({})
     const [isNFRFlow, setIsNFRFlow] = useState(false)
     const [rmAPIList, setRMAPIList] = useState([])
+    const [rmNameSelected, setRmNameSelected] = useState(false)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
     const rmSpecification = useSelector(state => state.comman.rmSpecification);
@@ -894,6 +895,9 @@ function AddRfq(props) {
             if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
                 Toaster.warning("Please select part number and SOP date");
                 return false;
+            } if (getValues('RMName')?.label !== undefined && (!getValues('RMGrade') || !getValues('RMSpecification'))) {
+                Toaster.warning("Please select RM Grade and RM Specification");
+
             } else {
                 if (nfrId) {
                     dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
@@ -1298,6 +1302,7 @@ function AddRfq(props) {
 
     const handleRMName = (newValue) => {
         setRMName({ label: newValue?.label, value: newValue?.value })
+        setRmNameSelected(true)
         dispatch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { }))
     }
 
@@ -1531,7 +1536,7 @@ function AddRfq(props) {
                                                         customClassName="costing-version"
                                                         // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
                                                         options={renderListingRM('rmgrade')}
-                                                        mandatory={false}
+                                                        mandatory={rmNameSelected}
                                                         handleChange={(newValue) => handleRMGrade(newValue)}
                                                         disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
                                                     // errors={`${indexInside} CostingVersion`}
@@ -1550,7 +1555,7 @@ function AddRfq(props) {
                                                         customClassName="costing-version"
                                                         // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
                                                         options={renderListingRM('rmspecification')}
-                                                        mandatory={false}
+                                                        mandatory={rmNameSelected}
                                                         handleChange={(newValue) => handleRMSpecification(newValue)}
                                                         disabled={(dataProps?.isAddFlag ? partNoDisable || isNFRFlow : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
                                                     // errors={`${indexInside} CostingVersion`}
