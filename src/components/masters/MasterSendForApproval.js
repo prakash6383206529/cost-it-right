@@ -96,8 +96,11 @@ function MasterSendForApproval(props) {
                             approverIdListTemp.push(item.Value)
                             return null
                         })
-                    setApprovalDropDown(tempDropdownList)
-                    setApproverIdList(approverIdListTemp)
+                    setTimeout(() => {
+                        setApprovalDropDown(tempDropdownList)
+
+                        setApproverIdList(approverIdListTemp)
+                    }, 100)
                 }
             },),)
         }))
@@ -162,8 +165,11 @@ function MasterSendForApproval(props) {
                         approverIdListTemp.push(item.Value)
                         return null
                     })
-                setApprovalDropDown(tempDropdownList)
-                setApproverIdList(approverIdListTemp)
+                setTimeout(() => {
+
+                    setApprovalDropDown(tempDropdownList)
+                    setApproverIdList(approverIdListTemp)
+                }, 100);
             }
         }),
         )
