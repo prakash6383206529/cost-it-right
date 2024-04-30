@@ -105,6 +105,7 @@ const BOPImportListing = (props) => {
     editSelectedList: false,
     tempList: [],
     render: false,
+    disableEdit: true,
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
@@ -592,11 +593,15 @@ const BOPImportListing = (props) => {
      * @description Renders buttons
      */
   const effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted
-      ? props.valueFormatted
-      : props?.value;
+    if (tourStartData?.showExtraData) {
+      return "Lorem Ipsum";
+    } else {
+      const cellValue = props?.valueFormatted
+        ? props.valueFormatted
+        : props?.value;
 
-    return cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
+      return cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
+    }
   };
   const viewAttachmentData = (index) => {
     setState((prevState) => ({
@@ -857,6 +862,10 @@ const BOPImportListing = (props) => {
 
   const onRowSelect = (event) => {
     var selectedRows = state.gridApi.getSelectedRows();
+    if (props?.isSimulation) {
+      setState((prevState) => ({ ...prevState, disableEdit: false }));
+
+    }
     if (selectedRows === undefined || selectedRows === null) {
       //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination;
@@ -1070,7 +1079,7 @@ const BOPImportListing = (props) => {
               {props.isSimulation && props.isFromVerifyPage && (
                 <Row>
                   <Col md="12" className="d-flex justify-content-end">
-                    <Button className={"apply"} id={"bopImportListing_editSelectedData"} onClick={editSelectedData} icon="edit-icon" buttonName="Edit" />
+                    <Button className={"apply"} id={"bopImportListing_editSelectedData"} disabled={state.gridApi?.getSelectedRows()?.length === 0} onClick={editSelectedData} icon="edit-icon" buttonName="Edit" />
                   </Col>
                 </Row>
               )}
