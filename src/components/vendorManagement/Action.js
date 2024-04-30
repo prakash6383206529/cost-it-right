@@ -59,7 +59,7 @@ export const getVendorClassificationListing = () => {
     };
 };
 
-export const getlpsratingListing = (callback) => {
+export const getLPSRatingListing = (callback) => {
     return async dispatch => {
         try {
             const response = await axios.get(`${API.getVendorLpsRatingList}`, config());
@@ -129,7 +129,7 @@ export const fetchVendorData = () => {
             });
     };
 };
-export const fetchVendorDependendPlantData = (data) => {
+export const fetchVendorDependentPlantData = (data) => {
 
     return dispatch => {
         axios.get(`${API.getPlantData}${data}`, config())
@@ -151,10 +151,10 @@ export const fetchVendorDependendPlantData = (data) => {
 };
 export const fetchDeviationApprovalData = (vendorId, plantId) => {
 
-    const querryString = `vendorId=${vendorId}&plantId=${plantId}`;
+    const queryString = `vendorId=${vendorId}&plantId=${plantId}`;
 
     return dispatch => {
-        axios.get(`${API.getVendorPlantDetailForDeviation}?${querryString}`, config())
+        axios.get(`${API.getVendorPlantDetailForDeviation}?${queryString}`, config())
             .then(response => {
 
                 dispatch({

@@ -3,7 +3,7 @@ import ScrollToTop from '../common/ScrollToTop';
 import { SearchableSelectHookForm } from '../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchDeviationApprovalData, fetchSupplierDetailData, fetchVendorData, fetchVendorDependendPlantData } from './Action';
+import { fetchDeviationApprovalData, fetchSupplierDetailData, fetchVendorData, fetchVendorDependentPlantData } from './Action';
 import { Col, Row, Table } from 'reactstrap';
 import Button from '../layout/Button';
 import SendForApproval from './approval/SendForApproval';
@@ -28,7 +28,7 @@ const InitiateUnblocking = () => {
         dispatch(fetchVendorData());
 
         if (selectedVendor) {
-            dispatch(fetchVendorDependendPlantData(selectedVendor.value));
+            dispatch(fetchVendorDependentPlantData(selectedVendor.value));
             // dispatch(fetchDeviationApprovalData(selectedVendor.Value, selectedPlant.Value)); // Use selectedVendor.Value and selectedPlant.Value to access the values
 
 
@@ -203,13 +203,13 @@ const InitiateUnblocking = () => {
                                         <tbody>
 
                                             <tr >
-                                                <td>{deviationData?.VendorName ?? ''}</td>
-                                                <td>{deviationData?.Division ?? ''}</td>
-                                                <td>{deviationData?.Department ?? ''}</td>
-                                                <td>{deviationData?.Classification ?? ''}</td>
-                                                <td>{deviationData?.LPSRating ?? ''}</td>
-                                                <td>{deviationData?.VendorCode ?? ''}</td>
-                                                <td>{deviationData?.PlantName ?? ''}</td>
+                                                <td>{deviationData?.VendorName ?? '-'}</td>
+                                                <td>{deviationData?.Division ?? '-'}</td>
+                                                <td>{deviationData?.Department ?? '-'}</td>
+                                                <td>{deviationData?.Classification ?? '-'}</td>
+                                                <td>{deviationData?.LPSRating ?? '-'}</td>
+                                                <td>{deviationData?.VendorCode ?? '-'}</td>
+                                                <td>{deviationData?.PlantName ?? '-'}</td>
                                             </tr>
 
 

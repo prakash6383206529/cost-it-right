@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
-import { fetchLPSRatingData, getlpsratingListing, updateLPSRatingStatus } from './Action';
+import { fetchLPSRatingData, getLPSRatingListing, updateLPSRatingStatus } from './Action';
 import { checkPermission, loggedInUserId, showTitleForActiveToggle } from '../../helper';
 import Switch from "react-switch";
 import { Col, Row } from 'reactstrap';
@@ -37,7 +37,7 @@ const LpsRatingListing = () => {
     useEffect(() => {
         // setIsLoader(true);
         applyPermission()
-        dispatch(getlpsratingListing(true, (res) => {
+        dispatch(getLPSRatingListing(true, (res) => {
             setIsLoader(false);
             if (res.status === 204 && res.data === '') {
                 setCellValue([]);
@@ -70,7 +70,7 @@ const LpsRatingListing = () => {
     }
     const getTableListData = () => {
         setIsLoader(true)
-        dispatch(getlpsratingListing(true, (res) => {
+        dispatch(getLPSRatingListing(true, (res) => {
 
             setIsLoader(false)
         }))
@@ -86,7 +86,7 @@ const LpsRatingListing = () => {
                 } else {
                     Toaster.success(MESSAGES.LPSRATING_UNBLOCKED_SUCCESSFULLY)
                 }
-                dispatch(getlpsratingListing(true))                // setDataCount(0)
+                dispatch(getLPSRatingListing(true))                // setDataCount(0)
             }
         }))
         setShowPopupToggle(false)
