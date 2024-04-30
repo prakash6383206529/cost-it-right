@@ -70,7 +70,7 @@ export const getLPSRatingListing = (callback) => {
             });
         } catch (error) {
             dispatch({ type: API_FAILURE });
-            callback(error);
+            // callback(error);
             apiErrors(error);
         }
     };

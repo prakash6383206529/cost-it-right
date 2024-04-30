@@ -20,6 +20,8 @@ const LpsRatingListing = () => {
     const [showPopupToggle, setShowPopupToggle] = useState(false);
     const [cellValue, setCellValue] = useState('');
     const [cellData, setCellData] = useState('');
+    const [errorMessage, setErrorMessage] = useState('')
+
     const [ActivateAccessibility, setActivateAccessibility] = useState(false);
     const [noData, setNoData] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
@@ -35,27 +37,36 @@ const LpsRatingListing = () => {
 
 
     useEffect(() => {
-        // setIsLoader(true);
+        setIsLoader(true);
         applyPermission()
         dispatch(getLPSRatingListing(true, (res) => {
             setIsLoader(false);
-            if (res.status === 204 && res.data === '') {
-                setCellValue([]);
-            } else if (res && res.data && res.data.DataList) {
-                let data = res.data.DataList;
-                setCellValue(data.map(row => row.status));
+            if (res.errorMessage) {
+                setErrorMessage(res.errorMessage);
             }
+            else {
+                setErrorMessage(null);
+                if (res.status === 204 && res.data === '') {
+                    setCellValue([]);
+                } else if (res && res.data && res.data.DataList) {
+                    let data = res.data.DataList;
+                    setCellValue(data.map(row => row.status));
+                }
+            }
+
         }));
     }, [dispatch]);
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
-            isLoader(true)
+            setIsLoader(true)
             const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === VENDOR_MANAGEMENT);
             const accessData = Data && Data.Pages.find((el) => el.PageName === LPS_RATING)
             const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
             if (permissionData !== undefined) {
                 setActivateAccessibility(permissionData && permissionData.Activate ? permissionData.Activate : false);
             }
+            setIsLoader(false);
+
         }
     }
 
@@ -150,6 +161,7 @@ const LpsRatingListing = () => {
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     const frameworkComponents = {
+        customNoRowsOverlay: NoContentFound,
 
         statusButtonFormatter: statusButtonFormatter,
         effectiveDateFormatter: effectiveDateFormatter
@@ -157,46 +169,48 @@ const LpsRatingListing = () => {
 
     return (
         <>
-            <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
-                <Row className="no-filter-row">
-                    <Col md={6} className="text-right filter-block"></Col>
-                </Row>
-                {<div className={`ag-grid-wrapper height-width-wrapper`}>
-                    <div className={`ag-theme-material`}>
-                        {isLoader && <LoaderCustom customClass="loader-center" />}
-                        {!isLoader && lpsRatingData && lpsRatingData.length > 0 &&
-                            <AgGridReact
-                                defaultColDef={defaultColDef}
-                                floatingFilter={true}
-                                domLayout='autoHeight'
-                                rowData={lpsRatingData}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                onGridReady={onGridReady}
-                                noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                    imagClass: 'imagClass pt-3'
-                                }}
-                                rowSelection={'multiple'}
-                                suppressRowClickSelection={true}
-                                frameworkComponents={frameworkComponents}
-                            >
-                                {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
-                                <AgGridColumn field="LPSRatingName" headerName="LPS Rating"></AgGridColumn>
-                                <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
-                                <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
-                                <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            </AgGridReact>
-                        }
-                        {!isLoader && (!lpsRatingData || lpsRatingData.length === 0) &&
-                            <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
-                        }
-                    </div>
-                </div>}
+            {(isLoader) ? <LoaderCustom customClass="loader-center" /> :
 
-                {showPopupToggle &&
-                    <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.LPS_RATING_APPROVED : MESSAGES.LPS_RATING_REJECTED}`} />
-                }
-            </div>
+                <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
+                    <Row className="no-filter-row">
+                        <Col md={6} className="text-right filter-block"></Col>
+                    </Row>
+                    {<div className={`ag-grid-wrapper height-width-wrapper`}>
+                        <div className={`ag-theme-material`}>
+                            {isLoader && <LoaderCustom customClass="loader-center" />}
+                            {!isLoader && lpsRatingData && lpsRatingData?.length > 0 &&
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
+                                    rowData={lpsRatingData}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    onGridReady={onGridReady}
+                                    noRowsOverlayComponentParams={{
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass pt-3'
+                                    }}
+                                    rowSelection={'multiple'}
+                                    suppressRowClickSelection={true}
+                                    frameworkComponents={frameworkComponents}
+                                >
+                                    {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
+                                    <AgGridColumn field="LPSRatingName" headerName="LPS Rating"></AgGridColumn>
+                                    <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
+                                    <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
+                                    <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                                </AgGridReact>
+                            }
+                            {!isLoader && (!lpsRatingData || lpsRatingData?.length === 0) &&
+                                <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
+                            }
+                        </div>
+                    </div>}
+
+                    {showPopupToggle &&
+                        <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.LPS_RATING_APPROVED : MESSAGES.LPS_RATING_REJECTED}`} />
+                    }
+                </div>}
 
         </>
 

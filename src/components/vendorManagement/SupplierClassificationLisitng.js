@@ -23,6 +23,7 @@ const SupplierClassificationListing = () => {
     const [showPopupToggle, setShowPopupToggle] = useState(false)
     const [cellValue, setCellValue] = useState('');
     const [cellData, setCellData] = useState('');
+    const [errorMessage, setErrorMessage] = useState('')
     const [noData, setNoData] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [ActivateAccessibility, setActivateAccessibility] = useState(false);
@@ -46,13 +47,14 @@ const SupplierClassificationListing = () => {
     }, [dispatch]);
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
-            isLoader(true)
+            setIsLoader(true)
             const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === VENDOR_MANAGEMENT);
             const accessData = Data && Data.Pages.find((el) => el.PageName === VENDOR_CLASSIFICATION)
             const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
             if (permissionData !== undefined) {
                 setActivateAccessibility(permissionData && permissionData.Activate ? permissionData.Activate : false);
             }
+            setIsLoader(false)
         }
     }
 
@@ -80,6 +82,8 @@ const SupplierClassificationListing = () => {
     }
     const confirmDeactivateItem = (data, cell) => {
         dispatch(updateClassificationStatus(data, res => {
+            setIsLoader(false)
+
             if (res && res?.data && res?.data?.Result) {
                 if (cell === 0) {
                     Toaster.success(MESSAGES?.CLASSIFICATION_BLOCK_SUCCESSFULLY)
@@ -165,42 +169,46 @@ const SupplierClassificationListing = () => {
     };
     return (
         <>
-            <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
-                {/* {isLoader && <LoaderCustom customClass="loader-center" />} */}
-                <Row className="no-filter-row">
-                    <Col md={6} className="text-right filter-block"></Col>
-                </Row>
-                {<div className={`ag-grid-wrapper height-width-wrapper`}>
-                    <div className={`ag-theme-material`}>
-                        {/* {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />} */}
-                        <AgGridReact
-                            defaultColDef={defaultColDef}
-                            floatingFilter={true}
-                            domLayout='autoHeight'
-                            rowData={supplierManagement}
-                            onGridReady={onGridReady}
-                            gridOptions={gridOptions}
-                            // noRowsOverlayComponent={'customNoRowsOverlay'}
-                            noRowsOverlayComponentParams={{
-                                title: EMPTY_DATA,
-                                imagClass: 'imagClass pt-3'
-                            }}
-                            suppressRowClickSelection={true}
-                            frameworkComponents={frameworkComponents}
-                        >
-                            {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
-                            <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
-                            <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
-                            <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
-                            <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                        </AgGridReact>
-                    </div>
-                </div>}
+            {(isLoader) ? <LoaderCustom customClass="loader-center" /> :
+                <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
+                    {/* {isLoader && <LoaderCustom customClass="loader-center" />} */}
+                    <Row className="no-filter-row">
+                        <Col md={6} className="text-right filter-block"></Col>
+                    </Row>
+                    {<div className={`ag-grid-wrapper height-width-wrapper`}>
+                        <div className={`ag-theme-material`}>
+                            {/* {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />} */}
+                            <AgGridReact
+                                defaultColDef={defaultColDef}
+                                floatingFilter={true}
+                                domLayout='autoHeight'
+                                rowData={supplierManagement}
+                                onGridReady={onGridReady}
+                                gridOptions={gridOptions}
+                                // noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponentParams={{
+                                    title: EMPTY_DATA,
+                                    imagClass: 'imagClass pt-3'
+                                }}
+                                suppressRowClickSelection={true}
+                                frameworkComponents={frameworkComponents}
+                            >
+                                {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
+                                <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
+                                <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
+                                <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
+                                <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            </AgGridReact>
+                            {!isLoader && (!supplierManagement || supplierManagement?.length === 0) &&
+                                <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
+                            }
+                        </div>
+                    </div>}
 
-                {
-                    showPopupToggle && <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.VENDOR_APPROVED : MESSAGES.VENDOR_REJECTED}`} />
-                }
-            </div>
+                    {
+                        showPopupToggle && <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.VENDOR_APPROVED : MESSAGES.VENDOR_REJECTED}`} />
+                    }
+                </div>}
 
         </>
 
