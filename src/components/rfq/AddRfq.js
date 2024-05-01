@@ -891,14 +891,24 @@ function AddRfq(props) {
             let objTemp = {};
             let arrTemp = [];
             let Data = {}
-
+            const { label } = getValues('RMName') || {};
+            const isRMGradeMissing = !getValues('RMGrade');
+            const isRMSpecificationMissing = !getValues('RMSpecification');
             if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
                 Toaster.warning("Please select part number and SOP date");
                 return false;
-            } if (getValues('RMName')?.label !== undefined && (!getValues('RMGrade') || !getValues('RMSpecification'))) {
-                Toaster.warning("Please select RM Grade and RM Specification");
-
+            } if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
+                const missingRequirements = [];
+                if (isRMGradeMissing) {
+                    missingRequirements.push('RM Grade');
+                }
+                if (isRMSpecificationMissing) {
+                    missingRequirements.push('RM Specification');
+                }
+                const message = `Please select ${missingRequirements.join(' and ')}`;
+                Toaster.warning(message);
             } else {
+
                 if (nfrId) {
                     dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
                         Data = res.data.Data
