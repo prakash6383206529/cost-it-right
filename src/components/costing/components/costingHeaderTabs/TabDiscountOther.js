@@ -150,7 +150,7 @@ function TabDiscountOther(props) {
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : ''
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
-  }, [])
+  }, [openCloseOtherCost])
   const viewAddButtonIcon = (data, type) => {
 
     let className = ''
@@ -1332,8 +1332,6 @@ function TabDiscountOther(props) {
     } else {
       setOpenCloseOtherCost(false)
     }
-    let request = partType ? 'multiple technology assembly' : ''
-    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
   }
   const setDisableFalseFunctionAttachmentFiles = (value) => {
     switch (value) {
