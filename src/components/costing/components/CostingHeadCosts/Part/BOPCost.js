@@ -438,7 +438,7 @@ function BOPCost(props) {
   const handleBOPHandlingType = (newValue) => {
     setFixedLimit(false)
     setTimeout(() => {
-      setBOPHandlingType(newValue.label)
+      setBOPHandlingType(newValue?.label)
       setValue('BOPHandlingPercentage', '')
       setValue('BOPHandlingFixed', '')
       setValue('BOPHandlingCharges', 0)
@@ -453,7 +453,7 @@ function BOPCost(props) {
       BOPHandlingPercentage: 0,
       BOPHandlingCharges: 0,
       // BOPHandlingFixed: 0,
-      BOPHandlingChargeType: newValue.label
+      BOPHandlingChargeType: newValue?.label
     }
     props.setBOPCost(gridData, Params, item, BOPHandlingFields)
     clearErrors('');
@@ -711,6 +711,7 @@ function BOPCost(props) {
                     handleChange={handleBOPHandlingType}
                     errors={errors.BOPHandlingType}
                     disabled={(CostingViewMode || IsLocked) ? true : false}
+                    isClearable={true}
                   />
                 </Col>}
               {IsApplyBOPHandlingCharges && BOPHandlingType &&
