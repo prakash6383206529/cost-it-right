@@ -535,7 +535,7 @@ function RMDomesticListing(props) {
     * @description Renders buttons
     */
     const effectiveDateFormatter = (props) => {
-        if (showExtraData) {
+        if (showExtraData && props?.rowIndex === 0) {
             return "Lorem Ipsum";
         } else {
             const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;

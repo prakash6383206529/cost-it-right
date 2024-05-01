@@ -146,7 +146,7 @@ const AssemblyPartListing = React.memo((props) => {
     }));
   };
   const effectiveDateFormatter = (props) => {
-    if (tourStartData?.showExtraData) {
+    if (tourStartData?.showExtraData && props?.rowIndex === 0) {
       return "Lorem Ipsum";
     } else {
       const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;

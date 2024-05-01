@@ -864,6 +864,8 @@ const BOPImportListing = (props) => {
     var selectedRows = state.gridApi.getSelectedRows();
     if (props?.isSimulation) {
       setState((prevState) => ({ ...prevState, disableEdit: false }));
+    } else {
+      setState((prevState) => ({ ...prevState, disableEdit: true }));
 
     }
     if (selectedRows === undefined || selectedRows === null) {
@@ -1079,6 +1081,7 @@ const BOPImportListing = (props) => {
               {props.isSimulation && props.isFromVerifyPage && (
                 <Row>
                   <Col md="12" className="d-flex justify-content-end">
+                    <WarningMessage dClass="mt-1" message={`Please check the ${showBopLabel()} that you want to edit.`} />
                     <Button className={"apply"} id={"bopImportListing_editSelectedData"} disabled={state.gridApi?.getSelectedRows()?.length === 0} onClick={editSelectedData} icon="edit-icon" buttonName="Edit" />
                   </Col>
                 </Row>

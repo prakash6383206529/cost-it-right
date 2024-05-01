@@ -415,7 +415,7 @@ const MachineRateListing = (props) => {
 
 
   const effectiveDateFormatter = (props) => {
-    if (tourStartData?.showExtraData) {
+    if (tourStartData?.showExtraData && props?.rowIndex === 0) {
       return "Lorem Ipsum";
     } else {
       const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value ? props?.value : props.data.EffectiveDate;

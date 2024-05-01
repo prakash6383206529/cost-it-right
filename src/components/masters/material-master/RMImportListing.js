@@ -93,7 +93,7 @@ function RMImportListing(props) {
   const [disableEdit, setDisableEdit] = useState(true)
   const { t } = useTranslation("common")
   const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
-  const { tokenForSimulation } = useSelector(state => state.simulation)
+  const { tokenForSimulation, selectedMasterForSimulation } = useSelector(state => state.simulation)
   const headerNames = {
     BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
     ScrapRate: `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
@@ -539,7 +539,7 @@ function RMImportListing(props) {
   * @description Renders buttons
   */
   const effectiveDateFormatter = (props) => {
-    if (showExtraData) {
+    if (showExtraData && props?.rowIndex === 0) {
       return "Lorem Ipsum";
     } else {
       const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
@@ -754,8 +754,11 @@ function RMImportListing(props) {
 
     let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     var selectedRows = gridApi && gridApi?.getSelectedRows();
-    if (props?.isSimulation) {
+    if (props?.isSimulation && selectedRows?.length !== 0) {
       setDisableEdit(false)
+    } else {
+      setDisableEdit(true)
+
     }
     if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination
@@ -1067,6 +1070,7 @@ function RMImportListing(props) {
           {
             props.isSimulation && isFromVerifyPage && <Row>
               <Col md="12" className="d-flex justify-content-end">
+                {disableEdit && <WarningMessage dClass="mt-1" message={"Please check the Raw Material that you want to edit."} />}
                 <button type="button" className={"apply"} disabled={disableEdit} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
               </Col>
             </Row>

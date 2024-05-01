@@ -559,7 +559,7 @@ const BOPDomesticListing = (props) => {
       * @description Renders buttons
       */
   const effectiveDateFormatter = (props) => {
-    if (tourStartData?.showExtraData) {
+    if (tourStartData?.showExtraData && props?.rowIndex === 0) {
       return "Lorem Ipsum";
     } else {
       const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;

@@ -380,7 +380,7 @@ function OverheadListing(props) {
     * @description Renders buttons
     */
     const effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        if (showExtraData) {
+        if (showExtraData && props?.rowIndex === 0) {
             return "Lorem Ipsum";
         } else {
             let value = cell.value != null ? DayTime(cell.value).format('DD/MM/YYYY') : '';

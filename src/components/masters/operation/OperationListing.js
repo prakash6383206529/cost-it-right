@@ -488,7 +488,7 @@ const OperationListing = (props) => {
     // }
 
     const effectiveDateFormatter = (props) => {
-        if (state?.showExtraData) {
+        if (state?.showExtraData && props?.rowIndex === 0) {
             return "Lorem Ipsum";
         } else {
             const cellValue = props?.valueFormatted || props?.value || '-';

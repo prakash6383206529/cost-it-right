@@ -175,7 +175,7 @@ const IndivisualProductListing = (props) => {
 
 
   const effectiveDateFormatter = (props) => {
-    if (showExtraData) {
+    if (showExtraData && props?.rowIndex === 0) {
       return "Lorem Ipsum";
     } else {
       let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
