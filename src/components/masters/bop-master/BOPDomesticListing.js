@@ -559,8 +559,12 @@ const BOPDomesticListing = (props) => {
       * @description Renders buttons
       */
   const effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    if (tourStartData?.showExtraData && props?.rowIndex === 0) {
+      return "Lorem Ipsum";
+    } else {
+      const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+      return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
   }
   const onGridReady = (params) => {
     setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
