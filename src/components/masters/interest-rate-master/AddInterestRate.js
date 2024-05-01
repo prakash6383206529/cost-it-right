@@ -55,7 +55,8 @@ class AddInterestRate extends Component {
       vendorFilterList: [],
       RawMaterial: [],
       RMGrade: [],
-      isRMFieldsEnabled: true
+      isRawMaterialSelected: false,
+      isGradeSelected: false
     }
   }
   /**
@@ -116,11 +117,17 @@ class AddInterestRate extends Component {
     if (label === 'ICC') {
       iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null
+        let modifiedLabel = item.Text;
+        if ((this.state.isRawMaterialSelected || this.state.isGradeSelected) && modifiedLabel.startsWith("Part")) {
+          modifiedLabel = modifiedLabel.replace("Part", ""); // Remove "Part" from the label
+
+        }
+        temp.push({ label: modifiedLabel, value: item.Value });
+        return null;
       });
       return temp;
     }
+
     if (label === 'PaymentTerms') {
       paymentTermsSelectList && paymentTermsSelectList.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
@@ -195,14 +202,11 @@ class AddInterestRate extends Component {
       this.setState({ vendorName: [], })
     }
   };
-
   /**
-  * @method handleICCApplicability
-  * @description called
-  */
+* @method handleICCApplicability
+* @description called
+*/
   handleICCApplicability = (newValue, actionMeta) => {
-    console.log('newValue: ', newValue);
-    console.log(newValue.value.startsWith("Part"));
     if (newValue && newValue !== '') {
       this.setState({ ICCApplicability: newValue, });
     } else {
@@ -214,20 +218,8 @@ class AddInterestRate extends Component {
     else {
       this.setState({ isDataChanged: false, DropdownNotChanged: false })
     }
-    if (newValue && newValue.value.startsWith("Part")) {
-      console.log("Part");
-      // Disable RM detail fields
-      this.setState({ isRMFieldsEnabled: false });
-      // Make RM detail fields non-mandatory
-      // You may need to update your form validation logic here
-    } else {
-      // Enable RM detail fields
-      this.setState({ isRMFieldsEnabled: true });
-      // Make RM detail fields mandatory again
-      // You may need to update your form validation logic here
-    }
-
   };
+
 
   /**
   * @method handlePaymentApplicability
@@ -325,6 +317,8 @@ class AddInterestRate extends Component {
   * @description  used to handle row material selection
   */
   handleRMChange = (newValue, actionMeta) => {
+    this.setState({ isRawMaterialSelected: true });
+
     if (newValue && newValue !== '') {
       this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
         const { RawMaterial } = this.state
@@ -346,6 +340,8 @@ class AddInterestRate extends Component {
    * @description  used to handle row material grade selection
    */
   handleGradeChange = (newValue, actionMeta) => {
+    this.setState({ isGradeSelected: true });
+
     if (newValue && newValue !== '') {
       this.setState({ RMGrade: newValue })
     } else {
