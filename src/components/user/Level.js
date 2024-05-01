@@ -751,7 +751,7 @@ class Level extends Component {
                               onClick={() => this.onPressRadioLevel('Onboarding')}
                               disabled={this.props.isEditFlag}
                             />{' '}
-                            <span>Onboarding</span>
+                            <span>Onboarding & Management</span>
                           </Label>}
                         </Col>
                       </Row >

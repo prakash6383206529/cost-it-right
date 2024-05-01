@@ -1939,7 +1939,7 @@ export const REPORTS_AND_ANALYTICS = 'Reports And Analytics'
 export const USERS = 'Users'
 export const AUDIT = 'Audit'
 export const RFQ = 'RFQ'
-export const ONBOARDING = 'Onboarding'
+export const ONBOARDING = 'Onboarding & Management'
 export const VENDOR_MANAGEMENT = 'Vendor Management'
 export const APPROVAL_LISTING = 'Approval Listing'
 
