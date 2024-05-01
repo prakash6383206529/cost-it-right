@@ -1069,8 +1069,8 @@ function RMImportListing(props) {
           </Row >
           {
             props.isSimulation && isFromVerifyPage && <Row>
-              <Col md="12" className="d-flex justify-content-end">
-                {disableEdit && <WarningMessage dClass="mt-1" message={"Please check the Raw Material that you want to edit."} />}
+              <Col md="12" className="d-flex justify-content-end align-items-center">
+                {disableEdit && <WarningMessage dClass="mr-5" message={"Please check the Raw Material that you want to edit."} />}
                 <button type="button" className={"apply"} disabled={disableEdit} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
               </Col>
             </Row>

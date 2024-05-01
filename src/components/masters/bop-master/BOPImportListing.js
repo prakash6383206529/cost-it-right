@@ -1080,8 +1080,8 @@ const BOPImportListing = (props) => {
               </Row>
               {props.isSimulation && props.isFromVerifyPage && (
                 <Row>
-                  <Col md="12" className="d-flex justify-content-end">
-                    <WarningMessage dClass="mt-1" message={`Please check the ${showBopLabel()} that you want to edit.`} />
+                  <Col md="12" className="d-flex justify-content-end align-items-center">
+                    <WarningMessage dClass="mr-5" message={`Please check the ${showBopLabel()} that you want to edit.`} />
                     <Button className={"apply"} id={"bopImportListing_editSelectedData"} disabled={state.gridApi?.getSelectedRows()?.length === 0} onClick={editSelectedData} icon="edit-icon" buttonName="Edit" />
                   </Col>
                 </Row>
