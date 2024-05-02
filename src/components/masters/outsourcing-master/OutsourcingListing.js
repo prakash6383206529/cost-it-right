@@ -263,6 +263,7 @@ const OutsourcingListing = (props) => {
     }
 
     const handleChange = (cell, row) => {
+
         let data = { Id: row.OutSourcingId, LoggedInUserId: loggedInUserId(), IsActive: !cell, }
         setCellData(data)
         setCellValue(cell)

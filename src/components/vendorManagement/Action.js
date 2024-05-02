@@ -79,6 +79,7 @@ export const getLPSRatingListing = (callback) => {
 
 export function updateClassificationStatus(requestData, callback) {
 
+
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         axios.put(`${API.vendorClassificationStatusUpdate}`, requestData, config())

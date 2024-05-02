@@ -16,7 +16,7 @@ import { MESSAGES } from '../../config/message';
 import DayTime from '../common/DayTimeWrapper';
 const gridOptions = {};
 
-const SupplierClassificationListing = () => {
+const VendorClassificationListing = () => {
     const [renderState, setRenderState] = useState(true);
     const [isLoader, setIsLoader] = useState(false);
     const [tableData, setTableData] = useState([]);
@@ -27,6 +27,8 @@ const SupplierClassificationListing = () => {
     const [noData, setNoData] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [ActivateAccessibility, setActivateAccessibility] = useState(false);
+    const [render, setRender] = useState(false)
+    const [showExtraData, setShowExtraData] = useState(false)
 
 
 
@@ -34,10 +36,6 @@ const SupplierClassificationListing = () => {
 
     const dispatch = useDispatch();
     const supplierManagement = useSelector(state => state?.supplierManagement?.vendorData) || [];
-
-
-
-
 
     useEffect(() => {
         applyPermission()
@@ -58,11 +56,19 @@ const SupplierClassificationListing = () => {
         }
     }
 
+    const toggleExtraData = (showTour) => {
+
+        setRender(true)
+        setTimeout(() => {
+            setShowExtraData(showTour)
+            setRender(false)
+        }, 100);
+
+
+    }
     const getTableListData = () => {
         setIsLoader(true)
         dispatch(getVendorClassificationListing(true, (res) => {
-
-
             setIsLoader(false)
             if (res?.status === 204 && res?.data === '') {
                 setTableData([])
@@ -81,11 +87,12 @@ const SupplierClassificationListing = () => {
         }))
     }
     const confirmDeactivateItem = (data, cell) => {
+
+
         dispatch(updateClassificationStatus(data, res => {
             setIsLoader(false)
-
             if (res && res?.data && res?.data?.Result) {
-                if (cell === 0) {
+                if (cell === "Unblocked") {
                     Toaster.success(MESSAGES?.CLASSIFICATION_BLOCK_SUCCESSFULLY)
                 } else {
                     Toaster.success(MESSAGES?.CLASSIFICATION_UNBLOCK_SUCCESSFULLY)
@@ -97,24 +104,21 @@ const SupplierClassificationListing = () => {
         setShowPopupToggle(false)
     }
     const onPopupConfirmToggle = () => {
-        // Handle popup confirmation toggle
         confirmDeactivateItem(cellData, cellValue)
     }
     const handleChange = (cell, row, index) => {
-        const statusId = cell === 0 ? 1 : 0;
+        const statusId = row?.IsBlocked === true ? 0 : 1
         let data = {
             ClassificationId: row.ClassificationId,
-            StatusId: statusId, // Toggle the status
             LoggedInUserId: loggedInUserId(),
+            StatusId: statusId, // Toggle the status
         }
-
-
         setCellData(data);
         setCellValue(cell)
-
         setShowPopupToggle(true);
     }
     const statusButtonFormatter = (props) => {
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         // if (rowData.UserId === loggedInUserId()) return null;
@@ -125,7 +129,7 @@ const SupplierClassificationListing = () => {
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => handleChange(cellValue, rowData)}
-                        checked={cellValue}
+                        checked={cellValue === "Blocked"}
                         // disabled={!ActivateAccessibility}
                         background="#ff6600"
                         onColor="#FC5774"
@@ -163,29 +167,33 @@ const SupplierClassificationListing = () => {
 
 
     const frameworkComponents = {
+        customNoRowsOverlay: NoContentFound,
 
         statusButtonFormatter: statusButtonFormatter,
         effectiveDateFormatter: effectiveDateFormatter
     };
     return (
         <>
-            {(isLoader) ? <LoaderCustom customClass="loader-center" /> :
-                <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
-                    {/* {isLoader && <LoaderCustom customClass="loader-center" />} */}
+            {/* {(isLoader) ? <LoaderCustom customClass="loader-center" /> : */}
+            <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
+                <>
                     <Row className="no-filter-row">
                         <Col md={6} className="text-right filter-block"></Col>
                     </Row>
                     {<div className={`ag-grid-wrapper height-width-wrapper`}>
                         <div className={`ag-theme-material`}>
                             {/* {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />} */}
-                            <AgGridReact
+                            {noData ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
+                                style={{ height: '100%', width: '100%' }}
+
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
                                 rowData={supplierManagement}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
-                                // noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
                                     imagClass: 'imagClass pt-3'
@@ -193,26 +201,26 @@ const SupplierClassificationListing = () => {
                                 suppressRowClickSelection={true}
                                 frameworkComponents={frameworkComponents}
                             >
-                                {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
                                 <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
                                 <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
                                 <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
                                 <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            </AgGridReact>
+                            </AgGridReact>}
                             {!isLoader && (!supplierManagement || supplierManagement?.length === 0) &&
                                 <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
                             }
                         </div>
                     </div>}
+                </>
+                {
+                    showPopupToggle && <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue === "Blocked" ? MESSAGES.VENDOR_APPROVED : MESSAGES.VENDOR_REJECTED}`} />
+                }
+            </div>
 
-                    {
-                        showPopupToggle && <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.VENDOR_APPROVED : MESSAGES.VENDOR_REJECTED}`} />
-                    }
-                </div>}
 
         </>
 
     );
 };
 
-export default SupplierClassificationListing;
+export default VendorClassificationListing;
