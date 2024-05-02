@@ -9,8 +9,10 @@ import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, removeBOPfromApplicability } from '../../../../helper';
 import { removeBOPFromList } from '../../../../helper';
-import { CRMHeads, Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../config/constants';
+import { CRMHeads, Fixed, FullTruckLoad, PartTruckLoad, Percentage, WACTypeId } from '../../../../config/constants';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../helper/validation";
+import { fetchCostingHeadsAPI } from '../../../../actions/Common';
+import { IdForMultiTechnology } from '../../../../config/masterData';
 
 function AddFreight(props) {
 
@@ -51,6 +53,7 @@ function AddFreight(props) {
 
 
   const [freightCost, setFreightCost] = useState('')
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
   useEffect(() => {
     setTimeout(() => {
@@ -61,7 +64,10 @@ function AddFreight(props) {
   useEffect(() => {
     dispatch(getFreigtFullTruckCapacitySelectList())
   }, []);
-
+  useEffect(() => {
+    let request = partType ? 'multiple technology assembly' : ''
+    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+  }, [])
   const fieldValues = useWatch({
     control,
     name: ['PackagingPercentage'],
