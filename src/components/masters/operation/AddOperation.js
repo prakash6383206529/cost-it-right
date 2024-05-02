@@ -583,6 +583,7 @@ class AddOperation extends Component {
             this.setState({ isDisableCode: true })
           }
           else {
+            Toaster.warning(res.data.Message);
 
             this.props.change('OperationCode', '');
             this.setState({ isDisableCode: false })
