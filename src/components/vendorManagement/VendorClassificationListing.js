@@ -121,8 +121,9 @@ const VendorClassificationListing = () => {
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        console.log('rowData: ', rowData);
         // if (rowData.UserId === loggedInUserId()) return null;
-        showTitleForActiveToggle(props?.rowIndex)
+        showTitleForActiveToggle(props?.rowIndex, rowData?.Status, rowData?.Status);
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
@@ -137,7 +138,7 @@ const VendorClassificationListing = () => {
                         offColor="#4DC771"
                         id="normal-switch"
                         height={24}
-                        className={cellValue ? "blocked-switch" : "unblocked-switch"}
+                        className={cellValue ? "active-switch" : "inactive-switch"}
                     />
                 </label>
             </>

@@ -251,7 +251,7 @@ const OutsourcingListing = (props) => {
     const statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        showTitleForActiveToggle(props?.rowIndex)
+        showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive');
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
