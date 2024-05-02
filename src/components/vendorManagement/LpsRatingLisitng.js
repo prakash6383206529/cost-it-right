@@ -104,12 +104,13 @@ const LpsRatingListing = () => {
     }
 
     const handleChange = (cell, row, index) => {
-        const statusId = cell === 0 ? 1 : 0;
+
         let data = {
             LPSRatingId: row.LPSRatingId,
-            StatusId: statusId, // Toggle the status
+            IsBlocked: !cell, // Toggle the status
             LoggedInUserId: loggedInUserId(),
         }
+
         setCellData(data);
         setCellValue(cell)
 
@@ -118,7 +119,9 @@ const LpsRatingListing = () => {
 
     const statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         // if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive');
         return (
@@ -126,8 +129,8 @@ const LpsRatingListing = () => {
                 <label htmlFor="normal-switch" className="normal-switch">
                     {/* <span>Switch with default style</span> */}
                     <Switch
-                        onChange={() => handleChange(cellValue, rowData)}
-                        checked={cellValue}
+                        onChange={() => handleChange(rowData.IsBlocked, rowData)}
+                        checked={rowData.IsBlocked}
                         // disabled={!ActivateAccessibility}
                         background="#ff6600"
                         onColor="#FC5774"
@@ -135,7 +138,7 @@ const LpsRatingListing = () => {
                         offColor="#4DC771"
                         id="normal-switch"
                         height={24}
-                        className={cellValue ? "blocked-switch" : "unblocked-switch"}
+                        className={rowData.IsBlocked ? 'active-switch' : 'inactive-switch'}
                     />
                 </label>
             </>

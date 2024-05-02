@@ -107,12 +107,13 @@ const VendorClassificationListing = () => {
         confirmDeactivateItem(cellData, cellValue)
     }
     const handleChange = (cell, row, index) => {
-        const statusId = row?.IsBlocked === true ? 0 : 1
+        const status = row?.IsBlocked === true ? false : true
         let data = {
             ClassificationId: row.ClassificationId,
             LoggedInUserId: loggedInUserId(),
-            StatusId: statusId, // Toggle the status
+            IsBlocked: status, // Toggle the status
         }
+
         setCellData(data);
         setCellValue(cell)
         setShowPopupToggle(true);
@@ -121,7 +122,7 @@ const VendorClassificationListing = () => {
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log('rowData: ', rowData);
+
         // if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex, rowData?.Status, rowData?.Status);
         return (
