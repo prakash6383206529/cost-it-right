@@ -103,13 +103,13 @@ function ERSimulation(props) {
     }
 
     const effectiveDateFormatter = (props) => {
+
         let cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (cell?.includes('T')) {
             cell = DayTime(cell).format('DD/MM/YYYY')
         }
-        return (!cell ? '-' : cell)
+        return (!cell ? '-' : DayTime(cell).format('DD/MM/YYYY'))
     }
-
     const newERFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -440,7 +440,7 @@ function ERSimulation(props) {
                                                 <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(${reactLocalStorage.getObject("baseCurrency")}) `} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>
                                             </>}
                                             {props.children}
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date123" editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
 
                                         </AgGridReact>}
