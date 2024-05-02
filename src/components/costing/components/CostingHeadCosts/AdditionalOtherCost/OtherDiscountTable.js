@@ -31,6 +31,7 @@ export default function OtherDiscountTable(props) {
                 </thead>
                 <tbody>
                     {tableData.gridData && tableData.gridData.length !== 0 && tableData.gridData.map((item, index) => {
+                        console.log(item?.PercentageDiscountCost, "item?.PercentageDiscountCost");
                         return (
                             <tr key={index} >
                                 {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}
@@ -38,7 +39,7 @@ export default function OtherDiscountTable(props) {
                                 <td>{item.applicability}</td>
                                 {/* <td>{item?.OtherCostApplicability}</td> */}
                                 <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                <td>{item?.PercentageDiscountCost}</td>
+                                <td>{item?.PercentageDiscountCost !== '' ? item?.PercentageDiscountCost : '-'}</td>
                                 <td>{checkForDecimalAndNull(item.NetCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                                 {!CostingViewMode && <td className='text-right'>
                                     <button
@@ -69,7 +70,7 @@ export default function OtherDiscountTable(props) {
                     ) : (
                         <tr className='table-footer'>
                             <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4} className='text-right'>
-                                Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):
+                                Total Discount Cost ({reactLocalStorage.getObject("baseCurrency")}):
                             </td>
                             <td colSpan={3}>
                                 {checkForDecimalAndNull(tableData.otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}

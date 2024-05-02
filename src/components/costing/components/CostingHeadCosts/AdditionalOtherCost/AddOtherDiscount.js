@@ -47,12 +47,14 @@ function AddOtherDiscount(props) {
 
     useEffect(() => {
         setValue('ApplicabilityCost', '')
+        console.log("Hello2");
         if (!CostingViewMode) {
             findApplicabilityCost()
         }
     }, [fieldValuesForPercent])
     useEffect(() => {
         if (!CostingViewMode && getValues('OtherCostApplicability')?.label === 'Fixed') {
+            console.log("Hello");
             findApplicabilityCost()
         }
     }, [fieldValuesForFixed])
@@ -124,7 +126,9 @@ function AddOtherDiscount(props) {
         setValue('PercentageOtherCost', '')
         setValue('OtherCostDescription', '')
         setValue('AnyOtherCost', '')
-        setValue('ApplicabilityCost', '')
+        setTimeout(() => {
+            setValue('ApplicabilityCost', '')
+        }, 100);
         setOtherCostApplicability([])
         setOtherCost(0)
         setState(prevState => ({ ...prevState, isEdit: false, editIndex: '' }))
@@ -134,18 +138,18 @@ function AddOtherDiscount(props) {
     const validation = () => {
         let labels = ['OtherCostDescription', 'OtherCostApplicability', 'AnyOtherCost', 'PercentageOtherCost'];
         let count = 0
-        labels.forEach(label => {
-            if (state.otherDiscountApplicabilityType?.label === 'Fixed' && label === 'PercentageOtherCost') {
-                return false
-            } else {
-                if (!getValues(label)) {
-                    count++
-                }
-            }
-        })
+        // labels.forEach(label => {
+        //     if (state.otherDiscountApplicabilityType?.label === 'Fixed' && label === 'PercentageOtherCost') {
+        //         return false
+        //     } else {
+        //         if (!getValues(label)) {
+        //             count++
+        //         }
+        //     }
+        // })
         if (count > 0) {
-            Toaster.warning("Please fill all details")
-            return true
+            // Toaster.warning("Please fill all details")
+            // return true
         } else {
 
             let OtherCostDescription = getValues('OtherCostDescription')
@@ -219,7 +223,8 @@ function AddOtherDiscount(props) {
             _.pullAt(newgridData, index);
         }
         const sumOfNetCost = newgridData.reduce((acc, obj) => acc + obj.NetCost, 0);
-        setState(prevState => ({ ...prevState, tableData: newgridData, discountTotalCost: sumOfNetCost }))
+        setState(prevState => ({ ...prevState, tableData: newgridData, discountTotalCost: sumOfNetCost, isEdit: false }))
+        resetData()
     }
     const handleOherCostApplicabilityChange = (value) => {
         if (!CostingViewMode) {
@@ -228,7 +233,7 @@ function AddOtherDiscount(props) {
                 // setState(prevState => ({ ...prevState, otherDiscountApplicabilityType: applicability }))
                 setOtherCostApplicability(applicability)
                 setValue('AnyOtherCost', 0)
-                setValue('PercentageOtherCost', 0)
+                setValue('PercentageOtherCost', '')
                 errors.AnyOtherCost = {}
                 errors.PercentageOtherCost = {}
 
@@ -298,6 +303,7 @@ function AddOtherDiscount(props) {
             case 'Net Cost':
                 totalCost = (totalTabCost) * calculatePercentage(percent)
                 setApplicabilityCost(totalTabCost)
+                console.log(totalTabCost, "totalTabCost");
                 setValue('ApplicabilityCost', checkForDecimalAndNull(totalTabCost, initialConfiguration.NoOfDecimalForPrice))
                 break;
             case 'Surface Treatment Cost':
@@ -455,7 +461,7 @@ function AddOtherDiscount(props) {
                                                 register={register}
                                                 mandatory={true}
                                                 rules={{
-                                                    required: false,
+                                                    required: !(CostingViewMode || !(otherCostApplicability && otherCostApplicability.value === 'Percentage')),
                                                     validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                     max: {
                                                         value: 100,
@@ -482,7 +488,7 @@ function AddOtherDiscount(props) {
                                                 register={register}
                                                 mandatory={true}
                                                 rules={{
-                                                    required: false,
+                                                    required: !(CostingViewMode || Object.keys(otherCostApplicability).length === 0 || (otherCostApplicability && otherCostApplicability?.value === 'Percentage')),
                                                 }}
                                                 handleChange={(e) => {
                                                     e.preventDefault();
@@ -504,9 +510,9 @@ function AddOtherDiscount(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={true}
+                                            mandatory={false}
                                             rules={{
-                                                required: true,
+                                                required: false,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
                                             handleChange={(e) => {
@@ -525,14 +531,14 @@ function AddOtherDiscount(props) {
                                             <>
                                                 <button
                                                     type="submit"
-                                                    className={"btn btn-primary mt30 pull-left mr5"}
+                                                    className={`btn btn-primary ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} pull-left mr5`}
                                                     disabled={CostingViewMode}
                                                 >
                                                     Update
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
+                                                    className={`mr15 ml-1 ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} add-cancel-btn cancel-btn`}
                                                     onClick={() => resetData()}
                                                     disabled={CostingViewMode}
                                                 >
