@@ -385,8 +385,9 @@ class AddVolume extends Component {
     const value = this.beforeSaveCell(cell)
 
     return (
-      <>
+      <><div id="actual_Quantity">
         <span>{value ? Number(cell) : 0}</span>
+      </div>
       </>
     )
   }

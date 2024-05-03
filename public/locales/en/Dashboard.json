@@ -1,15 +1,15 @@
 {
     "simulationApproval": {
-        "dashboard_simulation_Pending_For_Approval": "Check Amendments Pending Approvals from here.",
-        "dashboard_simulation_Awaiting_Approval": "Check your Amendments Awaiting Approvals from here.",
-        "dashboard_simulation_Approved": "Check your Amendments Approved from here.",
-        "dashboard_simulation_Rejected": "Check your Amendments Rejected from here."
+        "dashboard_simulation_Pending_For_Approval": "Check amendments pending approvals from here.",
+        "dashboard_simulation_Awaiting_Approval": "Check your amendments awaiting approvals from here.",
+        "dashboard_simulation_Approved": "Check your amendments approved from here.",
+        "dashboard_simulation_Rejected": "Check your amendments rejected from here."
     },
     "costingApproval": {
-        "dashboard_costing_Pending_For_Approval": "Check costings Pending Approvals from here.",
-        "dashboard_costing_Awaiting_Approval": "Check costings Awaiting Approvals from here.",
-        "dashboard_costing_Approved": "Check costings Approved Approvals from here.",
-        "dashboard_costing_Rejected": "Check costings Rejected Approvals from here."
+        "dashboard_costing_Pending_For_Approval": "Check costings pending approvals from here.",
+        "dashboard_costing_Awaiting_Approval": "Check costings awaiting approvals from here.",
+        "dashboard_costing_Approved": "Check costings approved approvals from here.",
+        "dashboard_costing_Rejected": "Check costings rejected approvals from here."
     },
     "masterApproval": {
         "dashboard_master_Pending_For_Approval": "Check masters pending approval from here.",

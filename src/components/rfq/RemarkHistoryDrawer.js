@@ -4,7 +4,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { getReporterList } from '../.././actions/Common';
 import { getCostingSpecificTechnology } from '../costing/actions/Costing'
-import { loggedInUserId } from '../.././helper';
+import { getTimeZone, loggedInUserId } from '../.././helper';
 import { MESSAGES } from '../../config/message';
 import { getCommunicationHistory } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
@@ -33,7 +33,8 @@ function RemarkHistoryDrawer(props) {
         let reqData = {
             quotationId: data.QuotationId,
             partId: data.PartId,
-            vendorId: data.VendorId
+            vendorId: data.VendorId,
+            timeZone: getTimeZone()
 
         }
         dispatch(getCommunicationHistory(reqData, (res) => {

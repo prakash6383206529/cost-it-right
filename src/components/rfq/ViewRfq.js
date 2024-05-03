@@ -1,8 +1,8 @@
 import React from 'react';
-import { useState, useEffect, } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, NCCTypeId, VBCTypeId, } from '../.././config/constants'
+import { EMPTY_DATA, RETURNED, RECEIVED, NCCTypeId, VBCTypeId, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -13,12 +13,12 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
-import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setQuotationIdForRFQ, checkExistCosting } from './actions/rfq';
+import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setQuotationIdForRFQ, checkExistCosting, getQuotationList } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
-import { checkForNull, formViewData, getCodeBySplitting, getNameBySplitting, loggedInUserId } from '../../helper';
+import { checkForNull, formViewData, getCodeBySplitting, getNameBySplitting, loggedInUserId, userDetails } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { Fragment } from 'react';
@@ -32,6 +32,10 @@ import CostingApproveReject from '../costing/components/approval/CostingApproveR
 import TourWrapper from '../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
+import { getGridHeight } from '../../actions/Common';
+import SingleDropdownFloationFilter from '../masters/material-master/SingleDropdownFloationFilter';
+import WarningMessage from '../common/WarningMessage';
+
 const gridOptions = {};
 
 
@@ -43,9 +47,7 @@ function RfqListing(props) {
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
     const [showPopup, setShowPopup] = useState(false)
-
     const [selectedCostings, setSelectedCostings] = useState([])
-
     const [addRfq, setAddRfq] = useState(false);
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
@@ -53,6 +55,7 @@ function RfqListing(props) {
     const [noData, setNoData] = useState(false)
     const [sendForApproval, setSendForApproval] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
+    const [returnDrawer, setReturnDrawer] = useState(false)
     const [selectedRows, setSelectedRows] = useState([])
     const [addComparisonToggle, setaddComparisonToggle] = useState(false)
     const [addComparisonButton, setAddComparisonButton] = useState(true)
@@ -75,10 +78,15 @@ function RfqListing(props) {
     const [compareButtonPressed, setCompareButtonPressed] = useState(false)
     const [isVisibiltyConditionMet, setisVisibiltyConditionMet] = useState(false)
     const [rejectedList, setRejectedList] = useState([])
+    const [returnList, setReturnList] = useState([])
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
     const { initialConfiguration } = useSelector(state => state.auth)
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
-
+    const [costingsDifferentStatus, setCostingsDifferentStatus] = useState(false)
+    const agGridRef = useRef(null);
+    const [matchedStatus, setMatchedStatus] = useState([])
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    let arr = []
 
     useEffect(() => {
         getDataList()
@@ -99,18 +107,23 @@ function RfqListing(props) {
         }
 
     }, [selectedCostings])
-
+    useEffect(() => {
+        if (statusColumnData) {
+            gridApi?.setQuickFilter(statusColumnData?.data);
+        }
+    }, [statusColumnData])
     useEffect(() => {
         let filteredArr = _.map(viewCostingData, 'costingId')
-        let arr = []
         filteredArr.map(item => selectedRows.filter(el => {
             if (el.CostingId === item) {
                 arr.push(el)
             }
         }))
         const isApproval = arr.filter(item => item.ShowApprovalButton)
+        const disableApproveButton = isApproval.some(item => String(item.Status) === String(RETURNED));
         setDisableApproveRejectButton(isApproval.length > 0)
-    }, [viewCostingData])
+
+    }, [viewCostingData, selectedCostingList, selectedRows])
 
     /**
     * @method hideForm
@@ -159,8 +172,48 @@ function RfqListing(props) {
             setTechnologyId(res?.data?.DataList[0].TechnologyId)
             setloader(false);
         }))
-    }
 
+    }
+    const handleFilterChange = () => {
+
+
+        if (agGridRef.current) {
+            //MINDA
+            // setTimeout(() => {
+            //     if (!agGridRef.current.rowRenderer.allRowCons.length) {
+            //         setNoData(true)
+            //         dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
+            //     } else {
+            //         setNoData(false)
+            //     }
+            // }, 100);
+
+            const gridApi = agGridRef.current.api;
+
+
+            if (gridApi) {
+
+                const displayedRowCount = gridApi.getDisplayedRowCount();
+
+                const allRowData = [];
+                for (let i = 0; i < displayedRowCount; i++) {
+                    const rowNode = gridApi.getDisplayedRowAtIndex(i);
+                    if (rowNode) {
+
+                        allRowData.push(rowNode.data);
+                    }
+                }
+                setNoData(!allRowData.length)
+            }
+        }
+    };
+    const floatingFilterRFQ = {
+        maxValue: 11,
+        suppressFilterButton: true,
+        component: "RFQ",
+        onFilterChange: handleFilterChange,
+        notPagination: true
+    }
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
@@ -299,6 +352,25 @@ function RfqListing(props) {
         setRejectedList(arr)
         setRejectDrawer(true)
     }
+    const returnDetailsClick = (Id, rowData = {}) => {
+        if (selectedCostingList?.length === 0) {
+            Toaster.warning("Select at least one costing to return")
+            return false
+        }
+        const arrayOfObjects = [...viewCostingData]
+        const matchingItems = selectedCostingList.filter(item =>
+            arrayOfObjects.some(obj => obj.costingId === item)
+        );
+        let arr = []
+        matchingItems.map(item => rowData.filter(el => {
+            if (el.CostingId === item) {
+                arr.push(el)
+            }
+            return null
+        }))
+        setReturnList(arr)
+        setReturnDrawer(true)
+    }
 
     /**
     * @method singleApprovalDetails
@@ -318,6 +390,7 @@ function RfqListing(props) {
 
         setTimeout(() => {
             setRejectDrawer(true)
+            setReturnDrawer(true)
         }, 600);
     }
 
@@ -572,8 +645,28 @@ function RfqListing(props) {
     }
 
     const checkCostingSelected = (list, index) => {
-        setIndex(index)
-        setSelectedCostingList(list)
+        setIndex(index);
+        setSelectedCostingList(list);
+        let filteredArr = _.map(viewCostingData, 'costingId');
+        let arr = [];
+        filteredArr.map(item => selectedRows.filter(el => {
+            if (el.CostingId === item) {
+                arr.push(el);
+            }
+        }));
+
+        const matchedStatus = list.map(selectedItem => {
+            const matchedItem = arr.find(item => item.CostingId === selectedItem);
+            return matchedItem ? matchedItem.Status : null;
+        });
+        setMatchedStatus(matchedStatus);
+        const uniqueStatuses = new Set(matchedStatus);
+        if (uniqueStatuses.size > 1) {
+            setCostingsDifferentStatus(true);
+            Toaster.warning('Actions cannot be performed on costings with different statuses.');
+        } else {
+            setCostingsDifferentStatus(false);
+        }
     }
 
     /**
@@ -581,6 +674,7 @@ function RfqListing(props) {
     * @description Renders buttons
     */
     const buttonFormatter = (props) => {
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
@@ -623,6 +717,7 @@ function RfqListing(props) {
         setAddRfqData({})
         setAddRfq(false)
         setRejectDrawer(false)
+        setReturnDrawer(false)
         if (type !== 'cancel') {
             getDataList()
         }
@@ -634,6 +729,7 @@ function RfqListing(props) {
 
 
     const onGridReady = (params) => {
+        agGridRef.current = params.api;
         setgridApi(params.api);
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
@@ -745,6 +841,7 @@ function RfqListing(props) {
 
     const addComparisonDrawerToggle = () => {
         let arr = []
+
         selectedRows && selectedRows?.map(item => {
             if (item?.CostingId) {
                 arr.push(item?.CostingId)
@@ -755,6 +852,8 @@ function RfqListing(props) {
         let temp = []
         let tempObj = {}
         const isApproval = selectedRows.filter(item => item.ShowApprovalButton)
+
+
 
 
         setDisableApproveRejectButton(isApproval.length > 0)
@@ -837,7 +936,11 @@ function RfqListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (cellValue != null && cellValue !== '' && cellValue !== undefined) ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
+    const dateTimeFormatter = (props) => {
 
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY  hh:mm') : '-';
+    }
     const isRowSelectable = rowNode => rowNode.data ? rowNode?.data?.ShowCheckBox : false;
 
 
@@ -866,13 +969,21 @@ function RfqListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue === null ? '-' : cellValue
     }
+    const statusFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return <div className={cell}>{row.DisplayStatus}</div>
+    }
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
+        statusFormatter: statusFormatter,
         linkableFormatter: linkableFormatter,
         dateFormatter: dateFormatter,
         partNumberFormatter: partNumberFormatter,
         customNoRowsOverlay: NoContentFound,
-        seperateHyphenFormatter: seperateHyphenFormatter
+        seperateHyphenFormatter: seperateHyphenFormatter,
+        valuesFloatingFilter: SingleDropdownFloationFilter,
+        dateTimeFormatter: dateTimeFormatter,
     }
 
     const closeSendForApproval = (e = '', type) => {
@@ -975,6 +1086,7 @@ function RfqListing(props) {
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
+                                            ref={agGridRef}
                                             domLayout='autoHeight'
                                             rowData={rowData}
                                             pagination={true}
@@ -1003,13 +1115,14 @@ function RfqListing(props) {
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
                                             <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={dateFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityDate" width={"300px"} headerName='Visibility Date' cellRenderer={dateTimeFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
                                             <AgGridColumn field="NetPOPrice" headerName=" Net Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
+                                            <AgGridColumn width={350} field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
                                             {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
@@ -1067,6 +1180,23 @@ function RfqListing(props) {
                     // dataSend={[approvalDetails, partDetail]}
                     />
                 )}
+                {returnDrawer && (
+                    <CostingApproveReject
+                        // <ApproveRejectDrawer    //RE
+                        type={'Return'}
+                        isOpen={returnDrawer}
+                        approvalData={returnList}
+                        closeDrawer={closeDrawer}
+                        //  tokenNo={approvalNumber}
+                        anchor={'right'}
+                        isRFQApproval={true}
+                        cancel={cancel}
+                    // IsFinalLevel={!showFinalLevelButtons}
+                    // reasonId={approvalDetails.ReasonId}
+                    // IsPushDrawer={showPushDrawer}
+                    // dataSend={[approvalDetails, partDetail]}
+                    />
+                )}
 
                 {addRfq &&
 
@@ -1105,6 +1235,7 @@ function RfqListing(props) {
                                 compareButtonPressed={compareButtonPressed}
                                 showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
                                 selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
+                                costingsDifferentStatus={costingsDifferentStatus}
                             />
                         )}
                     </div>
@@ -1127,22 +1258,32 @@ function RfqListing(props) {
 
             </div >
             {addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0 && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
+                {costingsDifferentStatus && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Actions cannot be performed on costings with different statuses.'} />}
                 <div className="col-sm-12 text-right bluefooter-butn">
-
-                    <button type={'button'} className="mr5 approve-reject-btn" onClick={() => rejectDetailsClick("", selectedRows)} >
+                    <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
+                        <div className={'cancel-icon-white mr5'}></div>
+                        {'Return'}
+                    </button>
+                    <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => rejectDetailsClick("", selectedRows)} >
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Reject'}
                     </button>
-                    <button
-                        type="button"
-                        className="approve-button mr5 approve-hover-btn"
-                        onClick={() => approveDetails("", selectedRows)}
-                    >
-                        <div className={'save-icon'}></div>
-                        {'Approve'}
-                    </button>
+                    {(matchedStatus.length === 0 || matchedStatus.includes(RECEIVED)) && (
+                        <button
+                            disabled={costingsDifferentStatus}
+                            type="button"
+                            className="approve-button mr5 approve-hover-btn"
+                            onClick={() => approveDetails("", selectedRows)}
+                        >
+                            <div className={'save-icon'}></div>
+                            {'Approve'}
+                        </button>
+                    )}
+
+
                 </div>
-            </Row>}
+
+            </Row >}
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }

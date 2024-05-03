@@ -16,7 +16,7 @@ import { PaginationWrapper } from '.././common/commonPagination'
 import { getQuotationList, cancelRfqQuotation } from './actions/rfq';
 import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
-import { checkPermission, searchNocontentFilter, setLoremIpsum, userDetails } from '../../helper';
+import { checkPermission, getTimeZone, searchNocontentFilter, setLoremIpsum, userDetails } from '../../helper';
 import DayTime from '../common/DayTimeWrapper';
 import Attachament from '../costing/components/Drawers/Attachament';
 import { useRef } from 'react';
@@ -37,6 +37,7 @@ function RfqListing(props) {
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
+
     const [noData, setNoData] = useState(false)
     const [viewRfq, setViewRfq] = useState(false)
     const [viewRfqData, setViewRfqData] = useState("")
@@ -55,6 +56,7 @@ function RfqListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const handleFilterChange = () => {
         if (agGridRef.current) {
+
             //MINDA
             // setTimeout(() => {
             //     if (!agGridRef.current.rowRenderer.allRowCons.length) {
@@ -94,6 +96,9 @@ function RfqListing(props) {
 
     useEffect(() => {
         if (statusColumnData) {
+
+
+
             gridApi?.setQuickFilter(statusColumnData?.data);
         }
     }, [statusColumnData])
@@ -119,12 +124,14 @@ function RfqListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = () => {
-        dispatch(getQuotationList(userDetails()?.DepartmentCode, (res) => {
+        const Timezone = getTimeZone()
+        dispatch(getQuotationList(userDetails()?.DepartmentCode, Timezone, (res) => {
             let temp = []
             res?.data?.DataList && res?.data?.DataList.map((item) => {
                 if (item.IsActive === false) {
                     item.Status = "Cancelled"
                 }
+
                 item.tooltipText = ''
                 switch (item.Status) {
                     case APPROVED:
@@ -347,6 +354,11 @@ function RfqListing(props) {
         const cellValue = props?.value;
         return cellValue ? cellValue : '-';
     }
+    const timeZoneFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue ? cellValue : '-'
+    }
+
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
@@ -511,9 +523,10 @@ function RfqListing(props) {
                                                 <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" width={"160px"} headerName='Raised By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter'></AgGridColumn>
-                                                <AgGridColumn field="VisibilityMode" width={"140px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
+                                                <AgGridColumn field="VisibilityMode" width={"200px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityDate" width={"160px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
+                                                <AgGridColumn field="TimeZone" width={"150px"} headerName='Time Zone' cellRenderer='timeZoneFormatter'></AgGridColumn>
                                                 <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>

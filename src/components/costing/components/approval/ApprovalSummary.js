@@ -78,6 +78,8 @@ function ApprovalSummary(props) {
   const [fgWise, setFgWise] = useState(false)
   const [accDisable, setAccDisable] = useState(false)
   const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
+  const [approvalType, setApprovalType] = useState('');
+  const [isRFQCostingApproval, setIsRFQCostingApproval] = useState(false);
 
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
@@ -137,11 +139,11 @@ function ApprovalSummary(props) {
     dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
 
       if (res?.data?.Data?.Costings?.length > 0) {
-        const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
+        const { IsRFQCostingApproval, PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
           ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
           CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, NfrId, NfrGroupIdForPFS2, NfrGroupIdForPFS3, IsNFRPFS2PushedButtonShow, IsNFRPFS3PushedButtonShow } = res?.data?.Data?.Costings[0];
         setApprovalTypeId(ApprovalTypeId)
-
+        setIsRFQCostingApproval(IsRFQCostingApproval)
         dispatch(setQuotationIdForRFQ(QuotationId))
         // let BestCostAndShouldCostDetails = {
         //   ShouldCostings: [{ CostingId: "aae83b68-128d-4ade-b446-cd2407d6c1c2" }],
@@ -307,7 +309,10 @@ function ApprovalSummary(props) {
 
     )
   }
-
+  const handleRejectOrReturn = (type) => {
+    setRejectDrawer(true);
+    setApprovalType(type);
+  };
   const closeDrawer = (e = '', type) => {
     if (type === 'submit') {
       setApproveDrawer(false)
@@ -818,7 +823,13 @@ function ApprovalSummary(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right bluefooter-butn">
                 <Fragment>
-                  <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
+                  {isRFQCostingApproval &&
+                    <button type={'button'} className="mr5 approve-reject-btn" onClick={() => handleRejectOrReturn('Return')} >
+                      <div className={'cancel-icon-white mr5'}></div>
+                      {'Return'}
+                    </button>
+                  }
+                  <button type={'button'} className="mr5 approve-reject-btn" onClick={() => handleRejectOrReturn('Reject')} >
                     <div className={'cancel-icon-white mr5'}></div>
                     {'Reject'}
                   </button>
@@ -902,7 +913,7 @@ function ApprovalSummary(props) {
       {
         rejectDrawer && (
           <CostingApproveReject
-            type={'Reject'}
+            type={approvalType}
             isOpen={rejectDrawer}
             approvalData={[approvalData]}
             closeDrawer={closeDrawer}

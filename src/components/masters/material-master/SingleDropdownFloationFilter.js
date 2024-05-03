@@ -9,16 +9,19 @@ import { statusDropdownforNfr, statusDropdownforRfq } from "../../../config/mast
 
 function SingleDropdownFloationFilter(props) {
 
+
     const [maxValue, setMaxValue] = useState(props.maxValue)
     const [currentValue, setCurrentValue] = useState(0)
     const [dropdownData, setDropdownData] = useState([])
     const [selectedPlants, setSelectedPlants] = useState([])
     const [activate, setActivate] = useState(true)
+
     const dispatch = useDispatch()
     const [showInputData, setShowInputData] = useState([])
     const [gridHeight, setGridHeight] = useState(0)
     const isReset = useSelector((state) => state.comman.isReset);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+
     const getGridHeight = useSelector(state => state.comman.getGridHeight)
 
     const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
@@ -52,7 +55,7 @@ function SingleDropdownFloationFilter(props) {
             }))
         }
 
-        if (isReset && isReset.component == "applicablity") {
+        if (isReset && isReset.component === "applicablity") {
             setActivate(false)
         }
 
@@ -121,7 +124,7 @@ function SingleDropdownFloationFilter(props) {
                     onFocus={onFocus}
                     register={register}
                     // defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
-                    options={activate || props?.maxValue == 5 ? (props.location == 'masters' ? statusOptionsMasters : (props.location == 'costing' ? statusOptionsCosting : (props.location == 'simulation' ? statusOptionsSimulation : maxValue === 11 ? statusDropdownforRfq : maxValue === 12 ? statusDropdownforNfr : maxValue === 3 ? dropdownData : statusOptions))) : dropdownData}
+                    options={activate || props?.maxValue === 5 ? (props.location === 'masters' ? statusOptionsMasters : (props.location === 'costing' ? statusOptionsCosting : (props.location === 'simulation' ? statusOptionsSimulation : maxValue === 11 ? statusDropdownforRfq : maxValue === 12 ? statusDropdownforNfr : maxValue === 3 ? dropdownData : statusOptions))) : dropdownData}
                     isMulti={false}
                     mandatory={true}
                     dropDownClass={true}

@@ -1,19 +1,23 @@
 {
     "budgetMater": {
-        "AddBudget_ZeroBased": "Select a Zero-Based Costing Head.",
-        "AddBudget_VendorBased": "Select a Vendor-Based Costing Head.",
-        "AddBudget_CustomerBased": "Select a Customer-Based Costing Head.",
-        "AddBudget_Vendor_container": "Select Vendor (Code) from the dropdown.",
-        "customer_container": "Select Customer (Code) from the dropdown.",
-        "AddBudget_PlantCode": "Select Plant (Code) from the dropdown.",
-        "AddBudget_PartType": "Select Part Type from the dropdown.",
-        "AddBudget_PartNumber": "Select Part No. (Revision No.) from the dropdown.",
-        "AddBudget_Year": "Select Year from the dropdown.",
-        "AddBudget_Currency": "Select Currency from the dropdown.",
+        "AddBudget_ZeroBased": "Select a zero-based costing head.",
+        "AddBudget_VendorBased": "Select a vendor-based costing head.",
+        "AddBudget_CustomerBased": "Select a customer-based costing head.",
+        "AddBudget_Vendor_container": "Select vendor (code) from the dropdown.",
+        "customer_container": "Select customer (code) from the dropdown.",
+        "AddBudget_PlantCode": "Select plant (code) from the dropdown.",
+        "AddBudget_PartType": "Select part type from the dropdown.",
+        "AddBudget_PartNumber": "Select part no. (revision no.) from the dropdown.",
+        "AddBudget_Year": "Select year from the dropdown.",
+        "AddBudget_Currency": "Select currency from the dropdown.",
         "AddBudget_checkbox": "Check the checkbox to see the current price.",
-        "AddBudget_CurrentPrice": "Please verify your Current Price.",
-        "AddBudget_Add": "For adding Condition costing, please add a drawer.",
-        "AddBudget_Cancel": "Click here to cancel and go back to the budget listing.",
-        "AddBudget_Save": "Click here to send the form for approval."
+        "AddBudget_CurrentPrice": "Please verify your current price.",
+        "AddBudget_Add": "For adding condition costing, please add a drawer.",
+        "AddBudget_Cancel": "Click here to cancel.",
+        "AddBudget_SendForApproval": "Click here to send the budget for approval."
+    },
+    "DynamicActionControl": {
+        "save_Button": "Click here to save.",
+        "update_Button": "Click here to update."
     }
 }

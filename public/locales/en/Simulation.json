@@ -1,9 +1,9 @@
 {
     "Simulation": {
-        "masters": "Please select the master.",
-        "technology": "Please select the technology.",
-        "association": "Select association for BOP.",
-        "vendor": "After selcting technology select vendor.",
+        "masters": "Select the master from the dropdown.",
+        "technology": "Select the technology from the dropdown.",
+        "association": "Select association for BOP from the dropdown.",
+        "vendor": "After selecting technology select vendor from the dropdown.",
         "globalSearch": "Search for specific data from here.",
         "floatingFilterInput": "You can search for specific column-wise data here.",
         "floatingFilterButton": "Filter the data based on different conditions here.",
@@ -13,27 +13,27 @@
         "edit": "After selecting the checkbox, you can edit the simulation from here.",
         "upload": "Upload the data from here.",
         "download": "Download the entire master table or a specific master in Excel format from here.",
-        "date": "Select the effective date from here.",
-        "cancel": "Click here to cancel the form.",
+        "date": "Select the effective date from the dropdown.",
+        "cancel": "Click here to cancel.",
         "verify": "Click here to verify the simulation.",
         "editBasicRate": "Edit the Basic Rate here.",
         "editScrapRate": "Edit the Scrap Rate here.",
         "back": "Click here to go back to the previous page.",
-        "editNetCost": "view the updated Net Cost.",
+        "editNetCost": "View the updated Net Cost.",
         "run_Simulation": "Click here to run the simulation.",
         "sendForApproval": "After selecting the checkbox, you can send it for approval.",
         "verifyImpact": "Click here to verify the impact on the cost.",
         "simulationHistory": "View the simulation history from here.",
         "simulation_Checkbox": "Click on the checkbox to apply applicability.",
-        "applicability": "Select the applicability."
+        "applicability": "Select the applicability from the dropdown."
     },
     "SendForApproval": {
-        "approvalType": "Choose the approval type.",
-        "reason": "Select the reason for approval.",
-        "decimal-option": "Select the decimal option.",
+        "approvalType": "Select the approval type from the dropdown.",
+        "reason": "Select the reason for approval from the dropdown.",
+        "decimal-option": "Select the decimal option from the dropdown.",
         "remark": "Add necessary remarks.",
         "attachments": "Add necessary attachments.",
-        "cancel": "Click here to cancel the form.",
+        "cancel": "Click here to cancel.",
         "submit": "Click here to submit the form."
     },
     "simulationApproval": {
@@ -46,8 +46,8 @@
         "simulation_Summary": "Click on the token number to view approval summary from here.",
         "sendForApproval": "After selecting the checkbox, you can send it for approval.",
         "status": "You can filter the simulation by status from here.",
-        "view": "View detailed master data from here.",
+        "view": "View the data from here.",
         "delete": "You can delete the simulation from here.",
-        "edit": "Click here to edit the master data."
+        "edit": "Click here to edit the data from here."
     }
 }

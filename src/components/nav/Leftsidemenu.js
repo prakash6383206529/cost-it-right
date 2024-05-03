@@ -51,6 +51,11 @@ class Leftmenu extends Component {
 										item.PageName === 'Levels' ||
 										item.PageName === 'Department' ||
 										item.PageName === 'Simulation Upload' ||
+										item.PageName === 'Vendor Classification Status' ||
+										item.PageName === 'LPS Rating Status' ||
+										item.PageName === 'Initiate Unblocking' ||
+										item.PageName === 'Login Audit' ||
+
 										(item.NavigationURL !== "/exchange-master" && SIMULATION_LEFT_MENU_NOT_INCLUDED.includes(item.PageName))
 									) return false;
 									return (

@@ -203,8 +203,8 @@ const AddReason = (props) => {
                       rules={{ required: false }}
                       isClearable={true}
                       register={register}
-                      // defaultValue={''}
-                      options={module.map((item) => ({ label: item.label, value: item.value }))}
+                      // defaultValue={selectedVendor}
+                      // options={supplierDetailData?.map((vendor) => ({ label: vendor.SupplierName, value: vendor.SupplierCode }))}
                       mandatory={true}
                       // handleChange={handleVendorChange}
                       errors={errors.Masters}

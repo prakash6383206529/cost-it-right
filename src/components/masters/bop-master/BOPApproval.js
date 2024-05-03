@@ -120,7 +120,6 @@ function BOPApproval(props) {
   * @description Renders Name link
   */
     const linkableFormatter = (props) => {
-
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <Fragment>
