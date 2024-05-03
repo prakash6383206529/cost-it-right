@@ -184,7 +184,7 @@ const RolesListing = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     if (rowData.UserId === loggedInUserId() || rowData.RoleName === 'RFQUser') return null;
-    showTitleForActiveToggle(props)
+    showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive');
     return (
       <>
         <label htmlFor="normal-switch" className="normal-switch Tour_List_Status">

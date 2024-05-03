@@ -1,10 +1,7 @@
 
 export function Steps(t, config) {
+    const SubmissionDate = (config && config.isEditFlag === false) ? t("RFQForm.SubmissionDate") : t("RFQForm.Edit_Rfq_SubmissionDate");
 
-
-    if (config) {
-
-    }
     return {
         VIEW_RFQ: [
             // {
@@ -28,6 +25,7 @@ export function Steps(t, config) {
             {
                 element: "#ViewRfq_back",
                 intro: t("rfqView.ViewRfq_back"),
+                position: "left",
             },
             ...config && config?.action ? [
                 {
@@ -45,83 +43,84 @@ export function Steps(t, config) {
 
         ],
         RFQ_FORM: [
-
-            {
-                element: ".input-container #technology_container",
-                intro: t("RFQForm.Technology"),
-            },
-            {
-                element: ".input-container #nfrId_container",
-                intro: t("RFQForm.RFQNo"),
-            },
-            {
-                element: ".input-container #plant_container",
-                intro: t("RFQForm.PlantCode"),
-            },
+            ...(config && config.isEditFlag === false) ? [
+                {
+                    element: ".input-container #technology_container",
+                    intro: t("RFQForm.Technology"),
+                },
+                {
+                    element: ".input-container #nfrId_container",
+                    intro: t("RFQForm.RFQNo"),
+                },
+                {
+                    element: ".input-container #plant_container",
+                    intro: t("RFQForm.PlantCode"),
+                }] : [],
             {
                 element: "#submissionDate_container",
-                intro: t("RFQForm.SubmissionDate"),
+                intro: SubmissionDate,
             },
+            ...(config && config.isEditFlag === false) ? [
 
-            {
-                element: ".input-container #partNumber_container",
-                intro: t("RFQForm.PartNo"),
-            },
-            {
-                element: "#addRFQDate_container",
-                intro: t("RFQForm.SOPDate"),
-            },
-            {
-                element: ".input-container #RMName_container",
-                intro: t("RFQForm.RMName"),
-            },
-            {
-                element: ".input-container #RMGrade_container",
-                intro: t("RFQForm.RMGrade"),
-            },
-            {
-                element: ".input-container #RMSpecification_container",
-                intro: t("RFQForm.RMSpecification"),
-            },
-            {
-                element: "#add_part",
-                intro: t("RFQForm.AddPart"),
-            },
-            {
-                element: " #reset_part",
-                intro: t("RFQForm.Reset"),
-            },
-            {
-                element: ".input-container #vendor_container",
-                intro: t("RFQForm.VendorCode"),
-            },
-            {
-                element: ".input-container #contactPerson_container",
-                intro: t("RFQForm.PointofContact"),
-            },
-            {
-                element: "#add_vendor",
-                intro: t("RFQForm.AddVendor"),
-            },
+                {
+                    element: ".input-container #partNumber_container",
+                    intro: t("RFQForm.PartNo"),
+                },
+                {
+                    element: "#addRFQDate_container",
+                    intro: t("RFQForm.SOPDate"),
+                },
+                {
+                    element: ".input-container #RMName_container",
+                    intro: t("RFQForm.RMName"),
+                },
+                {
+                    element: ".input-container #RMGrade_container",
+                    intro: t("RFQForm.RMGrade"),
+                },
+                {
+                    element: ".input-container #RMSpecification_container",
+                    intro: t("RFQForm.RMSpecification"),
+                },
+                {
+                    element: "#add_part",
+                    intro: t("RFQForm.AddPart"),
+                },
+                {
+                    element: " #reset_part",
+                    intro: t("RFQForm.Reset"),
+                },
+                {
+                    element: ".input-container #vendor_container",
+                    intro: t("RFQForm.VendorCode"),
+                },
+                {
+                    element: ".input-container #contactPerson_container",
+                    intro: t("RFQForm.PointofContact"),
+                },
+                {
+                    element: "#add_vendor",
+                    intro: t("RFQForm.AddVendor"),
+                },
 
-            {
-                element: "#reset_vendor",
-                intro: t("RFQForm.ResetVendor"),
-            },
+                {
+                    element: "#reset_vendor",
+                    intro: t("RFQForm.ResetVendor"),
+                },
 
-            {
-                element: "#checkbox_container",
-                intro: t("RFQForm.VisibilityCheckbox"),
-            },
+                {
+                    element: "#checkbox_container",
+                    intro: t("RFQForm.VisibilityCheckbox"),
+                },
 
-            {
-                element: " #remark_container",
-                intro: t("RFQForm.Notes"),
-            },
-            {
-                element: " #addRFQ_uploadFile",
-                intro: t("RFQForm.UploadAttachment"),
-            },
+                {
+                    element: " #remark_container",
+                    intro: t("RFQForm.Notes"),
+                },
+                {
+                    element: " #addRFQ_uploadFile",
+                    intro: t("RFQForm.UploadAttachment"),
+                }] : [],
             {
                 element: "#addRFQ_cancel",
                 intro: t("RFQForm.cancel"),

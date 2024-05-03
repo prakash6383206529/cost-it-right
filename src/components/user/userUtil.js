@@ -2,7 +2,9 @@ import Switch from "react-switch";
 import React from 'react';
 
 export function renderActionCommon(actions, parentIndex, thisRef, moduleName) {
-
+    if (!actions || !thisRef || !moduleName) {
+        return null; // Return early if any required parameter is missing
+    }
     let actionHeads = []
 
     const { actionData, actionSelectList } = thisRef.state;

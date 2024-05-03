@@ -20,6 +20,7 @@ function ViewOtherCostDrawer(props) {
     const [costingSummary, setCostingSummary] = useState(props.costingSummary ? props.costingSummary : false)
     const [gridData, setgridData] = useState([]);
     const [totalOtherCost, setTotalOtherCost] = useState(0);
+    const [totalDiscountCost, setTotalDiscountCost] = useState(0);
     const [isLoader, setIsLoader] = useState(false)
     const [discountData, setDiscountData] = useState([])
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
@@ -55,20 +56,26 @@ function ViewOtherCostDrawer(props) {
                 obj.ApplicabilityCost = item?.ApplicabilityCost
                 obj.PercentageOtherCost = item?.Value ? item?.Value : '-'
                 obj.AnyOtherCost = item?.NetCost
+                obj.CRMHead = item?.CRMHead ?? ''
                 tempNew.push(obj)
             })
             setTotalOtherCost(totalCost)
             setgridData(tempNew)
             let discountTable = []
+            let totalDiscountCost = 0
             viewCostingData && viewCostingData[costingIndex]?.CostingPartDetails?.DiscountCostDetails && viewCostingData[costingIndex].CostingPartDetails.DiscountCostDetails.map((item) => {
                 let obj = {}
+                totalDiscountCost = checkForNull(totalDiscountCost) + checkForNull(item.NetCost)
                 obj.DiscountDescription = item?.Description
                 obj.DiscountApplicability = item?.ApplicabilityType
+                obj.dicountApplicabilityValue = item?.ApplicabilityCost
                 obj.Percentage = item?.Value ? item?.Value : '-'
                 obj.Value = item?.NetCost
+                obj.CRMHead = item?.CRMHead ?? ''
                 discountTable.push(obj)
             })
             setDiscountData(discountTable)
+            setTotalDiscountCost(totalDiscountCost)
         }
 
     }, [])
@@ -88,8 +95,10 @@ function ViewOtherCostDrawer(props) {
                 <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
                     <thead>
                         <tr>
+                            {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                             <th className='custom-max-width-220px'>{`Discount Description/Remark`}</th>
                             <th>{`Discount Applicability`}</th>
+                            <th>{`Discount Applicability Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                             <th>{`Percentage (%)`}</th>
                             <th>{'Value'}</th>
                         </tr>
@@ -98,15 +107,20 @@ function ViewOtherCostDrawer(props) {
                         {discountData && discountData.map((item, index) => {
                             return (
                                 <tr key={index} >
+                                    {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}
                                     <td className='custom-max-width-220px'>{item?.DiscountDescription}</td>
                                     <td>{item?.DiscountApplicability}</td>
+                                    <td>{item?.dicountApplicabilityValue}</td>
                                     <td>{String(item?.DiscountApplicability) === String('Fixed') ? '-' : item.Percentage}</td>
                                     <td>{checkForDecimalAndNull(item.Value, initialConfiguration.NoOfDecimalForPrice)}</td>
                                 </tr>
                             );
                         })}
-                        {discountData.length === 0 && <tr>
-                            <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
+                        {discountData.length === 0 ? <tr>
+                            <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}> <NoContentFound title={EMPTY_DATA} /></td>
+                        </tr> : <tr className='table-footer'>
+                            <td className='text-right' colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}>Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):</td>
+                            <td colSpan={2}>{checkForDecimalAndNull(totalDiscountCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                         </tr>}
                     </tbody>
                 </Table>
@@ -126,6 +140,7 @@ function ViewOtherCostDrawer(props) {
                 <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
                     <thead>
                         <tr>
+                            {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                             <th>{`Other Cost Description`}</th>
                             <th>{`Other Cost Applicability`}</th>
                             {<th>{`Cost Applicability (${reactLocalStorage.getObject('baseCurrency')})`}</th>}
@@ -137,6 +152,7 @@ function ViewOtherCostDrawer(props) {
                         {gridData && gridData.map((item, index) => {
                             return (
                                 <tr key={index} >
+                                    {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}
                                     <td>{item.OtherCostDescription}</td>
                                     <td>{item?.OtherCostApplicability}</td>
                                     <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -146,10 +162,10 @@ function ViewOtherCostDrawer(props) {
                             );
                         })}
                         {gridData.length === 0 ? <tr>
-                            <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
+                            <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}> <NoContentFound title={EMPTY_DATA} /></td>
                         </tr> :
                             <tr className='table-footer'>
-                                <td className='text-right' colSpan={4}>Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):</td>
+                                <td className='text-right' colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}>Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):</td>
                                 <td colSpan={2}>{checkForDecimalAndNull(totalOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             </tr>}
                     </tbody>

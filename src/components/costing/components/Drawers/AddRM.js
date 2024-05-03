@@ -11,7 +11,6 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
-import { isMultipleRMAllow } from '../../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -23,7 +22,7 @@ const gridOptions = {};
 
 function AddRM(props) {
 
-  const { IsApplyMasterBatch, Ids, rmNameList } = props;
+  const { IsApplyMasterBatch, Ids, rmNameList, item } = props;
   const { handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -52,7 +51,7 @@ function AddRM(props) {
     var selectedRows = gridApi && gridApi?.getSelectedRows();
 
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
-    if (isMultipleRMAllow(costData?.TechnologyId)) {
+    if (item?.IsMultipleRMApplied) {
       if ((selectedRowData?.length + 1) === gridApi?.getSelectedRows()?.length) {
         if (selectedRows?.length === 0) {
           setSelectedRowData([])
@@ -173,7 +172,7 @@ function AddRM(props) {
     filter: true,
     sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
-    headerCheckboxSelection: isMultipleRMAllow(costData?.TechnologyId) ? isFirstColumn : false,
+    headerCheckboxSelection: item?.IsMultipleRMApplied ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
 
@@ -321,7 +320,7 @@ function AddRM(props) {
                           imagClass: "imagClass"
                         }}
                         suppressRowClickSelection={true}
-                        rowSelection={isMultipleRMAllow(costData?.TechnologyId) && !IsApplyMasterBatch ? 'multiple' : 'single'}
+                        rowSelection={item?.IsMultipleRMApplied && !IsApplyMasterBatch ? 'multiple' : 'single'}
                         frameworkComponents={frameworkComponents}
                         onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}

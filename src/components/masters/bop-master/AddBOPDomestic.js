@@ -1074,6 +1074,7 @@ class AddBOPDomestic extends Component {
 
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                isBOPAssociated: isBOPAssociated,
                                 isEditFlag: isEditFlag,
                                 showSendForApproval: !this.state.isFinalApprovar,
                                 sourceField: (costingTypeId === VBCTypeId),

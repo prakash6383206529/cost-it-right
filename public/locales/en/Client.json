@@ -3,7 +3,7 @@
         "company_name": "Enter the company name.",
         "company_code": "Enter the company code.",
         "contact_name": "Enter the contact name.",
-        "customer_code": "Enter the customer's code.",
+        "customer_code": "Enter the customer code.",
         "contact_number": "Enter the contact number.",
         "email": "Enter the email address.",
         "phone_number": "Enter the phone number.",
@@ -15,7 +15,11 @@
         "zip_code": "Enter the zip code.",
         "address1": "Enter the primary address.",
         "address2": "Enter the secondary address.",
-        "cancel": "Click here to cancel and go back.",
-        "save": "Click here to save the customer."
+        "cancel": "Click here to cancel.",
+        "save": "Click here to save."
+    },
+    "DynamicActionControl": {
+        "save_Button": "Click here to save.",
+        "update_Button": "Click here to update."
     }
 }

@@ -977,7 +977,7 @@ class AddProfit extends Component {
                           buttonSpecificProp={{ id: "Add_Profit_Form" }}
                           stepsSpecificProp={{
                             steps: Steps(t,
-                              { isEditFlag: isEditFlag, vendorField: (costingTypeId === VBCTypeId), customerField: (costingTypeId === CBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) }).ADD_PROFIT_DETAILS
+                              { isEditFlag: isEditFlag, vendorField: (costingTypeId === VBCTypeId), customerField: (costingTypeId === CBCTypeId), plantField: (costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant), isProfitPercent: isProfitPercent, isRM: isRM, isCC: isCC, isBOP: isBOP, isHideProfit: isHideProfit, isHideBOP: isHideBOP, isHideRM: isHideRM, isHideCC: isHideCC, }).ADD_PROFIT_DETAILS
                           }} />}
                       </h1>
                     </div>

@@ -68,3 +68,13 @@ export function IsShowFreightAndShearingCostFields() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
   return configurationKey.IsShowFreightAndShearingCostFields
 }
+/* function to handle point of contact dropdown in rfq*/
+export function IsSendQuotationToPointOfContact() {
+  const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
+  return configurationKey?.IsSendQuotationToPointOfContact
+}
+/* function to handle primary contact checkbox in rfq user */
+export function IsSendMailToPrimaryContact() {
+  const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
+  return configurationKey?.IsSendMailToPrimaryContact
+}

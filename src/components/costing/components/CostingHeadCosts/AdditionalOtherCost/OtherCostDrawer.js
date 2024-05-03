@@ -423,7 +423,7 @@ function OtherCostDrawer(props) {
             // onClose={(e) => toggleDrawer(e)}
             >
                 <Container>
-                    <div className={"drawer-wrapper layout-min-width-640px"}>
+                    <div className={"drawer-wrapper layout-min-width-720px"}>
                         <Row className="drawer-heading">
                             <Col>
                                 <div className={"header-wrapper left"}>
@@ -577,7 +577,7 @@ function OtherCostDrawer(props) {
                                         />
 
                                     </Col>
-                                    <Col md="4" className='pt-1 d-flex'>
+                                    <Col md="4" className={`${initialConfiguration.IsShowCRMHead ? "mb-3" : "pt-1"} d-flex`}>
                                         {isEdit ? (
                                             <>
                                                 <button
@@ -600,14 +600,14 @@ function OtherCostDrawer(props) {
                                             <>
                                                 <button
                                                     type="submit"
-                                                    className={"user-btn mt30 pull-left"}
+                                                    className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} pull-left`}
                                                     disabled={CostingViewMode}
                                                 >
                                                     <div className={"plus"}></div>ADD
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    className={"mr15 ml-1 mt30 reset-btn"}
+                                                    className={`mr15 ml-1 ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} reset-btn`}
                                                     disabled={CostingViewMode}
                                                     onClick={() => resetData()}
                                                 >

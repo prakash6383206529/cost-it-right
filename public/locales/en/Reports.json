@@ -1,16 +1,16 @@
 {
     "costRatio": {
-        "FromDate": "Choose the start date for your report.",
-        "ToDate": "Choose the end date for your report.",
-        "Technology": "Choose the technology for your report.",
-        "PartType": "Choose the specific part type.",
-        "PartNo": "Choose the part number for your report.",
+        "FromDate": "Select the start date from the calendar.",
+        "ToDate": "Select the end date from the calendar.",
+        "Technology": "Select the technology from the dropdown.",
+        "PartType": "Select the specific part type from the dropdown.",
+        "PartNo": "Select the part number from the dropdown.",
         "RevisionNumber": "Indicate the revision number.",
-        "Vendor": "Choose the vendor code for your report.",
+        "Vendor": "Select the vendor code from the dropdown.",
         "productCategory_container": "Select the Product Category from the dropdown.",
-        "Customer": "Choose the customer code for your report.",
-        "PlantCode": "Choose the plant code for your report.",
-        "Plant": "Choose the plant for your report.",
+        "Customer": "Select the customer code from the dropdown.",
+        "PlantCode": "Select the plant code from the dropdown.",
+        "Plant": "Select the plant for your report from the dropdown.",
         "AddButton": "Add the selected criteria to your report.",
         "ResetButton": "Reset all criteria to default values.",
         "floatingFilterInput": "Use this input to search specific column-wise data.",
@@ -19,12 +19,12 @@
         "EffectiveDate_Container": "Select Effective Date from the calendar."
     },
     "masterBenchmark": {
-        "master": "Select a master from here.",
+        "master": "Select a master from here from the dropdown.",
         "globalSearch": "Search for specific data from here.",
         "filterData": "After entering the specific data, click here to filter it out.",
         "cost-movement": "Check the movement in the cost from here.",
-        "view": "View detailed master from here.",
-        "edit": "Click here to edit the master.",
+        "view": "Click here to view the data from here.",
+        "edit": "Click here to edit the data from here.",
         "delete": "If the master is not associated anywhere, you can delete it.",
         "status": "Activate or deactivate from here.",
         "AddButton": "Add the selected inputs to your report.",
@@ -33,32 +33,32 @@
         "floatingFilterButton": "Apply filters to refine data based on different conditions."
     },
     "supplierContribution": {
-        "FromDate": "Choose the start date for your report.",
-        "ToDate": "Choose the end date for your report.",
-        "PlantCode": "Choose the plant code from here.",
+        "FromDate": "Select the start date from the calendar.",
+        "ToDate": "Select the end date from the calendar.",
+        "PlantCode": "Select the plant codefrom the dropdown.",
         "runReport": "Click here to run your report.",
         "reset": "Click here to reset your report."
     },
     "gotGivenReport": {
-        "technology": "Select the technology from here.",
-        "PartNo": "Select the part number.",
-        "Vendor": "Select the vendor code.",
-        "customer": "Select the customer code.",
-        "product": "Select the product code.",
-        "plant": "Select the plant code.",
+        "technology": "Select the technology from the dropdown.",
+        "PartNo": "Select the part number from the dropdown.",
+        "Vendor": "Select the vendor code from the dropdown.",
+        "customer": "Select the customer code from the dropdown.",
+        "product": "Select the product code from the dropdown.",
+        "plant": "Select the plant code from the dropdown.",
         "reset": "Click here to reset your report."
     },
     "costMovement": {
-        "FromDate": "Choose the start date.",
-        "ToDate": "Choose the end date.",
+        "FromDate": "Select the start date from the calendar.",
+        "ToDate": "Select the end date from the calendar.",
         "Vendor": "Select the vendor code from here.",
-        "master": "Select a master from here.",
-        "costingHeadType": "Select the costing head type.",
-        "PlantCode": "Choose the plant code from here."
+        "master": "Select a master from the dropdown.",
+        "costingHeadType": "Select the costing head type from the dropdown.",
+        "PlantCode": "Select the plant code from the dropdown."
     },
     "assyReport": {
-        "modelNo": "Select the model number from here.",
-        "partNo": "Select the part number from here.",
+        "modelNo": "Select the model number from the dropdown.",
+        "partNo": "Select the part number from the dropdown.",
         "viewReport": "Click here to view the report."
     }
 }

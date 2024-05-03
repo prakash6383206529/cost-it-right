@@ -26,7 +26,7 @@ function ApprovalWorkFlow(props) {
     }
   }, [approverData])
   const approverListUI = () => {
-    switch (approverList.length) {
+    switch (approverList?.length) {
       case 0:
         return 'toto'
       case 1:
@@ -44,6 +44,9 @@ function ApprovalWorkFlow(props) {
           </Popup>
         </>
     }
+  }
+  if (!approvalLevelStep || !props.approvalNo || !approverData) {
+    return null;
   }
   /* TODO SORTING OF LEVEL ACC TO DATA*/
   return approvalLevelStep &&

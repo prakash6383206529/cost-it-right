@@ -1,0 +1,223 @@
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
+import { fetchLPSRatingData, getLPSRatingListing, updateLPSRatingStatus } from './Action';
+import { checkPermission, loggedInUserId, showTitleForActiveToggle } from '../../helper';
+import Switch from "react-switch";
+import { Col, Row } from 'reactstrap';
+import NoContentFound from '../common/NoContentFound';
+import { EMPTY_DATA, LPS_RATING, VENDOR_MANAGEMENT } from '../../config/constants';
+import PopupMsgWrapper from '../common/PopupMsgWrapper';
+import { MESSAGES } from '../../config/message';
+import LoaderCustom from '../common/LoaderCustom';
+import Toaster from '../common/Toaster';
+import DayTime from '../common/DayTimeWrapper';
+
+const LpsRatingListing = () => {
+    const [isLoader, setIsLoader] = useState(false);
+    const [showPopupToggle, setShowPopupToggle] = useState(false);
+    const [cellValue, setCellValue] = useState('');
+    const [cellData, setCellData] = useState('');
+    const [errorMessage, setErrorMessage] = useState('')
+
+    const [ActivateAccessibility, setActivateAccessibility] = useState(false);
+    const [noData, setNoData] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+
+
+
+
+
+
+    const dispatch = useDispatch();
+    const lpsRatingData = useSelector(state => state.supplierManagement.lpsRatingData);
+
+
+
+    useEffect(() => {
+        // setIsLoader(true);
+        applyPermission()
+        dispatch(getLPSRatingListing(true, (res) => {
+            setIsLoader(false);
+            if (res.errorMessage) {
+                setErrorMessage(res.errorMessage);
+            }
+            else {
+                setErrorMessage(null);
+                if (res.status === 204 && res.data === '') {
+                    setCellValue([]);
+                } else if (res && res.data && res.data.DataList) {
+                    let data = res.data.DataList;
+                    setCellValue(data.map(row => row.status));
+                }
+            }
+
+        }));
+    }, [dispatch]);
+    const applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            setIsLoader(true)
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === VENDOR_MANAGEMENT);
+            const accessData = Data && Data.Pages.find((el) => el.PageName === LPS_RATING)
+            const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+            if (permissionData !== undefined) {
+                setActivateAccessibility(permissionData && permissionData.Activate ? permissionData.Activate : false);
+            }
+            setIsLoader(false);
+
+        }
+    }
+
+    const confirmApprovalStatus = (data) => {
+        // Handle confirm approval status
+        setShowPopupToggle(false);
+    }
+
+    const onPopupConfirmToggle = () => {
+        // Handle popup confirmation toggle
+        confirmDeactivateItem(cellData, cellValue)
+    }
+    const getTableListData = () => {
+        setIsLoader(true)
+        dispatch(getLPSRatingListing(true, (res) => {
+
+            setIsLoader(false)
+        }))
+    }
+    const confirmDeactivateItem = (data, cell) => {
+
+
+        dispatch(updateLPSRatingStatus(data, res => {
+
+            if (res && res.data && res.data.Result) {
+                if (cell === "Unblocked") {
+                    Toaster.success(MESSAGES.LPSRATING_BLOCKED_SUCCESSFULLY)
+                } else {
+                    Toaster.success(MESSAGES.LPSRATING_UNBLOCKED_SUCCESSFULLY)
+                }
+                dispatch(getLPSRatingListing(true))                // setDataCount(0)
+            }
+        }))
+        setShowPopupToggle(false)
+    }
+
+    const handleChange = (cell, row, index) => {
+
+        let data = {
+            LPSRatingId: row.LPSRatingId,
+            IsBlocked: !cell, // Toggle the status
+            LoggedInUserId: loggedInUserId(),
+        }
+
+        setCellData(data);
+        setCellValue(cell)
+
+        setShowPopupToggle(true);
+    }
+
+    const statusButtonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        // if (rowData.UserId === loggedInUserId()) return null;
+        showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive');
+        return (
+            <>
+                <label htmlFor="normal-switch" className="normal-switch">
+                    {/* <span>Switch with default style</span> */}
+                    <Switch
+                        onChange={() => handleChange(rowData.IsBlocked, rowData)}
+                        checked={rowData.IsBlocked}
+                        // disabled={!ActivateAccessibility}
+                        background="#ff6600"
+                        onColor="#FC5774"
+                        onHandleColor="#ffffff"
+                        offColor="#4DC771"
+                        id="normal-switch"
+                        height={24}
+                        className={rowData.IsBlocked ? 'active-switch' : 'inactive-switch'}
+                    />
+                </label>
+            </>
+        )
+    }
+    const defaultColDef = {
+        resizable: true,
+        sortable: false,
+    };
+
+    const closePopUp = () => {
+        setShowPopupToggle(false);
+    }
+    const onGridReady = (params) => {
+        // setGridApi(params.api)
+        // setGridColumnApi(params.columnApi)
+        params.api.paginationGoToPage(0);
+        // agGridRef.current = params.api;
+        params.api.sizeColumnsToFit();
+    };
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
+    const frameworkComponents = {
+        customNoRowsOverlay: NoContentFound,
+
+        statusButtonFormatter: statusButtonFormatter,
+        effectiveDateFormatter: effectiveDateFormatter
+    };
+
+    return (
+        <>
+            {/* {(isLoader) ? <LoaderCustom customClass="loader-center" /> : */}
+
+            <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
+                <Row className="no-filter-row">
+                    <Col md={6} className="text-right filter-block"></Col>
+                </Row>
+                {<div className={`ag-grid-wrapper height-width-wrapper`}>
+                    <div className={`ag-theme-material`}>
+                        {isLoader && <LoaderCustom customClass="loader-center" />}
+                        {!isLoader && lpsRatingData && lpsRatingData?.length > 0 &&
+                            <AgGridReact
+                                defaultColDef={defaultColDef}
+                                floatingFilter={true}
+                                domLayout='autoHeight'
+                                rowData={lpsRatingData}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                onGridReady={onGridReady}
+                                noRowsOverlayComponentParams={{
+                                    title: EMPTY_DATA,
+                                    imagClass: 'imagClass pt-3'
+                                }}
+                                rowSelection={'multiple'}
+                                suppressRowClickSelection={true}
+                                frameworkComponents={frameworkComponents}
+                            >
+                                {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
+                                <AgGridColumn field="LPSRatingName" headerName="LPS Rating"></AgGridColumn>
+                                <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
+                                <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
+                                <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            </AgGridReact>
+                        }
+                        {!isLoader && (!lpsRatingData || lpsRatingData?.length === 0) &&
+                            <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
+                        }
+                    </div>
+                </div>}
+
+                {showPopupToggle &&
+                    <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.LPS_RATING_APPROVED : MESSAGES.LPS_RATING_REJECTED}`} />
+                }
+            </div>
+
+        </>
+
+    );
+};
+
+export default LpsRatingListing;

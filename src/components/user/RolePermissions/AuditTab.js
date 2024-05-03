@@ -12,6 +12,7 @@ import { renderActionCommon } from "../userUtil"
 
 class AuditTab extends Component {
     constructor(props) {
+
         super(props);
         this.state = {
             isLoader: false,
@@ -211,6 +212,7 @@ class AuditTab extends Component {
 
     updateModules = () => {
         const { Modules } = this.state;
+
         this.props.permissions(Modules, AUDIT)
     }
 

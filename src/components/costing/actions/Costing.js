@@ -60,6 +60,7 @@ import {
   COSTING_ACC_OPEN_CLOSE_STATUS,
   GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
   SET_TOOL_COST_ICC,
+  SET_OTHER_DISCOUNT_DATA,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1339,30 +1340,7 @@ export function setEmptyExistingSupplierData(callback) {
   }
 }
 
-/**
- * @method getZBCCostingSelectListByPart
- * @description get ZBC Costing Select List By Part
- */
-export function getZBCCostingSelectListByPart(PartId, SupplierId, UserId, callback,) {
-  return (dispatch) => {
-    dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getZBCCostingSelectListByPart}/${PartId}/${SupplierId}/${UserId}`, config(),)
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_ZBC_COSTING_SELECTLIST_BY_PART,
-          payload: response.data.SelectList,
-        })
-        callback(response)
-      } else {
-        Toaster.error(MESSAGES.SOME_ERROR)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
-  }
-}
+
 
 /**
  * @method createPartWithSupplier
@@ -1726,10 +1704,12 @@ export function storePartNumber(partNo) {
   }
 }
 
-export function getCostingSummaryByplantIdPartNo(partNo, plantId, callback) {
+export function getCostingSummaryByplantIdPartNo(partNo, plantId, vendorId, callback) {
+
+
   return (dispatch) => {
-    if (partNo !== '' && plantId !== '') {
-      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}/${false}/${reactLocalStorage.getObject('CostingTypePermission').zbc}/${reactLocalStorage.getObject('CostingTypePermission').vbc}/${reactLocalStorage.getObject('CostingTypePermission').cbc}`, config(),)
+    if (partNo !== '' && plantId !== '' && vendorId !== '') {
+      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}/${false}/${reactLocalStorage.getObject('CostingTypePermission').zbc}/${reactLocalStorage.getObject('CostingTypePermission').vbc}/${reactLocalStorage.getObject('CostingTypePermission').cbc}/${vendorId}`, config(),)
       request
         .then((response) => {
           if (response.data.Result || response.status === 204) {
@@ -2549,6 +2529,14 @@ export function setOtherCostData(data) {
   return (dispatch) => {
     dispatch({
       type: SET_OTHER_COST,
+      payload: data,
+    });
+  }
+};
+export function setOtherDiscountData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OTHER_DISCOUNT_DATA,
       payload: data,
     });
   }

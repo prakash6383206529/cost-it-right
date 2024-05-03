@@ -1043,9 +1043,7 @@ class AddOperation extends Component {
                         buttonSpecificProp={{ id: "Add_Operation_Form" }}
                         stepsSpecificProp={{
                           steps: Steps(t, {
-                            isEditFlag: isEditFlag,
-                            showSendForApproval: !this.state.isFinalApprovar,
-                            vendorField: costingTypeId === VBCTypeId, customerField: costingTypeId === CBCTypeId, plantField: (costingTypeId === ZBCTypeId || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure)
+                            isEditFlag: isEditFlag, showSendForApproval: !this.state.isFinalApprovar, vendorField: costingTypeId === VBCTypeId, customerField: costingTypeId === CBCTypeId, plantField: (costingTypeId === ZBCTypeId || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)), destinationPlant: (costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure), isWelding: this.state.isWelding, isOperationAssociated: isOperationAssociated, IsShowOperationType: getConfigurationKey().IsShowDetailedOperationBreakup
                           }).ADD_OPERATION
                         }} />}
                     </h2>}

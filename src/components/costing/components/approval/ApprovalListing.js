@@ -5,7 +5,7 @@ import { getApprovalList, } from '../../actions/Approval'
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
-import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, ZBCTypeId } from '../../../../config/constants'
+import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, REJECTED, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import CostingApproveReject from './CostingApproveReject'
 import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter, setLoremIpsum } from '../../../../helper'
@@ -1017,7 +1017,7 @@ function ApprovalListing(props) {
     basicRateFormatter: basicRateFormatter
   };
 
-  const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === DRAFT) : false
+  const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === REJECTED) : false
 
   if (showApprovalSumary === true) {
 

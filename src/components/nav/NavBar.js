@@ -228,6 +228,8 @@ class SideBar extends Component {
         return this.renderAudit(module, LandingPageURL);
       case "NFR":
         return this.renderNFR(module, LandingPageURL);
+      case "Vendor Management":
+        return this.renderVendorManagement(module, LandingPageURL);
       case "RFQ":
         if (getConfigurationKey().IsRFQConfigured) {
           return this.renderRFQ(module, LandingPageURL);
@@ -783,6 +785,7 @@ class SideBar extends Component {
    * @description Render User menu.
    */
   renderAudit = (module) => {
+
     const { menusData, topAndLeftMenuData } = this.props
     return (
       topAndLeftMenuData &&
@@ -796,11 +799,11 @@ class SideBar extends Component {
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''} Audit_NavBar`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
-                  pathname: "/login-audit",
+                  pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Audit",
-                    PageURL: "/login-audit",
+                    PageURL: el.LandingPageURL,
                   },
                 }}
               >
@@ -834,11 +837,11 @@ class SideBar extends Component {
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''} RFQ_NavBar`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
-                  pathname: "/rfq-listing",
+                  pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "RFQ",
-                    PageURL: "/rfq-listing",
+                    PageURL: el.LandingPageURL,
                   },
                 }}
               >
@@ -871,11 +874,11 @@ class SideBar extends Component {
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === 'NFR' ? 'IsActive' : ''} NFR_NavBar`}
                 onClick={() => this.setLeftMenu('NFR')}
                 to={{
-                  pathname: "/nfr",
+                  pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "NFR",
-                    PageURL: "/nfr",
+                    PageURL: el.LandingPageURL,
                   },
                 }}
               >
@@ -894,6 +897,62 @@ class SideBar extends Component {
     );
   };
 
+  /**
+   * @method renderSupplierManagement
+   * @description Render Supplier Management.
+   */
+
+
+  renderVendorManagement = (module) => {
+
+    const { menusData, topAndLeftMenuData } = this.props
+    return (
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+
+        if (el.ModuleName === module) {
+          return (
+            <li>
+              <Link
+                key={i}
+                id={this.getSpecificIdForElement(el)}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''} Vendor_NavBar`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: el.LandingPageURL,
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "Vendor Management",
+                    PageURL: el.LandingPageURL,
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeAudit : auditImg}
+                  alt={module + " icon"}
+                />
+                <span className="vendor_management">{el.ModuleName}</span>
+              </Link >
+            </li >
+          );
+        }
+        return null
+      })
+    );
+  };
+
+  tourStart = () => {
+    const { location, TourStartAction } = this.props;
+    const { showTour } = this.state;
+    this.setState({ showTour: !showTour });
+
+
+    TourStartAction({
+      showTour: !showTour,
+    });
+
+  }
 
   render() {
     const { userData, moduleSelectList, leftMenuData, topAndLeftMenuData, t } = this.props;
