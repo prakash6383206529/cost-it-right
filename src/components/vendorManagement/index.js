@@ -5,7 +5,7 @@ import InitiateUnblocking from './InitiateUnblocking';
 import LpsRatingListing from './LpsRatingLisitng';
 import { useHistory } from "react-router-dom";
 import ApprovalListing from './approval/ApprovalListing';
-import SupplierClassificationListing from './SupplierClassificationLisitng';
+import VendorClassificationListing from './VendorClassificationListing';
 const VendorManagement = () => {
     let history = useHistory();
     const [activeTab, setActiveTab] = useState("1");
@@ -68,7 +68,7 @@ const VendorManagement = () => {
 
                         {Number(activeTab) === 1 &&
                             <TabPane tabId="1">
-                                <SupplierClassificationListing
+                                <VendorClassificationListing
                                     toggle={toggle}
 
 
