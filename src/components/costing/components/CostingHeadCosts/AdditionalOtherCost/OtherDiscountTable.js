@@ -31,7 +31,6 @@ export default function OtherDiscountTable(props) {
                 </thead>
                 <tbody>
                     {tableData.gridData && tableData.gridData.length !== 0 && tableData.gridData.map((item, index) => {
-                        console.log(item?.PercentageDiscountCost, "item?.PercentageDiscountCost");
                         return (
                             <tr key={index} >
                                 {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}

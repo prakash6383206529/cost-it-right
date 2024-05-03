@@ -47,14 +47,12 @@ function AddOtherDiscount(props) {
 
     useEffect(() => {
         setValue('ApplicabilityCost', '')
-        console.log("Hello2");
         if (!CostingViewMode) {
             findApplicabilityCost()
         }
     }, [fieldValuesForPercent])
     useEffect(() => {
         if (!CostingViewMode && getValues('OtherCostApplicability')?.label === 'Fixed') {
-            console.log("Hello");
             findApplicabilityCost()
         }
     }, [fieldValuesForFixed])
@@ -303,7 +301,6 @@ function AddOtherDiscount(props) {
             case 'Net Cost':
                 totalCost = (totalTabCost) * calculatePercentage(percent)
                 setApplicabilityCost(totalTabCost)
-                console.log(totalTabCost, "totalTabCost");
                 setValue('ApplicabilityCost', checkForDecimalAndNull(totalTabCost, initialConfiguration.NoOfDecimalForPrice))
                 break;
             case 'Surface Treatment Cost':
