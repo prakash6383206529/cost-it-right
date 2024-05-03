@@ -60,6 +60,7 @@ import {
   COSTING_ACC_OPEN_CLOSE_STATUS,
   GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
   SET_TOOL_COST_ICC,
+  SET_OTHER_DISCOUNT_DATA,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2528,6 +2529,14 @@ export function setOtherCostData(data) {
   return (dispatch) => {
     dispatch({
       type: SET_OTHER_COST,
+      payload: data,
+    });
+  }
+};
+export function setOtherDiscountData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OTHER_DISCOUNT_DATA,
       payload: data,
     });
   }
