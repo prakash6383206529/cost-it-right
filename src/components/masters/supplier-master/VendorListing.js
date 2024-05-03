@@ -466,7 +466,7 @@ const VendorListing = () => {
       : props?.data;
     const { ActivateAccessibility } = state;
     if (rowData.UserId === loggedInUserId()) return null;
-    showTitleForActiveToggle(props?.rowIndex);
+    showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive');
     return (
       <>
         <label htmlFor="normal-switch" className="normal-switch Tour_List_Status">

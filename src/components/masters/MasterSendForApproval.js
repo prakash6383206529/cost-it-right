@@ -91,8 +91,11 @@ function MasterSendForApproval(props) {
                             approverIdListTemp.push(item.Value)
                             return null
                         })
-                    setApprovalDropDown(tempDropdownList)
-                    setApproverIdList(approverIdListTemp)
+                    setTimeout(() => {
+                        setApprovalDropDown(tempDropdownList)
+
+                        setApproverIdList(approverIdListTemp)
+                    }, 100)
                 }
             },),)
         }))
@@ -113,7 +116,7 @@ function MasterSendForApproval(props) {
             deptList &&
                 deptList.map((item) => {
                     if (item.Value === '0') return false
-                    tempDropdownList.push({ label: item.Text, value: item.Value })
+                    tempDropdownList?.push({ label: item.Text, value: item.Value })
                     return null
                 })
             return tempDropdownList
@@ -121,7 +124,7 @@ function MasterSendForApproval(props) {
         if (label === 'reasons') {
             reasonsList && reasonsList.map((item) => {
                 if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
+                tempDropdownList?.push({ label: item.Text, value: item.Value })
                 return null
             })
             return tempDropdownList
@@ -157,8 +160,12 @@ function MasterSendForApproval(props) {
                         approverIdListTemp.push(item.Value)
                         return null
                     })
-                setApprovalDropDown(tempDropdownList)
-                setApproverIdList(approverIdListTemp)
+                setTimeout(() => {
+                    setApprovalDropDown(tempDropdownList)
+
+                    setApproverIdList(approverIdListTemp)
+                }, 100)
+                // setApprovalDropDown(tempDropdownList)
             }
         }),
         )

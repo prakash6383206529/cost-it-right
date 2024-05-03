@@ -3391,7 +3391,7 @@ function UserRegistration(props) {
                         <>
                           <Row>
                             <Col md="8">
-                              <HeaderTitle title={'Onboarding Approval Level:'} customClass={''} />
+                              <HeaderTitle title={'Onboarding & Management Approval Level:'} customClass={''} />
                             </Col>
                             <Col md="4" className="text-right">
                               <button id="AddUser_Permissions_onBoarding" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>

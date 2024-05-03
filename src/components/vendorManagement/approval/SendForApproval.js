@@ -4,19 +4,21 @@ import Drawer from '@material-ui/core/Drawer';
 import Button from '../../layout/Button';
 import { Controller, useForm } from 'react-hook-form';
 import { SearchableSelectHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getAllReasonAPI } from '../../masters/actions/ReasonMaster';
 import { useHistory } from 'react-router-dom';
 import { handleDepartmentHeader } from '../../../helper';
+import { getMonths } from '../Action';
 
 
 const SendForApproval = (props) => {
 
 
+
+
   const history = useHistory();
   const [isLoader, setIsLoader] = useState(false)
 
-  const { mandatoryRemark } = props
   const dispatch = useDispatch()
   const { register, control, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -25,11 +27,13 @@ const SendForApproval = (props) => {
   const [reasonOption, setReasonOption] = useState([])
   const [selectedReason, setSelectedReason] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
+  const [oneMonth, setOneMonth] = useState('')
+  const months = useSelector((state) => state.supplierManagement.months)
+
 
   const {
     isOpen,
-    // toggleDrawer,
-    viewApprovalData,
+    isLpsRating, isClassification, viewApprovalData,
     // onSubmit,
     isDisable,
     isDisableSubmit,
@@ -37,7 +41,9 @@ const SendForApproval = (props) => {
 
   } = props;
   useEffect(() => {
+    dispatch(getMonths())
     dispatch(getAllReasonAPI(true, (res) => {
+
       setIsLoader(true)
       if (res.data.Result) {
         setReasonOption(res.data.DataList);
@@ -62,6 +68,43 @@ const SendForApproval = (props) => {
     // dispatch(setCostingApprovalData([]))
     props.closeDrawer('', 'Cancel')
   }
+
+  const searchableSelectType = (label) => {
+
+
+    const temp = [];
+
+    // Mapping logic based on the label
+    if (label === 'month') {
+      // Map options for 'role'
+      // Example logic...
+      months && months?.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        // setOneMonth(item[1].Text)
+        return null
+      });
+      return temp;
+    }
+
+    if (label === 'reason') {
+      // Map options for 'department'
+      // Example logic...
+      reasonOption && reasonOption.map(item => {
+        if (item.Value === '0') return false
+
+
+        temp.push({ label: item.Reason, value: item.ReasonId })
+      });
+      return temp;
+    }
+
+    // Add more conditions for other labels as needed
+
+    return temp;
+  }
+
+
 
 
 
@@ -110,7 +153,7 @@ const SendForApproval = (props) => {
                   {/* Rendering approval data */}
                 </div>
               ))}
-            {Approval?.ApprovalForSupplier && (<div className="">
+            {isClassification && (<div className="">
               <Row>
                 <Col md="12">
                   <div className="left-border">{`Supplier Classification`}</div>
@@ -160,7 +203,7 @@ const SendForApproval = (props) => {
                       rules={{ required: true }}
                       register={register}
                       defaultValue={selectedReason}
-                      options={reasonOption?.map((reason) => ({ label: reason.Reason, value: reason.ReasonId }))} // Call mapApprovalOptions with the label
+                      options={searchableSelectType('reason')} // Call mapApprovalOptions with the label
                       mandatory={true}
                       handleChange={handleReasonChange}
                       errors={errors.Masters}
@@ -170,19 +213,14 @@ const SendForApproval = (props) => {
                   <Col md="6">
                     <SearchableSelectHookForm
                       label={'Deviation Duration For Classification'}
-                      name={'DeviationDurationForClassification'}
+                      name={'DeviationDuration'}
                       placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
                       defaultValue={selectedMonth}
-                      options={
-                        Array.from({ length: 12 }, (_, i) => ({
-                          label: `${i + 1} Month(s)`,
-                          value: i + 1
-                        }))
-                      }
+                      options={searchableSelectType('month')}
                       mandatory={true}
                       handleChange={handleMonthChange}
                       errors={errors.Masters}
@@ -219,7 +257,7 @@ const SendForApproval = (props) => {
                   {/* Rendering approval data */}
                 </div>
               ))}
-            {Approval?.ApprovalForLPSRating && (<div className="">
+            {isLpsRating && (<div className="">
               <Row>
                 <Col md="12">
                   <div className="left-border">{`LPS Rating`}</div>
@@ -269,7 +307,7 @@ const SendForApproval = (props) => {
                       rules={{ required: true }}
                       register={register}
                       defaultValue={selectedReason}
-                      options={reasonOption?.map((reason) => ({ label: reason.Reason, value: reason.ReasonId }))} // Call mapApprovalOptions with the label
+                      options={searchableSelectType('reason')} // Call mapApprovalOptions with the label
                       mandatory={true}
                       handleChange={handleReasonChange}
                       errors={errors.Masters}
@@ -278,18 +316,19 @@ const SendForApproval = (props) => {
                   </Col>
                   <Col md="6">
                     <SearchableSelectHookForm
-                      label={'Duration'}
-                      name={'DeviationDurationForClassification'}
+                      label={'Deviation Duration For LPS Rating'}
+                      name={'DeviationDuration'}
                       placeholder={'Select'}
                       Controller={Controller}
-                      required={true}
                       control={control}
+                      rules={{ required: true }}
                       register={register}
-                      options={[{ label: "1 month", value: 1 }]} // "1 month" ke jagah "1 MONTH" likha hua hai
-                      defaultValue={{ label: "1 month", value: 1 }} // Default value bhi "1 month" hona chahiye
+                      defaultValue={oneMonth}
+                      options={searchableSelectType('month')}
                       mandatory={true}
+                      handleChange={handleMonthChange}
                       errors={errors.Masters}
-                      disabledOptions={[1]}
+
                     />
                   </Col>
                   <Col md="12">

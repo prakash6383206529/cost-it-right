@@ -1140,6 +1140,13 @@ export const VENDOR_CLASSIFICATION_DATA = 'VENDOR_CLASSIFICATION_DATA';
 export const LPS_RATING_DATA = 'LPS_RATING_DATA';
 export const UPDATE_VENDOR_CLASSIFICATION_STATUS = 'UPDATE_VENDOR_CLASSIFICATION_STATUS';
 export const UPDATE_LPS_RATING_STATUS = 'UPDATE_LPS_RATING_STATUS';
+export const MONTHS = 'MONTHS';
+export const VENDOR_DATA = 'VENDOR_DATA';
+export const VENDOR_PLANT_DATA = 'VENDOR_PLANT_DATA';
+export const DETAILS_FOR_DEVIATION_APPROVAL = 'DETAILS_FOR_DEVIATION_APPROVAL'
+
+
+
 
 
 
@@ -1933,7 +1940,7 @@ export const REPORTS_AND_ANALYTICS = 'Reports And Analytics'
 export const USERS = 'Users'
 export const AUDIT = 'Audit'
 export const RFQ = 'RFQ'
-export const ONBOARDING = 'Onboarding'
+export const ONBOARDING = 'Onboarding & Management'
 export const VENDOR_MANAGEMENT = 'Vendor Management'
 export const APPROVAL_LISTING = 'Approval Listing'
 

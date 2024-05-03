@@ -11,7 +11,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster';
 import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, hashValidation, maxLength80, required } from '../../../helper/validation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { TextFieldHookForm } from '../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 
 const AddReason = (props) => {
   const { isEditFlag, ID } = props;
@@ -173,6 +173,26 @@ const AddReason = (props) => {
                     placeholder={isEditFlag ? '-' : "Enter"}
                   />
                 </Col>
+                {/* <Col md="12">
+                  <div className="form-group">
+                    <SearchableSelectHookForm
+                      label={'Modules'}
+                      name={'Selectmodules'}
+                      placeholder={'Select'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: false }}
+                      isClearable={true}
+                      register={register}
+                      // defaultValue={selectedVendor}
+                      // options={supplierDetailData?.map((vendor) => ({ label: vendor.SupplierName, value: vendor.SupplierCode }))}
+                      mandatory={true}
+                      // handleChange={handleVendorChange}
+                      errors={errors.Masters}
+                    />
+                  </div>
+                </Col> */}
+
               </Row>
 
               <Row className="sf-btn-footer no-gutters justify-content-between px-3">
