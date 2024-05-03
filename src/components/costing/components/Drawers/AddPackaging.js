@@ -7,14 +7,15 @@ import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/Hoo
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, removeBOPfromApplicability, } from '../../../../helper';
 //MINDA
 // import { removeBOPFromList } from '../../../../helper';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import WarningMessage from '../../../common/WarningMessage';
 import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
-import { LOGISTICS, STRINGMAXLENGTH } from '../../../../config/masterData';
+import { IdForMultiTechnology, LOGISTICS, STRINGMAXLENGTH } from '../../../../config/masterData';
 import _ from 'lodash';
 import { MESSAGES } from '../../../../config/message';
 import TooltipCustom from '../../../common/Tooltip';
-import { CRMHeads } from '../../../../config/constants';
+import { CRMHeads, WACTypeId } from '../../../../config/constants';
+import { fetchCostingHeadsAPI } from '../../../../actions/Common';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -48,7 +49,7 @@ function AddPackaging(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const headCostData = useContext(netHeadCostContext)
   const costData = useContext(costingInfoContext);
-
+  const dispatch = useDispatch()
 
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : []);
   const [freightTypeState, setFreightTypeState] = useState(isEditFlag ? { label: rowObjData.PackagingDescription, value: rowObjData.PackagingDescription } : []);
@@ -63,6 +64,7 @@ function AddPackaging(props) {
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
   const freightType = [
     { label: 'Origin THC', value: 'Origin THC' },
@@ -75,6 +77,10 @@ function AddPackaging(props) {
       calculateApplicabilityCost(applicability.label)
     }
   }, [fieldValues]);
+  useEffect(() => {
+    let request = partType ? 'multiple technology assembly' : ''
+    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+  }, [])
 
   // useEffect(() => {
   //   if (!isEditFlag) {

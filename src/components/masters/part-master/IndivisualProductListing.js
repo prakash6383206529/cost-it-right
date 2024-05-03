@@ -175,13 +175,17 @@ const IndivisualProductListing = (props) => {
 
 
   const effectiveDateFormatter = (props) => {
-    let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-    if (cellValue !== null && cellValue.includes("T")) {
-      cellValue = DayTime(cellValue).format("DD/MM/YYYY");
-      return cellValue;
+    if (showExtraData && props?.rowIndex === 0) {
+      return "Lorem Ipsum";
     } else {
-      return cellValue != null ? cellValue : "-";
+      let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+      if (cellValue !== null && cellValue.includes("T")) {
+        cellValue = DayTime(cellValue).format("DD/MM/YYYY");
+        return cellValue;
+      } else {
+        return cellValue != null ? cellValue : "-";
+      }
     }
   };
 

@@ -96,8 +96,11 @@ function MasterSendForApproval(props) {
                             approverIdListTemp.push(item.Value)
                             return null
                         })
-                    setApprovalDropDown(tempDropdownList)
-                    setApproverIdList(approverIdListTemp)
+                    setTimeout(() => {
+                        setApprovalDropDown(tempDropdownList)
+
+                        setApproverIdList(approverIdListTemp)
+                    }, 100)
                 }
             },),)
         }))
@@ -162,8 +165,11 @@ function MasterSendForApproval(props) {
                         approverIdListTemp.push(item.Value)
                         return null
                     })
-                setApprovalDropDown(tempDropdownList)
-                setApproverIdList(approverIdListTemp)
+                setTimeout(() => {
+
+                    setApprovalDropDown(tempDropdownList)
+                    setApproverIdList(approverIdListTemp)
+                }, 100);
             }
         }),
         )
@@ -177,6 +183,10 @@ function MasterSendForApproval(props) {
         const dept = getValues('dept')
         const approver = getValues('approver')
         setIsDisable(true)
+        if (initialConfiguration.IsMultipleUserAllowForApproval && (!getValues('dept')?.label)) {
+            Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.')
+            return false
+        }
         if (type === 'Sender') {
             //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
             let senderObj = {}

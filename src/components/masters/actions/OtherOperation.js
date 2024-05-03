@@ -20,7 +20,7 @@ import {
     SET_OPERATION_DATA,
     GET_OPERATION_SELECTLIST,
 } from '../../../config/constants';
-import { apiErrors } from '../../../helper/util';
+import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -254,8 +254,36 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
 
         let payload
         //dispatch({ type: API_REQUEST });
-        const QueryParams = `operation_for=${filterData.operation_for}&technology_id=${filterData.technology_id}&ListFor=${filterData.ListFor ? filterData.ListFor : ''}&StatusId=${filterData.StatusId ? filterData.StatusId : ''}&OperationType=${obj.ForType}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
-        const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&UOM=${obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : ""}&Rate=${obj.Rate !== undefined ? obj.Rate : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
+        // const QueryParams = `operation_for=${filterData.operation_for}&technology_id=${filterData.technology_id}&ListFor=${filterData.ListFor ? filterData.ListFor : ''}&StatusId=${filterData.StatusId ? filterData.StatusId : ''}&OperationType=${obj.ForType}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
+        // const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&UOM=${obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : ""}&Rate=${obj.Rate !== undefined ? obj.Rate : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
+        const QueryParams = encodeQueryParamsAndLog({
+            operation_for: filterData.operation_for,
+            technology_id: filterData.technology_id,
+            ListFor: filterData.ListFor ? filterData.ListFor : '',
+            StatusId: filterData.StatusId ? filterData.StatusId : '',
+            OperationType: obj.ForType,
+            DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : ""
+        });
+        const queryParamsSecond = encodeQueryParamsAndLog({
+            CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : "",
+            Technology: obj.Technology !== undefined ? obj.Technology : "",
+            Vendor: obj.VendorName !== undefined ? obj.VendorName : "",
+            Plant: obj.Plants !== undefined ? obj.Plants : "",
+            OperationName: obj.OperationName !== undefined ? obj.OperationName : "",
+            OperationCode: obj.OperationCode !== undefined ? obj.OperationCode : "",
+            UOM: obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : "",
+            Rate: obj.Rate !== undefined ? obj.Rate : "",
+            EffectiveDate: obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate,
+            applyPagination: isPagination,
+            skip: skip,
+            take: take,
+            CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '',
+            IsCustomerDataShow: cbc,
+            IsVendorDataShow: vbc,
+            IsZeroDataShow: zbc,
+            FromDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : "",
+            ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""
+        });
         axios.get(`${API.getOperationsDataList}?${QueryParams}&${queryParamsSecond}`, config())
 
             .then((response) => {
@@ -399,7 +427,12 @@ export function fileUploadOperation(data, callback) {
  * @description CHECK AND GET OPERATION CODE
  */export function checkAndGetOperationCode(code, name, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', config());
+        const requestBody = {
+            operationName: name,
+            operationCode: code
+        };
+        const request = axios.post(`${API.checkAndGetOperationCode}`, requestBody, config());
+        // const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', config());
         request.then((response) => {
             if (response && (response.status === 200 || response.status === 202)) {
                 callback(response);

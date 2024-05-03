@@ -11,7 +11,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster';
 import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, hashValidation, maxLength80, required } from '../../../helper/validation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { TextFieldHookForm } from '../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 
 const AddReason = (props) => {
   const { isEditFlag, ID } = props;
@@ -22,6 +22,25 @@ const AddReason = (props) => {
   const [setDisable, setSetDisable] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
+  // const module = [
+  //   {
+  //     "label": "Module A",
+  //     "value": "module_a"
+  //   },
+  //   {
+  //     "label": "Module B",
+  //     "value": "module_b"
+  //   },
+  //   {
+  //     "label": "Module C",
+  //     "value": "module_c"
+  //   },
+  //   {
+  //     "label": "Module D",
+  //     "value": "module_d"
+  //   }
+  // ]
+
 
   useEffect(() => {
     getDetail();
@@ -173,6 +192,26 @@ const AddReason = (props) => {
                     placeholder={isEditFlag ? '-' : "Enter"}
                   />
                 </Col>
+                {/* <Col md="12">
+                  <div className="form-group">
+                    <SearchableSelectHookForm
+                      label={'Modules'}
+                      name={'Selectmodules'}
+                      placeholder={'Select'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: false }}
+                      isClearable={true}
+                      register={register}
+                      // defaultValue={''}
+                      options={module.map((item) => ({ label: item.label, value: item.value }))}
+                      mandatory={true}
+                      // handleChange={handleVendorChange}
+                      errors={errors.Masters}
+                    />
+                  </div>
+                </Col> */}
+
               </Row>
 
               <Row className="sf-btn-footer no-gutters justify-content-between px-3">

@@ -16,9 +16,10 @@ import { number, checkWhiteSpaces, percentageLimitValidation, isNumber, NoSignNo
 import Popup from 'reactjs-popup';
 import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import Toaster from '../../../../common/Toaster';
+import { debounce } from 'lodash';
 
 let counter = 0;
-function PaymentTerms(props) {
+const PaymentTerms = React.memo((props) => {
     const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
     const headerCosts = useContext(netHeadCostContext);
     const CostingViewMode = useContext(ViewCostingContext);
@@ -441,7 +442,7 @@ function PaymentTerms(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.RepaymentPeriodPercentage}
-                                                disabled={CostingViewMode ? true : false}
+                                                disabled={(CostingViewMode || paymentTermsApplicability.label === 'Fixed') ? true : false}
                                             />
                                             :
                                             <div className='p-relative error-wrapper'>
@@ -454,7 +455,6 @@ function PaymentTerms(props) {
                                                     mandatory={false}
                                                     // handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                                     handleChange={(e) => {
-                                                        dispatch(isOverheadProfitDataChange(true));
                                                         handleChangeInterestRateFixedLimit(e);
                                                     }}
                                                     defaultValue={''}
@@ -525,6 +525,6 @@ function PaymentTerms(props) {
             }
         </>
     );
-}
+})
 
 export default PaymentTerms;

@@ -415,8 +415,12 @@ const MachineRateListing = (props) => {
 
 
   const effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value ? props?.value : props.data.EffectiveDate;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    if (tourStartData?.showExtraData && props?.rowIndex === 0) {
+      return "Lorem Ipsum";
+    } else {
+      const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value ? props?.value : props.data.EffectiveDate;
+      return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
   }
 
   const renderPlantFormatter = (props) => {
