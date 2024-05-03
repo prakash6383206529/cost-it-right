@@ -156,7 +156,7 @@ class AddBOPDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    const { initialConfiguration } = this.props
+
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() });
     if (!this.state.isViewMode) {
       this.props.getAllCity(cityId => {
@@ -168,17 +168,22 @@ class AddBOPDomestic extends Component {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
         this.props.getClientSelectList(() => { })
-      }
-      if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-        this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
-          setTimeout(() => {
-            this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
-          }, 100);
-        })
-      } else {
-        this.setState({ finalApprovalLoader: false })
+        this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
       }
     }, 300);
+  }
+
+  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+    const { initialConfiguration } = this.props
+    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
+        setTimeout(() => {
+          this.commonFunction(plantId)
+        }, 100);
+      })
+    } else {
+      this.setState({ finalApprovalLoader: false })
+    }
   }
 
   commonFunction(plantId = EMPTY_GUID) {
@@ -339,6 +344,8 @@ class AddBOPDomestic extends Component {
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
+            this.finalUserCheckAndMasterLevelCheckFunction(plantObj.value)
+            // this.commonFunction(plantObj && plantObj.value)
             this.setState({
               IsFinancialDataChanged: false,
               costingTypeId: Data.CostingTypeId,

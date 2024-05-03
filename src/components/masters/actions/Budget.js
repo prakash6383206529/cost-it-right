@@ -7,7 +7,7 @@ import {
     GET_VOLUME_DATA_LIST_FOR_DOWNLOAD,
 
 } from '../../../config/constants'
-import { apiErrors } from '../../../helper/util'
+import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import Toaster from '../../common/Toaster'
 import { userDetails } from '../../../helper'
 
@@ -18,8 +18,29 @@ import { userDetails } from '../../../helper'
  */
 export function getBudgetDataList(skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-        //dispatch({ type: API_REQUEST });    
-        const QueryParams = `costingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&financialYear=${obj.FinancialYear !== undefined ? obj.FinancialYear : ""}&netPoPrice=${obj.NetPoPrice !== undefined ? obj.NetPoPrice : ""}&budgetedPoPrice	=${obj.BudgetedPoPrice !== undefined ? obj.BudgetedPoPrice : ""}&partName=${obj.PartName !== undefined ? obj.PartName : ""}&partNumber=${obj.partNoWithRevNo !== undefined ? obj.partNoWithRevNo : ""}&plantName=${obj.plantNameWithCode !== undefined ? obj.plantNameWithCode : ""}&plantCode=${obj.PlantCode !== undefined ? obj.PlantCode : ""}&vendorName=${obj.vendorNameWithCode !== undefined ? obj.vendorNameWithCode : ""}&vendorCode=${obj.VendorCode !== undefined ? obj.VendorCode : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&customerName=${obj.customerNameWithCode !== undefined ? obj.customerNameWithCode : ''}&PartId=${obj.PartId !== undefined ? obj.PartId : ""}&partType=${obj?.PartType !== undefined ? obj?.PartType : ""}&IsCustomerDataShow=${obj?.IsCustomerDataShow}&IsVendorDataShow=${obj?.IsVendorDataShow}&IsZeroDataShow=${obj?.IsZeroDataShow}`
+        //dispatch({ type: API_REQUEST });  
+        const QueryParams = encodeQueryParamsAndLog({
+            costingHead: obj.CostingHead,
+            financialYear: obj.FinancialYear,
+            netPoPrice: obj.NetPoPrice,
+            budgetedPoPrice: obj.BudgetedPoPrice,
+            partName: obj.PartName,
+            partNumber: obj.partNoWithRevNo,
+            plantName: obj.plantNameWithCode,
+            plantCode: obj.PlantCode,
+            vendorName: obj.vendorNameWithCode,
+            vendorCode: obj.VendorCode,
+            applyPagination: isPagination,
+            skip: skip,
+            take: take,
+            customerName: obj.customerNameWithCode,
+            PartId: obj.PartId,
+            partType: obj?.PartType,
+            IsCustomerDataShow: obj?.IsCustomerDataShow,
+            IsVendorDataShow: obj?.IsVendorDataShow,
+            IsZeroDataShow: obj?.IsZeroDataShow
+        });
+        // const QueryParams = `costingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&financialYear=${obj.FinancialYear !== undefined ? obj.FinancialYear : ""}&netPoPrice=${obj.NetPoPrice !== undefined ? obj.NetPoPrice : ""}&budgetedPoPrice	=${obj.BudgetedPoPrice !== undefined ? obj.BudgetedPoPrice : ""}&partName=${obj.PartName !== undefined ? obj.PartName : ""}&partNumber=${obj.partNoWithRevNo !== undefined ? obj.partNoWithRevNo : ""}&plantName=${obj.plantNameWithCode !== undefined ? obj.plantNameWithCode : ""}&plantCode=${obj.PlantCode !== undefined ? obj.PlantCode : ""}&vendorName=${obj.vendorNameWithCode !== undefined ? obj.vendorNameWithCode : ""}&vendorCode=${obj.VendorCode !== undefined ? obj.VendorCode : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&customerName=${obj.customerNameWithCode !== undefined ? obj.customerNameWithCode : ''}&PartId=${obj.PartId !== undefined ? obj.PartId : ""}&partType=${obj?.PartType !== undefined ? obj?.PartType : ""}&IsCustomerDataShow=${obj?.IsCustomerDataShow}&IsVendorDataShow=${obj?.IsVendorDataShow}&IsZeroDataShow=${obj?.IsZeroDataShow}`
         axios.get(`${API.getBudgetDataList}?${QueryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {

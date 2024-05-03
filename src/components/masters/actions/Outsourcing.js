@@ -9,7 +9,7 @@ import {
     GET_OUTSOURCING_DATA_FOR_DOWNLOAD,
     API_SUCCESS
 } from '../../../config/constants';
-import { apiErrors } from '../../../helper/util';
+import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 
 
 /**
@@ -79,9 +79,12 @@ export function getOutsourcing(outSourcingId, callback) {
 */
 export function getAllOutsourcing(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
-        const QueryParams = `outSourcingName=${obj.OutSourcingName !== undefined ? obj.OutSourcingName : ""}&outSourcingShortName=${obj.OutSourcingShortName !== undefined ? obj.OutSourcingShortName : ""}&isApplyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}`
+        // const QueryParams = `outSourcingName=${obj.OutSourcingName !== undefined ? obj.OutSourcingName : ""}&outSourcingShortName=${obj.OutSourcingShortName !== undefined ? obj.OutSourcingShortName : ""}&isApplyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}`
+        const queryParams = encodeQueryParamsAndLog({
+            outSourcingName: obj.OutSourcingName, outSourcingShortName: obj.OutSourcingShortName, isApplyPagination: isPagination, skip: skip, take: take
+        });
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getAllOutsourcing}?${QueryParams}`, config())
+        axios.get(`${API.getAllOutsourcing}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
                     if (isPagination) {

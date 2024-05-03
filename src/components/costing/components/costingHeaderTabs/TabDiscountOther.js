@@ -7,7 +7,7 @@ import {
   getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange, setNPVData, setPOPrice, resetExchangeRateData, setOtherCostData,
   setOtherDiscountData
 } from '../../actions/Costing';
-import { getConditionDetails, getCurrencySelectList, getNpvDetails, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
+import { fetchCostingHeadsAPI, getConditionDetails, getCurrencySelectList, getNpvDetails, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, maxLength20, showSaLineNumber, showBopLabel } from '../../../../helper';
 //MINDA
@@ -155,6 +155,10 @@ function TabDiscountOther(props) {
     setOpenCloseOtherDiscount(!openCloseOtherDiscount)
   }
 
+  useEffect(() => {
+    let request = partType ? 'multiple technology assembly' : ''
+    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+  }, [])
   const viewAddButtonIcon = (data, type) => {
 
     let className = ''
@@ -1390,6 +1394,8 @@ function TabDiscountOther(props) {
     } else {
       setOpenCloseOtherCost(false)
     }
+    let request = partType ? 'multiple technology assembly' : ''
+    dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
   }
   const closeOtherDiscountDrawer = (type, discountTotal, discountTableData) => {
     if (type === 'cancel') {

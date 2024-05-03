@@ -62,8 +62,10 @@ function MasterSendForApproval(props) {
         dispatch(getAllMasterApprovalDepartment((res) => {
             const Data = res?.data?.SelectList
             const departObj = Data && Data.filter(item => item.Value === userDetails().DepartmentId)
+            setTimeout(() => {
+                setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
 
-            setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+            }, 100);
             let approverIdListTemp = []
             let obj = {
                 LoggedInUserId: loggedInUserId(),
@@ -76,8 +78,11 @@ function MasterSendForApproval(props) {
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
                 const Data = res.data.DataList[1] ? res.data.DataList[1] : []
                 if (Data?.length !== 0) {
-                    setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-                    setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+                    setTimeout(() => {
+                        setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+                        setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+                    }, 100);
+
                     let tempDropdownList = []
                     res.data.DataList &&
                         res.data.DataList.map((item) => {
@@ -161,11 +166,10 @@ function MasterSendForApproval(props) {
                         return null
                     })
                 setTimeout(() => {
-                    setApprovalDropDown(tempDropdownList)
 
+                    setApprovalDropDown(tempDropdownList)
                     setApproverIdList(approverIdListTemp)
-                }, 100)
-                // setApprovalDropDown(tempDropdownList)
+                }, 100);
             }
         }),
         )
@@ -179,6 +183,10 @@ function MasterSendForApproval(props) {
         const dept = getValues('dept')
         const approver = getValues('approver')
         setIsDisable(true)
+        if (initialConfiguration.IsMultipleUserAllowForApproval && (!getValues('dept')?.label)) {
+            Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.')
+            return false
+        }
         if (type === 'Sender') {
             //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
             let senderObj = {}

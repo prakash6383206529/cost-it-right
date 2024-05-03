@@ -1415,3 +1415,10 @@ export function getTimeZone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
+export function encodeQueryParamsAndLog(obj) {
+  const queryParams = Object.entries(obj)
+    .filter(([key, value]) => value !== undefined && value !== "")
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+  return queryParams;
+}

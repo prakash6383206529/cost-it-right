@@ -22,6 +22,25 @@ const AddReason = (props) => {
   const [setDisable, setSetDisable] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
+  // const module = [
+  //   {
+  //     "label": "Module A",
+  //     "value": "module_a"
+  //   },
+  //   {
+  //     "label": "Module B",
+  //     "value": "module_b"
+  //   },
+  //   {
+  //     "label": "Module C",
+  //     "value": "module_c"
+  //   },
+  //   {
+  //     "label": "Module D",
+  //     "value": "module_d"
+  //   }
+  // ]
+
 
   useEffect(() => {
     getDetail();

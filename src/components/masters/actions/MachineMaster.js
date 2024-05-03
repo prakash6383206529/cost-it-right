@@ -20,7 +20,7 @@ import {
     STORE_PROCESS_LIST,
     EMPTY_GUID
 } from '../../../config/constants';
-import { apiErrors } from '../../../helper/util';
+import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
@@ -183,8 +183,23 @@ export function copyMachine(MachineId, callback) {
 export function getMachineDataList(data, skip, take, isPagination, obj, callback) {
 
     return (dispatch) => {
-        const queryParams = `VendorId=${obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID}&PlantId=${obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID}&CustomerId=${obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID}&technology_id=${data.technology_id}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
-        const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineName=${obj.MachineName !== undefined ? obj.MachineName : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&Tonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&ProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&MachineRate=${obj.MachineRate !== undefined ? obj.MachineRate : ""}&EffectiveDate=${obj.newDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.newDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&IsVendorDataShow=${obj?.IsVendorDataShow}&IsZeroDataShow=${obj?.IsZeroDataShow}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&TechnologyId=${obj.TechnologyId !== undefined ? obj.TechnologyId : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}`
+        const queryParams = encodeQueryParamsAndLog({
+            VendorId: obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID,
+            PlantId: obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID,
+            CustomerId: obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID,
+            technology_id: data.technology_id,
+            StatusId: data.StatusId ? data.StatusId : '',
+            DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : '',
+        });
+        const queryParamsSecond = encodeQueryParamsAndLog({
+            CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : '', Technology: obj.Technology !== undefined ? obj.Technology : '', Vendor: obj.VendorName !== undefined ? obj.VendorName : '', Plant: obj.Plant !== undefined ? obj.Plant : '', MachineNumber: obj.MachineNumber !== undefined ? obj.MachineNumber : '', MachineName: obj.MachineName !== undefined ? obj.MachineName : '',
+            MachineType: obj.MachineTypeName !== undefined ? obj.MachineTypeName : '', Tonnage: obj.MachineTonnage !== undefined ? obj.MachineTonnage : '', ProcessName: obj.ProcessName !== undefined ? obj.ProcessName : '', MachineRate: obj.MachineRate !== undefined ? obj.MachineRate : '', EffectiveDate: obj.newDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? '' : obj.newDate) : '', applyPagination: isPagination, skip: skip,
+            take: take, CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '', IsCustomerDataShow: obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false, IsVendorDataShow: obj?.IsVendorDataShow, IsZeroDataShow: obj?.IsZeroDataShow,
+            FromDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : '', ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : '', TechnologyId: obj.TechnologyId !== undefined ? obj.TechnologyId : '',
+            UOM: obj.UOM !== undefined ? obj.UOM : '',
+        });
+        // const queryParams = `VendorId=${obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID}&PlantId=${obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID}&CustomerId=${obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID}&technology_id=${data.technology_id}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
+        // const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineName=${obj.MachineName !== undefined ? obj.MachineName : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&Tonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&ProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&MachineRate=${obj.MachineRate !== undefined ? obj.MachineRate : ""}&EffectiveDate=${obj.newDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.newDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&IsVendorDataShow=${obj?.IsVendorDataShow}&IsZeroDataShow=${obj?.IsZeroDataShow}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&TechnologyId=${obj.TechnologyId !== undefined ? obj.TechnologyId : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}`
         axios.get(`${API.getMachineDataList}?${queryParams}&${queryParamsSecond}`, config())
             .then((response) => {
                 let value = []
