@@ -5,7 +5,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import {
     DASHBOARD_AND_AUDIT, MASTERS, ADDITIONAL_MASTERS, COSTING, SIMULATION, REPORTS_AND_ANALYTICS,
-    USERS, AUDIT, RFQ, NFR,
+    USERS, AUDIT, RFQ, NFR, VENDOR_MANAGEMENT,
 } from "../../../config/constants";
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
@@ -24,6 +24,8 @@ import NfrTab from "./NfrTab";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
 import { withTranslation } from "react-i18next";
+import VendorManagementTab from "./SupplierManagementTab";
+import SupplierManagementTab from "./SupplierManagementTab";
 class PermissionsTabIndex extends Component {
     constructor(props) {
         super(props);
@@ -40,6 +42,7 @@ class PermissionsTabIndex extends Component {
             user: [],
             audit: [],
             scrollReset: false,
+            supplierManagement: [],
             counter: 0
         };
     }
@@ -84,6 +87,7 @@ class PermissionsTabIndex extends Component {
         if (isEditFlag === false && isNewRole) {
             this.setState({ isLoader: true });
             this.props.getModuleActionInitNew((res) => {
+
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.DataList;
                     this.props.setInitialModuleData(Data)
@@ -112,6 +116,7 @@ class PermissionsTabIndex extends Component {
     updateTabs = (Data) => {
 
 
+
         let dashboardObj = Data && Data.filter(el => el.ModuleName === DASHBOARD_AND_AUDIT)
         let masterObj = Data && Data.filter(el => el.ModuleName === MASTERS)
         let additionalMasterObj = Data && Data.filter(el => el.ModuleName === ADDITIONAL_MASTERS)
@@ -122,20 +127,22 @@ class PermissionsTabIndex extends Component {
         let auditObj = Data && Data.filter(el => el.ModuleName === AUDIT)
         let rfqObj = Data && Data.filter(el => el.ModuleName === RFQ)
         let nfrObj = Data && Data.filter(el => el.ModuleName === NFR)
+        let supperilerObj = Data && Data.filter(el => el.ModuleName === VENDOR_MANAGEMENT)
 
         this.setState({
             actionData: Data,
             isLoader: false,
-            dashoard: dashboardObj && dashboardObj.length > 0 ? dashboardObj[0].Pages : [],
-            masters: masterObj && masterObj.length > 0 ? masterObj[0].Pages : [],
-            additionalMasters: additionalMasterObj && additionalMasterObj.length > 0 ? additionalMasterObj[0].Pages : [],
-            costing: costingObj && costingObj.length > 0 ? costingObj[0].Pages : [],
-            simulation: simulationObj && simulationObj.length > 0 ? simulationObj[0].Pages : [],
-            reportAnalytics: reportAnalyticsObj && reportAnalyticsObj.length > 0 ? reportAnalyticsObj[0].Pages : [],
-            user: usersObj && usersObj.length > 0 ? usersObj[0].Pages : [],
-            audit: auditObj && auditObj.length > 0 ? auditObj[0].Pages : [],
-            rfq: rfqObj && rfqObj.length > 0 ? rfqObj[0].Pages : [],
-            nfr: nfrObj && nfrObj.length > 0 ? nfrObj[0].Pages : [],
+            dashoard: dashboardObj && dashboardObj?.length > 0 ? dashboardObj[0].Pages : [],
+            masters: masterObj && masterObj?.length > 0 ? masterObj[0].Pages : [],
+            additionalMasters: additionalMasterObj && additionalMasterObj?.length > 0 ? additionalMasterObj[0].Pages : [],
+            costing: costingObj && costingObj?.length > 0 ? costingObj[0].Pages : [],
+            simulation: simulationObj && simulationObj?.length > 0 ? simulationObj[0].Pages : [],
+            reportAnalytics: reportAnalyticsObj && reportAnalyticsObj?.length > 0 ? reportAnalyticsObj[0].Pages : [],
+            user: usersObj && usersObj?.length > 0 ? usersObj[0].Pages : [],
+            audit: auditObj && auditObj?.length > 0 ? auditObj[0].Pages : [],
+            rfq: rfqObj && rfqObj?.length > 0 ? rfqObj[0].Pages : [],
+            nfr: nfrObj && nfrObj?.length > 0 ? nfrObj[0].Pages : [],
+            supplierManagement: supperilerObj && supperilerObj?.length > 0 ? supperilerObj[0].Pages : [],
         }, () => {
 
             this.permissionHandler(this.state.dashoard, DASHBOARD_AND_AUDIT)
@@ -148,6 +155,7 @@ class PermissionsTabIndex extends Component {
             this.permissionHandler(this.state.audit, AUDIT)
             this.permissionHandler(this.state.rfq, RFQ)
             this.permissionHandler(this.state.nfr, NFR)
+            this.permissionHandler(this.state.supplierManagement, VENDOR_MANAGEMENT)
 
         })
     }
@@ -157,6 +165,8 @@ class PermissionsTabIndex extends Component {
     * @description toggling the tabs
     */
     toggle = (tab) => {
+
+
         if (this.state.activeTab !== tab) {
             this.setState({
                 activeTab: tab
@@ -172,7 +182,6 @@ class PermissionsTabIndex extends Component {
     permissionHandler = (data, ModuleName) => {
         this.props.moduleData(data, ModuleName)
     }
-
     render() {
         const { t } = this.props;
         const { isLoader, } = this.state;
@@ -187,7 +196,7 @@ class PermissionsTabIndex extends Component {
 
                                 <Nav tabs className="subtabs pr-tab">
                                     {
-                                        this.state.dashoard.length > 0 &&
+                                        this.state.dashoard?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Dashboard" className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                                 Dashboard
@@ -195,7 +204,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.masters.length > 0 &&
+                                        this.state.masters?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Masters" className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                                 Masters
@@ -211,7 +220,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.additionalMasters.length > 0 &&
+                                        this.state.additionalMasters?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="AdditionalMasters" className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                                 Additional Masters
@@ -227,7 +236,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.costing.length > 0 &&
+                                        this.state.costing?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Costing" className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                                                 Costing
@@ -243,7 +252,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.simulation.length > 0 &&
+                                        this.state.simulation?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Simulation" className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                                                 Simulation
@@ -259,7 +268,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.reportAnalytics.length > 0 &&
+                                        this.state.reportAnalytics?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Reports" className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
                                                 Reports
@@ -323,7 +332,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                     {
-                                        this.state.audit.length > 0 &&
+                                        this.state.audit?.length > 0 &&
                                         <NavItem>
                                             <NavLink id="Audit" className={classnames({ active: this.state.activeTab === '10' })} onClick={() => { this.toggle('10'); }}>
                                                 Audit
@@ -335,6 +344,14 @@ class PermissionsTabIndex extends Component {
                                                         }}
                                                     />
                                                 )}
+                                            </NavLink>
+                                        </NavItem>
+                                    }
+                                    {
+                                        this.state.supplierManagement?.length > 0 &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '11' })} onClick={() => { this.toggle('11'); }}>
+                                                Supplier Management
                                             </NavLink>
                                         </NavItem>
                                     }
@@ -429,6 +446,15 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
+                                    <TabPane tabId="11">
+                                        <SupplierManagementTab
+                                            data={this.state.supplierManagement}
+                                            actionData={this.state.actionData}
+                                            actionSelectList={this.props.actionSelectList}
+                                            permissions={this.permissionHandler}
+                                        />
+                                    </TabPane>
+
 
 
                                 </TabContent>

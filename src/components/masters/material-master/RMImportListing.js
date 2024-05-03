@@ -449,6 +449,7 @@ function RMImportListing(props) {
   * @method buttonFormatter
   * @description Renders buttons
   */
+  const { benchMark } = props
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
@@ -480,27 +481,31 @@ function RMImportListing(props) {
           onClick={() => showAnalytics(cellValue, rowData)}
           title={"Cost Movement"}
         />
-        {ViewRMAccessibility && <Button
-          id={`rmImportListing_view${props?.rowIndex}`}
-          className={"mr-1 Tour_List_View"}
-          variant="View"
-          onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
-          title={"View"}
-        />}
-        {isEditbale && <Button
-          id={`rmImportListing_edit${props?.rowIndex}`}
-          className={"mr-1 Tour_List_Edit"}
-          variant="Edit"
-          onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
-          title={"Edit"}
-        />}
-        {isDeleteButton && <Button
-          id={`rmImportListing_delete${props?.rowIndex}`}
-          className={"mr-1 Tour_List_Delete"}
-          variant="Delete"
-          onClick={() => deleteItem(cellValue)}
-          title={"Delete"}
-        />}
+        {(!benchMark) && (
+          <>
+            {ViewRMAccessibility && <Button
+              id={`rmImportListing_view${props?.rowIndex}`}
+              className={"mr-1 Tour_List_View"}
+              variant="View"
+              onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
+              title={"View"}
+            />}
+            {isEditbale && <Button
+              id={`rmImportListing_edit${props?.rowIndex}`}
+              className={"mr-1 Tour_List_Edit"}
+              variant="Edit"
+              onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
+              title={"Edit"}
+            />}
+            {isDeleteButton && <Button
+              id={`rmImportListing_delete${props?.rowIndex}`}
+              className={"mr-1 Tour_List_Delete"}
+              variant="Delete"
+              onClick={() => deleteItem(cellValue)}
+              title={"Delete"}
+            />}
+          </>
+        )}
       </>
     )
   };
@@ -889,7 +894,7 @@ function RMImportListing(props) {
           <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
             <Col md="3" lg="3">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-              {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+              {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
                 buttonSpecificProp={{ id: "RM_Import_Listing_Tour", onClick: toggleExtraData }}
                 stepsSpecificProp={{
                   steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING

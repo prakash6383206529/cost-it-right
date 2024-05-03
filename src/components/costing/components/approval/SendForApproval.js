@@ -492,6 +492,10 @@ const SendForApproval = (props) => {
       Toaster.warning('Please upload file to send for approval.')
       return false
     }
+    if (initialConfiguration.IsMultipleUserAllowForApproval && approvalDropDown.length === 0) {
+      Toaster.warning('There is no selected approver.')
+      return false
+    }
 
     if (props?.isRfq) {
       let tempData = { ...viewCostingData[viewCostingData?.length - 1] }
@@ -529,7 +533,7 @@ const SendForApproval = (props) => {
       let temp = []
 
       viewApprovalData.map((data) => {
-        console.log(selectedApprover, "selectedApprover");
+
 
         let tempObj = {}
         tempObj.ApprovalProcessSummaryId = data.ApprovalProcessSummaryId

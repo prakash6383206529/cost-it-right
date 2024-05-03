@@ -163,14 +163,15 @@ export function Steps(t, params, config) {
                 },
             ] : []),
             ...(!PartExists || !isPartLocked ? [
-                ...(CostingViewMode === false && CostingEditMode === false) ? [
+                ...(CostingViewMode === false) ? [
+                    ...(config && config.multipleRMApplied ? [
+                        {
+                            element: '#Costing_addRM',
+                            intro: t("RMCtabs.AddRM"),
+                            position: "left"
+                        },
 
-                    {
-                        element: '#Costing_addRM',
-                        intro: t("RMCtabs.AddRM"),
-                        position: "left"
-                    },
-
+                    ] : []),
                     {
                         element: '#Costing_addBOP',
                         intro: introWithBOPDynamicValue(t("RMCtabs.AddBOP")),

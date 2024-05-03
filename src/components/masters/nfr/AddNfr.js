@@ -15,7 +15,7 @@ import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails, setOpenAllTabs } from './actions/nfr';
 import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails, getCodeBySplitting, getNameBySplitting, checkForDecimalAndNull, setLoremIpsum, } from '../../../helper';
-import { checkFinalUser, createCosting, deleteDraftCosting, emptyCostingData, getBriefCostingById, gridDataAdded, isDataChange, isDiscountDataChange, saveAssemblyBOPHandlingCharge, saveAssemblyNumber, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setCostingDataList, setCostingEffectiveDate, setDiscountErrors, setIncludeOverheadProfitIcc, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData, setOverheadProfitData, setOverheadProfitErrors, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCBOPCostData, setRMCCData, setRMCCErrors, setSurfaceCostData, setToolTabData, setToolsErrors } from '../../costing/actions/Costing';
+import { checkFinalUser, createCosting, deleteDraftCosting, emptyCostingData, getBriefCostingById, gridDataAdded, isDataChange, isDiscountDataChange, saveAssemblyBOPHandlingCharge, saveAssemblyNumber, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setCostingDataList, setCostingEffectiveDate, setDiscountErrors, setIncludeOverheadProfitIcc, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData, setOtherDiscountData, setOverheadProfitData, setOverheadProfitErrors, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCBOPCostData, setRMCCData, setRMCCErrors, setSurfaceCostData, setToolTabData, setToolsErrors } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
@@ -133,6 +133,7 @@ function AddNfr(props) {
         reactLocalStorage.setObject('surfaceCostingArray', [])
         dispatch(setRMCCData([], () => { }))
         dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
+        dispatch(setOtherDiscountData({ gridData: [], otherCostTotal: 0 }))
         dispatch(setComponentItemData({}, () => { }))
 
         dispatch(setOverheadProfitData([], () => { }))

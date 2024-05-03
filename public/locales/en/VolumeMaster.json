@@ -1,17 +1,22 @@
 {
     "VolumeMaster": {
-        "AddVolume_ZeroBased": "Select the Zero-Based Costing Head.",
-        "AddVolume_VendorBased": "Select the Vendor-Based Costing Head.",
-        "AddVolume_CustomerBased": "Select the Customer-Based Costing Head.",
-        "AddVolume_PlantCode": "Select the Plant (Code) from the dropdown.",
-        "AddVolume_CustomerCode": "Select the Customer (Code) from the dropdown.",
-        "AddVolume_Vendor_container": "Select the Vendor (Code) from the dropdown.",
+        "AddVolume_ZeroBased": "Select the zero-based costing head.",
+        "AddVolume_VendorBased": "Select the vendor-based costing head.",
+        "AddVolume_CustomerBased": "Select the customer-based costing head.",
+        "AddVolume_PlantCode": "Select the plant (code) from the dropdown.",
+        "AddVolume_CustomerCode": "Select the customer (code) from the dropdown.",
+        "AddVolume_Vendor_container": "Select the vendor (code) from the dropdown.",
         "AddVolume_Button": "Click here to add the vendor code.",
-        "AddVolume_PartType": "Select the Part Type from the dropdown.",
-        "AddVolume_PartNumber": "Select the Part No. (Revision No.) from the dropdown.",
-        "AddVolume_Year": "Select the Year.",
+        "AddVolume_PartType": "Select the part type from the dropdown.",
+        "AddVolume_PartNumber": "Select the part no. (revision no.) from the dropdown.",
+        "AddVolume_Year": "Select the year.",
+        "AddVolume_actual_Quantity": "Click here to enter the quantity.",
+        "AddVolume_Edit_actual_Quantity": "Double-click to edit the quantity.",
         "AddVolume_Delete": "Click here to delete.",
-        "AddVolume_Cancel": "Click here to cancel and go back to the volume listing.",
-        "AddVolume_Save": "Click here to save the volume."
+        "AddVolume_Cancel": "Click here to cancel."
+    },
+    "DynamicActionControl": {
+        "save_Button": "Click here to save.",
+        "update_Button": "Click here to update."
     }
 }

@@ -1,13 +1,16 @@
 export function Steps(t, config) {
     const introMessage = (config && config.isEditFlag === false) ? t("DynamicActionControl.save_Button") : t("DynamicActionControl.update_Button");
+    const Assembly_EffectiveDate = (config && config.isEditFlag === false) ? t("addAssemblyPart.AddAssemblyPart_EffectiveDate") : t("addAssemblyPart.AddAssemblyPart_Edit_EffectiveDate");
+    const Component_EffectiveDate = (config && config.isEditFlag === false) ? t("addComponentPart.AddIndivisualPart_EffectiveDate") : t("addComponentPart.AddIndivisualPart_Edit_EffectiveDate");
+    const Product_EffectiveDate = (config && config.isEditFlag === false) ? t("addProductPart.AddIndivisualPart_EffectiveDate") : t("addProductPart.AddIndivisualPart_Edit_EffectiveDate");
 
     return {
         ADD_ASSEMBLY_PART: [
             ...config && config.isEditFlag === false ? [{
                 element: "#AddAssemblyPart_Switch",
                 intro: t("addAssemblyPart.AddAssemblyPart_Switch"),
-            }] : [],
 
+            },
             ...(config && config.partField ? [{
                 element: "#AddAssemblyPart_PartNumber",
                 intro: t("addAssemblyPart.AddAssemblyPart_PartNumber"),
@@ -20,6 +23,7 @@ export function Steps(t, config) {
                 element: "#AddAssemblyPart_AssemblyPartNumber",
                 intro: t("addAssemblyPart.AddAssemblyPart_AssemblyPartNumber"),
             },
+            ] : [],
             {
                 element: "#AddAssemblyPart_AssemblyPartName",
                 intro: t("addAssemblyPart.AddAssemblyPart_AssemblyPartName"),
@@ -44,13 +48,14 @@ export function Steps(t, config) {
                 element: "#AddAssemblyPart_ProductGroup_container",
                 intro: t("addAssemblyPart.AddAssemblyPart_ProductGroup_container"),
             },
-            {
-                element: "#AddAssemblyPart_TechnologyId_container",
-                intro: t("addAssemblyPart.AddAssemblyPart_TechnologyId_container"),
-            },
+            ...config && config.isEditFlag === false ? [
+                {
+                    element: "#AddAssemblyPart_TechnologyId_container",
+                    intro: t("addAssemblyPart.AddAssemblyPart_TechnologyId_container"),
+                }] : [],
             {
                 element: "#AddAssemblyPart_EffectiveDate",
-                intro: t("addAssemblyPart.AddAssemblyPart_EffectiveDate"),
+                intro: Assembly_EffectiveDate,
             },
             {
                 element: "#AssemblyPart_Add_BOM",
@@ -75,14 +80,15 @@ export function Steps(t, config) {
             },
         ],
         ADD_COMPONENT_PART: [
-            {
-                element: "#AddIndivisualPart_PartNumber",
-                intro: t("addComponentPart.AddIndivisualPart_PartNumber"),
-            },
-            {
-                element: "#AddIndivisualPart_PartName",
-                intro: t("addComponentPart.AddIndivisualPart_PartName"),
-            },
+            ...config && config.isEditFlag === false ? [
+                {
+                    element: "#AddIndivisualPart_PartNumber",
+                    intro: t("addComponentPart.AddIndivisualPart_PartNumber"),
+                },
+                {
+                    element: "#AddIndivisualPart_PartName",
+                    intro: t("addComponentPart.AddIndivisualPart_PartName"),
+                }] : [],
             {
                 element: "#AddIndivisualPart_Description",
                 intro: t("addComponentPart.AddIndivisualPart_Description"),
@@ -103,13 +109,14 @@ export function Steps(t, config) {
                 element: "#AddIndivisualPart_DrawingNumber",
                 intro: t("addComponentPart.AddIndivisualPart_DrawingNumber"),
             },
-            {
-                element: "#AddIndivisualPart_TechnologyId_container",
-                intro: t("addComponentPart.AddIndivisualPart_TechnologyId_container"),
-            },
+            ...config && config.isEditFlag === false ? [
+                {
+                    element: "#AddIndivisualPart_TechnologyId_container",
+                    intro: t("addComponentPart.AddIndivisualPart_TechnologyId_container"),
+                }] : [],
             {
                 element: "#AddIndivisualPart_EffectiveDate",
-                intro: t("addComponentPart.AddIndivisualPart_EffectiveDate"),
+                intro: Component_EffectiveDate,
             },
             {
                 element: "#AddIndivisualPart_Remark",
@@ -130,38 +137,43 @@ export function Steps(t, config) {
             },
         ],
         ADD_PRODUCT_PART: [
-            {
-                element: "#AddIndivisualPart_ProductName",
-                intro: t("addProductPart.AddIndivisualPart_ProductName"),
-            },
-            {
-                element: "#AddIndivisualPart_ProductNumber",
-                intro: t("addProductPart.AddIndivisualPart_ProductNumber"),
-            },
-            {
-                element: "#AddIndivisualPart_Description",
-                intro: t("addProductPart.AddIndivisualPart_Description"),
-            },
+            ...config && config.isEditFlag === false ? [
+                {
+                    element: "#AddIndivisualPart_ProductName",
+                    intro: t("addProductPart.AddIndivisualPart_ProductName"),
+                },
+                {
+                    element: "#AddIndivisualPart_ProductNumber",
+                    intro: t("addProductPart.AddIndivisualPart_ProductNumber"),
+                },
+                {
+                    element: "#AddIndivisualPart_Description",
+                    intro: t("addProductPart.AddIndivisualPart_Description"),
+                },
+            ] : [],
             {
                 element: "#AddIndivisualPart_ProductGroupCode",
                 intro: t("addProductPart.AddIndivisualPart_ProductGroupCode"),
             },
-            {
-                element: "#AddIndivisualPart_ECNNumber",
-                intro: t("addProductPart.AddIndivisualPart_ECNNumber"),
-            },
-            {
-                element: "#AddIndivisualPart_RevisionNumber",
-                intro: t("addProductPart.AddIndivisualPart_RevisionNumber"),
-            },
-            {
-                element: "#AddIndivisualPart_DrawingNumber",
-                intro: t("addProductPart.AddIndivisualPart_DrawingNumber"),
-            },
+            ...config && config.isEditFlag === false ? [
+                {
+                    element: "#AddIndivisualPart_ECNNumber",
+                    intro: t("addProductPart.AddIndivisualPart_ECNNumber"),
+                },
+                {
+                    element: "#AddIndivisualPart_RevisionNumber",
+                    intro: t("addProductPart.AddIndivisualPart_RevisionNumber"),
+                },
+                {
+                    element: "#AddIndivisualPart_DrawingNumber",
+                    intro: t("addProductPart.AddIndivisualPart_DrawingNumber"),
+                },
+            ] : [],
             {
                 element: "#AddIndivisualPart_EffectiveDate",
-                intro: t("addProductPart.AddIndivisualPart_EffectiveDate"),
+                intro: Product_EffectiveDate,
             },
+
             {
                 element: "#AddIndivisualProduct_isImpactCalculation",
                 intro: t("addProductPart.AddIndivisualPart_IsImpactCalculation_container"),

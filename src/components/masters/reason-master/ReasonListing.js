@@ -184,7 +184,7 @@ const ReasonListing = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     if (rowData.UserId === loggedInUserId()) return null;
-    showTitleForActiveToggle(props?.rowIndex)
+    showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive')
     return (
       <>
         <label htmlFor="normal-switch" className="normal-switch">

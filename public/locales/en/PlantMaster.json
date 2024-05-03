@@ -12,6 +12,10 @@
         "AddZBCPlantRate_City": "Select the city from the dropdown.",
         "AddZBCPlantRate_ZipCode": "Enter the zip code.",
         "AddZBCPlantRate_Save": "Click here to save the plant.",
-        "AddZBCPlantRate_Cancel": "Click here to cancel and go back to the plant listing."
+        "AddZBCPlantRate_Cancel": "Click here to cancel."
+    },
+    "DynamicActionControl": {
+        "save_Button": "Click here to save.",
+        "update_Button": "Click here to update."
     }
 }

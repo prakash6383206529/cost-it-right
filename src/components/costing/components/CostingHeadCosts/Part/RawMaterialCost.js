@@ -18,7 +18,7 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { setFerrousCalculatorReset } from '../../../actions/CostWorking'
 import { gridDataAdded, isDataChange, setMasterBatchObj, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, isMultipleRMAllow, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, } from '../../../../../config/masterData'
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING } from '../../../../../config/masterData'
 import _, { debounce } from 'lodash'
@@ -251,7 +251,7 @@ function RawMaterialCost(props) {
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
       let tempArray = []
-      if (isMultipleRMAllow(costData?.TechnologyId)) {
+      if (item?.IsMultipleRMApplied) {
         let rowArray = rowData && rowData.map(el => {
           return {
             RMName: `${el.RawMaterial} - ${el.RMGrade}`,
@@ -1204,7 +1204,7 @@ function RawMaterialCost(props) {
       isShow = true;
     }
 
-    if (costData && (isMultipleRMAllow(costData?.TechnologyId))) {
+    if (costData && (item?.IsMultipleRMApplied)) {
       isShow = true;
     }
     return isShow;
@@ -1763,6 +1763,7 @@ function RawMaterialCost(props) {
             IsApplyMasterBatch={IsApplyMasterBatch}
             Ids={Ids}
             rmNameList={rmNameList}
+            item={item}
           />
         )
       }

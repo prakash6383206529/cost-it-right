@@ -50,6 +50,7 @@ import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from './TourMessages'
 import { useTranslation } from 'react-i18next';
+import AdditionalTcoInfo from './CostingHeadCosts/AdditionalOtherCost/ViewTcoDetail'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -2059,10 +2060,7 @@ const CostingSummaryTable = (props) => {
                                         </div>}
                                       </>
                                     }
-                                    { }
-                                    { }
-
-                                    {!isApproval && !data?.IsApprovalLocked && props?.isRfqCosting && isFromViewRFQ && costingIdList?.includes(data?.costingId) && !isSuperAdmin && <div className="custom-check1 d-inline-block">
+                                    {data?.IsShowCheckBoxForApproval && !isApproval && !data?.IsApprovalLocked && props?.isRfqCosting && isFromViewRFQ && costingIdList?.includes(data?.costingId) && !isSuperAdmin && <div className="custom-check1 d-inline-block">
                                       <label
                                         className="custom-checkbox pl-0 mb-0"
                                         onChange={() => moduleHandler(data?.costingId, 'top', data, index)}
@@ -2078,8 +2076,10 @@ const CostingSummaryTable = (props) => {
                                           onChange={() => moduleHandler(data?.costingId, 'top', data, index)}
                                         />
                                       </label>
+                                    </div>
+                                    }
 
-                                    </div>}
+
                                     {
                                       (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> :
                                         (data?.bestCost === true) ? "" :
@@ -2986,6 +2986,7 @@ const CostingSummaryTable = (props) => {
                                 })}
                             </tr>
                           }
+                          <AdditionalTcoInfo isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} />
                           {/* {
                           initialConfiguration?.IsShowNpvCost && <tr>
                             <td>

@@ -17,10 +17,10 @@ import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 
 
-export function getQuotationList(DepartmentCode, callback) {
+export function getQuotationList(DepartmentCode, Timezone, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${''}&LoggedInUserId=${loggedInUserId()}`, config());
+        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${''}&LoggedInUserId=${loggedInUserId()}&Timezone=${Timezone}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -230,7 +230,7 @@ export function getMultipleCostingDetails(selectedRows, callback) {
 export function getCommunicationHistory(data, callback) {
     // export function getCommunicationHistory(id, callback) {      //RE
     return (dispatch) => {
-        axios.get(`${API.getCommunicationHistory}?quotationId=${data.quotationId}&partId=${data.partId}&vendorId=${data.vendorId}`, config())
+        axios.get(`${API.getCommunicationHistory}?quotationId=${data.quotationId}&partId=${data.partId}&vendorId=${data.vendorId}&timeZone=${data.timeZone}`, config())
             // axios.get(`${API.getCommunicationHistory}?costingId=${id}`, config())      //RE
             .then((response) => {
                 callback(response)

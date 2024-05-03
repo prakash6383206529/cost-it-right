@@ -361,6 +361,7 @@ const MachineRateListing = (props) => {
   }
 
 
+  const { benchMark } = props
   const buttonFormatter = (props) => {
     const cellValue = props?.value;
     const rowData = props?.data;
@@ -380,11 +381,16 @@ const MachineRateListing = (props) => {
     return (
       <>
         <button className="cost-movement Tour_List_Cost_Movement" title='Cost Movement' type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> </button>
-        {state.isProcessGroup && <button className="group-process Tour_List_Process_Group" type={'button'} title={'View Process Group'} onClick={() => viewProcessGroupDetail(rowData)} />}
-        {permissions?.View && <button title="View" className="View Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-        {isEditable && <button title="Edit" className="Edit Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-        <button className="Copy All Costing Tour_List_Copy" title="Copy Machine" type={'button'} onClick={() => copyItem(cellValue)} />
-        {isDeleteButton && <button title="Delete" className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+
+        {(!benchMark) && (
+          <>
+            {state.isProcessGroup && <button className="group-process Tour_List_Process_Group" type={'button'} title={'View Process Group'} onClick={() => viewProcessGroupDetail(rowData)} />}
+            {permissions?.View && <button title="View" className="View Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+            {isEditable && <button title="Edit" className="Edit Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+            <button className="Copy All Costing Tour_List_Copy" title="Copy Machine" type={'button'} onClick={() => copyItem(cellValue)} />
+            {isDeleteButton && <button title="Delete" className="Delete Tour_List_Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+          </>
+        )}
       </>
     )
   };
@@ -697,7 +703,7 @@ const MachineRateListing = (props) => {
         <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large ${(props.isSimulation || props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
           <Col md="3" lg="3">
             <input type="text" className="form-control table-search" value={searchText} id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={onFilterTextBoxChanged} />
-            {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+            {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
               buttonSpecificProp={{
                 id: "MachineRate_Listing_Tour",
                 onClick: toggleExtraData

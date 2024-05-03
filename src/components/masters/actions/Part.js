@@ -17,7 +17,7 @@ import {
     PRODUCT_GROUPCODE_SELECTLIST
 } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import { apiErrors, encodeQueryParams } from '../../../helper/util';
+import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
 
 // const config() = config;
 
@@ -99,14 +99,14 @@ export function getPartData(PartId, callback) {
  */
 export function getPartDataList(skip, take, obj, isPagination, callback) {
     return (dispatch) => {
+        const baseQueryParams = `isApplyPagination=${isPagination}&take=${take}&skip=${skip}`;
 
-        var queryParams = `isApplyPagination=${isPagination}`;
-
-        var queryParams2 = `take=${take}`
-        var queryParams1 = `skip=${skip}`
-        var queryParams3 = encodeQueryParams({
+        var additionalQueryParams = encodeQueryParams({
             effectiveDate: obj?.newDate !== null && obj?.newDate !== undefined ? obj?.newDate : "", partNumber: obj.PartNumber !== null && obj.PartNumber !== "" ? obj.PartNumber : "", partName: obj.PartName !== null && obj.PartName !== "" ? obj.PartName : "", ecnNumber: obj.ECNNumber !== null && obj.ECNNumber !== "" ? obj.ECNNumber : "", revisionNumber: obj.RevisionNumber !== null && obj.RevisionNumber !== "" ? obj.RevisionNumber : "", drawingNumber: obj.DrawingNumber !== null && obj.DrawingNumber !== "" ? obj.DrawingNumber : "", technology: obj.Technology ? obj.Technology : "", sapCode: obj.SAPCode ? obj.SAPCode : ""
-        }); const request = axios.get(`${API.getPartDataList}?${queryParams}&${queryParams1}&${queryParams2}&${queryParams3}`, config());
+        });
+        const queryParams = `${baseQueryParams}&${additionalQueryParams}`;
+
+        const request = axios.get(`${API.getPartDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response?.data?.Result === true || response.status === 204) {
 
