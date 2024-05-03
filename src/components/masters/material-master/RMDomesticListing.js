@@ -535,8 +535,12 @@ function RMDomesticListing(props) {
     * @description Renders buttons
     */
     const effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        if (showExtraData && props?.rowIndex === 0) {
+            return "Lorem Ipsum";
+        } else {
+            const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+            return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        }
     }
 
     /**
