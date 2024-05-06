@@ -1202,7 +1202,8 @@ class AddBOPImport extends Component {
         checkForNull(fieldsObj?.NumberOfPieces) === checkForNull(DataToChange?.NumberOfPieces) &&
         checkForNull(fieldsObj?.BasicRateSelectedCurrency) === checkForNull(DataToChange?.BasicRate) &&
 
-        checkForNull(netLandedCostSelectedCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostSelectedCurrency) === checkForNull(DataToChange?.NetConditionCost) && DropdownChanged) {
+        checkForNull(netLandedCostSelectedCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostSelectedCurrency) === checkForNull(DataToChange?.NetConditionCost) && DropdownChanged &&
+        ((DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
         this.setState({ isEditBuffer: true })
         Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
         return false
@@ -1579,8 +1580,7 @@ class AddBOPImport extends Component {
                                   <input
                                     type="checkbox"
                                     checked={isTechnologyVisible}
-                                    disabled={isViewMode || isEditFlag ? true : false
-                                    }
+                                    disabled={isViewMode || (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
                                   />
                                   < span
                                     className=" before-box"
@@ -1588,6 +1588,7 @@ class AddBOPImport extends Component {
                                     onChange={this.breakUpHandleChange}
                                   />
                                 </label >
+                                {isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId && <WarningMessage dClass={"mr-2"} message={`This ${showBopLabel()} is already associated, so now you can't edit it.`} />}
                               </Col >
                               {isTechnologyVisible && <Col md="3">
                                 <Field
@@ -1604,7 +1605,7 @@ class AddBOPImport extends Component {
                                     this.handleTechnologyChange
                                   }
                                   valueDescription={this.state.Technology}
-                                  disabled={isViewMode || isEditFlag ? true : false}
+                                  disabled={isViewMode || (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
                                 />
                               </Col>}
                             </>
@@ -1787,7 +1788,7 @@ class AddBOPImport extends Component {
                               />
                             </div>
                           </Col>
-                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) && <>
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
                             < Col md="3">
                               <Field
                                 label={`Minimum Order Quantity`}
@@ -1803,7 +1804,7 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                           </>}
-                          {(!isTechnologyVisible || this.showBasicRate()) && <>
+                          {(!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
                             <Col md="3">
                               <Field
                                 label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
@@ -1834,7 +1835,7 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                           </>}
-                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
+                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">
                               <TooltipCustom id="bop-basic-currency" tooltipText={toolTipTextBasicPrice?.toolTipTextBasicPriceSelectedCurrency} />
                               <Field

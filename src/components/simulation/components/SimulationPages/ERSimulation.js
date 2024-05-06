@@ -103,13 +103,13 @@ function ERSimulation(props) {
     }
 
     const effectiveDateFormatter = (props) => {
+
         let cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (cell?.includes('T')) {
             cell = DayTime(cell).format('DD/MM/YYYY')
         }
-        return (!cell ? '-' : cell)
+        return (!cell ? '-' : DayTime(cell).format('DD/MM/YYYY'))
     }
-
     const newERFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
