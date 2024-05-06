@@ -691,10 +691,14 @@ function AddRfq(props) {
                 obj.ContactPersonId = getValues('contactPerson')?.value
                 obj.Vendor = getValues('vendor')?.label
                 obj.ContactPerson = getValues('contactPerson')?.label
+                if (obj.VendorId === null || obj.VendorId === undefined) {
+                    Toaster.warning("Please fill all the mandatory fields first.");
+                    return false;
+                }
 
-                if (obj.VendorId === null || obj.VendorId === undefined || obj.ContactPersonId === null || obj.ContactPersonId === undefined) {
-
-                    Toaster.warning("Please fill all the mandatory fields first.")
+                // Check IsSendQuotationToPointOfContact() result and ContactPersonId
+                if (IsSendQuotationToPointOfContact() && (obj.ContactPersonId === null || obj.ContactPersonId === undefined)) {
+                    Toaster.warning("Please fill all the mandatory fields first.");
                     return false;
                 }
 
