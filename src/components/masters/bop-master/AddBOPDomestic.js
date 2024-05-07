@@ -1530,7 +1530,7 @@ class AddBOPDomestic extends Component {
 
 
                         </Row>
-                        {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                        {getConfigurationKey().IsShowClientVendorBOP && costingTypeId === CBCTypeId && <Col md="3" className="d-flex align-items-center mb-3">
                           <label
                             className={`custom-checkbox`}
                             onChange={this.onIsClientVendorBOP}
