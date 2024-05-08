@@ -78,10 +78,8 @@ import LoginAudit from './audit/LoginAudit'
 import SAPDetailList from './masters/sap-detail/SAPDetailList'
 import NFRInsightsReport from './report/components/NFRInsightReportFolder/NFRInsightReport'
 import VendorManagement from './vendorManagement'
-import ApprovalListing from './vendorManagement/approval/ApprovalListing'
 import InitiateUnblocking from './vendorManagement/InitiateUnblocking'
 import LpsRatingListing from './vendorManagement/LpsRatingLisitng'
-import SummaryDrawer from './vendorManagement/approval/SummaryDrawer'
 import VendorMaster from './masters/supplier-master'
 
 
@@ -418,10 +416,10 @@ class Main extends Component {
                     <Route path="/nfr-insights-details" component={AuthMiddleware(NFRInsightsReport, NFR_INSIGHT_DETAILS)} />
                     <Route path="/login-audit" component={AuthMiddleware(LoginAudit, lOGIN_AUDIT)} />
                     <Route path="/vendor-classification" component={AuthMiddleware(VendorManagement, VENDOR_MANAGEMENT)} />
-                    <Route path="/lps-rating" component={AuthMiddleware(LpsRatingListing, LPS_RATING)} />
-                    <Route path="/supplier-management/approval-listing" component={(ApprovalListing, APPROVAL_LISTING)} />
-                    <Route path='/initiate-unblocking' component={AuthMiddleware(InitiateUnblocking, INITIATE_UNBLOCKING)} />
-                    <Route path='/supplier-approval-summary' component={SummaryDrawer} />
+                    {/* <Route path="/lps-rating" component={AuthMiddleware(LpsRatingListing, LPS_RATING)} /> */}
+                    <Route path="/supplier-approval-summary" component={(CommonApproval, APPROVAL_LISTING)} />
+                    <Route path='/vendor-classification' component={AuthMiddleware(InitiateUnblocking, INITIATE_UNBLOCKING)} />
+                    {/* <Route path='/supplier-approval-summary' component={SummaryDrawer} /> */}
                     {/* <Route path='/initiate-unblocking/vendor-classification' component={UnblockClassification} />
                     <Route path='/initiate-unblocking/vendor-lps' component={UnblockClassificationLps} />
                     <Route path='/initiate-unblocking/lps-rating' component={UnblockLPSRating} /> */}

@@ -24,7 +24,6 @@ import { approvalPushedOnSap } from '../costing/actions/Approval';
 import Toaster from '../common/Toaster';
 import DayTime from '../common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import OnboardingListing from '../vendorManagement/approval/OnboardingListing';
 import InitiateUnblocking from '../vendorManagement/InitiateUnblocking';
 
 function SummaryDrawer(props) {
