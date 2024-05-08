@@ -82,6 +82,8 @@ import ApprovalListing from './vendorManagement/approval/ApprovalListing'
 import InitiateUnblocking from './vendorManagement/InitiateUnblocking'
 import LpsRatingListing from './vendorManagement/LpsRatingLisitng'
 import SummaryDrawer from './vendorManagement/approval/SummaryDrawer'
+import VendorMaster from './masters/supplier-master'
+
 
 
 const CustomHeader = {
@@ -344,7 +346,7 @@ class Main extends Component {
 
                     <Route path="/plant-master" component={AuthMiddleware(PlantMaster, PLANT)} />
 
-                    <Route path="/vendor-master" component={AuthMiddleware(SupplierMaster, VENDOR)} />
+                    <Route path="/vendor-master" component={AuthMiddleware(VendorMaster, VENDOR)} />
 
                     <Route path="/bop-master" component={AuthMiddleware(BOPMaster, BOP)} />
 
