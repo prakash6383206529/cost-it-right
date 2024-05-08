@@ -4,8 +4,9 @@ import classnames from 'classnames';
 import InitiateUnblocking from './InitiateUnblocking';
 import LpsRatingListing from './LpsRatingLisitng';
 import { useHistory } from "react-router-dom";
-import ApprovalListing from './approval/ApprovalListing';
+import CommonApproval from '../masters/material-master/CommonApproval';
 import VendorClassificationListing from './VendorClassificationListing';
+import { ONBOARDINGID } from '../../config/constants';
 const VendorManagement = () => {
     let history = useHistory();
     const [activeTab, setActiveTab] = useState("1");
@@ -94,7 +95,9 @@ const VendorManagement = () => {
                         {
                             Number(activeTab) === 4 &&
                             <TabPane tabId="4">
-                                <ApprovalListing
+                                <CommonApproval
+                                    MasterId={0}
+                                    OnboardingApprovalId={ONBOARDINGID}
                                     toggle={toggle}
                                 />
                             </TabPane>

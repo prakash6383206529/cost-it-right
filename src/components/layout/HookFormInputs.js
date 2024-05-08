@@ -792,7 +792,7 @@ export const AllApprovalField = (props) => {
           {approverList.length > 1 && <Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn" type={'button'}>{popupButton}</button>}
             position="left center">
             <ul className="px-1 view-all-list">
-              {approverList && approverList.map((item, index) => {
+              {approverList && approverList?.map((item, index) => {
                 return <li key={item.value}>{index + 1}. {item.label}</li>
               })}
             </ul>

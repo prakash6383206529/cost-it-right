@@ -8,7 +8,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, userDetails, userTechnologyDetailByMasterId } from '../../../helper'
-import { BOP_MASTER_ID, BUDGET_ID, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
+import { BOP_MASTER_ID, BUDGET_ID, EMPTY_DATA, MACHINE_MASTER_ID, ONBOARDINGID, OPERATIONS_ID } from '../../../config/constants';
 import { deleteRawMaterialAPI, getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
@@ -160,7 +160,7 @@ function CommonApproval(props) {
 
         setLoader(true)
         props?.isDashboard && dispatch(dashboardTabLock(true))
-        dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, (res) => {
+        dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, props?.OnboardingApprovalId, (res) => {
             setLoader(false)
             dispatch(dashboardTabLock(false))
             let obj = { ...floatingFilterData }
@@ -951,7 +951,12 @@ function CommonApproval(props) {
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="160" field="CustomerName" headerName='Customer (Code)'></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" ></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="NetPoPrice" headerName="Net Cost"></AgGridColumn>}
-
+                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer="linkableFormatter" headerName="Token No."></AgGridColumn>}
+                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="145" field="ApprovalType" headerName='Type'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="145" field="PlantName" headerName='Plant'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="145" field="VendorCode" headerName='Supplier Code'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="145" field="VendorName" headerName='Supplier Name' ></AgGridColumn>}
+                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="145" field="Category" headerName='Category'></AgGridColumn>}
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName={`Breakup ${showBopLabel()} `}></AgGridColumn>}
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
@@ -981,6 +986,7 @@ function CommonApproval(props) {
                     approvalData={approvalData}
                     anchor={'bottom'}
                     masterId={props?.MasterId}
+                    OnboardingApprovalId={props?.OnboardingApprovalId}
                     selectedRowData={selectedRowData[0]?.CostingHead}
                 />
             }

@@ -81,7 +81,7 @@ import VendorManagement from './vendorManagement'
 import ApprovalListing from './vendorManagement/approval/ApprovalListing'
 import InitiateUnblocking from './vendorManagement/InitiateUnblocking'
 import LpsRatingListing from './vendorManagement/LpsRatingLisitng'
-import SummaryDrawer from './vendorManagement/approval/SummaryDrawer'
+import SummaryDrawer from './vendorManagement/approval/OnboardingListing'
 
 
 const CustomHeader = {
