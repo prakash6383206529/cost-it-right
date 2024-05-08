@@ -7,9 +7,9 @@ import { MASTERS, PART } from "../../../config/constants";
 import { checkPermission } from "../../../helper/util";
 import { MESSAGES } from "../../../config/message";
 import { resetStatePagination } from "../../common/Pagination/paginationAction";
-import VendorMasterTab from "./VendorListing";
-import SupplierClassificationListing from "../../vendorManagement/SupplierClassificationLisitng";
+import SupplierClassificationListing from "../../vendorManagement/VendorClassificationListing";
 import LpsRatingListing from "../../vendorManagement/LpsRatingLisitng";
+import VendorListing from "./VendorListing";
 export const ApplyPermission = React.createContext();
 
 const VendorMaster = () => {
@@ -70,7 +70,7 @@ const VendorMaster = () => {
                             </Nav>
                             <TabContent activeTab={state.activeTab}>
                                 {state.activeTab === "1" && (
-                                    <TabPane tabId="1"><VendorMasterTab />
+                                    <TabPane tabId="1"><VendorListing />
                                     </TabPane>
                                 )}
                                 {state.activeTab === "2" && (
