@@ -8,7 +8,7 @@ const VendorManagement = () => {
     const [activeTab, setActiveTab] = useState("1");
 
     const toggle = (tab) => {
-        console.log('tab: ', tab);
+
         if (activeTab !== tab) setActiveTab(tab);
     }
 
