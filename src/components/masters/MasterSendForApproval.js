@@ -22,30 +22,21 @@ import LoaderCustom from '../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
 function MasterSendForApproval(props) {
-
-
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
-
-
-
-
+    console.log('approvalData: ', approvalData);
+    console.log('approvalObj: ', approvalObj);
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-
-
     const [approvalDropDown, setApprovalDropDown] = useState([])
     const [approverIdList, setApproverIdList] = useState([])
     const [isDisable, setIsDisable] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
-
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const { deptList } = useSelector((state) => state.material)
-
     const { initialConfiguration } = useSelector(state => state.auth)
-
     const toggleDrawer = (event, type = 'cancel') => {
         if (isDisable) {
             return false
@@ -76,7 +67,7 @@ function MasterSendForApproval(props) {
                 DepartmentId: departObj && departObj[0]?.Value,
                 MasterId: masterId,
                 OnboardingMasterId: OnboardingId,
-                ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalProcessId,
+                ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
                 ReasonId: reasonId,
                 PlantId: approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID
 
@@ -153,7 +144,7 @@ function MasterSendForApproval(props) {
             MasterId: masterId,
             OnboardingMasterId: OnboardingId,
             ReasonId: '',
-            ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalProcessId,
+            ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
             PlantId: approvalObj.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID
         }
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
@@ -220,7 +211,7 @@ function MasterSendForApproval(props) {
             senderObj.MaterialGroup = ''
             senderObj.CostingTypeId = props?.costingTypeId
 
-            senderObj.ApprovalTypeId = masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalProcessId
+            senderObj.ApprovalTypeId = masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId
             senderObj.MasterIdList = [
 
             ]

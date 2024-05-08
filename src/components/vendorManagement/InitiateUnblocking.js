@@ -7,6 +7,7 @@ import { fetchDeviationApprovalData, fetchSupplierDetailData, fetchVendorData, f
 import { Col, Row, Table } from 'reactstrap';
 import Button from '../layout/Button';
 import SendForApproval from './approval/SendForApproval';
+import { ONBOARDINGID } from '../../config/constants';
 
 const InitiateUnblocking = (props) => {
 
@@ -24,8 +25,8 @@ const InitiateUnblocking = (props) => {
 
     const [selectedVendor, setSelectedVendor] = useState(null);
     const [selectedPlant, setSelectedPlant] = useState(null);
-    const [isClassification, setIsClassification] = useState((deviationData?.ClassificationStatus === 1 ? true : false));
-    const [isLpsRating, setIsLpsRating] = useState((deviationData?.LPSRatingStatus === 1 ? true : false));
+    const [isClassification, setIsClassification] = useState((deviationData?.ClassificationStatus === ONBOARDINGID ? true : false));
+    const [isLpsRating, setIsLpsRating] = useState((deviationData?.LPSRatingStatus === ONBOARDINGID ? true : false));
     const [openDraftDrawer, setOpenDraftDrawer] = useState(false); // State variable to control the opening of the approval drawer
 
 
