@@ -281,6 +281,7 @@ export const API = {
   vendorBulkUpload: `${BASE_URL}/vendor/bulk-upload-for-vendor-json`,
   getReporterList: `${BASE_URL}/rfq-user/get-user-select-list`,
   getContactPerson: `${BASE_URL}/rfq-quotation/get-contact-person-by-vendor-selectlist`,
+  getVendorNameByVendorSelectList: `${BASE_URL}/vendor/vendor-name-by-vendor-select-list`,
 
   //BOP DOMESTIC
   createBOP: `${BASE_URL}/masters-bought-out-part/create-bought-out-part`,
