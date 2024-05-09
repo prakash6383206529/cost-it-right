@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { getModuleActionInit, } from "../../../actions/auth/AuthActions";
 import { Table } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA, VENDOR_MANAGEMENT, VENDOR_MANAGEMENT_ROLE } from "../../../config/constants";
+import { EMPTY_DATA, VENDOR_MANAGEMENT_ROLE } from "../../../config/constants";
 import { renderActionCommon } from "../userUtil";
 
 const SupplierManagementTab = ({
@@ -167,12 +167,12 @@ const SupplierManagementTab = ({
             actionCheckHandler: actionCheckHandler,
             state: obj
         }
-        return renderActionCommon(actions, parentIndex, functionContainer, VENDOR_MANAGEMENT)
+        return renderActionCommon(actions, parentIndex, functionContainer, VENDOR_MANAGEMENT_ROLE)
     }
 
 
     const updateModules = () => {
-        permissions(Modules, VENDOR_MANAGEMENT);
+        permissions(Modules, VENDOR_MANAGEMENT_ROLE);
     }
 
     useEffect(() => {
