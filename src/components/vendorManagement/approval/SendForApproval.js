@@ -158,7 +158,7 @@ const SendForApproval = (props) => {
   useEffect(() => {
     dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
 
-      userTechnology(CLASSIFICATIONAPPROVALTYPEID, res.data.Data)
+      userTechnology(isLpsRating ? LPSAPPROVALTYPEID : CLASSIFICATIONAPPROVALTYPEID, res.data.Data)
 
     }))
   }, [isOpen])
@@ -272,6 +272,7 @@ const SendForApproval = (props) => {
 
           }
         }));
+
       };
 
       if (isClassification && isLpsRating) {
@@ -641,7 +642,7 @@ const SendForApproval = (props) => {
                         defaultValue={""}
                         className=""
                         customClassName={"withBorder"}
-                        errors={errors.remarks}
+                        errors={errors.remarks1}
                         disabled={false}
                       />
                     </Col>
