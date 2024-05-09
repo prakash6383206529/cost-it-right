@@ -7,8 +7,11 @@ import { fetchDeviationApprovalData, fetchSupplierDetailData, fetchVendorData, f
 import { Col, Row, Table } from 'reactstrap';
 import Button from '../layout/Button';
 import SendForApproval from './approval/SendForApproval';
+import { ONBOARDINGID } from '../../config/constants';
 
-const InitiateUnblocking = () => {
+const InitiateUnblocking = (props) => {
+
+
     const dispatch = useDispatch();
     const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
@@ -17,20 +20,21 @@ const InitiateUnblocking = () => {
     const supplierDetail = useSelector((state) => state.supplierManagement.supplierData)
     const vendorPlantData = useSelector((state) => state.supplierManagement.vendorPlantData)
     const deviationData = useSelector((state) => state.supplierManagement.deviationData)
+
+
+
     const [selectedVendor, setSelectedVendor] = useState(null);
     const [selectedPlant, setSelectedPlant] = useState(null);
-    const [isClassification, setIsClassification] = useState((deviationData.ClassificationStatus === 1 ? true : false));
-    const [isLpsRating, setIsLpsRating] = useState((deviationData.LPSRatingStatus === 1 ? true : false));
+    const [isClassification, setIsClassification] = useState((deviationData?.ClassificationStatus === ONBOARDINGID ? true : false));
+    const [isLpsRating, setIsLpsRating] = useState((deviationData?.LPSRatingStatus === ONBOARDINGID ? true : false));
     const [openDraftDrawer, setOpenDraftDrawer] = useState(false); // State variable to control the opening of the approval drawer
 
 
     useEffect(() => {
         dispatch(fetchVendorData());
-
         if (selectedVendor) {
             dispatch(fetchVendorDependentPlantData(selectedVendor.value));
             // dispatch(fetchDeviationApprovalData(selectedVendor.Value, selectedPlant.Value)); // Use selectedVendor.Value and selectedPlant.Value to access the values
-
 
         }
     }, [selectedVendor]);
@@ -90,17 +94,11 @@ const InitiateUnblocking = () => {
         setOpenDraftDrawer(true); // Open the approval drawer when the "Next" button is clicked
         // Remaining logic for navigation can be added here if needed
     };
-    const onChangeClassification = () => {
-        setIsClassification(!isClassification);
-    }
-    const onChangeLPS = () => {
-        setIsLpsRating(!isLpsRating);
-    }
     return (
         <div className="container-fluid">
             <ScrollToTop pointProp={"go-to-top"} />
             <div className='intiate-unblocking-container'>
-                <Row >
+                {props?.isMasterSummaryDrawer === undefined && <Row >
                     <Col md="3">
                         <div className="form-group">
                             <SearchableSelectHookForm
@@ -140,91 +138,93 @@ const InitiateUnblocking = () => {
                             </div>
                         </Col>
                     )}
+                </Row>}
 
-                    {selectedVendor && selectedPlant && (
-                        <>
+                {((selectedVendor && selectedPlant) || (props?.isMasterSummaryDrawer)) && (
+                    <>
 
-                            <div>
-                                <div className="vendor-details">
-                                    <Row>
-                                        <Col md="3">
-                                            <div className="approval-section mb-2 mt-2">
-                                                <div className="left-border">Approval for</div>
-                                                <div className="approval-checkboxes">
-                                                    {deviationData && (
-                                                        <div>
-                                                            <label id={`vendorClassification_Checkbox_${deviationData.ClassificationStatus}`} className={`custom-checkbox`}>
-                                                                Vendor Classification
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={isClassification}
-                                                                    onChange={() => setIsClassification(!isClassification)}
-                                                                />
-                                                                <span className="before-box" />
-                                                            </label>
+                        {(!props?.isMasterSummaryDrawer) && <div>
+                            <div className="vendor-details">
+                                <Row>
+                                    <Col md="3">
+                                        <div className="approval-section mb-2 mt-2">
+                                            <div className="left-border">Approval for</div>
+                                            <div className="approval-checkboxes">
+                                                {deviationData && (
+                                                    <div>
+                                                        <label id={`vendorClassification_Checkbox_${deviationData?.ClassificationStatus}`} className={`custom-checkbox`}>
+                                                            Vendor Classification
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={isClassification}
+                                                                onChange={() => setIsClassification(!isClassification)}
+                                                            />
+                                                            <span className="before-box" />
+                                                        </label>
 
-                                                            <label id={`LPS_Checkbox_${deviationData.LPSRatingStatus}`} className={`custom-checkbox`}>
-                                                                LPS Rating
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={isLpsRating}
-                                                                    onChange={() => setIsLpsRating(!isLpsRating)}
-                                                                />
-                                                                <span className="before-box" />
-                                                            </label>
-                                                        </div>
-                                                    )}
+                                                        <label id={`LPS_Checkbox_${deviationData?.LPSRatingStatus}`} className={`custom-checkbox`}>
+                                                            LPS Rating
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={isLpsRating}
+                                                                onChange={() => setIsLpsRating(!isLpsRating)}
+                                                            />
+                                                            <span className="before-box" />
+                                                        </label>
+                                                    </div>
+                                                )}
 
-                                                </div>
                                             </div>
-                                        </Col>
-                                    </Row>
-                                </div>
+                                        </div>
+                                    </Col>
+                                </Row>
                             </div>
+                        </div>}
 
 
 
 
-                            <Col md="12">
-                                <div className="left-border">{'Vendor Details:'}</div>
-                                <div>
-                                    <Table bordered>
-                                        <thead>
-                                            <tr>
-                                                <th>Vendor Name</th>
-                                                <th>Division</th>
-                                                <th>Vendor Category</th>
-                                                <th>Vendor Classification</th>
-                                                <th>LPS Rating</th>
-                                                <th>Vendor Code</th>
-                                                <th>Plant</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
 
-                                            <tr >
-                                                <td>{deviationData?.VendorName ?? '-'}</td>
-                                                <td>{deviationData?.Division ?? '-'}</td>
-                                                <td>{deviationData?.Department ?? '-'}</td>
-                                                <td>{deviationData?.Classification ?? '-'}</td>
-                                                <td>{deviationData?.LPSRating ?? '-'}</td>
-                                                <td>{deviationData?.VendorCode ?? '-'}</td>
-                                                <td>{deviationData?.PlantName ?? '-'}</td>
-                                            </tr>
+                        <Col md="12">
+                            <div className="left-border">{'Vendor Details:'}</div>
+                            <div>
+                                <Table bordered>
+                                    <thead>
+                                        <tr>
+                                            <th>Vendor Name</th>
+                                            <th>Vendor Code</th>
+                                            <th>Plant</th>
+                                            <th>Vendor Classification</th>
+                                            <th>LPS Rating</th>
+                                            <th>Division</th>
+                                            <th>Vendor Category</th>
 
+                                        </tr>
+                                    </thead>
+                                    <tbody>
 
-                                        </tbody>
-                                    </Table>
+                                        <tr >
+                                            <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorName ?? '-'}</td>
+                                            <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorCode ?? '-'}</td>
+                                            <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.PlantName ?? '-'}</td>
+                                            <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorClassification ?? '-'}</td>
+                                            <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorLPSRating ?? '-'}</td>
+                                            <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.Division ?? '-'}</td>
+                                            <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.DepartmentName ?? '-'}</td>
+                                        </tr>
 
 
-                                </div>
-                            </Col>
+                                    </tbody>
+                                </Table>
 
-                        </>
-                    )}
-                </Row>
+
+                            </div>
+                        </Col>
+
+                    </>
+                )}
             </div>
-            {selectedVendor && selectedPlant && (
+            {selectedVendor && selectedPlant && (!props?.isMasterSummaryDrawer) && (
                 <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer`}>
                     <div className="col-sm-12 Text-right bluefooter-butn mt-3">
                         <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
@@ -241,13 +241,13 @@ const InitiateUnblocking = () => {
                     </div>
                 </Row>
             )}
-            {openDraftDrawer && selectedPlant && selectedVendor && ( // Render SendForApproval component only when the approval drawer should be open and selectedVendor is not null
+            {openDraftDrawer && selectedPlant && (!props?.isMasterSummaryDrawer) && selectedVendor && ( // Render SendForApproval component only when the approval drawer should be open and selectedVendor is not null
                 <SendForApproval
                     isOpen={openDraftDrawer}
                     closeDrawer={() => setOpenDraftDrawer(false)}
                     anchor={'right'}
                     isApprovalisting={true}
-                    Approval={deviationData}
+                    deviationData={deviationData}
                     isClassification={isClassification}
                     isLpsRating={isLpsRating} // Pass LPS Rating approval status
                 // Add other props as needed

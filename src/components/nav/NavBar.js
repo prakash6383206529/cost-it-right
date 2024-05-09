@@ -922,7 +922,7 @@ class SideBar extends Component {
                   pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
-                    PageName: "Vendor Management",
+                    PageName: "Vendor Classification Status",
                     PageURL: el.LandingPageURL,
                   },
                 }}
