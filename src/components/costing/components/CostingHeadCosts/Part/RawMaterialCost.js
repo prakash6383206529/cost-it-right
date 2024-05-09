@@ -1294,6 +1294,12 @@ function RawMaterialCost(props) {
   const pinHandler = useCallback(() => {
     setHeaderPinned(!headerPinned)
   }, [headerPinned])
+
+  const checkRMDevisor = () => {
+    if (checkForNull(RMDivisor) === 1 || checkForNull(RMDivisor) === 0) return false
+    return true
+  }
+
   /**
    * @method render
    * @description Renders the component
@@ -1393,7 +1399,7 @@ function RawMaterialCost(props) {
                       {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery (%)`}</th>}
                       {<th className='scrap-weight'>Scrap Weight </th>}
                       {/* //Add i here for MB+ */}
-                      <th className='net-rm-cost' >{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}  </th>
+                      <th className='net-rm-cost' >{`Net RM Cost ${(isRMDivisorApplicable(costData.TechnologyName) && checkRMDevisor()) ? '/(' + RMDivisor + ')' : ''}`}  </th>
                       {initialConfiguration.IsShowCRMHead && <th>{'CRM Head'}</th>}
                       <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={pinHandler} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
 
