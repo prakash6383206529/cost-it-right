@@ -24,7 +24,7 @@ function AddOtherDiscount(props) {
     const [state, setState] = useState({
         isEdit: false,
         tableData: otherDiscountData.gridData,
-        discountTotalCost: otherDiscountData.otherCostTotal,
+        discountTotalCost: otherDiscountData.totalCost,
         otherDiscountApplicabilityType: [],
     })
     const [otherCostApplicability, setOtherCostApplicability] = useState([])
@@ -367,7 +367,7 @@ function AddOtherDiscount(props) {
     }
     const onFinalSubmit = () => {
         props.closeDrawer('submit', state.discountTotalCost, state.tableData)
-        dispatch(setOtherDiscountData({ gridData: state.tableData, otherCostTotal: state.discountTotalCost }))
+        dispatch(setOtherDiscountData({ gridData: state.tableData, totalCost: state.discountTotalCost }))
     }
     return (
         <div>
