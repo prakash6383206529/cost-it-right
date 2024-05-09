@@ -433,7 +433,7 @@ function CostingDetailStepTwo(props) {
       dispatch(setOpenAllTabs(false))
       dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
       dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
-      dispatch(setOtherDiscountData({ gridData: [], otherCostTotal: 0 }))
+      dispatch(setOtherDiscountData({ gridData: [], totalCost: 0 }))
       props.backBtn()
     }
   }
