@@ -2904,19 +2904,8 @@ const CostingSummaryTable = (props) => {
                                       {/* <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.discount : ''}</span> &nbsp;{' '}
                                        <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.value : ''}</span> */}
 
-                                      <div style={{ width: '95%' }} className={`d-flex justify-content-between`}>
-                                        <div>
-                                          <div className=''>Applicability</div>
-                                          <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key") + " mt-2"}>{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0 && (data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType ?? '-')}</div>
-                                        </div>
-                                        <div>
-                                          <div>Percentage (%)</div>
-                                          <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key") + " mt-2"}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) && <span title={checkForDecimalAndNull(String(data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType) === String('Fixed') ? '-' : data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{String(data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType) === String('Fixed') ? '-' : checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</div>
-                                        </div>
-                                        <div className='mr-2'>
-                                          <div>Value</div>
-                                          <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key") + " mt-2"}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</div>
-                                        </div>
+                                      <div className={`${highlighter("NetDiscountsCost")}`}>
+                                        <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.CostingPartDetails.NetDiscountsCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.NetDiscountsCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                       </div>
                                       {/* <span className="d-inline-block ">{"Applicability"}</span>
                                       <span className="d-inline-block ">{"Value"}</span>
@@ -2944,7 +2933,7 @@ const CostingSummaryTable = (props) => {
 
                                   (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
                                     <td className={tableDataClass(data)}>
-                                      <div className={`${highlighter("anyOtherCost")}`}>
+                                      <div className={`${highlighter("anyOtherCostTotal")}`}>
                                         <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                       </div>
                                     </td>
