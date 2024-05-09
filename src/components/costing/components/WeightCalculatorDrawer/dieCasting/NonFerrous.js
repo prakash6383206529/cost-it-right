@@ -364,7 +364,7 @@ function NonFerrous(props) {
 
                             <Row className={'mt25'}>
                                 <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} id={'gross-weight-nonferrous'} tooltipText={'Gross Weight = (Casting Weight + Net Loss Weight)'} />
+                                    <TooltipCustom disabledIcon={true} id={'gross-weight-nonferrous'} tooltipText={'Gross Weight = (Casting Weight + Burning Value + Net Loss Weight)'} />
                                     <TextFieldHookForm
                                         label={`Gross Weight(Kg)`}
                                         name={'grossWeight'}
