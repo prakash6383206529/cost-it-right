@@ -1119,6 +1119,12 @@ export const API = {
   getVendorLpsRatingList: `${BASE_URL}/vendor/get-lpsratings-status`,
   vendorClassificationStatusUpdate: `${BASE_URL}/vendor/update-classification-status`,
   lpsRatingStatusUpdate: `${BASE_URL}/vendor/update-lpsrating-status`,
+  sendForUnblocking: `${BASE_URL}/masters-approval/master-send-to-approver-by-sender`,
+  getVendorData: `${BASE_URL}/vendor/vendor-name-by-vendor-select-list`,
+  getPlantData: `${BASE_URL}/configuration/get-plant-for-deviation-approval-by-vendor`,
+  // getMonths : `${BASE_URL}/configuration/get-months-for-deviation-approval-by-vendor`,
+  getVendorPlantDetailForDeviation: `${BASE_URL}/vendor/get-vendor-plant-detail-for-deviation-approval`,
+  getOnboardingSummaryData: `${BASE_URL}/app-approval-system/get-approval-master-summary`,
 
   // NFR
   getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
@@ -1143,7 +1149,9 @@ export const UPDATE_LPS_RATING_STATUS = 'UPDATE_LPS_RATING_STATUS';
 export const MONTHS = 'MONTHS';
 export const VENDOR_DATA = 'VENDOR_DATA';
 export const VENDOR_PLANT_DATA = 'VENDOR_PLANT_DATA';
-export const DETAILS_FOR_DEVIATION_APPROVAL = 'DETAILS_FOR_DEVIATION_APPROVAL'
+export const DETAILS_FOR_DEVIATION_APPROVAL = 'DETAILS_FOR_DEVIATION_APPROVAL';
+export const SEND_FOR_UNBLOCKING = 'SEND_FOR_UNBLOCKING';
+export const GET_ONBOARDING_SUMMARY_DATA_LIST = 'GET_ONBOARDING_SUMMARY_DATA_LIST';
 
 
 
@@ -1941,8 +1949,9 @@ export const USERS = 'Users'
 export const AUDIT = 'Audit'
 export const RFQ = 'RFQ'
 export const ONBOARDING = 'Onboarding & Management'
-export const VENDOR_MANAGEMENT = 'Vendor Management'
+export const VENDOR_MANAGEMENT = 'Vendor Classification Status'
 export const APPROVAL_LISTING = 'Approval Listing'
+export const VENDOR_MANAGEMENT_ROLE = 'Vendor Management'
 
 //PAGE NAMES
 export const DASHBOARD = 'Dashboard'
@@ -2069,6 +2078,8 @@ export const NFR = 'NFR'
 export const PFS1 = 'PFS1'
 export const PFS2 = 'PFS2'
 export const PFS3 = 'PFS3'
+export const CUD = 'CUD'
+export const LPSUD = 'LPSUD'
 export const ReleaseStrategyB1 = 'RSB1'
 export const ReleaseStrategyB2 = 'RSB2'
 export const ReleaseStrategyB3 = 'RSB3'
@@ -2899,6 +2910,14 @@ export const RELEASESTRATEGYTYPEID3 = Number(reactLocalStorage.getObject('Approv
 export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB4])
 export const RELEASESTRATEGYTYPEID6 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB6])
 export const VENDORNEEDFORMID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VendorNeedForm])
+
+//Supplier approval 
+
+export const CLASSIFICATIONAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CUD])
+
+export const LPSAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[LPSUD])
+export const LPSAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[LPSUD])
+export const CLASSIFICATIONAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[CUD])
 
 //CONSTANTS FOR MASTER APPROVAL TYPE 
 export const RMTYPE = Number(reactLocalStorage.getObject('masterType')[RAW_MATERIAL])

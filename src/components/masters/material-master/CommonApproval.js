@@ -7,8 +7,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
-import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, userDetails, userTechnologyDetailByMasterId } from '../../../helper'
-import { BOP_MASTER_ID, BUDGET_ID, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
+import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, getConfigurationKey, handleDepartmentHeader, loggedInUserId, searchNocontentFilter, showBopLabel, userDetails, userTechnologyDetailByMasterId } from '../../../helper'
+import { BOP_MASTER_ID, BUDGET_ID, EMPTY_DATA, MACHINE_MASTER_ID, ONBOARDINGID, OPERATIONS_ID } from '../../../config/constants';
 import { deleteRawMaterialAPI, getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
@@ -160,7 +160,7 @@ function CommonApproval(props) {
 
         setLoader(true)
         props?.isDashboard && dispatch(dashboardTabLock(true))
-        dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, (res) => {
+        dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, props?.OnboardingApprovalId, (res) => {
             setLoader(false)
             dispatch(dashboardTabLock(false))
             let obj = { ...floatingFilterData }
@@ -855,7 +855,7 @@ function CommonApproval(props) {
 
 
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
+                                    {props?.MasterId !== 0 && props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>}
@@ -951,14 +951,18 @@ function CommonApproval(props) {
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="160" field="CustomerName" headerName='Customer (Code)'></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" ></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="NetPoPrice" headerName="Net Cost"></AgGridColumn>}
-
+                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer="linkableFormatter" headerName="Token No."></AgGridColumn>}
+                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="ApprovalType" headerName='Type'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="PlantName" headerName='Plant (Code)'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="VendorName" headerName='Supplier (Code)' ></AgGridColumn>}
+                                    {/* {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="145" field="Department" headerName={`${handleDepartmentHeader()} (Code)`}></AgGridColumn>} */}
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName={`Breakup ${showBopLabel()} `}></AgGridColumn>}
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
-                                    <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
+                                    {props?.MasterId !== 0 && <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>}
                                     <AgGridColumn width="200" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>
                                     {!props?.MasterId === BUDGET_ID && <AgGridColumn cell width="190" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>}
-                                    {<AgGridColumn field={getMasterField(props?.MasterId)} width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='actionRenderer'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId !== ONBOARDINGID && <AgGridColumn field={getMasterField(props?.MasterId)} width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='actionRenderer'></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {!loader &&
@@ -981,6 +985,7 @@ function CommonApproval(props) {
                     approvalData={approvalData}
                     anchor={'bottom'}
                     masterId={props?.MasterId}
+                    OnboardingApprovalId={props?.OnboardingApprovalId}
                     selectedRowData={selectedRowData[0]?.CostingHead}
                 />
             }
