@@ -209,7 +209,7 @@ function SummaryDrawer(props) {
             }
         }))
     }, 500)
-    console.log(approvalDetails);
+
 
     return (
         <div>
