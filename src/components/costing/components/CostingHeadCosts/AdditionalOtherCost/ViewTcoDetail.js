@@ -2,16 +2,14 @@
 import React from 'react';
 import { VARIANCE } from '../../../../../config/constants';
 import { viewCostingData } from './TcoDummyData';
-const AdditionalTcoInfo = ({ isApproval, /* viewCostingData */isRfqCosting }) => {
-    const tableDataClass = (data) => {
-        return isRfqCosting && data.isRFQFinalApprovedCosting && !isApproval && !data?.bestCost ? 'finalize-cost' : ''
-    }
+const AdditionalTcoInfo = ({ isApproval, /* viewCostingData */isRfqCosting, highlighter, displayValueWithSign, tableDataClass }) => {
+
     return (
         <>
             <tr>
                 <td >
                     <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1} `}>Inco Terms </span>
-                    {/* <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1} `}>Payment Terms </span> */}
+                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1} `}>Payment Terms </span>
                     <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1} `}>Warranty Year</span>
                     <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1}`}>Quality PPM</span>
                     <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1}`}>MOQ</span>
@@ -24,7 +22,26 @@ const AdditionalTcoInfo = ({ isApproval, /* viewCostingData */isRfqCosting }) =>
                     viewCostingData?.map((data) => {
                         return (
                             <td className={tableDataClass(data)}>
-                                <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.IncoTerms : '')}</span>
+
+                                <div style={{ width: '95%' }} className={`d-flex justify-content-between`}>
+                                    <div>
+                                        <div className=''>Applicability</div>
+                                        <div className={""}>{data?.CostingHeading !== VARIANCE && data?.tcoValues?.TotalCostDetails?.length > 0 && (data?.tcoValues?.TotalCostDetails[0]?.ApplicabilityType ?? '-')}</div>
+
+                                    </div>
+                                    <div>
+                                        <div>Percentage (%)</div>
+                                        <div className={""}>{data?.CostingHeading !== VARIANCE && data?.tcoValues?.TotalCostDetails?.length > 0 && (data?.tcoValues?.TotalCostDetails[0]?.ApplicabilityType ?? '-')}</div>
+
+                                    </div>
+                                    <div className='mr-2'>
+                                        <div>Value</div>
+                                        <div className={""}>{data?.CostingHeading !== VARIANCE && data?.tcoValues?.TotalCostDetails?.length > 0 && (data?.tcoValues?.TotalCostDetails[0]?.NetCost ?? '-')}</div>
+
+                                    </div>
+                                </div>
+                                {/* <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.IncoTerms : '')}</span> */}
+                                <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.PayTerms : '')}</span>
                                 <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.WarrantyYears : '')}</span>
                                 <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.QualityPPM : '')}</span>
                                 <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.MOQ : '')}</span>
