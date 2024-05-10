@@ -264,7 +264,9 @@ function NfrListing(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
         tempStatus = row?.DisplayStatus
-        let displayCount = `${row?.ApprovalPartCount}/${row?.NumberOfParts}`
+        // let displayCount = `${row?.ApprovalPartCount}/${row?.NumberOfParts}`
+        let displayCount = ' (' + row?.ApprovalPartCount + '/' + row?.NumberOfParts + ')'
+
         return <div className={cell}>{`${tempStatus} ${displayCount}`}</div>
     }
 

@@ -86,7 +86,7 @@ function SummaryDrawer(props) {
             const Data = res.data.Data
 
             setApprovalLevelStep(Data?.MasterSteps)
-            setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId })
+            setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId, ApprovalTypeId: Data?.ApprovalTypeId })
             setLoader(false)
             let masterPlantId = ''
             if (checkForNull(props?.masterId) === RM_MASTER_ID) {
@@ -141,15 +141,15 @@ function SummaryDrawer(props) {
                 DepartmentId: Data?.DepartmentId,
                 UserId: loggedInUserId(),
                 TechnologyId: props?.masterId,
-                Mode: 'master',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+                Mode: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? 'onboarding' : 'master',
+                approvalTypeId: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? Data?.ApprovalTypeId : costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
                 plantId: masterPlantId
             }
             setMastersPlantId(masterPlantId)
             setDataForFetchingAllApprover({
                 processId: approvalData.approvalProcessId,
                 levelId: Data?.MasterSteps[Data?.MasterSteps.length - 1].LevelId,
-                mode: 'Master'
+                mode: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? 'onboarding' : 'Master'
             })
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {

@@ -20,10 +20,6 @@ import { getUsersOnboardingLevelAPI } from '../../../actions/auth/AuthActions';
 
 
 const SendForApproval = (props) => {
-
-
-
-
   const history = useHistory();
   const [isLoader, setIsLoader] = useState(false)
 
@@ -66,6 +62,7 @@ const SendForApproval = (props) => {
 
 
   } = props;
+
   useEffect(() => {
     dispatch(getAllMasterApprovalDepartment((res) => {
       const Data = res?.data?.SelectList;
@@ -158,7 +155,7 @@ const SendForApproval = (props) => {
   useEffect(() => {
     dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
 
-      userTechnology(CLASSIFICATIONAPPROVALTYPEID, res.data.Data)
+      userTechnology(isLpsRating ? LPSAPPROVALTYPEID : CLASSIFICATIONAPPROVALTYPEID, res.data.Data)
 
     }))
   }, [isOpen])
@@ -272,6 +269,7 @@ const SendForApproval = (props) => {
 
           }
         }));
+
       };
 
       if (isClassification && isLpsRating) {
@@ -345,7 +343,7 @@ const SendForApproval = (props) => {
     if (label === 'month') {
       // Generate month options dynamically
       for (let i = 1; i <= 12; i++) {
-        temp.push({ label: `${i} Month(s)`, value: i });
+        temp.push({ label: `${i}`, value: i });
       }
 
       return temp;
@@ -487,7 +485,7 @@ const SendForApproval = (props) => {
                   </Col>
                   <Col md="6">
                     <SearchableSelectHookForm
-                      label={'Deviation Duration For Classification'}
+                      label={'Deviation Duration (Months)'}
                       name={'month'}
                       placeholder={'Select'}
                       Controller={Controller}
@@ -609,21 +607,22 @@ const SendForApproval = (props) => {
                   </Col>
                   <Col md="6">
                     <SearchableSelectHookForm
-                      label={'Deviation Duration For LPS Rating'}
+                      label={'Deviation Duration (Months)'}
                       name={'month1'}
                       placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      // defaultValue={1}
-                      // disabled={true}
-                      options={searchableSelectType('month') ? searchableSelectType('month') : []}
+                      defaultValue={searchableSelectType('month').find(option => option.value === 1)}
+                      options={searchableSelectType('month')}
                       mandatory={true}
                       handleChange={handleMonthChange}
                       errors={errors.Masters}
-
+                      disabled={true}
                     />
+
+
                   </Col>
                   <Col md="12">
                     <Col md="12">
@@ -641,7 +640,7 @@ const SendForApproval = (props) => {
                         defaultValue={""}
                         className=""
                         customClassName={"withBorder"}
-                        errors={errors.remarks}
+                        errors={errors.remarks1}
                         disabled={false}
                       />
                     </Col>
