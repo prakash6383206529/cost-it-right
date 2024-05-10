@@ -62,6 +62,7 @@ const SendForApproval = (props) => {
 
 
   } = props;
+
   useEffect(() => {
     dispatch(getAllMasterApprovalDepartment((res) => {
       const Data = res?.data?.SelectList;
@@ -342,7 +343,7 @@ const SendForApproval = (props) => {
     if (label === 'month') {
       // Generate month options dynamically
       for (let i = 1; i <= 12; i++) {
-        temp.push({ label: `${i} Month(s)`, value: i });
+        temp.push({ label: `${i}`, value: i });
       }
 
       return temp;
@@ -484,7 +485,7 @@ const SendForApproval = (props) => {
                   </Col>
                   <Col md="6">
                     <SearchableSelectHookForm
-                      label={'Deviation Duration For Classification'}
+                      label={'Deviation Duration (Months)'}
                       name={'month'}
                       placeholder={'Select'}
                       Controller={Controller}
@@ -606,21 +607,22 @@ const SendForApproval = (props) => {
                   </Col>
                   <Col md="6">
                     <SearchableSelectHookForm
-                      label={'Deviation Duration For LPS Rating'}
+                      label={'Deviation Duration (Months)'}
                       name={'month1'}
                       placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      // defaultValue={1}
-                      // disabled={true}
-                      options={searchableSelectType('month') ? searchableSelectType('month') : []}
+                      defaultValue={searchableSelectType('month').find(option => option.value === 1)}
+                      options={searchableSelectType('month')}
                       mandatory={true}
                       handleChange={handleMonthChange}
                       errors={errors.Masters}
-
+                      disabled={true}
                     />
+
+
                   </Col>
                   <Col md="12">
                     <Col md="12">
