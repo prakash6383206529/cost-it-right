@@ -20,16 +20,14 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import CommonApproval from '../masters/material-master/CommonApproval';
 import { getVendorNameByVendorSelectList } from '../../actions/Common';
 import _ from 'lodash'
+import { MESSAGES } from '../../config/message';
 
 const InitiateUnblocking = (props) => {
-
-
     const dispatch = useDispatch();
     const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     });
-
     const vendorPlantData = useSelector((state) => state.supplierManagement.vendorPlantData)
     const deviationData = useSelector((state) => state.supplierManagement.deviationData)
 
@@ -115,33 +113,34 @@ const InitiateUnblocking = (props) => {
         setSelectedPlant(selectedValue);
     };
     // const handleNext = () => {
-    //     let approvalTypeIds = [];
-    //     // Check if Classification checkbox is checked
-    //     if (isClassificationChecked || isLpsRatingChecked) {
-    //         // If checked, add Classification approval type ID to the array
-    //         approvalTypeIds.push(isClassificationChecked ? CLASSIFICATIONAPPROVALTYPEID : LPSAPPROVALTYPEID);
-    //     }
-
-
-    //     if (isClassificationChecked && isLpsRatingChecked) {
-    //         approvalTypeIds.push(CLASSIFICATIONAPPROVALTYPEID, LPSAPPROVALTYPEID)
-    //     }
-    //     approvalTypeIds = Array.from(new Set(approvalTypeIds));
+    //     // let approvalTypeIds = [];
+    //     // // Check if Classification checkbox is checked
+    //     // if (isClassificationChecked || isLpsRatingChecked) {
+    //     //     // If checked, add Classification approval type ID to the array
+    //     //     approvalTypeIds.push(isClassificationChecked ? CLASSIFICATIONAPPROVALTYPEID : LPSAPPROVALTYPEID);
+    //     // }
+    //     // if (isClassificationChecked && isLpsRatingChecked) {
+    //     //     approvalTypeIds.push(CLASSIFICATIONAPPROVALTYPEID, LPSAPPROVALTYPEID)
+    //     // }
+    //     // approvalTypeIds = Array.from(new Set(approvalTypeIds));
 
 
     //     dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
+    //         
     //         let OnboardingApprovalLevels = Array.from(res?.data?.Data?.OnboardingApprovalLevels.values());
-    //         let filteredApprovalLevels = OnboardingApprovalLevels.filter(level => approvalTypeIds.includes(level?.ApprovalTypeId));
+    //         
+    //         // let filteredApprovalLevels = OnboardingApprovalLevels.filter(level => approvalTypeIds.includes(level?.ApprovalTypeId));
 
     //         if (!res?.data?.Data?.OnboardingApprovalLevels?.length || res?.data?.Data?.OnboardingApprovalLevels?.length === 0) {
-
+    //             
     //             setShowApproval(false)
     //             Toaster.warning('User is not in the approval flow')
     //         } else {
     //             let levelDetailsTemp = []
-    //             filteredApprovalLevels?.forEach(filteredApprovalLevel => {
-    //                 let response = userTechnologyLevelDetailsWithoutCostingToApproval(filteredApprovalLevel?.ApprovalTypeId, OnboardingApprovalLevels)
+    //             OnboardingApprovalLevels?.forEach(OnboardingApprovalLevel => {
+    //                 let response = userTechnologyLevelDetailsWithoutCostingToApproval(OnboardingApprovalLevel?.ApprovalTypeId, OnboardingApprovalLevels)
     //                 levelDetailsTemp.push(response); // Store the response
+    //                 
 
 
     //             })
@@ -149,29 +148,29 @@ const InitiateUnblocking = (props) => {
 
     //             if (levelDetailsTemp?.length === 0) {
     //                 Toaster.warning("You don't have permission to send costing for approval.")
-    //             } else {
+    //             }
+    //             else {
     //                 let finalUserResponses = []; // Array to store responses for final user check
-
-    //                 levelDetailsTemp.forEach(levelDetails => {
-
+    //                 levelDetailsTemp.forEach(details => {
+    //                     
 
     //                     let obj = {};
     //                     obj.DepartmentId = userDetails().DepartmentId;
     //                     obj.UserId = loggedInUserId();
     //                     obj.TechnologyId = '';
     //                     obj.Mode = 'onboarding';
-    //                     obj.approvalTypeId = levelDetails?.ApprovalTypeId; // Access the approval type ID from the response
+    //                     obj.approvalTypeId = details?.ApprovalTypeId; // Access the approval type ID from the response
     //                     obj.plantId = deviationData?.PlantId ?? EMPTY_GUID;
-
     //                     dispatch(checkFinalUser(obj, res => {
-    //                         // finalUserResponses.push({ Data: res.data.Data, type: approvalTypeId === LPSAPPROVALTYPEID ? "lps" : "classification" });
-    //                         finalUserResponses.push(res.data.Data);
-
-
+    //                         finalUserResponses.push({ ...res.data.Data, type: details.ApprovalTypeId === LPSAPPROVALTYPEID ? "lps" : "classification" });
+    //                         
 
     //                         if (res?.data?.Result) {
     //                             setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover);
-    //                             if (finalUserResponses.every(response => response.IsUserInApprovalFlow === true && response.IsFinalApprover === false)) {
+    //                             let tempArr = _.filter(finalUserResponses, ['IsUserInApprovalFlow', true], ['IsFinalApprover', false]);
+    //                             
+
+    //                             if (tempArr?.length > 0) {
     //                                 setShowApproval(true);
     //                             } else if (finalUserResponses.some(response => response.IsFinalApprover === true)) {
     //                                 Toaster.warning("Final level user cannot send costing for approval.");
@@ -182,12 +181,15 @@ const InitiateUnblocking = (props) => {
     //                     }));
     //                 });
     //             }
+
     //         }
     //     }));
     // };
     const handleNext = () => {
         dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
+
             let approvalTypeIds = Array.from(res?.data?.Data?.OnboardingApprovalLevels.values(), level => level.ApprovalTypeId);
+
             if (approvalTypeIds?.length === 0 || !res?.data?.Data?.OnboardingApprovalLevels?.length || res?.data?.Data?.OnboardingApprovalLevels?.length === 0) {
                 setShowApproval(false)
                 Toaster.warning('User is not in the approval flow');
@@ -195,8 +197,7 @@ const InitiateUnblocking = (props) => {
             }
             if (isClassificationChecked && isLpsRatingChecked) {
                 handleCombinedApproval(approvalTypeIds, res);
-            } else if ((isClassificationChecked && res?.data?.Data?.OnboardingApprovalLevels[0]?.ApprovalTypeId === CLASSIFICATIONAPPROVALTYPEID) ||
-                (isLpsRatingChecked && res?.data?.Data?.OnboardingApprovalLevels[0]?.ApprovalTypeId === LPSAPPROVALTYPEID)) {
+            } else if (isClassificationChecked || isLpsRatingChecked) {
                 handleSingleApproval(approvalTypeIds, res);
             } else {
 
@@ -206,21 +207,31 @@ const InitiateUnblocking = (props) => {
     };
 
     const handleCombinedApproval = (approvalTypeIds, res) => {
+        let checkedApproval = [];
+        if (isClassificationChecked && isLpsRatingChecked) {
+            checkedApproval.push(CLASSIFICATIONAPPROVALTYPEID, LPSAPPROVALTYPEID)
+        }
+
+
         const combinedApprovalTypeIds = [...approvalTypeIds]; // Duplicate the array for both types
         if (combinedApprovalTypeIds?.length === 1) {
-
-            Toaster.warning(`User is only in ${combinedApprovalTypeIds === LPSAPPROVALTYPEID ? 'LPS Rating' : 'Classification'} approval flow`)
+            const approvalType = combinedApprovalTypeIds[0] === LPSAPPROVALTYPEID ? 'LPS Rating' : 'Classification';
+            Toaster.warning(`User is only in ${approvalType} approval flow`);
             return;
         }
-        processApproval(combinedApprovalTypeIds, res);
 
-        // combinedApprovalTypeIds.forEach(approvalTypeId => {
-        //     processApproval(approvalTypeId, res);
-        // });
+        processApproval(combinedApprovalTypeIds, res);
     };
 
+
     const handleSingleApproval = (approvalTypeIds, res) => {
-        const type = isClassificationChecked ? 'Classification' : 'LPS Rating';
+
+
+        let checkedApproval = [];
+        if (isClassificationChecked || isLpsRatingChecked) {
+            checkedApproval.push(isClassificationChecked ? CLASSIFICATIONAPPROVALTYPEID : LPSAPPROVALTYPEID)
+        }
+
         processApproval(approvalTypeIds, res);
 
         // approvalTypeIds.forEach(approvalTypeId => {
@@ -232,6 +243,7 @@ const InitiateUnblocking = (props) => {
         let levelDetailsTempArray = []; // Array to store level details responses
         approvalTypeIds.forEach(approvalTypeId => {
             let levelDetailsTemp;
+
             levelDetailsTemp = userTechnologyLevelDetailsWithoutCostingToApproval(approvalTypeId, res?.data?.Data?.OnboardingApprovalLevels);
 
             levelDetailsTempArray.push(levelDetailsTemp); // Store response in array
@@ -314,8 +326,10 @@ const InitiateUnblocking = (props) => {
     const closeDrawer = (e, type = '') => {
 
 
+
         if (type === 'Cancel') {
-            setOpenDraftDrawer(false)
+
+            setShowApproval(false)
         } else {
             setShowApprovalStatus(true)
             props.toggle('2')
@@ -334,7 +348,7 @@ const InitiateUnblocking = (props) => {
                             <Col md="3">
                                 <div className="form-group">
                                     <AsyncSearchableSelectHookForm
-                                        label={'Vendor (Code)'}
+                                        label={'Supplier (Code)'}
                                         name={'SelectVendor'}
                                         placeholder={'Select'}
                                         Controller={Controller}
@@ -347,6 +361,7 @@ const InitiateUnblocking = (props) => {
                                         mandatory={true}
                                         handleChange={handleVendorChange}
                                         errors={errors.SelectVendor}
+                                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                     />
                                 </div>
                             </Col>
@@ -385,7 +400,7 @@ const InitiateUnblocking = (props) => {
                                                         {deviationData && (
                                                             <div>
                                                                 <label id={`vendorClassification_Checkbox_${deviationData?.ClassificationStatus}`} className={`custom-checkbox`}>
-                                                                    Vendor Classification
+                                                                    Classification
                                                                     <input
                                                                         type="checkbox"
                                                                         checked={isClassification}
@@ -420,17 +435,17 @@ const InitiateUnblocking = (props) => {
 
 
                                 <Col md="12">
-                                    <div className="left-border">{'Vendor Details:'}</div>
+                                    <div className="left-border">{'Supplier Details:'}</div>
                                     <div>
                                         <Table bordered>
                                             <thead>
                                                 <tr>
-                                                    <th>Vendor Name</th>
-                                                    <th>Plant</th>
-                                                    {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <th>Vendor Classification</th>}
-                                                    <th>Vendor Classification Status</th>
+                                                    <th>Supplier (Code)</th>
+                                                    <th>Plant (Code)</th>
+                                                    {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <th>Classification</th>}
+                                                    {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <th>Classification Status</th>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <th>LPS Rating</th>}
-                                                    <th>LPS Rating Status</th>
+                                                    {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <th>LPS Rating Status</th>}
                                                     <th>Division</th>
                                                     {/* <th>Department (Code)</th> */}
 
@@ -442,9 +457,9 @@ const InitiateUnblocking = (props) => {
                                                     <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorName ?? '-'}</td>
                                                     <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.PlantName ?? '-'}</td>
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorClassification ?? '-'}</td>}
-                                                    <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.ClassificationStatus, "ClassificationStatus")}</td>
+                                                    {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.ClassificationStatus, "ClassificationStatus")}</td>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorLPSRating ?? '-'}</td>}
-                                                    <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.LPSRatingStatus, "LPSRatingStatus")}</td>
+                                                    {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.LPSRatingStatus, "LPSRatingStatus")}</td>}
                                                     <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.Division ?? '-'}</td>
                                                     {/* <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.DepartmentName ?? '-'}</td> */}
                                                 </tr>
@@ -460,7 +475,7 @@ const InitiateUnblocking = (props) => {
                             </>
                         )}
                     </div>
-                    {selectedVendor && selectedPlant && (!props?.isMasterSummaryDrawer) && (
+                    {selectedVendor && !isSuperAdmin && selectedPlant && (!props?.isMasterSummaryDrawer) && (
                         <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer`}>
                             <div className="col-sm-12 Text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">

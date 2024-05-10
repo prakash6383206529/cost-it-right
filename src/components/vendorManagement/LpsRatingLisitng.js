@@ -104,9 +104,10 @@ const LpsRatingListing = () => {
     }
 
     const handleChange = (cell, row, index) => {
+        const status = row?.IsBlocked === true ? false : true
         let data = {
             LPSRatingId: row.LPSRatingId,
-            IsBlocked: !cell, // Toggle the status
+            IsBlocked: status, // Toggle the status
             LoggedInUserId: loggedInUserId(),
         }
         setCellData(data);
@@ -117,7 +118,9 @@ const LpsRatingListing = () => {
     const statusButtonFormatter = (props) => {
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
 
         // if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex, rowData?.Status, rowData?.Status);
