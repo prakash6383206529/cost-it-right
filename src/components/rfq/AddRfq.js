@@ -1712,7 +1712,7 @@ function AddRfq(props) {
                                         <Col md="3">
                                             {IsSendQuotationToPointOfContact() && (
                                                 <SearchableSelectHookForm
-                                                    label={"Point of Contact"}
+                                                    label={"Vendor's Point of Contact"}
                                                     name={"contactPerson"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}

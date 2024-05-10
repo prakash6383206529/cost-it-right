@@ -120,7 +120,7 @@ function AddBOPHandling(props) {
     * @description  HANDLE OTHER COST TYPE CHANGE
     */
   const handleBOPHandlingType = (newValue) => {
-    setBOPHandlingType(newValue.label)
+    setBOPHandlingType(newValue?.label)
     setTimeout(() => {
       setValue('BOPHandlingPercentage', 0)
       setValue('BOPHandlingFixed', 0)
@@ -232,6 +232,7 @@ function AddBOPHandling(props) {
                         handleChange={handleBOPHandlingType}
                         errors={errors.BOPHandlingType}
                         disabled={(CostingViewMode || IsLocked) ? true : false}
+                        isClearable={true}
                       />
                     </Col>
 
