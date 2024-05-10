@@ -52,7 +52,7 @@ const initialState = {
   assemblyNumber: [],
   IsIncludedSurfaceInRejection: false,
   otherCostData: { gridData: [], otherCostTotal: 0 },
-  otherDiscountData: { gridData: [], otherCostTotal: 0 },
+  otherDiscountData: { gridData: [], totalCost: 0 },
   costingOpenCloseStatus: { RMC: false, overheadProfit: false }
 }
 
