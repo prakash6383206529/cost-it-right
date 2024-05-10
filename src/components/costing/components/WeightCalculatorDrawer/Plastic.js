@@ -138,13 +138,13 @@ function Plastic(props) {
     const netWeight = checkForNull(getValues('netWeight')) // THIS IS FIRST GROSS WEIGHT
     const runnerWeight = checkForNull(getValues('runnerWeight'))
     const scrapRecoveryPercent = Number((getValues('scrapRecoveryPercent')))
-    console.log('scrapRecoveryPercent: ', scrapRecoveryPercent);
+
 
     const finishedWeight = checkForNull(getValues('finishedWeight'))
     const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [])) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
 
     if (finishedWeight !== 0) {
-      console.log('finishedWeight', finishedWeight, 'grossWeight', grossWeight, 'scrapRecoveryPercent', scrapRecoveryPercent);
+
       scrapWeight = calculateScrapWeight(grossWeight, finishedWeight, scrapRecoveryPercent)
       setDataToSend(checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
       // scrapWeight = (checkForNull(grossWeight) - checkForNull(finishedWeight)).toFixed(9) //FINAL GROSS WEIGHT - FINISHED WEIGHT
@@ -182,7 +182,7 @@ function Plastic(props) {
     DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
     setIsDisable(true)
     let obj = {}
-    console.log('obj: ', obj);
+
     obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
     obj.BaseCostingIdRef = item.CostingId
     obj.TechnologyId = costData.TechnologyId
