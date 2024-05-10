@@ -213,12 +213,15 @@ class AddBOPImport extends Component {
     if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getCurrencySelectList(() => { })
       this.props.getClientSelectList(() => { })
-
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     }
+  }
+  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+    const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
+          this.commonFunction(plantId)
         }, 100);
       })
     } else {
@@ -547,9 +550,7 @@ class AddBOPImport extends Component {
                 this.setInStateToolTip()
                 this.toolTipNetCost({ label: Data.Currency, value: Data.CurrencyId })
                 this.toolTipBasicPrice({ label: Data.Currency, value: Data.CurrencyId })
-                if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-                  this.commonFunction(plantObj.value)
-                }
+                this.finalUserCheckAndMasterLevelCheckFunction(plantObj.value)
                 this.setState({ isLoader: false, isCallCalculation: false })
               }, 500)
             })

@@ -1,60 +1,41 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller, useWatch } from "react-hook-form";
+import { Drawer } from '@material-ui/core';
+import React, { useCallback, useContext, useEffect, useState } from 'react'
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Row, Col, Table } from 'reactstrap';
-import Drawer from '@material-ui/core/Drawer';
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs';
-import { CRMHeads, EMPTY_DATA, WACTypeId } from '../../../../../config/constants';
-import { checkForDecimalAndNull, checkWhiteSpaces, number, decimalNumberLimit6, percentageLimitValidation, hashValidation, calculatePercentage, checkForNull, removeBOPfromApplicability } from '../../../../../helper';
-import NoContentFound from '../../../../common/NoContentFound';
-import { ViewCostingContext } from '../../CostingDetails';
-import { IdForMultiTechnology, STRINGMAXLENGTH } from '../../../../../config/masterData';
-import TooltipCustom from '../../../../common/Tooltip';
-import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
-import _ from 'lodash'
-import Toaster from '../../../../common/Toaster';
-import { setOtherCostData } from '../../../actions/Costing';
-import OtherCostTable from './OtherCostTable';
+import { Col, Container, Row } from 'reactstrap';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { CRMHeads } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
+import { ViewCostingContext } from '../../CostingDetails';
+import OtherDiscountTable from './OtherDiscountTable';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkWhiteSpaces, decimalNumberLimit6, hashValidation, number, percentageLimitValidation, removeBOPfromApplicability } from '../../../../../helper';
+import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
+import _ from 'lodash';
+import Toaster from '../../../../common/Toaster';
+import { setOtherDiscountData } from '../../../actions/Costing';
 
-function OtherCostDrawer(props) {
-
-    //FUNCTION TO GET SUM OF OTHER COST ADDED IN THE TABLE
-    const calculateSumOfValues = (data) => {
-        let sum = 0;
-        for (let i = 0; i < data.length; i++) {
-            sum += Number(data[i].AnyOtherCost);
-        }
-        return sum;
-    }
-
-
+function AddOtherDiscount(props) {
     const { register, handleSubmit, formState: { errors }, control, getValues, setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-    const dispatch = useDispatch()
-    const { otherCostData } = useSelector(state => state.costing)
-
-
-    const headerCosts = useContext(netHeadCostContext);
-    const costData = useContext(costingInfoContext);
     const CostingViewMode = useContext(ViewCostingContext);
-
-    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData } = useSelector(state => state.costing)
+    const { otherDiscountData } = useSelector(state => state.costing)
+    const [state, setState] = useState({
+        isEdit: false,
+        tableData: otherDiscountData.gridData,
+        discountTotalCost: otherDiscountData.otherCostTotal,
+        otherDiscountApplicabilityType: [],
+    })
+    const [otherCostApplicability, setOtherCostApplicability] = useState([])
+    const [otherCost, setOtherCost] = useState('')
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costingHead = useSelector(state => state.comman.costingHead)
-    const [isEdit, setIsEdit] = useState(false);
-    const [gridData, setgridData] = useState(otherCostData.gridData);
-    const [otherCostTotal, setOtherCostTotal] = useState(props?.otherCostArr?.length > 0 ? calculateSumOfValues(props?.otherCostArr) : 0)
-    const [otherCostType, setOtherCostType] = useState([]);
-    const [otherCostApplicability, setOtherCostApplicability] = useState([])
-    const [editIndex, setEditIndex] = useState('')
-    const [otherCost, setOtherCost] = useState('')
+    const headerCosts = useContext(netHeadCostContext);
+    const costData = useContext(costingInfoContext);
     const [applicabilityCost, setApplicabilityCost] = useState('')
-    // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+    const dispatch = useDispatch()
+    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData } = useSelector(state => state.costing)
     const fieldValuesForPercent = useWatch({
         control,
         name: ['PercentageOtherCost', 'OtherCostApplicability'],
@@ -76,24 +57,9 @@ function OtherCostDrawer(props) {
         }
     }, [fieldValuesForFixed])
 
-    useEffect(() => {
-        let request = partType ? 'multiple technology assembly' : ''
-        dispatch(fetchCostingHeadsAPI(request, true, (res) => { }))
-    }, [])
-
-    /**
-    * @method renderListing
-    * @description RENDER LISTING IN DROPDOWN
-    */
     const renderListing = (label) => {
         const temp = [];
         let tempList = [];
-        if (label === 'OtherCostType') {
-            return [
-                { label: 'Fixed', value: 'Fixed' },
-                { label: 'Percentage', value: 'Percentage' },
-            ];
-        }
         if (label === 'Applicability') {
             costingHead && costingHead.map(item => {
                 if (item.Value === '0') return false;
@@ -104,47 +70,19 @@ function OtherCostDrawer(props) {
                 tempList = removeBOPfromApplicability([...temp])
             } else {
                 tempList = [...temp]
+
             }
             return tempList;
         }
     }
-
-    const handleOherCostApplicabilityChange = (value) => {
-
-        if (!CostingViewMode) {
-            if (value && value !== '') {
-                setOtherCostType(value.label !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : value)
-                setValue('AnyOtherCost', 0)
-                setValue('PercentageOtherCost', 0)
-                errors.AnyOtherCost = {}
-                errors.PercentageOtherCost = {}
-
-            } else {
-                setOtherCostType([])
-            }
-            errors.PercentageOtherCost = {}
-        }
-
-        setOtherCostApplicability(value)
-        setValue('ApplicabilityCost', '')
-    }
-
-    /**
-    * @method cancel
-    * @description used to Reset form
-    */
-    const cancel = () => {
-        props.closeDrawer('cancel')
-    }
-
-    const onSubmit = data => {
-        if (isEdit) {
+    const onSubmit = () => {
+        if (state.isEdit) {
             let OtherCostDescription = getValues('OtherCostDescription')
             let OtherCostApplicability = getValues('OtherCostApplicability')?.label
             let isDuplicate = false
-            gridData && gridData.map((item, index) => {
-                if (index !== editIndex) {
-                    if (String(item.OtherCostDescription) === String(OtherCostDescription) && String(item.OtherCostApplicability) === String(OtherCostApplicability)) {
+            state.tableData && state.tableData.map((item, index) => {
+                if (index !== state.editIndex) {
+                    if (String(item.Description) === String(OtherCostDescription) && String(item.applicability) === String(OtherCostApplicability)) {
                         isDuplicate = true
                     }
                 }
@@ -159,40 +97,70 @@ function OtherCostDrawer(props) {
             addRow()
         }
     }
+    const addRow = () => {
+        if (validation()) {
+            return false
+        }
+        let gridData = [...state.tableData]
+        let obj = {
+            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-',
+            Description: getValues("OtherCostDescription"),
+            ApplicabilityIdRef: state.otherDiscountApplicabilityType?.value,
+            applicability: state.otherDiscountApplicabilityType?.label,
+            ApplicabilityCost: applicabilityCost,
+            ApplicabilityType: getValues("OtherCostApplicability").value ?? '',
+            PercentageDiscountCost: getValues("PercentageOtherCost") ?? '-',
+            NetCost: state.otherDiscountApplicabilityType?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
+        }
 
-    const onFinalSubmit = () => {
-        props.closeDrawer('submit', otherCostTotal, gridData)
-        dispatch(setOtherCostData({ gridData: gridData, otherCostTotal: otherCostTotal }))
+        gridData.push(obj)
+        const sumOfNetCost = gridData.reduce((acc, obj) => acc + Number(obj.NetCost), 0);
+        resetData()
+        setState(prevState => ({ ...prevState, tableData: gridData, discountTotalCost: sumOfNetCost }))
     }
-
+    const resetData = (type) => {
+        setValue('OtherCostType', "")
+        setValue('OtherCostApplicability', '')
+        setValue('PercentageOtherCost', '')
+        setValue('OtherCostDescription', '')
+        setValue('AnyOtherCost', '')
+        setTimeout(() => {
+            setValue('ApplicabilityCost', '')
+        }, 100);
+        setOtherCostApplicability([])
+        setOtherCost(0)
+        setState(prevState => ({ ...prevState, isEdit: false, editIndex: '' }))
+        setApplicabilityCost(0)
+        setValue('crmHeadOtherCost', '')
+    }
     const validation = () => {
         let labels = ['OtherCostDescription', 'OtherCostApplicability', 'AnyOtherCost', 'PercentageOtherCost'];
         let count = 0
-        labels.forEach(label => {
-            if (otherCostType?.label === 'Fixed' && label === 'PercentageOtherCost') {
-                return false
-            } else {
-                if (!getValues(label)) {
-                    count++
-                }
-            }
-        })
+        // labels.forEach(label => {
+        //     if (state.otherDiscountApplicabilityType?.label === 'Fixed' && label === 'PercentageOtherCost') {
+        //         return false
+        //     } else {
+        //         if (!getValues(label)) {
+        //             count++
+        //         }
+        //     }
+        // })
         if (count > 0) {
-            Toaster.warning("Please fill all details")
-            return true
+            // Toaster.warning("Please fill all details")
+            // return true
         } else {
 
             let OtherCostDescription = getValues('OtherCostDescription')
             let OtherCostApplicability = getValues('OtherCostApplicability')?.label
             let isDuplicate = false
 
-            gridData && gridData.map((item) => {
-                if (String(item.OtherCostDescription) === String(OtherCostDescription) && String(item.OtherCostApplicability) === String(OtherCostApplicability)) {
+            state.tableData && state.tableData.map((item) => {
+                if (String(item.Description) === String(OtherCostDescription) && String(item.applicability) === String(OtherCostApplicability)) {
                     isDuplicate = true
                 }
             })
 
-            if (isDuplicate && !isEdit) {
+            if (isDuplicate && !state.isEdit) {
                 Toaster.warning("Duplicate entries are not allowed")
                 return true
 
@@ -202,77 +170,33 @@ function OtherCostDrawer(props) {
         }
     }
 
-    const addRow = () => {
-        if (validation()) {
-            return false
-        }
-
-        const obj = {
-            OtherCostType: otherCostType?.label,
-            OtherCostApplicability: otherCostApplicability?.label,
-            OtherCostApplicabilityId: otherCostApplicability?.value,
-            PercentageOtherCost: otherCostType?.label === 'Fixed' ? '-' : getValues('PercentageOtherCost'),
-            OtherCostDescription: getValues('OtherCostDescription'),
-            AnyOtherCost: otherCostType?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
-            ApplicabilityCost: applicabilityCost,
-            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-'
-        }
-        setOtherCostTotal(0)
-        setOtherCostTotal(calculateSumOfValues([...gridData, obj]))
-        setgridData([...gridData, obj])
-        resetData()
-
-    }
-
-
     const updateRow = () => {
         if (validation()) {
             return false
         }
         const obj = {
-            OtherCostType: otherCostType?.label,
-            OtherCostApplicability: otherCostApplicability?.label,
-            OtherCostApplicabilityId: otherCostApplicability?.value,
-            PercentageOtherCost: otherCostType?.label === 'Fixed' ? '-' : getValues('PercentageOtherCost'),
-            OtherCostDescription: getValues('OtherCostDescription'),
-            AnyOtherCost: otherCostType?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
+            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-',
+            Description: getValues("OtherCostDescription"),
+            ApplicabilityIdRef: state.otherDiscountApplicabilityType?.value,
+            applicability: state.otherDiscountApplicabilityType?.label,
             ApplicabilityCost: applicabilityCost,
-            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-'
+            PercentageDiscountCost: getValues("PercentageOtherCost") ?? '-',
+            NetCost: otherCostApplicability?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
         }
 
-        let tempArr = Object.assign([...gridData], { [editIndex]: obj })
-        setgridData(tempArr)
-        setOtherCostTotal(0)
-        setOtherCostTotal(calculateSumOfValues(tempArr))
-        setIsEdit(false)
+        let tempArr = Object.assign([...state.tableData], { [state.editIndex]: obj })
+        const sumOfNetCost = tempArr.reduce((acc, obj) => acc + Number(obj.NetCost), 0);
+        setState(prevState => ({ ...prevState, tableData: tempArr, isEdit: false, discountTotalCost: sumOfNetCost }))
         resetData()
     }
-
-    const resetData = (type) => {
-        setValue('OtherCostType', "")
-        setValue('OtherCostApplicability', '')
-        setValue('PercentageOtherCost', '')
-        setValue('OtherCostDescription', '')
-        setValue('AnyOtherCost', '')
-        setValue('ApplicabilityCost', '')
-        setOtherCostApplicability([])
-        setOtherCost(0)
-        setEditIndex('')
-        setIsEdit(false)
-        setApplicabilityCost(0)
-        setValue('crmHeadOtherCost', '')
-    }
-
-
     const editItemDetails = (index) => {
-        const editObj = gridData[index]
-        setValue('OtherCostType', { label: editObj.OtherCostType, value: editObj.OtherCostType })
-        setValue('OtherCostApplicability', { label: editObj.OtherCostApplicability, value: editObj.OtherCostApplicabilityId })
-        setValue('PercentageOtherCost', editObj.PercentageOtherCost === '-' ? 0 : editObj.PercentageOtherCost)
-        setValue('OtherCostDescription', editObj.OtherCostDescription)
-        setValue('AnyOtherCost', editObj.AnyOtherCost)
+        const editObj = state.tableData[index]
+        setValue('OtherCostApplicability', { label: editObj.applicability, value: editObj.ApplicabilityIdRef })
+        setValue('PercentageOtherCost', editObj.PercentageDiscountCost === '-' ? 0 : editObj.PercentageDiscountCost)
+        setValue('OtherCostDescription', editObj.Description)
+        setValue('AnyOtherCost', editObj.NetCost)
         setValue('crmHeadOtherCost', { label: editObj.CRMHead, value: index })
-        if (editObj?.OtherCostApplicability === 'Fixed') {
+        if (editObj?.applicability === 'Fixed') {
             setTimeout(() => {
                 setValue('ApplicabilityCost', editObj?.ApplicabilityCost)
                 setApplicabilityCost(editObj?.ApplicabilityCost)
@@ -284,23 +208,43 @@ function OtherCostDrawer(props) {
             }, 100);
         }
 
-        setOtherCostType({ label: editObj.OtherCostApplicability !== 'Fixed' ? 'Percentage' : editObj.OtherCostApplicability, value: editObj.OtherCostApplicability !== 'Fixed' ? 'Percentage' : editObj.OtherCostApplicability })
-        setOtherCostApplicability({ label: editObj.OtherCostApplicability, value: editObj.OtherCostApplicabilityId })
-        setEditIndex(index)
-        setIsEdit(true)
+        setState(prevState => ({ ...prevState, editIndex: index, isEdit: true, otherDiscountApplicabilityType: { label: editObj.applicability, value: editObj.ApplicabilityIdRef } }))
+        let applicability = editObj.applicability !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : editObj.applicability
+        setOtherCostApplicability(applicability)
+
     }
 
     const deleteItem = (index) => {
         let newgridData = []
-        if (index >= 0 && index < gridData.length) {
-            newgridData = [...gridData]; // create a copy of the array
+        if (index >= 0 && index < state.tableData.length) {
+            newgridData = [...state.tableData]; // create a copy of the array
             _.pullAt(newgridData, index);
         }
-        setgridData(newgridData)
-        setOtherCostTotal(calculateSumOfValues(newgridData))
+        const sumOfNetCost = newgridData.reduce((acc, obj) => acc + obj.NetCost, 0);
+        setState(prevState => ({ ...prevState, tableData: newgridData, discountTotalCost: sumOfNetCost, isEdit: false }))
+        resetData()
     }
+    const handleOherCostApplicabilityChange = (value) => {
+        if (!CostingViewMode) {
+            if (value && value !== '') {
+                let applicability = value.label !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : value
+                // setState(prevState => ({ ...prevState, otherDiscountApplicabilityType: applicability }))
+                setOtherCostApplicability(applicability)
+                setValue('AnyOtherCost', 0)
+                setValue('PercentageOtherCost', '')
+                errors.AnyOtherCost = {}
+                errors.PercentageOtherCost = {}
 
+            } else {
+                setState(prevState => ({ ...prevState, otherDiscountApplicabilityType: [] }))
 
+            }
+            errors.PercentageOtherCost = {}
+        }
+        // setOtherCostApplicability(value)
+        setState(prevState => ({ ...prevState, otherDiscountApplicabilityType: value }))
+        setValue('ApplicabilityCost', '')
+    }
     const findApplicabilityCost = () => {
         const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.ProcessCostTotal + headerCosts?.OperationCostTotal
         const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation
@@ -314,7 +258,7 @@ function OtherCostDrawer(props) {
         const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
 
         let totalCost = ''
-        switch (otherCostApplicability?.label) {
+        switch (state.otherDiscountApplicabilityType?.label) {
             case 'RM':
             case 'Part Cost':
                 totalCost = headerCosts.NetRawMaterialsCost * calculatePercentage(percent)
@@ -413,8 +357,10 @@ function OtherCostDrawer(props) {
         setValue('AnyOtherCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
         setOtherCost(totalCost)
     }
-
-
+    const onFinalSubmit = () => {
+        props.closeDrawer('submit', state.discountTotalCost, state.tableData)
+        dispatch(setOtherDiscountData({ gridData: state.tableData, otherCostTotal: state.discountTotalCost }))
+    }
     return (
         <div>
             <Drawer
@@ -427,7 +373,7 @@ function OtherCostDrawer(props) {
                         <Row className="drawer-heading">
                             <Col>
                                 <div className={"header-wrapper left"}>
-                                    <h3>{"Add Other Cost"}</h3>
+                                    <h3>{"Add Other Discount"}</h3>
                                 </div>
                                 <div
                                     onClick={() => props.closeDrawer('cancel')}
@@ -462,7 +408,7 @@ function OtherCostDrawer(props) {
 
                                     <Col md="4" >
                                         <TextFieldHookForm
-                                            label="Other Cost Description"
+                                            label="Other Discount Description"
                                             name={"OtherCostDescription"}
                                             Controller={Controller}
                                             control={control}
@@ -486,14 +432,14 @@ function OtherCostDrawer(props) {
                                     {
                                         <Col md="4">
                                             <SearchableSelectHookForm
-                                                label={'Other Cost Applicability'}
+                                                label={'Other Disount Applicability'}
                                                 name={'OtherCostApplicability'}
                                                 placeholder={'Select'}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: true }}
                                                 register={register}
-                                                defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
+                                                defaultValue={state.otherDiscountApplicabilityType.length !== 0 ? state.otherDiscountApplicabilityType : ''}
                                                 options={renderListing('Applicability')}
                                                 mandatory={true}
                                                 disabled={CostingViewMode ? true : false}
@@ -512,7 +458,7 @@ function OtherCostDrawer(props) {
                                                 register={register}
                                                 mandatory={true}
                                                 rules={{
-                                                    required: false,
+                                                    required: !(CostingViewMode || !(otherCostApplicability && otherCostApplicability.value === 'Percentage')),
                                                     validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                     max: {
                                                         value: 100,
@@ -526,7 +472,7 @@ function OtherCostDrawer(props) {
                                                 className=""
                                                 customClassName={"withBorder"}
                                                 errors={errors.PercentageOtherCost}
-                                                disabled={CostingViewMode || !(otherCostType && otherCostType.value === 'Percentage') ? true : false}
+                                                disabled={CostingViewMode || !(otherCostApplicability && otherCostApplicability.value === 'Percentage') ? true : false}
                                             />
                                         </Col>}
                                     {
@@ -539,7 +485,7 @@ function OtherCostDrawer(props) {
                                                 register={register}
                                                 mandatory={true}
                                                 rules={{
-                                                    required: false,
+                                                    required: !(CostingViewMode || Object.keys(otherCostApplicability).length === 0 || (otherCostApplicability && otherCostApplicability?.value === 'Percentage')),
                                                 }}
                                                 handleChange={(e) => {
                                                     e.preventDefault();
@@ -548,22 +494,22 @@ function OtherCostDrawer(props) {
                                                 className=""
                                                 customClassName={"withBorder"}
                                                 errors={errors?.ApplicabilityCost}
-                                                disabled={(CostingViewMode || Object.keys(otherCostType).length === 0 || (otherCostType && otherCostType?.value === 'Percentage')) ? true : false}
+                                                disabled={(CostingViewMode || Object.keys(otherCostApplicability).length === 0 || (otherCostApplicability && otherCostApplicability?.value === 'Percentage')) ? true : false}
                                             />
                                         </Col>}
 
                                     <Col md="4">
-                                        {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="drawer-other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
+                                        {/* {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="drawer-other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />} */}
                                         <TextFieldHookForm
-                                            label="Other Cost"
+                                            label="Other Discount"
                                             name={"AnyOtherCost"}
                                             id="drawer-other-cost"
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={true}
+                                            mandatory={false}
                                             rules={{
-                                                required: true,
+                                                required: false,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
                                             handleChange={(e) => {
@@ -578,18 +524,18 @@ function OtherCostDrawer(props) {
 
                                     </Col>
                                     <Col md="4" className={`${initialConfiguration.IsShowCRMHead ? "mb-3" : "pt-1"} d-flex`}>
-                                        {isEdit ? (
+                                        {state.isEdit ? (
                                             <>
                                                 <button
                                                     type="submit"
-                                                    className={"btn btn-primary mt30 pull-left mr5"}
+                                                    className={`btn btn-primary ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} pull-left mr5`}
                                                     disabled={CostingViewMode}
                                                 >
                                                     Update
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
+                                                    className={`mr15 ml-1 ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} add-cancel-btn cancel-btn`}
                                                     onClick={() => resetData()}
                                                     disabled={CostingViewMode}
                                                 >
@@ -617,14 +563,18 @@ function OtherCostDrawer(props) {
                                         )}
                                     </Col>
                                 </Row>
-                                <OtherCostTable editItemDetails={editItemDetails} deleteItem={deleteItem} tableData={{ gridData: gridData, otherCostTotal: otherCostTotal }} />
+                                <OtherDiscountTable
+                                    editItemDetails={editItemDetails}
+                                    deleteItem={deleteItem}
+                                    tableData={{ gridData: state.tableData, otherCostTotal: state.discountTotalCost }}
+                                />
                             </div>
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0 pr-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                     <button
                                         type={"button"}
                                         className="reset mr15 cancel-btn"
-                                        onClick={cancel}
+                                        onClick={() => props.closeDrawer('cancel')}
                                     >
                                         <div className={"cancel-icon"}></div>
                                         {"Cancel"}
@@ -646,7 +596,7 @@ function OtherCostDrawer(props) {
                 </Container>
             </Drawer>
         </div>
-    );
+    )
 }
 
-export default React.memo(OtherCostDrawer);
+export default AddOtherDiscount

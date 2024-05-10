@@ -12,15 +12,15 @@ function ApprovalWorkFlow(props) {
   // const [approval, setApproval] = useState([])
   const dispatch = useDispatch()
   useEffect(() => {
-    if (initialConfiguration?.IsMultipleUserAllowForApproval && approverData && approverData.processId) {
+    if (initialConfiguration?.IsMultipleUserAllowForApproval && approverData && approverData?.processId) {
       let data = {
         processId: approverData?.processId,
         levelId: approverData?.levelId,
         mode: approverData?.mode
       }
       dispatch(getAllApproverList(data, res => {
-        if (res && res.data) {
-          setApproverList(res.data.DataList)
+        if (res && res?.data) {
+          setApproverList(res?.data?.DataList)
         }
       }))
     }
@@ -38,7 +38,7 @@ function ApprovalWorkFlow(props) {
             <ul className="px-1 view-all-list">
               {approverList && approverList.map((item, index) => {
                 if (index === 0) return false
-                return <li key={item.UserId}> {item.UserName}</li>
+                return <li key={item?.UserId}> {item?.UserName}</li>
               })}
             </ul>
           </Popup>
@@ -82,15 +82,15 @@ function ApprovalWorkFlow(props) {
           return (
             <>
               <div key={index} className="col-lg-3 col-md-6 col-sm-12 mb-4">
-                <div className={`card-border  ${item?.Title.split(' ')[0] === REJECTED ? 'card-red' : item?.Title.split(' ')[0] === APPROVED ? 'card-green' : item?.Status === PENDING ? 'card-yellow' : ''}`}>
+                <div className={`card-border  ${item?.Title?.split(' ')[0] === REJECTED ? 'card-red' : item?.Title?.split(' ')[0] === APPROVED ? 'card-green' : item?.Status === PENDING ? 'card-yellow' : ''}`}>
                   <div className="top d-flex">
                     <div className="left text-center">
-                      <b>{item?.Level ? item?.Level.split('-')[1] : 0}</b>
+                      <b>{item?.Level ? item?.Level?.split('-')[1] : 0}</b>
                       <span className="d-block">Level</span>
                     </div>
                     <div className="right">
-                      <span className="">{item.Title}</span>
-                      <p className="">{(item.ApprovedBy && item.ApprovedBy !== '-') ? item.ApprovedBy : initialConfiguration?.IsMultipleUserAllowForApproval ? approverListUI() : '-'}</p>
+                      <span className="">{item?.Title}</span>
+                      <p className="">{(item?.ApprovedBy && item?.ApprovedBy !== '-') ? item?.ApprovedBy : initialConfiguration?.IsMultipleUserAllowForApproval ? approverListUI() : '-'}</p>
                     </div>
                   </div>
                   {/* top */}

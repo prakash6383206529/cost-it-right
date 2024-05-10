@@ -11,7 +11,7 @@ import { Fragment } from 'react';
 import MasterSendForApproval from './MasterSendForApproval';
 import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
-import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, BUDGET_ID, APPROVED_STATUS, ZBCTypeId, INR } from '../../config/constants';
+import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, BUDGET_ID, APPROVED_STATUS, ZBCTypeId, INR, SUPPLIER_MANAGEMENT_ID, ONBOARDINGID } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
 import { checkForNull, getCodeBySplitting, getConfigurationKey, loggedInUserId, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
@@ -24,8 +24,10 @@ import { approvalPushedOnSap } from '../costing/actions/Approval';
 import Toaster from '../common/Toaster';
 import DayTime from '../common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import InitiateUnblocking from '../vendorManagement/InitiateUnblocking';
 
 function SummaryDrawer(props) {
+
     const { approvalData } = props
 
     const dispatch = useDispatch()
@@ -48,6 +50,9 @@ function SummaryDrawer(props) {
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
     const [files, setFiles] = useState([])
     const [approvalDetails, setApprovalDetails] = useState({})
+
+
+
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
     const [loader, setLoader] = useState(true)
@@ -66,94 +71,114 @@ function SummaryDrawer(props) {
     // const { rmDomesticListing, rmImportListing, bopDomesticList, bopImportList } = useSelector(state => state.material)
     const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
     const [mastersPlantId, setMastersPlantId] = useState('')
+    const [isOnboardingApproval, setIsOnboardingApproval] = useState(false)
+    const [onBoardingData, setOnBoardingData] = useState({})
+
+
+
     useEffect(() => {
+
         let CostingTypeId = ''
         setLoader(true)
-        dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props.masterId, res => {
+
+        dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props?.masterId, props?.OnboardingApprovalId, res => {
+
             const Data = res.data.Data
-            setApprovalLevelStep(Data.MasterSteps)
-            setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
+
+            setApprovalLevelStep(Data?.MasterSteps)
+            setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId })
             setLoader(false)
             let masterPlantId = ''
-            if (checkForNull(props.masterId) === RM_MASTER_ID) {
-                CostingTypeId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
-                masterPlantId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.MasterApprovalPlantId
-                Data.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
-                if (Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
+            if (checkForNull(props?.masterId) === RM_MASTER_ID) {
+                CostingTypeId = Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
+                setFiles(Data?.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
+                masterPlantId = Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.MasterApprovalPlantId
+                Data?.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                if (Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
                     setShowImport(false)
                 } else {
                     setShowImport(true)
                 }
-            } else if (checkForNull(props.masterId) === BOP_MASTER_ID) {
-                CostingTypeId = Data.ImpactedMasterDataList.BOPListResponse[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataList.BOPListResponse[0].Attachements)
-                setBopDataResponse(Data.ImpactedMasterDataList.BOPListResponse)
-                masterPlantId = Data.ImpactedMasterDataList.BOPListResponse[0]?.MasterApprovalPlantId
-                if (Data.ImpactedMasterDataList.BOPListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
+            } else if (checkForNull(props?.masterId) === BOP_MASTER_ID) {
+                CostingTypeId = Data?.ImpactedMasterDataList.BOPListResponse[0]?.CostingTypeId
+                setFiles(Data?.ImpactedMasterDataList.BOPListResponse[0].Attachements)
+                setBopDataResponse(Data?.ImpactedMasterDataList.BOPListResponse)
+                masterPlantId = Data?.ImpactedMasterDataList.BOPListResponse[0]?.MasterApprovalPlantId
+                if (Data?.ImpactedMasterDataList.BOPListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
                     setShowImport(false)
                 } else {
                     setShowImport(true)
                 }
-                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                Data?.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
                 setShowPushButton(Data?.IsPushedButtonShow)
-            } else if (checkForNull(props.masterId) === OPERATIONS_ID) {
-                CostingTypeId = Data.ImpactedMasterDataList.OperationListResponse[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataList.OperationListResponse[0].Attachements)
-                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
-                masterPlantId = Data.ImpactedMasterDataList.OperationListResponse[0]?.MasterApprovalPlantId
-            } else if (checkForNull(props.masterId) === MACHINE_MASTER_ID) {
-                CostingTypeId = Data.ImpactedMasterDataList.MachineListResponse[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataList.MachineListResponse[0].Attachements)
-                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
-                masterPlantId = Data.ImpactedMasterDataList.MachineListResponse[0]?.MasterApprovalPlantId
-            } else if (checkForNull(props.masterId) === BUDGET_ID) {
-                CostingTypeId = Data.ImpactedMasterDataList.BudgetingListResponse[0]?.CostingHeadId
-                setFiles(Data.ImpactedMasterDataList.BudgetingListResponse[0].Attachements)
-                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
-                masterPlantId = Data.ImpactedMasterDataList.BudgetingListResponse[0]?.MasterApprovalPlantId
+            } else if (checkForNull(props?.masterId) === OPERATIONS_ID) {
+                CostingTypeId = Data?.ImpactedMasterDataList.OperationListResponse[0]?.CostingTypeId
+                setFiles(Data?.ImpactedMasterDataList.OperationListResponse[0].Attachements)
+                Data?.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                masterPlantId = Data?.ImpactedMasterDataList.OperationListResponse[0]?.MasterApprovalPlantId
+            } else if (checkForNull(props?.masterId) === MACHINE_MASTER_ID) {
+                CostingTypeId = Data?.ImpactedMasterDataList.MachineListResponse[0]?.CostingTypeId
+                setFiles(Data?.ImpactedMasterDataList.MachineListResponse[0].Attachements)
+                Data?.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                masterPlantId = Data?.ImpactedMasterDataList.MachineListResponse[0]?.MasterApprovalPlantId
+            } else if (checkForNull(props?.masterId) === BUDGET_ID) {
+                CostingTypeId = Data?.ImpactedMasterDataList.BudgetingListResponse[0]?.CostingHeadId
+                setFiles(Data?.ImpactedMasterDataList.BudgetingListResponse[0].Attachements)
+                Data?.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                masterPlantId = Data?.ImpactedMasterDataList.BudgetingListResponse[0]?.MasterApprovalPlantId
+            }
+            else if (Number(props?.masterId) === 0 && checkForNull(props?.OnboardingApprovalId) === Number(ONBOARDINGID)) {
+
+                CostingTypeId = Data?.ImpactedMasterDataList.VendorPlantClassificationLPSRatingListResponses[0]?.CostingHeadId
+                setFiles(Data?.ImpactedMasterDataList.VendorPlantClassificationLPSRatingListResponses[0].Attachements)
+                Data?.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                masterPlantId = Data?.ImpactedMasterDataList.VendorPlantClassificationLPSRatingListResponses[0]?.MasterApprovalPlantId
+                setOnBoardingData(Data?.ImpactedMasterDataList.VendorPlantClassificationLPSRatingListResponses[0])
             }
             setCostingTypeId(CostingTypeId)
-            Data.NumberOfMaster > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+            Data?.NumberOfMaster > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             let obj = {
-                DepartmentId: Data.DepartmentId,
+                DepartmentId: Data?.DepartmentId,
                 UserId: loggedInUserId(),
-                TechnologyId: props.masterId,
-                Mode: 'master',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+                TechnologyId: props?.masterId,
+                Mode: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? 'onboarding' : 'master',
+                approvalTypeId: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? Data?.ApprovalTypeId : costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
                 plantId: masterPlantId
             }
             setMastersPlantId(masterPlantId)
             setDataForFetchingAllApprover({
                 processId: approvalData.approvalProcessId,
-                levelId: Data.MasterSteps[Data.MasterSteps.length - 1].LevelId,
-                mode: 'Master'
+                levelId: Data?.MasterSteps[Data?.MasterSteps.length - 1].LevelId,
+                mode: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? 'onboarding' : 'Master'
             })
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
-                    setFinalLevelUser(res.data.Data.IsFinalApprover)
+                    setFinalLevelUser(res.data.Data?.IsFinalApprover)
                 }
             }))
         }))
 
-        if (checkForNull(props.masterId) === RM_MASTER_ID) {            // MASTER ID 1 FOR RAW MATERIAL
+        if (checkForNull(props?.masterId) === RM_MASTER_ID) {            // MASTER ID 1 FOR RAW MATERIAL
             setIsRMApproval(true)
         }
-        else if (checkForNull(props.masterId) === BOP_MASTER_ID) {     // MASTER ID 2 FOR BOP 
+        else if (checkForNull(props?.masterId) === BOP_MASTER_ID) {     // MASTER ID 2 FOR BOP 
             setIsBOPApproval(true)
-        } else if (checkForNull(props.masterId) === OPERATIONS_ID) {  // MASTER ID 3 FOR OPERATION
+        } else if (checkForNull(props?.masterId) === OPERATIONS_ID) {  // MASTER ID 3 FOR OPERATION
             setIsOperationApproval(true)
-        } else if (checkForNull(props.masterId) === MACHINE_MASTER_ID) {  // MASTER ID 4 FOR MACHINE
+        } else if (checkForNull(props?.masterId) === MACHINE_MASTER_ID) {  // MASTER ID 4 FOR MACHINE
             setIsMachineApproval(true)
-        } else if (checkForNull(props.masterId) === BUDGET_ID) {
+        } else if (checkForNull(props?.masterId) === BUDGET_ID) {
             setIsBudgetApproval(true)
         }
+        else if (props.masterId === 0 && (props?.OnboardingApprovalId) === ONBOARDINGID) {
+            setIsOnboardingApproval(true)
+        }
 
-        dispatch(getUsersMasterLevelAPI(loggedInUserId(), props.masterId, res => {
+        dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.masterId, res => {
             if (res && res.data && res.data.Result) {
-                setFinalLevelUser(res.data.Data.IsFinalApprover)
+                setFinalLevelUser(res.data.Data?.IsFinalApprover)
                 let levelDetailsTemp = []
-                levelDetailsTemp = userTechnologyDetailByMasterId(CostingTypeId, props.masterId, res.data.Data.MasterLevels)
+                levelDetailsTemp = userTechnologyDetailByMasterId(CostingTypeId, props?.masterId, res.data.Data?.MasterLevels)
                 setLevelDetails(levelDetailsTemp)
             }
         }))
@@ -231,10 +256,15 @@ function SummaryDrawer(props) {
                                         <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
                                     {isBudgetApproval &&
                                         <BudgetListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
+
+                                    {
+                                        isOnboardingApproval &&
+                                        <InitiateUnblocking deviationData={onBoardingData} isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />
+                                    }
                                 </Col>
                             </Row>
                         }
-                        {(checkForNull(props.masterId) === BOP_MASTER_ID) && costingTypeId === ZBCTypeId && showPushButton &&
+                        {(checkForNull(props?.masterId) === BOP_MASTER_ID) && costingTypeId === ZBCTypeId && showPushButton &&
                             <div className='d-flex justify-content-end'>
                                 <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
                                     <div className={"save-icon"}></div>
@@ -242,6 +272,7 @@ function SummaryDrawer(props) {
                                 </button>
                             </div>
                         }
+
                         {
                             !approvalDetails.IsSent &&
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
@@ -271,7 +302,8 @@ function SummaryDrawer(props) {
                     approvalDetails={approvalDetails}
                     type={approvalDrawer ? 'Approve' : 'Reject'}
                     anchor={'right'}
-                    masterId={approvalDetails.MasterId}
+                    masterId={approvalDetails?.MasterId !== null ? approvalDetails.MasterId : 0}
+                    OnboardingId={approvalDetails?.OnboardingId !== null ? approvalDetails.OnboardingId : 0}
                     masterPlantId={mastersPlantId}
                     closeDrawer={closeApproveRejectDrawer}
                     IsFinalLevelButtonShow={finalLevelUser}

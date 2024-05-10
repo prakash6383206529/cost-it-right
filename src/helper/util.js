@@ -1114,8 +1114,7 @@ export const labelWithUOMAndUOM = (label, UOM, ScrapUOM) => {
 }
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
-export const showTitleForActiveToggle = (index) => {
-
+export const showTitleForActiveToggle = (index, titleFirst, titleSecond) => {
   setTimeout(() => {
     let titleActive = document.getElementsByClassName("active-switch")[index];
 
@@ -1132,7 +1131,7 @@ export const showTitleForActiveToggle = (index) => {
       titleActive = document.getElementsByClassName("active-switch")[rowIndex];
     }
 
-    titleActive?.setAttribute('title', 'Active');
+    titleActive?.setAttribute('title', titleFirst);
     let titleInactive = document.getElementsByClassName("inactive-switch")[index];
 
     if (titleInactive === undefined || titleInactive == null) {
@@ -1147,35 +1146,7 @@ export const showTitleForActiveToggle = (index) => {
       }
       titleInactive = document.getElementsByClassName("inactive-switch")[rowIndex];
     }
-
-    titleInactive?.setAttribute('title', 'Inactive');
-    let titleBlocked = document.getElementsByClassName("blocked-switch")[index];
-    if (titleBlocked === undefined || titleBlocked == null) {
-      let rowIndex = index
-      let array = Array.from(String(rowIndex), Number)
-      if (array.length === 1) {
-        rowIndex = array[0]
-      } else if (array.length === 2) {
-        rowIndex = array[1]
-      } else {
-        rowIndex = array[2]
-      }
-      titleBlocked = document.getElementsByClassName("blocked-switch")[rowIndex];
-    }
-    let titleUnblocked = document.getElementsByClassName("unblocked-switch")[index];
-    if (titleUnblocked === undefined || titleUnblocked == null) {
-      let rowIndex = index
-      let array = Array.from(String(rowIndex), Number)
-      if (array.length === 1) {
-        rowIndex = array[0]
-      } else if (array.length === 2) {
-        rowIndex = array[1]
-      } else {
-        rowIndex = array[2]
-      }
-      titleUnblocked = document.getElementsByClassName("unblocked-switch")[rowIndex];
-    }
-
+    titleInactive?.setAttribute('title', titleSecond);
 
   }, 500);
 }
@@ -1444,3 +1415,10 @@ export function getTimeZone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
+export function encodeQueryParamsAndLog(obj) {
+  const queryParams = Object.entries(obj)
+    .filter(([key, value]) => value !== undefined && value !== "")
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+  return queryParams;
+}

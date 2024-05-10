@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import { Row, Col } from 'reactstrap'
+import { Row, Col, Nav, NavItem, NavLink, TabContent, TabPane, } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, NumberFieldHookForm } from '../../../layout/HookFormInputs'
@@ -10,6 +10,8 @@ import { debounce } from 'lodash'
 import { checkForDecimalAndNull, decimalNumberLimit, positiveAndDecimalNumber, number, nonZero } from '../../../../helper/validation'
 import TooltipCustom from '../../../common/Tooltip'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import classnames from 'classnames'
+import Bar from './sheetMetal/Bar'
 
 function Machining(props) {
     const { item, rmRowData, CostingViewMode } = props
@@ -220,349 +222,411 @@ function Machining(props) {
             delete errors.outerDiameter
         }
     }
+    const getTabno = (layout) => {
+        switch (layout) {
+            case 'Input Weight Calculator':
+                return '1'
+            case 'Bar':
+                return '2'
+            default:
+                break;
+        }
+    }
+    const [activeTab, setActiveTab] = useState(rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? '1' : rmRowData.WeightCalculatorRequest.LayoutType ? getTabno(rmRowData.WeightCalculatorRequest.LayoutType) : '1')
+    const toggle = (tab) => {
+        if (activeTab !== tab) {
+            setActiveTab(tab)
+        }
+    }
+    const toggleDrawer = (event, weightData = {}, originalWeight = {}) => {
+        if (
+            event.type === 'keydown' &&
+            (event.key === 'Tab' || event.key === 'Shift')
+        ) {
+            return
+        }
+
+        props.toggleDrawer('', weightData, originalWeight)
+    }
 
     return (
         <Fragment>
             <Row>
-                <form noValidate className="form"
-                    onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
-                    <Col md="12">
-                        <div className="costing-border px-4">
-                            <Row>
-                                <Col md="12" className={'mt25'}>
-                                    <div className="header-title">
-                                        <h5>{'Input Weight Calculator:'}</h5>
+                <Col>
+                    <Nav tabs className="subtabs cr-subtabs-head ">
+                        <NavItem>
+                            <NavLink
+                                className={classnames({ active: activeTab === '1' })}
+                                onClick={() => {
+                                    toggle('1')
+                                }}
+                                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
+                            >
+                                Input Weight Calculator
+                            </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink
+                                className={classnames({ active: activeTab === '2' })}
+                                onClick={() => {
+                                    toggle('2')
+                                }}
+                                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
+                            >
+                                Bar
+                            </NavLink>
+                        </NavItem>
+                    </Nav>
+                    <TabContent activeTab={activeTab}>
+                        {activeTab === '1' && (
+                            <TabPane tabId="1">
+                                <form noValidate className="form"
+                                    onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
+                                    <Col md="12">
+                                        <div className="costing-border px-4">
+                                            <Row>
+                                                <Col md="12" className={'mt25'}>
+                                                    <div className="header-title">
+                                                        <h5>{'Input Weight Calculator:'}</h5>
+                                                    </div>
+                                                </Col>
+                                            </Row>
+
+                                            <Row className={''}>
+                                                <Col md="3" >
+                                                    <TextFieldHookForm
+                                                        label={`Outer Diameter (mm)`}
+                                                        name={'outerDiameter'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={true}
+                                                        rules={{
+                                                            required: true,
+                                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
+                                                            min: {
+                                                                value: getValues('thickness'),
+                                                                message: 'Outer diameter should not be  less than thickness.'
+                                                            }
+                                                        }}
+                                                        handleChange={handleOuterDiameterChange}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.outerDiameter}
+                                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        label={`Thickness (mm)`}
+                                                        name={'thickness'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
+                                                            max: {
+                                                                value: getValues('outerDiameter'),
+                                                                message: 'Thickness should not be greater than outer diameter.'
+                                                            },
+                                                        }}
+                                                        handleChange={handleThicknessChange}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.thickness}
+                                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TooltipCustom disabledIcon={true} tooltipClass='inner-diameter' id={'inner-diameter'} tooltipText="Inner Diameter = Outer Diameter - (2 * Thickness)" />
+                                                    <TextFieldHookForm
+                                                        label={`Inner Diameter(mm)`}
+                                                        name={'InnerDiameter'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        id={'inner-diameter'}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.InnerDiameter}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        label={`Net Length (mm)`}
+                                                        name={'netLength'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.netLength}
+                                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                            <Row className={'mt25'}>
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        label={`Parting Margin (mm)`}
+                                                        name={'partingMargin'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.partingMargin}
+                                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                                    />
+                                                </Col>
+                                                <Col md="3" >
+                                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-length-machining'} tooltipText={'Gross Length (mm) = (Net Length (mm) + Parting Margin (mm))'} />
+                                                    <TextFieldHookForm
+                                                        label={`Gross Length (mm)`}
+                                                        name={'grossLength'}
+                                                        id={'gross-length-machining'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.grossLength}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                                <Col md="3" >
+                                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'piece-per-meter-length'} tooltipText={'Pc/meter = (1000/Gross Length (mm))'} />
+                                                    <TextFieldHookForm
+                                                        label={`Pc/meter`}
+                                                        name={'piecePerMeter'}
+                                                        id={'piece-per-meter-length'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.grossLength}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                                <Col md="3" >
+                                                    <TextFieldHookForm
+                                                        label={`RM Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                                                        name={'rmRate'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={rmRowData.RMRate}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.rmRate}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TooltipCustom disabledIcon={true} id={'rm-per-piece'} tooltipText={`RM/Pc = RM Rate (${reactLocalStorage.getObject("baseCurrency")})/(Pc/meter)`} />
+                                                    <TextFieldHookForm
+                                                        label={`RM/Pc`}
+                                                        name={'rmPerPiece'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        id={'rm-per-piece'}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.rmPerPiece}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={tooltipMessageForSheetWeight('Gross', 'Gross')} />
+                                                    <TextFieldHookForm
+                                                        label={`Gross Weight(Kg)`}
+                                                        name={'GrossWeight'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        id={'gross-weight'}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.GrossWeight}
+                                                        disabled={true}
+                                                    />
+                                                </Col >
+                                                <Col md="3">
+                                                    <TooltipCustom disabledIcon={true} id={'finish-weight'} tooltipText={tooltipMessageForSheetWeight('Finish', 'Net')} />
+                                                    <TextFieldHookForm
+                                                        label={`Finish Weight(Kg)`}
+                                                        name={'FinishWeight'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        id={'finish-weight'}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.FinishWeight}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TooltipCustom disabledIcon={true} id={'Scrap-weight'} tooltipText={"Scrap Weight =  Gross Weight - Finish Weight"} />
+                                                    <TextFieldHookForm
+                                                        label={`Scrap Weight(Kg)`}
+                                                        name={'ScrapWeight'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        id={'Scrap-weight'}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.ScrapWeight}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        label={`Scrap Rate (${reactLocalStorage.getObject("baseCurrency")}/Kg)`}
+                                                        name={'ScrapRate'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={props.rmRowData.ScrapRatePerScrapUOMConversion ?? props.rmRowData.ScrapRatePerScrapUOM}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.ScrapRate}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TooltipCustom disabledIcon={true} id={'Scrap-Cost'} tooltipText={"Scrap Cost =  Scrap Weight * Scrap Rate"} />
+                                                    <TextFieldHookForm
+                                                        label={`Scrap Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                                        name={'ScrapCost'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        id={'Scrap-Cost'}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.ScrapCost}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TooltipCustom disabledIcon={true} id={'net-rm-cost'} tooltipText={'Net RM Cost = RM/Pc - ScrapCost'} />
+                                                    <TextFieldHookForm
+                                                        label={`Net RM Cost`}
+                                                        name={'netRm'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        id={'net-rm-cost'}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.netRm}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                            </Row >
+
+                                        </div >
+                                    </Col >
+
+                                    {!CostingViewMode && <div className="col-sm-12 text-right mt-4">
+                                        <button
+                                            type={'button'}
+                                            className="reset mr15 cancel-btn"
+                                            onClick={cancel} >
+                                            <div className={'cancel-icon'}></div> {'Cancel'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={onSubmit}
+                                            disabled={props.CostingViewMode ? true : false}
+                                            className="submit-button save-btn">
+                                            <div className={'save-icon'}></div>
+                                            {'Save'}
+                                        </button>
                                     </div>
-                                </Col>
-                            </Row>
-
-                            <Row className={''}>
-                                <Col md="3" >
-                                    <TextFieldHookForm
-                                        label={`Outer Diameter (mm)`}
-                                        name={'outerDiameter'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
-                                            min: {
-                                                value: getValues('thickness'),
-                                                message: 'Outer diameter should not be  less than thickness.'
-                                            }
-                                        }}
-                                        handleChange={handleOuterDiameterChange}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.outerDiameter}
-                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Thickness (mm)`}
-                                        name={'thickness'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
-                                            max: {
-                                                value: getValues('outerDiameter'),
-                                                message: 'Thickness should not be greater than outer diameter.'
-                                            },
-                                        }}
-                                        handleChange={handleThicknessChange}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.thickness}
-                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} tooltipClass='inner-diameter' id={'inner-diameter'} tooltipText="Inner Diameter = Outer Diameter - (2 * Thickness)" />
-                                    <TextFieldHookForm
-                                        label={`Inner Diameter(mm)`}
-                                        name={'InnerDiameter'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        id={'inner-diameter'}
-                                        rules={{
-                                            required: false,
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.InnerDiameter}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Net Length (mm)`}
-                                        name={'netLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.netLength}
-                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                                    />
-                                </Col>
-                            </Row>
-                            <Row className={'mt25'}>
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Parting Margin (mm)`}
-                                        name={'partingMargin'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.partingMargin}
-                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                                    />
-                                </Col>
-                                <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-length-machining'} tooltipText={'Gross Length (mm) = (Net Length (mm) + Parting Margin (mm))'} />
-                                    <TextFieldHookForm
-                                        label={`Gross Length (mm)`}
-                                        name={'grossLength'}
-                                        id={'gross-length-machining'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.grossLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'piece-per-meter-length'} tooltipText={'Pc/meter = (1000/Gross Length (mm))'} />
-                                    <TextFieldHookForm
-                                        label={`Pc/meter`}
-                                        name={'piecePerMeter'}
-                                        id={'piece-per-meter-length'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.grossLength}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3" >
-                                    <TextFieldHookForm
-                                        label={`RM Rate (${reactLocalStorage.getObject("baseCurrency")})`}
-                                        name={'rmRate'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={rmRowData.RMRate}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.rmRate}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'rm-per-piece'} tooltipText={`RM/Pc = RM Rate (${reactLocalStorage.getObject("baseCurrency")})/(Pc/meter)`} />
-                                    <TextFieldHookForm
-                                        label={`RM/Pc`}
-                                        name={'rmPerPiece'}
-                                        Controller={Controller}
-                                        control={control}
-                                        id={'rm-per-piece'}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.rmPerPiece}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={tooltipMessageForSheetWeight('Gross', 'Gross')} />
-                                    <TextFieldHookForm
-                                        label={`Gross Weight(Kg)`}
-                                        name={'GrossWeight'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        id={'gross-weight'}
-                                        rules={{
-                                            required: false,
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.GrossWeight}
-                                        disabled={true}
-                                    />
-                                </Col >
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'finish-weight'} tooltipText={tooltipMessageForSheetWeight('Finish', 'Net')} />
-                                    <TextFieldHookForm
-                                        label={`Finish Weight(Kg)`}
-                                        name={'FinishWeight'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        id={'finish-weight'}
-                                        rules={{
-                                            required: false,
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.FinishWeight}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'Scrap-weight'} tooltipText={"Scrap Weight =  Gross Weight - Finish Weight"} />
-                                    <TextFieldHookForm
-                                        label={`Scrap Weight(Kg)`}
-                                        name={'ScrapWeight'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        id={'Scrap-weight'}
-                                        rules={{
-                                            required: false,
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.ScrapWeight}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Scrap Rate (${reactLocalStorage.getObject("baseCurrency")}/Kg)`}
-                                        name={'ScrapRate'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={props.rmRowData.ScrapRatePerScrapUOMConversion ?? props.rmRowData.ScrapRatePerScrapUOM}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.ScrapRate}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'Scrap-Cost'} tooltipText={"Scrap Cost =  Scrap Weight * Scrap Rate"} />
-                                    <TextFieldHookForm
-                                        label={`Scrap Cost (${reactLocalStorage.getObject("baseCurrency")})`}
-                                        name={'ScrapCost'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        id={'Scrap-Cost'}
-                                        rules={{
-                                            required: false,
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.ScrapCost}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'net-rm-cost'} tooltipText={'Net RM Cost = RM/Pc - ScrapCost'} />
-                                    <TextFieldHookForm
-                                        label={`Net RM Cost`}
-                                        name={'netRm'}
-                                        Controller={Controller}
-                                        control={control}
-                                        id={'net-rm-cost'}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.netRm}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row >
-
-                        </div >
-                    </Col >
-
-                    {!CostingViewMode && <div className="col-sm-12 text-right mt-4">
-                        <button
-                            type={'button'}
-                            className="reset mr15 cancel-btn"
-                            onClick={cancel} >
-                            <div className={'cancel-icon'}></div> {'Cancel'}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onSubmit}
-                            disabled={props.CostingViewMode ? true : false}
-                            className="submit-button save-btn">
-                            <div className={'save-icon'}></div>
-                            {'Save'}
-                        </button>
-                    </div>
-                    }
-                </form >
-
+                                    }
+                                </form >
+                            </TabPane>
+                        )}
+                        {activeTab === '2' && (
+                            <TabPane tabId="2">
+                                <Bar rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} CostingViewMode={props.CostingViewMode} />
+                            </TabPane>
+                        )}
+                    </TabContent>                
+                </Col>
             </Row >
         </Fragment >
     )
