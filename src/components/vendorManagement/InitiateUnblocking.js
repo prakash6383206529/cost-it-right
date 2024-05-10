@@ -37,12 +37,9 @@ const InitiateUnblocking = (props) => {
     const [selectedPlant, setSelectedPlant] = useState(null);
     const [isClassification, setIsClassification] = useState((deviationData?.ClassificationStatus === ONBOARDINGID ? true : false));
     const [isLpsRating, setIsLpsRating] = useState((deviationData?.LPSRatingStatus === ONBOARDINGID ? true : false));
-    const [openDraftDrawer, setOpenDraftDrawer] = useState(false); // State variable to control the opening of the approval drawer
     const [showApproval, setShowApproval] = useState(false);
-    const [isFinalCommonApproval, setIsFinalCommonApproval] = useState(false)
     const [isClassificationChecked, setIsClassificationChecked] = useState(false)
     const [isLpsRatingChecked, setIsLpsRatingChecked] = useState(false)
-    const isSendForApprovalEnabled = isClassificationChecked || isLpsRatingChecked;
     const [vendor, setVendor] = useState("");
     const [showApprvalStatus, setShowApprovalStatus] = useState(false)
 
@@ -187,67 +184,72 @@ const InitiateUnblocking = (props) => {
     // };
     const handleNext = () => {
         dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
-
             let approvalTypeIds = Array.from(res?.data?.Data?.OnboardingApprovalLevels.values(), level => level.ApprovalTypeId);
-
             if (approvalTypeIds?.length === 0 || !res?.data?.Data?.OnboardingApprovalLevels?.length || res?.data?.Data?.OnboardingApprovalLevels?.length === 0) {
                 setShowApproval(false)
                 Toaster.warning('User is not in the approval flow');
                 return;
             }
-            if (isClassificationChecked && isLpsRatingChecked) {
-                handleCombinedApproval(approvalTypeIds, res);
-            } else if (isClassificationChecked || isLpsRatingChecked) {
-                handleSingleApproval(approvalTypeIds, res);
-            } else {
 
+            let checkedApproval = [];
+            if (isClassificationChecked && isLpsRatingChecked) {
+
+                checkedApproval.push(CLASSIFICATIONAPPROVALTYPEID, LPSAPPROVALTYPEID)
+                handleCombinedApproval(approvalTypeIds, res, checkedApproval);
+            } else if (isClassificationChecked || isLpsRatingChecked) {
+
+                checkedApproval.push(isClassificationChecked ? CLASSIFICATIONAPPROVALTYPEID : LPSAPPROVALTYPEID)
+                const similarApprovals = checkedApproval.filter(approval => approvalTypeIds.includes(approval));
+
+                handleSingleApproval(similarApprovals, res, checkedApproval);
+            } else {
                 Toaster.warning(`User is not in the approval flow for ${isClassificationChecked === CLASSIFICATIONAPPROVALTYPEID ? 'LPS Rating' : 'Classification'}`);
             }
         }));
     };
 
-    const handleCombinedApproval = (approvalTypeIds, res) => {
-        let checkedApproval = [];
-        if (isClassificationChecked && isLpsRatingChecked) {
-            checkedApproval.push(CLASSIFICATIONAPPROVALTYPEID, LPSAPPROVALTYPEID)
-        }
+    const handleCombinedApproval = (approvalTypeIds, res, checkedApproval) => {
 
+        let approvalType = checkedApproval?.find(approval => approval === approvalTypeIds[0]);
+        if (approvalTypeIds?.length === 1) {
+            // Match approvalTypeIds with checkedApproval
 
-        const combinedApprovalTypeIds = [...approvalTypeIds]; // Duplicate the array for both types
-        if (combinedApprovalTypeIds?.length === 1) {
-            const approvalType = combinedApprovalTypeIds[0] === LPSAPPROVALTYPEID ? 'LPS Rating' : 'Classification';
-            Toaster.warning(`User is only in ${approvalType} approval flow`);
+            if (approvalType === CLASSIFICATIONAPPROVALTYPEID) {
+                Toaster.warning(`User is only in classification approval flow`);
+            } else if (approvalType === LPSAPPROVALTYPEID) {
+                Toaster.warning(`User is only in LPS Rating approval flow`);
+            } else {
+                Toaster.error("Invalid approval type.");
+            }
             return;
         }
-
-        processApproval(combinedApprovalTypeIds, res);
+        processApproval(approvalTypeIds, res);
     };
 
 
-    const handleSingleApproval = (approvalTypeIds, res) => {
+    const handleSingleApproval = (approvalTypeIds, res, checkedApproval) => {
+
+        const arraysAreEqual = (array1, array2) => {
+            return JSON.stringify(array1) === JSON.stringify(array2);
+        };
 
 
-        let checkedApproval = [];
-        if (isClassificationChecked || isLpsRatingChecked) {
-            checkedApproval.push(isClassificationChecked ? CLASSIFICATIONAPPROVALTYPEID : LPSAPPROVALTYPEID)
+        if (!arraysAreEqual(approvalTypeIds, checkedApproval)) {
+
+
+            Toaster.warning(`User is not in the approval flow for ${checkedApproval === CLASSIFICATIONAPPROVALTYPEID ? 'LPS Rating' : 'Classification'}`);
+        } else {
+            processApproval(checkedApproval, res);
         }
-
-        processApproval(approvalTypeIds, res);
-
-        // approvalTypeIds.forEach(approvalTypeId => {
-        //     processApproval(approvalTypeId, res);
-        // });
     };
 
     const processApproval = (approvalTypeIds, res) => {
+
         let levelDetailsTempArray = []; // Array to store level details responses
         approvalTypeIds.forEach(approvalTypeId => {
             let levelDetailsTemp;
-
             levelDetailsTemp = userTechnologyLevelDetailsWithoutCostingToApproval(approvalTypeId, res?.data?.Data?.OnboardingApprovalLevels);
-
             levelDetailsTempArray.push(levelDetailsTemp); // Store response in array
-
 
         });
 
@@ -257,7 +259,6 @@ const InitiateUnblocking = (props) => {
         else {
             let finalUserResponses = []; // Array to store responses for final user check
             levelDetailsTempArray.forEach(details => {
-
                 let obj = {};
                 obj.DepartmentId = userDetails().DepartmentId;
                 obj.UserId = loggedInUserId();
@@ -266,18 +267,50 @@ const InitiateUnblocking = (props) => {
                 obj.approvalTypeId = details?.ApprovalTypeId; // Access the approval type ID from the response
                 obj.plantId = deviationData?.PlantId ?? EMPTY_GUID;
                 dispatch(checkFinalUser(obj, res => {
+
                     finalUserResponses.push({ ...res.data.Data, type: details.ApprovalTypeId === LPSAPPROVALTYPEID ? "lps" : "classification" });
+                    let tempArr = _.filter(finalUserResponses, ['IsUserInApprovalFlow', true], ['IsFinalApprover', false]);
 
-                    if (res?.data?.Result) {
-                        setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover);
-                        let tempArr = _.filter(finalUserResponses, ['IsUserInApprovalFlow', true], ['IsFinalApprover', false]);
+                    // if (res?.data?.Result) {
+                    // 
+                    // setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover);
+                    if (finalUserResponses.length === levelDetailsTempArray.length) {
 
-                        if (tempArr?.length > 0) {
-                            setShowApproval(true);
-                        } else if (finalUserResponses.some(response => response.IsFinalApprover === true)) {
-                            Toaster.warning("Final level user cannot send costing for approval.");
-                        } else {
-                            Toaster.warning("User does not have permission to send for approval.");
+                        if (tempArr?.length === 1) {
+
+                            if (tempArr[0].IsFinalApprover === false && tempArr[0].IsUserInApprovalFlow === true) {
+
+                                setShowApproval(true);
+                            } else {
+
+                                Toaster.warning(`Final level user cannot send ${tempArr.type} for approval.`);
+                            }
+                        }
+                        else if (finalUserResponses?.length > 1) {
+
+                            // Check all elements in tempArr
+                            const satisfiedElements = _.filter(finalUserResponses, (response) => {
+                                return response.IsFinalApprover === false && response.IsUserInApprovalFlow === true;
+                            });
+
+
+                            const finalLevelElements = _.filter(finalUserResponses, (response) => {
+                                return !(response.IsFinalApprover === false && response.IsUserInApprovalFlow === true);
+                            });
+
+                            const undefinedElements = _.filter(finalUserResponses, (response) => {
+                                return !(response.IsFinalApprover === true && response.IsUserInApprovalFlow === false);
+                            });
+
+                            // If all conditions are satisfied, open the drawer; otherwise, show a warning
+                            if (satisfiedElements.length === finalUserResponses.length) {
+
+                                setShowApproval(true);
+                            } else {
+
+
+                                Toaster.warning(`Final level user cannot send ${finalLevelElements[0].type} for approval.`);
+                            }
                         }
                     }
                 }));
@@ -324,21 +357,15 @@ const InitiateUnblocking = (props) => {
         }
     };
     const closeDrawer = (e, type = '') => {
-
-
-
         if (type === 'Cancel') {
-
             setShowApproval(false)
         } else {
             setShowApprovalStatus(true)
             props.toggle('2')
         }
-
     }
 
     return (
-
         <>
             {showApprvalStatus ? <CommonApproval MasterId={0} OnboardingApprovalId={ONBOARDINGID} /> :
                 <div className="container-fluid">
@@ -452,7 +479,6 @@ const InitiateUnblocking = (props) => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-
                                                 <tr >
                                                     <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorName ?? '-'}</td>
                                                     <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.PlantName ?? '-'}</td>
@@ -463,15 +489,10 @@ const InitiateUnblocking = (props) => {
                                                     <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.Division ?? '-'}</td>
                                                     {/* <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.DepartmentName ?? '-'}</td> */}
                                                 </tr>
-
-
                                             </tbody >
                                         </Table >
-
-
                                     </div >
                                 </Col >
-
                             </>
                         )}
                     </div>
@@ -504,11 +525,8 @@ const InitiateUnblocking = (props) => {
                         // Add other props as needed
                         />
                     )}
-
                 </div>}
         </>
-
-
     );
 };
 
