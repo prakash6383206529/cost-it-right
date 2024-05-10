@@ -141,15 +141,15 @@ function SummaryDrawer(props) {
                 DepartmentId: Data?.DepartmentId,
                 UserId: loggedInUserId(),
                 TechnologyId: props?.masterId,
-                Mode: 'master',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+                Mode: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? 'onboarding' : 'master',
+                approvalTypeId: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? Data?.ApprovalTypeId : costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
                 plantId: masterPlantId
             }
             setMastersPlantId(masterPlantId)
             setDataForFetchingAllApprover({
                 processId: approvalData.approvalProcessId,
                 levelId: Data?.MasterSteps[Data?.MasterSteps.length - 1].LevelId,
-                mode: 'Master'
+                mode: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? 'onboarding' : 'Master'
             })
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
