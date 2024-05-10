@@ -8007,3 +8007,7 @@ export const NFR_RAW_MATERIAL_LABEL = 'Raw Material'
 export const NFR_COMPONENT_CUSTOMIZED_NAME = 'Part'
 export const NFR_BOP_STANDARD_NAME = 'BoughtOutPart'
 export const NFR_RAW_MATERIAL_NAME = 'RawMaterial'
+
+export const REJECTION_RECOVERY_APPLICABILITY = [
+    { label: "Scap Rate * Net weight", value: 1 },
+]
