@@ -4,7 +4,7 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Container, Row } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { CRMHeads } from '../../../../../config/constants';
+import { CRMHeads, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { ViewCostingContext } from '../../CostingDetails';
 import OtherDiscountTable from './OtherDiscountTable';
@@ -13,6 +13,8 @@ import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepT
 import _ from 'lodash';
 import Toaster from '../../../../common/Toaster';
 import { setOtherDiscountData } from '../../../actions/Costing';
+import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 
 function AddOtherDiscount(props) {
     const { register, handleSubmit, formState: { errors }, control, getValues, setValue } = useForm({
@@ -44,6 +46,7 @@ function AddOtherDiscount(props) {
         control,
         name: ['ApplicabilityCost'],
     })
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
     useEffect(() => {
         setValue('ApplicabilityCost', '')
@@ -56,6 +59,10 @@ function AddOtherDiscount(props) {
             findApplicabilityCost()
         }
     }, [fieldValuesForFixed])
+    useEffect(() => {
+        let request = partType ? 'multiple technology assembly' : ''
+        dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    }, [])
 
     const renderListing = (label) => {
         const temp = [];
