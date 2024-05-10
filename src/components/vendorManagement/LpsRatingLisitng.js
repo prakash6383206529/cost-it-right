@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -14,8 +14,10 @@ import { MESSAGES } from '../../config/message';
 import LoaderCustom from '../common/LoaderCustom';
 import Toaster from '../common/Toaster';
 import DayTime from '../common/DayTimeWrapper';
+import { filterParams } from '../common/DateFilter';
 
 const LpsRatingListing = () => {
+    const searchRef = useRef(null);
     const [isLoader, setIsLoader] = useState(false);
     const [showPopupToggle, setShowPopupToggle] = useState(false);
     const [cellValue, setCellValue] = useState('');
@@ -25,6 +27,7 @@ const LpsRatingListing = () => {
     const [ActivateAccessibility, setActivateAccessibility] = useState(false);
     const [noData, setNoData] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
+    const [gridApi, setGridApi] = useState(null);
 
 
 
@@ -87,10 +90,7 @@ const LpsRatingListing = () => {
         }))
     }
     const confirmDeactivateItem = (data, cell) => {
-
-
         dispatch(updateLPSRatingStatus(data, res => {
-
             if (res && res.data && res.data.Result) {
                 if (cell === "Unblocked") {
                     Toaster.success(MESSAGES.LPSRATING_BLOCKED_SUCCESSFULLY)
@@ -104,33 +104,30 @@ const LpsRatingListing = () => {
     }
 
     const handleChange = (cell, row, index) => {
-
         let data = {
             LPSRatingId: row.LPSRatingId,
             IsBlocked: !cell, // Toggle the status
             LoggedInUserId: loggedInUserId(),
         }
-
         setCellData(data);
         setCellValue(cell)
-
         setShowPopupToggle(true);
     }
 
     const statusButtonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         // if (rowData.UserId === loggedInUserId()) return null;
-        showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive');
+        showTitleForActiveToggle(props?.rowIndex, rowData?.Status, rowData?.Status);
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
                     {/* <span>Switch with default style</span> */}
                     <Switch
-                        onChange={() => handleChange(rowData.IsBlocked, rowData)}
-                        checked={rowData.IsBlocked}
+                        onChange={() => handleChange(cellValue, rowData)}
+                        checked={cellValue === "Blocked"}
                         // disabled={!ActivateAccessibility}
                         background="#ff6600"
                         onColor="#FC5774"
@@ -138,7 +135,7 @@ const LpsRatingListing = () => {
                         offColor="#4DC771"
                         id="normal-switch"
                         height={24}
-                        className={rowData.IsBlocked ? 'active-switch' : 'inactive-switch'}
+                        className={cellValue ? "active-switch" : "inactive-switch"}
                     />
                 </label>
             </>
@@ -147,13 +144,14 @@ const LpsRatingListing = () => {
     const defaultColDef = {
         resizable: true,
         sortable: false,
+        filter: true
     };
 
     const closePopUp = () => {
         setShowPopupToggle(false);
     }
     const onGridReady = (params) => {
-        // setGridApi(params.api)
+        setGridApi(params.api)
         // setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
         // agGridRef.current = params.api;
@@ -162,6 +160,9 @@ const LpsRatingListing = () => {
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
     }
     const frameworkComponents = {
         customNoRowsOverlay: NoContentFound,
@@ -175,6 +176,8 @@ const LpsRatingListing = () => {
             {/* {(isLoader) ? <LoaderCustom customClass="loader-center" /> : */}
 
             <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
+                <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+
                 <Row className="no-filter-row">
                     <Col md={6} className="text-right filter-block"></Col>
                 </Row>
@@ -197,9 +200,8 @@ const LpsRatingListing = () => {
                                 suppressRowClickSelection={true}
                                 frameworkComponents={frameworkComponents}
                             >
-                                {/* <AgGridColumn field="sno" headerName="S. NO"></AgGridColumn> */}
                                 <AgGridColumn field="LPSRatingName" headerName="LPS Rating"></AgGridColumn>
-                                <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
+                                <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
                                 <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                             </AgGridReact>

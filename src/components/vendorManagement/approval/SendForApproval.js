@@ -20,10 +20,6 @@ import { getUsersOnboardingLevelAPI } from '../../../actions/auth/AuthActions';
 
 
 const SendForApproval = (props) => {
-
-
-
-
   const history = useHistory();
   const [isLoader, setIsLoader] = useState(false)
 
