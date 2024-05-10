@@ -160,7 +160,7 @@ function NonFerrous(props) {
         const shotWeight = getValues('shotWeight')
         const burningPercent = getValues('burningPercent')
         const cavity = getValues('cavity')
-        const burningValue = checkForNull((checkForNull(shotWeight) * checkForNull(burningPercent)) / 100 * cavity)
+        const burningValue = checkForNull(shotWeight) / (checkForNull(burningPercent) / 100 * cavity)
 
         const updatedValue = dataToSend
         updatedValue.burningValue = burningValue
@@ -245,9 +245,9 @@ function NonFerrous(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                                 }}
                                                 handleChange={() => { }}
@@ -285,9 +285,9 @@ function NonFerrous(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                     max: {
                                                         value: 100,
@@ -303,7 +303,7 @@ function NonFerrous(props) {
                                             />
                                         </Col>
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'buring-nonferrous'} tooltipText={"Burning Value = Shot Weight * (Burning Percentage / 100) * No. of Cavity"} />
+                                            <TooltipCustom disabledIcon={true} id={'buring-nonferrous'} tooltipText={"Burning Value = Shot Weight / (No. of Cavity * Burning Percentage / 100)"} />
                                             <TextFieldHookForm
                                                 label={`Burning Value`}
                                                 name={'burningValue'}
@@ -311,7 +311,7 @@ function NonFerrous(props) {
                                                 control={control}
                                                 id={'buring-nonferrous'}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
@@ -364,7 +364,7 @@ function NonFerrous(props) {
 
                             <Row className={'mt25'}>
                                 <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} id={'gross-weight-nonferrous'} tooltipText={'Gross Weight = (Casting Weight + Net Loss Weight)'} />
+                                    <TooltipCustom disabledIcon={true} id={'gross-weight-nonferrous'} tooltipText={'Gross Weight = (Casting Weight + Burning Value + Net Loss Weight)'} />
                                     <TextFieldHookForm
                                         label={`Gross Weight(Kg)`}
                                         name={'grossWeight'}
