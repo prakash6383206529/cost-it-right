@@ -216,7 +216,7 @@ const LpsRatingListing = () => {
                 </div>}
 
                 {showPopupToggle &&
-                    <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.LPS_RATING_APPROVED : MESSAGES.LPS_RATING_REJECTED}`} />
+                    <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue === "Blocked" ? MESSAGES.LPS_RATING_UNBLOCK : MESSAGES.LPS_RATING_BLOCK}`} />
                 }
             </div>
 
