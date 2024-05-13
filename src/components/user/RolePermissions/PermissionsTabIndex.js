@@ -5,7 +5,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import {
     DASHBOARD_AND_AUDIT, MASTERS, ADDITIONAL_MASTERS, COSTING, SIMULATION, REPORTS_AND_ANALYTICS,
-    USERS, AUDIT, RFQ, NFR, VENDOR_MANAGEMENT,
+    USERS, AUDIT, RFQ, NFR, VENDOR_MANAGEMENT_ROLE,
 } from "../../../config/constants";
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
@@ -127,7 +127,7 @@ class PermissionsTabIndex extends Component {
         let auditObj = Data && Data.filter(el => el.ModuleName === AUDIT)
         let rfqObj = Data && Data.filter(el => el.ModuleName === RFQ)
         let nfrObj = Data && Data.filter(el => el.ModuleName === NFR)
-        let supperilerObj = Data && Data.filter(el => el.ModuleName === VENDOR_MANAGEMENT)
+        let supperilerObj = Data && Data.filter(el => el.ModuleName === VENDOR_MANAGEMENT_ROLE)
 
         this.setState({
             actionData: Data,
@@ -155,7 +155,7 @@ class PermissionsTabIndex extends Component {
             this.permissionHandler(this.state.audit, AUDIT)
             this.permissionHandler(this.state.rfq, RFQ)
             this.permissionHandler(this.state.nfr, NFR)
-            this.permissionHandler(this.state.supplierManagement, VENDOR_MANAGEMENT)
+            this.permissionHandler(this.state.supplierManagement, VENDOR_MANAGEMENT_ROLE)
 
         })
     }
@@ -180,6 +180,7 @@ class PermissionsTabIndex extends Component {
     }
 
     permissionHandler = (data, ModuleName) => {
+
         this.props.moduleData(data, ModuleName)
     }
     render() {

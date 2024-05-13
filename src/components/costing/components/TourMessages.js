@@ -401,7 +401,7 @@ export function Steps(t, params, config) {
             },
             {
                 element: '.Raw_material_grossWeight0',
-                intro: t("RawMaterialCost.grossWeigtht"),
+                intro: t("RawMaterialCost.grossWeight"),
             },
             {
                 element: '.Raw_material_finishWeight0',

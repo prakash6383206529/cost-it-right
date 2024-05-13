@@ -117,6 +117,7 @@ export const fetchVendorData = () => {
             .then(response => {
 
 
+
                 dispatch({
                     type: VENDOR_DATA,
                     payload: response.status === 200 ? response.data : null
@@ -133,7 +134,7 @@ export const fetchVendorData = () => {
 export const fetchVendorDependentPlantData = (data) => {
 
     return dispatch => {
-        axios.get(`${API.getPlantData}${data}`, config())
+        axios.get(`${API.getPlantData}/${data}`, config())
             .then(response => {
 
 
@@ -151,6 +152,7 @@ export const fetchVendorDependentPlantData = (data) => {
     };
 };
 export const fetchDeviationApprovalData = (vendorId, plantId) => {
+
 
     const queryString = `vendorId=${vendorId}&plantId=${plantId}`;
 
@@ -171,22 +173,19 @@ export const fetchDeviationApprovalData = (vendorId, plantId) => {
     };
 
 }
-export const getMonths = () => {
-    return dispatch => {
-        axios.get(`${API.getMonths}`, config())
-            .then(response => {
 
+export function sendForUnblocking(data, callback) {
 
-                dispatch({
-                    type: MONTHS,
-                    payload: response.status === 200 ? response.data : null
-                });
-            })
-
-            .catch(error => {
-                dispatch({ type: API_FAILURE });
-                apiErrors(error);
-                // callback(error);
-            });
+    return (dispatch) => {
+        const request = axios.post(API.sendForUnblocking, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
     };
-};
+}
