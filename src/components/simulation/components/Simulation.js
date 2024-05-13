@@ -135,10 +135,12 @@ function Simulation(props) {
                 setShowCustomer(true)
                 setShowVendor(true)
             }
-        } else {
+        }
+        if (!props.isRMPage && !props.preserveData) {
             dispatch(setMasterForSimulation({ label: '', value: '' }))
             dispatch(setTokenForSimulation([]))
         }
+
         return () => {
             reactLocalStorage?.setObject('vendorData', [])
         }
