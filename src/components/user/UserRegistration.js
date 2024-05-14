@@ -2621,7 +2621,7 @@ function UserRegistration(props) {
                       <div className="input-group col-md-3">
                         <TextFieldHookForm
                           name="UserName"
-                          label="User name"
+                          label="User Name"
                           errors={errors.UserName}
                           Controller={Controller}
                           control={control}
