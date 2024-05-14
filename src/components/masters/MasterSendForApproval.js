@@ -182,8 +182,9 @@ function MasterSendForApproval(props) {
         const dept = getValues('dept')
         const approver = getValues('approver')
         setIsDisable(true)
-        if (initialConfiguration.IsMultipleUserAllowForApproval && (!getValues('dept')?.label)) {
+        if (initialConfiguration.IsMultipleUserAllowForApproval && (!getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
             Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.')
+            setIsDisable(false)
             return false
         }
         if (type === 'Sender') {
