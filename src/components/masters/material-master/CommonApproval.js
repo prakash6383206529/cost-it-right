@@ -252,7 +252,7 @@ function CommonApproval(props) {
         // setPageNoNew(1)
         // setCurrentRowIndex(0)
         dispatch(updatePageNumber(1))
-        dispatch(updateCurrentRowIndex(0))
+        dispatch(updateCurrentRowIndex(10))
         gridOptions?.columnApi?.resetColumnState();
         getTableData(0, globalTakes, true, floatingFilterData)
     }
