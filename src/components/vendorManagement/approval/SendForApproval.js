@@ -511,9 +511,8 @@ const SendForApproval = (props) => {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      rules={{ required: false }}
+                      rules={{ required: true }}
                       mandatory={true}
-
                       // mandatory={mandatoryRemark ? true : false}
                       // rules={{ required: mandatoryRemark ? true : false }}
                       handleChange={() => { }}
