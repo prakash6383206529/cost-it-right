@@ -37,7 +37,7 @@ class Department extends Component {
 	*/
 	componentDidMount() {
 		const { DepartmentId, isEditFlag } = this.props;
-		this.props.getPlantSelectListByType(ZBC, "MASTER", '', (res) => {
+		this.props.getPlantSelectListByType(ZBC, "", '', (res) => {
 			let list = res?.data?.DataList?.filter(element => element?.Value !== '0')
 			let temp = []
 			list?.forEach((item) => {
