@@ -151,7 +151,7 @@ export const fetchVendorDependentPlantData = (data) => {
             });
     };
 };
-export const fetchDeviationApprovalData = (vendorId, plantId) => {
+export const fetchDeviationApprovalData = (vendorId, plantId, callback) => {
 
 
     const queryString = `vendorId=${vendorId}&plantId=${plantId}`;
@@ -163,7 +163,9 @@ export const fetchDeviationApprovalData = (vendorId, plantId) => {
                 dispatch({
                     type: DETAILS_FOR_DEVIATION_APPROVAL,
                     payload: response.status === 200 ? response.data : null
+
                 })
+                callback(response)
             })
             .catch(error => {
                 dispatch({ type: API_FAILURE });

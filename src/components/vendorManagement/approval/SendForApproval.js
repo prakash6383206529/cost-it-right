@@ -15,30 +15,26 @@ import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_GUID, LPSAPPROVALTYPEID, RELEASESTR
 import WarningMessage from '../../common/WarningMessage';
 import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
-import { is } from 'date-fns/locale';
 import { getUsersOnboardingLevelAPI } from '../../../actions/auth/AuthActions';
-import { months } from 'moment';
+import LoaderCustom from '../../common/LoaderCustom';
 
 
 const SendForApproval = (props) => {
-  const history = useHistory();
   const [isLoader, setIsLoader] = useState(false)
 
   const dispatch = useDispatch()
-  const { register, control, setValue, handleSubmit, getValues, formState: { errors } } = useForm({
+  const { register, control, setValue, handleSubmit, reset, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
   const [reasonOption, setReasonOption] = useState([])
   const [selectedReason, setSelectedReason] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
-  const [approvalDropDown, setApprovalDropDown] = useState([])
   const [disableRS, setDisableRS] = useState(false);
   const userData = userDetails()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [showValidation, setShowValidation] = useState(false)
-  const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const [selectedApproverLevelId, setSelectedApproverLevelId] = useState('')
   const [selectedApprover, setSelectedApprover] = useState('')
@@ -65,7 +61,9 @@ const SendForApproval = (props) => {
   } = props;
 
   useEffect(() => {
+    setIsLoader(true)
     dispatch(getAllMasterApprovalDepartment((res) => {
+      res ? setIsLoader(false) : setIsLoader(false)
       const Data = res?.data?.SelectList;
       const departObj = Data && Data.filter(item => item.Value === userDetails().DepartmentId);
       setTimeout(() => {
@@ -197,7 +195,7 @@ const SendForApproval = (props) => {
         SenderLevelId: levelDetails?.LevelId,
         SenderId: loggedInUserId(),
         SenderLevel: levelDetails?.Level,
-        SenderRemark: '',
+        // SenderRemark: isClassification ? getValues('remarks') : getValues('remarks1'),
         LoggedInUserId: loggedInUserId(),
         PurchasingGroup: '',
         MaterialGroup: '',
@@ -215,6 +213,7 @@ const SendForApproval = (props) => {
         ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
           ? classificationApproverIdList
           : [approver?.value || ''],
+        SenderRemark: getValues('remarks'),
         MasterCreateRequest: {
           CreateVendorPlantClassificationLPSRatingUnblocking: {
             VendorClassificationId: deviationData?.VendorClassificationId,
@@ -228,7 +227,7 @@ const SendForApproval = (props) => {
             LoggedInUserId: loggedInUserId(),
             PlantId: deviationData.PlantId,
             PlantName: deviationData.PlantName,
-            Remark: getValues('remarks') || '',
+            Remark: '',
             DepartmentId: ''
           }
         }
@@ -238,6 +237,7 @@ const SendForApproval = (props) => {
         ...senderObj,
         ReasonId: getValues('reason1')?.value || '',
         Reason: getValues('reason1')?.label || '',
+        SenderRemark: getValues('remarks1'),
         ApprovalTypeId: LPSAPPROVALTYPEID,
         ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
           ? lpsApproverIdList
@@ -245,8 +245,8 @@ const SendForApproval = (props) => {
         MasterCreateRequest: {
           CreateVendorPlantClassificationLPSRatingUnblocking: {
             VendorClassificationId: '',
-            VendorLPSRatingId: deviationData.VendorLPSRatingId,
-            IsSendForApproval: deviationData.LPSRatingIsBlocked,
+            VendorLPSRatingId: deviationData?.VendorLPSRatingId,
+            IsSendForApproval: deviationData?.LPSRatingIsBlocked,
             DeviationId: '00000000-0000-0000-0000-000000000000',
             CostingTypeId: 1,
             DeviationType: 2,
@@ -254,7 +254,7 @@ const SendForApproval = (props) => {
             LoggedInUserId: loggedInUserId(),
             PlantId: deviationData.PlantId,
             PlantName: deviationData.PlantName,
-            Remark: getValues('remarks1') || '',
+            Remark: '',
             DepartmentId: ''
           }
         }
@@ -315,6 +315,7 @@ const SendForApproval = (props) => {
     ) {
       return
     }
+    reset()
     // dispatch(setCostingApprovalData([]))
     props.closeDrawer('', 'Cancel')
   }
@@ -405,6 +406,7 @@ const SendForApproval = (props) => {
               </Col>
             </Row>
 
+            {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
 
             {viewApprovalData &&
               viewApprovalData.map((data, index) => (

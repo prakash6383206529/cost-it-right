@@ -43,22 +43,29 @@ const LpsRatingListing = () => {
         // setIsLoader(true);
         applyPermission()
         dispatch(getLPSRatingListing(true, (res) => {
-            setIsLoader(false);
+            setIsLoader(true);
             if (res.errorMessage) {
                 setErrorMessage(res.errorMessage);
+                setIsLoader(false);
             }
             else {
                 setErrorMessage(null);
                 if (res.status === 204 && res.data === '') {
                     setCellValue([]);
-                } else if (res && res.data && res.data.DataList) {
-                    let data = res.data.DataList;
+                    setIsLoader(false);
+                } else if (res?.status === 200 && res?.data && res?.data?.DataList) {
+                    setIsLoader(false);
+                    let data = res?.data?.DataList;
                     setCellValue(data.map(row => row.status));
                 }
             }
 
         }));
     }, [dispatch]);
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
             setIsLoader(true)
@@ -73,22 +80,12 @@ const LpsRatingListing = () => {
         }
     }
 
-    const confirmApprovalStatus = (data) => {
-        // Handle confirm approval status
-        setShowPopupToggle(false);
-    }
 
     const onPopupConfirmToggle = () => {
         // Handle popup confirmation toggle
         confirmDeactivateItem(cellData, cellValue)
     }
-    const getTableListData = () => {
-        setIsLoader(true)
-        dispatch(getLPSRatingListing(true, (res) => {
 
-            setIsLoader(false)
-        }))
-    }
     const confirmDeactivateItem = (data, cell) => {
         dispatch(updateLPSRatingStatus(data, res => {
             if (res && res.data && res.data.Result) {
@@ -162,14 +159,14 @@ const LpsRatingListing = () => {
     };
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
     const frameworkComponents = {
         customNoRowsOverlay: NoContentFound,
-
+        hyphenFormatter: hyphenFormatter,
         statusButtonFormatter: statusButtonFormatter,
         effectiveDateFormatter: effectiveDateFormatter
     };
@@ -205,7 +202,7 @@ const LpsRatingListing = () => {
                             >
                                 <AgGridColumn field="LPSRatingName" headerName="LPS Rating"></AgGridColumn>
                                 <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
+                                <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                             </AgGridReact>
                         }
