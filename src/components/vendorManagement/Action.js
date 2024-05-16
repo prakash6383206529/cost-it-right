@@ -40,7 +40,7 @@ export const fetchApprovalData = () => {
 
 
 
-export const getVendorClassificationListing = () => {
+export const getVendorClassificationListing = (callback) => {
     return dispatch => {
         axios.get(`${API.getVendorClassificationList}`, config())
             .then(response => {
@@ -49,6 +49,7 @@ export const getVendorClassificationListing = () => {
                     type: VENDOR_CLASSIFICATION_DATA,
                     payload: response.status === 200 ? response.data : null
                 });
+                callback(response)
             })
 
             .catch(error => {
@@ -68,9 +69,10 @@ export const getLPSRatingListing = (callback) => {
                 type: LPS_RATING_DATA,
                 payload: response.status === 200 ? response.data : null
             });
+            callback(response)
         } catch (error) {
             dispatch({ type: API_FAILURE });
-            // callback(error);
+            callback(error);
             apiErrors(error);
         }
     };
@@ -151,11 +153,8 @@ export const fetchVendorDependentPlantData = (data) => {
             });
     };
 };
-export const fetchDeviationApprovalData = (vendorId, plantId) => {
-
-
+export const fetchDeviationApprovalData = (vendorId, plantId, callback) => {
     const queryString = `vendorId=${vendorId}&plantId=${plantId}`;
-
     return dispatch => {
         axios.get(`${API.getVendorPlantDetailForDeviation}?${queryString}`, config())
             .then(response => {
@@ -163,12 +162,14 @@ export const fetchDeviationApprovalData = (vendorId, plantId) => {
                 dispatch({
                     type: DETAILS_FOR_DEVIATION_APPROVAL,
                     payload: response.status === 200 ? response.data : null
+
                 })
+                callback(response)
             })
             .catch(error => {
                 dispatch({ type: API_FAILURE });
                 apiErrors(error);
-                // callback(error);
+                callback(error);
             });
     };
 

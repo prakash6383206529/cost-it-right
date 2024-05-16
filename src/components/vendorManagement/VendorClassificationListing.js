@@ -26,8 +26,6 @@ const VendorClassificationListing = () => {
     const [showPopupToggle, setShowPopupToggle] = useState(false)
     const [cellValue, setCellValue] = useState('');
     const [cellData, setCellData] = useState('');
-    const [errorMessage, setErrorMessage] = useState('')
-    const [noData, setNoData] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [ActivateAccessibility, setActivateAccessibility] = useState(false);
     const [render, setRender] = useState(false)
@@ -42,7 +40,6 @@ const VendorClassificationListing = () => {
 
     useEffect(() => {
         applyPermission()
-        dispatch(getVendorClassificationListing());
         getTableListData()
 
     }, [dispatch]);
@@ -71,8 +68,10 @@ const VendorClassificationListing = () => {
     }
     const getTableListData = () => {
         setIsLoader(true)
-        dispatch(getVendorClassificationListing(true, (res) => {
-            setIsLoader(false)
+        dispatch(getVendorClassificationListing((res) => {
+            if (res.errorMessage) {
+                setIsLoader(false);
+            }
             if (res?.status === 204 && res?.data === '') {
                 setTableData([])
                 setIsLoader(false)
@@ -83,7 +82,8 @@ const VendorClassificationListing = () => {
                 setRenderState(!renderState)
                 setCellValue(Data?.map(row => row.updatedStatus === 'Active'));
 
-            } else {
+            }
+            else {
                 setTableData([])
                 setIsLoader(false)
             }
@@ -122,10 +122,8 @@ const VendorClassificationListing = () => {
         setShowPopupToggle(true);
     }
     const statusButtonFormatter = (props) => {
-
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
         // if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex, rowData?.Status, rowData?.Status);
         return (
@@ -173,15 +171,18 @@ const VendorClassificationListing = () => {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
     const frameworkComponents = {
         customNoRowsOverlay: NoContentFound,
-
+        hyphenFormatter: hyphenFormatter,
         statusButtonFormatter: statusButtonFormatter,
         effectiveDateFormatter: effectiveDateFormatter
     };
     return (
         <>
-            {/* {(isLoader) ? <LoaderCustom customClass="loader-center" /> : */}
             <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
                 <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
 
@@ -191,8 +192,8 @@ const VendorClassificationListing = () => {
                     </Row>
                     {<div className={`ag-grid-wrapper height-width-wrapper`}>
                         <div className={`ag-theme-material`}>
-                            {/* {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />} */}
-                            {noData ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+                            {isLoader && <LoaderCustom customClass="loader-center" />}
+                            <AgGridReact
 
                                 style={{ height: '100%', width: '100%' }}
 
@@ -214,9 +215,11 @@ const VendorClassificationListing = () => {
                                 <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 
                                 <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
+                                <AgGridColumn field="Status" headerName="Type" ></AgGridColumn>
+
                                 <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 
-                            </AgGridReact>}
+                            </AgGridReact>
                             {!isLoader && (!supplierManagement || supplierManagement?.length === 0) &&
                                 <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
                             }

@@ -21,6 +21,7 @@ import CommonApproval from '../masters/material-master/CommonApproval';
 import { getVendorNameByVendorSelectList } from '../../actions/Common';
 import _ from 'lodash'
 import { MESSAGES } from '../../config/message';
+import LoaderCustom from '../common/LoaderCustom';
 
 const InitiateUnblocking = (props) => {
     const dispatch = useDispatch();
@@ -38,11 +39,10 @@ const InitiateUnblocking = (props) => {
     const [isClassification, setIsClassification] = useState((deviationData?.ClassificationStatus === ONBOARDINGID ? true : false));
     const [isLpsRating, setIsLpsRating] = useState((deviationData?.LPSRatingStatus === ONBOARDINGID ? true : false));
     const [showApproval, setShowApproval] = useState(false);
-    const [isClassificationChecked, setIsClassificationChecked] = useState(false)
-    const [isLpsRatingChecked, setIsLpsRatingChecked] = useState(false)
     const [vendor, setVendor] = useState("");
     const [showApprvalStatus, setShowApprovalStatus] = useState(false)
-
+    const [submit, setSubmit] = useState(true)
+    const [isLoader, setIsLoader] = useState(false)
 
     useEffect(() => {
         setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
@@ -55,16 +55,44 @@ const InitiateUnblocking = (props) => {
     }, [selectedVendor]);
     useEffect(() => {
         if (selectedVendor && selectedPlant) {
-            dispatch(fetchDeviationApprovalData(selectedVendor?.value, selectedPlant?.value));
+            setIsLoader(true);
+            dispatch(fetchDeviationApprovalData(selectedVendor.value, selectedPlant.value, (res) => {
+                if (res?.status === 200 && res?.data?.DataList !== '') {
+                    setIsLoader(false);
+                } else if (res?.status === 204) {
+                    setIsLoader(false);
+                }
+            }));
         }
-    }, [selectedVendor]);
+    }, [selectedPlant, selectedVendor]);
 
-    useEffect(() => {
+    const handlePlantCheck = (approvalTypeId) => {
 
         if (selectedVendor && selectedPlant) {
-            dispatch(fetchDeviationApprovalData(selectedVendor.value, selectedPlant.value)); // Use selectedVendor.Value and selectedPlant.Value to access the values
+            let obj = {};
+            obj.DepartmentId = userDetails().DepartmentId;
+            obj.UserId = loggedInUserId();
+            obj.TechnologyId = '';
+            obj.Mode = 'onboarding';
+            obj.approvalTypeId = approvalTypeId; // Access the approval type ID from the response
+            obj.plantId = selectedPlant?.value ?? EMPTY_GUID;
+            dispatch(checkFinalUser(obj, res => {
+                if (res?.data?.Result) {
+                    if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === true) {
+                        Toaster.warning("User does not have permission for unblocking either the plant is not associated or it is the final level approver.")
+                        approvalTypeId === LPSAPPROVALTYPEID ? setIsLpsRating(false) : setIsClassification(false)
+                        setSubmit(false)
+                    } else if (res?.data?.Data?.IsUserInApprovalFlow === false && res?.data?.Data?.IsFinalApprover === false) {
+                        Toaster.warning(`You don't have permission to initiate unblocking for the vendor against the selected plant. Either the plant is not associated, or the approval level has not been set Or may be both.`)
+                        approvalTypeId === LPSAPPROVALTYPEID ? setIsLpsRating(false) : setIsClassification(false)
+                        setSubmit(false)
+                    }
+                    else
+                        setSubmit(true)
+                }
+            }))
         }
-    }, [selectedVendor, selectedPlant, dispatch]); // Include dispatch in the dependency array
+    };
 
     const searchableSelectType = (label) => {
         const temp = [];
@@ -80,6 +108,15 @@ const InitiateUnblocking = (props) => {
     }
 
     const handleVendorChange = (selectedValue) => {
+        if (selectedValue === null) {
+            // Reset all state variables and form values
+            setSelectedPlant(null);
+            setIsClassification(false);
+            setIsLpsRating(false);
+            setShowApproval(false);
+            // Reset form value for Plant using setValue
+            setValue('Plant', null);
+        }
         setSelectedVendor(selectedValue);
         setSelectedPlant(null); // Reset selected plant when a new vendor is selected
         setValue('Plant', null);
@@ -107,84 +144,30 @@ const InitiateUnblocking = (props) => {
         )
     }
     const handlePlantChange = (selectedValue) => {
-        setSelectedPlant(selectedValue);
+        if (selectedValue === null) {
+            // Reset all state variables and form values
+            setSelectedPlant(null);
+            setIsClassification(false);
+            setIsLpsRating(false);
+            setShowApproval(false);
+            // Reset form value for Plant using setValue
+            setValue('Plant', null);
+        } else {
+            setSelectedPlant(selectedValue);
+        }
     };
-    // const handleNext = () => {
-    //     // let approvalTypeIds = [];
-    //     // // Check if Classification checkbox is checked
-    //     // if (isClassificationChecked || isLpsRatingChecked) {
-    //     //     // If checked, add Classification approval type ID to the array
-    //     //     approvalTypeIds.push(isClassificationChecked ? CLASSIFICATIONAPPROVALTYPEID : LPSAPPROVALTYPEID);
-    //     // }
-    //     // if (isClassificationChecked && isLpsRatingChecked) {
-    //     //     approvalTypeIds.push(CLASSIFICATIONAPPROVALTYPEID, LPSAPPROVALTYPEID)
-    //     // }
-    //     // approvalTypeIds = Array.from(new Set(approvalTypeIds));
 
 
-    //     dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
-    //         
-    //         let OnboardingApprovalLevels = Array.from(res?.data?.Data?.OnboardingApprovalLevels.values());
-    //         
-    //         // let filteredApprovalLevels = OnboardingApprovalLevels.filter(level => approvalTypeIds.includes(level?.ApprovalTypeId));
-
-    //         if (!res?.data?.Data?.OnboardingApprovalLevels?.length || res?.data?.Data?.OnboardingApprovalLevels?.length === 0) {
-    //             
-    //             setShowApproval(false)
-    //             Toaster.warning('User is not in the approval flow')
-    //         } else {
-    //             let levelDetailsTemp = []
-    //             OnboardingApprovalLevels?.forEach(OnboardingApprovalLevel => {
-    //                 let response = userTechnologyLevelDetailsWithoutCostingToApproval(OnboardingApprovalLevel?.ApprovalTypeId, OnboardingApprovalLevels)
-    //                 levelDetailsTemp.push(response); // Store the response
-    //                 
-
-
-    //             })
-
-
-    //             if (levelDetailsTemp?.length === 0) {
-    //                 Toaster.warning("You don't have permission to send costing for approval.")
-    //             }
-    //             else {
-    //                 let finalUserResponses = []; // Array to store responses for final user check
-    //                 levelDetailsTemp.forEach(details => {
-    //                     
-
-    //                     let obj = {};
-    //                     obj.DepartmentId = userDetails().DepartmentId;
-    //                     obj.UserId = loggedInUserId();
-    //                     obj.TechnologyId = '';
-    //                     obj.Mode = 'onboarding';
-    //                     obj.approvalTypeId = details?.ApprovalTypeId; // Access the approval type ID from the response
-    //                     obj.plantId = deviationData?.PlantId ?? EMPTY_GUID;
-    //                     dispatch(checkFinalUser(obj, res => {
-    //                         finalUserResponses.push({ ...res.data.Data, type: details.ApprovalTypeId === LPSAPPROVALTYPEID ? "lps" : "classification" });
-    //                         
-
-    //                         if (res?.data?.Result) {
-    //                             setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover);
-    //                             let tempArr = _.filter(finalUserResponses, ['IsUserInApprovalFlow', true], ['IsFinalApprover', false]);
-    //                             
-
-    //                             if (tempArr?.length > 0) {
-    //                                 setShowApproval(true);
-    //                             } else if (finalUserResponses.some(response => response.IsFinalApprover === true)) {
-    //                                 Toaster.warning("Final level user cannot send costing for approval.");
-    //                             } else {
-    //                                 Toaster.warning("User does not have permission to send for approval.");
-    //                             }
-    //                         }
-    //                     }));
-    //                 });
-    //             }
-
-    //         }
-    //     }));
-    // };
     const handleNext = () => {
         dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
-            let approvalTypeIds = Array.from(res?.data?.Data?.OnboardingApprovalLevels.values(), level => level.ApprovalTypeId);
+
+            //When user is not in any approval flow
+            if (res.status === 204 && res?.data === '') {
+
+                Toaster.warning('User is not in any approval flow');
+                return;
+            }
+            let approvalTypeIds = Array?.from(res?.data?.Data?.OnboardingApprovalLevels.values(), level => level.ApprovalTypeId);
             if (approvalTypeIds?.length === 0 || !res?.data?.Data?.OnboardingApprovalLevels?.length || res?.data?.Data?.OnboardingApprovalLevels?.length === 0) {
                 setShowApproval(false)
                 Toaster.warning('User is not in the approval flow');
@@ -192,18 +175,18 @@ const InitiateUnblocking = (props) => {
             }
 
             let checkedApproval = [];
-            if (isClassificationChecked && isLpsRatingChecked) {
+            if (isClassification && isLpsRating) {
 
                 checkedApproval.push(CLASSIFICATIONAPPROVALTYPEID, LPSAPPROVALTYPEID)
                 handleCombinedApproval(approvalTypeIds, res, checkedApproval);
-            } else if (isClassificationChecked || isLpsRatingChecked) {
+            } else if (isClassification || isLpsRating) {
 
-                checkedApproval.push(isClassificationChecked ? CLASSIFICATIONAPPROVALTYPEID : LPSAPPROVALTYPEID)
+                checkedApproval.push(isClassification ? CLASSIFICATIONAPPROVALTYPEID : LPSAPPROVALTYPEID)
                 const similarApprovals = checkedApproval.filter(approval => approvalTypeIds.includes(approval));
 
                 handleSingleApproval(similarApprovals, res, checkedApproval);
             } else {
-                Toaster.warning(`User is not in the approval flow for ${isClassificationChecked === CLASSIFICATIONAPPROVALTYPEID ? 'LPS Rating' : 'Classification'}`);
+                Toaster.warning(`User is not in the approval flow for ${isClassification === CLASSIFICATIONAPPROVALTYPEID ? 'LPS Rating' : 'Classification'}`);
             }
         }));
     };
@@ -211,48 +194,44 @@ const InitiateUnblocking = (props) => {
     const handleCombinedApproval = (approvalTypeIds, res, checkedApproval) => {
 
         let approvalType = checkedApproval?.find(approval => approval === approvalTypeIds[0]);
+
         if (approvalTypeIds?.length === 1) {
             // Match approvalTypeIds with checkedApproval
-
             if (approvalType === CLASSIFICATIONAPPROVALTYPEID) {
                 Toaster.warning(`User is only in classification approval flow`);
-            } else if (approvalType === LPSAPPROVALTYPEID) {
-                Toaster.warning(`User is only in LPS Rating approval flow`);
-            } else {
-                Toaster.error("Invalid approval type.");
+                processApproval(LPSAPPROVALTYPEID, res);
             }
-            return;
+            else if (approvalType === LPSAPPROVALTYPEID) {
+                Toaster.warning(`User is only in LPS Rating approval flow`);
+                processApproval(CLASSIFICATIONAPPROVALTYPEID, res);
+            }
         }
-        processApproval(approvalTypeIds, res);
-    };
+        else
+            processApproval(approvalTypeIds, res);
+
+        return;
+    }
+
 
 
     const handleSingleApproval = (approvalTypeIds, res, checkedApproval) => {
-
         const arraysAreEqual = (array1, array2) => {
             return JSON.stringify(array1) === JSON.stringify(array2);
         };
-
-
         if (!arraysAreEqual(approvalTypeIds, checkedApproval)) {
-
-
-            Toaster.warning(`User is not in the approval flow for ${checkedApproval === CLASSIFICATIONAPPROVALTYPEID ? 'LPS Rating' : 'Classification'}`);
+            Toaster.warning(`User is not in the approval flow for ${checkedApproval === CLASSIFICATIONAPPROVALTYPEID ? 'Classification' : 'LPS Rating'}`);
         } else {
             processApproval(checkedApproval, res);
         }
     };
 
     const processApproval = (approvalTypeIds, res) => {
-
         let levelDetailsTempArray = []; // Array to store level details responses
-        approvalTypeIds.forEach(approvalTypeId => {
+        approvalTypeIds?.forEach(approvalTypeId => {
             let levelDetailsTemp;
             levelDetailsTemp = userTechnologyLevelDetailsWithoutCostingToApproval(approvalTypeId, res?.data?.Data?.OnboardingApprovalLevels);
             levelDetailsTempArray.push(levelDetailsTemp); // Store response in array
-
         });
-
         if (levelDetailsTempArray?.length === 0) {
             Toaster.warning("You don't have permission to send for approval.");
         }
@@ -267,48 +246,33 @@ const InitiateUnblocking = (props) => {
                 obj.approvalTypeId = details?.ApprovalTypeId; // Access the approval type ID from the response
                 obj.plantId = deviationData?.PlantId ?? EMPTY_GUID;
                 dispatch(checkFinalUser(obj, res => {
-
                     finalUserResponses.push({ ...res.data.Data, type: details.ApprovalTypeId === LPSAPPROVALTYPEID ? "lps" : "classification" });
                     let tempArr = _.filter(finalUserResponses, ['IsUserInApprovalFlow', true], ['IsFinalApprover', false]);
-
                     // if (res?.data?.Result) {
-                    // 
                     // setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover);
                     if (finalUserResponses.length === levelDetailsTempArray.length) {
-
                         if (tempArr?.length === 1) {
-
                             if (tempArr[0].IsFinalApprover === false && tempArr[0].IsUserInApprovalFlow === true) {
-
                                 setShowApproval(true);
                             } else {
-
-                                Toaster.warning(`Final level user cannot send ${tempArr.type} for approval.`);
+                                Toaster.warning(`Final level user cannot send ${tempArr[0].type} for approval.`);
                             }
                         }
                         else if (finalUserResponses?.length > 1) {
-
                             // Check all elements in tempArr
                             const satisfiedElements = _.filter(finalUserResponses, (response) => {
                                 return response.IsFinalApprover === false && response.IsUserInApprovalFlow === true;
                             });
-
-
                             const finalLevelElements = _.filter(finalUserResponses, (response) => {
                                 return !(response.IsFinalApprover === false && response.IsUserInApprovalFlow === true);
                             });
-
                             const undefinedElements = _.filter(finalUserResponses, (response) => {
                                 return !(response.IsFinalApprover === true && response.IsUserInApprovalFlow === false);
                             });
-
                             // If all conditions are satisfied, open the drawer; otherwise, show a warning
                             if (satisfiedElements.length === finalUserResponses.length) {
-
                                 setShowApproval(true);
                             } else {
-
-
                                 Toaster.warning(`Final level user cannot send ${finalLevelElements[0].type} for approval.`);
                             }
                         }
@@ -320,13 +284,17 @@ const InitiateUnblocking = (props) => {
     };
 
     const handleClassificationCheckboxChange = (e) => {
-        setIsClassificationChecked(e.target.checked);
+        if (e.target.checked) {
+            handlePlantCheck(CLASSIFICATIONAPPROVALTYPEID);
+        }
     };
 
-    // Function to handle LPS rating checkbox change
     const handleLpsRatingCheckboxChange = (e) => {
-        setIsLpsRatingChecked(e.target.checked);
+        if (e.target.checked) {
+            handlePlantCheck(LPSAPPROVALTYPEID);
+        }
     };
+
 
     const vendorFilterList = async (inputValue) => {
         if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -359,6 +327,7 @@ const InitiateUnblocking = (props) => {
     const closeDrawer = (e, type = '') => {
         if (type === 'Cancel') {
             setShowApproval(false)
+
         } else {
             setShowApprovalStatus(true)
             props.toggle('2')
@@ -413,6 +382,7 @@ const InitiateUnblocking = (props) => {
                                 </Col>
                             )}
                         </Row>}
+                        {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
 
                         {((selectedVendor && selectedPlant) || (props?.isMasterSummaryDrawer)) && (
                             <>
@@ -422,11 +392,10 @@ const InitiateUnblocking = (props) => {
                                         <Row>
                                             <Col md="3">
                                                 <div className="approval-section mb-2 mt-2">
-                                                    <div className="left-border">Approval for   <TooltipCustom id="Primary_Contact" customClass="mt-1" tooltipText="Please click on the checkboxes to send approval for." /></div>
-                                                    <div className="approval-checkboxes">
+                                                    <div className="left-border"><div className='d-flex'>Approval for <TooltipCustom id="Primary_Contact" customClass="mt2 pl-1 ml-5" tooltipText="Please click on the checkboxes to send approval for." /></div></div>                                                    <div className="approval-checkboxes">
                                                         {deviationData && (
                                                             <div>
-                                                                <label id={`vendorClassification_Checkbox_${deviationData?.ClassificationStatus}`} className={`custom-checkbox`}>
+                                                                <label id={`vendorClassification_Checkbox_${deviationData?.ClassificationStatus}`} className={`custom-checkbox ${deviationData?.ClassificationStatus === "Blocked" ? "" : "disabled"}`}>
                                                                     Classification
                                                                     <input
                                                                         type="checkbox"
@@ -437,7 +406,7 @@ const InitiateUnblocking = (props) => {
                                                                     <span className="before-box" />
                                                                 </label>
 
-                                                                <label id={`LPS_Checkbox_${deviationData?.LPSRatingStatus}`} className={`custom-checkbox`}>
+                                                                <label id={`LPS_Checkbox_${deviationData?.LPSRatingStatus}`} className={`custom-checkbox ${deviationData?.LPSRatingStatus === "Blocked" ? "" : "disabled"}`}>
                                                                     LPS Rating
                                                                     <input
                                                                         type="checkbox"
@@ -504,7 +473,7 @@ const InitiateUnblocking = (props) => {
                                         id="addRMDomestic_sendForApproval"
                                         type="submit"
                                         className="approval-btn mr5"
-                                        disabled={!selectedPlant}
+                                        disabled={!selectedPlant && submit}
                                         onClick={handleNext}
                                         icon={"send-for-approval"}
                                         buttonName={"Send For Approval"}
@@ -513,7 +482,7 @@ const InitiateUnblocking = (props) => {
                             </div>
                         </Row>
                     )}
-                    {selectedPlant && (!props?.isMasterSummaryDrawer) && selectedVendor && ( // Render SendForApproval component only when the approval drawer should be open and selectedVendor is not null
+                    {(isLpsRating || isClassification) && (!props?.isMasterSummaryDrawer) && selectedVendor && ( // Render SendForApproval component only when the approval drawer should be open and selectedVendor is not null
                         <SendForApproval
                             isOpen={showApproval}
                             closeDrawer={closeDrawer}
