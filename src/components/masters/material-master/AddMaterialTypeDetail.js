@@ -1,9 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Row, Col, Table } from "reactstrap";
 import { checkForDecimalAndNull, checkWhiteSpaces, percentageLimitValidation, number } from "../../../helper"
 import { useSelector } from "react-redux";
 import NoContentFound from "../../common/NoContentFound";
-import { ViewCostingContext } from "../../costing/components/CostingDetails";
 import { EMPTY_DATA } from "../../../config/constants";
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { useForm, Controller } from "react-hook-form";
@@ -12,7 +11,6 @@ import Toaster from '../../common/Toaster';
 const AddMaterialTypeDetail = () => {
 
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-    const CostingViewMode = useContext(ViewCostingContext);
     const [isEdit, setIsEdit] = useState(false);
     const [editIndex, setEditIndex] = useState('')
     const [percentageTotal, setPercentageTotal] = useState(0);
@@ -246,8 +244,8 @@ const AddMaterialTypeDetail = () => {
                 <thead>
                     <tr>
                         <th>{`Material Index`}</th>
-                        <th>{'Percentage (%)'}</th>
-                        {!CostingViewMode && <th className='text-right'>{`Action`}</th>}
+                        <th>{`Percentage (%)`}</th>
+                        <th className='text-right'>{`Action`}</th>
                     </tr>
                 </thead>
                 <tbody >
@@ -257,7 +255,6 @@ const AddMaterialTypeDetail = () => {
                                 <tr key={index}>
                                     <td>{item.MaterialIndex}</td>
                                     <td>{item.Percentage}</td>
-                                    {!CostingViewMode && (
                                         <td className='text-right'>
                                             <button
                                                 className="Edit"
@@ -272,7 +269,6 @@ const AddMaterialTypeDetail = () => {
                                                 onClick={() => deleteItem(index)}
                                             />
                                         </td>
-                                    )}
                                 </tr>
                             ))}
                             <tr className='table-footer'>
