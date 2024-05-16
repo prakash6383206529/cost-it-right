@@ -15,7 +15,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, Label, } from 'reactstrap';
 import LoaderCustom from "../common/LoaderCustom";
 import { getApprovalTypeSelectList } from '../../actions/Common'
-import { CUSTOMER_BASED, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONAL, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, WACAPPROVALTYPEID, NEW_COMPONENT, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B4, VENDORNEEDFORMID, ONBOARDINGNAME } from "../../config/constants";
+import { CUSTOMER_BASED, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONAL, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, WACAPPROVALTYPEID, NEW_COMPONENT, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B4, VENDORNEEDFORMID, ONBOARDINGNAME, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID } from "../../config/constants";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { transformApprovalItem } from "../common/CommonFunctions";
 import TourWrapper from "../common/Tour/TourWrapper";
@@ -236,7 +236,7 @@ class Level extends Component {
         if ((Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || (!getConfigurationKey().IsNFRConfigured && Number(item.Value) === Number(NFRAPPROVALTYPEID))) && this.state.levelType === 'Costing') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && this.state.levelType === 'Master') return false
         if (item.Text === CUSTOMER_BASED && !(reactLocalStorage.getObject('CostingTypePermission').cbc)) return false
-        if (this.state.levelType === 'Onboarding' && Number(item.Value) !== VENDORNEEDFORMID) return false;
+        if (this.state.levelType === 'Onboarding' && Number(item.Value) !== VENDORNEEDFORMID && Number(item.Value) !== LPSAPPROVALTYPEID && Number(item.Value) !== CLASSIFICATIONAPPROVALTYPEID) return false;
         if ((this.state.levelType === 'Simulation' || this.state.levelType === 'Master' || this.state.levelType === 'Costing') && Number(item.Value) === VENDORNEEDFORMID) return true
         const transformedText = transformApprovalItem(item);
         temp.push({ label: transformedText, value: item.Value });
@@ -751,7 +751,7 @@ class Level extends Component {
                               onClick={() => this.onPressRadioLevel('Onboarding')}
                               disabled={this.props.isEditFlag}
                             />{' '}
-                            <span>Onboarding</span>
+                            <span>Onboarding & Management</span>
                           </Label>}
                         </Col>
                       </Row >

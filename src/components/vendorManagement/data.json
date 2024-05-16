@@ -1,0 +1,300 @@
+{
+    "vendorData": [
+        {
+            "ClassificationId": 1,
+            "ClassificationName": "Strategic",
+            "ClassificationStatus": true,
+            "lastUpdatedOn": "2024-04-05",
+            "lastUpdatedBy": "User A"
+        },
+        {
+            "ClassificationId": 2,
+            "ClassificationName": "Challenger",
+            "status": false,
+            "lastUpdatedOn": "2024-04-04",
+            "lastUpdatedBy": "User B"
+        },
+        {
+            "ClassificationId": 3,
+            "ClassificationName": "Transactional",
+            "status": true,
+            "lastUpdatedOn": "2024-04-03",
+            "lastUpdatedBy": "User C"
+        },
+        {
+            "ClassificationId": 4,
+            "ClassificationName": "No New Business",
+            "status": false,
+            "lastUpdatedOn": "2024-04-02",
+            "lastUpdatedBy": "User D"
+        },
+        {
+            "ClassificationId": 5,
+            "ClassificationName": "Active Disengagement",
+            "status": false,
+            "lastUpdatedOn": "2024-04-01",
+            "lastUpdatedBy": "User E"
+        }
+    ],
+    "lpsRatingData": [
+        {
+            "sno": 1,
+            "lpsRating": "LPS 1",
+            "status": true,
+            "lastUpdatedOn": "2024-04-04",
+            "lastUpdatedBy": "User Bq"
+        },
+        {
+            "sno": 2,
+            "lpsRating": "LPS 2",
+            "status": false,
+            "lastUpdatedOn": "2024-04-04",
+            "lastUpdatedBy": "User Ba"
+        },
+        {
+            "sno": 3,
+            "lpsRating": "LPS 3",
+            "status": true,
+            "lastUpdatedOn": "2024-04-04",
+            "lastUpdatedBy": "User Bd"
+        }
+    ],
+    "approvalListing": [
+        {
+            "SupplierID": 1,
+            "Plant": "Plan X",
+            "VendorCode": 1234,
+            "VendorName": "TechSoft Ltd",
+            "Category": "BOM",
+            "ApprovalProcessId": 1,
+            "ApprovalNumber": 2323,
+            "EffectiveDate": "12/03/2023",
+            "ReasonForRequest": "LPS",
+            "Status": "PendingForApproval",
+            "DisplayStatus": "Pending",
+            "RequestedBy": "User A",
+            "Action": ""
+        },
+        {
+            "SupplierID": 2,
+            "Plant": "Plan Y",
+            "VendorCode": 1235,
+            "VendorName": "Royal Gear",
+            "ApprovalProcessId": 2,
+            "Category": "BOM",
+            "ApprovalNumber": 3456,
+            "EffectiveDate": "12/03/2023",
+            "ReasonForRequest": "Classification",
+            "Status": "Approved",
+            "DisplayStatus": "Approved",
+            "RequestedBy": "User B",
+            "Action": ""
+        },
+        {
+            "SupplierID": 3,
+            "Plant": "Plan Y",
+            "VendorCode": 1264,
+            "VendorName": "Softude",
+            "ApprovalProcessId": 3,
+            "Category": "BOM",
+            "ApprovalNumber": 4456,
+            "EffectiveDate": "12/03/2023",
+            "ReasonForRequest": "Classification",
+            "Status": "PendingForApproval",
+            "DisplayStatus": "Pending",
+            "RequestedBy": "User C",
+            "Action": ""
+        },
+        {
+            "SupplierID": 4,
+            "Plant": "Plan X",
+            "VendorCode": 1237,
+            "VendorName": "Serotech Ltd",
+            "ApprovalProcessId": 4,
+            "Category": "BOM",
+            "ApprovalNumber": 4456,
+            "EffectiveDate": "12/03/2023",
+            "ReasonForRequest": "Classification & LPS",
+            "Status": "Returned",
+            "DisplayStatus": "Returned",
+            "RequestedBy": "User D",
+            "Action": ""
+        },
+        {
+            "SupplierID": 5,
+            "Plant": "Plan Y",
+            "VendorCode": 1284,
+            "VendorName": "Aspron",
+            "ApprovalProcessId": 5,
+            "Category": "BOM",
+            "ApprovalNumber": 3456,
+            "EffectiveDate": "12/03/2023",
+            "ReasonForRequest": "LPS",
+            "Status": "Rejected",
+            "DisplayStatus": "Rejected",
+            "RequestedBy": "User E",
+            "Action": ""
+        }
+    ],
+    "supplierDetailData": [
+        {
+            "sno": 1,
+            "SupplierName": "Supplier 1",
+            "SupplierCode": "S1",
+            "SupplierCategory": "Category A",
+            "Division": "Division 1",
+            "Plant": [
+                {
+                    "sno": 1,
+                    "Plant": "Plant 1",
+                    "SupplierClassification": "Strategic",
+                    "LPSRating": 4,
+                    "ApprovalForSupplier": true,
+                    "ApprovalForLPSRating": true
+                }
+            ]
+        },
+        {
+            "sno": 2,
+            "SupplierName": "Supplier 2",
+            "SupplierCode": "S2",
+            "SupplierCategory": "Category B",
+            "Division": "Division 3",
+            "Plant": [
+                {
+                    "sno": 1,
+                    "Plant": "Plant 2",
+                    "SupplierClassification": "Transactional",
+                    "LPSRating": 2,
+                    "ApprovalForSupplier": false,
+                    "ApprovalForLPSRating": true,
+                    "ApprovalDate": "2024-04-09",
+                    "ApprovedBy": "Jane Smith"
+                },
+                {
+                    "sno": 2,
+                    "Plant": "Plant 3",
+                    "SupplierClassification": "Transactional",
+                    "LPSRating": 2,
+                    "ApprovalForSupplier": false,
+                    "ApprovalForLPSRating": true,
+                    "ApprovalDate": "2024-04-09",
+                    "ApprovedBy": "Jane Smith"
+                }
+            ]
+        },
+        {
+            "sno": 3,
+            "SupplierName": "Supplier 3",
+            "SupplierCode": "S3",
+            "SupplierCategory": "Category C",
+            "Division": "Division 2",
+            "Plant": [
+                {
+                    "sno": 1,
+                    "Plant": "Plant 4",
+                    "SupplierClassification": "Challenger",
+                    "LPSRating": 3,
+                    "ApprovalForSupplier": true,
+                    "ApprovalForLPSRating": false,
+                    "ApprovalDate": "2024-04-08",
+                    "ApprovedBy": "Bob Johnson"
+                },
+                {
+                    "sno": 2,
+                    "Plant": "Plant 5",
+                    "SupplierClassification": "Challenger",
+                    "LPSRating": 3,
+                    "ApprovalForSupplier": true,
+                    "ApprovalForLPSRating": false,
+                    "ApprovalDate": "2024-04-08",
+                    "ApprovedBy": "Bob Johnson"
+                },
+                {
+                    "sno": 3,
+                    "Plant": "Plant 6",
+                    "SupplierClassification": "Challenger",
+                    "LPSRating": 3,
+                    "ApprovalForSupplier": true,
+                    "ApprovalForLPSRating": false,
+                    "ApprovalDate": "2024-04-08",
+                    "ApprovedBy": "Bob Johnson"
+                }
+            ]
+        },
+        {
+            "sno": 4,
+            "SupplierName": "Supplier 4",
+            "SupplierCode": "S4",
+            "SupplierCategory": "Category D",
+            "Division": "Division 3",
+            "Plant": [
+                {
+                    "sno": 1,
+                    "Plant": "Plant 7",
+                    "SupplierClassification": "Transactional",
+                    "LPSRating": 2,
+                    "ApprovalForSupplier": true,
+                    "ApprovalForLPSRating": true,
+                    "ApprovalDate": "2024-04-09",
+                    "ApprovedBy": "Jane Smith"
+                },
+                {
+                    "sno": 2,
+                    "Plant": "Plant 8",
+                    "SupplierClassification": "Transactional",
+                    "LPSRating": 2,
+                    "ApprovalForSupplier": false,
+                    "ApprovalForLPSRating": true,
+                    "ApprovalDate": "2024-04-09",
+                    "ApprovedBy": "Jane Smith"
+                }
+            ]
+        }
+    ],
+    "approvalSummary": [
+        {
+            "approvalNo": 1000187,
+            "approverData": {
+                "mode": "Costing",
+                "processId": "597d5107-67a9-4104-87ca-7add6428ec4a",
+                "levelId": "4af8cee2-269c-41f4-9835-dd642b900e8c"
+            },
+            "approvalLevelStep": [
+                {
+                    "Title": "Initiated by:",
+                    "Level": "Level-2",
+                    "LevelId": "5e9619a9-7ce7-47b6-aad7-8f2ecb8fdc5e",
+                    "ApprovedBy": "shreya  (shreya2)",
+                    "Status": "Approved",
+                    "Comments": "",
+                    "Date": "2024-04-10T09:14:08.26",
+                    "FlowStepSequence": 0,
+                    "Remark": ""
+                },
+                {
+                    "ApprovedBy": "O.M.  (OM1)",
+                    "Comments": "",
+                    "Date": "2024-04-10T09:14:08.26",
+                    "FlowStepSequence": 0,
+                    "Level": "Level-1",
+                    "LevelId": "5419173e-85e8-4eeb-97eb-fc379de5fb20",
+                    "Remark": "",
+                    "Status": "Approved",
+                    "Title": "Initiated by:"
+                },
+                {
+                    "Title": "Approved by:",
+                    "Level": "Level-3",
+                    "LevelId": "4af8cee2-269c-41f4-9835-dd642b900e8c",
+                    "ApprovedBy": "mansi  (mansi1302)",
+                    "Status": "Approved",
+                    "Comments": "",
+                    "Date": "2024-04-10T09:14:08.26",
+                    "FlowStepSequence": 0,
+                    "Remark": ""
+                }
+            ]
+        }
+    ]
+}

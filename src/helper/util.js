@@ -559,7 +559,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
-
+  obj.IsShowCheckBoxForApproval = dataFromAPI.IsShowCheckBoxForApproval
   obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
   obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked !== null ? dataFromAPI.IsApprovalLocked : '-'
   obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
@@ -678,7 +678,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
     discountApplicablity: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountApplicability : 0,
     dicountType: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType : '-'
   }
-
+  obj.netDiscountsCost = dataFromAPI?.CostingPartDetails?.NetDiscountsCost
   obj.anyOtherCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost : 0
   obj.anyOtherCostType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostType : '-'
   obj.anyOtherCostApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostApplicability : 0
@@ -1114,7 +1114,7 @@ export const labelWithUOMAndUOM = (label, UOM, ScrapUOM) => {
 }
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
-export const showTitleForActiveToggle = (index) => {
+export const showTitleForActiveToggle = (index, titleFirst, titleSecond) => {
   setTimeout(() => {
     let titleActive = document.getElementsByClassName("active-switch")[index];
 
@@ -1131,7 +1131,7 @@ export const showTitleForActiveToggle = (index) => {
       titleActive = document.getElementsByClassName("active-switch")[rowIndex];
     }
 
-    titleActive?.setAttribute('title', 'Active');
+    titleActive?.setAttribute('title', titleFirst);
     let titleInactive = document.getElementsByClassName("inactive-switch")[index];
 
     if (titleInactive === undefined || titleInactive == null) {
@@ -1146,8 +1146,8 @@ export const showTitleForActiveToggle = (index) => {
       }
       titleInactive = document.getElementsByClassName("inactive-switch")[rowIndex];
     }
+    titleInactive?.setAttribute('title', titleSecond);
 
-    titleInactive?.setAttribute('title', 'Inactive');
   }, 500);
 }
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
@@ -1406,4 +1406,19 @@ export function encodeQueryParams(params) {
   return Object.entries(params)
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&');
+}
+/**
+  * @method getTimeZone
+  * @description get time zone
+  */
+export function getTimeZone() {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
+export function encodeQueryParamsAndLog(obj) {
+  const queryParams = Object.entries(obj)
+    .filter(([key, value]) => value !== undefined && value !== "")
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+  return queryParams;
 }

@@ -255,7 +255,7 @@ class AddRMDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    const { data, initialConfiguration } = this.props
+    const { data } = this.props
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     this.props.getUOMSelectList(() => { })
     if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
@@ -276,18 +276,22 @@ class AddRMDomestic extends Component {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     }
+  }
+
+  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+    const { initialConfiguration } = this.props
     if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
+          this.commonFunction(plantId)
         }, 100);
       })
     } else {
       this.setState({ finalApprovalLoader: false })
     }
   }
-
   setInStateToolTip() {
     const obj = { ...this.state.toolTipTextObject, netCostCurrency: this.netCostTitle(), basicPriceCurrency: this.basicPriceTitle() }
     this.setState({ toolTipTextObject: obj })
@@ -323,16 +327,18 @@ class AddRMDomestic extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       plantId: plantId
     }
-    this.props.checkFinalUser(obj, (res) => {
-      if (res?.data?.Result) {
-        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
-      }
-      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
-        this.setState({ disableSendForApproval: true })
-      } else {
-        this.setState({ disableSendForApproval: false })
-      }
-    })
+    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+        }
+        if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+          this.setState({ disableSendForApproval: true })
+        } else {
+          this.setState({ disableSendForApproval: false })
+        }
+      })
+    }
     this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
   }
 
@@ -780,10 +786,11 @@ class AddRMDomestic extends Component {
               CalculatedFactor: Data?.CalculatedFactor,
             })
             this.checkTechnology({ label: Data.TechnologyName, value: Data.TechnologyId })
-
+            if (!data.isViewFlag) {
+              this.finalUserCheckAndMasterLevelCheckFunction(Data.DestinationPlantId)
+            }
             this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
             this.setState({ minEffectiveDate: Data.EffectiveDate })
-            console.log('Data: ', Data);
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
@@ -1363,7 +1370,7 @@ class AddRMDomestic extends Component {
     this.setState({ isVendorNameNotSelected: false, isEditBuffer: false })
 
     let plantArray = []
-    if (costingTypeId === VBCTypeId) {
+    if (costingTypeId === VBCTypeId || this.props.initialConfiguration.IsMultipleUserAllowForApproval) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
     } else if (costingTypeId === ZBCTypeId) {
       selectedPlants && selectedPlants.map((item) => {

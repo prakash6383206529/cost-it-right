@@ -49,6 +49,7 @@ function CostingHeaderTabs(props) {
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
+  const [multipleRMApplied, setMultipleRMApplied] = useState(false)
   const [effectiveDate, setEffectiveDate] = useState(DayTime(costingData.EffectiveDate).isValid() ? DayTime(costingData.EffectiveDate) : '');
   const [warningMessageObj, setWarningMessageObj] = useState({
     tabName: '',
@@ -293,7 +294,11 @@ function CostingHeaderTabs(props) {
     }
   }, [RMCCTabData]);
 
-
+  useEffect(() => {
+    if (RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0]?.IsMultipleRMApplied) {
+      setMultipleRMApplied(true)
+    }
+  }, [RMCCTabData]);
   const callAssemblyAPi = (tabId) => {
     if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {
       const tabData = RMCCTabData && RMCCTabData[0]
@@ -454,7 +459,7 @@ function CostingHeaderTabs(props) {
           } else {
             setTabsTour(prevState => ({
               ...prevState,
-              steps: Steps(t, '', { CostingViewMode: CostingViewMode, CostingEditMode: CostingEditMode, PartExists: isPartExists, isPartLocked: ispartLocked }).TAB_RMC,
+              steps: Steps(t, '', { multipleRMApplied: multipleRMApplied, CostingViewMode: CostingViewMode, CostingEditMode: CostingEditMode, PartExists: isPartExists, isPartLocked: ispartLocked }).TAB_RMC,
               hints: []
             }))
           }
@@ -572,12 +577,12 @@ function CostingHeaderTabs(props) {
                   onChangeRaw={(e) => e.preventDefault()}
                   disabled={(CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid())) ? true : false}
                 />
-                <TourWrapper
+                {!CostingViewMode && <TourWrapper
                   buttonSpecificProp={{ id: "Costing_Tabs", onClick: tourStart }}
                   stepsSpecificProp={{
                     steps: tabsTour.steps,
                     hints: tabsTour.hints
-                  }} />
+                  }} />}
               </div>
             </div >
           </Col >

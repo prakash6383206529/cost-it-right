@@ -1,36 +1,40 @@
 {
     "addfuel": {
-        "AddFuel_zerobased": "Select Zero based Costing Head.",
-        "AddFuel_vendorbased": "Select Vendor based Costing Head.",
-        "AddFuel_customerbased": "Select Customer based Costing Head.",
-        "AddFuel_plant_container": "Select Plant (Code) from the dropdown.",
-        "AddFuel_Fuel_container": "Select Your Fuel Name",
-        "AddFuel_Toggle":"Add Fuel Name form here.",    
-        "AddFuel_CountryId_container": "Select Your Country",
-        "AddFuel_StateId_container": "Select Your State",
-        "AddFuel_CityId_container": "Select Your City",
-        "AddFuel_Rate": "Enter Your Rate",
-        "AddFuel_EffectiveDate": "Select Your Effective Date",
-        "AddFuel_Cancel": "Click here to reset the form and go-back to the grid page.",
-        "AddFuel_AddData":"Click here to add More data in the table.",
-        "AddFuel_Save": "Click here to Save."
+        "AddFuel_zerobased": "Select zero-based costing head.",
+        "AddFuel_vendorbased": "Select vendor-based costing head.",
+        "AddFuel_customerbased": "Select customer-based costing head.",
+        "AddFuel_plant_container": "Select plant (code) from the dropdown.",
+        "AddFuel_Fuel_container": "Select your fuel name from the dropdown.",
+        "AddFuel_Toggle": "Add fuel name from here.",
+        "AddFuel_CountryId_container": "Select your country from the dropdown.",
+        "AddFuel_StateId_container": "Select your state from the dropdown.",
+        "AddFuel_CityId_container": "Select your city from the dropdown.",
+        "AddFuel_Rate": "Enter your rate.",
+        "AddFuel_EffectiveDate": "Select your effective date from the calendar.",
+        "AddFuel_Cancel": "Click here to cancel.",
+        "AddFuel_AddData": "Click here to add more data in the table.",
+        "AddFuel_Save": "Click here to save."
     },
     "addfuelNameDrawers": {
-        "AddFuelNameDrawer_FuelName": "Select Your Fuel Name ",
-        "AddFuelNameDrawer_UnitOfMeasurementId_container": "Select Your UOM",
-        "AddFuelNameDrawer_Cancel": "Click here to cancel the form and go-back form page",
-        "AddFuelNameDrawer_Save": "Click here to Save."
+        "AddFuelNameDrawer_FuelName": "Select your fuel name from the dropdown.",
+        "AddFuelNameDrawer_UnitOfMeasurementId_container": "Select your UOM from the dropdown.",
+        "AddFuelNameDrawer_Cancel": "Click here to cancel.",
+        "AddFuelNameDrawer_Save": "Click here to save."
     },
     "addPower": {
-        "AddPower_zerobased": "Select Zero based Costing Head.",
-        "AddPower_vendorbased": "Select Vendor based Costing Head.",
-        "AddPower_customerbased": "Select Customer based Costing Head.",
-        "AddPower_state_container": "Select Your State",
-        "AddPower_Plant_container": "Select Plant (Code) from the dropdown.",
-        "AddPower_EffectiveDate": "Select Your Effective Date",
-        "AddPower_NetPowerCostPerUnit": "Enter Your Net Cost",
-        "AddPower_AddMoreDetails":"Click here the checkbox to add more details.",
-        "AddPower_Cancel": "Click here to reset the form and go-back to the grid page.",
-        "AddPower_Save": "Click here to Save."
+        "AddPower_zerobased": "Select zero-based costing head.",
+        "AddPower_vendorbased": "Select vendor-based costing head.",
+        "AddPower_customerbased": "Select customer-based costing head.",
+        "AddPower_state_container": "Select your state from the dropdown.",
+        "AddPower_Plant_container": "Select plant (code) from the dropdown.",
+        "AddPower_EffectiveDate": "Select your effective date from the calendar.",
+        "AddPower_NetPowerCostPerUnit": "Enter your net cost.",
+        "AddPower_AddMoreDetails": "Click here the checkbox to add more details.",
+        "AddPower_Cancel": "Click here to reset the form and go back to the grid page.",
+        "AddPower_Save": "Click here to save."
+    },
+    "DynamicActionControl": {
+        "save_Button": "Click here to save.",
+        "update_Button": "Click here to update."
     }
 }

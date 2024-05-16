@@ -15,7 +15,7 @@ import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails, setOpenAllTabs } from './actions/nfr';
 import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails, getCodeBySplitting, getNameBySplitting, checkForDecimalAndNull, setLoremIpsum, } from '../../../helper';
-import { checkFinalUser, createCosting, deleteDraftCosting, emptyCostingData, getBriefCostingById, gridDataAdded, isDataChange, isDiscountDataChange, saveAssemblyBOPHandlingCharge, saveAssemblyNumber, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setCostingDataList, setCostingEffectiveDate, setDiscountErrors, setIncludeOverheadProfitIcc, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData, setOverheadProfitData, setOverheadProfitErrors, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCBOPCostData, setRMCCData, setRMCCErrors, setSurfaceCostData, setToolTabData, setToolsErrors } from '../../costing/actions/Costing';
+import { checkFinalUser, createCosting, deleteDraftCosting, emptyCostingData, getBriefCostingById, gridDataAdded, isDataChange, isDiscountDataChange, saveAssemblyBOPHandlingCharge, saveAssemblyNumber, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setCostingDataList, setCostingEffectiveDate, setDiscountErrors, setIncludeOverheadProfitIcc, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData, setOtherDiscountData, setOverheadProfitData, setOverheadProfitErrors, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCBOPCostData, setRMCCData, setRMCCErrors, setSurfaceCostData, setToolTabData, setToolsErrors } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
@@ -102,7 +102,6 @@ function AddNfr(props) {
     const [nfrPartNumber, setNfrPartNumber] = useState('')
     const [partName, setPartName] = useState('')
     const [isFinalLevelApprover, setIsFinalLevelApprover] = useState('')
-
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -133,6 +132,7 @@ function AddNfr(props) {
         reactLocalStorage.setObject('surfaceCostingArray', [])
         dispatch(setRMCCData([], () => { }))
         dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
+        dispatch(setOtherDiscountData({ gridData: [], totalCost: 0 }))
         dispatch(setComponentItemData({}, () => { }))
 
         dispatch(setOverheadProfitData([], () => { }))
@@ -863,11 +863,12 @@ function AddNfr(props) {
             {(loader && <LoaderCustom customClass="pdf-loader" />)}
             {props.showAddNfr && <div>
                 <div className='mb-2 d-flex justify-content-between'>
-                    <h1>Create Estimation
+
+                    <h1>{isViewEstimation ? "View" : "Update"} Estimation
                         <TourWrapper
                             buttonSpecificProp={{ id: "Add_Nfr_Form", onClick: toggleExtraData }}
                             stepsSpecificProp={{
-                                steps: Steps(t, { showNfrPartListing, activeTab, editNfr, isRowEdited }).NFR_lISTING
+                                steps: Steps(t, { rowData, isViewEstimation, showNfrPartListing, activeTab, editNfr, isRowEdited }).NFR_lISTING
                             }} />
                     </h1>
                     <button type="button" id="back_addNfrPart" className={"apply mt-1"} onClick={onBackButton}>
@@ -1018,6 +1019,7 @@ function AddNfr(props) {
                                             <td>{dataItem?.label}</td>
 
                                             <td><SearchableSelectHookForm
+                                                id="CostingVersion_container"
                                                 label={""}
                                                 name={`${indexInside}.CostingVersion`}
                                                 placeholder={"Select"}

@@ -298,34 +298,22 @@ class AddRMImport extends Component {
       this.props.fetchSpecificationDataAPI(0, () => { })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     }
+
+  }
+
+  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+    const { initialConfiguration } = this.props
     if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-      // let obj = {
-      //   TechnologyId: RM_MASTER_ID,
-      //   DepartmentId: userDetails().DepartmentId,
-      //   Mode: 'master',
-      //   approvalTypeId: this.state.costingTypeId,
-      //   UserId: loggedInUserId(),
-      // }
-      // this.setState({ finalApprovalLoader: true })
-      // this.props.checkFinalUser(obj, (res) => {
-      //   if (res?.data?.Result) {
-      //     this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
-      //     this.setState({ finalApprovalLoader: false })
-      //   }
-      // })
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
-        if (!(data.isEditFlag || data.isViewFlag)) {
-          setTimeout(() => {
-            this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
-          }, 100);
-        }
+
+        this.commonFunction(plantId)
       })
     } else {
       this.setState({ finalApprovalLoader: false })
     }
   }
-
   commonFunction(plantId = EMPTY_GUID) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, RM_MASTER_ID, this.props.userMasterLevelAPI)
@@ -339,17 +327,18 @@ class AddRMImport extends Component {
       plantId: plantId
     }
 
-
-    this.props.checkFinalUser(obj, (res) => {
-      if (res?.data?.Result) {
-        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
-      }
-      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
-        this.setState({ disableSendForApproval: true })
-      } else {
-        this.setState({ disableSendForApproval: false })
-      }
-    })
+    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+        }
+        if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+          this.setState({ disableSendForApproval: true })
+        } else {
+          this.setState({ disableSendForApproval: false })
+        }
+      })
+    }
     this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
   }
 
@@ -888,6 +877,7 @@ class AddRMImport extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
+            this.finalUserCheckAndMasterLevelCheckFunction(Data.DestinationPlantId)
 
             this.props.change('cutOffPriceSelectedCurrency', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('cutOffPriceBaseCurrency', checkForDecimalAndNull(Data?.CutOffPriceInINR, initialConfiguration.NoOfDecimalForPrice));
@@ -1018,7 +1008,7 @@ class AddRMImport extends Component {
                 this.setState({ isLoader: false, isCallCalculation: false })
                 if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
                   this.allFieldsInfoIcon(true)
-                  this.commonFunction()
+                  // this.commonFunction()
                 }
               }, 500)
               setTimeout(() => {
@@ -1565,14 +1555,14 @@ class AddRMImport extends Component {
     this.setState({ isVendorNameNotSelected: false, isEditBuffer: false })
 
     let plantArray = []
-    if (costingTypeId === VBCTypeId) {
-      plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
-    } else {
-      selectedPlants && selectedPlants.map((item) => {
-        plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
-        return plantArray
-      })
-    }
+    // if (costingTypeId === VBCTypeId) {
+    plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
+    // } else {
+    //   selectedPlants && selectedPlants.map((item) => {
+    //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+    //     return plantArray
+    //   })
+    // }
     let cbcPlantArray = []
     if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
       cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })

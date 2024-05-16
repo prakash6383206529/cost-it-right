@@ -205,7 +205,7 @@ const VBCPlantListing = ({ ...props }) => {
   const statusButtonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    showTitleForActiveToggle(props); // Make sure this is a util and not another method
+    showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive');
     if (ActivateAccessibility) {
       return (
         <>

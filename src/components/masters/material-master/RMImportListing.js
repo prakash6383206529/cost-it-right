@@ -90,9 +90,10 @@ function RMImportListing(props) {
   const [tempList, setTempList] = useState([])
   const [showExtraData, setShowExtraData] = useState(false)
   const [render, setRender] = useState(false)
+  const [disableEdit, setDisableEdit] = useState(true)
   const { t } = useTranslation("common")
   const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
-  const { tokenForSimulation } = useSelector(state => state.simulation)
+  const { tokenForSimulation, selectedMasterForSimulation } = useSelector(state => state.simulation)
   const headerNames = {
     BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
     ScrapRate: `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
@@ -448,6 +449,7 @@ function RMImportListing(props) {
   * @method buttonFormatter
   * @description Renders buttons
   */
+  const { benchMark } = props
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
@@ -479,27 +481,31 @@ function RMImportListing(props) {
           onClick={() => showAnalytics(cellValue, rowData)}
           title={"Cost Movement"}
         />
-        {ViewRMAccessibility && <Button
-          id={`rmImportListing_view${props?.rowIndex}`}
-          className={"mr-1 Tour_List_View"}
-          variant="View"
-          onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
-          title={"View"}
-        />}
-        {isEditbale && <Button
-          id={`rmImportListing_edit${props?.rowIndex}`}
-          className={"mr-1 Tour_List_Edit"}
-          variant="Edit"
-          onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
-          title={"Edit"}
-        />}
-        {isDeleteButton && <Button
-          id={`rmImportListing_delete${props?.rowIndex}`}
-          className={"mr-1 Tour_List_Delete"}
-          variant="Delete"
-          onClick={() => deleteItem(cellValue)}
-          title={"Delete"}
-        />}
+        {(!benchMark) && (
+          <>
+            {ViewRMAccessibility && <Button
+              id={`rmImportListing_view${props?.rowIndex}`}
+              className={"mr-1 Tour_List_View"}
+              variant="View"
+              onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
+              title={"View"}
+            />}
+            {isEditbale && <Button
+              id={`rmImportListing_edit${props?.rowIndex}`}
+              className={"mr-1 Tour_List_Edit"}
+              variant="Edit"
+              onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
+              title={"Edit"}
+            />}
+            {isDeleteButton && <Button
+              id={`rmImportListing_delete${props?.rowIndex}`}
+              className={"mr-1 Tour_List_Delete"}
+              variant="Delete"
+              onClick={() => deleteItem(cellValue)}
+              title={"Delete"}
+            />}
+          </>
+        )}
       </>
     )
   };
@@ -538,8 +544,12 @@ function RMImportListing(props) {
   * @description Renders buttons
   */
   const effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    if (showExtraData && props?.rowIndex === 0) {
+      return "Lorem Ipsum";
+    } else {
+      const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+      return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
   }
 
   /**
@@ -749,6 +759,12 @@ function RMImportListing(props) {
 
     let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     var selectedRows = gridApi && gridApi?.getSelectedRows();
+    if (props?.isSimulation && selectedRows?.length !== 0) {
+      setDisableEdit(false)
+    } else {
+      setDisableEdit(true)
+
+    }
     if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination
     } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
@@ -878,7 +894,7 @@ function RMImportListing(props) {
           <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
             <Col md="3" lg="3">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-              {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+              {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
                 buttonSpecificProp={{ id: "RM_Import_Listing_Tour", onClick: toggleExtraData }}
                 stepsSpecificProp={{
                   steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
@@ -1058,8 +1074,9 @@ function RMImportListing(props) {
           </Row >
           {
             props.isSimulation && isFromVerifyPage && <Row>
-              <Col md="12" className="d-flex justify-content-end">
-                <button type="button" className={"apply"} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
+              <Col md="12" className="d-flex justify-content-end align-items-center">
+                {disableEdit && <WarningMessage dClass="mr-5" message={"Please check the Raw Material that you want to edit."} />}
+                <button type="button" className={"apply"} disabled={disableEdit} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
               </Col>
             </Row>
           }

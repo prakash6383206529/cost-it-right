@@ -13,9 +13,9 @@ import {
 } from "../../actions/auth/AuthActions";
 import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
-import { getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
+import { IsSendMailToPrimaryContact, getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
-import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, NCCTypeId, NFRAPPROVALTYPEID, ONBOARDINGID, ONBOARDINGNAME, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
+import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, LPSAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, ONBOARDINGID, ONBOARDINGNAME, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -31,6 +31,7 @@ import { apiErrors } from "../../helper";
 import TourWrapper from "../common/Tour/TourWrapper";
 import { useTranslation } from "react-i18next";
 import { Steps } from "./TourMessages";
+import TooltipCustom from "../common/Tooltip";
 
 
 var CryptoJS = require('crypto-js')
@@ -469,7 +470,7 @@ function UserRegistration(props) {
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId) || Number(item.Value) === Number(NFRAPPROVALTYPEID)) && label === 'approvalTypeSimulation') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && label === 'approvalTypeMaster') return false
         if ((Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || (!initialConfiguration.IsNFRConfigured && Number(item.Value) === Number(NFRAPPROVALTYPEID))) && label === 'approvalTypeCosting') return false
-        if (label === 'approvalTypeOnboarding' && Number(item.Value) !== VENDORNEEDFORMID) return false;
+        if (label === 'approvalTypeOnboarding' && Number(item.Value) !== VENDORNEEDFORMID && Number(item.Value) !== LPSAPPROVALTYPEID && Number(item.Value) !== CLASSIFICATIONAPPROVALTYPEID) return false;
         if ((label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster') && Number(item.Value) === VENDORNEEDFORMID) return false;
         const transformedText = transformApprovalItem(item);
         temp.push({ label: transformedText, value: item.Value })
@@ -2395,7 +2396,7 @@ function UserRegistration(props) {
                   </div>
                 </div>
                 {isEditFlag && !isShowPwdField && <div className="col-md-6">
-                  <Button className={'user-btn'} onClick={() => setIsShowPwdField(!isShowPwdField)} >Change Password</Button>
+                  <Button id={"Change_Password"} className={'user-btn'} onClick={() => setIsShowPwdField(!isShowPwdField)} >Change Password</Button>
                 </div>}
               </div>
               <form noValidate className="manageuser form" onKeyDown={(e) => { handleKeyDown(e, onSubmit); }}>
@@ -2467,7 +2468,24 @@ function UserRegistration(props) {
                         customClassName={'withBorder'}
                       />
                     </div>
-
+                    {props?.RFQUser && IsSendMailToPrimaryContact() && <Col md="3" id="primaryContact_container" className="d-flex align-items-center mt-4 pt-2">
+                      <label
+                        className={`custom-checkbox`}
+                        onChange={onPrimaryContactCheck}
+                      >
+                        Primary Contact
+                        <input
+                          type="checkbox"
+                          checked={primaryContact}
+                        />
+                        <TooltipCustom id="Primary_Contact" customClass="mt-1" tooltipText="Please click on the checkbox if this user is the main point of contact for the vendor." />
+                        <span
+                          className=" before-box"
+                          checked={primaryContact}
+                          onChange={onPrimaryContactCheck}
+                        />
+                      </label>
+                    </Col>}
                     {!props?.RFQUser ? <div className="col-md-3">
                       <div className="row form-group">
                         <div className="Phone phoneNumber col-md-8">
@@ -2547,7 +2565,7 @@ function UserRegistration(props) {
                             <SearchableSelectHookForm
                               name="Reporter"
                               type="text"
-                              label={`Point of Contact`}
+                              label={`Vendor's Point of Contact`}
 
                               errors={errors.Reporter}
                               Controller={Controller}
@@ -2569,23 +2587,7 @@ function UserRegistration(props) {
                         </Col>
                       </>
                     }
-                    {props?.RFQUser && <Col md="3" id="primaryContact_container" className="d-flex align-items-center mt-4 pt-2">
-                      <label
-                        className={`custom-checkbox`}
-                        onChange={onPrimaryContactCheck}
-                      >
-                        Primary Contact
-                        <input
-                          type="checkbox"
-                          checked={primaryContact}
-                        />
-                        <span
-                          className=" before-box"
-                          checked={primaryContact}
-                          onChange={onPrimaryContactCheck}
-                        />
-                      </label>
-                    </Col>}
+
                   </div>
 
                   <HeaderTitle
@@ -3391,7 +3393,7 @@ function UserRegistration(props) {
                         <>
                           <Row>
                             <Col md="8">
-                              <HeaderTitle title={'Onboarding Approval Level:'} customClass={''} />
+                              <HeaderTitle title={'Onboarding & Management Approval Level:'} customClass={''} />
                             </Col>
                             <Col md="4" className="text-right">
                               <button id="AddUser_Permissions_onBoarding" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>

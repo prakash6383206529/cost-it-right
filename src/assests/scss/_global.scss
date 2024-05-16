@@ -2768,6 +2768,8 @@ td,
   .Approved,
   .Rejected,
   .History,
+  .Returned,
+  .NotSelected,
   .ApprovedBySimulation,
   .ApprovedByAssembly,
   .ApprovedByASMSimulation,
@@ -2814,13 +2816,15 @@ td,
     background-color: #4dc771;
   }
 
+  .NotSelected,
   .History {
     background-color: #c2cbe8;
   }
 
   .Rejected,
   .RejectedBySystem,
-  .Cancelled {
+  .Cancelled,
+  .Returned {
     background-color: #fc5774;
   }
 
@@ -3687,4 +3691,8 @@ input:focus,
 
 .label-fit {
   margin-top: -22px;
+}
+
+.arrow.tooltip-arrow {
+  margin-left: 6px;
 }

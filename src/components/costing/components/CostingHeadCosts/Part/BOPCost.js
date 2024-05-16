@@ -445,8 +445,8 @@ function BOPCost(props) {
     }, 200);
     const Params = {
       index: props.index,
-      BOMLevel: props.item.BOMLevel,
-      PartNumber: props.item.PartNumber,
+      BOMLevel: props.item?.BOMLevel,
+      PartNumber: props.item?.PartNumber,
     }
     const BOPHandlingFields = {
       IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,

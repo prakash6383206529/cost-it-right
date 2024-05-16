@@ -1,0 +1,687 @@
+import React, { Fragment, useEffect, useState } from 'react';
+import { Col, Row } from 'reactstrap';
+import Drawer from '@material-ui/core/Drawer';
+import Button from '../../layout/Button';
+import { Controller, useForm } from 'react-hook-form';
+import { AllApprovalField, SearchableSelectHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllReasonAPI } from '../../masters/actions/ReasonMaster';
+import { useHistory } from 'react-router-dom';
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails, userTechnologyLevelDetailsWithoutCostingToApproval } from '../../../helper';
+import { sendForUnblocking } from '../Action';
+import { getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment } from '../../masters/actions/Material';
+import { transformApprovalItem } from '../../common/CommonFunctions';
+import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_GUID, LPSAPPROVALTYPEID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../config/constants';
+import WarningMessage from '../../common/WarningMessage';
+import Toaster from '../../common/Toaster';
+import { debounce } from 'lodash';
+import { is } from 'date-fns/locale';
+import { getUsersOnboardingLevelAPI } from '../../../actions/auth/AuthActions';
+import { months } from 'moment';
+
+
+const SendForApproval = (props) => {
+  const history = useHistory();
+  const [isLoader, setIsLoader] = useState(false)
+
+  const dispatch = useDispatch()
+  const { register, control, setValue, handleSubmit, getValues, formState: { errors } } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  })
+  const [reasonOption, setReasonOption] = useState([])
+  const [selectedReason, setSelectedReason] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [approvalDropDown, setApprovalDropDown] = useState([])
+  const [disableRS, setDisableRS] = useState(false);
+  const userData = userDetails()
+
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const [showValidation, setShowValidation] = useState(false)
+  const reasonsList = useSelector((state) => state.approval.reasonsList)
+  const deptList = useSelector((state) => state.approval.approvalDepartmentList)
+  const [selectedApproverLevelId, setSelectedApproverLevelId] = useState('')
+  const [selectedApprover, setSelectedApprover] = useState('')
+  const [approver, setApprover] = useState('')
+  const [approvalType, setApprovalType] = useState({});
+  const [approverIdList, setApproverIdList] = useState([])
+  const [lpsApprovalDropDown, setLPSApprovalDropDown] = useState([])
+  const [classificationApprovalDropDown, setClassificationApprovalDropDown] = useState([])
+  const [lpsApproverIdList, setLPSApproverIdList] = useState([]) // [loggedInUserId(), setLPSApproverIdList]
+  const [classificationApproverIdList, setClassificationApproverIdList] = useState([])
+  const [levelDetails, setLevelDetails] = useState('');
+
+  const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
+
+  const {
+    isOpen,
+    isLpsRating, isClassification, viewApprovalData,
+    deviationData,
+    // onSubmit,
+    isDisable,
+    isDisableSubmit,
+
+
+  } = props;
+
+  useEffect(() => {
+    dispatch(getAllMasterApprovalDepartment((res) => {
+      const Data = res?.data?.SelectList;
+      const departObj = Data && Data.filter(item => item.Value === userDetails().DepartmentId);
+      setTimeout(() => {
+        setValue('dept', { label: departObj[0].Text, value: departObj[0].Value });
+      }, 100);
+
+      let approverIdListTemp = [];
+      let obj = {
+        LoggedInUserId: loggedInUserId(),
+        DepartmentId: userDetails().DepartmentId,
+        MasterId: 0,
+        ReasonId: 0,
+        PlantId: deviationData?.PlantId ?? EMPTY_GUID,
+        OnboardingMasterId: 1
+      };
+
+      const handleApiResponse = (res, deptKey, approverKey) => {
+
+        const Data = res.data.DataList[1] || {};
+        const isLPSApprovalType = Data.ApprovalTypeId === LPSAPPROVALTYPEID;
+        if (Data.length !== 0) {
+          setTimeout(() => {
+            setValue(deptKey, { label: Data.DepartmentName, value: Data.DepartmentId });
+            setValue(approverKey, {
+              label: Data.Text || '',
+              value: Data.Value || '',
+              levelId: Data.LevelId || '',
+              levelName: Data.LevelName || ''
+            });
+          }, 100);
+
+          let tempDropdownList = [];
+          res.data.DataList && res.data.DataList.forEach((item) => {
+
+            if (item.Value !== '0') {
+              tempDropdownList.push({
+                label: item.Text,
+                value: item.Value,
+                levelId: item.LevelId,
+                levelName: item.LevelName
+              });
+              approverIdListTemp.push(item.Value);
+            }
+          });
+          setTimeout(() => {
+            if (isLPSApprovalType) {
+              // Update LPS related states
+              setLPSApprovalDropDown(tempDropdownList);
+              setLPSApproverIdList(approverIdListTemp);
+            } else {
+              // Update Classification related states
+              setClassificationApprovalDropDown(tempDropdownList);
+              setClassificationApproverIdList(approverIdListTemp);
+            }
+          }, 100);
+        }
+      };
+
+      if (isLpsRating && isClassification) {
+        const lpsObj = { ...obj, ApprovalTypeId: LPSAPPROVALTYPEID };
+        const classificationObj = { ...obj, ApprovalTypeId: CLASSIFICATIONAPPROVALTYPEID };
+        dispatch(getAllMasterApprovalUserByDepartment(classificationObj, (classificationRes) => {
+
+          handleApiResponse(classificationRes, 'dept', 'approver');
+          // After handling the response for Classification, make API call for LPS
+          dispatch(getAllMasterApprovalUserByDepartment(lpsObj, (lpsRes) => {
+
+            handleApiResponse(lpsRes, 'dept1', 'approver1');
+          }));
+        }));
+      } else {
+        // Handle single scenario
+        const apiObj = {
+          ...obj,
+          ApprovalTypeId: isLpsRating ? LPSAPPROVALTYPEID : CLASSIFICATIONAPPROVALTYPEID
+        };
+
+
+        // Make API call for single type
+        dispatch(getAllMasterApprovalUserByDepartment(apiObj, (res) => {
+          isClassification ?
+            handleApiResponse(res, 'dept', 'approver') : handleApiResponse(res, 'dept1', 'approver1');
+        }));
+      }
+    }));
+  }, [isOpen]);
+
+  useEffect(() => {
+    dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
+
+      userTechnology(isLpsRating ? LPSAPPROVALTYPEID : CLASSIFICATIONAPPROVALTYPEID, res.data.Data)
+
+    }))
+  }, [isOpen])
+  const userTechnology = (approvalTypeId, levelsList) => {
+
+    let levelDetailsTemp = ''
+    levelDetailsTemp = userTechnologyLevelDetailsWithoutCostingToApproval(approvalTypeId, levelsList?.OnboardingApprovalLevels)
+    setLevelDetails(levelDetailsTemp)
+  }
+
+
+
+
+
+
+  const onSubmit = debounce(
+    handleSubmit(() => {
+      const dept = isClassification ? getValues('dept') : getValues('dept1');
+      const approver = isClassification ? getValues('approver') : getValues('approver1');
+      const month = isClassification ? getValues('month') : getValues('month1');
+      if (initialConfiguration.IsMultipleUserAllowForApproval && !dept?.label) {
+        Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.');
+        return false;
+      }
+
+      const senderObj = {
+
+        IsFinalApproved: false,
+        DepartmentId: dept?.value || '',
+        DepartmentName: dept?.label || '',
+        ApproverLevelId: approver?.levelId || '',
+        ApproverDepartmentId: dept?.value || '',
+        ApproverLevel: approver?.levelName || '',
+        ApproverDepartmentName: dept?.label || '',
+        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+          ? approverIdList
+          : [approver?.value || ''],
+        SenderLevelId: levelDetails?.LevelId,
+        SenderId: loggedInUserId(),
+        SenderLevel: levelDetails?.Level,
+        SenderRemark: '',
+        LoggedInUserId: loggedInUserId(),
+        PurchasingGroup: '',
+        MaterialGroup: '',
+        CostingTypeId: 1,
+        MasterIdList: [],
+        BudgetingIdList: [],
+        OnboardingApprovalId: 1,
+      };
+
+      const classificationSenderObj = {
+        ...senderObj,
+        ReasonId: getValues('reason')?.value || '',
+        Reason: getValues('reason')?.label || '',
+        ApprovalTypeId: CLASSIFICATIONAPPROVALTYPEID,
+        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+          ? classificationApproverIdList
+          : [approver?.value || ''],
+        MasterCreateRequest: {
+          CreateVendorPlantClassificationLPSRatingUnblocking: {
+            VendorClassificationId: deviationData?.VendorClassificationId,
+            VendorLPSRatingId: '',
+            IsSendForApproval: deviationData?.ClassificationIsBlocked,
+
+            DeviationId: '00000000-0000-0000-0000-000000000000',
+            CostingTypeId: 1,
+            DeviationType: 1,
+            DeviationDuration: `${month.value} Month(s)`,
+            LoggedInUserId: loggedInUserId(),
+            PlantId: deviationData.PlantId,
+            PlantName: deviationData.PlantName,
+            Remark: getValues('remarks') || '',
+            DepartmentId: ''
+          }
+        }
+      };
+
+      const lpsSenderObj = {
+        ...senderObj,
+        ReasonId: getValues('reason1')?.value || '',
+        Reason: getValues('reason1')?.label || '',
+        ApprovalTypeId: LPSAPPROVALTYPEID,
+        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+          ? lpsApproverIdList
+          : [approver?.value || ''],
+        MasterCreateRequest: {
+          CreateVendorPlantClassificationLPSRatingUnblocking: {
+            VendorClassificationId: '',
+            VendorLPSRatingId: deviationData.VendorLPSRatingId,
+            IsSendForApproval: deviationData.LPSRatingIsBlocked,
+            DeviationId: '00000000-0000-0000-0000-000000000000',
+            CostingTypeId: 1,
+            DeviationType: 2,
+            DeviationDuration: `1 Month(s)`,
+            LoggedInUserId: loggedInUserId(),
+            PlantId: deviationData.PlantId,
+            PlantName: deviationData.PlantName,
+            Remark: getValues('remarks1') || '',
+            DepartmentId: ''
+          }
+        }
+      };
+
+      // Dispatching API calls
+      setIsLoader(true);
+      const dispatchApproval = (sender, message) => {
+        dispatch(sendForUnblocking(sender, res => {
+
+          setIsLoader(false);
+          if (res?.data?.Result) {
+            Toaster.success(message);
+            props.closeDrawer('', 'submit');
+            // history.push('/supplier-approval-summary'); // Update the route as per your application
+
+          }
+        }));
+
+      };
+
+      if (isClassification && isLpsRating) {
+        dispatchApproval(classificationSenderObj, 'Data has been sent for classification approval.');
+        dispatchApproval(lpsSenderObj, 'Data has been sent for LPS rating approval.');
+      } else if (isClassification) {
+        dispatchApproval(classificationSenderObj, 'Data has been sent for classification approval.');
+      } else if (isLpsRating) {
+        dispatchApproval(lpsSenderObj, 'Data has been sent for LPS rating approval.');
+      }
+    }),
+    500
+  );
+
+
+
+
+
+  useEffect(() => {
+    dispatch(getAllReasonAPI(true, (res) => {
+      setIsLoader(true)
+      if (res.data.Result) {
+        setReasonOption(res.data.DataList);
+        // Set selected reason to the first option by default
+        setSelectedReason(res.data.DataList || null);
+      }
+      setIsLoader(false)
+    }));
+  }, [dispatch]);
+
+
+  const toggleDrawer = (event) => {
+    if (isDisable) {
+      return false
+    }
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return
+    }
+    // dispatch(setCostingApprovalData([]))
+    props.closeDrawer('', 'Cancel')
+  }
+
+  const searchableSelectType = (label) => {
+
+
+    const temp = [];
+    if (label === 'Dept') {
+      deptList && deptList.map((item) => {
+
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+
+    if (label === 'ApprovalType') {
+      approvalTypeSelectList && approvalTypeSelectList.map((item) => {
+
+        const transformedText = transformApprovalItem(item);
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && !props?.isRfq) temp.push({ label: transformedText, value: item.Value })
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && props?.isRfq) temp.push({ label: transformedText, value: item.Value })
+        return null
+      })
+      return temp
+    }
+
+    if (label === 'month') {
+      // Generate month options dynamically
+      for (let i = 1; i <= 12; i++) {
+        temp.push({ label: `${i}`, value: i });
+      }
+
+      return temp;
+    }
+
+    if (label === 'reason') {
+      // Map options for 'department'
+      // Example logic...
+      reasonOption && reasonOption.map(item => {
+        if (item.Value === '0') return false
+
+
+        temp.push({ label: item.Reason, value: item.ReasonId })
+      });
+      return temp;
+    }
+
+    // Add more conditions for other labels as needed
+
+    return temp;
+  }
+
+  const handleMonthChange = (selectedMonth) => {
+    // Do something with the selected month, such as updating state or setting a value
+
+  };
+
+  const handleReasonChange = (selectedReason) => {
+    // Do something with the selected reason, such as updating state or setting a value
+
+  };
+  const handleApproverChange = (data) => {
+    setApprover(data.label)
+    setSelectedApprover(data.value)
+    setSelectedApproverLevelId({ levelName: data.levelName, levelId: data.levelId })
+  }
+  const approverMessage = `This user is not in approval cycle for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type, please contact admin to add approver for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`;
+
+  return (
+    <Fragment>
+      <Drawer anchor={props.anchor} open={isOpen}>
+
+        <div className="container">
+          <div className={"drawer-wrapper layout-width-900px"}>
+            <Row className="drawer-heading">
+              <Col>
+                <div className={"header-wrapper left"}>
+                  <h3>{"Send for Approval"}</h3>
+                </div>
+                <div
+                  onClick={(e) => toggleDrawer(e)}
+                  disabled={isLoader}
+                  className={"close-button right"}
+                ></div>
+              </Col>
+            </Row>
+
+
+            {viewApprovalData &&
+              viewApprovalData.map((data, index) => (
+                <div className="" key={index}>
+                  {/* Rendering approval data */}
+                </div>
+              ))}
+            {isClassification && (<div className="">
+              <Row>
+                <Col md="12">
+                  <div className="left-border">{`Supplier Classification`}</div>
+                </Col>
+              </Row>
+              <form>
+                {/* Form fields */}
+                <Row>
+                  <Col md="6">
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={`${handleDepartmentHeader()}`}
+                        name={"dept"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={searchableSelectType("Dept")}
+                        disabled={disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
+                        mandatory={true}
+                        // handleChange={handleDepartmentChange}
+                        errors={errors.dept}
+                      />
+                    </div>
+                  </Col >
+                  <Col md="6">
+                    {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                      <AllApprovalField
+                        label="Approver"
+                        approverList={classificationApprovalDropDown}
+                        popupButton="View all"
+                      />
+                    </> :
+                      <SearchableSelectHookForm
+                        label={"Approver"}
+                        name={"approver"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={classificationApprovalDropDown}
+                        mandatory={true}
+                        disabled={disableRS || !(userData.Department.length > 1)}
+                        customClassName={"mb-0 approver-wrapper"}
+                        handleChange={handleApproverChange}
+                        errors={errors.approver}
+                      />}
+                    {
+                      showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
+                    }
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md="6">
+                    <SearchableSelectHookForm
+                      label={'Select Reason'}
+                      name={'reason'}
+                      placeholder={'Select'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={selectedReason}
+                      options={searchableSelectType('reason')} // Call mapApprovalOptions with the label
+                      mandatory={true}
+                      handleChange={handleReasonChange}
+                      errors={errors.Masters}
+                    />
+
+                  </Col>
+                  <Col md="6">
+                    <SearchableSelectHookForm
+                      label={'Deviation Duration (Months)'}
+                      name={'month'}
+                      placeholder={'Select'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={selectedMonth}
+                      options={searchableSelectType('month')}
+                      mandatory={true}
+                      handleChange={handleMonthChange}
+                      errors={errors.Masters}
+                    />
+
+                  </Col>
+                  <Col md="12">
+                    <TextAreaHookForm
+                      label="Remarks"
+                      name={"remarks"}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      rules={{ required: true }}
+                      mandatory={true}
+                      // mandatory={mandatoryRemark ? true : false}
+                      // rules={{ required: mandatoryRemark ? true : false }}
+                      handleChange={() => { }}
+                      defaultValue={""}
+                      className=""
+                      customClassName={"withBorder"}
+                      errors={errors.remarks}
+                      disabled={false}
+                    />
+                  </Col>
+                </Row>
+              </form>
+            </div>)}
+
+            {viewApprovalData &&
+              viewApprovalData.map((data, index) => (
+                <div className="" key={index}>
+                  {/* Rendering approval data */}
+                </div>
+              ))}
+            {isLpsRating && (<div className="">
+              <Row>
+                <Col md="12">
+                  <div className="left-border">{`LPS Rating`}</div>
+                </Col>
+              </Row>
+              <form>
+                {/* Form fields */}
+                <Row>
+                  <Col md="6">
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={`${handleDepartmentHeader()}`}
+                        name={"dept1"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={searchableSelectType("Dept")}
+                        disabled={disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
+                        mandatory={true}
+                        // handleChange={handleDepartmentChange}
+                        errors={errors.dept}
+                      />
+                    </div>
+                  </Col >
+                  <Col md="6">
+                    {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                      <AllApprovalField
+                        label="Approver"
+                        approverList={lpsApprovalDropDown}
+                        popupButton="View all"
+                      />
+                    </> :
+                      <SearchableSelectHookForm
+                        label={"Approver"}
+                        name={"approver1"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={lpsApprovalDropDown}
+                        mandatory={true}
+                        disabled={disableRS || !(userData.Department.length > 1)}
+                        customClassName={"mb-0 approver-wrapper"}
+                        handleChange={handleApproverChange}
+                        errors={errors.approver}
+                      />}
+                    {
+                      showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
+                    }
+                  </Col >
+                </Row>
+                <Row>
+                  <Col md="6">
+                    <SearchableSelectHookForm
+                      label={'Select Reason'}
+                      name={'reason1'}
+                      placeholder={'Select'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={selectedReason}
+                      options={searchableSelectType('reason')} // Call mapApprovalOptions with the label
+                      mandatory={true}
+                      handleChange={handleReasonChange}
+                      errors={errors.Masters}
+                    />
+
+                  </Col>
+                  <Col md="6">
+                    <SearchableSelectHookForm
+                      label={'Deviation Duration (Months)'}
+                      name={'month1'}
+                      placeholder={'Select'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={searchableSelectType('month').find(option => option.value === 1)}
+                      options={searchableSelectType('month')}
+                      mandatory={true}
+                      handleChange={handleMonthChange}
+                      errors={errors.Masters}
+                      disabled={true}
+                    />
+
+
+                  </Col>
+                  <Col md="12">
+                    <Col md="12">
+                      <TextAreaHookForm
+                        label="Remarks"
+                        name={"remarks1"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        // mandatory={mandatoryRemark ? true : false}
+                        rules={{ required: true }}
+                        // rules={{ required: mandatoryRemark ? true : false }}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.remarks1}
+                        disabled={false}
+                      />
+                    </Col>
+                  </Col>
+                </Row>
+              </form>
+            </div>)}
+            <Row className="mb-4">
+              <Col
+                md="12"
+                className="d-flex justify-content-end align-items-center"
+              >
+                <button
+                  className="cancel-btn mr-2"
+                  type={"button"}
+                  onClick={toggleDrawer}
+                // className="reset mr15 cancel-btn"
+                >
+                  <div className={'cancel-icon'}></div>
+                  {"Cancel"}
+                </button>
+                <Button
+                  className="btn btn-primary save-btn"
+                  type="submit"
+                  // disabled={(isDisable || isFinalApproverShow)}
+                  disabled={isDisable || isDisableSubmit}
+                  onClick={onSubmit}
+                >
+                  <div className={'save-icon'}></div>
+                  {"Submit"}
+                </Button>
+              </Col>
+            </Row>
+          </div>
+        </div>
+      </Drawer>
+    </Fragment>
+  );
+}
+
+export default SendForApproval;

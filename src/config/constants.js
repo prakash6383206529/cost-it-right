@@ -13,12 +13,14 @@ export const config = () => {
     'Access-From': 'WEB',
     'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   }
+
   return { headers }
 }
 
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.11.208:3030/api/v1`
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10162/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
@@ -532,7 +534,6 @@ export const API = {
   createPartWithSupplier: `${BASE_URL}/costing-sheet-metal/add-part-with-supplier`,
   createNewCosting: `${BASE_URL}/costing-sheet-metal/create`,
   getCostingDetailsById: `${BASE_URL}/costing-sheet-metal/get-costing-details-by-id`,
-  getZBCCostingSelectListByPart: `${BASE_URL}/costing-sheet-metal/get-costing-select-list-by-part`,
   getCostingTechnologySelectList: `${BASE_URL}/costing/get-technology-select-list`,
   getPartInfo: `${BASE_URL}/masters-part/get-part-info`,
   checkPartWithTechnology: `${BASE_URL}/costing/check-part-with-technology`,
@@ -1022,6 +1023,7 @@ export const API = {
   simulationUploadFileByCategory: `${BASE_URL}/simulation/simulation-file-upload-with-form-data`,          						//RE
   simulationUploadFtp: `${BASE_URL}/simulation/simulation-file-upload-on-ftp`,          						//RE
   getSimualtionInsightReport: `${BASE_URL}/app-simulation-approval-system/get-simulation-insights`,
+  getCostingHeadsList: `${BASE_URL}/configuration/get-costing-heads`,
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
@@ -1112,6 +1114,18 @@ export const API = {
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
 
+  //vendor management
+  getVendorClassificationList: `${BASE_URL}/vendor/get-classifications-status`,
+  getVendorLpsRatingList: `${BASE_URL}/vendor/get-lpsratings-status`,
+  vendorClassificationStatusUpdate: `${BASE_URL}/vendor/update-classification-status`,
+  lpsRatingStatusUpdate: `${BASE_URL}/vendor/update-lpsrating-status`,
+  sendForUnblocking: `${BASE_URL}/masters-approval/master-send-to-approver-by-sender`,
+  getVendorData: `${BASE_URL}/vendor/vendor-name-by-vendor-select-list`,
+  getPlantData: `${BASE_URL}/configuration/get-plant-for-deviation-approval-by-vendor`,
+  // getMonths : `${BASE_URL}/configuration/get-months-for-deviation-approval-by-vendor`,
+  getVendorPlantDetailForDeviation: `${BASE_URL}/vendor/get-vendor-plant-detail-for-deviation-approval`,
+  getOnboardingSummaryData: `${BASE_URL}/app-approval-system/get-approval-master-summary`,
+
   // NFR
   getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
   getNfrAnnualForecastQuantity: `${BASE_URL}/rfq-quotation/get-nfr-annual-forecast-quantity`,
@@ -1126,6 +1140,23 @@ export const API = {
   // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
   // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
 }
+//VENDOR MANAGEMENT
+
+export const VENDOR_CLASSIFICATION_DATA = 'VENDOR_CLASSIFICATION_DATA';
+export const LPS_RATING_DATA = 'LPS_RATING_DATA';
+export const UPDATE_VENDOR_CLASSIFICATION_STATUS = 'UPDATE_VENDOR_CLASSIFICATION_STATUS';
+export const UPDATE_LPS_RATING_STATUS = 'UPDATE_LPS_RATING_STATUS';
+export const MONTHS = 'MONTHS';
+export const VENDOR_DATA = 'VENDOR_DATA';
+export const VENDOR_PLANT_DATA = 'VENDOR_PLANT_DATA';
+export const DETAILS_FOR_DEVIATION_APPROVAL = 'DETAILS_FOR_DEVIATION_APPROVAL';
+export const SEND_FOR_UNBLOCKING = 'SEND_FOR_UNBLOCKING';
+export const GET_ONBOARDING_SUMMARY_DATA_LIST = 'GET_ONBOARDING_SUMMARY_DATA_LIST';
+
+
+
+
+
 
 //Api constants
 export const API_REQUEST = 'API_REQUEST'
@@ -1618,6 +1649,7 @@ export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
 export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
 export const SET_NPV_DATA = 'SET_NPV_DATA'
 export const SET_OTHER_COST = 'SET_OTHER_COST'
+export const SET_OTHER_DISCOUNT_DATA = 'SET_OTHER_DISCOUNT_DATA'
 export const SET_OVERHEAD_PROFIT_ICC = 'SET_OVERHEAD_PROFIT_ICC'
 export const SET_YOY_COST_GRID_FOR_SAVE = 'SET_YOY_COST_GRID_FOR_SAVE'
 export const SET_QUOTATION_ID_FOR_RFQ = 'SET_QUOTATION_ID_FOR_RFQ'
@@ -1812,6 +1844,7 @@ export const SET_BOP_ASSOCIATION = 'SET_BOP_ASSOCIATION'
 export const SET_SIMULATION_APPLICABILITY = 'SET_SIMULATION_APPLICABILITY'
 export const SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT = 'SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT'
 export const SET_SELECTED_CUSTOMER_SIMULATION = 'SET_SELECTED_CUSTOMER_SIMULATION'
+export const GET_SELECTLIST_COSTING_HEADS = 'GET_SELECTLIST_COSTING_HEADS'
 
 // ASSEMBLY TECHNOLOGY
 export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
@@ -1915,13 +1948,14 @@ export const REPORTS_AND_ANALYTICS = 'Reports And Analytics'
 export const USERS = 'Users'
 export const AUDIT = 'Audit'
 export const RFQ = 'RFQ'
-export const ONBOARDING = 'Onboarding'
+export const ONBOARDING = 'Onboarding & Management'
+export const VENDOR_MANAGEMENT = 'Vendor Classification Status'
+export const APPROVAL_LISTING = 'Approval Listing'
+export const VENDOR_MANAGEMENT_ROLE = 'Vendor Management'
 
 //PAGE NAMES
 export const DASHBOARD = 'Dashboard'
-
 export const DASHBOARDWITHGRAPH = 'DashboardWithGraph'
-
 export const RAW_MATERIAL = 'Raw Material'
 export const RAW_MATERIAL_NAME_AND_GRADE = 'Raw Material Name and Grade'
 export const BOP = 'BOP'
@@ -1980,7 +2014,9 @@ export const OUTSOURCING = "Outsourcing"
 export const INSIGHT_SIMULATION_REPORT = "Simulation Insights"
 export const NFR_INSIGHT_DETAILS = 'NFR Insights' //MINDA
 export const lOGIN_AUDIT = 'Login Audit'
-
+export const VENDOR_CLASSIFICATION = 'Vendor Classification'
+export const INITIATE_UNBLOCKING = 'Initiate Unblocking'
+export const LPS_RATING = 'LPS Rating'
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
@@ -2042,6 +2078,8 @@ export const NFR = 'NFR'
 export const PFS1 = 'PFS1'
 export const PFS2 = 'PFS2'
 export const PFS3 = 'PFS3'
+export const CUD = 'CUD'
+export const LPSUD = 'LPSUD'
 export const ReleaseStrategyB1 = 'RSB1'
 export const ReleaseStrategyB2 = 'RSB2'
 export const ReleaseStrategyB3 = 'RSB3'
@@ -2075,6 +2113,9 @@ export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
 export const RESET_PASSWORD = '/reset-password'
 export const FORGET_PASSWORD = '/forget-password'
+export const SUPPLIER_MANAGEMENT = '/vendor-classification'
+export const lOGIN_AUDITS = '/login-audit'
+export const SUPPLIER_APPROVAL_SUMMARY = '/supplier-approval-summary'
 export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
 
 
@@ -2631,6 +2672,7 @@ export const ReportMaster = "Report-rate"
 export const ReportSAPMaster = "SAP-Excel Download"//MINDA
 export const UserListing = "User-Listing"
 export const AuditLisitng = "Audit-Listing"
+export const VendorManagement = "Vendor-Management"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
@@ -2660,6 +2702,7 @@ export const BOP_MASTER_ID = 2
 export const OPERATIONS_ID = 3
 export const MACHINE_MASTER_ID = 4
 export const BUDGET_ID = 5
+export const SUPPLIER_MANAGEMENT_ID = 6
 
 
 //approve reject drawer
@@ -2749,6 +2792,7 @@ export const statusOptionsCosting = _.sortBy([
   { label: "POUpdated", value: "14" },
   { label: "Pushed", value: "13" },
   { label: "Rejected", value: "4" },
+  { label: "Returned", value: "15" },
   { label: "Approved", value: "3" },
 ]
   , ({ label }) => label.toLowerCase());
@@ -2867,6 +2911,14 @@ export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('Approv
 export const RELEASESTRATEGYTYPEID6 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB6])
 export const VENDORNEEDFORMID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VendorNeedForm])
 
+//Supplier approval 
+
+export const CLASSIFICATIONAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CUD])
+
+export const LPSAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[LPSUD])
+export const LPSAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[LPSUD])
+export const CLASSIFICATIONAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[CUD])
+
 //CONSTANTS FOR MASTER APPROVAL TYPE 
 export const RMTYPE = Number(reactLocalStorage.getObject('masterType')[RAW_MATERIAL])
 export const BOPTYPE = Number(reactLocalStorage.getObject('masterType')[BOP])
@@ -2919,7 +2971,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 
 //VERSION 
-export const VERSION = "V2.2.3";
+export const VERSION = "V2.2.13";
 
 
 

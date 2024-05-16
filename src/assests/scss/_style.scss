@@ -6222,6 +6222,8 @@ body {
       .Under.Revision,
       .Received,
       .Open,
+      .Returned,
+      .NotSelected,
       .ExternalReject,
       [class^="Pending"],
       [class^="Awaiting"],
@@ -8485,6 +8487,8 @@ table.group-process-table {
     right: -20px;
     top: 26%;
     z-index: 2;
+    width: 22px;
+    height: 28px;
   }
 }
 
@@ -9107,5 +9111,17 @@ iframe {
   .pagination-button-container {
     margin-top: 10px;
     margin-bottom: 10px;
+  }
+}
+
+.operation-defination {
+  .tooltip-inner {
+    margin-right: 34px;
+  }
+}
+
+.process-defination {
+  .tooltip-inner {
+    margin-right: 24px;
   }
 }

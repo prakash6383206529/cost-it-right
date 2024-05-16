@@ -7,7 +7,7 @@
             "checkBox": "Click on the checkbox to select a particular row.",
             "link": "This is clickable data; click here to see more details.",
             "approvalStatus": "Search data by status.",
-            "toggleStatus": "Switch this button to allow or disallow actions."
+            "toggleStatus": "Toggle this button to activate and deactivate the role."
         },
         "mainButton": {
             "filter": "After entering specific data, click here to filter it out.",
@@ -18,7 +18,7 @@
         },
         "actionButton": {
             "cost-movement": "Check the movement in the cost from here.",
-            "view": "View detailed data from here.",
+            "view": "View the data from here.",
             "edit": "Click here to edit the data.",
             "delete": "If the master data is not associated anywhere, you can delete it.",
             "copy": "If data is not associated anywhere, you can copy the particular data.",
@@ -31,7 +31,7 @@
             "reject": "Currently working on it.",
             "sapDownload": "Download the SAP master in Excel format from here.",
             "encodedDownload": "Download the encoded master in Excel format from here.",
-            "cancel": "Click here to cancel the rfq.",
+            "cancel": "Click here to cancel.",
             "viewProcessGroup": "Click here to View the process group."
         },
         "master_Listing_Tour": {

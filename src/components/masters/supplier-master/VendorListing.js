@@ -466,7 +466,7 @@ const VendorListing = () => {
       : props?.data;
     const { ActivateAccessibility } = state;
     if (rowData.UserId === loggedInUserId()) return null;
-    showTitleForActiveToggle(props?.rowIndex);
+    showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive');
     return (
       <>
         <label htmlFor="normal-switch" className="normal-switch Tour_List_Status">
@@ -801,7 +801,10 @@ const VendorListing = () => {
               <AgGridColumn field="Country" headerName="Country" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
               <AgGridColumn field="State" headerName="State" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
               <AgGridColumn field="City" headerName="City" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+
               {getConfigurationKey()?.IsCriticalVendorConfigured && (<AgGridColumn field="IsCriticalVendor" headerName="Potential Vendor" ></AgGridColumn>)}
+              <AgGridColumn field="VendorClassification" headerName="Vendor Classification" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+              <AgGridColumn field="VendorLPSRating" headerName="Vendor LPSRating" cellRenderer={"hyphenFormatter"}></AgGridColumn>
               <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}              ></AgGridColumn>
               <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"}              ></AgGridColumn>
             </AgGridReact>

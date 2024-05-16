@@ -5,7 +5,7 @@ import { Row, Col, Tooltip, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
-import { addDays, loggedInUserId } from '../.././helper';
+import { IsSendQuotationToPointOfContact, addDays, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
 import { Component, EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -115,6 +115,7 @@ function AddRfq(props) {
     const [plant, setPlant] = useState({})
     const [isNFRFlow, setIsNFRFlow] = useState(false)
     const [rmAPIList, setRMAPIList] = useState([])
+    const [rmNameSelected, setRmNameSelected] = useState(false)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
     const rmSpecification = useSelector(state => state.comman.rmSpecification);
@@ -541,7 +542,7 @@ function AddRfq(props) {
         obj.VisibilityDuration = getValues('Time')
         obj.LastSubmissionDate = DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss')
         obj.VendorList = vendorList
-
+        obj.Timezone = getTimeZone()
         let temppartArr = []
         let partIdList = _.uniq(_.map(list, 'PartId'))
         partIdList && partIdList?.map((item) => {
@@ -690,10 +691,14 @@ function AddRfq(props) {
                 obj.ContactPersonId = getValues('contactPerson')?.value
                 obj.Vendor = getValues('vendor')?.label
                 obj.ContactPerson = getValues('contactPerson')?.label
+                if (obj.VendorId === null || obj.VendorId === undefined) {
+                    Toaster.warning("Please fill all the mandatory fields first.");
+                    return false;
+                }
 
-                if (obj.VendorId === null || obj.VendorId === undefined || obj.ContactPersonId === null || obj.ContactPersonId === undefined) {
-
-                    Toaster.warning("Please fill all the mandatory fields first.")
+                // Check IsSendQuotationToPointOfContact() result and ContactPersonId
+                if (IsSendQuotationToPointOfContact() && (obj.ContactPersonId === null || obj.ContactPersonId === undefined)) {
+                    Toaster.warning("Please fill all the mandatory fields first.");
                     return false;
                 }
 
@@ -890,11 +895,24 @@ function AddRfq(props) {
             let objTemp = {};
             let arrTemp = [];
             let Data = {}
-
+            const { label } = getValues('RMName') || {};
+            const isRMGradeMissing = !getValues('RMGrade');
+            const isRMSpecificationMissing = !getValues('RMSpecification');
             if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
                 Toaster.warning("Please select part number and SOP date");
                 return false;
+            } if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
+                const missingRequirements = [];
+                if (isRMGradeMissing) {
+                    missingRequirements.push('RM Grade');
+                }
+                if (isRMSpecificationMissing) {
+                    missingRequirements.push('RM Specification');
+                }
+                const message = `Please select ${missingRequirements.join(' and ')}`;
+                Toaster.warning(message);
             } else {
+
                 if (nfrId) {
                     dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
                         Data = res.data.Data
@@ -1298,6 +1316,7 @@ function AddRfq(props) {
 
     const handleRMName = (newValue) => {
         setRMName({ label: newValue?.label, value: newValue?.value })
+        setRmNameSelected(true)
         dispatch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { }))
     }
 
@@ -1531,7 +1550,7 @@ function AddRfq(props) {
                                                         customClassName="costing-version"
                                                         // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
                                                         options={renderListingRM('rmgrade')}
-                                                        mandatory={false}
+                                                        mandatory={rmNameSelected}
                                                         handleChange={(newValue) => handleRMGrade(newValue)}
                                                         disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
                                                     // errors={`${indexInside} CostingVersion`}
@@ -1550,7 +1569,7 @@ function AddRfq(props) {
                                                         customClassName="costing-version"
                                                         // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
                                                         options={renderListingRM('rmspecification')}
-                                                        mandatory={false}
+                                                        mandatory={rmNameSelected}
                                                         handleChange={(newValue) => handleRMSpecification(newValue)}
                                                         disabled={(dataProps?.isAddFlag ? partNoDisable || isNFRFlow : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
                                                     // errors={`${indexInside} CostingVersion`}
@@ -1691,23 +1710,25 @@ function AddRfq(props) {
                                         </Col>
 
                                         <Col md="3">
-                                            <SearchableSelectHookForm
-                                                label={"Point of Contact"}
-                                                name={"contactPerson"}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                                options={renderListing("reporter")}
-                                                mandatory={true}
-                                                // handleChange={handleDestinationPlantChange}
-                                                handleChange={() => { }}
-                                                errors={errors.contactPerson}
-                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
-                                                isLoading={plantLoaderObj}
-                                            />
+                                            {IsSendQuotationToPointOfContact() && (
+                                                <SearchableSelectHookForm
+                                                    label={"Vendor's Point of Contact"}
+                                                    name={"contactPerson"}
+                                                    placeholder={"Select"}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                                                    options={renderListing("reporter")}
+                                                    mandatory={true}
+                                                    // handleChange={handleDestinationPlantChange}
+                                                    handleChange={() => { }}
+                                                    errors={errors.contactPerson}
+                                                    disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                    isLoading={plantLoaderObj}
+                                                />
+                                            )}
                                         </Col>
                                         <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
@@ -1759,8 +1780,8 @@ function AddRfq(props) {
                                                                 frameworkComponents={frameworkComponents}
                                                             >
                                                                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
-
-                                                                <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>
+                                                                {IsSendQuotationToPointOfContact() && (
+                                                                    <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
                                                                 <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
                                                                 <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                             </AgGridReact>

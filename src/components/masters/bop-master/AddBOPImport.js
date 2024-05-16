@@ -213,12 +213,15 @@ class AddBOPImport extends Component {
     if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getCurrencySelectList(() => { })
       this.props.getClientSelectList(() => { })
-
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     }
+  }
+  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+    const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
+          this.commonFunction(plantId)
         }, 100);
       })
     } else {
@@ -238,18 +241,18 @@ class AddBOPImport extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       plantId: plantId
     }
-
-    this.props.checkFinalUser(obj, (res) => {
-      if (res?.data?.Result) {
-        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
-      }
-      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
-        this.setState({ disableSendForApproval: true })
-      } else {
-        this.setState({ disableSendForApproval: false })
-      }
-    })
-
+    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+        }
+        if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+          this.setState({ disableSendForApproval: true })
+        } else {
+          this.setState({ disableSendForApproval: false })
+        }
+      })
+    }
     this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
 
   }
@@ -547,9 +550,7 @@ class AddBOPImport extends Component {
                 this.setInStateToolTip()
                 this.toolTipNetCost({ label: Data.Currency, value: Data.CurrencyId })
                 this.toolTipBasicPrice({ label: Data.Currency, value: Data.CurrencyId })
-                if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-                  this.commonFunction(plantObj.value)
-                }
+                this.finalUserCheckAndMasterLevelCheckFunction(plantObj.value)
                 this.setState({ isLoader: false, isCallCalculation: false })
               }, 500)
             })
@@ -1201,7 +1202,8 @@ class AddBOPImport extends Component {
         checkForNull(fieldsObj?.NumberOfPieces) === checkForNull(DataToChange?.NumberOfPieces) &&
         checkForNull(fieldsObj?.BasicRateSelectedCurrency) === checkForNull(DataToChange?.BasicRate) &&
 
-        checkForNull(netLandedCostSelectedCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostSelectedCurrency) === checkForNull(DataToChange?.NetConditionCost) && DropdownChanged) {
+        checkForNull(netLandedCostSelectedCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostSelectedCurrency) === checkForNull(DataToChange?.NetConditionCost) && DropdownChanged &&
+        ((DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
         this.setState({ isEditBuffer: true })
         Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
         return false
@@ -1378,6 +1380,7 @@ class AddBOPImport extends Component {
                             buttonSpecificProp={{ id: "Add_BOP_Import_Form" }}
                             stepsSpecificProp={{
                               steps: Steps(t, {
+                                isBOPAssociated: isBOPAssociated,
                                 isEditFlag: isEditFlag,
                                 showSendForApproval: !this.state.isFinalApprovar,
                                 CBCTypeField: (costingTypeId === CBCTypeId),
@@ -1577,8 +1580,7 @@ class AddBOPImport extends Component {
                                   <input
                                     type="checkbox"
                                     checked={isTechnologyVisible}
-                                    disabled={isViewMode || isEditFlag ? true : false
-                                    }
+                                    disabled={isViewMode || (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
                                   />
                                   < span
                                     className=" before-box"
@@ -1586,6 +1588,7 @@ class AddBOPImport extends Component {
                                     onChange={this.breakUpHandleChange}
                                   />
                                 </label >
+                                {isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId && <WarningMessage dClass={"mr-2"} message={`This ${showBopLabel()} is already associated, so now you can't edit it.`} />}
                               </Col >
                               {isTechnologyVisible && <Col md="3">
                                 <Field
@@ -1602,7 +1605,7 @@ class AddBOPImport extends Component {
                                     this.handleTechnologyChange
                                   }
                                   valueDescription={this.state.Technology}
-                                  disabled={isViewMode || isEditFlag ? true : false}
+                                  disabled={isViewMode || (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
                                 />
                               </Col>}
                             </>
@@ -1785,7 +1788,7 @@ class AddBOPImport extends Component {
                               />
                             </div>
                           </Col>
-                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) && <>
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
                             < Col md="3">
                               <Field
                                 label={`Minimum Order Quantity`}
@@ -1801,7 +1804,7 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                           </>}
-                          {(!isTechnologyVisible || this.showBasicRate()) && <>
+                          {(!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
                             <Col md="3">
                               <Field
                                 label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
@@ -1832,7 +1835,7 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                           </>}
-                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
+                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">
                               <TooltipCustom id="bop-basic-currency" tooltipText={toolTipTextBasicPrice?.toolTipTextBasicPriceSelectedCurrency} />
                               <Field
@@ -1942,7 +1945,7 @@ class AddBOPImport extends Component {
 
                         </Row>
                         {
-                          getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                          getConfigurationKey().IsShowClientVendorBOP && costingTypeId === CBCTypeId && <Col md="3" className="d-flex align-items-center mb-3">
                             <label
                               className={`custom-checkbox`}
                               onChange={this.onIsClientVendorBOP}

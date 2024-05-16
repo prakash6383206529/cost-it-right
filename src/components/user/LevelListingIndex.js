@@ -134,7 +134,7 @@ function ManageLevelTabs(props) {
                                     toggle('4')
                                 }}
                             >
-                                Onboarding
+                                Onboarding & Management
                             </NavLink>
                         </NavItem>}
                     </Nav>

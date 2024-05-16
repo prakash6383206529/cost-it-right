@@ -289,8 +289,7 @@ function NfrPartsListing(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
-        tempStatus = row?.Status
-
+        tempStatus = row?.DisplayStatus
         return <div className={cell}>{tempStatus}</div>
     }
 

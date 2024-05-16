@@ -427,10 +427,10 @@ const OperationListing = (props) => {
 
         return (
             <>
-                {benchMark && (
-                    <Button id={`operationListing_movement${props.rowIndex}`} className={"cost-movement Tour_List_Cost_Movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
-                )}
-                {(!benchMark) && (
+
+                <Button id={`operationListing_movement${props.rowIndex}`} className={"cost-movement Tour_List_Cost_Movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
+
+                {benchMark !== true && (
                     <>
                         {permissionData?.View && <Button id={`operationListing_view${props.rowIndex}`} className={"View Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
                         {isEditable && <Button id={`operationListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
@@ -488,8 +488,12 @@ const OperationListing = (props) => {
     // }
 
     const effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted || props?.value || '-';
-        return cellValue !== '-' ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+        if (state?.showExtraData && props?.rowIndex === 0) {
+            return "Lorem Ipsum";
+        } else {
+            const cellValue = props?.valueFormatted || props?.value || '-';
+            return cellValue !== '-' ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+        }
     }
 
     const renderPlantFormatter = (props) => {
@@ -786,7 +790,7 @@ const OperationListing = (props) => {
                     <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation || props.benchMark ? "zindex-0" : ""}`}>
                         <Col md="3" lg="3">
                             <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                            {(!props.isSimulation && !props.benchMark) && (<TourWrapper
+                            {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
                                 buttonSpecificProp={{ id: "Operation_Listing_Tour", onClick: toggleExtraData }}
                                 stepsSpecificProp={{
                                     steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
