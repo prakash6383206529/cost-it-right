@@ -70,13 +70,8 @@ const AddMaterialTypeDetail = () => {
         return totalPercentage;
     }
 
-    const onSubmit = data => {
+    const onSubmit = () => {
         if (isEdit) {
-            let isDuplicate = false
-            if (isDuplicate) {
-                Toaster.warning("Duplicate entries are not allowed")
-                return false
-            }
             updateRow()
         } else {
             addRow()
@@ -100,7 +95,7 @@ const AddMaterialTypeDetail = () => {
         });
 
         if (isDuplicate) {
-            Toaster.warning("Duplicate entries are not allowed");
+            Toaster.warning("Duplicate entries are not allowed.");
             return;
         }
 
@@ -114,7 +109,7 @@ const AddMaterialTypeDetail = () => {
             resetData();
         }
         else {
-            Toaster.warning("Total percentage cannot exceed 100");
+            Toaster.warning("Total percentage cannot exceed 100.");
         }
     };
 
@@ -137,10 +132,10 @@ const AddMaterialTypeDetail = () => {
                 resetData();
             }
             else {
-                Toaster.warning("Total percentage cannot exceed 100");
+                Toaster.warning("Total percentage cannot exceed 100.");
             }
         } else {
-            Toaster.warning("Duplicate entries are not allowed");
+            Toaster.warning("Duplicate entries are not allowed.");
         }
     };
 
@@ -281,7 +276,7 @@ const AddMaterialTypeDetail = () => {
                                 </tr>
                             ))}
                             <tr className='table-footer'>
-                                <td colSpan={initialConfiguration.IsShowCRMHead ? 2 : 1} className='text-left'>
+                                <td colSpan={1} className='text-left'>
                                     Total Percentage:
                                 </td>
                                 <td colSpan={3}>
