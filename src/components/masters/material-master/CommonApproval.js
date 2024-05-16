@@ -252,7 +252,7 @@ function CommonApproval(props) {
         // setPageNoNew(1)
         // setCurrentRowIndex(0)
         dispatch(updatePageNumber(1))
-        dispatch(updateCurrentRowIndex(0))
+        dispatch(updateCurrentRowIndex(10))
         gridOptions?.columnApi?.resetColumnState();
         getTableData(0, globalTakes, true, floatingFilterData)
     }
@@ -641,6 +641,9 @@ function CommonApproval(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        if (props?.OnboardingApprovalId === ONBOARDINGID) {
+            params.api.sizeColumnsToFit();
+        }
 
     };
 

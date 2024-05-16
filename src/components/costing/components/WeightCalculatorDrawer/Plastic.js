@@ -143,6 +143,7 @@ function Plastic(props) {
     const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [])) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
 
     if (finishedWeight !== 0) {
+      scrapWeight = calculateScrapWeight(grossWeight, finishedWeight, scrapRecoveryPercent)
       setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     }
     const rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + getValues('burningAllownace') // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
