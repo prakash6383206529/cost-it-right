@@ -81,18 +81,25 @@ const InitiateUnblocking = (props) => {
                     if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === true) {
                         Toaster.warning("User does not have permission for unblocking either the plant is not associated or it is the final level approver.")
                         approvalTypeId === LPSAPPROVALTYPEID ? setIsLpsRating(false) : setIsClassification(false)
-                        setSubmit(false)
                     } else if (res?.data?.Data?.IsUserInApprovalFlow === false && res?.data?.Data?.IsFinalApprover === false) {
                         Toaster.warning(`You don't have permission to initiate unblocking for the vendor against the selected plant. Either the plant is not associated, or the approval level has not been set Or may be both.`)
                         approvalTypeId === LPSAPPROVALTYPEID ? setIsLpsRating(false) : setIsClassification(false)
-                        setSubmit(false)
                     }
                     else
-                        setSubmit(true)
+                        setSubmit(false)
                 }
             }))
         }
     };
+    console.log(isClassification, isLpsRating);
+    const reset = () => {
+        setSelectedPlant(null);
+        setIsClassification(false);
+        setIsLpsRating(false);
+        setShowApproval(false);
+        setSubmit(true)
+        setValue('Plant', null);
+    }
 
     const searchableSelectType = (label) => {
         const temp = [];
@@ -109,17 +116,9 @@ const InitiateUnblocking = (props) => {
 
     const handleVendorChange = (selectedValue) => {
         if (selectedValue === null) {
-            // Reset all state variables and form values
-            setSelectedPlant(null);
-            setIsClassification(false);
-            setIsLpsRating(false);
-            setShowApproval(false);
-            // Reset form value for Plant using setValue
-            setValue('Plant', null);
+            reset()
         }
         setSelectedVendor(selectedValue);
-        setSelectedPlant(null); // Reset selected plant when a new vendor is selected
-        setValue('Plant', null);
     };
 
 
@@ -145,15 +144,11 @@ const InitiateUnblocking = (props) => {
     }
     const handlePlantChange = (selectedValue) => {
         if (selectedValue === null) {
-            // Reset all state variables and form values
-            setSelectedPlant(null);
-            setIsClassification(false);
-            setIsLpsRating(false);
-            setShowApproval(false);
-            // Reset form value for Plant using setValue
-            setValue('Plant', null);
+            reset()
         } else {
+            reset()
             setSelectedPlant(selectedValue);
+
         }
     };
 
@@ -465,36 +460,36 @@ const InitiateUnblocking = (props) => {
                             </>
                         )}
                     </div>
-                    {selectedVendor && (isLpsRating || isClassification) && !isSuperAdmin && selectedPlant && (!props?.isMasterSummaryDrawer) && (
-                        <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer`}>
-                            <div className="col-sm-12 Text-right bluefooter-butn mt-3">
-                                <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
-                                    <Button
-                                        id="addRMDomestic_sendForApproval"
-                                        type="submit"
-                                        className="approval-btn mr5"
-                                        disabled={!selectedPlant && submit}
-                                        onClick={handleNext}
-                                        icon={"send-for-approval"}
-                                        buttonName={"Send For Approval"}
-                                    />
-                                </div>
-                            </div>
-                        </Row>
-                    )}
-                    {(isLpsRating || isClassification) && (!props?.isMasterSummaryDrawer) && selectedVendor && ( // Render SendForApproval component only when the approval drawer should be open and selectedVendor is not null
-                        <SendForApproval
-                            isOpen={showApproval}
-                            closeDrawer={closeDrawer}
-                            anchor={'right'}
-                            isApprovalisting={true}
-                            deviationData={deviationData}
-                            isClassification={isClassification}
-                            isLpsRating={isLpsRating} // Pass LPS Rating approval status
-                        // Add other props as needed
-                        />
-                    )}
                 </div>}
+            {!isSuperAdmin && (!props?.isMasterSummaryDrawer) && (
+                <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer`}>
+                    <div className="col-sm-12 Text-right bluefooter-butn mt-3">
+                        <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
+                            <Button
+                                id="addRMDomestic_sendForApproval"
+                                type="submit"
+                                className="approval-btn mr5"
+                                disabled={submit || !isLpsRating || isClassification}
+                                onClick={handleNext}
+                                icon={"send-for-approval"}
+                                buttonName={"Send For Approval"}
+                            />
+                        </div>
+                    </div>
+                </Row>
+            )}
+            {(isLpsRating || isClassification) && (!props?.isMasterSummaryDrawer) && selectedVendor && ( // Render SendForApproval component only when the approval drawer should be open and selectedVendor is not null
+                <SendForApproval
+                    isOpen={showApproval}
+                    closeDrawer={closeDrawer}
+                    anchor={'right'}
+                    isApprovalisting={true}
+                    deviationData={deviationData}
+                    isClassification={isClassification}
+                    isLpsRating={isLpsRating} // Pass LPS Rating approval status
+                // Add other props as needed
+                />
+            )}
         </>
     );
 };
