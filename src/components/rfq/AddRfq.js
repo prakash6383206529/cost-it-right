@@ -2034,13 +2034,13 @@ function AddRfq(props) {
                                                 </button>
                                             }
 
-                                            <button type="button" className="submit-button save-btn" value="send"
+                                            {!props?.isEditFlag && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}
                                                 disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
-                                            </button>
+                                            </button>}
                                         </div >
                                     </Row >
                                 </form >
