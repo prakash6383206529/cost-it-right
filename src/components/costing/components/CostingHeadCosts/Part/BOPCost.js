@@ -445,15 +445,15 @@ function BOPCost(props) {
     }, 200);
     const Params = {
       index: props.index,
-      BOMLevel: props.item.BOMLevel,
-      PartNumber: props.item.PartNumber,
+      BOMLevel: props.item?.BOMLevel,
+      PartNumber: props.item?.PartNumber,
     }
     const BOPHandlingFields = {
       IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
       BOPHandlingPercentage: 0,
       BOPHandlingCharges: 0,
       // BOPHandlingFixed: 0,
-      BOPHandlingChargeType: newValue.label
+      BOPHandlingChargeType: newValue?.label
     }
     props.setBOPCost(gridData, Params, item, BOPHandlingFields)
     clearErrors('');
@@ -711,6 +711,7 @@ function BOPCost(props) {
                     handleChange={handleBOPHandlingType}
                     errors={errors.BOPHandlingType}
                     disabled={(CostingViewMode || IsLocked) ? true : false}
+                    isClearable={true}
                   />
                 </Col>}
               {IsApplyBOPHandlingCharges && BOPHandlingType &&

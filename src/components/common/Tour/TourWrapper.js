@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Steps, Hints } from "intro.js-react";
 import 'intro.js/introjs.css';
-import { useSelector } from "react-redux";
 import Button from "../../layout/Button";
 import { GUIDE_BUTTON_SHOW } from "../../../config/constants";
 
@@ -47,16 +46,13 @@ const TourWrapper = ({ buttonSpecificProp, stepsSpecificProp }) => {
     useEffect(() => {
         // Add event listeners to all buttons in the component
         const buttons = document.querySelectorAll('button');
-
         buttons.forEach(button => {
             if (showTour) {
                 button.style.pointerEvents = 'none';
             } else {
                 button.style.pointerEvents = 'auto';
             }
-
         });
-
     }, [showTour]);
 
 

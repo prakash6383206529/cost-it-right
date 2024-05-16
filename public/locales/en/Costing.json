@@ -102,7 +102,7 @@
     "DiscountTab": {
         "discountRemark": "ERMC_tabsnter the Descount descriptions or remark",
         "discountApplicability": "Choose the discount applicability",
-        "discountTypePercentage": "If you choose applicability other than 'Fixed',t his field will be enabled; otherwise, it will remain disabled.",
+        "discountTypePercentage": "If you choose applicability other than 'Fixed',this field will be enabled; otherwise, it will remain disabled.",
         "discountTypeFixed": "If you choose applicability'Fixed', this field will be enabled; otherwise, it will remain disabled.",
         "otherCost": "You can add other costs from here; clicking on it will open a drawer.",
         "conditionCost": "You can add condition cost from here; clicking on it will open a drawer.",

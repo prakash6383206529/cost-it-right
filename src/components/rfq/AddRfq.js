@@ -691,10 +691,14 @@ function AddRfq(props) {
                 obj.ContactPersonId = getValues('contactPerson')?.value
                 obj.Vendor = getValues('vendor')?.label
                 obj.ContactPerson = getValues('contactPerson')?.label
+                if (obj.VendorId === null || obj.VendorId === undefined) {
+                    Toaster.warning("Please fill all the mandatory fields first.");
+                    return false;
+                }
 
-                if (obj.VendorId === null || obj.VendorId === undefined || obj.ContactPersonId === null || obj.ContactPersonId === undefined) {
-
-                    Toaster.warning("Please fill all the mandatory fields first.")
+                // Check IsSendQuotationToPointOfContact() result and ContactPersonId
+                if (IsSendQuotationToPointOfContact() && (obj.ContactPersonId === null || obj.ContactPersonId === undefined)) {
+                    Toaster.warning("Please fill all the mandatory fields first.");
                     return false;
                 }
 
@@ -1708,7 +1712,7 @@ function AddRfq(props) {
                                         <Col md="3">
                                             {IsSendQuotationToPointOfContact() && (
                                                 <SearchableSelectHookForm
-                                                    label={"Point of Contact"}
+                                                    label={"Vendor's Point of Contact"}
                                                     name={"contactPerson"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}

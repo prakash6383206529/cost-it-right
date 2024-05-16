@@ -362,9 +362,9 @@ class AddIndivisualPart extends Component {
       }
 
       //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND TEHRE IS CHANGE IN OTHER FIELD ALSO APART FROM PART DESCRIPTION,NAME AND ATTACHMENT (TO CREATE NEW RECORD)
-      else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
+      else if (this.state.isBomEditable === false && (String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
         String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
-        || String(oldProductGroup) !== String(ProductGroup))) {
+      )) {
         // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
         if (DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
           Toaster.warning('Please edit Revision no or ECN no, and Effective date')

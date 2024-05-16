@@ -31,6 +31,7 @@ import { apiErrors } from "../../helper";
 import TourWrapper from "../common/Tour/TourWrapper";
 import { useTranslation } from "react-i18next";
 import { Steps } from "./TourMessages";
+import TooltipCustom from "../common/Tooltip";
 
 
 var CryptoJS = require('crypto-js')
@@ -2477,6 +2478,7 @@ function UserRegistration(props) {
                           type="checkbox"
                           checked={primaryContact}
                         />
+                        <TooltipCustom id="Primary_Contact" customClass="mt-1" tooltipText="Please click on the checkbox if this user is the main point of contact for the vendor." />
                         <span
                           className=" before-box"
                           checked={primaryContact}
@@ -2563,7 +2565,7 @@ function UserRegistration(props) {
                             <SearchableSelectHookForm
                               name="Reporter"
                               type="text"
-                              label={`Point of Contact`}
+                              label={`Vendor's Point of Contact`}
 
                               errors={errors.Reporter}
                               Controller={Controller}

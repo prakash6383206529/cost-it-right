@@ -43,7 +43,7 @@ function Plastic(props) {
     grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-
+    scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
     rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RMCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     materialCost: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',
@@ -73,7 +73,7 @@ function Plastic(props) {
 
   const fieldValues = useWatch({
     control,
-    name: ['netWeight', 'runnerWeight', 'finishedWeight'],
+    name: ['netWeight', 'runnerWeight', 'finishedWeight', 'scrapRecoveryPercent'],
   })
 
   const dropDown = [
@@ -138,17 +138,13 @@ function Plastic(props) {
     const netWeight = checkForNull(getValues('netWeight')) // THIS IS FIRST GROSS WEIGHT
     const runnerWeight = checkForNull(getValues('runnerWeight'))
     const scrapRecoveryPercent = Number((getValues('scrapRecoveryPercent')))
-    console.log('scrapRecoveryPercent: ', scrapRecoveryPercent);
 
     const finishedWeight = checkForNull(getValues('finishedWeight'))
     const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [])) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
 
     if (finishedWeight !== 0) {
-      console.log('finishedWeight', finishedWeight, 'grossWeight', grossWeight, 'scrapRecoveryPercent', scrapRecoveryPercent);
       scrapWeight = calculateScrapWeight(grossWeight, finishedWeight, scrapRecoveryPercent)
-      setDataToSend(checkForDecimalAndNull(scrapWeight, localStorage.NoOfDecimalForInputOutput))
-      // scrapWeight = (checkForNull(grossWeight) - checkForNull(finishedWeight)).toFixed(9) //FINAL GROSS WEIGHT - FINISHED WEIGHT
-
+      setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     }
     const rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + getValues('burningAllownace') // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
     const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
@@ -182,7 +178,7 @@ function Plastic(props) {
     DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
     setIsDisable(true)
     let obj = {}
-    console.log('obj: ', obj);
+
     obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
     obj.BaseCostingIdRef = item.CostingId
     obj.TechnologyId = costData.TechnologyId
@@ -194,11 +190,8 @@ function Plastic(props) {
     obj.RunnerWeight = getValues('runnerWeight')
     obj.GrossWeight = dataToSend.grossWeight
     obj.FinishWeight = getValues('finishedWeight')
-    //uncomment when key will be added in the api 
-    // obj.RecoveryPercentage: getValues('scrapRecoveryPercent'),
-
+    obj.RecoveryPercentage = getValues('scrapRecoveryPercent')
     obj.ScrapWeight = dataToSend.scrapWeight
-
     obj.RMCost = dataToSend.rmCost
     obj.ScrapCost = dataToSend.scrapCost
     obj.BurningValue = dataToSend.burningValue
@@ -382,7 +375,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Input Weight - Finish Weight)*(Scrap Recovery %)/100'} />
+                  <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Input Weight - Finish Weight )* Scrap Recovery (%)/100'} />
                   <TextFieldHookForm
                     label={`Scrap Weight(Kg)`}
                     name={'scrapWeight'}

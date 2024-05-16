@@ -279,7 +279,7 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus, isClearable } = field;
+    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus, isClearable, id } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
@@ -318,7 +318,7 @@ export const SearchableSelectHookForm = (field) => {
     stringify: option => `${option.label}`,
   };
   return (
-    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`} id={containerId}>
+    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`} id={id ? id : containerId}>
       <label className={label === false ? 'd-none' : ''}>
         {label}
         {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}

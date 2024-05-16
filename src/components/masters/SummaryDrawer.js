@@ -11,7 +11,7 @@ import { Fragment } from 'react';
 import MasterSendForApproval from './MasterSendForApproval';
 import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
-import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, BUDGET_ID, APPROVED_STATUS, ZBCTypeId, INR, SUPPLIER_MANAGEMENT_ID, ONBOARDINGID } from '../../config/constants';
+import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, BUDGET_ID, APPROVED_STATUS, ZBCTypeId, INR, SUPPLIER_MANAGEMENT_ID, ONBOARDINGID, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
 import { checkForNull, getCodeBySplitting, getConfigurationKey, loggedInUserId, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
@@ -86,7 +86,7 @@ function SummaryDrawer(props) {
             const Data = res.data.Data
 
             setApprovalLevelStep(Data?.MasterSteps)
-            setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId })
+            setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId, ApprovalTypeId: Data?.ApprovalTypeId })
             setLoader(false)
             let masterPlantId = ''
             if (checkForNull(props?.masterId) === RM_MASTER_ID) {
@@ -141,15 +141,15 @@ function SummaryDrawer(props) {
                 DepartmentId: Data?.DepartmentId,
                 UserId: loggedInUserId(),
                 TechnologyId: props?.masterId,
-                Mode: 'master',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+                Mode: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? 'onboarding' : 'master',
+                approvalTypeId: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? Data?.ApprovalTypeId : costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
                 plantId: masterPlantId
             }
             setMastersPlantId(masterPlantId)
             setDataForFetchingAllApprover({
                 processId: approvalData.approvalProcessId,
                 levelId: Data?.MasterSteps[Data?.MasterSteps.length - 1].LevelId,
-                mode: 'Master'
+                mode: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? 'onboarding' : 'Master'
             })
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
@@ -219,7 +219,9 @@ function SummaryDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`Master Summary (Token No.${approvalDetails.Token}):`}</h3>
+                                    {/* <h3>{`Master Summary (Token No.${approvalDetails.Token}):`}</h3> */}
+                                    <h3>{`${approvalDetails?.ApprovalTypeId === LPSAPPROVALTYPEID ? 'LPS' : (approvalDetails?.ApprovalTypeId === CLASSIFICATIONAPPROVALTYPEID ? 'Classification' : 'Master')} Summary (Token No.${approvalDetails.Token}):`}</h3>
+
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}

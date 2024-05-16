@@ -40,7 +40,7 @@ function Costing(props) {
     dispatch(setDiscountErrors({}))
     dispatch(setComponentDiscountOtherItemData({}, () => { }))
     dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
-    dispatch(setOtherDiscountData({ gridData: [], otherCostTotal: 0 }))
+    dispatch(setOtherDiscountData({ gridData: [], totalCost: 0 }))
   }
 
   const dispatch = useDispatch();
