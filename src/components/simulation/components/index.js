@@ -112,12 +112,12 @@ function SimulationTab(props) {
                     <TabContent activeTab={activeTab}>
                         <simulationContext.Provider
                             value={{ showverifyPage, showEditMaster, costingDrawerPage, handleEditMasterPage, showCompressedColumns, render, showTour }}>
-                            <TabPane tabId="1">
-                                <Simulation activeTab={activeTab} isFromApprovalListing={location?.state?.isFromApprovalListing} approvalProcessId={location?.state?.approvalProcessId} master={location?.state?.master} statusForLinkedToken={location?.state?.statusForLinkedToken} approvalTypeId={location?.state?.approvalTypeId} DepartmentId={location?.state?.DepartmentId} handleEditMasterPage={handleEditMasterPage} showverifyPage={showverifyPage} render={render} showCompressedColumns={showCompressedColumns} />
-                            </TabPane>
-                            <TabPane tabId="2">
+                            {activeTab === "1" && <TabPane tabId="1">
+                                <Simulation activeTab={activeTab} isFromApprovalListing={location?.state?.isFromApprovalListing} approvalProcessId={location?.state?.approvalProcessId} master={location?.state?.master} preserveData={location?.state?.preserveData} statusForLinkedToken={location?.state?.statusForLinkedToken} approvalTypeId={location?.state?.approvalTypeId} DepartmentId={location?.state?.DepartmentId} handleEditMasterPage={handleEditMasterPage} showverifyPage={showverifyPage} render={render} showCompressedColumns={showCompressedColumns} />
+                            </TabPane>}
+                            {activeTab === "2" && <TabPane tabId="2">
                                 <SimulationApprovalListing activeTab={activeTab} />
-                            </TabPane>
+                            </TabPane>}
                         </simulationContext.Provider>
 
                     </TabContent>
