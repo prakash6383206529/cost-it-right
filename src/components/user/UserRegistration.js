@@ -15,7 +15,7 @@ import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectLis
 import { MESSAGES } from "../../config/message";
 import { IsSendMailToPrimaryContact, getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
-import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, NCCTypeId, NFRAPPROVALTYPEID, ONBOARDINGID, ONBOARDINGNAME, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
+import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, LPSAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, ONBOARDINGID, ONBOARDINGNAME, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -462,7 +462,7 @@ function UserRegistration(props) {
     }
     if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster' || label === 'approvalTypeOnboarding') {
       // if (label === 'approvalType') {                 //RE
-      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false) {
+      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false && isOnboardingEditIndex === false) {
         temp.push({ label: 'Select All', value: '0' });
       }
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
@@ -470,7 +470,7 @@ function UserRegistration(props) {
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId) || Number(item.Value) === Number(NFRAPPROVALTYPEID)) && label === 'approvalTypeSimulation') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && label === 'approvalTypeMaster') return false
         if ((Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || (!initialConfiguration.IsNFRConfigured && Number(item.Value) === Number(NFRAPPROVALTYPEID))) && label === 'approvalTypeCosting') return false
-        if (label === 'approvalTypeOnboarding' && Number(item.Value) !== VENDORNEEDFORMID) return false;
+        if (label === 'approvalTypeOnboarding' && Number(item.Value) !== VENDORNEEDFORMID && Number(item.Value) !== LPSAPPROVALTYPEID && Number(item.Value) !== CLASSIFICATIONAPPROVALTYPEID) return false;
         if ((label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster') && Number(item.Value) === VENDORNEEDFORMID) return false;
         const transformedText = transformApprovalItem(item);
         temp.push({ label: transformedText, value: item.Value })
@@ -913,15 +913,29 @@ function UserRegistration(props) {
    * @description Used to handle onboarding ApprovalType Handler
    */
   const onboardingApprovalTypeHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
+
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      const selectedOptions = approvalTypeSelectList
+        .filter((option) => option?.Value !== '0')
+        .map(({ Text, Value }) => ({ label: Text, value: Value }));
+      setOnboardingApprovalType(selectedOptions);
+      setTimeout(() => {
+        setValue('OnboardingApprovalType', selectedOptions)
+      }, 100);
+      setOnboardingLevels([]);
+      setValue('onboardingLevel', '');
+      dispatch(getOnboardingLevelById(true, newValue.value, res => { }))
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
       setOnboardingApprovalType(newValue)
-      setOnboardingLevels([])
+      setOnboardingLevels([]);
       setValue('onboardingLevel', '')
       if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isOnboardingEditIndex) {
         dispatch(getOnboardingLevelById(true, newValue.value, res => { }))
       }
     } else {
       setOnboardingApprovalType([])
+      setValue('OnboardingApprovalType', '')
     }
   };
   /**
@@ -1745,6 +1759,7 @@ function UserRegistration(props) {
     setOnboardingApprovalType([])
     setValue('onboardingLevel', '')
     setValue('OnboardingApprovalType', '')
+    setOnboardingLevelEditIndex(false)
   };
 
 

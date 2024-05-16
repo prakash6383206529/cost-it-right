@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -14,9 +14,12 @@ import { EMPTY_DATA, VENDOR_CLASSIFICATION, VENDOR_MANAGEMENT } from '../../conf
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import DayTime from '../common/DayTimeWrapper';
+import { filterParams } from '../common/DateFilter';
 const gridOptions = {};
 
 const VendorClassificationListing = () => {
+    const searchRef = useRef(null);
+
     const [renderState, setRenderState] = useState(true);
     const [isLoader, setIsLoader] = useState(false);
     const [tableData, setTableData] = useState([]);
@@ -29,7 +32,7 @@ const VendorClassificationListing = () => {
     const [ActivateAccessibility, setActivateAccessibility] = useState(false);
     const [render, setRender] = useState(false)
     const [showExtraData, setShowExtraData] = useState(false)
-
+    const [gridApi, setGridApi] = useState(null);
 
 
 
@@ -147,11 +150,11 @@ const VendorClassificationListing = () => {
     }
     const defaultColDef = {
         resizable: true,
-        // filter: true,
+        filter: true,
         sortable: false,
     };
     const onGridReady = (params) => {
-        // setGridApi(params.api)
+        setGridApi(params.api)
         // setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
         // agGridRef.current = params.api;
@@ -167,7 +170,9 @@ const VendorClassificationListing = () => {
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
-
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
+    }
     const frameworkComponents = {
         customNoRowsOverlay: NoContentFound,
 
@@ -178,6 +183,8 @@ const VendorClassificationListing = () => {
         <>
             {/* {(isLoader) ? <LoaderCustom customClass="loader-center" /> : */}
             <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
+                <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+
                 <>
                     <Row className="no-filter-row">
                         <Col md={6} className="text-right filter-block"></Col>
@@ -204,9 +211,11 @@ const VendorClassificationListing = () => {
                                 frameworkComponents={frameworkComponents}
                             >
                                 <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
-                                <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On"></AgGridColumn>
+                                <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+
                                 <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
                                 <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+
                             </AgGridReact>}
                             {!isLoader && (!supplierManagement || supplierManagement?.length === 0) &&
                                 <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />

@@ -2979,25 +2979,23 @@ const CostingSummaryTable = (props) => {
                                 })}
                             </tr>
                           }
-                          <AdditionalTcoInfo isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} />
-                          {/* {
-                          initialConfiguration?.IsShowNpvCost && <tr>
-                            <td>
-                              <span className={`d-block small-grey-text`}>Net NPV Cost</span>
-                            </td>
-                            {viewCostingData &&
-                              viewCostingData?.map((data) => {
-                                return (
-                                  <td className={tableDataClass(data)}>
-                                    <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
-                                      {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                    </span>
+                          {/* initialConfiguration?.IsShowNpvCost && */
+                            <tr className={highlighter("npvCost", "main-row")}>
+                              <th>NPV Cost</th>
+                              {viewCostingData &&
+                                viewCostingData?.map((data, index) => {
+                                  return (
+                                    <td className={tableDataClass(data)}>
+                                      <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
+                                        {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                      </span>
 
-                                  </td>
-                                )
-                              })}
-                          </tr>
-                        } */}
+                                    </td>
+                                  )
+                                })}
+                            </tr>
+                          }
+                          {props?.isRfqCosting && <AdditionalTcoInfo isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} />}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
                               <td>

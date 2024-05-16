@@ -577,12 +577,12 @@ function CostingHeaderTabs(props) {
                   onChangeRaw={(e) => e.preventDefault()}
                   disabled={(CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid())) ? true : false}
                 />
-                <TourWrapper
+                {!CostingViewMode && <TourWrapper
                   buttonSpecificProp={{ id: "Costing_Tabs", onClick: tourStart }}
                   stepsSpecificProp={{
                     steps: tabsTour.steps,
                     hints: tabsTour.hints
-                  }} />
+                  }} />}
               </div>
             </div >
           </Col >

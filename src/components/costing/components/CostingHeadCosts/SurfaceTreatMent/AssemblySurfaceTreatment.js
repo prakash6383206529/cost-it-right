@@ -169,6 +169,7 @@ function AssemblySurfaceTreatment(props) {
           <div className='d-flex align-items-center justify-content-end'>
             {!CostingViewMode && (item?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly !== 0 || item?.CostingPartDetails?.TotalTransportationCostPerAssembly !== 0) ?
               <button
+                id="costing_surface_treatment_btn"
                 type="button"
                 className={'user-btn surface-treatment-btn'}
                 //onClick={DrawerToggle}
@@ -182,6 +183,7 @@ function AssemblySurfaceTreatment(props) {
 
               <button
                 type="button"
+                id="costing_surface_treatment_btn"
                 className={'user-btn surface-treatment-btn'}
                 //onClick={DrawerToggle}
                 onClick={() => {

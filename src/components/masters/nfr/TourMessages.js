@@ -101,59 +101,71 @@ export function Steps(t, config) {
                 {
                     element: "#back_addNfrPart",
                     intro: t("nfr.back_nfrpart"),
+                    position: "left"
                 },
-                {
-                    element: "#GroupName_container",
-                    intro: t("nfr.groupName"),
-                },
-                {
-                    element: ".input-container #VendorName_container",
-                    intro: t("nfr.vendor"),
-                },
-                ...config && config?.isRowEdited ? [
+                ...(config && config?.rowData.length !== 0) || (config && !config?.isViewEstimation) ? [
 
+
+                    ...(config && !config?.isViewEstimation) ? [
+                        {
+                            element: ".input-container #VendorName_container",
+                            intro: t("nfr.vendor"),
+                        },
+                        ...config && config?.isRowEdited ? [
+
+                            {
+                                element: "#addNfr_update",
+                                intro: t("nfr.update_Estimation"),
+                            }] : [],
+                        {
+                            element: "#addNfr_add",
+                            intro: t("nfr.add_Estimation"),
+                        },
+                        {
+                            element: "#addNfr_reset",
+                            intro: introMessage,
+                        },
+                    ] : [],
+                ] : [],
+                ...(config && config?.rowData.length !== 0) ? [
                     {
-                        element: "#addNfr_update",
-                        intro: t("nfr.update_Estimation"),
-                    }] : [],
-                {
-                    element: "#addNfr_add",
-                    intro: t("nfr.add_Estimation"),
-                },
-                {
-                    element: "#addNfr_reset",
-                    intro: introMessage,
-                },
-                {
-                    element: "#nfr_AddCosting",
-                    intro: t("nfr.addCosting"),
-                },
-                {
-                    element: "#nfr_ViewCosting",
-                    intro: t("nfr.viewCosting"),
-                },
-                {
-                    element: "#nfr_EditCosting",
-                    intro: t("nfr.editCosting"),
-                },
-                {
-                    element: "#nfr_CopyCosting",
-                    intro: t("nfr.copyCosting"),
-                },
-                {
-                    element: "#nfr_DeleteCosting",
-                    intro: t("nfr.deleteCosting"),
-                },
-                {
-                    element: "#nfr_DiscardCosting",
-                    intro: t("nfr.discardCosting"),
-                },
-                {
-                    element: "#nfr_RowEdit",
-                    intro: t("nfr.nfr_RowEdit"),
-                },
+                        element: "#CostingVersion_container",
+                        intro: t("nfr.costingVersion"),
+                    },
+                    {
+                        element: "#nfr_ViewCosting",
+                        intro: t("nfr.viewCosting"),
+                    },
 
+                    ...(config && !config?.isViewEstimation) ? [
+                        {
+                            element: "#nfr_AddCosting",
+                            intro: t("nfr.addCosting"),
+                        },
+                        {
+                            element: "#nfr_EditCosting",
+                            intro: t("nfr.editCosting"),
+                        },
+                        {
+                            element: "#nfr_CopyCosting",
+                            intro: t("nfr.copyCosting"),
+                        },
+                        {
+                            element: "#nfr_DeleteCosting",
+                            intro: t("nfr.deleteCosting"),
+                        },
+                        {
+                            element: "#nfr_DiscardCosting",
+                            intro: t("nfr.discardCosting"),
+                        },
+                        {
+                            element: "#nfr_RowEdit",
+                            intro: t("nfr.nfr_RowEdit"),
+                        }] : [],
+
+                ] : [],
             ] : [],
+
 
         ],
         ADD_NFR: [
