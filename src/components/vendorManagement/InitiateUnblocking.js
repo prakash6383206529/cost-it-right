@@ -422,7 +422,7 @@ const InitiateUnblocking = (props) => {
                                         <Row>
                                             <Col md="3">
                                                 <div className="approval-section mb-2 mt-2">
-                                                    <div className="left-border">Approval for</div>
+                                                    <div className="left-border">Approval for   <TooltipCustom id="Primary_Contact" customClass="mt-1" tooltipText="Please click on the checkboxes to send approval for." /></div>
                                                     <div className="approval-checkboxes">
                                                         {deviationData && (
                                                             <div>
@@ -496,7 +496,7 @@ const InitiateUnblocking = (props) => {
                             </>
                         )}
                     </div>
-                    {selectedVendor && !isSuperAdmin && selectedPlant && (!props?.isMasterSummaryDrawer) && (
+                    {selectedVendor && (isLpsRating || isClassification) && !isSuperAdmin && selectedPlant && (!props?.isMasterSummaryDrawer) && (
                         <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer`}>
                             <div className="col-sm-12 Text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
