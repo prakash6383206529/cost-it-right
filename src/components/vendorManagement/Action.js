@@ -72,7 +72,7 @@ export const getLPSRatingListing = (callback) => {
             callback(response)
         } catch (error) {
             dispatch({ type: API_FAILURE });
-            // callback(error);
+            callback(error);
             apiErrors(error);
         }
     };
@@ -154,10 +154,7 @@ export const fetchVendorDependentPlantData = (data) => {
     };
 };
 export const fetchDeviationApprovalData = (vendorId, plantId, callback) => {
-
-
     const queryString = `vendorId=${vendorId}&plantId=${plantId}`;
-
     return dispatch => {
         axios.get(`${API.getVendorPlantDetailForDeviation}?${queryString}`, config())
             .then(response => {
@@ -172,7 +169,7 @@ export const fetchDeviationApprovalData = (vendorId, plantId, callback) => {
             .catch(error => {
                 dispatch({ type: API_FAILURE });
                 apiErrors(error);
-                // callback(error);
+                callback(error);
             });
     };
 
