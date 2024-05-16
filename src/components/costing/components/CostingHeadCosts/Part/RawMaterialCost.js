@@ -187,6 +187,13 @@ function RawMaterialCost(props) {
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
       }
+      if (!CostingViewMode && gridData) {
+        gridData && gridData.map(item => {
+          if (item.ScrapRecoveryPercentage !== 0) {
+            item.IsScrapRecoveryPercentageApplied = true
+          }
+        })
+      }
       if (!CostingViewMode && !IsLocked) {
 
         if (gridData && (costData.TechnologyName === 'Rubber' || costData.TechnologyName === 'Ferrous Casting') && !isMultiCalculatorData) {
@@ -779,7 +786,6 @@ function RawMaterialCost(props) {
     let finishWeight
     let netLandedCost
     let ScrapWeight
-
     // GROSS WEIGHT WILL ALWAYS BE KG ON THIS TAB, SO CONVERTING OTHER UNIT INTO KG
     if (Object.keys(weightData).length > 0) {
       if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_G) {
@@ -826,7 +832,8 @@ function RawMaterialCost(props) {
         ScrapRecoveryPercentage: RecoveryPercentage,
         BurningLossWeight: weightData.BurningValue,
         ScrapWeight: scrapWeight,
-        IsCalculaterAvailable: true
+        IsCalculaterAvailable: true,
+        // IsScrapRecoveryPercentageApplied: true
       }
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
       setTimeout(() => {
@@ -857,7 +864,7 @@ function RawMaterialCost(props) {
           item.ScrapRecoveryPercentage = RecoveryPercentage
           item.ScrapWeight = weightData?.CostingFerrousCalculationRawMaterials[index]?.ScrapWeight ? weightData?.CostingFerrousCalculationRawMaterials[index]?.ScrapWeight : 0
           item.Percentage = weightData.CostingFerrousCalculationRawMaterials[index].Percentage
-          return item
+          // item.IsScrapRecoveryPercentageApplied = true
         })
         setTimeout(() => {
           setGridData(gridData)
