@@ -318,7 +318,7 @@ function CostingApproveReject(props) {
       dispatch(rejectRequestByApprove(Data, res => {
         setIsDisable(false)
         if (res?.data?.Result) {
-          Toaster.success(`Costing ${props?.isRFQApproval ? 'Returned' : 'Rejected'}`)
+          Toaster.success(`Costing ${props?.type === "Return" ? 'Returned' : 'Rejected'}`)
           props.closeDrawer('', 'submit')
         }
         if (props?.isRFQApproval) {
