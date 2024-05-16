@@ -58,14 +58,14 @@ function RfqListing(props) {
         if (agGridRef.current) {
 
             //MINDA
-            // setTimeout(() => {
-            //     if (!agGridRef.current.rowRenderer.allRowCons.length) {
-            //         setNoData(true)
-            //         dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
-            //     } else {
-            //         setNoData(false)
-            //     }
-            // }, 100);
+            setTimeout(() => {
+                if (!agGridRef.current.rowRenderer.allRowCons.length) {
+                    setNoData(true)
+                    // dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
+                } else {
+                    setNoData(false)
+                }
+            }, 100);
 
             const gridApi = agGridRef.current.api;
             if (gridApi) {
@@ -337,7 +337,7 @@ function RfqListing(props) {
         if (row?.Status === APPROVED || row?.Status === UNDER_REVISION || row?.Status === RECEIVED || row?.Status === SUBMITTED || row?.Status === UNDER_APPROVAL) {
             tempStatus = row?.DisplayStatus + ' (' + row?.CostingReceived + '/' + row?.TotalCostingCount + ')'
         } else {
-            tempStatus = row?.DisplayStatus
+            tempStatus = row?.DisplayStatus ?? '-'
         }
         return <div className={cell}>{tempStatus}</div>
     }

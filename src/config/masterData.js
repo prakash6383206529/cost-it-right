@@ -7936,14 +7936,14 @@ export const statusDropdownforRfq = [
     { label: "Approved", value: "1" },
     { label: "Draft", value: "2" },
     { label: "Received", value: "3" },
-    { label: "UnderRevision", value: "4" },
+    { label: "Under Revision", value: "4" },
     { label: "Sent", value: "5" },
     { label: "Cancelled", value: "6" },
     { label: "Rejected", value: "7" },
     { label: "Returned", value: "8" },
-    { label: 'PendingForApproval', value: "9" },
+    { label: 'Pending For Approval', value: "9" },
     { label: 'History', value: "10" },
-    { label: 'NotSelected', value: "11" },
+    { label: 'Not Selected', value: "11" },
 ]
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },
