@@ -375,8 +375,10 @@ function Simulation(props) {
         setValue('Plant', '')
         setVendor('')
         setValue('Vendor', '')
+        dispatch(setVendorForSimulation(''))
         setCustomer('')
-        setValue('Customer', '')
+        setValue('customer', '')
+        dispatch(setCustomerForSimulation(''))
 
         setShowDropdown(obj)
     }
@@ -412,14 +414,14 @@ function Simulation(props) {
         setShowMasterList(false)
         switch (costingHead?.value) {
             case VBCTypeId:
-                if (vendor && plant) {
+                if (Number(Object.keys(vendor)?.length) > 0 && Number(Object.keys(plant)?.length) > 0) {
                     setTimeout(() => {
                         setShowMasterList(true)
                     }, 200);
                 }
                 break;
             case ZBCTypeId:
-                if (plant) {
+                if (Number(Object.keys(plant)?.length) > 0) {
                     setTimeout(() => {
                         setShowMasterList(true)
                     }, 200);
@@ -427,7 +429,7 @@ function Simulation(props) {
 
                 break;
             case CBCTypeId:
-                if (customer && plant) {
+                if (Number(Object.keys(customer)?.length) > 0 && Number(Object.keys(plant)?.length) > 0) {
                     setTimeout(() => {
                         setShowMasterList(true)
                     }, 200);
@@ -445,15 +447,17 @@ function Simulation(props) {
     }
 
     const handleCustomerChange = (value) => {
-        setShowMasterList(false)
+        Number(master?.value) !== ASSEMBLY_TECHNOLOGY_MASTER && setShowMasterList(false)
         setToken([])
         setValue('token', '')
         setSelectionForListingMasterAPI('Master')
-        setTimeout(() => {
-            if (value !== '') {
-                setShowMasterList(true)
-            }
-        }, 50);
+        if (Number(master?.value) !== ASSEMBLY_TECHNOLOGY_MASTER) {
+            setTimeout(() => {
+                if (value !== '') {
+                    setShowMasterList(true)
+                }
+            }, 50);
+        }
         setToken('')
         dispatch(setTokenForSimulation(''))
         dispatch(setCustomerForSimulation(value))
@@ -1687,7 +1691,7 @@ function Simulation(props) {
                                 {(showVendor || showDropdown?.showVendorDropdown) &&
                                     // {(partType || master.value === COMBINED_PROCESS) &&                //RE
                                     < div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
-                                        <div className="flex-fills label">Vendor:</div>
+                                        <div className="flex-fills label">Vendor:{Number(master?.value) === ASSEMBLY_TECHNOLOGY_MASTER && <span className="asterisk-required">*</span>}</div>
                                         <div className="flex-fills hide-label pl-0 p-relative">
                                             {/* {inputLoader && <LoaderCustom customClass="vendor-loader" />} */}
                                             <AsyncSearchableSelectHookForm
@@ -1705,30 +1709,7 @@ function Simulation(props) {
                                                 errors={errors.Masters}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                                 buttonCross={buttonCrossVendor}
-                                            />
-                                        </div>
-                                    </div>
-                                }
-                                {
-                                    (showDropdown?.showPlantDropdown) &&
-                                    < div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
-                                        <div className="flex-fills label">Plant:</div>
-                                        <div className="flex-fills hide-label pl-0 p-relative">
-                                            <SearchableSelectHookForm
-                                                label={''}
-                                                name={'Plant'}
-                                                placeholder={'Select'}
-                                                valueDescription={plant}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                options={renderListing('plant')}
-                                                defaultValue={plant.length !== 0 ? plant : ''}
-                                                mandatory={false}
-                                                handleChange={handlePlantChange}
-                                                errors={errors.Masters}
-                                                buttonCross={buttonCrossPlant}
+                                                disabled={getValues('customer')?.value}
                                             />
                                         </div>
                                     </div>
@@ -1736,7 +1717,7 @@ function Simulation(props) {
                                 {
                                     (showCustomer || showDropdown?.showCustomerDropdown) &&
                                     < div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
-                                        <div className="flex-fills label">Customer:</div>
+                                        <div className="flex-fills label">Customer:{Number(master?.value) === ASSEMBLY_TECHNOLOGY_MASTER && <span className="asterisk-required">*</span>}</div>
                                         <div className="flex-fills hide-label pl-0 p-relative">
                                             <SearchableSelectHookForm
                                                 label={''}
@@ -1753,6 +1734,31 @@ function Simulation(props) {
                                                 handleChange={handleCustomerChange}
                                                 errors={errors.Masters}
                                                 buttonCross={buttonCrossCustomer}
+                                                disabled={getValues('Vendor')?.value ? true : false}
+                                            />
+                                        </div>
+                                    </div>
+                                }
+                                {
+                                    (showDropdown?.showPlantDropdown) &&
+                                    < div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
+                                        <div className="flex-fills label">Plant:{Number(master?.value) === ASSEMBLY_TECHNOLOGY_MASTER && <span className="asterisk-required">*</span>}</div>
+                                        <div className="flex-fills hide-label pl-0 p-relative">
+                                            <SearchableSelectHookForm
+                                                label={''}
+                                                name={'Plant'}
+                                                placeholder={'Select'}
+                                                valueDescription={plant}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                options={renderListing('plant')}
+                                                defaultValue={plant.length !== 0 ? plant : ''}
+                                                mandatory={false}
+                                                handleChange={handlePlantChange}
+                                                errors={errors.Masters}
+                                                buttonCross={buttonCrossPlant}
                                             />
                                         </div>
                                     </div>
