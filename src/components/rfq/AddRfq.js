@@ -590,7 +590,7 @@ function AddRfq(props) {
                     if (isSent) {
                         Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
                     } else {
-                        Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                        Toaster.success(MESSAGES.RFQ_UPDATE_SUCCESS)
                     }
                     cancel()
                 }
