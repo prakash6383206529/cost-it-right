@@ -40,7 +40,7 @@ export const fetchApprovalData = () => {
 
 
 
-export const getVendorClassificationListing = () => {
+export const getVendorClassificationListing = (callback) => {
     return dispatch => {
         axios.get(`${API.getVendorClassificationList}`, config())
             .then(response => {
@@ -49,6 +49,7 @@ export const getVendorClassificationListing = () => {
                     type: VENDOR_CLASSIFICATION_DATA,
                     payload: response.status === 200 ? response.data : null
                 });
+                callback(response)
             })
 
             .catch(error => {
@@ -68,6 +69,7 @@ export const getLPSRatingListing = (callback) => {
                 type: LPS_RATING_DATA,
                 payload: response.status === 200 ? response.data : null
             });
+            callback(response)
         } catch (error) {
             dispatch({ type: API_FAILURE });
             // callback(error);

@@ -38,18 +38,19 @@ const LpsRatingListing = () => {
     const lpsRatingData = useSelector(state => state.supplierManagement.lpsRatingData);
 
 
-
     useEffect(() => {
-        // setIsLoader(true);
+        setIsLoader(true);
         applyPermission()
-        dispatch(getLPSRatingListing(true, (res) => {
-            setIsLoader(true);
+        dispatch(getLPSRatingListing((res) => {
+
+
             if (res.errorMessage) {
                 setErrorMessage(res.errorMessage);
                 setIsLoader(false);
             }
             else {
                 setErrorMessage(null);
+
                 if (res.status === 204 && res.data === '') {
                     setCellValue([]);
                     setIsLoader(false);
@@ -57,6 +58,9 @@ const LpsRatingListing = () => {
                     setIsLoader(false);
                     let data = res?.data?.DataList;
                     setCellValue(data.map(row => row.status));
+                }
+                else {
+                    setIsLoader(false)
                 }
             }
 
@@ -203,7 +207,9 @@ const LpsRatingListing = () => {
                                 <AgGridColumn field="LPSRatingName" headerName="LPS Rating"></AgGridColumn>
                                 <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Status" headerName="Type" ></AgGridColumn>
                                 <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+
                             </AgGridReact>
                         }
                         {!isLoader && (!lpsRatingData || lpsRatingData?.length === 0) &&

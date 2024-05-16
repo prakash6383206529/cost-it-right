@@ -40,7 +40,6 @@ const VendorClassificationListing = () => {
 
     useEffect(() => {
         applyPermission()
-        dispatch(getVendorClassificationListing());
         getTableListData()
 
     }, [dispatch]);
@@ -68,9 +67,11 @@ const VendorClassificationListing = () => {
 
     }
     const getTableListData = () => {
-        // setIsLoader(true)
-        dispatch(getVendorClassificationListing(true, (res) => {
-            // setIsLoader(true)
+        setIsLoader(true)
+        dispatch(getVendorClassificationListing((res) => {
+            if (res.errorMessage) {
+                setIsLoader(false);
+            }
             if (res?.status === 204 && res?.data === '') {
                 setTableData([])
                 setIsLoader(false)
@@ -214,6 +215,8 @@ const VendorClassificationListing = () => {
                                 <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 
                                 <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
+                                <AgGridColumn field="Status" headerName="Type" ></AgGridColumn>
+
                                 <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 
                             </AgGridReact>

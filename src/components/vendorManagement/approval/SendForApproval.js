@@ -321,8 +321,6 @@ const SendForApproval = (props) => {
   }
 
   const searchableSelectType = (label) => {
-
-
     const temp = [];
     if (label === 'Dept') {
       deptList && deptList.map((item) => {
