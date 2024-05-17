@@ -256,7 +256,7 @@ const UsersListing = (props) => {
 		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <Button id={`userListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} />}
+				{EditAccessibility && <Button id={`userListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} title={"Edit"} />}
 			</div>
 		)
 	}
@@ -456,7 +456,7 @@ const UsersListing = (props) => {
 								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn sort={true} field="DepartmentName" headerName="Company"></AgGridColumn>} */}
 							<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName={`${handleDepartmentHeader()}`}></AgGridColumn>
 							{/* //RE    */}
-							{props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Points of Contact"></AgGridColumn>}
+							{props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Point of Contact"></AgGridColumn>}
 							<AgGridColumn field="CreatedBy" headerName="Created By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
 							<AgGridColumn field="CreatedDate" width={props?.RFQUser ? 220 : ''} headerName="Created Date (Created Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 							<AgGridColumn field="ModifiedDate" width={props?.RFQUser ? 220 : ''} headerName="Modified Date (Modified Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
