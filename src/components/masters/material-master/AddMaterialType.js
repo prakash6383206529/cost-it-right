@@ -15,6 +15,8 @@ import { debounce } from 'lodash';
 import Button from '../../layout/Button';
 import { MESSAGES } from '../../../config/message';
 import { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, decimalLengthFour, hashValidation, positiveAndDecimalNumber, required } from '../../../helper';
+import AddMaterialTypeDetail from './AddMaterialTypeDetail';
+import { RMIndex } from '../../../config/constants';
 
 const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
   const { t } = useTranslation("RawMaterialMaster");
@@ -154,7 +156,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
     <div>
       <Drawer anchor={anchor} open={isOpen}>
         <Container>
-          <div className={"drawer-wrapper"}>
+          <div className={`drawer-wrapper ${RMIndex ? 'layout-min-width-720px' : ''}`}>
             <form
               noValidate
               className="form"
@@ -181,7 +183,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                 </Col>
               </Row>
               <Row className="pl-3">
-                <Col md="12">
+                <Col md={RMIndex ? "6" : "12"}>
                   <TextFieldHookForm
                     label={`Material`}
                     name={"MaterialType"}
@@ -200,7 +202,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                     errors={errors.MaterialType}
                   />
                 </Col>
-                <Col md="12">
+                <Col md={RMIndex ? "6" : "12"}>
                   <TextFieldHookForm
                     label={`Density (g/cm3)`}
                     name={"CalculatedDensityValue"}
@@ -220,7 +222,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                   />
                 </Col>
               </Row>
-
+              {RMIndex && <AddMaterialTypeDetail/>}
               <Row className=" no-gutters justify-content-between">
                 <div className="col-md-12">
                   <div className="text-right ">
