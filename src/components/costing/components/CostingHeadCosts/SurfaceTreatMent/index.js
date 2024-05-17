@@ -152,7 +152,7 @@ function SurfaceTreatment(props) {
       const toolTabData = ToolTabData && ToolTabData[0]
 
 
-      let totalPOriceForAssembly = surfaceTabData?.CostingPartDetails?.BasicRate + checkForNull(discountAndOtherTabData?.totalConditionCost) + checkForNull(discountAndOtherTabData?.totalNpvCost)
+      let totalPOriceForAssembly = checkForNull(surfaceTabData?.CostingPartDetails?.BasicRate) + checkForNull(discountAndOtherTabData?.totalConditionCost) + checkForNull(discountAndOtherTabData?.totalNpvCost)
 
       let basicRate = surfaceTabData?.CostingPartDetails.BasicRate
 
@@ -336,7 +336,7 @@ function SurfaceTreatment(props) {
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     }
 
-    let totalPOriceForAssembly = basicRate + checkForNull(discountAndOtherTabData?.totalConditionCost) + checkForNull(discountAndOtherTabData?.totalNpvCost)
+    let totalPOriceForAssembly = checkForNull(basicRate) + checkForNull(discountAndOtherTabData?.totalConditionCost) + checkForNull(discountAndOtherTabData?.totalNpvCost)
     dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, EffectiveDate: CostingEffectiveDate, TotalCost: totalPOriceForAssembly, BasicRate: basicRate, NetPOPrice: totalPOriceForAssembly }, res => { }))
     // }
   }
