@@ -37,7 +37,7 @@ import { CBC_COSTING, COSTING, SIMULATION, VBC_COSTING, VERSION, ZBC_COSTING } f
 import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
-import { checkForNull } from "../../helper";
+import { checkForNull, displayNavigationLength } from "../../helper";
 import LanguageDropdown from "../common/Tour/LanguageDropdown";
 import TourWrapper from "../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
@@ -56,7 +56,9 @@ class SideBar extends Component {
       showPopup: false,
       updatedObj: {},
       isShowCal: false,
-      showTour: false
+      showTour: false,
+      startIndex: 0,
+      showAllCategory: false
     };
   }
 
@@ -365,7 +367,7 @@ class SideBar extends Component {
                   />
                   <span className="masters">Masters</span>
                 </Link>
-                <div className="dropdown-menu sub-menu">
+                <div className={`dropdown-menu ${this.state.showAllCategory ? "" : "sub-menu"}`}>
                   <ul>
                     {
                       el && el.Pages && el.Pages.map((item, i) => {
@@ -462,7 +464,7 @@ class SideBar extends Component {
                   />
                   <span className="additional-masters">Additional Masters</span>
                 </Link>
-                <div className="dropdown-menu sub-menu">
+                <div className={`dropdown-menu ${this.state.showAllCategory ? "" : "sub-menu"}`}>
                   <ul>
                     {
                       el && el.Pages && el.Pages.map((item, i) => {
@@ -539,7 +541,7 @@ class SideBar extends Component {
                 />
                 <span className="report">Report</span>
               </Link>
-              <div className="dropdown-menu sub-menu">
+              <div className={`dropdown-menu ${this.state.showAllCategory ? "" : "sub-menu"}`}>
                 <ul>
                   {
                     el && el.Pages && el.Pages.map((item, i) => {
@@ -601,7 +603,7 @@ class SideBar extends Component {
                   />
                   <span className="costing">Costing </span>
                 </Link>
-                <div className="dropdown-menu sub-menu">
+                <div className={`dropdown-menu ${this.state.showAllCategory ? "" : "sub-menu"}`}>
                   <ul>
                     {
                       el && el.Pages && el.Pages.map((item, i) => {
@@ -680,7 +682,7 @@ class SideBar extends Component {
                 />
                 <span className="simulation">Simulation</span>
               </Link>
-              <div className="dropdown-menu sub-menu">
+              <div className={`dropdown-menu ${this.state.showAllCategory ? "" : "sub-menu"}`}>
                 <ul>
                   {
                     el && el.Pages && el.Pages.map((item, i) => {
@@ -954,10 +956,33 @@ class SideBar extends Component {
 
   }
 
+
+  nextNavItems = () => {
+    const { startIndex } = this.state;
+    const { topAndLeftMenuData } = this.props;
+    const totalNavItems = topAndLeftMenuData ? topAndLeftMenuData.length : 0;
+    if (startIndex + displayNavigationLength() < totalNavItems) {
+      this.setState({ startIndex: startIndex + 1 });
+    }
+  };
+
+  prevNavItems = () => {
+    const { startIndex } = this.state;
+    if (startIndex > 0) {
+      this.setState({ startIndex: startIndex - 1 });
+    }
+  };
+
+
   render() {
     const { userData, moduleSelectList, leftMenuData, topAndLeftMenuData, t } = this.props;
-    const { isLoader, isLeftMenuRendered, showTour } = this.state;
+    const { isLoader, startIndex, showAllCategory } = this.state;
     const isLoggedIn = isUserLoggedIn();
+    const isScrollButtonVisible = (topAndLeftMenuData && topAndLeftMenuData.length) > displayNavigationLength();
+    const endIndex = startIndex + displayNavigationLength();
+    const totalNavItems = topAndLeftMenuData ? topAndLeftMenuData.length : 0;
+    const visibleNavItems = topAndLeftMenuData && topAndLeftMenuData.slice(startIndex, endIndex);
+
     return (
       <nav className={`${this.props.sidebarAndNavbarHide ? 'hide-navbar' : ''}`}>
         {isLoader && <Loader />}
@@ -1044,15 +1069,28 @@ class SideBar extends Component {
             <div className="nav-scroller bg-white shadow-sm header-secondry w100 p-relative">
               {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow min-width"></div>}
               <nav className="navbar navbar-expand-lg pl-0">
+                {isScrollButtonVisible && <button className="arrow-previous" onClick={this.prevNavItems} disabled={startIndex === 0}></button>}
                 <ul className="navbar-nav mr-auto">
-                  {topAndLeftMenuData &&
-                    topAndLeftMenuData.map((item, index) => {
+                  {isScrollButtonVisible && <li> <button className="all-modules-btn"
+                    onMouseEnter={() => this.setState({ showAllCategory: true })}
+                    onMouseLeave={() => this.setState({ showAllCategory: false })}
+                  ><div className={showAllCategory ? 'cross-module' : 'all-modules'}></div>View All</button> </li>}
+                  {visibleNavItems &&
+                    visibleNavItems.map((item, index) => {
 
                       return this.renderMenus(item.ModuleName, item.LandingPageURL);
                     })}
                   {/* {this.renderNFR('RFQ')} */}
                 </ul>
+                {isScrollButtonVisible && <button className="arrow-next" onClick={this.nextNavItems} disabled={endIndex >= totalNavItems}></button>}
               </nav>
+              <div
+                onMouseEnter={() => this.setState({ showAllCategory: true })}
+                onMouseLeave={() => this.setState({ showAllCategory: false })}
+                className={`mega-menu ${showAllCategory ? 'show' : ''}`}> {topAndLeftMenuData &&
+                  topAndLeftMenuData.map((item, index) => {
+                    return this.renderMenus(item.ModuleName, item.LandingPageURL);
+                  })}</div>
             </div>
           )
           }
