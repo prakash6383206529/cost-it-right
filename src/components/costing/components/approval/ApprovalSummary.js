@@ -5,7 +5,6 @@ import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, get
 import { approvalPushedOnSap, getApprovalSummary } from '../../actions/Approval'
 import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingViewData, storePartNumber, updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
-import SimulationApproveReject from './SimulationApproveReject'
 import CostingSummaryTable from '../CostingSummaryTable'
 import DayTime from '../../../common/DayTimeWrapper'
 import { Fragment } from 'react'
@@ -18,13 +17,11 @@ import { debounce } from 'lodash'
 import { INR } from '../../../../config/constants'
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
 import { CBCTypeId, EMPTY_GUID, NCC, NCCTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants'
-import { Impactedmasterdata } from '../../../simulation/components/ImpactedMasterData'
 import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
 import Toaster from '../../../common/Toaster'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import { getMultipleCostingDetails, rfqGetBestCostingDetails, setQuotationIdForRFQ } from '../../../rfq/actions/rfq'
 import _ from 'lodash'
 import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
@@ -142,6 +139,7 @@ function ApprovalSummary(props) {
         const { IsRFQCostingApproval, PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
           ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
           CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, NfrId, NfrGroupIdForPFS2, NfrGroupIdForPFS3, IsNFRPFS2PushedButtonShow, IsNFRPFS3PushedButtonShow } = res?.data?.Data?.Costings[0];
+        console.log('ApprovalTypeId: ', ApprovalTypeId);
         setApprovalTypeId(ApprovalTypeId)
         setIsRFQCostingApproval(IsRFQCostingApproval)
         dispatch(setQuotationIdForRFQ(QuotationId))
@@ -252,7 +250,8 @@ function ApprovalSummary(props) {
                 UserId: loggedInUserId(),
                 TechnologyId: technologyId,
                 Mode: 'costing',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+                // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+                approvalTypeId: ApprovalTypeId,
                 plantId: Data.DestinationPlantId ?? EMPTY_GUID
               }
               dispatch(checkFinalUser(obj, res => {
@@ -273,7 +272,9 @@ function ApprovalSummary(props) {
             UserId: loggedInUserId(),
             TechnologyId: technologyId,
             Mode: 'costing',
-            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+            // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+            approvalTypeId: ApprovalTypeId,
+
             plantId: Data.DestinationPlantId
           }
           dispatch(checkFinalUser(obj, res => {
