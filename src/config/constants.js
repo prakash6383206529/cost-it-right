@@ -627,6 +627,7 @@ export const API = {
   uploadCorrugatedBoxCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-box`,
   uploadAssemblyCosting: `${BASE_URL}/bulk-costing/save-costing-assembly`,
   uploadWiringHarnessCosting: `${BASE_URL}/bulk-costing/save-costing-wiring-harness`,
+  uploadDiecastingCosting: `${BASE_URL}/bulk-costing/save-die-costing`,
   uploadSheetMetal: `${BASE_URL}/bulk-costing/save-costing-sheet-metal-in-mhr-process`,
   getAssemblyChildPartbyAsmCostingId: `${BASE_URL}/costing/get-assembly-child-parts-by-asmCostingId`,
   getProcessAndOperationbyCostingId: `${BASE_URL}/costing/get-process-and-operation-by-asmCostingId-or-childCostingId`,
@@ -2626,6 +2627,7 @@ export const CORRUGATED_BOX = 4
 export const ASSEMBLY = 5
 export const WIRINGHARNESS = 6
 export const SHEETMETAL = 7
+export const DIE_CASTING = 8
 
 
 export const REASON_ID = 2

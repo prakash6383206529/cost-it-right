@@ -1055,7 +1055,7 @@ export function bulkUploadCosting(data, costingVersion, callback) {
 
   return (dispatch) => {
     let request;
-    if (costingVersion === 'V2') {  // BULK UPLOAD NEW COSTING
+    if (costingVersion === 'V2' || costingVersion === 'V4') {  // BULK UPLOAD NEW COSTING
       request = axios.post(API.uploadCosting, data, config());
     } else if (costingVersion === 'V3') { //  BULK UPLOAD COSTING FOR SHEET METAL
       request = axios.post(API.uploadSheetMetal, data, config());
@@ -1210,7 +1210,7 @@ export function plasticBulkUploadCosting(data, costingVersion, callback) {
   return (dispatch) => {
 
     let request;
-    if (costingVersion === 'V2') {  // BULK UPLOAD NEW COSTING
+    if (costingVersion === 'V2' || costingVersion === 'V4') {  // BULK UPLOAD NEW COSTING
       request = axios.post(API.uploadPlasticCosting, data, config());
     } else {  // BULK UPLOAD OLD COSTING
       request = axios.post(API.uploadPlasticOldCosting, data, config());
@@ -1234,7 +1234,7 @@ export function machiningBulkUploadCosting(data, costingVersion, callback) {
   return (dispatch) => {
 
     let request;
-    if (costingVersion === 'V2') {  // BULK UPLOAD NEW COSTING
+    if (costingVersion === 'V2' || costingVersion === 'V4') {  // BULK UPLOAD NEW COSTING
       request = axios.post(API.uploadMachiningCosting, data, config());
     } else {  // BULK UPLOAD OLD COSTING
       request = axios.post(API.uploadMachiningOldCosting, data, config());
@@ -1372,6 +1372,23 @@ export function wiringHarnessBulkUploadCosting(data, callback) {
       apiErrors(error);
     });
   };
+}
+
+export function diecastingBulkUploadCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.uploadDiecastingCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
+      apiErrors(error);
+    });
+  }
 }
 /**
  * @method getRawMaterialCalculationForMachining
