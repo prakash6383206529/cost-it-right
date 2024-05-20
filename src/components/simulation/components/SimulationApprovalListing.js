@@ -722,7 +722,8 @@ function SimulationApprovalListing(props) {
                     master: approvalData.SimulationTechnologyId,
                     statusForLinkedToken: statusForLinkedToken,
                     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(approvalData.SimulationHeadId),
-                    DepartmentId: approvalData.DepartmentId
+                    DepartmentId: approvalData.DepartmentId,
+                    preserveData: true
                 }
 
             }}

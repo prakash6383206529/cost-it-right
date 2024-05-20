@@ -918,15 +918,15 @@ export const RMSpecification = [
     { label: "RawMaterialName", value: "RawMaterialName" },//*
     { label: "Grade", value: "RMGrade" },//*
     { label: "Specification", value: "Specification" },//*
+    { label: "Code", value: "RawMaterialCode" },//*
 ]
 
 export const RMSpecificationXLTempData = [
     {
         "RawMaterialName": "CRCA",
         "RMGrade": "15Cr3",
-        "Material": "Stainless Steel",
-        "Density": "3.3",
         "Specification": "50 mm",
+        "RawMaterialCode": "RM-10000001",
     }
 ]
 
@@ -7946,14 +7946,14 @@ export const statusDropdownforRfq = [
     { label: "Approved", value: "1" },
     { label: "Draft", value: "2" },
     { label: "Received", value: "3" },
-    { label: "UnderRevision", value: "4" },
+    { label: "Under Revision", value: "4" },
     { label: "Sent", value: "5" },
     { label: "Cancelled", value: "6" },
     { label: "Rejected", value: "7" },
     { label: "Returned", value: "8" },
-    { label: 'PendingForApproval', value: "9" },
+    { label: 'Pending For Approval', value: "9" },
     { label: 'History', value: "10" },
-    { label: 'NotSelected', value: "11" },
+    { label: 'Not Selected', value: "11" },
 ]
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },

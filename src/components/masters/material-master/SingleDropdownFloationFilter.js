@@ -33,6 +33,7 @@ function SingleDropdownFloationFilter(props) {
 
         if (isReset && isReset?.data) {
             setValue("singleDropDown", [])
+            setShowInputData([])
         } else {
             setValue("singleDropDown", statusColumnData?.arr)
         }
