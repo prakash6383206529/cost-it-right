@@ -2626,8 +2626,9 @@ export const MACHINING_GROUP_BULKUPLOAD = 3
 export const CORRUGATED_BOX = 4
 export const ASSEMBLY = 5
 export const WIRINGHARNESS = 6
-export const SHEETMETAL = 7
-export const DIE_CASTING = 8
+export const DIE_CASTING = 7
+//changed the sheet metal to 8 bcz the version 3 code is not working or deployed
+export const SHEETMETAL = 8
 
 
 export const REASON_ID = 2
