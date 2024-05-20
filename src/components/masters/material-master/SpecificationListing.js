@@ -108,7 +108,7 @@ const SpecificationListing = (props) => {
 
   const editItemDetails = useCallback((Id, rowData) => {
     setState((prev) => ({
-      ...prev, isEditFlag: true, isOpen: true, ID: Id, isAssociate: rowData.IsAssociated
+      ...prev, isEditFlag: true, isOpen: true, ID: Id, isAssociate: rowData?.IsAssociated
     }));
   }, []);
 
@@ -166,7 +166,7 @@ const SpecificationListing = (props) => {
       isEditbale = permissions.Edit;
       isDeleteButton =
         (tourStartData?.showExtraData && props.rowIndex === 0) ||
-        (permissions.Delete && !rowData.IsAssociated);
+        (permissions.Delete && !rowData?.IsAssociated);
 
       return (
         <>
