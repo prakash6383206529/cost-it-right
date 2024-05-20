@@ -4,7 +4,7 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Container, Row } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { CRMHeads } from '../../../../../config/constants';
+import { CRMHeads, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { ViewCostingContext } from '../../CostingDetails';
 import OtherDiscountTable from './OtherDiscountTable';
@@ -13,6 +13,8 @@ import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepT
 import _ from 'lodash';
 import Toaster from '../../../../common/Toaster';
 import { setOtherDiscountData } from '../../../actions/Costing';
+import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
 
 function AddOtherDiscount(props) {
     const { register, handleSubmit, formState: { errors }, control, getValues, setValue } = useForm({
@@ -24,7 +26,7 @@ function AddOtherDiscount(props) {
     const [state, setState] = useState({
         isEdit: false,
         tableData: otherDiscountData.gridData,
-        discountTotalCost: otherDiscountData.otherCostTotal,
+        discountTotalCost: otherDiscountData.totalCost,
         otherDiscountApplicabilityType: [],
     })
     const [otherCostApplicability, setOtherCostApplicability] = useState([])
@@ -44,6 +46,7 @@ function AddOtherDiscount(props) {
         control,
         name: ['ApplicabilityCost'],
     })
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
     useEffect(() => {
         setValue('ApplicabilityCost', '')
@@ -56,6 +59,10 @@ function AddOtherDiscount(props) {
             findApplicabilityCost()
         }
     }, [fieldValuesForFixed])
+    useEffect(() => {
+        let request = partType ? 'multiple technology assembly' : ''
+        dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    }, [])
 
     const renderListing = (label) => {
         const temp = [];
@@ -115,6 +122,10 @@ function AddOtherDiscount(props) {
 
         gridData.push(obj)
         const sumOfNetCost = gridData.reduce((acc, obj) => acc + Number(obj.NetCost), 0);
+        if (costData.TotalCost < sumOfNetCost) {
+            Toaster.warning("Discount should not be greater than Total Cost.")
+            return false
+        }
         resetData()
         setState(prevState => ({ ...prevState, tableData: gridData, discountTotalCost: sumOfNetCost }))
     }
@@ -186,6 +197,10 @@ function AddOtherDiscount(props) {
 
         let tempArr = Object.assign([...state.tableData], { [state.editIndex]: obj })
         const sumOfNetCost = tempArr.reduce((acc, obj) => acc + Number(obj.NetCost), 0);
+        if (costData.TotalCost < sumOfNetCost) {
+            Toaster.warning("Discount should not be greater than Total Cost.")
+            return false
+        }
         setState(prevState => ({ ...prevState, tableData: tempArr, isEdit: false, discountTotalCost: sumOfNetCost }))
         resetData()
     }
@@ -359,7 +374,7 @@ function AddOtherDiscount(props) {
     }
     const onFinalSubmit = () => {
         props.closeDrawer('submit', state.discountTotalCost, state.tableData)
-        dispatch(setOtherDiscountData({ gridData: state.tableData, otherCostTotal: state.discountTotalCost }))
+        dispatch(setOtherDiscountData({ gridData: state.tableData, totalCost: state.discountTotalCost }))
     }
     return (
         <div>
@@ -373,7 +388,7 @@ function AddOtherDiscount(props) {
                         <Row className="drawer-heading">
                             <Col>
                                 <div className={"header-wrapper left"}>
-                                    <h3>{"Add Other Discount"}</h3>
+                                    <h3>{"Add Discount Cost"}</h3>
                                 </div>
                                 <div
                                     onClick={() => props.closeDrawer('cancel')}
@@ -408,7 +423,7 @@ function AddOtherDiscount(props) {
 
                                     <Col md="4" >
                                         <TextFieldHookForm
-                                            label="Other Discount Description"
+                                            label="Discount Description"
                                             name={"OtherCostDescription"}
                                             Controller={Controller}
                                             control={control}
@@ -432,7 +447,7 @@ function AddOtherDiscount(props) {
                                     {
                                         <Col md="4">
                                             <SearchableSelectHookForm
-                                                label={'Other Disount Applicability'}
+                                                label={'Disount Applicability'}
                                                 name={'OtherCostApplicability'}
                                                 placeholder={'Select'}
                                                 Controller={Controller}
@@ -501,7 +516,7 @@ function AddOtherDiscount(props) {
                                     <Col md="4">
                                         {/* {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="drawer-other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />} */}
                                         <TextFieldHookForm
-                                            label="Other Discount"
+                                            label="Discount Cost"
                                             name={"AnyOtherCost"}
                                             id="drawer-other-cost"
                                             Controller={Controller}

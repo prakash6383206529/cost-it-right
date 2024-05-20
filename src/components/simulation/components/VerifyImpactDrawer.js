@@ -140,7 +140,7 @@ function VerifyImpactDrawer(props) {
                           <td>{amendmentDetails.SimulationAppliedOn}</td>
                           <td>{amendmentDetails.CostingHead}</td>
                           <td>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</td>
-                          <td>{impactedMasterData.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(impactedMasterData.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                          <td>{impactedMasterData?.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(impactedMasterData?.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
                           <td>{impactedMasterData.TotalBudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(impactedMasterData.TotalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
                         </tr>
                       </tbody>

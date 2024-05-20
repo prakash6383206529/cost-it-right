@@ -17,6 +17,7 @@ import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
 import { is } from 'date-fns/locale';
 import { getUsersOnboardingLevelAPI } from '../../../actions/auth/AuthActions';
+import { months } from 'moment';
 
 
 const SendForApproval = (props) => {
@@ -62,6 +63,7 @@ const SendForApproval = (props) => {
 
 
   } = props;
+
   useEffect(() => {
     dispatch(getAllMasterApprovalDepartment((res) => {
       const Data = res?.data?.SelectList;
@@ -172,8 +174,6 @@ const SendForApproval = (props) => {
 
   const onSubmit = debounce(
     handleSubmit(() => {
-      const remark = isClassification ? getValues('remarks') : getValues('remarks1');
-      const reason = isClassification ? getValues('reason') : getValues('reason1');
       const dept = isClassification ? getValues('dept') : getValues('dept1');
       const approver = isClassification ? getValues('approver') : getValues('approver1');
       const month = isClassification ? getValues('month') : getValues('month1');
@@ -181,9 +181,9 @@ const SendForApproval = (props) => {
         Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.');
         return false;
       }
+
       const senderObj = {
-        ReasonId: reason ? reason.value : 0,
-        Reason: reason ? reason.label : '',
+
         IsFinalApproved: false,
         DepartmentId: dept?.value || '',
         DepartmentName: dept?.label || '',
@@ -197,7 +197,7 @@ const SendForApproval = (props) => {
         SenderLevelId: levelDetails?.LevelId,
         SenderId: loggedInUserId(),
         SenderLevel: levelDetails?.Level,
-        SenderRemark: remark,
+        SenderRemark: '',
         LoggedInUserId: loggedInUserId(),
         PurchasingGroup: '',
         MaterialGroup: '',
@@ -209,6 +209,8 @@ const SendForApproval = (props) => {
 
       const classificationSenderObj = {
         ...senderObj,
+        ReasonId: getValues('reason')?.value || '',
+        Reason: getValues('reason')?.label || '',
         ApprovalTypeId: CLASSIFICATIONAPPROVALTYPEID,
         ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
           ? classificationApproverIdList
@@ -222,11 +224,11 @@ const SendForApproval = (props) => {
             DeviationId: '00000000-0000-0000-0000-000000000000',
             CostingTypeId: 1,
             DeviationType: 1,
-            DeviationDuration: month.label,
+            DeviationDuration: `${month.value} Month(s)`,
             LoggedInUserId: loggedInUserId(),
             PlantId: deviationData.PlantId,
             PlantName: deviationData.PlantName,
-            Remark: remark,
+            Remark: getValues('remarks') || '',
             DepartmentId: ''
           }
         }
@@ -234,6 +236,8 @@ const SendForApproval = (props) => {
 
       const lpsSenderObj = {
         ...senderObj,
+        ReasonId: getValues('reason1')?.value || '',
+        Reason: getValues('reason1')?.label || '',
         ApprovalTypeId: LPSAPPROVALTYPEID,
         ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
           ? lpsApproverIdList
@@ -242,15 +246,15 @@ const SendForApproval = (props) => {
           CreateVendorPlantClassificationLPSRatingUnblocking: {
             VendorClassificationId: '',
             VendorLPSRatingId: deviationData.VendorLPSRatingId,
-            IsSendForApproval: deviationData.LpsIsBlocked,
+            IsSendForApproval: deviationData.LPSRatingIsBlocked,
             DeviationId: '00000000-0000-0000-0000-000000000000',
             CostingTypeId: 1,
             DeviationType: 2,
-            DeviationDuration: month.label,
+            DeviationDuration: `1 Month(s)`,
             LoggedInUserId: loggedInUserId(),
             PlantId: deviationData.PlantId,
             PlantName: deviationData.PlantName,
-            Remark: remark,
+            Remark: getValues('remarks1') || '',
             DepartmentId: ''
           }
         }
@@ -260,6 +264,7 @@ const SendForApproval = (props) => {
       setIsLoader(true);
       const dispatchApproval = (sender, message) => {
         dispatch(sendForUnblocking(sender, res => {
+
           setIsLoader(false);
           if (res?.data?.Result) {
             Toaster.success(message);
@@ -342,7 +347,7 @@ const SendForApproval = (props) => {
     if (label === 'month') {
       // Generate month options dynamically
       for (let i = 1; i <= 12; i++) {
-        temp.push({ label: `${i} Month(s)`, value: i });
+        temp.push({ label: `${i}`, value: i });
       }
 
       return temp;
@@ -484,7 +489,7 @@ const SendForApproval = (props) => {
                   </Col>
                   <Col md="6">
                     <SearchableSelectHookForm
-                      label={'Deviation Duration For Classification'}
+                      label={'Deviation Duration (Months)'}
                       name={'month'}
                       placeholder={'Select'}
                       Controller={Controller}
@@ -506,9 +511,8 @@ const SendForApproval = (props) => {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      rules={{ required: false }}
+                      rules={{ required: true }}
                       mandatory={true}
-
                       // mandatory={mandatoryRemark ? true : false}
                       // rules={{ required: mandatoryRemark ? true : false }}
                       handleChange={() => { }}
@@ -606,21 +610,22 @@ const SendForApproval = (props) => {
                   </Col>
                   <Col md="6">
                     <SearchableSelectHookForm
-                      label={'Deviation Duration For LPS Rating'}
+                      label={'Deviation Duration (Months)'}
                       name={'month1'}
                       placeholder={'Select'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      // defaultValue={1}
-                      // disabled={true}
-                      options={searchableSelectType('month') ? searchableSelectType('month') : []}
+                      defaultValue={searchableSelectType('month').find(option => option.value === 1)}
+                      options={searchableSelectType('month')}
                       mandatory={true}
                       handleChange={handleMonthChange}
                       errors={errors.Masters}
-
+                      disabled={true}
                     />
+
+
                   </Col>
                   <Col md="12">
                     <Col md="12">

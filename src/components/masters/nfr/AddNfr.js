@@ -132,7 +132,7 @@ function AddNfr(props) {
         reactLocalStorage.setObject('surfaceCostingArray', [])
         dispatch(setRMCCData([], () => { }))
         dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
-        dispatch(setOtherDiscountData({ gridData: [], otherCostTotal: 0 }))
+        dispatch(setOtherDiscountData({ gridData: [], totalCost: 0 }))
         dispatch(setComponentItemData({}, () => { }))
 
         dispatch(setOverheadProfitData([], () => { }))

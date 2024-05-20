@@ -627,6 +627,7 @@ export const API = {
   uploadCorrugatedBoxCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-box`,
   uploadAssemblyCosting: `${BASE_URL}/bulk-costing/save-costing-assembly`,
   uploadWiringHarnessCosting: `${BASE_URL}/bulk-costing/save-costing-wiring-harness`,
+  uploadDiecastingCosting: `${BASE_URL}/bulk-costing/save-die-costing`,
   uploadSheetMetal: `${BASE_URL}/bulk-costing/save-costing-sheet-metal-in-mhr-process`,
   getAssemblyChildPartbyAsmCostingId: `${BASE_URL}/costing/get-assembly-child-parts-by-asmCostingId`,
   getProcessAndOperationbyCostingId: `${BASE_URL}/costing/get-process-and-operation-by-asmCostingId-or-childCostingId`,
@@ -1534,6 +1535,7 @@ export const SET_RMCCBOP_DATA = 'SET_RMCCBOP_DATA';
 export const SET_SURFACE_COST_DATA = 'SET_SURFACE_COST_DATA';
 export const SET_OVERHEAD_PROFIT_COST_DATA = 'SET_OVERHEAD_PROFIT_COST_DATA';
 export const SET_DISCOUNT_COST_DATA = 'SET_DISCOUNT_COST_DATA';
+export const SET_REJECTION_RECOVERY_DATA = 'SET_REJECTION_RECOVERY_DATA';
 export const SET_IS_TOOLCOST_USED = 'SET_IS_TOOLCOST_USED';
 export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
@@ -2625,6 +2627,7 @@ export const CORRUGATED_BOX = 4
 export const ASSEMBLY = 5
 export const WIRINGHARNESS = 6
 export const SHEETMETAL = 7
+export const DIE_CASTING = 8
 
 
 export const REASON_ID = 2
@@ -2969,9 +2972,9 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 export const PartTypeIDFromAPI = 2
-
+export const RMIndex = true
 //VERSION 
-export const VERSION = "V2.2.8";
+export const VERSION = "V2.2.13";
 
 
 

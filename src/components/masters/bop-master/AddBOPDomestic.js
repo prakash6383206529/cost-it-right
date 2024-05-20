@@ -899,7 +899,7 @@ class AddBOPDomestic extends Component {
         ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
         ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
         checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
-        checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBaseCurrency) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged) {
+        checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBaseCurrency) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged && ((DataToCheck.TechnologyId ? String(DataToCheck.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
         this.setState({ isEditBuffer: true })
         Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
         return false
@@ -1276,7 +1276,8 @@ class AddBOPDomestic extends Component {
                                   <input
                                     type="checkbox"
                                     checked={isTechnologyVisible}
-                                    disabled={isViewMode || isEditFlag ? true : false}
+                                    disabled={isViewMode ||
+                                      (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
                                   />
                                   <span
                                     className=" before-box"
@@ -1284,6 +1285,7 @@ class AddBOPDomestic extends Component {
                                     onChange={this.breakUpHandleChange}
                                   />
                                 </label>
+                                {isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId && <WarningMessage dClass={"mr-2"} message={`This ${showBopLabel()} is already associated, so now you can't edit it.`} />}
                               </Col>
                               {isTechnologyVisible && <Col md="3">
                                 <Field
@@ -1300,7 +1302,7 @@ class AddBOPDomestic extends Component {
                                     this.handleTechnologyChange
                                   }
                                   valueDescription={this.state.Technology}
-                                  disabled={isViewMode || isEditFlag ? true : false}
+                                  disabled={isViewMode || (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
                                 />
                               </Col>}
                             </>
@@ -1437,7 +1439,7 @@ class AddBOPDomestic extends Component {
                               />
                             </div>
                           </Col>
-                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) &&
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible &&
                             < Col md="3">
                               <Field
                                 label={`Minimum Order Quantity`}
@@ -1452,7 +1454,7 @@ class AddBOPDomestic extends Component {
                                 disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               />
                             </Col>}
-                          {(!isTechnologyVisible || this.showBasicRate()) && <>
+                          {(!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
                             <Col md="3">
                               <Field
                                 label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}
@@ -1467,7 +1469,7 @@ class AddBOPDomestic extends Component {
                                 customClassName=" withBorder"
                               />
                             </Col></>}
-                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
+                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">
                               <TooltipCustom id="bop-basic-price" tooltipText={this.state.toolTipTextObject?.basicPriceSelectedCurrency} />
                               <Field
@@ -1528,7 +1530,7 @@ class AddBOPDomestic extends Component {
 
 
                         </Row>
-                        {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                        {getConfigurationKey().IsShowClientVendorBOP && costingTypeId === CBCTypeId && <Col md="3" className="d-flex align-items-center mb-3">
                           <label
                             className={`custom-checkbox`}
                             onChange={this.onIsClientVendorBOP}

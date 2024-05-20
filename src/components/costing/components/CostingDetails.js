@@ -1040,7 +1040,7 @@ function CostingDetails(props) {
 
         if (checkSOBTotal()) {
           dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
-          dispatch(setOtherDiscountData({ gridData: [], otherCostTotal: 0 }))
+          dispatch(setOtherDiscountData({ gridData: [], totalCost: 0 }))
 
           const userDetailsCosting = JSON.parse(localStorage.getItem('userDetail'))
           const data = {
@@ -1619,7 +1619,7 @@ function CostingDetails(props) {
       sessionStorage.setItem('surfaceCostingArray', JSON.stringify([]))
       dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
       dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
-      dispatch(setOtherDiscountData({ gridData: [], otherCostTotal: 0 }))
+      dispatch(setOtherDiscountData({ gridData: [], totalCost: 0 }))
       dispatch(setComponentItemData({}, () => { }))
 
       dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
