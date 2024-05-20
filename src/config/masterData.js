@@ -918,15 +918,15 @@ export const RMSpecification = [
     { label: "RawMaterialName", value: "RawMaterialName" },//*
     { label: "Grade", value: "RMGrade" },//*
     { label: "Specification", value: "Specification" },//*
+    { label: "Code", value: "RawMaterialCode" },//*
 ]
 
 export const RMSpecificationXLTempData = [
     {
         "RawMaterialName": "CRCA",
         "RMGrade": "15Cr3",
-        "Material": "Stainless Steel",
-        "Density": "3.3",
         "Specification": "50 mm",
+        "RawMaterialCode": "RM-10000001",
     }
 ]
 
