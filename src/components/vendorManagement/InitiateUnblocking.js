@@ -85,7 +85,8 @@ const InitiateUnblocking = (props) => {
                         Toaster.warning(`You don't have permission to initiate unblocking for the vendor against the selected plant. Either the plant is not associated, or the approval level has not been set Or may be both.`)
                         approvalTypeId === LPSAPPROVALTYPEID ? setIsLpsRating(false) : setIsClassification(false)
                     }
-                    else { }
+                    else { setSubmit(false) }
+
                 }
             }))
         }
