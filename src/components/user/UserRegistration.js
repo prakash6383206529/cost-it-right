@@ -462,7 +462,7 @@ function UserRegistration(props) {
     }
     if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster' || label === 'approvalTypeOnboarding') {
       // if (label === 'approvalType') {                 //RE
-      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false) {
+      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false && isOnboardingEditIndex === false) {
         temp.push({ label: 'Select All', value: '0' });
       }
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
@@ -913,15 +913,29 @@ function UserRegistration(props) {
    * @description Used to handle onboarding ApprovalType Handler
    */
   const onboardingApprovalTypeHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
+
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      const selectedOptions = approvalTypeSelectList
+        .filter((option) => option?.Value !== '0')
+        .map(({ Text, Value }) => ({ label: Text, value: Value }));
+      setOnboardingApprovalType(selectedOptions);
+      setTimeout(() => {
+        setValue('OnboardingApprovalType', selectedOptions)
+      }, 100);
+      setOnboardingLevels([]);
+      setValue('onboardingLevel', '');
+      dispatch(getOnboardingLevelById(true, newValue.value, res => { }))
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
       setOnboardingApprovalType(newValue)
-      setOnboardingLevels([])
+      setOnboardingLevels([]);
       setValue('onboardingLevel', '')
       if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isOnboardingEditIndex) {
         dispatch(getOnboardingLevelById(true, newValue.value, res => { }))
       }
     } else {
       setOnboardingApprovalType([])
+      setValue('OnboardingApprovalType', '')
     }
   };
   /**
@@ -1745,6 +1759,7 @@ function UserRegistration(props) {
     setOnboardingApprovalType([])
     setValue('onboardingLevel', '')
     setValue('OnboardingApprovalType', '')
+    setOnboardingLevelEditIndex(false)
   };
 
 
@@ -2621,7 +2636,7 @@ function UserRegistration(props) {
                       <div className="input-group col-md-3">
                         <TextFieldHookForm
                           name="UserName"
-                          label="User name"
+                          label="User Name"
                           errors={errors.UserName}
                           Controller={Controller}
                           control={control}

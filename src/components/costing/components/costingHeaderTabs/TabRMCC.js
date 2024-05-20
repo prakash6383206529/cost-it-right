@@ -294,7 +294,7 @@ function TabRMCC(props) {
   const calculationForPart = (gridData, obj, type, checkboxFields = {}) => {
     let partObj = obj
     let GrandTotalCost = 0
-    let sumForBasicRate = (CostingDataList[0]?.NetSurfaceTreatmentCost + CostingDataList[0]?.NetOverheadAndProfitCost + CostingDataList[0]?.NetPackagingAndFreight + CostingDataList[0]?.ToolCost + CostingDataList[0]?.NetOtherCost) - CostingDataList[0]?.NetDiscountsCost
+    let sumForBasicRate = (checkForNull(CostingDataList[0]?.NetSurfaceTreatmentCost) + checkForNull(CostingDataList[0]?.NetOverheadAndProfitCost) + checkForNull(CostingDataList[0]?.NetPackagingAndFreight) + checkForNull(CostingDataList[0]?.ToolCost) + checkForNull(CostingDataList[0]?.NetOtherCost)) - checkForNull(CostingDataList[0]?.NetDiscountsCost)
     switch (type) {
       case 'RM':
 
@@ -378,7 +378,7 @@ function TabRMCC(props) {
         break;
     }
     if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
-      partObj.CostingPartDetails.BasicRate = checkForNull(partObj.CostingPartDetails.TotalCalculatedRMBOPCCCost) + findSurfaceTreatmentData(partObj)?.CostingPartDetails?.NetSurfaceTreatmentCost
+      partObj.CostingPartDetails.BasicRate = checkForNull(partObj.CostingPartDetails.TotalCalculatedRMBOPCCCost) + checkForNull(findSurfaceTreatmentData(partObj)?.CostingPartDetails?.NetSurfaceTreatmentCost)
     } else {
       partObj.CostingPartDetails.BasicRate = checkForNull(sumForBasicRate) + checkForNull(partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity)
     }

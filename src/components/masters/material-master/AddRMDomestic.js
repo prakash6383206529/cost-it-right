@@ -270,7 +270,7 @@ class AddRMDomestic extends Component {
         this.props.getRMSpecificationDataList({ GradeId: null }, () => { });
       })
     }
-    if (!(this.props.data.isEditFlag || this.state.isViewFlag) && this.state.Technology) {
+    if (!(this.props.data.isEditFlag || data.isViewFlag) && this.state.Technology) {
       this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory((res) => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
@@ -788,6 +788,8 @@ class AddRMDomestic extends Component {
             this.checkTechnology({ label: Data.TechnologyName, value: Data.TechnologyId })
             if (!data.isViewFlag) {
               this.finalUserCheckAndMasterLevelCheckFunction(Data.DestinationPlantId)
+            } else {
+              this.setState({ finalApprovalLoader: false })
             }
             this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
             this.setState({ minEffectiveDate: Data.EffectiveDate })

@@ -32,7 +32,7 @@ import CostingApproveReject from '../costing/components/approval/CostingApproveR
 import TourWrapper from '../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
-import { getGridHeight } from '../../actions/Common';
+import { agGridStatus, getGridHeight, isResetClick } from '../../actions/Common';
 import SingleDropdownFloationFilter from '../masters/material-master/SingleDropdownFloationFilter';
 import WarningMessage from '../common/WarningMessage';
 
@@ -179,14 +179,14 @@ function RfqListing(props) {
 
         if (agGridRef.current) {
             //MINDA
-            // setTimeout(() => {
-            //     if (!agGridRef.current.rowRenderer.allRowCons.length) {
-            //         setNoData(true)
-            //         dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
-            //     } else {
-            //         setNoData(false)
-            //     }
-            // }, 100);
+            setTimeout(() => {
+                if (!agGridRef.current.rowRenderer.allRowCons.length) {
+                    setNoData(true)
+                    //dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
+                } else {
+                    setNoData(false)
+                }
+            }, 100);
 
             const gridApi = agGridRef.current.api;
 
@@ -219,6 +219,9 @@ function RfqListing(props) {
         gridOptions?.api?.setFilterModel(null);
         window.screen.width > 1600 && gridApi.sizeColumnsToFit();
         gridApi.deselectAll()
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "status"))
+
         setSelectedCostings([])
         setaddComparisonToggle(false)
     }
@@ -972,7 +975,9 @@ function RfqListing(props) {
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={cell}>{row.DisplayStatus}</div>
+        const displayStatus = row?.DisplayStatus ?? '-';
+
+        return <div className={cell}>{displayStatus}</div>
     }
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,

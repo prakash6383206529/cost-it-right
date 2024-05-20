@@ -445,6 +445,45 @@
     @include icons("../../images/link.svg", 20px, 20px)
 }
 
+
+.all-modules {
+    @include icons("../../images/all-modules.png", 24px, 24px);
+    margin-bottom: 2px;
+}
+
+.cross-module {
+    @include icons("../../images/cross-icon.png", 24px, 24px);
+    margin-bottom: 2px;
+}
+
+.arrow-previous {
+    @include icons("../../images/caret-down.svg", 20px, 20px, );
+    margin-top: 3px;
+    transform: rotate(90deg);
+
+    &:focus {
+        @extend %focus;
+    }
+
+    &:disabled {
+        @extend %disabled;
+    }
+}
+
+.arrow-next {
+    @include icons("../../images/caret-down.svg", 20px, 20px, $shadowColor: none, $borderColor: none);
+    margin-top: 3px;
+    transform: rotate(-90deg);
+
+    &:focus {
+        @extend %focus;
+    }
+
+    &:disabled {
+        @extend %disabled;
+    }
+}
+
 .pinned {
     @include icons("../../images/pinned.svg", 20px, 20px);
 

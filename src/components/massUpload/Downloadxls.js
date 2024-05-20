@@ -155,7 +155,7 @@ class Downloadxls extends React.Component {
         let updatedLabels, updatedTempData;
         switch (master) {
             case 'RM Specification':
-                return this.returnExcelColumn(RMSpecification, RMSpecificationXLTempData);
+                return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMSpecification), RMSpecificationXLTempData);
             case 'Vendor':
                 ({ updatedLabels, updatedTempData } = updateBOPValues(Vendor, VendorTempData, bopMasterName));
 
