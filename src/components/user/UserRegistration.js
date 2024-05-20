@@ -324,6 +324,7 @@ function UserRegistration(props) {
   const searchableSelectType = (label) => {
     // const { roleList, technologyList, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterLevelSelectList, masterList } = props;
     const temp = [];
+    const isAllowMultiple = getConfigurationKey().IsAllowMultiSelectApprovalType
 
     if (label === 'role') {
       roleList && roleList.map(item => {
@@ -352,8 +353,9 @@ function UserRegistration(props) {
     }
     if (label === 'technology') {
       const temp = [];
+
       technologyList && technologyList?.forEach(item => {
-        if (item?.Value === '0' && !isEditIndex) {
+        if (item?.Value === '0' && !isEditIndex && isAllowMultiple) {
           temp.push({ label: "Select All", value: item?.Value });
         } else if (item?.Value !== '0') {
           temp.push({ label: item.Text, value: item.Value });
@@ -373,7 +375,7 @@ function UserRegistration(props) {
       const temp = [];
       simulationTechnologyList && simulationTechnologyList.forEach(item => {
 
-        if (item?.Value === '0' && !isSimulationEditIndex) {
+        if (item?.Value === '0' && !isSimulationEditIndex && isAllowMultiple) {
           temp.push({ label: "Select All", value: item?.Value });
         } else if (item?.Value !== '0') {
           temp.push({ label: item.Text, value: item.Value })
@@ -462,7 +464,7 @@ function UserRegistration(props) {
     }
     if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster' || label === 'approvalTypeOnboarding') {
       // if (label === 'approvalType') {                 //RE
-      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false && isOnboardingEditIndex === false) {
+      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false && isOnboardingEditIndex === false && isAllowMultiple) {
         temp.push({ label: 'Select All', value: '0' });
       }
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
