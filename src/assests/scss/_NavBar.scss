@@ -1027,6 +1027,17 @@ label.btn.btn-link.align-middle.checkbox-label {
 .header-secondry {
   .navbar {
     border-bottom: none !important;
+    position: relative;
+
+    .arrow-previous {
+      position: absolute;
+      left: -24px;
+    }
+
+    .arrow-next {
+      position: absolute;
+      right: 0;
+    }
   }
 }
 
@@ -1035,4 +1046,55 @@ label.btn.btn-link.align-middle.checkbox-label {
   color: $colorPrimary;
   margin-left: 12px;
   font-size: 15px;
+}
+
+.all-modules-btn {
+  display: flex;
+  align-items: center;
+  background-color: transparent !important;
+  margin-right: 10px;
+  margin-top: 6px;
+  color: $headinlightgblack;
+
+  &:focus {
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.mega-menu {
+  position: absolute;
+  padding: 10px 25px;
+  box-shadow: 0px 5px 18px #88888873;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto;
+  background-color: #fff;
+  top: 0;
+  z-index: 100;
+  width: calc(100% - 200px);
+  left: 129px;
+  right: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease;
+
+  &.show {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+.all-modules-btn:hover+.mega-menu {
+  display: block;
+}
+
+.mega-menu:before {
+  content: "";
+  position: absolute;
+  top: 27%;
+  left: -10px;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #5d5d5d transparent transparent;
 }

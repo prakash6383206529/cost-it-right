@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, hashValidation } from "../../../helper/validation";
+import { required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, hashValidation, maxLength80 } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getMaterialTypeSelectList } from '../actions/Material';
 import { getRawMaterialSelectList } from '../../../actions/Common';
@@ -138,12 +138,11 @@ class AddGrade extends Component {
                     name={"Grade"}
                     type="text"
                     placeholder={"Enter"}
-                    validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, hashValidation]}
+                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
                     component={renderText}
                     required={true}
                     className=" "
                     customClassName=" withBorder"
-                    maxLength="80"
                   />
                 </Col>
 
