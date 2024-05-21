@@ -1422,3 +1422,33 @@ export function encodeQueryParamsAndLog(obj) {
     .join('&');
   return queryParams;
 }
+
+export function displayNavigationLength() {
+  const screenWidth = window.screen.width;
+
+  switch (true) {
+    case screenWidth >= 1068 && screenWidth <= 1167:
+      return 5;
+
+    case screenWidth >= 1168 && screenWidth <= 1267:
+      return 6;
+
+    case screenWidth >= 1268 && screenWidth <= 1365:
+      return 7;
+
+    case screenWidth >= 1366 && screenWidth <= 1440:
+      return 8;
+
+    case screenWidth >= 1441 && screenWidth <= 1600:
+      return 10;
+
+    case screenWidth >= 1661 && screenWidth < 1920:
+      return 13;
+
+    case screenWidth >= 1920:
+      return 14;
+
+    default:
+      return 7;
+  }
+}

@@ -354,6 +354,7 @@ export const MESSAGES = {
 
   //RFQ
   RFQ_ADD_SUCCESS: 'RFQ details added successfully',
+  RFQ_UPDATE_SUCCESS: 'RFQ details updated successfully',
   RFQ_SENT_SUCCESS: 'RFQ raised successfully',
   RFQ_DETAIL_CANCEL_ALERT: 'Are you sure you want to cancel this RFQ?',
 

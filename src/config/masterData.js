@@ -918,15 +918,15 @@ export const RMSpecification = [
     { label: "RawMaterialName", value: "RawMaterialName" },//*
     { label: "Grade", value: "RMGrade" },//*
     { label: "Specification", value: "Specification" },//*
+    { label: "Code", value: "RawMaterialCode" },//*
 ]
 
 export const RMSpecificationXLTempData = [
     {
         "RawMaterialName": "CRCA",
         "RMGrade": "15Cr3",
-        "Material": "Stainless Steel",
-        "Density": "3.3",
         "Specification": "50 mm",
+        "RawMaterialCode": "RM-10000001",
     }
 ]
 
@@ -4230,6 +4230,7 @@ export const DIE_CASTING = 23
 export const ASSEMBLY_TECHNOLOGY_MASTER = 10
 export const LOGISTICS = 24
 export const WIREFORMING = 25
+export const ELECTRICAL_STAMPING = 26
 
 // PART TYPE
 export const PART_TYPE_ASSEMBLY = 1
@@ -4886,7 +4887,7 @@ export const ENDMILL = 'End Mill'
 export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
-export const getTechnology = [1, 8, 2, 4, 20, 23, 14, 25]
+export const getTechnology = [1, 8, 2, 4, 20, 23, 14, 25, 26]
 export const technologyForDensity = [1, 2, 14, 25]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['0', '1', '2', '3', '4', '5', '6', '7', '9', '10']
@@ -6461,7 +6462,16 @@ export const TechnologyDropdownBulkUpload = [
     { label: 'Assembly', value: '5' },
     { label: 'Wiring Harness', value: '6' }
 ]
+export const TechnologyDropdownBulkUploadV4 = [
+    { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Rivet', value: '1' },
+    { label: 'Rubber, Plastic', value: '2' },
+    { label: 'Forging, Machining, Springs', value: '3' },
+    { label: 'Corrugated Box', value: '4' },
+    { label: 'Assembly', value: '5' },
+    { label: 'Wiring Harness', value: '6' },
+    { label: 'Die Casting', value: '7' }
 
+]
 
 
 export const constRMCCTabData = [{
@@ -7939,14 +7949,14 @@ export const statusDropdownforRfq = [
     { label: "Approved", value: "1" },
     { label: "Draft", value: "2" },
     { label: "Received", value: "3" },
-    { label: "UnderRevision", value: "4" },
+    { label: "Under Revision", value: "4" },
     { label: "Sent", value: "5" },
     { label: "Cancelled", value: "6" },
     { label: "Rejected", value: "7" },
     { label: "Returned", value: "8" },
-    { label: 'PendingForApproval', value: "9" },
+    { label: 'Pending For Approval', value: "9" },
     { label: 'History', value: "10" },
-    { label: 'NotSelected', value: "11" },
+    { label: 'Not Selected', value: "11" },
 ]
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },
@@ -7961,7 +7971,7 @@ export const statusDropdownforNfr = [
     { label: 'ExternalReject', value: 27 },
 ];
 export const CostingBulkUploadTechnologyDropdown = [
-    { label: "Sheet Metal", value: "7" },
+    { label: "Sheet Metal", value: "8" },
 ]
 
 export const applicabilityList = [
@@ -8010,3 +8020,7 @@ export const NFR_RAW_MATERIAL_LABEL = 'Raw Material'
 export const NFR_COMPONENT_CUSTOMIZED_NAME = 'Part'
 export const NFR_BOP_STANDARD_NAME = 'BoughtOutPart'
 export const NFR_RAW_MATERIAL_NAME = 'RawMaterial'
+
+export const REJECTION_RECOVERY_APPLICABILITY = [
+    { label: "Scap Rate * Net weight", value: 1 },
+]

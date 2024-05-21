@@ -277,7 +277,6 @@ class Main extends Component {
                       </div>
                     </div>
                   </div>
-                  {isLogin && !this.state.visibelPageNotFound && (<Breadcrumb {...this.props} />)}
                 </div>
               </div>
             </div>

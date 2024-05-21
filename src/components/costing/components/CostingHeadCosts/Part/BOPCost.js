@@ -438,7 +438,7 @@ function BOPCost(props) {
   const handleBOPHandlingType = (newValue) => {
     setFixedLimit(false)
     setTimeout(() => {
-      setBOPHandlingType(newValue.label)
+      setBOPHandlingType(newValue?.label)
       setValue('BOPHandlingPercentage', '')
       setValue('BOPHandlingFixed', '')
       setValue('BOPHandlingCharges', 0)
