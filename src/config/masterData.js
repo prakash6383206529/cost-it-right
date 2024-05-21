@@ -5908,17 +5908,20 @@ export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
 export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Name", value: "FullName", },
     { label: "User Name", value: "UserName", },
+    { label: "Vendor(code)", value: "VendorName", },
     { label: "Email Id", value: "EmailAddress", },
     { label: "Mobile No", value: "Mobile", },
     { label: "Phone No", value: "PhoneNumber", },
+    { label: "Point of Contact", value: "PointOfContact", },
     { label: "Department", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
     { label: "Created By", value: "CreatedBy", },
     { label: "Created Date (Created Time)", value: "CreatedDateExcel", },
     { label: "Modified Date (Modified Time)", value: "ModifiedDateExcel", },
     { label: "Modified By", value: "ModifiedBy", },
-    { label: "Status", value: "status", }
-
+    { label: "Status", value: "status", },
+    { label: "Created Date (Created Time)", value: "CreatedDate", },
+    { label: "Modified Date (Modified Time)", value: "ModifiedDate", },
 ]
 
 export const AUDIT_LISTING_DOWNLOAD_EXCEl = [
