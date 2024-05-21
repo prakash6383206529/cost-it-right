@@ -8,7 +8,6 @@ import { EMPTY_GUID, INR } from '../../../../config/constants'
 import { debounce } from 'lodash'
 import "react-datepicker/dist/react-datepicker.css";
 import 'react-dropzone-uploader/dist/styles.css';
-import { PROVISIONAL } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import ApproveRejectUI from './ApproveRejectUI'
@@ -19,6 +18,7 @@ import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
 import { MESSAGES } from '../../../../config/message'
 
 function CostingApproveReject(props) {
+
   // ********* INITIALIZE REF FOR DROPZONE ********
 
   const { type, technologyId, approvalData, IsNotFinalLevel, IsPushDrawer, dataSend, reasonId, selectedRowData, costingArr, apiData, TechnologyId, releaseStrategyDetails } = props
@@ -148,6 +148,7 @@ function CostingApproveReject(props) {
     if (IsNotFinalLevel) {
       dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId, (res) => {
         let approvalTypeId = props?.costingTypeId
+
         levelDetailsTemp = userTechnologyLevelDetails(approvalTypeId, res?.data?.Data?.TechnologyLevels)
         setLevelDetails(levelDetailsTemp)
         if (levelDetailsTemp?.length === 0) {

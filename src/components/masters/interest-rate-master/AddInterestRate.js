@@ -56,7 +56,9 @@ class AddInterestRate extends Component {
       RawMaterial: [],
       RMGrade: [],
       isRawMaterialSelected: false,
-      isGradeSelected: false
+      isGradeSelected: false,
+      isPartSelected: false, // new state variable
+
     }
   }
   /**
@@ -115,18 +117,29 @@ class AddInterestRate extends Component {
       return temp
     }
     if (label === 'ICC') {
-      iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
-        if (item.Value === '0' || item.Text === 'Net Cost') return false;
-        let modifiedLabel = item.Text;
-        if ((this.state.isRawMaterialSelected || this.state.isGradeSelected) && modifiedLabel.startsWith("Part")) {
-          modifiedLabel = modifiedLabel.replace("Part", ""); // Remove "Part" from the label
+      const temp = [];
+      let modifiedArray = iccApplicabilitySelectList;
 
+      // Check if the conditions are met to filter out items starting with "Part"
+      if (this.state.isRawMaterialSelected || this.state.isGradeSelected) {
+        modifiedArray = iccApplicabilitySelectList.filter(item => {
+          return !(item.Text.startsWith("Part"));
+        });
+      }
+      let isPartSelected = false;
+
+      // Iterate over the modifiedArray
+      modifiedArray?.map((item) => {
+        // Check conditions to exclude certain items
+        if (item.Value !== '0' && item.Text !== 'Net Cost') {
+          temp.push({ label: item.Text, value: item.Value });
         }
-        temp.push({ label: modifiedLabel, value: item.Value });
-        return null;
       });
+      //if the selected data starts with part 
+
       return temp;
     }
+
 
     if (label === 'PaymentTerms') {
       paymentTermsSelectList && paymentTermsSelectList.map(item => {
@@ -161,6 +174,7 @@ class AddInterestRate extends Component {
       return temp;
     }
   }
+
 
   /**
   * @method onPressVendor
@@ -207,10 +221,15 @@ class AddInterestRate extends Component {
 * @description called
 */
   handleICCApplicability = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ ICCApplicability: newValue, });
+    if (newValue.label.startsWith('Part')) {
+      this.setState({ isPartSelected: true })
     } else {
-      this.setState({ ICCApplicability: [], })
+      this.setState({ isPartSelected: false })
+    }
+    if (newValue && newValue !== '') {
+      this.setState({ ICCApplicability: newValue });
+    } else {
+      this.setState({ ICCApplicability: [] })
     }
     if (this.state.ICCApplicability.value === newValue.value) {
       this.setState({ isDataChanged: true, DropdownNotChanged: true })
@@ -697,11 +716,11 @@ class AddInterestRate extends Component {
                                 placeholder={"Select"}
                                 options={this.renderListing("material")}
                                 validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
-                                required={true}
+                                required={!this.state.isPartSelected}
                                 handleChangeDescription={this.handleRMChange}
                                 valueDescription={this.state.RawMaterial}
                                 className="fullinput-icon"
-                                disabled={isEditFlag || isViewMode}
+                                disabled={isEditFlag || isViewMode || this.state.isPartSelected}
                               />
                             </div>
                           </div>
@@ -717,10 +736,10 @@ class AddInterestRate extends Component {
                                   placeholder={"Select"}
                                   options={this.renderListing("grade")}
                                   validate={this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
-                                  required={true}
+                                  required={!this.state.isPartSelected}
                                   handleChangeDescription={this.handleGradeChange}
                                   valueDescription={this.state.RMGrade}
-                                  disabled={isEditFlag || isViewMode}
+                                  disabled={isEditFlag || isViewMode || this.state.isPartSelected}
                                 />
                               </div>
                             </div>
