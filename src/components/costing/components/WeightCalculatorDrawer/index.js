@@ -4,7 +4,7 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
-import { SHEETMETAL, RUBBER, PLASTIC, FORGING, DIE_CASTING, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING } from '../../../../config/masterData'
+import { SHEETMETAL, RUBBER, PLASTIC, FORGING, DIE_CASTING, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, ELECTRICAL_STAMPING } from '../../../../config/masterData'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
 import NonFerrousCalculator from './dieCasting'
 import Ferrous from './Ferrous'
@@ -15,6 +15,7 @@ import RubberCalciTab from './rubber'
 import Machining from './MachiningCalculator'
 import Pipe from './sheetMetal/Pipe'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import Stamping from './Stamping'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox } = props
@@ -95,6 +96,18 @@ function OpenWeightCalculator(props) {
       case PLASTIC:
         return (
           <Plastic
+            rmRowData={props.rmRowData}
+            isEditFlag={props.isEditFlag}
+            item={item}
+            toggleDrawer={toggleDrawer}
+            isSummary={isSummary}
+            CostingViewMode={CostingViewMode ? CostingViewMode : false}
+            DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
+          />
+        )
+      case ELECTRICAL_STAMPING:
+        return (
+          <Stamping
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             item={item}
