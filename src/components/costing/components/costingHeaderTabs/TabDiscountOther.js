@@ -132,8 +132,8 @@ function TabDiscountOther(props) {
     if (CostingViewMode === false) {
       if (props.activeTab !== '6') {
         // Basic Rate (INR) = Total Cost + Total Other Cost
-        setValue('BasicRateINR', discountObj !== undefined && checkForDecimalAndNull((netPOPrice - otherDiscountData.totalCost - (totalNpvCost + totalConditionCost)), initialConfiguration?.NoOfDecimalForPrice))
-        setValue('NetPOPriceINR', discountObj !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage)), initialConfiguration?.NoOfDecimalForPrice))
+        setValue('BasicRateINR', discountObj !== undefined && checkForDecimalAndNull((checkForNull(netPOPrice) - checkForNull(otherDiscountData.totalCost) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost))), initialConfiguration?.NoOfDecimalForPrice))
+        setValue('NetPOPriceINR', discountObj !== undefined && checkForDecimalAndNull((checkForNull(netPOPrice) - checkForNull(netPOPrice) * calculatePercentage(discountObj?.HundiOrDiscountPercentage)), initialConfiguration?.NoOfDecimalForPrice))
         setValue('HundiOrDiscountPercentage', discountObj !== undefined && discountObj?.HundiOrDiscountPercentage !== null ? discountObj?.HundiOrDiscountPercentage : '')
         // setValue('HundiOrDiscountValue', discountObj !== undefined && discountObj?.DiscountCostType === 'Percentage' ? discountObj !== undefined && (netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage)) : otherDiscountData.otherCostTotal)
         setValue('AnyOtherCost', discountObj !== undefined && checkForDecimalAndNull(discountObj?.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice))
@@ -607,7 +607,7 @@ function TabDiscountOther(props) {
   useEffect(() => {
     if (!CostingViewMode) {
 
-      setValue('BasicRateINR', DiscountCostData && checkForDecimalAndNull(netPOPrice - (totalNpvCost + totalConditionCost), initialConfiguration?.NoOfDecimalForPrice))
+      setValue('BasicRateINR', DiscountCostData && checkForDecimalAndNull(checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)), initialConfiguration?.NoOfDecimalForPrice))
       setValue('NetPOPriceINR', DiscountCostData && checkForDecimalAndNull(netPOPrice, initialConfiguration?.NoOfDecimalForPrice))
       // if (otherCostType.value === 'Percentage') {
       //   setValue('AnyOtherCost', DiscountCostData !== undefined ? checkForDecimalAndNull(DiscountCostData.AnyOtherCost, initialConfiguration?.NoOfDecimalForPrice) : 0)
@@ -1310,7 +1310,7 @@ function TabDiscountOther(props) {
       if (item?.ConditionType === "Fixed" || item?.ConditionType === "Quantity") {
         finalValue = item?.ConditionCost
       } else if (item?.ConditionType === "Percentage") {
-        finalValue = checkForNull((item?.Percentage) / 100) * checkForNull(getValues('BasicRateINR'))
+        finalValue = (checkForNull(item?.Percentage) / 100) * checkForNull(getValues('BasicRateINR'))
       }
       let tempObject = { ...item, ConditionCost: finalValue }
       finalListCondition.push(tempObject)

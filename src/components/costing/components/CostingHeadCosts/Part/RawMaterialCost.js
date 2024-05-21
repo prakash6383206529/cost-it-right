@@ -18,7 +18,7 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { setFerrousCalculatorReset } from '../../../actions/CostWorking'
 import { gridDataAdded, isDataChange, setMasterBatchObj, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, ELECTRICAL_STAMPING, } from '../../../../../config/masterData'
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING } from '../../../../../config/masterData'
 import _, { debounce } from 'lodash'
@@ -415,6 +415,11 @@ function RawMaterialCost(props) {
             setCalculatorData(res, index)
           }))
         }
+        break;
+      case ELECTRICAL_STAMPING:
+        dispatch(getRawMaterialCalculationForMachining(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
         break;
       default:
         return "none";

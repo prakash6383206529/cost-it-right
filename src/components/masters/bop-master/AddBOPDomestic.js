@@ -1506,7 +1506,7 @@ class AddBOPDomestic extends Component {
                                   id="addBOPDomestic_condition"
                                   onClick={this.conditionToggle}
                                   className={"right mt-0 mb-2"}
-                                  variant="plus-icon-square"
+                                  variant={isViewMode ? "view-icon-primary" : "plus-icon-square"}
                                 />
 
                               </div>
