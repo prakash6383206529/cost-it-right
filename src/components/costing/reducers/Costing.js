@@ -14,7 +14,11 @@ import {
   CHECK_IS_DATA_CHANGE, SET_ARRAY_FOR_COSTING, CHECK_IS_DISCOUNT_DATA_CHANGE, CHECK_IS_TOOL_DATA_CHANGE, CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE, CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
   FORGING_CALCULATOR_MACHININGSTOCK_SECTION, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION, SET_MASTER_BATCH_OBJ, SELECTED_IDS_OF_OPERATION, SELECTED_PROCESS_AND_GROUPCODE, SET_PROCESS_ID, SET_PROCESSGROUP_ID, GET_FG_WISE_IMPACT_DATA_FOR_COSTING, SAVE_PART_NUMBER_STOP_API_CALL, SET_PART_NUMBER_ARRAY_API_CALL, SET_MESSAGE_FOR_ASSEMBLY, SET_PROCESS_GROUP_GRID, SAVE_BOM_LEVEL_STOP_API_CALL, IMPORT, SAVE_ASSEMBLY_NUMBER_STOP_API_CALL, SET_ACTIVE_TAB, SET_OVERHEAD_PROFIT_ERRORS, SET_TOOLS_ERRORS, SET_DISCOUNT_ERRORS, SET_SURFACE_COST_FOR_REJECTION_DATA, SET_TOOL_COST_FOR_OVERHEAD_PROFIT, SET_NPV_DATA, NFR_DETAILS_FOR_DISCOUNT, SET_OVERHEAD_PROFIT_ICC, SET_YOY_COST_GRID, SET_OTHER_COST, RESET_EXCHANGE_RATE_DATA, SET_OPEN_ALL_TABS, SET_REJECTED_COSTING_VIEW_DATA, SET_CALL_ST_API, SET_BREAKUP_BOP, SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API, SET_COSTING_MODE, CORRUGATED_BOX, CORRUGATED_DATA, GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA, COSTING_ACC_OPEN_CLOSE_STATUS, SET_TOOL_COST_ICC,
   SET_OTHER_DISCOUNT_DATA,
-  SET_REJECTION_RECOVERY_DATA
+  SET_REJECTION_RECOVERY_DATA,
+  SET_COSTING_PAYMENT_TERM_DETAIL,
+  GET_COSTING_PAYMENT_TERM_DETAIL,
+  SET_DISCOUNT_AND_OTHER_TAB_DATA,
+  SET_COMPONENT_PAYMENT_TERMS_DATA
 } from '../../../config/constants';
 
 const initialState = {
@@ -365,6 +369,12 @@ export default function costingReducer(state = initialState, action) {
         loading: false,
         OverheadProfitTabData: action.payload
       };
+    case SET_DISCOUNT_AND_OTHER_TAB_DATA:
+      return {
+        ...state,
+        loading: false,
+        DiscountAndOtherCostTabData: action.payload
+      };
     case SET_PACKAGE_AND_FREIGHT_TAB_DATA:
       return {
         ...state,
@@ -418,6 +428,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         ComponentItemDiscountData: action.payload
+      }
+    case SET_COMPONENT_PAYMENT_TERMS_DATA:
+      return {
+        ...state,
+        loading: false,
+        PaymentTermDataDiscountTab: action.payload
       }
     case GET_RM_DRAWER_DATA_LIST:
       // let isNFR = action?.isNFR
@@ -812,6 +828,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         includeToolCostIcc: action.payload
+      }
+    case GET_COSTING_PAYMENT_TERM_DETAIL:
+      return {
+        ...state,
+        loading: false,
+        getCostingPaymentDetails: action.payload
       }
     default:
       return state
