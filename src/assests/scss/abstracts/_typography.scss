@@ -118,3 +118,14 @@ $max: 150;
         }
     }
 }
+
+%disabled {
+    opacity: 0.4;
+    background-color: transparent !important;
+    border: none !important;
+}
+
+%focus {
+    box-shadow: none !important;
+    border-color: transparent !important;
+}

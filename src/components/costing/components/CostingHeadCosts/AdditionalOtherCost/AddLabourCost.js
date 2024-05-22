@@ -215,7 +215,7 @@ function AddLabourCost(props) {
 
     const onPercentChange = (e) => {
         if (e?.target?.value) {
-            let cost = checkForNull((e.target.value) / 100) * checkForNull(props.basicRate)
+            let cost = (checkForNull(e.target.value) / 100) * checkForNull(props.basicRate)
             setValue('Cost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
             setTotalCost(cost)
         }

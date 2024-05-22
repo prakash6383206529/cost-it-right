@@ -18,6 +18,8 @@ import CommonApproval from './CommonApproval';
 import { MESSAGES } from '../../../config/message';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import { resetStatePagination } from '../../common/Pagination/paginationAction';
+import RMDetailListing from './RMDetailListing';
+import RMMaterialListing from './RMMaterialListing';
 export const ApplyPermission = React.createContext();
 function RowMaterialMaster(props) {
 
@@ -233,12 +235,22 @@ function RowMaterialMaster(props) {
                                         Manage Material
                                     </NavLink>
                                 </NavItem>}
+                                {<NavItem>
+                                    <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
+                                        Material Detail
+                                    </NavLink>
+                                </NavItem>}
+                                {<NavItem>
+                                    <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => { toggle('6'); }}>
+                                        Create Material
+                                    </NavLink>
+                                </NavItem>}
                                 {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
                                 {(CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
                                     {/* {ViewRMAccessibility && <NavItem> */}
-                                    <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
-                                        toggle('5');
+                                    <NavLink className={classnames({ active: activeTab === '7' })} onClick={() => {
+                                        toggle('7');
                                         // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                     }}>
                                         Approval Status
@@ -310,6 +322,14 @@ function RowMaterialMaster(props) {
                                         </TabPane>}
                                     {Number(activeTab) === 5 &&
                                         <TabPane tabId="5">
+                                            <RMDetailListing />
+                                        </TabPane>}
+                                    {Number(activeTab) === 6 &&
+                                        <TabPane tabId="6">
+                                            <RMMaterialListing />
+                                        </TabPane>}
+                                    {Number(activeTab) === 7 &&
+                                        <TabPane tabId="7">
                                             {/* {
                                             this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                         } */}
