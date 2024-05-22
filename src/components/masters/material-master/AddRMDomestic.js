@@ -584,8 +584,8 @@ class AddRMDomestic extends Component {
     }
 
     if (this.state.isEditFlag) {
-
       if (checkForNull(fieldsObj?.ScrapRateBaseCurrency) === checkForNull(this.state.DataToChange.ScrapRate) && checkForNull(this.state.NetLandedCostBaseCurrency) === checkForNull(this.state.DataToChange?.NetLandedCost)
+
         && checkForNull(this.state.BasicPrice) === checkForNull(this.state.DataToChange?.BasicPrice)) {
         this.setState({ IsFinancialDataChanged: false })
       } else {
@@ -1935,7 +1935,7 @@ class AddRMDomestic extends Component {
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
                                       noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                      isDisabled={isEditFlag || isViewFlag}
+
                                       onKeyDown={(onKeyDown) => {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                       }}
