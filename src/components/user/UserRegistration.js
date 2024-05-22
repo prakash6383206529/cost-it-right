@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { SearchableSelectHookForm, TextFieldHookForm, PasswordFieldHookForm, AsyncSearchableSelectHookForm } from '../../components/layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, PasswordFieldHookForm, AsyncSearchableSelectHookForm, NumberFieldHookForm } from '../../components/layout/HookFormInputs'
 import { useForm, Controller } from "react-hook-form";
 import Toaster from "../common/Toaster";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength10, maxLength12, required, email, minLength6, minLength7, maxLength18, maxLength11,
-  maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number, maxLength50, getNameBySplitting, getCodeBySplitting
+  maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number, maxLength50, getNameBySplitting, getCodeBySplitting, checkSpacesInString, checkSingleSpaceInString, checkNumericInput
 } from "../../helper/validation";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
@@ -2438,6 +2438,7 @@ function UserRegistration(props) {
                             minLength3,
                             maxLength25,
                             checkWhiteSpaces,
+                            checkSpacesInString
                           }
                         }}
                         handleChange={() => { }}
@@ -2458,14 +2459,14 @@ function UserRegistration(props) {
                         disableErrorOverflow={true}
                         rules={{
                           required: false,
-                          validate: { hashValidation, minLength3, maxLength25 }
+                          validate: { hashValidation, minLength3, maxLength25, checkWhiteSpaces, checkSpacesInString }
                         }}
                         handleChange={() => { }}
                         customClassName={'withBorder'}
                       />
                     </div>
                     <div className="input-group col-md-3">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         name="Mobile"
                         label="Mobile"
                         errors={errors.Mobile}
@@ -2476,7 +2477,7 @@ function UserRegistration(props) {
                         disableErrorOverflow={true}
                         rules={{
                           required: false,
-                          validate: { number, postiveNumber, minLength10, maxLength12, checkWhiteSpaces }
+                          validate: { number, postiveNumber, minLength10, maxLength12 }
                         }}
                         handleChange={() => { }}
                         placeholder={'Enter'}
@@ -2645,7 +2646,7 @@ function UserRegistration(props) {
                           mandatory={true}
                           rules={{
                             required: true,
-                            validate: { hashValidation, required, minLength3, maxLength50 }
+                            validate: { hashValidation, required, minLength3, maxLength50, checkWhiteSpaces, checkSpacesInString }
                           }}
                           handleChange={() => { }}
                           placeholder={'Enter'}
@@ -2674,7 +2675,7 @@ function UserRegistration(props) {
                             //validate={[required, minLength6, maxLength18, checkWhiteSpaces, strongPassword]}
                             rules={{
                               required: true,
-                              validate: { required, minLength6, maxLength18, checkWhiteSpaces, strongPassword }
+                              validate: { required, minLength6, maxLength18, checkWhiteSpaces, strongPassword, checkSpacesInString, checkSingleSpaceInString }
                             }}
                             isShowHide={isShowHidePassword}
                             showHide={showHidePasswordHandler}
@@ -2699,7 +2700,7 @@ function UserRegistration(props) {
                             disableErrorOverflow={true}
                             rules={{
                               required: true,
-                              validate: { required, minLength6, maxLength18, checkWhiteSpaces, checkPasswordConfirm }
+                              validate: { required, minLength6, maxLength18, checkWhiteSpaces, checkPasswordConfirm, checkSingleSpaceInString }
                             }}
                             //component={renderPasswordInputField}
                             //validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
@@ -2731,7 +2732,7 @@ function UserRegistration(props) {
                         mandatory={false}
                         rules={{
                           required: false,
-                          validate: { acceptAllExceptSingleSpecialCharacter, maxLength80 }
+                          validate: { acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, checkWhiteSpaces }
                         }}
                         handleChange={() => { }}
 
@@ -2754,7 +2755,7 @@ function UserRegistration(props) {
                         mandatory={false}
                         rules={{
                           required: false,
-                          validate: { acceptAllExceptSingleSpecialCharacter, maxLength80 }
+                          validate: { acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, checkWhiteSpaces }
                         }}
                         handleChange={() => { }}
                         placeholder={'Enter'}
@@ -2788,7 +2789,7 @@ function UserRegistration(props) {
                       />
                     </div>
                     <div className="input-group col-md-3 input-withouticon">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label="ZipCode"
                         name={"ZipCode"}
                         errors={errors.ZipCode}
@@ -2799,7 +2800,7 @@ function UserRegistration(props) {
                         mandatory={false}
                         rules={{
                           required: false,
-                          validate: { postiveNumber, maxLength6, number }
+                          validate: { postiveNumber, number, maxLength6, checkNumericInput }
                         }}
                         handleChange={() => { }}
                         placeholder={'Enter'}
