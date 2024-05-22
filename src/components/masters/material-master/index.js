@@ -19,6 +19,7 @@ import { MESSAGES } from '../../../config/message';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import { resetStatePagination } from '../../common/Pagination/paginationAction';
 import RMDetailListing from './RMDetailListing';
+import RMMaterialListing from './RMMaterialListing';
 export const ApplyPermission = React.createContext();
 function RowMaterialMaster(props) {
 
@@ -248,8 +249,8 @@ function RowMaterialMaster(props) {
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
                                 {(CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
                                     {/* {ViewRMAccessibility && <NavItem> */}
-                                    <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => {
-                                        toggle('6');
+                                    <NavLink className={classnames({ active: activeTab === '7' })} onClick={() => {
+                                        toggle('7');
                                         // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                     }}>
                                         Approval Status
@@ -325,7 +326,7 @@ function RowMaterialMaster(props) {
                                         </TabPane>}
                                     {Number(activeTab) === 6 &&
                                         <TabPane tabId="6">
-                                            <RMDetailListing />
+                                            <RMMaterialListing />
                                         </TabPane>}
                                     {Number(activeTab) === 7 &&
                                         <TabPane tabId="7">
