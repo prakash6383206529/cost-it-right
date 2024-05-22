@@ -133,6 +133,9 @@ export const checkWhiteSpaces = value => {
 export const checkSpacesInString = value => {
     return value && value.includes('  ') ? 'The field should not contain more than one space.' : undefined;
 }
+export const checkSingleSpaceInString = value => {
+    return value && value.includes(' ') ? 'The field should not contain space.' : undefined;
+}
 export const number = value =>
     value && (isNaN(Number(value)) || Number(value) < 0 || !/^\d*\.?\d+$/.test(value))
         ? 'Please enter a positive number.' : undefined;
