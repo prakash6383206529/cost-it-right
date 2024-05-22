@@ -71,33 +71,15 @@ function Stamping(props) {
 
   const fieldValues = useWatch({
     control,
-    name: ['netWeight', 'runnerWeight', 'finishedWeight'],
+    name: ['netWeight', 'BurningLossPercent', 'finishedWeight', 'scrapRecoveryPer'],
   })
-
-  const dropDown = [
-    {
-      label: 'Processing Loss',
-      value: 1,
-    },
-    {
-      label: 'Burning Loss',
-      value: 2
-    },
-  ]
 
   useEffect(() => {
     if (!CostingViewMode) {
       calculateGrossWeight()
-      calculateRemainingCalculation(lostWeight)
     }
   }, [fieldValues])
 
-  useEffect(() => {
-    if (!CostingViewMode) {
-      calculateGrossWeight()
-      calculateRemainingCalculation()
-    }
-  }, [getPlasticData])
 
   useEffect(() => {
     setValue('grossWeight', WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '')
@@ -116,53 +98,32 @@ function Stamping(props) {
    * @description For Calculating gross weight
    */
   const calculateGrossWeight = () => {
+    const finishedWeight = Number(getValues('finishedWeight'));
 
-    const netWeight = Number(getValues('netWeight'))
-    const runnerWeight = Number(getValues('runnerWeight'))
+    const grossWeight = Number(getValues('netWeight'))
 
-    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : []))
-    setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+    const lossWeight = grossWeight * Number(getValues('BurningLossPercent')) / 100;
 
-    let updatedValue = dataToSend
+    const inputWeight = Number(getValues('netWeight')) + lossWeight
+
+    setValue('BurningLossWeight', checkForDecimalAndNull(lossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+    setValue('grossWeight', checkForDecimalAndNull(inputWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+
+    const scrapWeight = (inputWeight - finishedWeight) * (Number(getValues('scrapRecoveryPer')) / 100);
+
+    setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+    const scrapCost = scrapWeight * Number(rmRowData.ScrapRate)
+
+    setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForInputOutput))
+    const netRMCost = (Number(rmRowData.RMRate) * inputWeight) - (scrapWeight * scrapCost)
+
+    setValue('materialCost', checkForDecimalAndNull(netRMCost, getConfigurationKey().NoOfDecimalForInputOutput))
+    const updatedValue = dataToSend
+    updatedValue.netRMCost = netRMCost
     updatedValue.grossWeight = grossWeight
     setDataToSend(updatedValue)
   }
-  /**
-   * @method calculateRemainingCalculation
-   * @description Calculating finished weight,scrap weight,RM cost, scrap cost,material cost
-   */
-  const calculateRemainingCalculation = (lostSum = 0) => {
-    let scrapWeight = 0
-    const netWeight = checkForNull(getValues('netWeight')) // THIS IS FIRST GROSS WEIGHT
-    const runnerWeight = checkForNull(getValues('runnerWeight'))
-    const finishedWeight = checkForNull(getValues('finishedWeight'))
-    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [])) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
 
-    if (finishedWeight !== 0) {
-      scrapWeight = (checkForNull(grossWeight) - checkForNull(finishedWeight)).toFixed(9) //FINAL GROSS WEIGHT - FINISHED WEIGHT
-
-    }
-    const rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + getValues('burningAllownace') // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
-    const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
-    const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
-
-    const updatedValue = dataToSend
-    updatedValue.scrapWeight = scrapWeight
-    updatedValue.totalGrossWeight = grossWeight
-    updatedValue.rmCost = rmCost
-    updatedValue.scrapCost = scrapCost
-    updatedValue.materialCost = materialCost
-
-    setDataToSend(updatedValue)
-
-    setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput)) // SETING FINAL GROSS WEIGHT VALUE
-    setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-    setValue('rmCost', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
-    setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice))
-    setValue('materialCost', checkForDecimalAndNull(materialCost, getConfigurationKey().NoOfDecimalForPrice))
-    setLostWeight(lostSum)
-
-  }
   /**
      * @method cancel
      * @description used to Reset form
@@ -208,23 +169,17 @@ function Stamping(props) {
     }))
   }), 500);
 
-  const tableData = (value = []) => {
-    setTableVal(value)
-  }
-
-  const setBurningAllowance = (value) => {
-    const burningAllownace = value * checkForNull(totalRM)
-    setValue('burningAllownace', checkForDecimalAndNull(burningAllownace, getConfigurationKey().NoOfDecimalForInputOutput))
-    const updatedValue = dataToSend
-    updatedValue.burningValue = value
-    setDataToSend(updatedValue)
-  }
-
   const handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
     }
   };
+  const burningLossHandle = (e) => {
+
+  }
+  const handleScrapRecovery = (e) => {
+
+  }
 
   return (
     <Fragment>
@@ -261,27 +216,50 @@ function Stamping(props) {
                     errors={errors.netWeight}
                     disabled={props.CostingViewMode ? props.CostingViewMode : (tableVal?.length > 0 ? true : false)}
                   />
-
+                </Col>
+                <Col md="3" >
+                  <NumberFieldHookForm
+                    label={`Burning Loss %`}
+                    name={'BurningLossPercent'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={true}
+                    rules={{
+                      required: true,
+                      validate: { nonZero, number, decimalAndNumberValidation }
+                    }}
+                    handleChange={burningLossHandle}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.BurningLossPercent}
+                    disabled={props.CostingViewMode ? props.CostingViewMode : (tableVal?.length > 0 ? true : false)}
+                  />
+                </Col>
+                <Col md="3" >
+                  <NumberFieldHookForm
+                    label={`Burning Loss Weight`}
+                    name={'BurningLossWeight'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      validate: { nonZero, number, decimalAndNumberValidation }
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.BurningLossWeight}
+                    disabled={true}
+                  />
                 </Col>
 
 
               </Row>
-
-              <LossStandardTable
-                dropDownMenu={dropDown}
-                calculation={calculateRemainingCalculation}
-                weightValue={Number(getValues('netWeight'))}
-                netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
-                sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
-                tableValue={tableData}
-                CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
-                burningLoss={setBurningAllowance}
-                burningValue={WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== null ? WeightCalculatorRequest.BurningValue : ''}
-                isPlastic={true}
-                isLossStandard={false}
-                isNonFerrous={false}
-              />
-
               <Row className={'mt25'}>
                 <Col md="3" >
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Input Weight = (Gross Weight + Runner Weight + Other Loss Weight)'} />
@@ -325,6 +303,30 @@ function Stamping(props) {
                     disabled={props.CostingViewMode ? props.CostingViewMode : false}
                   />
                 </Col>
+                <Col md="3" >
+                  <NumberFieldHookForm
+                    label={`Scrap Recovery %`}
+                    name={'scrapRecoveryPer'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={true}
+                    rules={{
+                      required: true,
+                      validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                      max: {
+                        value: 100,
+                        message: 'Percentage cannot be greater than 100'
+                      },
+                    }}
+                    handleChange={handleScrapRecovery}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.scrapRecoveryPer}
+                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                  />
+                </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Input Weight - Finish Weight)'} />
                   <TextFieldHookForm
@@ -343,42 +345,6 @@ function Stamping(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.scrapWeight}
-                    disabled={true}
-                  />
-                </Col>
-                <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'burning-allowance'} tooltipText={'Burning Allowance = (RM Rate * Burning Loss Weight)'} />
-                  <TextFieldHookForm
-                    label={`Burning Allowance`}
-                    name={'burningAllownace'}
-                    Controller={Controller}
-                    id={'burning-allowance'}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.burningAllownace}
-                    disabled={true}
-                  />
-                </Col>
-                <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={'RM Cost = (Input Weight * RM Rate + Burning Allowance)'} />
-                  <TextFieldHookForm
-                    label={`RM Cost`}
-                    name={'rmCost'}
-                    Controller={Controller}
-                    id={'rm-cost-plactic'}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.rmCost}
                     disabled={true}
                   />
                 </Col>

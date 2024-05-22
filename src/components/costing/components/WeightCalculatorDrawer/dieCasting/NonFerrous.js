@@ -160,7 +160,7 @@ function NonFerrous(props) {
         const shotWeight = getValues('shotWeight')
         const burningPercent = getValues('burningPercent')
         const cavity = getValues('cavity')
-        const burningValue = checkForNull(shotWeight) / (checkForNull(burningPercent) / 100 * cavity)
+        const burningValue = (checkForNull(shotWeight) / checkForNull(cavity)) * (checkForNull(burningPercent) / 100)
 
         const updatedValue = dataToSend
         updatedValue.burningValue = burningValue
@@ -303,7 +303,7 @@ function NonFerrous(props) {
                                             />
                                         </Col>
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'buring-nonferrous'} tooltipText={"Burning Value = Shot Weight / (No. of Cavity * Burning Percentage / 100)"} />
+                                            <TooltipCustom disabledIcon={true} id={'buring-nonferrous'} tooltipText={"Burning Value = (Shot Weight / No. of Cavity) * (Burning Percentage / 100)"} />
                                             <TextFieldHookForm
                                                 label={`Burning Value`}
                                                 name={'burningValue'}

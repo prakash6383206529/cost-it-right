@@ -61,6 +61,7 @@ import {
   GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
   SET_TOOL_COST_ICC,
   SET_OTHER_DISCOUNT_DATA,
+  SET_REJECTION_RECOVERY_DATA,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2537,6 +2538,14 @@ export function setOtherDiscountData(data) {
   return (dispatch) => {
     dispatch({
       type: SET_OTHER_DISCOUNT_DATA,
+      payload: data,
+    });
+  }
+};
+export function setRejectionRecoveryData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_REJECTION_RECOVERY_DATA,
       payload: data,
     });
   }

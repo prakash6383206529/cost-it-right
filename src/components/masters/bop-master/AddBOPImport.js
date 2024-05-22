@@ -1867,45 +1867,45 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                             <Col md="3">
-                              <Field
-                                label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                name={"FinalConditionCostSelectedCurrency"}
-                                type="text"
-                                placeholder={"-"}
-                                validate={[]}
-                                component={renderText}
-                                required={false}
-                                className=""
-                                customClassName=" withBorder"
-                                disabled={true}
-                                isViewFlag={true}
-                              />
-                            </Col>
-                            <Col md="3">
                               <div className='d-flex align-items-center'>
                                 <div className='w-100'>
                                   <Field
-                                    label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${reactLocalStorage.getObject("baseCurrency")})`}
-                                    name={"FinalConditionCostBaseCurrency"}
+                                    label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                    name={"FinalConditionCostSelectedCurrency"}
                                     type="text"
                                     placeholder={"-"}
                                     validate={[]}
                                     component={renderText}
                                     required={false}
+                                    className=""
+                                    customClassName=" withBorder"
                                     disabled={true}
                                     isViewFlag={true}
-                                    className=" "
-                                    customClassName=" withBorder"
                                   />
                                 </div>
                                 <Button
                                   id="addBOPImport_condition"
                                   onClick={this.conditionToggle}
                                   className={"right mt-0 mb-2"}
-                                  variant={(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency) ? `plus-icon-square` : `blurPlus-icon-square`}
+                                  variant={isViewMode ? "view-icon-primary" : (this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency) ? `plus-icon-square` : `blurPlus-icon-square`}
                                   disabled={!(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency)}
                                 />
                               </div>
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${reactLocalStorage.getObject("baseCurrency")})`}
+                                name={"FinalConditionCostBaseCurrency"}
+                                type="text"
+                                placeholder={"-"}
+                                validate={[]}
+                                component={renderText}
+                                required={false}
+                                disabled={true}
+                                isViewFlag={true}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
                             </Col>
 
                           </>}

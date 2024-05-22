@@ -85,13 +85,16 @@ const InitiateUnblocking = (props) => {
                         Toaster.warning(`You don't have permission to initiate unblocking for the vendor against the selected plant. Either the plant is not associated, or the approval level has not been set Or may be both.`)
                         approvalTypeId === LPSAPPROVALTYPEID ? setIsLpsRating(false) : setIsClassification(false)
                     }
-                    else
-                        setSubmit(false)
+                    else { setSubmit(false) }
+
                 }
             }))
         }
     };
-    console.log(isClassification, isLpsRating);
+
+
+
+
     const reset = () => {
         setSelectedPlant(null);
         setIsClassification(false);
@@ -469,7 +472,7 @@ const InitiateUnblocking = (props) => {
                                 id="addRMDomestic_sendForApproval"
                                 type="submit"
                                 className="approval-btn mr5"
-                                disabled={submit || !isLpsRating || isClassification}
+                                disabled={submit}
                                 onClick={handleNext}
                                 icon={"send-for-approval"}
                                 buttonName={"Send For Approval"}
