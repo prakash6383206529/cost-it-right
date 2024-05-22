@@ -155,7 +155,7 @@ const RMDetailListing = () => {
     }));
   };
 
- 
+
   /**
    * @method buttonFormatter
    * @description show and hide edit and delete
@@ -224,7 +224,7 @@ const RMDetailListing = () => {
 
 
 
- 
+
   const onFilterTextBoxChanged = (e) => {
     state.gridApi.setQuickFilter(e.target.value);
   };
@@ -267,15 +267,15 @@ const RMDetailListing = () => {
   return (
     <div
       className={`ag-grid-react min-height100vh`}
-    > 
+    >
       {state.isLoader && <LoaderCustom />}
       <Row className="pt-4 no-filter-row">
         <Col md={6} className="text-right search-user-block pr-0">
-        
+
           {permissions.Add && (
             <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
           )}
-    
+
           <Button id={"rmSpecification_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
         </Col>
       </Row>
@@ -349,7 +349,7 @@ const RMDetailListing = () => {
         </Col>
       </Row>
 
-      {isOpen && (<AddMaterialDetailDrawer  isEditFlag={isEditFlag} isOpen={isOpen} closeDrawer={closeDrawer}  anchor={"right"}/>)}
+      {isOpen && (<AddMaterialDetailDrawer isEditFlag={isEditFlag} isOpen={isOpen} closeDrawer={closeDrawer} anchor={"right"} />)}
 
       {state.showPopup && (
         <PopupMsgWrapper
