@@ -51,7 +51,13 @@ function Machining(props) {
         name: ['partingMargin', 'netLength', 'outerDiameter', 'thickness', 'finishedWeight'],
     })
 
-
+    useEffect(() => {
+        if (rmRowData && rmRowData.UOM === 'Meter') {
+            setActiveTab(getTabno(rmRowData.WeightCalculatorRequest ? rmRowData.WeightCalculatorRequest.LayoutType ?? 'Traub' : 'Traub'))
+        } else {
+            setActiveTab('2')
+        }
+    }, [rmRowData])
     useEffect(() => {
         if (!CostingViewMode) {
             calculateAll()
@@ -190,6 +196,7 @@ function Machining(props) {
             FinishWeight: dataToSend.FinishWeight,
             ScrapWeight: dataToSend.ScrapWeight,
             ScrapCost: dataToSend.ScrapCost,
+            LayoutType: 'Traub',
             NetRM: getValues('netRm'),
         }
         dispatch(saveRawMaterialCalculationForMachining(obj, res => {
@@ -224,7 +231,7 @@ function Machining(props) {
     }
     const getTabno = (layout) => {
         switch (layout) {
-            case 'Input Weight Calculator':
+            case 'Traub':
                 return '1'
             case 'Bar':
                 return '2'
@@ -254,7 +261,7 @@ function Machining(props) {
             <Row>
                 <Col>
                     <Nav tabs className="subtabs cr-subtabs-head ">
-                        <NavItem>
+                        {rmRowData && rmRowData.UOM === 'Meter' && <NavItem>
                             <NavLink
                                 className={classnames({ active: activeTab === '1' })}
                                 onClick={() => {
@@ -264,7 +271,7 @@ function Machining(props) {
                             >
                                 Input Weight Calculator
                             </NavLink>
-                        </NavItem>
+                        </NavItem>}
                         <NavItem>
                             <NavLink
                                 className={classnames({ active: activeTab === '2' })}
@@ -278,7 +285,7 @@ function Machining(props) {
                         </NavItem>
                     </Nav>
                     <TabContent activeTab={activeTab}>
-                        {activeTab === '1' && (
+                        {activeTab === '1' && rmRowData && rmRowData.UOM === 'Meter' && (
                             <TabPane tabId="1">
                                 <form noValidate className="form"
                                     onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
@@ -625,7 +632,7 @@ function Machining(props) {
                                 <Bar rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} CostingViewMode={props.CostingViewMode} />
                             </TabPane>
                         )}
-                    </TabContent>                
+                    </TabContent>
                 </Col>
             </Row >
         </Fragment >
