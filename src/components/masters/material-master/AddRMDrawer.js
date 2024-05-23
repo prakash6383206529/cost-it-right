@@ -5,16 +5,23 @@ import { SearchableSelectHookForm, TextFieldHookForm, DatePickerHookForm } from 
 import { useForm, Controller } from "react-hook-form";
 import Toaster from '../../common/Toaster';
 import { Drawer } from "@material-ui/core";
-
-
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { MESSAGES } from '../../../config/message';
 const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
 
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const [isEdit, setIsEdit] = useState(false);
     const [editIndex, setEditIndex] = useState('')
+    const [state, setState] = useState({
+        isShowForm: false,
+        MaterialTypeId: '',
+        DataToChange: [],
+        setDisable: false,
+        showPopup: false,
+    });
 
 
-    const { register, formState: { errors }, control, setValue, handleSubmit } = useForm({
+    const { register, formState: { errors, isDirty }, control, setValue, handleSubmit, reset } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
@@ -65,16 +72,16 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
         setGridData(tempArr);
 
         setIsEdit(false);
-        resetData();       
+        resetData();
     };
 
-    const addRow = () => {      
+    const addRow = () => {
         const obj = {
             MaterialName: formData.MaterialName,
             MaterialType: formData.MaterialType,
         };
         const newGridData = [...gridData, obj];
-        setGridData(newGridData);       
+        setGridData(newGridData);
         resetData();
     };
 
@@ -98,7 +105,27 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
         closeDrawer('', formData, type);
     };
 
+    const cancel = (type) => {
+        reset();
+        // dispatch(getMaterialTypeDataAPI('', res => { }));
+        toggleDrawer('', '', type);
+    };
 
+    const cancelHandler = () => {
+        if (isDirty) {
+            setState(prevState => ({ ...prevState, showPopup: true }));
+        } else {
+            cancel('cancel');
+        }
+    };
+    const onPopupConfirm = () => {
+        cancel('cancel');
+        setState(prevState => ({ ...prevState, showPopup: false }));
+      };
+    
+      const closePopUp = () => {
+        setState(prevState => ({ ...prevState, showPopup: false }));
+      };
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>
@@ -220,7 +247,7 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
                                         register={register}
                                         defaultValue={''}
                                         mandatory={true}
-                                        handleChange={() => { }}                      
+                                        handleChange={() => { }}
                                     />
                                 </Col>
                                 <Col md="6">
@@ -235,7 +262,7 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
                                         register={register}
                                         defaultValue={''}
                                         mandatory={true}
-                                        handleChange={() => { }}                               
+                                        handleChange={() => { }}
                                     />
                                 </Col>
                             </Row >
@@ -247,10 +274,11 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
                         <div className="col-md-12">
                             <div className="text-right ">
                                 <button
-                                    id="AddMaterialType_Cancel"                                   
+                                    id="AddMaterialType_Cancel"
+                                    onClick={cancelHandler}
                                     type="button"
                                     value="CANCEL"
-                                    className="mr15 cancel-btn"                                
+                                    className="mr15 cancel-btn"
                                 >
                                     <div className={"cancel-icon"}></div>
                                     CANCEL
@@ -269,6 +297,9 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
                     </Row>
                 </Container>
             </Drawer>
+            {state.showPopup && (
+                <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+            )}
         </div >
 
     )
