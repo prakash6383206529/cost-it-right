@@ -437,7 +437,7 @@ button.add-btn {
 
 .withBorder .form-control,
 .form-control {
-  border: 1px solid $borderColor;
+  border: 1px solid $borderColor !important;
 
   &::placeholder {
     color: #A4ABC5;

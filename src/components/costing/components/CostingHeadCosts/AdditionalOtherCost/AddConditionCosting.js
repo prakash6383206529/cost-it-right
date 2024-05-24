@@ -52,14 +52,14 @@ function AddConditionCosting(props) {
     })
 
     useEffect(() => {
-        if (tableData.length === 0) {
+        if (tableData?.length === 0) {
             setDisableEntryType(false)
             setValue('ConditionEntryType', '')
         }
     }, [tableData]);
 
     useEffect(() => {
-        const hasCostingConditionEntryTypeId = tableData.some(item => item.CostingConditionEntryTypeId !== undefined);
+        const hasCostingConditionEntryTypeId = tableData?.some(item => item.CostingConditionEntryTypeId !== undefined);
 
         if (hasCostingConditionEntryTypeId || props.costingConditionEntryType !== undefined) {
             const conditionEntryTypeId = hasCostingConditionEntryTypeId ? tableData[0]?.CostingConditionEntryTypeId : props.costingConditionEntryType;
@@ -384,7 +384,7 @@ function AddConditionCosting(props) {
         setValue('CostPerQuantityConversion', checkForDecimalAndNull(ConditionCostPerQuantityConversion, initialConfiguration.NoOfDecimalForPrice))
     }
 
-    const checkCondtionDisabled = props.ViewMode || (tableData.length === 0 && !props.isFromMaster && (costingConditionEntryType === '' || costingConditionEntryType === undefined || costingConditionEntryType === null))
+    const checkCondtionDisabled = props.ViewMode || (tableData && tableData?.length === 0 && !props.isFromMaster && (costingConditionEntryType === '' || costingConditionEntryType === undefined || costingConditionEntryType === null))
     return (
 
         <div>

@@ -5595,6 +5595,21 @@ export const RMLISTING_DOWNLOAD_EXCEl = [
     { label: "Grade", value: "RMGrade", },
 ]
 
+export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
+    { label: "Material Name", value: "MaterialName", },
+    { label: "Material Type", value: "MaterialType", },    
+]
+
+export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
+    { label: "Material Index", value: "MaterialIndex", },
+    { label: "Material Name", value: "MaterialName", },
+    { label: "UOM", value: "UOM", },
+    { label: "Currency", value: "Currency", },
+    { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Index Rate (Currency)", value: "IndexRateCurrency", }, 
+    { label: "Premium Currency", value: "PremiumCurrency", },    
+]
+
 export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [
     { label: "RM Name", value: "RMName", },
     { label: "Grade", value: "RMGrade", },
