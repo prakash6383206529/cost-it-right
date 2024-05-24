@@ -138,7 +138,7 @@ function ManageLevelTabs(props) {
                             </NavLink>
                         </NavItem>}
                     </Nav>
-                    {isOpen && (<Level isOpen={isOpen} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} levelValue={state.level} activeTab={activeTab} />)}
+                    {isOpen && (<Level isOpen={isOpen} toggle={toggle} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} levelValue={state.level} activeTab={activeTab} />)}
                     <TabContent activeTab={activeTab}>
                         {activeTab === '1' && (
                             <TabPane tabId="1">

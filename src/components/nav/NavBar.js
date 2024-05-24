@@ -371,7 +371,9 @@ class SideBar extends Component {
                   <ul>
                     {
                       el && el.Pages && el.Pages.map((item, i) => {
-                        if (item.Sequence === 22) return false;
+                        // if (item.Sequence === 22) return false;
+                        if (item.Sequence === 0) return false
+
                         return (
                           <li key={i} className={`mb5`}>
                             <Link

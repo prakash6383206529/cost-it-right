@@ -1467,6 +1467,23 @@ function AddRfq(props) {
                                     <HeaderTitle title={'Part:'} />
                                     <Row className="part-detail-wrapper">
                                         <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"Part Type"}
+                                                name={"PartType"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                // defaultValue={partType.length !== 0 ? partType : ""}
+                                                options={renderListing('PartType')}
+                                                mandatory={true}
+                                                // handleChange={handlePartTypeChange}
+                                                errors={errors.Part}
+                                                disabled={(technology.length === 0) ? true : false}
+                                            />
+                                        </Col>
+                                        <Col md="3">
                                             <AsyncSearchableSelectHookForm
                                                 label={"Part No"}
                                                 name={"partNumber"}
@@ -1485,6 +1502,25 @@ function AddRfq(props) {
                                                 asyncOptions={partFilterList}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
+                                            <Col className="col-md-15">
+                                                <TextFieldHookForm
+                                                    // title={titleObj.descriptionTitle}
+                                                    label="Assembly/Part Description"
+                                                    name={'Description'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    handleChange={() => { }}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.Description}
+                                                    disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col>
                                         </Col>
                                         <Col md="3">
                                             <div className="inputbox date-section">
