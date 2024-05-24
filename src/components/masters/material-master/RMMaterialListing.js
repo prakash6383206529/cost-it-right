@@ -23,7 +23,7 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import AddRMDrawer from "./AddRMDrawer";
-import { RMLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import { RMMATERIALISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
 import ReactExport from "react-export-excel";
 const ExcelFile = ReactExport.ExcelFile;
@@ -275,7 +275,7 @@ const RMMaterialListing = () => {
         : rawMaterialTypeDataList
           ? rawMaterialTypeDataList
           : [];
-    return returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr);
+    return returnExcelColumn(RMMATERIALISTING_DOWNLOAD_EXCEl, tempArr);
   };
 
   const returnExcelColumn = (data = [], TempData) => {
@@ -320,7 +320,7 @@ const RMMaterialListing = () => {
             <>
               <>
                 <ExcelFile
-                  filename={"Rm Material"}
+                  filename={"Rm Material Listing"}
                   fileExtension={".xls"}
                   element={
                     <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />

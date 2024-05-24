@@ -23,7 +23,7 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import AddMaterialDetailDrawer from "./AddMaterialDetailDrawer";
-import { RMLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import { RMDETAILLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
 import ReactExport from "react-export-excel";
 const ExcelFile = ReactExport.ExcelFile;
@@ -278,7 +278,7 @@ const RMDetailListing = () => {
         : rawMaterialTypeDataList
           ? rawMaterialTypeDataList
           : [];
-    return returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr);
+    return returnExcelColumn(RMDETAILLISTING_DOWNLOAD_EXCEl, tempArr);
   };
 
   const returnExcelColumn = (data = [], TempData) => {
@@ -324,7 +324,7 @@ const RMDetailListing = () => {
             <>
               <>
                 <ExcelFile
-                  filename={"Rm Material"}
+                  filename={"Rm Detail Material"}
                   fileExtension={".xls"}
                   element={
                     <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
@@ -392,7 +392,7 @@ const RMDetailListing = () => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn field="RawMaterial" headerName="Material Name"></AgGridColumn>
+                <AgGridColumn field="MaterialName" headerName="Material Name"></AgGridColumn>
                 <AgGridColumn field="Material Type"></AgGridColumn>
 
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
