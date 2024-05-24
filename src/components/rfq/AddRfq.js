@@ -1466,7 +1466,7 @@ function AddRfq(props) {
                                     </Row>
                                     <HeaderTitle title={'Part:'} />
                                     <Row className="part-detail-wrapper">
-                                        <Col md="3">
+                                        {/* <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Part Type"}
                                                 name={"PartType"}
@@ -1482,7 +1482,7 @@ function AddRfq(props) {
                                                 errors={errors.Part}
                                                 disabled={(technology.length === 0) ? true : false}
                                             />
-                                        </Col>
+                                        </Col> */}
                                         <Col md="3">
                                             <AsyncSearchableSelectHookForm
                                                 label={"Part No"}
@@ -1502,7 +1502,7 @@ function AddRfq(props) {
                                                 asyncOptions={partFilterList}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
-                                            <Col className="col-md-15">
+                                            {/* <Col className="col-md-15">
                                                 <TextFieldHookForm
                                                     // title={titleObj.descriptionTitle}
                                                     label="Assembly/Part Description"
@@ -1520,7 +1520,7 @@ function AddRfq(props) {
                                                     disabled={true}
                                                     placeholder="-"
                                                 />
-                                            </Col>
+                                            </Col> */}
                                         </Col>
                                         <Col md="3">
                                             <div className="inputbox date-section">
