@@ -27,6 +27,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import RemarksAndAttachments from "../Remark&Attachments"
 import { getClientSelectList } from "../actions/Client"
+import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 function AddRMDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data } = props
     const { isEditFlag, isViewFlag } = data
@@ -782,7 +783,7 @@ function AddRMDetails(props) {
 
                         </Row>
                     </Col>
-
+                    <AddIndexationMaterialListing />
                     {
                         state.isRMDrawerOpen && (
                             <AddSpecification
