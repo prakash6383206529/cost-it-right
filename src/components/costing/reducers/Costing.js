@@ -55,15 +55,17 @@ const initialState = {
   otherCostData: { gridData: [], otherCostTotal: 0 },
   otherDiscountData: { gridData: [], totalCost: 0 },
   costingOpenCloseStatus: { RMC: false, overheadProfit: false },
-  rejectionRecovery: [
-    {
-      rejectionApplicabilityType: {},
-      rejectionRecoveryPercentage: '',
-      effectiveRecoveryPercentage: '',
-      recoveryCostApplicability: '',
-      rejectionRecoveryCost: '',
-    }
-  ]
+  rejectionRecovery:
+  {
+    BaseCostingIdRef: '',
+    ApplicabilityIdRef: 0,
+    ApplicabilityType: '',
+    Type: "",
+    Value: 0,
+    EffectiveRecoveryPercentage: '',
+    ApplicabilityCost: '',
+    RejectionRecoveryNetCost: ''
+  }
 }
 
 export default function costingReducer(state = initialState, action) {
