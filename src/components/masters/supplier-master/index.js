@@ -37,7 +37,7 @@ const VendorMaster = () => {
             const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
             const accessData = Data && Data.Pages.find((el) => el.PageName === PART);
             const classification = Data && Data.Pages.find((el) => el.PageName === VENDOR_MANAGEMENT)
-            console.log('classification: ', classification);
+
             const lps = Data && Data.Pages.find((el) => el.PageName === LPS)
             const classificationData = classification && classification.Actions && checkPermission(classification.Actions)
             const lpsData = lps && lps.Actions && checkPermission(lps.Actions)

@@ -91,7 +91,7 @@ const InitiateUnblocking = (props) => {
             }))
         }
     };
-    console.log(isClassification, isLpsRating);
+
     const reset = () => {
         setSelectedPlant(null);
         setIsClassification(false);
