@@ -366,14 +366,16 @@ function AddToComparisonDrawer(props) {
             ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark : '-',
           }
 
-          obj.paymentTerms = {
-            paymentTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-',
-            paymentValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0,
-            paymentPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.InterestRate ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.InterestRate : '-',
-            PaymentTermCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermCRMHead ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermCRMHead : '-',
-            PaymentTermRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.Remark ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.Remark : '-',
-          }
+          const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail;
 
+          obj.paymentTerms = {
+            paymentTitle: paymentTermDetail?.PaymentTermApplicability || '-',
+            paymentValue: paymentTermDetail?.NetCost || 0,
+            paymentPercentage: paymentTermDetail?.InterestRate || '-',
+            PaymentTermCRMHead: paymentTermDetail?.PaymentTermCRMHead || '-',
+            PaymentTermRemark: paymentTermDetail?.Remark || '-',
+          };
+          obj.CostingRejectionRecoveryDetails = (dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingRejectionDetail && dataFromAPI?.CostingPartDetails.CostingRejectionDetail?.CostingRejectionRecoveryDetails) ?? {}
 
           obj.nOverheadProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost ? dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost : 0
 

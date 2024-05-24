@@ -8022,5 +8022,6 @@ export const NFR_BOP_STANDARD_NAME = 'BoughtOutPart'
 export const NFR_RAW_MATERIAL_NAME = 'RawMaterial'
 
 export const REJECTION_RECOVERY_APPLICABILITY = [
-    { label: "Scap Rate * Net weight", value: 1 },
+    { label: "Scrap Rate * Net Weight", value: '24' },
+    { label: "Fixed", value: '7' },
 ]
