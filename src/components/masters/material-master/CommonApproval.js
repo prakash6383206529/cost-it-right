@@ -948,7 +948,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="160" field="CustomerName" headerName='Customer (Code)'></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" ></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="NetPoPrice" headerName="Net Cost"></AgGridColumn>}
-                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer="linkableFormatter" headerName="Token No."></AgGridColumn>}
+                                    {/* {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer="linkableFormatter" headerName="Token No."></AgGridColumn>} */}
                                     {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="ApprovalType" headerName='Type'></AgGridColumn>}
                                     {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="PlantName" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="VendorName" headerName='Supplier (Code)' ></AgGridColumn>}

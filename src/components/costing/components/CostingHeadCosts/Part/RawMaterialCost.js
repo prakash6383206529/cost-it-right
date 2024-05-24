@@ -75,6 +75,7 @@ function RawMaterialCost(props) {
   const [tourState, setTourState] = useState({
     steps: []
   })
+  const [machiningCalculatorLayoutType, setMachiningCalculatorLayoutType] = useState('')
   const [dataFromAPI, setDataFromAPI] = useState([
     {
       RMName: 'NFRCARM84',
@@ -404,9 +405,16 @@ function RawMaterialCost(props) {
         }))
         break;
       case MACHINING:
-        dispatch(getRawMaterialCalculationForMachining(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
-          setCalculatorData(res, index)
-        }))
+        let layoutType = tempData.LayoutType ? tempData.LayoutType : machiningCalculatorLayoutType ?? ''
+        if (layoutType === 'Bar') {
+          dispatch(getRawMaterialCalculationForSheetMetal(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index)
+          }))
+        } else {
+          dispatch(getRawMaterialCalculationForMachining(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index)
+          }))
+        }
         break;
       case ELECTRICAL_STAMPING:
         dispatch(getRawMaterialCalculationForMachining(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
@@ -429,9 +437,12 @@ function RawMaterialCost(props) {
     if (String(e) === String('rubber') || String(e) === String('ferrous')) {
       setIsMultiCalculatorData(true)
     }
-
+    if (Number(costData?.TechnologyId) === MACHINING) {
+      setMachiningCalculatorLayoutType(weightData.LayoutType)
+    }
     setInputDiameter(weightData.Diameter)
     setWeight(weightData, originalWeight)
+
     setWeightDrawerOpen(false)
     if (Object.keys(weightData).length > 0) setForgingInfoIcon({ ...forgingInfoIcon, [editIndex]: false })
 
@@ -914,10 +925,10 @@ function RawMaterialCost(props) {
           })
         }, 500)
       }
-      if (Number(costData?.TechnologyId) === Number(MACHINING) && gridData?.some(material => material.UOM === 'Meter')) {
+      if (Number(costData?.TechnologyId) === Number(MACHINING)) {
         tempData = {
           ...tempData,
-          NetLandedCost: weightData.NetRM,
+          NetLandedCost: weightData.LayoutType === 'Bar' ? weightData.RawMaterialCost : weightData.NetRM,
           //MINDA
           // NetLandedCost: weightData.RMPerPiece,
           WeightCalculatorRequest: weightData,
@@ -1269,28 +1280,16 @@ function RawMaterialCost(props) {
   }
 
   const showCalculatorFunction = (item) => {
-    let value
-    if (costData?.TechnologyId === MACHINING) {
-      if (isScrapRateUOMApplied && item?.UOM === "Meter" && item?.IsScrapUOMApply && getConfigurationKey().IsShowMachiningCalculatorForMeter) {
-        value = true
-      } else {
-        value = false
-      }
-    } else if (getTechnology.includes(costData?.TechnologyId)) {
+    let value = false
+    if (getTechnology.includes(costData?.TechnologyId)) {
       value = true
     }
     return value
   }
 
   const showCalculatorFunctionHeader = () => {
-    let value
-    if (costData?.TechnologyId === MACHINING) {
-      if (isScrapRateUOMApplied && getConfigurationKey().IsShowMachiningCalculatorForMeter) {
-        value = true
-      } else {
-        value = false
-      }
-    } else if (getTechnology.includes(costData?.TechnologyId)) {
+    let value = false
+    if (getTechnology.includes(costData?.TechnologyId)) {
       value = true
     }
     return value
@@ -1316,8 +1315,6 @@ function RawMaterialCost(props) {
    * @method render
    * @description Renders the component
    */
-  const machiningUICheck = (costData?.TechnologyId === MACHINING && getConfigurationKey().IsShowMachiningCalculatorForMeter && item?.CostingPartDetails?.CostingRawMaterialsCost?.some(material => material.UOM === 'Meter'))
-
   return (
     <>
       <div className="user-page p-0">
@@ -1427,7 +1424,7 @@ function RawMaterialCost(props) {
                             <td>{checkForDecimalAndNull(item.ScrapRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
                             <td>{item.UOM}</td>
                             {
-                              showCalculatorFunctionHeader() && getTechnology.includes(costData?.TechnologyId) && (costData?.TechnologyId === MACHINING ? isScrapRateUOMApplied : true) &&
+                              showCalculatorFunctionHeader() && getTechnology.includes(costData?.TechnologyId) &&
                               <td className="text-center">
                                 {showCalculatorFunction(item) ? <button
                                   id={`RM_calculator${index}`}
@@ -1537,7 +1534,7 @@ function RawMaterialCost(props) {
                             <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied && item?.ScrapRecoveryPercentage ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div> </td>
                             <td>
                               <div className='d-flex'>
-                                <div className='w-fit' id={`net-rm-cost${index}`}>{<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(Number(costData?.TechnologyId) === MACHINING && item?.IsCalculatedEntry) ? 'Net RM Cost = RM/Pc - ScrapCost' : 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)'} />}{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                <div className='w-fit' id={`net-rm-cost${index}`}>{<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(Number(costData?.TechnologyId) === MACHINING && item?.UOM === 'Meter') ? 'Net RM Cost = RM/Pc - ScrapCost' : 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)'} />}{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                                 </div>
                                 {forgingInfoIcon[index] && costData?.TechnologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}
                                 {index === 0 && (item.RawMaterialCalculatorId !== '' && item?.RawMaterialCalculatorId > 0) && costData?.TechnologyId === Ferrous_Casting && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`This is RMC of all RM present in alloy.`} />}

@@ -24,6 +24,7 @@ import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../a
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
+import WarningMessage from '../../common/WarningMessage';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -56,7 +57,18 @@ class AddInterestRate extends Component {
       RawMaterial: [],
       RMGrade: [],
       isRawMaterialSelected: false,
-      isGradeSelected: false
+      isGradeSelected: false,
+      isEitherSectionFilled: false,
+      isWarningVisible: true,
+      ICCSectionFilled: {
+        ICCApplicability: false,
+        ICCPercent: false
+      },
+      PaymentSectionFilled: {
+        PaymentTermsApplicability: false,
+        RepaymentPeriod: false,
+        PaymentTermPercent: false,
+      }
     }
   }
   /**
@@ -84,6 +96,9 @@ class AddInterestRate extends Component {
     this.props.getPaymentTermsAppliSelectList(() => { })
     if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
       this.props.getRawMaterialNameChild(() => { })
+    }
+    if (this.state.Data.length !== 0) {
+      this.checkFilledSections()
     }
   }
 
@@ -115,18 +130,29 @@ class AddInterestRate extends Component {
       return temp
     }
     if (label === 'ICC') {
-      iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
-        if (item.Value === '0' || item.Text === 'Net Cost') return false;
-        let modifiedLabel = item.Text;
-        if ((this.state.isRawMaterialSelected || this.state.isGradeSelected) && modifiedLabel.startsWith("Part")) {
-          modifiedLabel = modifiedLabel.replace("Part", ""); // Remove "Part" from the label
+      const temp = [];
+      let modifiedArray = iccApplicabilitySelectList;
 
+      // Check if the conditions are met to filter out items starting with "Part"
+      if (this.state.isRawMaterialSelected || this.state.isGradeSelected) {
+        modifiedArray = iccApplicabilitySelectList.filter(item => {
+          return !(item.Text.startsWith("Part"));
+        });
+      }
+      let isPartSelected = false;
+
+      // Iterate over the modifiedArray
+      modifiedArray?.map((item) => {
+        // Check conditions to exclude certain items
+        if (item.Value !== '0' && item.Text !== 'Net Cost') {
+          temp.push({ label: item.Text, value: item.Value });
         }
-        temp.push({ label: modifiedLabel, value: item.Value });
-        return null;
       });
+      //if the selected data starts with part 
+
       return temp;
     }
+
 
     if (label === 'PaymentTerms') {
       paymentTermsSelectList && paymentTermsSelectList.map(item => {
@@ -161,6 +187,7 @@ class AddInterestRate extends Component {
       return temp;
     }
   }
+
 
   /**
   * @method onPressVendor
@@ -203,39 +230,50 @@ class AddInterestRate extends Component {
     }
   };
   /**
-* @method handleICCApplicability
-* @description called
-*/
+  * @method handleICCApplicability
+  * @description called
+  */
   handleICCApplicability = (newValue, actionMeta) => {
+    const ICCSectionFilled = { ...this.state.ICCSectionFilled };
+    ICCSectionFilled.ICCApplicability = newValue ? true : false;
+
     if (newValue && newValue !== '') {
-      this.setState({ ICCApplicability: newValue, });
+      this.setState(prevState => ({ ICCApplicability: newValue, ICCSectionFilled }), () => { this.checkFilledSections(); });
     } else {
-      this.setState({ ICCApplicability: [], })
+      this.setState({ ICCApplicability: [], ICCSectionFilled })
     }
     if (this.state.ICCApplicability.value === newValue.value) {
-      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+      this.setState({ isDataChanged: true, DropdownNotChanged: true, ICCFilled: true, ICCSectionFilled })
     }
     else {
-      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+      this.setState({ isDataChanged: false, DropdownNotChanged: false, ICCFilled: false, ICCSectionFilled })
     }
   };
 
 
-  /**
-  * @method handlePaymentApplicability
-  * @description called
-  */
+  // /**
+  // * @method handlePaymentApplicability
+  // * @description called
+  // */
   handlePaymentApplicability = (newValue, actionMeta) => {
+    const PaymentSectionFilled = { ...this.state.PaymentSectionFilled };
+    PaymentSectionFilled.PaymentTermsApplicability = newValue ? true : false;
+
     if (newValue && newValue !== '') {
-      this.setState({ PaymentTermsApplicability: newValue, });
+      this.setState(prevState => ({
+        PaymentTermsApplicability: newValue,
+        PaymentSectionFilled
+      }), () => {
+        this.checkFilledSections();
+      });
     } else {
-      this.setState({ PaymentTermsApplicability: [], })
+      this.setState({ PaymentTermsApplicability: [], PaymentSectionFilled })
     }
     if (this.state.PaymentTermsApplicability.value === newValue.value) {
-      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+      this.setState({ isDataChanged: true, DropdownNotChanged: true, PaymentSectionFilled })
     }
     else {
-      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+      this.setState({ isDataChanged: false, DropdownNotChanged: false, PaymentSectionFilled })
     }
   };
 
@@ -244,13 +282,18 @@ class AddInterestRate extends Component {
   * @description called
   */
   handleChangeAnnualIccPercentage = (newValue) => {
+    const ICCSectionFilled = { ...this.state.ICCSectionFilled };
+    ICCSectionFilled.ICCPercent = newValue ? true : false;
+
     if (this.state.isEditFlag) {
       if (String(newValue) === String(this.state.Data.ICCPercent) &&
         String(this.state.ICCApplicability.label) === String(this.state.Data.ICCApplicability)) {
-        this.setState({ isDataChanged: true })
+        this.setState(prevState => ({ isDataChanged: true, ICCSectionFilled }), () => { this.checkFilledSections(); });
       } else {
-        this.setState({ isDataChanged: false })
+        this.setState(prevState => ({ isDataChanged: false, ICCSectionFilled }), () => { this.checkFilledSections(); });
       }
+    } else {
+      this.setState(prevState => ({ ICCSectionFilled }), () => { this.checkFilledSections(); });
     }
   };
 
@@ -259,12 +302,16 @@ class AddInterestRate extends Component {
   * @description called
   */
   handleChangeRepaymentPeriod = (newValue) => {
+    const PaymentSectionFilled = { ...this.state.PaymentSectionFilled };
+    PaymentSectionFilled.RepaymentPeriod = newValue ? true : false;
     if (this.state.isEditFlag) {
       if (String(newValue) === String(this.state.Data.RepaymentPeriod) && String(this.state.PaymentTermsApplicability.label) === String(this.state.Data.PaymentTermApplicability)) {
-        this.setState({ isDataChanged: true })
+        this.setState(prevState => ({ isDataChanged: true, PaymentSectionFilled }), () => { this.checkFilledSections(); });
       } else {
-        this.setState({ isDataChanged: false })
+        this.setState(prevState => ({ isDataChanged: false, PaymentSectionFilled }), () => { this.checkFilledSections(); });
       }
+    } else {
+      this.setState(prevState => ({ PaymentSectionFilled }), () => { this.checkFilledSections(); });
     }
   };
 
@@ -273,14 +320,39 @@ class AddInterestRate extends Component {
   * @description called
   */
   handleChangePaymentTermPercentage = (newValue) => {
+
+    const PaymentSectionFilled = { ...this.state.PaymentSectionFilled };
+    PaymentSectionFilled.PaymentTermPercent = newValue ? true : false;
     if (this.state.isEditFlag) {
       if (String(newValue) === String(this.state.Data.PaymentTermPercent) && String(this.state.PaymentTermsApplicability.label) === String(this.state.Data.PaymentTermApplicability)) {
-        this.setState({ isDataChanged: true })
+        this.setState(prevState => ({ isDataChanged: true, PaymentSectionFilled }), () => { this.checkFilledSections(); });
       } else {
-        this.setState({ isDataChanged: false })
+        this.setState(prevState => ({ isDataChanged: false, PaymentSectionFilled }), () => { this.checkFilledSections(); });
       }
+    } else {
+      this.setState(prevState => ({ PaymentSectionFilled }), () => { this.checkFilledSections(); });
     }
   };
+  /**
+  * @method checkFilledSections
+  * @description check each filed is filled or not
+  */
+  checkFilledSections = () => {
+    const { ICCSectionFilled, PaymentSectionFilled, ICCApplicability, PaymentTermsApplicability } = this.state;
+    let isICCFilled, isPaymentFilled
+    if ((ICCApplicability && ICCApplicability.value !== "Fixed" && ICCApplicability.value !== undefined) ||
+      (PaymentTermsApplicability && PaymentTermsApplicability.value !== "Fixed" && PaymentTermsApplicability.value !== undefined)) {
+      isICCFilled = Object.values(ICCSectionFilled).some(value => value === false);
+      isPaymentFilled = Object.values(PaymentSectionFilled).some(value => value === false);
+    } else {
+      isICCFilled = ICCSectionFilled.ICCApplicability === false; // Check only ICCApplicability key
+      isPaymentFilled = PaymentSectionFilled.PaymentTermsApplicability === false; // Check only PaymentTermsApplicability key
+    }
+    const isWarningVisible = isICCFilled && isPaymentFilled;
+    this.setState({ isWarningVisible: isWarningVisible });
+  };
+
+
 
   /**
   * @method handleChange
@@ -302,9 +374,9 @@ class AddInterestRate extends Component {
     this.setState({ singlePlantSelected: newValue })
   }
   /**
-* @method handleClient
-* @description called
-*/
+  * @method handleClient
+  * @description called
+  */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ client: newValue });
@@ -365,7 +437,19 @@ class AddInterestRate extends Component {
       this.props.getInterestRateData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-          this.setState({ Data: Data })
+          this.setState({
+            Data: Data, ICCSectionFilled: {
+              ICCApplicability: Data?.ICCApplicability != null,
+              ICCPercent: Data?.ICCPercent != null,
+            },
+            PaymentSectionFilled: {
+              PaymentTermsApplicability: Data.PaymentTermApplicability != null,
+              RepaymentPeriod: Data?.RepaymentPeriod != null,
+              PaymentTermPercent: Data?.PaymentTermPercent != null,
+            }
+          });
+
+
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
@@ -439,6 +523,7 @@ class AddInterestRate extends Component {
 
   onSubmit = debounce((values) => {
     const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownNotChanged, RMGrade, RawMaterial } = this.state;
+    const { data } = this.props
     const userDetail = userDetails()
     const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
@@ -504,6 +589,7 @@ class AddInterestRate extends Component {
         RawMaterialName: RawMaterial?.label,
         RawMaterialGradeId: RMGrade?.value,
         RawMaterialGrade: RMGrade?.label,
+        IsFinancialDataChanged: data?.IsAssociatedData && !this.state.isDataChanged
       }
       if (this.state.isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -562,6 +648,7 @@ class AddInterestRate extends Component {
   * @description Renders the component
   */
   render() {
+    const { isWarningVisible } = this.state;
     let pos_drop_down = "auto"
     if (window.screen.width > 1366) {
       pos_drop_down = "auto";
@@ -697,11 +784,11 @@ class AddInterestRate extends Component {
                                 placeholder={"Select"}
                                 options={this.renderListing("material")}
                                 validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
-                                required={true}
+                                required={!this.state.isPartSelected}
                                 handleChangeDescription={this.handleRMChange}
                                 valueDescription={this.state.RawMaterial}
                                 className="fullinput-icon"
-                                disabled={isEditFlag || isViewMode}
+                                disabled={isEditFlag || isViewMode || this.state.isPartSelected}
                               />
                             </div>
                           </div>
@@ -717,10 +804,10 @@ class AddInterestRate extends Component {
                                   placeholder={"Select"}
                                   options={this.renderListing("grade")}
                                   validate={this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
-                                  required={true}
+                                  required={!this.state.isPartSelected}
                                   handleChangeDescription={this.handleGradeChange}
                                   valueDescription={this.state.RMGrade}
-                                  disabled={isEditFlag || isViewMode}
+                                  disabled={isEditFlag || isViewMode || this.state.isPartSelected}
                                 />
                               </div>
                             </div>
@@ -832,13 +919,13 @@ class AddInterestRate extends Component {
                           component={searchableSelect}
                           placeholder={isViewMode ? '-' : "Select"}
                           options={this.renderListing("ICC")}
-                          validate={
-                            this.state.ICCApplicability == null ||
-                              this.state.ICCApplicability.length === 0
-                              ? [required]
-                              : []
-                          }
-                          required={true}
+                          // validate={
+                          //   this.state.ICCApplicability == null ||
+                          //     this.state.ICCApplicability.length === 0
+                          //     ? [required]
+                          //     : []
+                          // }
+
                           handleChangeDescription={
                             this.handleICCApplicability
                           }
@@ -856,7 +943,7 @@ class AddInterestRate extends Component {
                             name={"ICCPercent"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
-                            validate={[required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, nonZero]}
+                            validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, nonZero]}
                             component={renderText}
                             required={true}
                             onChange={(event) => this.handleChangeAnnualIccPercentage(event.target.value)}
@@ -967,6 +1054,7 @@ class AddInterestRate extends Component {
 
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn">
+                      {isWarningVisible && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message="Either ICC or Payment Term should be filled!" />}
                       <button
                         id='AddInterestRate_Cancel'
                         type={"button"}
@@ -980,7 +1068,7 @@ class AddInterestRate extends Component {
                       {!isViewMode && <button
                         type="submit"
                         id='AddInterestRate_Save'
-                        disabled={isViewMode || setDisable}
+                        disabled={isWarningVisible || isViewMode || setDisable}
                         className="user-btn mr5 save-btn"
                       >
                         <div className={"save-icon"}></div>
