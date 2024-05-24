@@ -55,11 +55,12 @@ function OverheadProfit(props) {
     NetICCTotal: ICCApplicabilityDetail !== null ? checkForDecimalAndNull(ICCApplicabilityDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '',
 
     //PAYMENT TERMS FIELDS
-    PaymentTermsApplicability: PaymentTermDetail !== null ? PaymentTermDetail.PaymentTermApplicability : '',
-    RepaymentPeriodDays: PaymentTermDetail !== null ? PaymentTermDetail.RepaymentPeriod : '',
-    RepaymentPeriodPercentage: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '',
-    RepaymentPeriodCost: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '',
-    RepaymentPeriodFixed: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : ''
+    //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT
+    // PaymentTermsApplicability: PaymentTermDetail !== null ? PaymentTermDetail.PaymentTermApplicability : '',
+    // RepaymentPeriodDays: PaymentTermDetail !== null ? PaymentTermDetail.RepaymentPeriod : '',
+    // RepaymentPeriodPercentage: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '',
+    // RepaymentPeriodCost: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    // RepaymentPeriodFixed: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : ''
   }
 
   const { register, handleSubmit, control, clearErrors, setValue, getValues, formState: { errors } } = useForm({
@@ -2259,8 +2260,8 @@ function OverheadProfit(props) {
               data={data}
               setRejectionDetail={props.setRejectionDetail}
             />
-
-            <Icc
+            {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
+            {/* <Icc
               Controller={Controller}
               control={control}
               //  rules={rules}
@@ -2273,9 +2274,9 @@ function OverheadProfit(props) {
               CostingInterestRateDetail={CostingInterestRateDetail}
               data={data}
               setICCDetail={props.setICCDetail}
-            />
+            /> */}
 
-            <PaymentTerms
+            {/* <PaymentTerms
               Controller={Controller}
               control={control}
               //  rules={rules}
@@ -2289,7 +2290,7 @@ function OverheadProfit(props) {
               PaymentTermDetail={PaymentTermDetail}
               data={data}
               setPaymentTermsDetail={props.setPaymentTermsDetail}
-            />
+            /> */}
 
             <Row className=" no-gutters justify-content-between btn-sticky-container overhead-profit-save-btn">
               <div className="col-sm-12 text-right bluefooter-butn ">
