@@ -65,6 +65,7 @@ import {
   GET_COSTING_PAYMENT_TERM_DETAIL,
   SET_DISCOUNT_AND_OTHER_TAB_DATA,
   SET_COMPONENT_PAYMENT_TERMS_DATA,
+  SET_PAYMENT_TERM_COST,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2859,6 +2860,17 @@ export function setIncludeToolCostIcc(IsIncluded, callback) {
     callback();
   }
 };
+export function setPaymentTermCost(data, callback) {
+
+  return (dispatch) => {
+    dispatch({
+      type: SET_PAYMENT_TERM_COST,
+      payload: data || {},
+    });
+    callback();
+  }
+};
+
 
 /**
  * @method getAssemblyChildPartbyAsmCostingId
@@ -2903,9 +2915,14 @@ export function getCostingPaymentTermDetail(costingId, callback) {
     const request = axios.get(`${API.getCostingPaymentTermDetail}/${costingId}`, config());
     request.then((response) => {
       if (response.data?.Data || response?.status === 204) {
+        const netCost = response.data?.Data?.PaymentTermDetail?.NetCost;
         dispatch({
           type: GET_COSTING_PAYMENT_TERM_DETAIL,
           payload: response?.data?.Data || {},
+        });
+        dispatch({
+          type: SET_PAYMENT_TERM_COST,
+          payload: { NetCost: netCost } || {},
         });
       } else {
         Toaster.error(MESSAGES.SOME_ERROR);

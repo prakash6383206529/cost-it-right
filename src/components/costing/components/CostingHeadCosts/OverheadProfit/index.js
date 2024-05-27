@@ -33,7 +33,7 @@ function OverheadProfit(props) {
   const { data } = props;
 
   const { CostingOverheadDetail, CostingProfitDetail, CostingRejectionDetail, CostingInterestRateDetail } = props.data?.CostingPartDetails;
-  console.log('CostingInterestRateDetail: ', CostingInterestRateDetail);
+
 
   const ICCApplicabilityDetail = CostingInterestRateDetail && CostingInterestRateDetail.ICCApplicabilityDetail !== null ? CostingInterestRateDetail.ICCApplicabilityDetail : {}
 

@@ -71,7 +71,7 @@ function TabDiscountOther(props) {
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost } = useSelector(state => state.costing)
   const PaymentTermDetail = CostingInterestRateDetail && CostingInterestRateDetail.PaymentTermDetail !== null ? CostingInterestRateDetail.PaymentTermDetail : {}
 
 
@@ -302,7 +302,12 @@ function TabDiscountOther(props) {
     }
   }, [])
 
-
+  useEffect(() => {
+    setDiscountObj({
+      ...discountObj,
+      paymentTermCost: UpdatePaymentTermCost?.NetCost
+    })
+  }, [UpdatePaymentTermCost])
   useEffect(() => {
     if (RMCCTabData && RMCCTabData[0]?.CostingId && props?.activeTab === '6') {
       let npvSum = 0
@@ -317,7 +322,7 @@ function TabDiscountOther(props) {
             dispatch(isDiscountDataChange(true))
             setDiscountObj({
               ...discountObj,
-              totalNpvCost: sum
+              totalNpvCost: sum,
             })
           }
         }))
@@ -645,11 +650,7 @@ function TabDiscountOther(props) {
     if (!CostingViewMode) {
 
 
-      setValue('BasicRateINR', DiscountCostData && checkForDecimalAndNull(checkForNull(netPOPrice) + checkForNull(DiscountAndOtherCostTabData?.NetCost) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)), initialConfiguration?.NoOfDecimalForPrice))
-
-
-
-
+      setValue('BasicRateINR', DiscountCostData && checkForDecimalAndNull(checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)), initialConfiguration?.NoOfDecimalForPrice))
 
       setValue('NetPOPriceINR', DiscountCostData && checkForDecimalAndNull(netPOPrice, initialConfiguration?.NoOfDecimalForPrice))
       // if (otherCostType.value === 'Percentage') {
