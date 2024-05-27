@@ -2756,6 +2756,7 @@ export const SUB_ASSEMBLY = 'Sub Assembly';
 export const RMDOMESTICBULKUPLOAD = 'RM Domestic';
 export const RMIMPORTBULKUPLOAD = 'RM Import';
 export const RMSPECIFICATION = 'RM Specification'
+export const RMMATERIALBULKUPLOAD = 'RM Index Data'
 export const BOPDOMESTICBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Domestic";
 export const INSERTDOMESTICBULKUPLOAD = 'Insert Domestic';
 export const BOPIMPORTBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Import";
