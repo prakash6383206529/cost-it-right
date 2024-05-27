@@ -1234,7 +1234,7 @@ function AddRMFinancialDetails(props) {
                             }}
                             className=" "
                             handleChange={() => { }}
-                            customClassName=" withBorder mb-0"
+                            customClassName=" withBorder"
                             disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                             mandatory={true}
                             errors={errors.LocalLogisticBaseCurrency}
@@ -1273,7 +1273,7 @@ function AddRMFinancialDetails(props) {
                             }}
                             className=" "
                             handleChange={() => { }}
-                            customClassName=" withBorder mb-0"
+                            customClassName=" withBorder"
                             disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                             mandatory={true}
                             errors={errors.YieldLossBaseCurrency}
@@ -1312,7 +1312,7 @@ function AddRMFinancialDetails(props) {
                             }}
                             className=" "
                             handleChange={() => { }}
-                            customClassName=" withBorder mb-0"
+                            customClassName=" withBorder"
                             disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                             mandatory={true}
                             errors={errors.PackagingAndFreightBaseCurrency}
@@ -1351,7 +1351,7 @@ function AddRMFinancialDetails(props) {
                             }}
                             className=" "
                             handleChange={() => { }}
-                            customClassName=" withBorder mb-0"
+                            customClassName=" withBorder"
                             disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                             mandatory={true}
                             errors={errors.OverheadCostBaseCurrency}
@@ -1390,7 +1390,7 @@ function AddRMFinancialDetails(props) {
                             }}
                             className=" "
                             handleChange={() => { }}
-                            customClassName=" withBorder mb-0"
+                            customClassName=" withBorder"
                             disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                             mandatory={true}
                             errors={errors.ProfitCostBaseCurrency}
@@ -1429,7 +1429,7 @@ function AddRMFinancialDetails(props) {
                             }}
                             className=" "
                             handleChange={() => { }}
-                            customClassName=" withBorder mb-0"
+                            customClassName=" withBorder"
                             disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                             mandatory={true}
                             errors={errors.DiscountCostBaseCurrency}
@@ -1621,7 +1621,7 @@ function AddRMFinancialDetails(props) {
                                 disabled={true}
                                 className=" "
                                 handleChange={() => { }}
-                                customClassName=" withBorder mb-0"
+                                customClassName=" withBorder"
                             />
                         </Col>}
                     <Col className="col-md-15">
@@ -1637,12 +1637,12 @@ function AddRMFinancialDetails(props) {
                             disabled={true}
                             className=" "
                             handleChange={() => { }}
-                            customClassName=" withBorder mb-0"
+                            customClassName=" withBorder"
                         />
                     </Col>
                 </>
                 <Col className="col-md-15">
-                    <div className="inputbox date-section">
+                    <div className="inputbox date-section mb-5">
                         <DatePickerHookForm
                             name={`effectiveDate`}
                             label={'Effective Date'}

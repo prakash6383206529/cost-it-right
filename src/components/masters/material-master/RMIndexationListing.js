@@ -112,10 +112,6 @@ const RMIndexationListing = (props) => {
     }, []);
 
     const openModel = useCallback(() => {
-<<<<<<< HEAD
-=======
-
->>>>>>> 8c50ac4de18756adac7b24103d05bdc9d259b206
         setState((prev) => ({
             ...prev, isOpen: true, isEditFlag: false,
         }));
@@ -403,8 +399,7 @@ const RMIndexationListing = (props) => {
                 <Row>
                     <Col>
                         <div
-                            className={`ag-grid-wrapper height-width-wrapper ${(rmSpecificationList && rmSpecificationList?.length <= 0) ||
-                                noData
+                            className={`ag-grid-wrapper height-width-wrapper ${true
                                 ? "overlay-contain"
                                 : ""
                                 }`}
@@ -434,7 +429,7 @@ const RMIndexationListing = (props) => {
                                     floatingFilter={true}
                                     domLayout="autoHeight"
                                     // columnDefs={c}
-                                    rowData={tourStartData?.showExtraData ? [...setLoremIpsum(rmSpecificationList[0]), ...rmSpecificationList] : rmSpecificationList}
+                                    rowData={[]}
 
                                     pagination={true}
                                     paginationPageSize={defaultPageSize}
