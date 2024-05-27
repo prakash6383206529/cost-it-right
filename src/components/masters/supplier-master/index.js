@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import classnames from "classnames";
 import ScrollToTop from "../../common/ScrollToTop";
-import { MASTERS, PART } from "../../../config/constants";
+import { LPS, MASTERS, PART, VENDOR_MANAGEMENT } from "../../../config/constants";
 import { checkPermission } from "../../../helper/util";
 import { MESSAGES } from "../../../config/message";
 import { resetStatePagination } from "../../common/Pagination/paginationAction";
@@ -17,7 +17,10 @@ const VendorMaster = () => {
     const [state, setState] = useState({
         isOpen: false,
         activeTab: "1",
+        ViewClassificationAccessibility: false,
+        ViewLpsRatingAccessibility: false,
     });
+    const { ViewClassificationAccessibility, ViewLpsRatingAccessibility } = state
 
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData);
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration);
@@ -33,12 +36,25 @@ const VendorMaster = () => {
         if (topAndLeftMenuData !== undefined) {
             const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
             const accessData = Data && Data.Pages.find((el) => el.PageName === PART);
+            const classification = Data && Data.Pages.find((el) => el.PageName === VENDOR_MANAGEMENT)
+
+            const lps = Data && Data.Pages.find((el) => el.PageName === LPS)
+            const classificationData = classification && classification.Actions && checkPermission(classification.Actions)
+            const lpsData = lps && lps.Actions && checkPermission(lps.Actions)
             const permmisionDataAccess = accessData && accessData.Actions && checkPermission(accessData.Actions);
             if (permmisionDataAccess !== undefined) {
                 setPermissionData(permmisionDataAccess);
             }
-        }
-    };
+            if (classificationData !== undefined) {
+                setState((prevState) => ({ ...prevState, ViewClassificationAccessibility: classificationData.View }))
+            }
+            if (lpsData !== undefined) {
+                setState((prevState) => ({ ...prevState, ViewLpsRatingAccessibility: lpsData.View }))
+            }
+        };
+
+    }
+
 
     const toggle = (tab) => {
         if (state.activeTab !== tab) {
@@ -63,8 +79,8 @@ const VendorMaster = () => {
                             <Nav tabs className="subtabs mt-0 p-relative mb-4">
                                 {disabledClass && (<div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"  ></div>)}
                                 <NavItem> <NavLink className={classnames({ active: state.activeTab === "1" })} onClick={() => toggle("1")}  > Vendor Listing  </NavLink></NavItem>
-                                <NavItem> <NavLink className={classnames({ active: state.activeTab === "2" })} onClick={() => toggle("2")} > Supplier Classification Status </NavLink> </NavItem>
-                                {initialConfiguration?.IsProductMasterConfigurable && (
+                                {ViewClassificationAccessibility && <NavItem> <NavLink className={classnames({ active: state.activeTab === "2" })} onClick={() => toggle("2")} > Supplier Classification Status </NavLink> </NavItem>
+                                }                                {initialConfiguration?.IsProductMasterConfigurable && ViewLpsRatingAccessibility && (
                                     <NavItem> <NavLink className={classnames({ active: state.activeTab === "3" })} onClick={() => toggle("3")} >  LPS Rating Status </NavLink> </NavItem>
                                 )}
                             </Nav>
@@ -73,11 +89,11 @@ const VendorMaster = () => {
                                     <TabPane tabId="1"><VendorListing />
                                     </TabPane>
                                 )}
-                                {state.activeTab === "2" && (
+                                {state.activeTab === "2" && ViewClassificationAccessibility && (
                                     <TabPane tabId="2"><SupplierClassificationListing />
                                     </TabPane>
                                 )}
-                                {state.activeTab === "3" && (
+                                {state.activeTab === "3" && ViewLpsRatingAccessibility(
                                     <TabPane tabId="3"><LpsRatingListing />
                                     </TabPane>
                                 )}

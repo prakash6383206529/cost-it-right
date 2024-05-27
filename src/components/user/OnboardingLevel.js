@@ -44,7 +44,7 @@ const OnboardingLevelListing = (props) => {
     }, []);
 
     useEffect(() => {
-        if (isCallApi === true)
+        if (isCallApi === true || props.tab !== '')
             setTimeout(() => {
                 getOnboardingDataList();
             }, 100);
