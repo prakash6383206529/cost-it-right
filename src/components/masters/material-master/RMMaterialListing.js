@@ -23,7 +23,12 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import AddRMDrawer from "./AddRMDrawer";
-
+import { RMMATERIALISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import { RmMaterial } from "../../../config/constants";
+import ReactExport from "react-export-excel";
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const RMMaterialListing = () => {
@@ -261,7 +266,45 @@ const RMMaterialListing = () => {
     hyphenFormatter: hyphenFormatter,
     customNoRowsOverlay: NoContentFound,
   };
+  const onBtExport = () => {
+    let tempArr = [];
+    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+    tempArr =
+      tempArr && tempArr.length > 0
+        ? tempArr
+        : rawMaterialTypeDataList
+          ? rawMaterialTypeDataList
+          : [];
+    return returnExcelColumn(RMMATERIALISTING_DOWNLOAD_EXCEl, tempArr);
+  };
 
+  const returnExcelColumn = (data = [], TempData) => {
+    let temp = [];
+    temp =
+      TempData &&
+      TempData.map((item) => {
+        if (item.RMName === "-") {
+          item.RMName = " ";
+        }
+        if (item.RMGrade === "-") {
+          item.RMGrade = " ";
+        }
+        return item;
+      });
+    return (
+      <ExcelSheet data={temp} name={RmMaterial}>
+        {data &&
+          data.map((ele, index) => (
+            <ExcelColumn
+              key={index}
+              label={ele.label}
+              value={ele.value}
+              style={ele.style}
+            />
+          ))}
+      </ExcelSheet>
+    );
+  };
   return (
     <div
       className={`ag-grid-react min-height100vh`}
@@ -271,9 +314,23 @@ const RMMaterialListing = () => {
         <Col md={6} className="text-right search-user-block pr-0">
 
           {permissions.Add && (
-            <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} />
+            <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
           )}
-
+          {permissions.Download && (
+            <>
+              <>
+                <ExcelFile
+                  filename={"Rm Material Listing"}
+                  fileExtension={".xls"}
+                  element={
+                    <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                  }
+                >
+                  {onBtExport()}
+                </ExcelFile>
+              </>
+            </>
+          )}
           <Button id={"rmSpecification_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
         </Col>
       </Row>
@@ -281,9 +338,7 @@ const RMMaterialListing = () => {
       <Row>
         <Col>
           <div
-            className={`ag-grid-wrapper height-width-wrapper ${(rawMaterialTypeDataList &&
-              rawMaterialTypeDataList?.length <= 0) ||
-              noData
+            className={`ag-grid-wrapper height-width-wrapper ${true
               ? "overlay-contain"
               : ""
               }`}
@@ -313,7 +368,7 @@ const RMMaterialListing = () => {
                 floatingFilter={true}
                 domLayout="autoHeight"
                 // columnDefs={c}
-                rowData={showExtraData && rawMaterialTypeDataList ? [...setLoremIpsum(rawMaterialTypeDataList[0]), ...rawMaterialTypeDataList] : rawMaterialTypeDataList}
+                rowData={[]}
 
                 pagination={true}
                 paginationPageSize={defaultPageSize}
@@ -330,7 +385,7 @@ const RMMaterialListing = () => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
-               
+
                 <AgGridColumn field="Material Index"></AgGridColumn>
                 <AgGridColumn field="Material Name"></AgGridColumn>
                 <AgGridColumn field="UOM"></AgGridColumn>

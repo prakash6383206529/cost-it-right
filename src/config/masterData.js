@@ -5595,13 +5595,47 @@ export const RMLISTING_DOWNLOAD_EXCEl = [
     { label: "Grade", value: "RMGrade", },
 ]
 
+export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
+    { label: "Material Name", value: "MaterialName", },
+    { label: "Material Type", value: "MaterialType", },    
+]
+
+export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
+    { label: "Material Index", value: "MaterialIndex", },
+    { label: "Material Name", value: "MaterialName", },
+    { label: "UOM", value: "UOM", },
+    { label: "Currency", value: "Currency", },
+    { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Index Rate (Currency)", value: "IndexRateCurrency", }, 
+    { label: "Premium Currency", value: "PremiumCurrency", },    
+]
+
 export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [
     { label: "RM Name", value: "RMName", },
     { label: "Grade", value: "RMGrade", },
     { label: "Spec", value: "RMSpec", },
     { label: "Code", value: "RawMaterialCode", },
 ]
-
+export const RMINDEXATION = [
+    { label: "Costing Head", value: "CostingHead", },
+    { label: "Material Name (main)", value: "RawMaterialName", },
+    { label: "Material Name", value: "RawMaterialGrade", },
+    { label: "Plant (Code)", value: "RawMaterialSpecification", },
+    { label: "Vendor (Code)", value: "RawMaterialCode", },
+    { label: "Customer (Code)", value: "MaterialType", },
+    { label: "Exchange Rate Source", value: "Category", },
+    { label: "Index (LME)", value: "DestinationPlantName", },
+    { label: "From Date", value: "VendorName", },
+    { label: "To Date", value: "CustomerName", },
+    { label: "Effective Date", value: "CustomerName", },
+    { label: "UOM", value: "UnitOfMeasurement", },
+    { label: "Currency", value: "Currency", },
+    { label: "Frequency of settlement", value: "CustomerName", },
+    { label: "Index Premium(Currency)", value: "CustomerName", },
+    { label: "Exchange Rate Source Premium(Currency)", value: "CustomerName", },
+    { label: "Index Rate(Currency)", value: "Rate", },
+    { label: "Basic rate(Base Currency)", value: "EffectiveDate", },
+]
 export const OPERATION_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "Technology", },
@@ -8022,5 +8056,6 @@ export const NFR_BOP_STANDARD_NAME = 'BoughtOutPart'
 export const NFR_RAW_MATERIAL_NAME = 'RawMaterial'
 
 export const REJECTION_RECOVERY_APPLICABILITY = [
-    { label: "Scap Rate * Net weight", value: 1 },
+    { label: "Scrap Rate * Net Weight", value: '24' },
+    { label: "Fixed", value: '7' },
 ]

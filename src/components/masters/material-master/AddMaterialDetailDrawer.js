@@ -6,15 +6,22 @@ import { EMPTY_DATA } from "../../../config/constants";
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { useForm, Controller } from "react-hook-form";
 import { Drawer } from "@material-ui/core";
-
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { MESSAGES } from '../../../config/message';
 
 const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
 
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const [isEdit, setIsEdit] = useState(false);
     const [editIndex, setEditIndex] = useState('')
-
-    const { register, formState: { errors }, control, setValue, handleSubmit } = useForm({
+    const [state, setState] = useState({
+        isShowForm: false,
+        MaterialTypeId: '',
+        DataToChange: [],
+        setDisable: false,
+        showPopup: false,
+    });
+    const { register, formState: { errors, isDirty }, control, setValue, handleSubmit, reset } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
@@ -118,7 +125,27 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
         }
         closeDrawer('', formData, type);
     };
+    const cancel = (type) => {
+        reset();
+        // dispatch(getMaterialTypeDataAPI('', res => { }));
+        toggleDrawer('', '', type);
+    };
 
+    const cancelHandler = () => {
+        if (isDirty) {
+            setState(prevState => ({ ...prevState, showPopup: true }));
+        } else {
+            cancel('cancel');
+        }
+    };
+    const onPopupConfirm = () => {
+        cancel('cancel');
+        setState(prevState => ({ ...prevState, showPopup: false }));
+    };
+
+    const closePopUp = () => {
+        setState(prevState => ({ ...prevState, showPopup: false }));
+    };
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>
@@ -141,7 +168,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                             <Row className="pl-3">
                                 <Col md="6">
                                     <SearchableSelectHookForm
-                                        label={'Material Name'}
+                                        label={'Material Index'}
                                         name={'MaterialName'}
                                         placeholder={'Select'}
                                         Controller={Controller}
@@ -157,7 +184,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                 </Col>
                                 <Col md="6">
                                     <TextFieldHookForm
-                                        label="Material Type"
+                                        label="Index Type"
                                         name={"MaterialType"}
                                         Controller={Controller}
                                         control={control}
@@ -217,8 +244,8 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                         <Table className="table mb-0 forging-cal-table" size="sm">
                             <thead>
                                 <tr>
-                                    <th>{`Material Name`}</th>
-                                    <th>{`Material Type`}</th>
+                                    <th>{`Index Name`}</th>
+                                    <th>{`Index Type`}</th>
                                     <th className='text-right'>{`Action`}</th>
                                 </tr>
                             </thead>
@@ -245,14 +272,6 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                                 </td>
                                             </tr>
                                         ))}
-                                        {/* <tr className='table-footer'>
-                                    <td colSpan={1} className='text-left'>
-                                        Total Percentage:
-                                    </td>
-                                    <td colSpan={3}>
-                                        {checkForDecimalAndNull(percentageTotal, initialConfiguration.NoOfDecimalForPrice)}
-                                    </td>
-                                </tr> */}
                                     </>
                                 ) : (
                                     <tr>
@@ -269,8 +288,9 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                         <div className="col-md-12">
                             <div className="text-right ">
                                 <button
-                                    id="AddMaterialType_Cancel"                                   
+                                    id="AddMaterialType_Cancel"
                                     type="button"
+                                    onClick={cancelHandler}
                                     value="CANCEL"
                                     className="mr15 cancel-btn"
                                 >
@@ -291,6 +311,9 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                     </Row>
                 </Container>
             </Drawer>
+            {state.showPopup && (
+                <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+            )}
         </div>
 
     )

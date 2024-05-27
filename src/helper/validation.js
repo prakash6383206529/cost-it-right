@@ -485,3 +485,7 @@ export const decimalNumberLimit13 = value => {
     return tempValue && !/^[0-9][0-9]{0,12}(\.\d{0,2})?$/.test(tempValue)
         ? 'Maximum length for integer is 13 and for decimal is 2' : undefined;
 }
+export const integerOnly = value =>
+    value && !/^\d*$/.test(value)
+        ? 'Only integer values are allowed'
+        : undefined;
