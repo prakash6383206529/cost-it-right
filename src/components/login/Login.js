@@ -16,7 +16,7 @@ import CheckIcon from '../../assests/images/mail-sent.png';
 import errorImg from '../../assests/images/box.png';
 import { IV, KEY, VERSION } from '../../config/constants';
 import LoaderCustom from "../common/LoaderCustom";
-import { WrappedView } from "../../../src/components/login/WrappedView";
+import { MsalAuthLogin } from "../../../src/components/login/MsalAuthLogin";
 
 const CryptoJS = require('crypto-js');
 
@@ -242,7 +242,7 @@ class Login extends Component {
                   </div>
                 </form>
                 <div className="text-center p-relative pt-5">
-                  <WrappedView setToken={this.setToken} setIsLoginWithMsal={this.setIsLoginWithMsal} setAudience={this.setAudience} />
+                  <MsalAuthLogin setToken={this.setToken} setIsLoginWithMsal={this.setIsLoginWithMsal} setAudience={this.setAudience} />
                 </div>
                 {buttonFlag && (
                   <div className="forgot-link d-flex pt-2 justify-content-center">
