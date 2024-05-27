@@ -1,68 +1,102 @@
 
-// WrappedView.js
-import React, { useEffect } from 'react';
-import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
+import React, { useEffect, useState } from 'react';
+import { useMsal } from '@azure/msal-react';
 import { loginRequest } from '../../authConfig';
 import { InteractionRequiredAuthError } from "@azure/msal-browser";
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { jwtDecode } from "jwt-decode";
+import logo from '../../assests/images/logo/ms-symbollockup_signin_light.png';
+import Toaster from '../common/Toaster';
 
-export const WrappedView = ({ setToken, setIsLoginWithMsal }) => {
-    console.log('WrappedView: call');
+export const WrappedView = ({ setToken, setIsLoginWithMsal, setAudience }) => {
+    const { instance, accounts, inProgress } = useMsal();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    const { instance, accounts } = useMsal();
+    const checkAuthentication = async () => {
 
-    useEffect(() => {
-        const fetchToken = async () => {
-            if (!accounts.length) {
-                return;
-            }
-
-            const request = {
-                ...loginRequest,
-                account: accounts[0]
-            };
+        if (accounts.length > 0) {
+            const account = accounts[0];
+            const request = { ...loginRequest, account };
 
             try {
                 const response = await instance.acquireTokenSilent(request);
-                if (Object.keys(reactLocalStorage.getObject('msaltoken')).length === 0) {
-                    console.log("I am in wrapper view");
-                    reactLocalStorage.setObject('msaltoken', response.accessToken)
-                    setToken(response.accessToken);
-                    setIsLoginWithMsal(true);
-                }
-            } catch (e) {
-                if (e instanceof InteractionRequiredAuthError) {
+                const decodedToken = jwtDecode(response.accessToken);
+                setAudience(decodedToken.aud);
+                setToken(response.accessToken);
+                reactLocalStorage.setObject('msaltoken', response.accessToken);
+                setIsAuthenticated(true);
+                setIsLoginWithMsal(true);
+            } catch (error) {
+                if (error instanceof InteractionRequiredAuthError) {
                     try {
                         const response = await instance.acquireTokenPopup(request);
+                        const decodedToken = jwtDecode(response.accessToken);
+                        setAudience(decodedToken.aud);
                         setToken(response.accessToken);
+                        reactLocalStorage.setObject('msaltoken', response.accessToken);
+                        setIsAuthenticated(true);
                         setIsLoginWithMsal(true);
-                    } catch (error) {
+                    } catch (popupError) {
+                        Toaster.error(popupError);
                     }
                 } else {
+                    Toaster.error(error);
+                    setIsAuthenticated(false);
+                    setIsLoginWithMsal(false);
+                    setToken(null);
                 }
             }
-        };
+        } else {
+            setIsAuthenticated(false);
+            setIsLoginWithMsal(false);
+            setToken(null);
+        }
+    };
 
-        fetchToken();
-    }, [instance, accounts, setToken, setIsLoginWithMsal]);
+    useEffect(() => {
+        if (inProgress === 'none') {
+            checkAuthentication();
+        }
+    }, [accounts, instance, setAudience, setIsLoginWithMsal, setToken, inProgress]);
 
-    const handleRedirect = () => {
-        instance
-            .loginRedirect({
-                ...loginRequest,
-                prompt: "select_account",
-            })
-            .catch((error) => console.log(error));
+    useEffect(() => {
+        const token = reactLocalStorage.getObject('msaltoken');
+        if (!token || Object.keys(token).length === 0) {
+            setIsAuthenticated(false);
+        } else {
+            // Check if token is expired
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000;
+            if (decodedToken.exp < currentTime) {
+                setIsAuthenticated(false);
+            } else {
+                setIsAuthenticated(true);
+            }
+        }
+    }, []);
+
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            reactLocalStorage.setObject('msaltoken', null);
+            setToken(null);
+            setIsLoginWithMsal(false);
+        }
+    }, [isAuthenticated, setIsLoginWithMsal, setToken]);
+
+    const handleLogin = async () => {
+        try {
+            await instance.loginRedirect(loginRequest);
+        } catch (redirectError) {
+            Toaster.error(redirectError);
+        }
     };
 
     return (
-        <div className="App">
-            <AuthenticatedTemplate>
-                <p>Authenticated successfully</p>
-            </AuthenticatedTemplate>
-            <UnauthenticatedTemplate>
-                <button type="button" onClick={handleRedirect}>Login with Microsoft</button>
-            </UnauthenticatedTemplate>
+        <div>
+            <button type="button" onClick={handleLogin} style={{ boxShadow: 'none', border: 'none', background: 'none', }}>
+                <img src={logo} alt="Login with Microsoft" style={{ marginBottom: '0' }} />
+            </button>
         </div>
     );
 };

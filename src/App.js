@@ -105,12 +105,15 @@ class App extends Component {
    */
   logUserOut = () => {
     this.setState({ isUserLoggedIn: false });
-    window.location.assign('/login');
+    // Call MSAL logout method
+    this.props.instance.logout();
+    // Clear local storage tokens and other relevant data
+    reactLocalStorage.setObject('msaltoken', null);
     reactLocalStorage.setObject("isUserLoggedIn", false);
     reactLocalStorage.setObject("userDetail", {});
     reactLocalStorage.set('ModuleId', '');
     reactLocalStorage.setObject('logoutRefresh', true);
-
+    window.location.assign('/login');
     //setTimeout(() => {
     //}, 100)
   }

@@ -7,8 +7,6 @@ export const msalConfig = {
     authority:
       "https://login.microsoftonline.com/2b0a3b04-16bd-4638-be57-5622527eb55e",
     redirectUri: "http://localhost:3001/",
-
-
   },
   cache: {
     cacheLocation: "localStorage",

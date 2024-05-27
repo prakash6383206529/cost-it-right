@@ -36,16 +36,30 @@ class Login extends Component {
       forgetIsCalled: false,
       flag: false,
       token: null,
-      isLoginWithMsal: false
+      isLoginWithMsal: false,
+      audiance: null,
     };
   }
 
   setToken = (getParams) => {
     this.setState({ token: getParams });
   };
-
   setIsLoginWithMsal = (getParams) => {
-    this.setState({ isLoginWithMsal: getParams });
+
+    const startTime = Date.now();
+    while (Date.now() < startTime + 200) {
+    }
+
+    this.setState({ isLoginWithMsal: getParams }, () => {
+      if (getParams && getParams !== null) {
+        this.handleLoginWithMsal({});
+      }
+    });
+  };
+
+
+  setAudience = (getParams) => {
+    this.setState({ audiance: getParams })
   };
 
   componentWillMount() {
@@ -64,12 +78,9 @@ class Login extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.isLoginWithMsal !== this.state.isLoginWithMsal) {
 
-      if (this.state.isLoginWithMsal) {
-        this.handleLoginWithMsal({})
-      }
-
+    if (prevState.isLoginWithMsal !== this.state.isLoginWithMsal && this.state.isLoginWithMsal) {
+      this.handleLoginWithMsal({});
     }
   }
 
@@ -77,12 +88,12 @@ class Login extends Component {
   handleLoginWithMsal = (getparams) => {
     let reqParams;
     if (this.state.isLoginWithMsal) {
-      console.log("i am in trues", this.state.token);
       reqParams = {
         username: null,
         password: null,
         grant_type: '',
-        Token: this.state.token
+        Token: this.state.token,
+        audiance: this.state.audiance
       };
     } else {
       reqParams = {
@@ -110,7 +121,9 @@ class Login extends Component {
           this.setState({ inputLoader: false });
         }, 1500);
 
-        this.props.logUserIn();
+        setTimeout(() => {
+          this.props.logUserIn();
+        }, 1000);
 
         setTimeout(() => {
           window.location.replace("/");
@@ -122,8 +135,6 @@ class Login extends Component {
       }
     });
   }
-
-
 
 
   forgotConfirm = () => {
@@ -231,7 +242,7 @@ class Login extends Component {
                   </div>
                 </form>
                 <div className="text-center p-relative pt-5">
-                  <WrappedView setToken={this.setToken} setIsLoginWithMsal={this.setIsLoginWithMsal} />
+                  <WrappedView setToken={this.setToken} setIsLoginWithMsal={this.setIsLoginWithMsal} setAudience={this.setAudience} />
                 </div>
                 {buttonFlag && (
                   <div className="forgot-link d-flex pt-2 justify-content-center">
