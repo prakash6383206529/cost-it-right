@@ -525,7 +525,7 @@ function AddRMDetails(props) {
                             disabled={isEditFlag || isViewFlag}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
                                 <SearchableSelectHookForm
@@ -555,7 +555,7 @@ function AddRMDetails(props) {
                             )}
                         </div>
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
                                 <SearchableSelectHookForm
@@ -576,7 +576,7 @@ function AddRMDetails(props) {
                             </div>
                         </div>
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
                                 <SearchableSelectHookForm
@@ -613,7 +613,7 @@ function AddRMDetails(props) {
                             errors={errors.RawMaterialCategory}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <SearchableSelectHookForm
                             label={`Code`}
                             name={'RawMaterialCode'}
@@ -632,7 +632,7 @@ function AddRMDetails(props) {
                         />
                     </Col>
                     {((states.costingTypeId === ZBCTypeId || (states.costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (states.costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (<>
-                        <div className="col-md-3">
+                        <Col className="col-md-15">
                             <SearchableSelectHookForm
                                 label={'Plant (Code)'}
                                 name="Plants"
@@ -649,10 +649,63 @@ function AddRMDetails(props) {
                                 disabled={isEditFlag || isViewFlag}
                                 errors={errors.Plants}
                             />
-                        </div>
+                        </Col>
                     </>)
                     )}
+                    {states.costingTypeId === CBCTypeId && (
+                        <>
+                            <Col className="col-md-15">
+                                <SearchableSelectHookForm
+                                    name="clientName"
+                                    label="Customer (Code)"
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    rules={{ required: true }}
+                                    placeholder={'Select'}
+                                    options={renderListing("ClientList")}
+                                    handleChange={handleCustomer}
+                                    disabled={isEditFlag || isViewFlag}
+                                    errors={errors.clientName}
+                                />
+                            </Col>
+                        </>
+                    )}
+                    <Col className="col-md-15">
+                        <SearchableSelectHookForm
+                            name="Index"
+                            label="Index (LME)"
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={true}
+                            rules={{ required: true }}
+                            placeholder={'Select'}
+                            options={renderListing("ClientList")}
+                            handleChange={handleCustomer}
+                            disabled={isEditFlag || isViewFlag}
+                            errors={errors.Index}
+                        />
+                    </Col>
+                    <Col className="col-md-15">
+                        <SearchableSelectHookForm
+                            name="ExchangeSource"
+                            label="Exchange Source"
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={true}
+                            rules={{ required: true }}
+                            placeholder={'Select'}
+                            options={renderListing("ClientList")}
+                            handleChange={handleCustomer}
+                            disabled={isEditFlag || isViewFlag}
+                            errors={errors.ExchangeSource}
+                        />
+                    </Col>
                 </Row>
+                <AddIndexationMaterialListing />
                 <Row>
                     <Col md="11">
                         <Row>
@@ -682,7 +735,7 @@ function AddRMDetails(props) {
                                         )}
                                     </div>
                                 </Col>
-                                <Col md="3">
+                                <Col className="col-md-15">
                                     <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                                     <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                         <div className="fullinput-icon p-relative">
@@ -717,7 +770,7 @@ function AddRMDetails(props) {
                             )}
                             {(state.HasDifferentSource || states.costingTypeId === VBCTypeId) && (
                                 <>
-                                    <Col md="3">
+                                    <Col className="col-md-15">
                                         <TextFieldHookForm
                                             label={`Source`}
                                             name={"Source"}
@@ -739,7 +792,7 @@ function AddRMDetails(props) {
 
                                         />
                                     </Col>
-                                    <Col md="3">
+                                    <Col className="col-md-15">
                                         <SearchableSelectHookForm
                                             name="SourceSupplierCityId"
                                             label="Source Location"
@@ -760,30 +813,11 @@ function AddRMDetails(props) {
                                     </Col>
                                 </>
                             )}
-                            {states.costingTypeId === CBCTypeId && (
-                                <>
-                                    < div className="col-md-3">
-                                        <SearchableSelectHookForm
-                                            name="clientName"
-                                            label="Customer (Code)"
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={true}
-                                            rules={{ required: true }}
-                                            placeholder={'Select'}
-                                            options={renderListing("ClientList")}
-                                            handleChange={handleCustomer}
-                                            disabled={isEditFlag || isViewFlag}
-                                            errors={errors.clientName}
-                                        />
-                                    </div>
-                                </>
-                            )}
+
 
                         </Row>
                     </Col>
-                    <AddIndexationMaterialListing />
+
                     {
                         state.isRMDrawerOpen && (
                             <AddSpecification
