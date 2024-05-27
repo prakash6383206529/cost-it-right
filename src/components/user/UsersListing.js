@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col } from 'reactstrap';
-import { getAllUserDataAPI, getAllDepartmentAPI, getAllRoleAPI, activeInactiveUser } from '../../actions/auth/AuthActions';
+import { getAllUserDataAPI, getAllRoleAPI, activeInactiveUser } from '../../actions/auth/AuthActions';
 import $ from 'jquery';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
@@ -104,19 +104,6 @@ const UsersListing = (props) => {
 			}
 		}
 
-		//Get Department Listing
-		dispatch(getAllDepartmentAPI((res) => {
-			if (res && res.data && res.data.DataList) {
-				let Data = res.data.DataList;
-				let obj = {}
-				Data && Data.map((el, i) => {
-					obj[el.DepartmentId] = el.DepartmentName
-					return null
-				})
-				setState((prevState) => ({ ...prevState, departmentType: obj, }))
-			}
-		}))
-
 		// Get roles listing
 		dispatch(getAllRoleAPI((res) => {
 			if (res && res.data && res.data.DataList) {
@@ -197,38 +184,38 @@ const UsersListing = (props) => {
 		setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
 	}
 
-	const onBtExport = () => {		
-		let tempArr = state.gridApi?.getSelectedRows() || [];		
+	const onBtExport = () => {
+		let tempArr = state.gridApi?.getSelectedRows() || [];
 		if (tempArr.length === 0) {
 			tempArr = props.RFQUser ? rfqUserList : userDataList;
 		}
-		return returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr)		
+		return returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr)
 	};
 
 	const returnExcelColumn = (data = [], TempData) => {
-	
+
 		let filteredData = [...data];
 
-		if (TempData != null && (TempData  === userDataList || TempData.length > 0)){
-			if(!props.RFQUser){
-				
-				filteredData = hideMultipleColumnFromExcel(data, ["PointOfContact", "VendorName","CreatedDate","ModifiedDate"]);
+		if (TempData != null && (TempData === userDataList || TempData.length > 0)) {
+			if (!props.RFQUser) {
+
+				filteredData = hideMultipleColumnFromExcel(data, ["PointOfContact", "VendorName", "CreatedDate", "ModifiedDate"]);
 			}
-			else{
-				filteredData = hideMultipleColumnFromExcel(data, ["CreatedDateExcel","ModifiedDateExcel"]);
-				 TempData = TempData.map(item => {
+			else {
+				filteredData = hideMultipleColumnFromExcel(data, ["CreatedDateExcel", "ModifiedDateExcel"]);
+				TempData = TempData.map(item => {
 					if (item.CreatedDate?.includes('T')) {
-						item.CreatedDate = DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss');							
+						item.CreatedDate = DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss');
 					}
-					if (item.ModifiedDate?.includes('T')) {				
+					if (item.ModifiedDate?.includes('T')) {
 						item.ModifiedDate = DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss');
 					}
 					return item;
 				});
 			}
 		}
-		
-	
+
+
 		return (
 			<ExcelSheet data={TempData} name={UserListing}>
 				{filteredData && filteredData.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Department") ? `${handleDepartmentHeader()}` : ele.label} value={ele.value} style={ele.style} />)}
