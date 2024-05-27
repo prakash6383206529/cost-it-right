@@ -2660,7 +2660,7 @@ const CostingSummaryTable = (props) => {
 
                               {viewCostingData &&
                                 viewCostingData?.map((data) => {
-                                  const { ApplicabilityType, EffectiveRecoveryPercentage, RejectionRecoveryNetCost } = data?.CostingRejectionRecoveryDetails
+                                  const { ApplicabilityType, EffectiveRecoveryPercentage, RejectionRecoveryNetCost } = data?.CostingRejectionRecoveryDetails || {}
                                   return (
 
                                     <td className={tableDataClass(data)}>
