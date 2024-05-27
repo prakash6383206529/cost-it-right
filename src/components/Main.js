@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL, MASTER_COST_MOVEMENT_REPORT, RESET_PASSWORD, FORGET_PASSWORD, NFR_INSIGHT_DETAILS, INSIGHT_SIMULATION_REPORT, lOGIN_AUDIT, VENDOR_MANAGEMENT, SUPPLIER_MANAGEMENT, lOGIN_AUDITS, INITIATE_UNBLOCKING, LPS_RATING, SUPPLIER_APPROVAL_SUMMARY, APPROVAL_LISTING
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL, MASTER_COST_MOVEMENT_REPORT, RESET_PASSWORD, FORGET_PASSWORD, NFR_INSIGHT_DETAILS, INSIGHT_SIMULATION_REPORT, lOGIN_AUDIT, VENDOR_MANAGEMENT, SUPPLIER_MANAGEMENT, lOGIN_AUDITS, INITIATE_UNBLOCKING, LPS_RATING, SUPPLIER_APPROVAL_SUMMARY, APPROVAL_LISTING, VENDOR_CLASSIFICATION
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -78,10 +78,11 @@ import LoginAudit from './audit/LoginAudit'
 import SAPDetailList from './masters/sap-detail/SAPDetailList'
 import NFRInsightsReport from './report/components/NFRInsightReportFolder/NFRInsightReport'
 import VendorManagement from './vendorManagement'
-import ApprovalListing from './vendorManagement/approval/ApprovalListing'
 import InitiateUnblocking from './vendorManagement/InitiateUnblocking'
 import LpsRatingListing from './vendorManagement/LpsRatingLisitng'
-import SummaryDrawer from './vendorManagement/approval/SummaryDrawer'
+import VendorMaster from './masters/supplier-master'
+import VendorClassificationListing from './vendorManagement/VendorClassificationListing'
+
 
 
 const CustomHeader = {
@@ -277,7 +278,6 @@ class Main extends Component {
                       </div>
                     </div>
                   </div>
-                  {isLogin && !this.state.visibelPageNotFound && (<Breadcrumb {...this.props} />)}
                 </div>
               </div>
             </div>
@@ -344,7 +344,7 @@ class Main extends Component {
 
                     <Route path="/plant-master" component={AuthMiddleware(PlantMaster, PLANT)} />
 
-                    <Route path="/vendor-master" component={AuthMiddleware(SupplierMaster, VENDOR)} />
+                    <Route path="/vendor-master" component={AuthMiddleware(VendorMaster, VENDOR)} />
 
                     <Route path="/bop-master" component={AuthMiddleware(BOPMaster, BOP)} />
 
@@ -416,14 +416,15 @@ class Main extends Component {
                     <Route path="/nfr-insights-details" component={AuthMiddleware(NFRInsightsReport, NFR_INSIGHT_DETAILS)} />
                     <Route path="/login-audit" component={AuthMiddleware(LoginAudit, lOGIN_AUDIT)} />
                     <Route path="/vendor-classification" component={AuthMiddleware(VendorManagement, VENDOR_MANAGEMENT)} />
-                    <Route path="/lps-rating" component={AuthMiddleware(LpsRatingListing, LPS_RATING)} />
-                    <Route path="/supplier-management/approval-listing" component={(ApprovalListing, APPROVAL_LISTING)} />
+                    {/* <Route path="/lps-rating" component={AuthMiddleware(LpsRatingListing, LPS_RATING)} /> */}
+                    <Route path="/supplier-approval-summary" component={(CommonApproval, APPROVAL_LISTING)} />
                     <Route path='/initiate-unblocking' component={AuthMiddleware(InitiateUnblocking, INITIATE_UNBLOCKING)} />
-                    <Route path='/supplier-approval-summary' component={SummaryDrawer} />
+                    {/* <Route path='/supplier-approval-summary' component={SummaryDrawer} /> */}
                     {/* <Route path='/initiate-unblocking/vendor-classification' component={UnblockClassification} />
                     <Route path='/initiate-unblocking/vendor-lps' component={UnblockClassificationLps} />
                     <Route path='/initiate-unblocking/lps-rating' component={UnblockLPSRating} /> */}
-
+                    <Route path='/vendor-classification' component={AuthMiddleware(VendorClassificationListing, VENDOR_CLASSIFICATION)} />
+                    <Route path='/lps-rating' component={AuthMiddleware(LpsRatingListing, LPS_RATING)} />
 
 
 

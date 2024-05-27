@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -50,7 +50,7 @@ import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from './TourMessages'
 import { useTranslation } from 'react-i18next';
-import AdditionalTcoInfo from './CostingHeadCosts/AdditionalOtherCost/ViewTcoDetail'
+import ViewTcoDetail from './CostingHeadCosts/AdditionalOtherCost/ViewTcoDetail'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -85,6 +85,7 @@ const CostingSummaryTable = (props) => {
   const [viewConversionCostData, setViewConversionCostData] = useState([])
   const [viewRMData, setViewRMData] = useState([])
   const [viewOverheadData, setViewOverheadData] = useState([])
+  const [viewRejectionRecoveryData, setViewRejectionRecoveryData] = useState([])
   const [viewProfitData, setViewProfitData] = useState([])
   const [viewToolCost, setViewToolCost] = useState([])
   const [viewRejectAndModelType, setViewRejectAndModelType] = useState({})
@@ -180,13 +181,18 @@ const CostingSummaryTable = (props) => {
   const [count, setCount] = useState(0);
   const [disableSendForApproval, setDisableSendForApproval] = useState(false)
   const [cssObj, setCssObj] = useState({})
+  const [rfqCosting, setRfqCosting] = useState(props?.isRfqCosting)
+
   useEffect(() => {
-    applyPermission(topAndLeftMenuData, selectedTechnology)
-    setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
+    applyPermission(topAndLeftMenuData, selectedTechnology);
+    setIsSuperAdmin(userDetails()?.Role === "SuperAdmin");
+
     return () => {
-      dispatch(setCostingViewData([]))
-    }
-  }, [])
+      if (rfqCosting === false) {
+        dispatch(setCostingViewData([]));
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (compareButtonPressed === true) {
@@ -529,9 +535,10 @@ const CostingSummaryTable = (props) => {
     let isIncludeSurfaceTreatmentWithOverheadAndProfit = viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit
     let isIncludeOverheadAndProfitInICC = viewCostingData[index]?.isIncludeOverheadAndProfitInICC
     let isIncludeToolCostInCCForICC = viewCostingData[index]?.isIncludeToolCostInCCForICC
-
+    let rejectionRecoveryData = viewCostingData[index]?.CostingRejectionRecoveryDetails
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
+    setViewRejectionRecoveryData(rejectionRecoveryData)
     setViewProfitData(profitData)
     setIccPaymentData(IccPaymentData)
     let obj = {
@@ -2123,7 +2130,6 @@ const CostingSummaryTable = (props) => {
                                 const dateVersionAndStatus = (data?.bestCost === true) ? ' ' : `${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.isRfqCosting ? (notSelectedCostingId?.includes(data?.costingId) ? "-Not Selected" : `-${data?.status}`) : props.costingSummaryMainPage ? `-${data?.status}` : ''}`
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    { }
                                     <div className={`date-and-btn-wrapper ${(data?.bestCost === true) ? '' : 'bg-grey'} ${drawerDetailPDF ? 'p-0' : ''}`}>
                                       <span className='date-and-version' title={dateVersionAndStatus}>{dateVersionAndStatus}</span>
                                       <div className='button-container'>{costingIdList?.includes(data?.costingId) && <button
@@ -2646,6 +2652,7 @@ const CostingSummaryTable = (props) => {
                                 <br />
                                 <span className={highlighter(["overheadOn", "overheadValue"], "multiple-key")}>Overhead On</span>
                                 <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Profit On</span>
+                                <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Rejection Recovery</span>
                                 <span className={highlighter(["rejectionOn", "rejectionValue"], "multiple-key")}>Rejection On</span>
                                 <span className={highlighter(["iccOn", "iccValue"], "multiple-key")}>ICC On</span>
                                 <span className={highlighter(["paymentTerms", "paymentValue"], "multiple-key")}>Payment Terms</span>
@@ -2653,6 +2660,7 @@ const CostingSummaryTable = (props) => {
 
                               {viewCostingData &&
                                 viewCostingData?.map((data) => {
+                                  const { ApplicabilityType, EffectiveRecoveryPercentage, RejectionRecoveryNetCost } = data?.CostingRejectionRecoveryDetails
                                   return (
 
                                     <td className={tableDataClass(data)}>
@@ -2690,6 +2698,17 @@ const CostingSummaryTable = (props) => {
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
                                         </span>
                                       </div>
+                                      <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
+                                        <span className="d-inline-block w-50 small-grey-text">
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? ApplicabilityType ?? '-' : '')}
+                                        </span>{' '}
+                                        <span className="d-inline-block w-50 small-grey-text">
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? EffectiveRecoveryPercentage ?? '-' : '')}
+                                        </span>{' '}
+                                        <span className="d-inline-block w-50 small-grey-text">
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                        </span>
+                                      </div>
                                       <div style={pdfHead ? { marginTop: '-2px' } : {}} className={`d-flex ${highlighter(["rejectionOn", "rejectionValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle : '')}
@@ -2698,7 +2717,7 @@ const CostingSummaryTable = (props) => {
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle === 'Fixed' ? '-' : data?.rejectionOn.rejectionPercentage : '')}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}{!pdfHead && !drawerDetailPDF && RejectionRecoveryNetCost && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="rejection-recovery" width="280px" tooltipText={"Rejection Cost = Net Rejection Cost - Rejection Recovery Cost"} />}</span> : '')}
                                         </span>
                                       </div>
                                       <div style={pdfHead ? { marginTop: '-1px' } : {}} className={`d-flex  ${highlighter(["iccOn", "iccValue"], "multiple-key")}`}>
@@ -2733,6 +2752,7 @@ const CostingSummaryTable = (props) => {
                               overheadData={viewOverheadData}
                               profitData={viewProfitData}
                               rejectAndModelType={viewRejectAndModelType}
+                              viewRejectionRecovery={viewRejectionRecoveryData}
                               iccPaymentData={iccPaymentData}
                               closeDrawer={closeViewDrawer}
                               anchor={'right'}
@@ -2904,19 +2924,8 @@ const CostingSummaryTable = (props) => {
                                       {/* <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.discount : ''}</span> &nbsp;{' '}
                                        <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.value : ''}</span> */}
 
-                                      <div style={{ width: '95%' }} className={`d-flex justify-content-between`}>
-                                        <div>
-                                          <div className=''>Applicability</div>
-                                          <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key") + " mt-2"}>{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0 && (data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType ?? '-')}</div>
-                                        </div>
-                                        <div>
-                                          <div>Percentage (%)</div>
-                                          <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key") + " mt-2"}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) && <span title={checkForDecimalAndNull(String(data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType) === String('Fixed') ? '-' : data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{String(data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType) === String('Fixed') ? '-' : checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</div>
-                                        </div>
-                                        <div className='mr-2'>
-                                          <div>Value</div>
-                                          <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key") + " mt-2"}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</div>
-                                        </div>
+                                      <div className={`${highlighter("NetDiscountsCost")}`}>
+                                        <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.CostingPartDetails.NetDiscountsCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.NetDiscountsCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                       </div>
                                       {/* <span className="d-inline-block ">{"Applicability"}</span>
                                       <span className="d-inline-block ">{"Value"}</span>
@@ -2944,7 +2953,7 @@ const CostingSummaryTable = (props) => {
 
                                   (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
                                     <td className={tableDataClass(data)}>
-                                      <div className={`${highlighter("anyOtherCost")}`}>
+                                      <div className={`${highlighter("anyOtherCostTotal")}`}>
                                         <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                       </div>
                                     </td>
@@ -2986,25 +2995,23 @@ const CostingSummaryTable = (props) => {
                                 })}
                             </tr>
                           }
-                          <AdditionalTcoInfo isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} />
-                          {/* {
-                          initialConfiguration?.IsShowNpvCost && <tr>
-                            <td>
-                              <span className={`d-block small-grey-text`}>Net NPV Cost</span>
-                            </td>
-                            {viewCostingData &&
-                              viewCostingData?.map((data) => {
-                                return (
-                                  <td className={tableDataClass(data)}>
-                                    <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
-                                      {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                    </span>
+                          {/* initialConfiguration?.IsShowNpvCost && */
+                            <tr className={highlighter("npvCost", "main-row")}>
+                              <th>NPV Cost</th>
+                              {viewCostingData &&
+                                viewCostingData?.map((data, index) => {
+                                  return (
+                                    <td className={tableDataClass(data)}>
+                                      <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
+                                        {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                      </span>
 
-                                  </td>
-                                )
-                              })}
-                          </tr>
-                        } */}
+                                    </td>
+                                  )
+                                })}
+                            </tr>
+                          }
+                          {props?.isRfqCosting && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} />}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
                               <td>
@@ -3390,6 +3397,7 @@ const CostingSummaryTable = (props) => {
             overheadData={viewOverheadData}
             profitData={viewProfitData}
             rejectAndModelType={viewRejectAndModelType}
+            viewRejectionRecovery={viewRejectionRecoveryData}
             iccPaymentData={iccPaymentData}
             closeDrawer={closeViewDrawer}
             anchor={'right'}

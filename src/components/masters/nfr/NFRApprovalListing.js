@@ -90,7 +90,7 @@ function NFRApprovalListing(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <div
+                <div id="view_nfrSummary"
                     onClick={() => viewDetailCostingID(row.UserId, cell, row)}
                     className={'link'}
                 >{cell}</div>
@@ -150,7 +150,7 @@ function NFRApprovalListing(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <Fragment>
-                {(cell === '' || cell === null) ? <div id="view_nfrSummary" className='ml-4'>-</div> : <div onClick={() => viewDetails(cell, row)} className={'link'}>{cell}</div>}
+                {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div id="view_nfrSummary" onClick={() => viewDetails(cell, row)} className={'link'}>{cell}</div>}
             </Fragment>
         )
     }

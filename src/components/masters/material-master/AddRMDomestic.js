@@ -255,7 +255,7 @@ class AddRMDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    const { data, initialConfiguration } = this.props
+    const { data } = this.props
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     this.props.getUOMSelectList(() => { })
     if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
@@ -270,24 +270,28 @@ class AddRMDomestic extends Component {
         this.props.getRMSpecificationDataList({ GradeId: null }, () => { });
       })
     }
-    if (!(this.props.data.isEditFlag || this.state.isViewFlag) && this.state.Technology) {
+    if (!(this.props.data.isEditFlag || data.isViewFlag) && this.state.Technology) {
       this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory((res) => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     }
+  }
+
+  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+    const { initialConfiguration } = this.props
     if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
+          this.commonFunction(plantId)
         }, 100);
       })
     } else {
       this.setState({ finalApprovalLoader: false })
     }
   }
-
   setInStateToolTip() {
     const obj = { ...this.state.toolTipTextObject, netCostCurrency: this.netCostTitle(), basicPriceCurrency: this.basicPriceTitle() }
     this.setState({ toolTipTextObject: obj })
@@ -580,8 +584,8 @@ class AddRMDomestic extends Component {
     }
 
     if (this.state.isEditFlag) {
-
       if (checkForNull(fieldsObj?.ScrapRateBaseCurrency) === checkForNull(this.state.DataToChange.ScrapRate) && checkForNull(this.state.NetLandedCostBaseCurrency) === checkForNull(this.state.DataToChange?.NetLandedCost)
+
         && checkForNull(this.state.BasicPrice) === checkForNull(this.state.DataToChange?.BasicPrice)) {
         this.setState({ IsFinancialDataChanged: false })
       } else {
@@ -782,7 +786,11 @@ class AddRMDomestic extends Component {
               CalculatedFactor: Data?.CalculatedFactor,
             })
             this.checkTechnology({ label: Data.TechnologyName, value: Data.TechnologyId })
-
+            if (!data.isViewFlag) {
+              this.finalUserCheckAndMasterLevelCheckFunction(Data.DestinationPlantId)
+            } else {
+              this.setState({ finalApprovalLoader: false })
+            }
             this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
             this.setState({ minEffectiveDate: Data.EffectiveDate })
             this.setState({
@@ -1927,7 +1935,7 @@ class AddRMDomestic extends Component {
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
                                       noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                      isDisabled={isEditFlag || isViewFlag}
+
                                       onKeyDown={(onKeyDown) => {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                       }}

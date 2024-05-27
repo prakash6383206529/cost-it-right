@@ -90,9 +90,10 @@ function RMImportListing(props) {
   const [tempList, setTempList] = useState([])
   const [showExtraData, setShowExtraData] = useState(false)
   const [render, setRender] = useState(false)
+  const [disableEdit, setDisableEdit] = useState(true)
   const { t } = useTranslation("common")
   const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
-  const { tokenForSimulation } = useSelector(state => state.simulation)
+  const { tokenForSimulation, selectedMasterForSimulation } = useSelector(state => state.simulation)
   const headerNames = {
     BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
     ScrapRate: `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
@@ -543,8 +544,12 @@ function RMImportListing(props) {
   * @description Renders buttons
   */
   const effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    if (showExtraData && props?.rowIndex === 0) {
+      return "Lorem Ipsum";
+    } else {
+      const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+      return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
   }
 
   /**
@@ -754,6 +759,12 @@ function RMImportListing(props) {
 
     let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     var selectedRows = gridApi && gridApi?.getSelectedRows();
+    if (props?.isSimulation && selectedRows?.length !== 0) {
+      setDisableEdit(false)
+    } else {
+      setDisableEdit(true)
+
+    }
     if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination
     } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
@@ -880,7 +891,7 @@ function RMImportListing(props) {
       {(loader && !props?.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
         <>
           {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-          <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
+          <Row className={`filter-row-large pt-2 ${isSimulation ? "zindex-0" : ""}`}>
             <Col md="3" lg="3">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
               {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
@@ -924,7 +935,7 @@ function RMImportListing(props) {
                         icon={"filter"}
                         disabled={disableFilter}
                       />
-
+                      {/* 
                       {AddAccessibility && (
 
                         <Button
@@ -943,7 +954,7 @@ function RMImportListing(props) {
                           title={"Bulk Upload"}
                           icon={"upload"}
                         />
-                      )}
+                      )} */}
                       {
                         DownloadAccessibility &&
                         <>
@@ -1063,8 +1074,9 @@ function RMImportListing(props) {
           </Row >
           {
             props.isSimulation && isFromVerifyPage && <Row>
-              <Col md="12" className="d-flex justify-content-end">
-                <button type="button" className={"apply"} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
+              <Col md="12" className="d-flex justify-content-end align-items-center">
+                {disableEdit && <WarningMessage dClass="mr-5" message={"Please check the Raw Material that you want to edit."} />}
+                <button type="button" className={"apply"} disabled={disableEdit} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
               </Col>
             </Row>
           }

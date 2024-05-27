@@ -22,26 +22,19 @@ import LoaderCustom from '../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
 function MasterSendForApproval(props) {
-    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
-
-
+    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-
-
     const [approvalDropDown, setApprovalDropDown] = useState([])
     const [approverIdList, setApproverIdList] = useState([])
     const [isDisable, setIsDisable] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
-
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const { deptList } = useSelector((state) => state.material)
-
     const { initialConfiguration } = useSelector(state => state.auth)
-
     const toggleDrawer = (event, type = 'cancel') => {
         if (isDisable) {
             return false
@@ -62,22 +55,30 @@ function MasterSendForApproval(props) {
         dispatch(getAllMasterApprovalDepartment((res) => {
             const Data = res?.data?.SelectList
             const departObj = Data && Data.filter(item => item.Value === userDetails().DepartmentId)
+            setTimeout(() => {
+                setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
 
-            setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+            }, 100);
             let approverIdListTemp = []
             let obj = {
                 LoggedInUserId: loggedInUserId(),
                 DepartmentId: departObj && departObj[0]?.Value,
                 MasterId: masterId,
-                ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
+                OnboardingMasterId: OnboardingId,
+                ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
                 ReasonId: reasonId,
                 PlantId: approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID
+
             }
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
+
                 const Data = res.data.DataList[1] ? res.data.DataList[1] : []
                 if (Data?.length !== 0) {
-                    setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-                    setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+                    setTimeout(() => {
+                        setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+                        setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+                    }, 100);
+
                     let tempDropdownList = []
                     res.data.DataList &&
                         res.data.DataList.map((item) => {
@@ -91,8 +92,11 @@ function MasterSendForApproval(props) {
                             approverIdListTemp.push(item.Value)
                             return null
                         })
-                    setApprovalDropDown(tempDropdownList)
-                    setApproverIdList(approverIdListTemp)
+                    setTimeout(() => {
+                        setApprovalDropDown(tempDropdownList)
+
+                        setApproverIdList(approverIdListTemp)
+                    }, 100)
                 }
             },),)
         }))
@@ -113,7 +117,7 @@ function MasterSendForApproval(props) {
             deptList &&
                 deptList.map((item) => {
                     if (item.Value === '0') return false
-                    tempDropdownList.push({ label: item.Text, value: item.Value })
+                    tempDropdownList?.push({ label: item.Text, value: item.Value })
                     return null
                 })
             return tempDropdownList
@@ -121,7 +125,7 @@ function MasterSendForApproval(props) {
         if (label === 'reasons') {
             reasonsList && reasonsList.map((item) => {
                 if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
+                tempDropdownList?.push({ label: item.Text, value: item.Value })
                 return null
             })
             return tempDropdownList
@@ -136,8 +140,9 @@ function MasterSendForApproval(props) {
             LoggedInUserId: loggedInUserId(), // user id
             DepartmentId: value.value,
             MasterId: masterId,
+            OnboardingMasterId: OnboardingId,
             ReasonId: '',
-            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
+            ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
             PlantId: approvalObj.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID
         }
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
@@ -157,8 +162,11 @@ function MasterSendForApproval(props) {
                         approverIdListTemp.push(item.Value)
                         return null
                     })
-                setApprovalDropDown(tempDropdownList)
-                setApproverIdList(approverIdListTemp)
+                setTimeout(() => {
+
+                    setApprovalDropDown(tempDropdownList)
+                    setApproverIdList(approverIdListTemp)
+                }, 100);
             }
         }),
         )
@@ -172,6 +180,11 @@ function MasterSendForApproval(props) {
         const dept = getValues('dept')
         const approver = getValues('approver')
         setIsDisable(true)
+        if (initialConfiguration.IsMultipleUserAllowForApproval && (!getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
+            Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.')
+            setIsDisable(false)
+            return false
+        }
         if (type === 'Sender') {
             //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
             let senderObj = {}
@@ -196,7 +209,8 @@ function MasterSendForApproval(props) {
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
             senderObj.CostingTypeId = props?.costingTypeId
-            senderObj.ApprovalTypeId = costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId)
+
+            senderObj.ApprovalTypeId = masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId
             senderObj.MasterIdList = [
 
             ]
@@ -440,7 +454,7 @@ function MasterSendForApproval(props) {
                 setIsLoader(true)
                 dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
                     setIsLoader(false)
-                    if (res.data.Result) {
+                    if (res?.data?.Result) {
                         Toaster.success('Token Rejected')
                         props.closeDrawer('', 'submit')
                     }
@@ -451,7 +465,10 @@ function MasterSendForApproval(props) {
     }), 500)
 
     const getHeaderNameForApproveReject = () => {
+
         switch (checkForNull(masterId)) {
+            case 0:
+                return "Supplier"
             case 1:
                 return "Raw Material"
             case 2:
@@ -471,8 +488,8 @@ function MasterSendForApproval(props) {
         let labelSelectedCurrency = `Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency')}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
         let labelBaseCurrency = `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
         if (showScrapKeys?.showCircleJali) {
-            labelSelectedCurrency = `Jali Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency')}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
-            labelBaseCurrency = `Jali Scrap Rate (${reactLocalStorage.getObject("baseCurrency")}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+            labelSelectedCurrency = `Jali Scrap Rate 45(${approvalObj?.Currency ? approvalObj?.Currency : (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency')}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+            labelBaseCurrency = `Jali Scrap Rate 54(${reactLocalStorage.getObject("baseCurrency")}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
         } else if (showScrapKeys?.showForging) {
             labelSelectedCurrency = `Forging Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency')}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
             labelBaseCurrency = `Forging Scrap Rate (${reactLocalStorage.getObject("baseCurrency")}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
@@ -730,7 +747,7 @@ function MasterSendForApproval(props) {
                     </Col>
                     <Col md="6">
                         <TextFieldHookForm
-                            label={`Conversion Ratio (${displayUOM(approvalObj?.ScrapUnitOfMeasurement)}/${displayUOM(props?.UOM?.label)})`}
+                            label={`Conversion Ratio (${approvalObj?.ScrapUnitOfMeasurement}/${approvalObj?.UnitOfMeasurementName})`}
                             name={"UOMToScrapUOMRatio"}
                             type="text"
                             Controller={Controller}
@@ -747,7 +764,7 @@ function MasterSendForApproval(props) {
                     <Col md="6">
                         <TooltipCustom id="conversion-factor-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextCalculatedFactor} />
                         <TextFieldHookForm
-                            label={`Calculated Factor (${props?.UOM?.label}/${approvalObj?.ScrapUnitOfMeasurement})`}
+                            label={`Calculated Factor (${approvalObj?.UnitOfMeasurementName}/${approvalObj?.ScrapUnitOfMeasurement})`}
                             name={"CalculatedFactor"}
                             type="text"
                             Controller={Controller}
@@ -913,7 +930,7 @@ function MasterSendForApproval(props) {
                         <Col md="6">
                             <TooltipCustom id="jali-scrap-cost-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Jali Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                label={labelWithUOMAndCurrency("Jali Scrap Rate 66", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"JaliScrapCost"}
                                 type="text"
                                 Controller={Controller}
@@ -930,7 +947,7 @@ function MasterSendForApproval(props) {
                         {props?.IsImportEntry && <Col md="6">
                             <TooltipCustom id="rm-jali-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextJaliScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Jali Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
+                                label={labelWithUOMAndCurrency("Jali Scrap Rate 44", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
                                 name={"JaliScrapCostBase"}
                                 type="text"
                                 Controller={Controller}

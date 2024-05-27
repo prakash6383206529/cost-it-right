@@ -115,6 +115,7 @@ function AddRfq(props) {
     const [plant, setPlant] = useState({})
     const [isNFRFlow, setIsNFRFlow] = useState(false)
     const [rmAPIList, setRMAPIList] = useState([])
+    const [rmNameSelected, setRmNameSelected] = useState(false)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
     const rmSpecification = useSelector(state => state.comman.rmSpecification);
@@ -589,7 +590,7 @@ function AddRfq(props) {
                     if (isSent) {
                         Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
                     } else {
-                        Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                        Toaster.success(MESSAGES.RFQ_UPDATE_SUCCESS)
                     }
                     cancel()
                 }
@@ -690,10 +691,14 @@ function AddRfq(props) {
                 obj.ContactPersonId = getValues('contactPerson')?.value
                 obj.Vendor = getValues('vendor')?.label
                 obj.ContactPerson = getValues('contactPerson')?.label
+                if (obj.VendorId === null || obj.VendorId === undefined) {
+                    Toaster.warning("Please fill all the mandatory fields first.");
+                    return false;
+                }
 
-                if (obj.VendorId === null || obj.VendorId === undefined || obj.ContactPersonId === null || obj.ContactPersonId === undefined) {
-
-                    Toaster.warning("Please fill all the mandatory fields first.")
+                // Check IsSendQuotationToPointOfContact() result and ContactPersonId
+                if (IsSendQuotationToPointOfContact() && (obj.ContactPersonId === null || obj.ContactPersonId === undefined)) {
+                    Toaster.warning("Please fill all the mandatory fields first.");
                     return false;
                 }
 
@@ -890,11 +895,24 @@ function AddRfq(props) {
             let objTemp = {};
             let arrTemp = [];
             let Data = {}
-
+            const { label } = getValues('RMName') || {};
+            const isRMGradeMissing = !getValues('RMGrade');
+            const isRMSpecificationMissing = !getValues('RMSpecification');
             if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
                 Toaster.warning("Please select part number and SOP date");
                 return false;
+            } if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
+                const missingRequirements = [];
+                if (isRMGradeMissing) {
+                    missingRequirements.push('RM Grade');
+                }
+                if (isRMSpecificationMissing) {
+                    missingRequirements.push('RM Specification');
+                }
+                const message = `Please select ${missingRequirements.join(' and ')}`;
+                Toaster.warning(message);
             } else {
+
                 if (nfrId) {
                     dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
                         Data = res.data.Data
@@ -1298,6 +1316,7 @@ function AddRfq(props) {
 
     const handleRMName = (newValue) => {
         setRMName({ label: newValue?.label, value: newValue?.value })
+        setRmNameSelected(true)
         dispatch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { }))
     }
 
@@ -1447,6 +1466,23 @@ function AddRfq(props) {
                                     </Row>
                                     <HeaderTitle title={'Part:'} />
                                     <Row className="part-detail-wrapper">
+                                        {/* <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"Part Type"}
+                                                name={"PartType"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                // defaultValue={partType.length !== 0 ? partType : ""}
+                                                options={renderListing('PartType')}
+                                                mandatory={true}
+                                                // handleChange={handlePartTypeChange}
+                                                errors={errors.Part}
+                                                disabled={(technology.length === 0) ? true : false}
+                                            />
+                                        </Col> */}
                                         <Col md="3">
                                             <AsyncSearchableSelectHookForm
                                                 label={"Part No"}
@@ -1466,6 +1502,25 @@ function AddRfq(props) {
                                                 asyncOptions={partFilterList}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
+                                            {/* <Col className="col-md-15">
+                                                <TextFieldHookForm
+                                                    // title={titleObj.descriptionTitle}
+                                                    label="Assembly/Part Description"
+                                                    name={'Description'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    handleChange={() => { }}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.Description}
+                                                    disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col> */}
                                         </Col>
                                         <Col md="3">
                                             <div className="inputbox date-section">
@@ -1531,7 +1586,7 @@ function AddRfq(props) {
                                                         customClassName="costing-version"
                                                         // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
                                                         options={renderListingRM('rmgrade')}
-                                                        mandatory={false}
+                                                        mandatory={rmNameSelected}
                                                         handleChange={(newValue) => handleRMGrade(newValue)}
                                                         disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
                                                     // errors={`${indexInside} CostingVersion`}
@@ -1550,7 +1605,7 @@ function AddRfq(props) {
                                                         customClassName="costing-version"
                                                         // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
                                                         options={renderListingRM('rmspecification')}
-                                                        mandatory={false}
+                                                        mandatory={rmNameSelected}
                                                         handleChange={(newValue) => handleRMSpecification(newValue)}
                                                         disabled={(dataProps?.isAddFlag ? partNoDisable || isNFRFlow : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
                                                     // errors={`${indexInside} CostingVersion`}
@@ -1693,7 +1748,7 @@ function AddRfq(props) {
                                         <Col md="3">
                                             {IsSendQuotationToPointOfContact() && (
                                                 <SearchableSelectHookForm
-                                                    label={"Point of Contact"}
+                                                    label={"Vendor's Point of Contact"}
                                                     name={"contactPerson"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
@@ -2015,13 +2070,13 @@ function AddRfq(props) {
                                                 </button>
                                             }
 
-                                            <button type="button" className="submit-button save-btn" value="send"
+                                            {!props?.isEditFlag && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}
                                                 disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
-                                            </button>
+                                            </button>}
                                         </div >
                                     </Row >
                                 </form >

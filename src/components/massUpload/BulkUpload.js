@@ -40,6 +40,7 @@ import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
 import DayTime from '../common/DayTimeWrapper';
 import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
 import WarningMessage from '../common/WarningMessage';
+import Switch from 'react-switch'
 const bopMasterName = showBopLabel();
 
 class BulkUpload extends Component {
@@ -61,7 +62,8 @@ class BulkUpload extends Component {
             bulkUploadLoader: false,
             costingTypeId: props?.fileName === "Interest Rate" ? VBCTypeId : ZBCTypeId,
             showPopup: false,
-            bopType: ''
+            bopType: '',
+            isImport: false,
         }
     }
 
@@ -643,7 +645,7 @@ class BulkUpload extends Component {
             LoggedInUserId: loggedInUserId(),
             IsFinalApprover: !this.props.initialConfiguration.IsMasterApprovalAppliedConfigure ? true : IsFinalApprover,
             CostingTypeId: costingTypeId,
-            TypeOfEntry: typeOfEntryId ? typeOfEntryId : 0
+            TypeOfEntry: this.props.masterId === RM_MASTER_ID && this.state.isImport ? ENTRY_TYPE_IMPORT : typeOfEntryId ? typeOfEntryId : 0
         }
         if (costingTypeId === ZBCADDMORE || costingTypeId === ZBCADDMOREOPERATION) {
             masterUploadData.CostingTypeId = ZBCTypeId
@@ -658,7 +660,7 @@ class BulkUpload extends Component {
         } else if (fileName === 'Budgeted Volume') {
             uploadData.TypeOfEntry = ENTRY_TYPE_IMPORT
         }
-        if (fileName === 'RM Domestic' || fileName === 'RM Import') {
+        if (fileName === 'RM') {
             this.props.bulkUploadRM(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
@@ -777,6 +779,15 @@ class BulkUpload extends Component {
         }
 
     }
+    /**
+* @method onRmToggle
+* @description RM TOGGLE
+*/
+    onRmToggle = () => {
+        this.setState({
+            isImport: !this.state.isImport,
+        })
+    }
 
     /**
      * @method render
@@ -794,6 +805,7 @@ class BulkUpload extends Component {
                 failedData={failedData}
                 costingTypeId={costingTypeId}
                 bopType={bopType}
+                isImport={this.state.isImport}
             />
         }
         return (
@@ -817,7 +829,28 @@ class BulkUpload extends Component {
                                         </div>
                                     </Col>
                                 </Row>
-
+                                <Row>
+                                    <Col md="4" className="switch mb15">
+                                        <label className="switch-level">
+                                            <div className={"left-title"}>Domestic</div>
+                                            <Switch
+                                                onChange={this.onRmToggle}
+                                                checked={this.state.isImport}
+                                                id="normal-switch"
+                                                disabled={false}
+                                                background="#4DC771"
+                                                onColor="#4DC771"
+                                                onHandleColor="#ffffff"
+                                                offColor="#4DC771"
+                                                uncheckedIcon={false}
+                                                checkedIcon={false}
+                                                height={20}
+                                                width={46}
+                                            />
+                                            <div className={"right-title"}>Import</div>
+                                        </label>
+                                    </Col>
+                                </Row>
                                 <Row className="pl-3">
                                     {isZBCVBCTemplate &&
                                         <Col md="12">
@@ -932,6 +965,7 @@ class BulkUpload extends Component {
                                             isFailedFlag={false}
                                             costingTypeId={costingTypeId}
                                             bopType={bopType}
+                                            isImport={this.state.isImport}
                                         />
                                     </div>
 

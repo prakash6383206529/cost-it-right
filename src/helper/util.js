@@ -631,13 +631,18 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
     ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark : '-',
   }
 
+
+  const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail;
+
   obj.paymentTerms = {
-    paymentTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-',
-    paymentValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0,
-    paymentPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.InterestRate ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.InterestRate : '-',
-    PaymentTermCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermCRMHead ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermCRMHead : '-',
-    PaymentTermRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.Remark ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.Remark : '-',
-  }
+    paymentTitle: paymentTermDetail?.PaymentTermApplicability || '-',
+    paymentValue: paymentTermDetail?.NetCost || 0,
+    paymentPercentage: paymentTermDetail?.InterestRate || '-',
+    PaymentTermCRMHead: paymentTermDetail?.PaymentTermCRMHead || '-',
+    PaymentTermRemark: paymentTermDetail?.Remark || '-',
+  };
+
+  obj.CostingRejectionRecoveryDetails = (dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingRejectionDetail && dataFromAPI?.CostingPartDetails.CostingRejectionDetail?.CostingRejectionRecoveryDetails) ?? {}
 
   obj.nOverheadProfit = isBestCost ? (dataFromAPI && dataFromAPI?.NetOverheadAndProfitCost !== undefined ? dataFromAPI?.NetOverheadAndProfitCost : 0) :
     dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost ? dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost : 0
@@ -678,7 +683,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
     discountApplicablity: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountApplicability : 0,
     dicountType: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType : '-'
   }
-
+  obj.netDiscountsCost = dataFromAPI?.CostingPartDetails?.NetDiscountsCost
   obj.anyOtherCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost : 0
   obj.anyOtherCostType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostType : '-'
   obj.anyOtherCostApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostApplicability : 0
@@ -775,8 +780,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.rejectionApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0
   obj.iccApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-'
   obj.iccApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0
-  obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-'
-  obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0
+  obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.PaymentTermApplicability : '-'
+  obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.NetCost : 0
   obj.toolMaintenanceCostApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0
   obj.toolMaintenanceCostApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0
   obj.otherDiscountType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType : 0
@@ -1114,8 +1119,7 @@ export const labelWithUOMAndUOM = (label, UOM, ScrapUOM) => {
 }
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
-export const showTitleForActiveToggle = (index) => {
-
+export const showTitleForActiveToggle = (index, titleFirst, titleSecond) => {
   setTimeout(() => {
     let titleActive = document.getElementsByClassName("active-switch")[index];
 
@@ -1132,7 +1136,7 @@ export const showTitleForActiveToggle = (index) => {
       titleActive = document.getElementsByClassName("active-switch")[rowIndex];
     }
 
-    titleActive?.setAttribute('title', 'Active');
+    titleActive?.setAttribute('title', titleFirst);
     let titleInactive = document.getElementsByClassName("inactive-switch")[index];
 
     if (titleInactive === undefined || titleInactive == null) {
@@ -1147,35 +1151,7 @@ export const showTitleForActiveToggle = (index) => {
       }
       titleInactive = document.getElementsByClassName("inactive-switch")[rowIndex];
     }
-
-    titleInactive?.setAttribute('title', 'Inactive');
-    let titleBlocked = document.getElementsByClassName("blocked-switch")[index];
-    if (titleBlocked === undefined || titleBlocked == null) {
-      let rowIndex = index
-      let array = Array.from(String(rowIndex), Number)
-      if (array.length === 1) {
-        rowIndex = array[0]
-      } else if (array.length === 2) {
-        rowIndex = array[1]
-      } else {
-        rowIndex = array[2]
-      }
-      titleBlocked = document.getElementsByClassName("blocked-switch")[rowIndex];
-    }
-    let titleUnblocked = document.getElementsByClassName("unblocked-switch")[index];
-    if (titleUnblocked === undefined || titleUnblocked == null) {
-      let rowIndex = index
-      let array = Array.from(String(rowIndex), Number)
-      if (array.length === 1) {
-        rowIndex = array[0]
-      } else if (array.length === 2) {
-        rowIndex = array[1]
-      } else {
-        rowIndex = array[2]
-      }
-      titleUnblocked = document.getElementsByClassName("unblocked-switch")[rowIndex];
-    }
-
+    titleInactive?.setAttribute('title', titleSecond);
 
   }, 500);
 }
@@ -1444,3 +1420,40 @@ export function getTimeZone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
+export function encodeQueryParamsAndLog(obj) {
+  const queryParams = Object.entries(obj)
+    .filter(([key, value]) => value !== undefined && value !== "")
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+  return queryParams;
+}
+
+export function displayNavigationLength() {
+  const screenWidth = window.screen.width;
+
+  switch (true) {
+    case screenWidth >= 1068 && screenWidth <= 1167:
+      return 5;
+
+    case screenWidth >= 1168 && screenWidth <= 1267:
+      return 6;
+
+    case screenWidth >= 1268 && screenWidth <= 1365:
+      return 7;
+
+    case screenWidth >= 1366 && screenWidth <= 1440:
+      return 8;
+
+    case screenWidth >= 1441 && screenWidth <= 1600:
+      return 10;
+
+    case screenWidth >= 1661 && screenWidth < 1920:
+      return 13;
+
+    case screenWidth >= 1920:
+      return 14;
+
+    default:
+      return 7;
+  }
+}

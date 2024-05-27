@@ -2100,6 +2100,9 @@ export function getUsersOnboardingLevelAPI(UserId, callback) {
             if (response && response.data && response.data.Result) {
                 callback(response);
             }
+            else if (response.status === 204) {
+                callback(response);
+            }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);

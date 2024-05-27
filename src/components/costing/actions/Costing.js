@@ -60,8 +60,10 @@ import {
   COSTING_ACC_OPEN_CLOSE_STATUS,
   GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
   SET_TOOL_COST_ICC,
+  SET_OTHER_DISCOUNT_DATA,
+  SET_REJECTION_RECOVERY_DATA,
 } from '../../../config/constants'
-import { apiErrors, encodeQueryParams } from '../../../helper/util'
+import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -2532,6 +2534,22 @@ export function setOtherCostData(data) {
     });
   }
 };
+export function setOtherDiscountData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OTHER_DISCOUNT_DATA,
+      payload: data,
+    });
+  }
+};
+export function setRejectionRecoveryData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_REJECTION_RECOVERY_DATA,
+      payload: data,
+    });
+  }
+};
 
 
 export function getCostingLabourDetails(data, callback) {
@@ -2641,7 +2659,7 @@ export function getLabourDetailsByFilter(data, callback) {
 export function checkPartNoExistInBop(data, callback) {
   return (dispatch) => {
     // const queryParams = `partNumber=${data.partNumber}&plantId=${data.plantId}&vendorId=${data.vendorId}&customerId=${data.customerId}`
-    const queryParams = encodeQueryParams({ partNumber: data.partNumber, plantId: data.plantId, vendorId: data.vendorId, customerId: data.customerId });
+    const queryParams = encodeQueryParamsAndLog({ partNumber: data.partNumber, plantId: data.plantId, vendorId: data.vendorId, customerId: data.customerId });
     const request = axios.get(`${API.checkPartNoExistInBop}?${queryParams}`, config())
     request.then((response) => {
       if (response.data) {

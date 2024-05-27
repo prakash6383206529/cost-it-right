@@ -4,17 +4,18 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs'
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../helper'
+import { calculatePercentageValue, calculateScrapWeight, checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 import { debounce } from 'lodash'
-import { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../helper/validation'
+import { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation } from '../../../../helper/validation'
 import TooltipCustom from '../../../common/Tooltip'
 
 function Plastic(props) {
   const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox } = props
+
   let totalRM
   if (!isSummary) {
     const { CostingPartDetails } = item
@@ -42,6 +43,7 @@ function Plastic(props) {
     grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+    scrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, localStorage.NoOfDecimalForInputOutput) : '',
     rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RMCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     materialCost: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',
@@ -71,7 +73,7 @@ function Plastic(props) {
 
   const fieldValues = useWatch({
     control,
-    name: ['netWeight', 'runnerWeight', 'finishedWeight'],
+    name: ['netWeight', 'runnerWeight', 'finishedWeight', 'scrapRecoveryPercent'],
   })
 
   const dropDown = [
@@ -135,12 +137,14 @@ function Plastic(props) {
     let scrapWeight = 0
     const netWeight = checkForNull(getValues('netWeight')) // THIS IS FIRST GROSS WEIGHT
     const runnerWeight = checkForNull(getValues('runnerWeight'))
+    const scrapRecoveryPercent = Number((getValues('scrapRecoveryPercent')))
+
     const finishedWeight = checkForNull(getValues('finishedWeight'))
     const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [])) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
 
     if (finishedWeight !== 0) {
-      scrapWeight = (checkForNull(grossWeight) - checkForNull(finishedWeight)).toFixed(9) //FINAL GROSS WEIGHT - FINISHED WEIGHT
-
+      scrapWeight = calculateScrapWeight(grossWeight, finishedWeight, scrapRecoveryPercent)
+      setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     }
     const rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + getValues('burningAllownace') // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
     const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
@@ -174,6 +178,7 @@ function Plastic(props) {
     DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
     setIsDisable(true)
     let obj = {}
+
     obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
     obj.BaseCostingIdRef = item.CostingId
     obj.TechnologyId = costData.TechnologyId
@@ -185,6 +190,7 @@ function Plastic(props) {
     obj.RunnerWeight = getValues('runnerWeight')
     obj.GrossWeight = dataToSend.grossWeight
     obj.FinishWeight = getValues('finishedWeight')
+    obj.RecoveryPercentage = getValues('scrapRecoveryPercent')
     obj.ScrapWeight = dataToSend.scrapWeight
     obj.RMCost = dataToSend.rmCost
     obj.ScrapCost = dataToSend.scrapCost
@@ -345,7 +351,31 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Input Weight - Finish Weight)'} />
+                  <TextFieldHookForm
+                    label={`Scrap Recovery (%)`}
+                    name={'scrapRecoveryPercent'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    rules={{
+                      required: false,
+                      validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                      max: {
+                        value: 100,
+                        message: 'Percentage cannot be greater than 100'
+                      },
+                    }}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.scrapRecoveryPercent}
+                    disabled={props.CostingViewMode ? true : false}
+                  />
+                </Col>
+                <Col md="3">
+                  <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Input Weight - Finish Weight )* Scrap Recovery (%)/100'} />
                   <TextFieldHookForm
                     label={`Scrap Weight(Kg)`}
                     name={'scrapWeight'}
@@ -401,6 +431,7 @@ function Plastic(props) {
                     disabled={true}
                   />
                 </Col>
+
                 <Col md="3">
                   <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-plastic'} tooltipText={'Scrap Cost = (Scrap Rate * Scrap Weight)'} />
                   <TextFieldHookForm

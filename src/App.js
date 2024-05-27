@@ -39,6 +39,15 @@ class App extends Component {
         reactLocalStorage.setObject('onboardingName', onboardingName)
         reactLocalStorage.setObject('onboardingId', onboardingId)
 
+        const moduleListArray = Data.ApprovalModuleTypeList.split(",")
+        const moduleType = Object.fromEntries(moduleListArray.map(item => {
+          const moduleTypeobj = item.split("=");
+          return moduleTypeobj;
+        }));
+        reactLocalStorage.setObject('moduleType', moduleType)
+
+
+
         let baseCurrency = Data.BaseCurrency
         reactLocalStorage.setObject('baseCurrency', baseCurrency)
 
@@ -54,16 +63,28 @@ class App extends Component {
         })
 
 
+        // let objShortApp = {};
+        // approvalTypeListArray && approvalTypeListArray.map(item => {
+        //   let shortFormList = objShortApp[item.split("=")[0]] = item.match(/\d+/g)[item.match(/\d+/g)?.length - 1]
+        //   return shortFormList
+        // })
+        // let objFullApp = {}
+        // approvalTypeListArray && approvalTypeListArray.map(item => {
+        //   let fullFormList = objFullApp[item.split("=")[1]] = item.match(/\d+/g)[item.match(/\d+/g)?.length - 1]
+        //   return fullFormList
+        // })
         let objShortApp = {};
+        let objFullApp = {};
+
         approvalTypeListArray && approvalTypeListArray.map(item => {
-          let shortFormList = objShortApp[item.split("=")[0]] = item.match(/\d+/g)[item.match(/\d+/g)?.length - 1]
-          return shortFormList
-        })
-        let objFullApp = {}
-        approvalTypeListArray && approvalTypeListArray.map(item => {
-          let fullFormList = objFullApp[item.split("=")[1]] = item.match(/\d+/g)[item.match(/\d+/g)?.length - 1]
-          return fullFormList
-        })
+          let parts = item.split('=');
+          let shortForm = parts[0];
+          let fullForm = parts[1];
+          let id = parts[2];
+          objShortApp[shortForm] = id;
+          objFullApp[fullForm] = id;
+          return { shortForm, fullForm, id };
+        });
 
 
         reactLocalStorage.setObject('CostingHeadsListShortForm', objShort)

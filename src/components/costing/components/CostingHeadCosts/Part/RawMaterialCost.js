@@ -18,7 +18,7 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { setFerrousCalculatorReset } from '../../../actions/CostWorking'
 import { gridDataAdded, isDataChange, setMasterBatchObj, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, ELECTRICAL_STAMPING, } from '../../../../../config/masterData'
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING } from '../../../../../config/masterData'
 import _, { debounce } from 'lodash'
@@ -186,6 +186,13 @@ function RawMaterialCost(props) {
         index: props.index,
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
+      }
+      if (!CostingViewMode && gridData) {
+        gridData && gridData.map(item => {
+          if (item.ScrapRecoveryPercentage !== 0) {
+            item.IsScrapRecoveryPercentageApplied = true
+          }
+        })
       }
       if (!CostingViewMode && !IsLocked) {
 
@@ -397,6 +404,11 @@ function RawMaterialCost(props) {
         }))
         break;
       case MACHINING:
+        dispatch(getRawMaterialCalculationForMachining(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case ELECTRICAL_STAMPING:
         dispatch(getRawMaterialCalculationForMachining(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
@@ -779,7 +791,6 @@ function RawMaterialCost(props) {
     let finishWeight
     let netLandedCost
     let ScrapWeight
-
     // GROSS WEIGHT WILL ALWAYS BE KG ON THIS TAB, SO CONVERTING OTHER UNIT INTO KG
     if (Object.keys(weightData).length > 0) {
       if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_G) {
@@ -826,7 +837,8 @@ function RawMaterialCost(props) {
         ScrapRecoveryPercentage: RecoveryPercentage,
         BurningLossWeight: weightData.BurningValue,
         ScrapWeight: scrapWeight,
-        IsCalculaterAvailable: true
+        IsCalculaterAvailable: true,
+        // IsScrapRecoveryPercentageApplied: true
       }
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
       setTimeout(() => {
@@ -857,7 +869,7 @@ function RawMaterialCost(props) {
           item.ScrapRecoveryPercentage = RecoveryPercentage
           item.ScrapWeight = weightData?.CostingFerrousCalculationRawMaterials[index]?.ScrapWeight ? weightData?.CostingFerrousCalculationRawMaterials[index]?.ScrapWeight : 0
           item.Percentage = weightData.CostingFerrousCalculationRawMaterials[index].Percentage
-          return item
+          // item.IsScrapRecoveryPercentageApplied = true
         })
         setTimeout(() => {
           setGridData(gridData)
@@ -1294,6 +1306,12 @@ function RawMaterialCost(props) {
   const pinHandler = useCallback(() => {
     setHeaderPinned(!headerPinned)
   }, [headerPinned])
+
+  const checkRMDevisor = () => {
+    if (checkForNull(RMDivisor) === 1 || checkForNull(RMDivisor) === 0) return false
+    return true
+  }
+
   /**
    * @method render
    * @description Renders the component
@@ -1393,7 +1411,7 @@ function RawMaterialCost(props) {
                       {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery (%)`}</th>}
                       {<th className='scrap-weight'>Scrap Weight </th>}
                       {/* //Add i here for MB+ */}
-                      <th className='net-rm-cost' >{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}  </th>
+                      <th className='net-rm-cost' >{`Net RM Cost ${(isRMDivisorApplicable(costData.TechnologyName) && checkRMDevisor()) ? '/(' + RMDivisor + ')' : ''}`}  </th>
                       {initialConfiguration.IsShowCRMHead && <th>{'CRM Head'}</th>}
                       <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={pinHandler} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
 

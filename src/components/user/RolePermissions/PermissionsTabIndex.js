@@ -5,7 +5,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import {
     DASHBOARD_AND_AUDIT, MASTERS, ADDITIONAL_MASTERS, COSTING, SIMULATION, REPORTS_AND_ANALYTICS,
-    USERS, AUDIT, RFQ, NFR,
+    USERS, AUDIT, RFQ, NFR, VENDOR_MANAGEMENT_ROLE,
 } from "../../../config/constants";
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
@@ -24,7 +24,8 @@ import NfrTab from "./NfrTab";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
 import { withTranslation } from "react-i18next";
-import VendorManagementTab from "./VendorManagementTab";
+import VendorManagementTab from "./SupplierManagementTab";
+import SupplierManagementTab from "./SupplierManagementTab";
 class PermissionsTabIndex extends Component {
     constructor(props) {
         super(props);
@@ -41,6 +42,7 @@ class PermissionsTabIndex extends Component {
             user: [],
             audit: [],
             scrollReset: false,
+            supplierManagement: [],
             counter: 0
         };
     }
@@ -85,6 +87,7 @@ class PermissionsTabIndex extends Component {
         if (isEditFlag === false && isNewRole) {
             this.setState({ isLoader: true });
             this.props.getModuleActionInitNew((res) => {
+
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.DataList;
                     this.props.setInitialModuleData(Data)
@@ -113,6 +116,7 @@ class PermissionsTabIndex extends Component {
     updateTabs = (Data) => {
 
 
+
         let dashboardObj = Data && Data.filter(el => el.ModuleName === DASHBOARD_AND_AUDIT)
         let masterObj = Data && Data.filter(el => el.ModuleName === MASTERS)
         let additionalMasterObj = Data && Data.filter(el => el.ModuleName === ADDITIONAL_MASTERS)
@@ -123,6 +127,7 @@ class PermissionsTabIndex extends Component {
         let auditObj = Data && Data.filter(el => el.ModuleName === AUDIT)
         let rfqObj = Data && Data.filter(el => el.ModuleName === RFQ)
         let nfrObj = Data && Data.filter(el => el.ModuleName === NFR)
+        let supperilerObj = Data && Data.filter(el => el.ModuleName === VENDOR_MANAGEMENT_ROLE)
 
         this.setState({
             actionData: Data,
@@ -137,6 +142,7 @@ class PermissionsTabIndex extends Component {
             audit: auditObj && auditObj?.length > 0 ? auditObj[0].Pages : [],
             rfq: rfqObj && rfqObj?.length > 0 ? rfqObj[0].Pages : [],
             nfr: nfrObj && nfrObj?.length > 0 ? nfrObj[0].Pages : [],
+            supplierManagement: supperilerObj && supperilerObj?.length > 0 ? supperilerObj[0].Pages : [],
         }, () => {
 
             this.permissionHandler(this.state.dashoard, DASHBOARD_AND_AUDIT)
@@ -149,6 +155,7 @@ class PermissionsTabIndex extends Component {
             this.permissionHandler(this.state.audit, AUDIT)
             this.permissionHandler(this.state.rfq, RFQ)
             this.permissionHandler(this.state.nfr, NFR)
+            this.permissionHandler(this.state.supplierManagement, VENDOR_MANAGEMENT_ROLE)
 
         })
     }
@@ -158,6 +165,8 @@ class PermissionsTabIndex extends Component {
     * @description toggling the tabs
     */
     toggle = (tab) => {
+
+
         if (this.state.activeTab !== tab) {
             this.setState({
                 activeTab: tab
@@ -171,9 +180,9 @@ class PermissionsTabIndex extends Component {
     }
 
     permissionHandler = (data, ModuleName) => {
+
         this.props.moduleData(data, ModuleName)
     }
-
     render() {
         const { t } = this.props;
         const { isLoader, } = this.state;
@@ -343,7 +352,7 @@ class PermissionsTabIndex extends Component {
                                         this.state.supplierManagement?.length > 0 &&
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '11' })} onClick={() => { this.toggle('11'); }}>
-                                                Vendor Management
+                                                Supplier Management
                                             </NavLink>
                                         </NavItem>
                                     }
@@ -438,14 +447,14 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
-                                    {/* <TabPane tabId="11">
-                                        <VendorManagementTab
-                                        // data={this.state.supplierManagement}
-                                        // actionData={this.state.actionData}
-                                        // actionSelectList={this.props.actionSelectList}
-                                        // permissions={this.permissionHandler}
+                                    <TabPane tabId="11">
+                                        <SupplierManagementTab
+                                            data={this.state.supplierManagement}
+                                            actionData={this.state.actionData}
+                                            actionSelectList={this.props.actionSelectList}
+                                            permissions={this.permissionHandler}
                                         />
-                                    </TabPane> */}
+                                    </TabPane>
 
 
 

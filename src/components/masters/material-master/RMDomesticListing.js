@@ -34,6 +34,7 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
+import BulkUpload from '../../massUpload/BulkUpload';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -540,8 +541,12 @@ function RMDomesticListing(props) {
     * @description Renders buttons
     */
     const effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        if (showExtraData && props?.rowIndex === 0) {
+            return "Lorem Ipsum";
+        } else {
+            const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+            return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        }
     }
 
     /**
@@ -848,7 +853,7 @@ function RMDomesticListing(props) {
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
                     {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                    <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-4'}`}>
+                    <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-2'}`}>
                         <Col md="3" lg="3" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
@@ -1041,14 +1046,14 @@ function RMDomesticListing(props) {
                 {/* <MyLazyComponent /> */}
                 {
                     isBulkUpload && (
-                        <MyLazyComponent
+                        <BulkUpload
                             isOpen={isBulkUpload}
                             closeDrawer={closeBulkUploadDrawer}
                             isEditFlag={false}
                             densityAlert={densityAlert}
-                            fileName={"RM Domestic"}
+                            fileName={"RM"}
                             isZBCVBCTemplate={true}
-                            messageLabel={"RM Domestic"}
+                            messageLabel={"RM"}
                             anchor={"right"}
                             masterId={RM_MASTER_ID}
                             typeOfEntryId={ENTRY_TYPE_DOMESTIC}

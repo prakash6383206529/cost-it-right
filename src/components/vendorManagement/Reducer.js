@@ -1,59 +1,73 @@
-import { LPS_RATING_DATA, UPDATE_LPS_RATING_STATUS, UPDATE_VENDOR_CLASSIFICATION_STATUS, VENDOR_CLASSIFICATION_DATA } from '../../config/constants';
-import { APPROVAL_LISTING, UPDATE_APPROVAL_DATA, VENDOR_DETAIL_DATA } from './Action';
+import { DETAILS_FOR_DEVIATION_APPROVAL, LPS_RATING_DATA, MONTHS, SEND_FOR_UNBLOCKING, UPDATE_LPS_RATING_STATUS, UPDATE_VENDOR_CLASSIFICATION_STATUS, VENDOR_CLASSIFICATION_DATA, VENDOR_DATA, VENDOR_PLANT_DATA } from '../../config/constants';
+import { UPDATE_APPROVAL_DATA, VENDOR_DETAIL_DATA } from './Action';
 
 const initialState = {
     vendorData: [],
+    supplierData: [],
+    vendorPlantData: [],
     lpsRatingData: [],
+    deviationData: [],
     approvalListing: [], // Corrected the variable name,
     approvalSummary: [],
     supplierDetailData: [],
+    sendForUnblocking: [],
     // Add other initial state properties if needed
 };
 
 const supplierManagementReducer = (state = initialState, action) => {
-    switch (action.type) {
+    switch (action?.type) {
         case VENDOR_CLASSIFICATION_DATA:
 
             return {
                 ...state,
-                vendorData: action.payload.DataList
+                vendorData: action?.payload?.DataList || []
             };
         case LPS_RATING_DATA:
 
             return {
                 ...state,
-                lpsRatingData: action.payload.DataList
+                lpsRatingData: action?.payload?.DataList || []
             };
         case UPDATE_VENDOR_CLASSIFICATION_STATUS:
 
             return {
                 ...state,
-                classificationData: action.payload
+                classificationData: action?.payload || []
             }
         case UPDATE_LPS_RATING_STATUS:
 
             return {
                 ...state,
-                lpsRatingData: action.payload
+                lpsRatingData: action?.payload || []
             }
-        case APPROVAL_LISTING:
+        case VENDOR_DATA:
             return {
                 ...state,
-                approvalListing: action.payload
-            };
-        case VENDOR_DETAIL_DATA:
+                supplierData: action?.payload?.SelectList || []
+            }
+        case VENDOR_PLANT_DATA:
+            return {
+                ...state,
+                vendorPlantData: action?.payload?.SelectList || []
+            }
+        case DETAILS_FOR_DEVIATION_APPROVAL:
 
             return {
                 ...state,
-                supplierDetailData: action.payload
-            }
+                deviationData: action?.payload?.DataList[0]
+            };
+
         case UPDATE_APPROVAL_DATA:
 
             return {
                 ...state,
-                approvalSummary: action.payload[0]
+                approvalSummary: action?.payload[0]
             }
-
+        case SEND_FOR_UNBLOCKING:
+            return {
+                ...state,
+                sendForUnblocking: action?.payload
+            }
 
         default:
             return state;

@@ -14,7 +14,7 @@ import {
   EMPTY_GUID
 } from '../../../config/constants'
 import { userDetails } from '../../../helper'
-import { apiErrors } from '../../../helper/util'
+import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 // const config() = config
 
 /**
@@ -100,8 +100,26 @@ export function getVolumeData(VolumeId, callback) {
 export function getVolumeDataList(skip, take, isPagination, obj, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });    
-    const QueryParams = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Year=${obj.Year !== undefined ? obj.Year : ""}&Month=${obj.Month !== undefined ? obj.Month : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&BudgetedQuantity=${obj.BudgetedQuantity !== undefined ? obj.BudgetedQuantity : ""}&ApprovedQuantity=${obj.ApprovedQuantity !== undefined ? obj.ApprovedQuantity : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&IsVendorDataShow=${obj?.IsVendorDataShow}&IsZeroDataShow=${obj?.IsZeroDataShow}&partType=${obj?.PartType !== undefined ? obj?.PartType : ""}`
-    axios.get(`${API.getVolumeDataList}?${QueryParams}`, config())
+    const queryParams = encodeQueryParamsAndLog({
+      CostingHead: obj.CostingHead,
+      Year: obj.Year,
+      Month: obj.Month,
+      Vendor: obj.Vendor,
+      Plant: obj.Plant,
+      PartNumber: obj.PartNumber,
+      PartName: obj.PartName,
+      BudgetedQuantity: obj.BudgetedQuantity,
+      ApprovedQuantity: obj.ApprovedQuantity,
+      applyPagination: isPagination,
+      skip: skip,
+      take: take,
+      CustomerName: obj.CustomerName,
+      IsCustomerDataShow: obj.IsCustomerDataShow,
+      IsVendorDataShow: obj.IsVendorDataShow,
+      IsZeroDataShow: obj.IsZeroDataShow,
+      partType: obj.PartType
+    });
+    axios.get(`${API.getVolumeDataList}?${queryParams}`, config())
       .then((response) => {
         if (response.data.Result || response.status === 204) {
           if (isPagination) {

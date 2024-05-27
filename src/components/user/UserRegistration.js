@@ -15,7 +15,7 @@ import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectLis
 import { MESSAGES } from "../../config/message";
 import { IsSendMailToPrimaryContact, getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
-import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, NCCTypeId, NFRAPPROVALTYPEID, ONBOARDINGID, ONBOARDINGNAME, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
+import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, LPSAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, ONBOARDINGID, ONBOARDINGNAME, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -31,6 +31,7 @@ import { apiErrors } from "../../helper";
 import TourWrapper from "../common/Tour/TourWrapper";
 import { useTranslation } from "react-i18next";
 import { Steps } from "./TourMessages";
+import TooltipCustom from "../common/Tooltip";
 
 
 var CryptoJS = require('crypto-js')
@@ -461,7 +462,7 @@ function UserRegistration(props) {
     }
     if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster' || label === 'approvalTypeOnboarding') {
       // if (label === 'approvalType') {                 //RE
-      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false) {
+      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false && isOnboardingEditIndex === false) {
         temp.push({ label: 'Select All', value: '0' });
       }
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
@@ -469,7 +470,7 @@ function UserRegistration(props) {
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId) || Number(item.Value) === Number(NFRAPPROVALTYPEID)) && label === 'approvalTypeSimulation') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && label === 'approvalTypeMaster') return false
         if ((Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || (!initialConfiguration.IsNFRConfigured && Number(item.Value) === Number(NFRAPPROVALTYPEID))) && label === 'approvalTypeCosting') return false
-        if (label === 'approvalTypeOnboarding' && Number(item.Value) !== VENDORNEEDFORMID) return false;
+        if (label === 'approvalTypeOnboarding' && Number(item.Value) !== VENDORNEEDFORMID && Number(item.Value) !== LPSAPPROVALTYPEID && Number(item.Value) !== CLASSIFICATIONAPPROVALTYPEID) return false;
         if ((label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster') && Number(item.Value) === VENDORNEEDFORMID) return false;
         const transformedText = transformApprovalItem(item);
         temp.push({ label: transformedText, value: item.Value })
@@ -912,17 +913,32 @@ function UserRegistration(props) {
    * @description Used to handle onboarding ApprovalType Handler
    */
   const onboardingApprovalTypeHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
+
+    if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
+      const selectedOptions = approvalTypeSelectList
+        .filter((option) => option?.Value !== '0')
+        .map(({ Text, Value }) => ({ label: Text, value: Value }));
+      setOnboardingApprovalType(selectedOptions);
+      setTimeout(() => {
+        setValue('OnboardingApprovalType', selectedOptions)
+      }, 100);
+      setOnboardingLevels([]);
+      setValue('onboardingLevel', '');
+      dispatch(getOnboardingLevelById(true, newValue.value, res => { }))
+    }
+    else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
       setOnboardingApprovalType(newValue)
-      setOnboardingLevels([])
+      setOnboardingLevels([]);
       setValue('onboardingLevel', '')
       if (!getConfigurationKey().IsAllowMultiSelectApprovalType || isOnboardingEditIndex) {
         dispatch(getOnboardingLevelById(true, newValue.value, res => { }))
       }
     } else {
       setOnboardingApprovalType([])
+      setValue('OnboardingApprovalType', '')
     }
   };
+
   /**
    * @method headHandler
    * @description USED TO HANLE SIMULATION HEAD AND CALL HEAD LEVEL API
@@ -1744,6 +1760,7 @@ function UserRegistration(props) {
     setOnboardingApprovalType([])
     setValue('onboardingLevel', '')
     setValue('OnboardingApprovalType', '')
+    setOnboardingLevelEditIndex(false)
   };
 
 
@@ -1760,6 +1777,7 @@ function UserRegistration(props) {
     setValue('onboardingLevel', '')
     setValue('OnboardingApprovalType', '')
     emptyLevelDropdown()
+    setOnboardingLevelEditIndex(false)
   };
 
 
@@ -2477,6 +2495,7 @@ function UserRegistration(props) {
                           type="checkbox"
                           checked={primaryContact}
                         />
+                        <TooltipCustom id="Primary_Contact" customClass="mt-1" tooltipText="Please click on the checkbox if this user is the main point of contact for the vendor." />
                         <span
                           className=" before-box"
                           checked={primaryContact}
@@ -2563,7 +2582,7 @@ function UserRegistration(props) {
                             <SearchableSelectHookForm
                               name="Reporter"
                               type="text"
-                              label={`Point of Contact`}
+                              label={`Vendor's Point of Contact`}
 
                               errors={errors.Reporter}
                               Controller={Controller}
@@ -2619,7 +2638,7 @@ function UserRegistration(props) {
                       <div className="input-group col-md-3">
                         <TextFieldHookForm
                           name="UserName"
-                          label="User name"
+                          label="User Name"
                           errors={errors.UserName}
                           Controller={Controller}
                           control={control}
@@ -3391,7 +3410,7 @@ function UserRegistration(props) {
                         <>
                           <Row>
                             <Col md="8">
-                              <HeaderTitle title={'Onboarding Approval Level:'} customClass={''} />
+                              <HeaderTitle title={'Onboarding & Management Approval Level:'} customClass={''} />
                             </Col>
                             <Col md="4" className="text-right">
                               <button id="AddUser_Permissions_onBoarding" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>

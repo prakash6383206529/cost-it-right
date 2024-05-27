@@ -213,12 +213,15 @@ class AddBOPImport extends Component {
     if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getCurrencySelectList(() => { })
       this.props.getClientSelectList(() => { })
-
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     }
+  }
+  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+    const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
+          this.commonFunction(plantId)
         }, 100);
       })
     } else {
@@ -547,9 +550,7 @@ class AddBOPImport extends Component {
                 this.setInStateToolTip()
                 this.toolTipNetCost({ label: Data.Currency, value: Data.CurrencyId })
                 this.toolTipBasicPrice({ label: Data.Currency, value: Data.CurrencyId })
-                if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-                  this.commonFunction(plantObj.value)
-                }
+                this.finalUserCheckAndMasterLevelCheckFunction(plantObj.value)
                 this.setState({ isLoader: false, isCallCalculation: false })
               }, 500)
             })
@@ -1201,7 +1202,8 @@ class AddBOPImport extends Component {
         checkForNull(fieldsObj?.NumberOfPieces) === checkForNull(DataToChange?.NumberOfPieces) &&
         checkForNull(fieldsObj?.BasicRateSelectedCurrency) === checkForNull(DataToChange?.BasicRate) &&
 
-        checkForNull(netLandedCostSelectedCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostSelectedCurrency) === checkForNull(DataToChange?.NetConditionCost) && DropdownChanged) {
+        checkForNull(netLandedCostSelectedCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostSelectedCurrency) === checkForNull(DataToChange?.NetConditionCost) && DropdownChanged &&
+        ((DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
         this.setState({ isEditBuffer: true })
         Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
         return false
@@ -1578,8 +1580,7 @@ class AddBOPImport extends Component {
                                   <input
                                     type="checkbox"
                                     checked={isTechnologyVisible}
-                                    disabled={isViewMode || isEditFlag ? true : false
-                                    }
+                                    disabled={isViewMode || (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
                                   />
                                   < span
                                     className=" before-box"
@@ -1587,6 +1588,7 @@ class AddBOPImport extends Component {
                                     onChange={this.breakUpHandleChange}
                                   />
                                 </label >
+                                {isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId && <WarningMessage dClass={"mr-2"} message={`This ${showBopLabel()} is already associated, so now you can't edit it.`} />}
                               </Col >
                               {isTechnologyVisible && <Col md="3">
                                 <Field
@@ -1603,7 +1605,7 @@ class AddBOPImport extends Component {
                                     this.handleTechnologyChange
                                   }
                                   valueDescription={this.state.Technology}
-                                  disabled={isViewMode || isEditFlag ? true : false}
+                                  disabled={isViewMode || (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
                                 />
                               </Col>}
                             </>
@@ -1786,7 +1788,7 @@ class AddBOPImport extends Component {
                               />
                             </div>
                           </Col>
-                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) && <>
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
                             < Col md="3">
                               <Field
                                 label={`Minimum Order Quantity`}
@@ -1802,7 +1804,7 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                           </>}
-                          {(!isTechnologyVisible || this.showBasicRate()) && <>
+                          {(!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
                             <Col md="3">
                               <Field
                                 label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
@@ -1833,7 +1835,7 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                           </>}
-                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
+                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">
                               <TooltipCustom id="bop-basic-currency" tooltipText={toolTipTextBasicPrice?.toolTipTextBasicPriceSelectedCurrency} />
                               <Field
@@ -1865,45 +1867,45 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                             <Col md="3">
-                              <Field
-                                label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                name={"FinalConditionCostSelectedCurrency"}
-                                type="text"
-                                placeholder={"-"}
-                                validate={[]}
-                                component={renderText}
-                                required={false}
-                                className=""
-                                customClassName=" withBorder"
-                                disabled={true}
-                                isViewFlag={true}
-                              />
-                            </Col>
-                            <Col md="3">
                               <div className='d-flex align-items-center'>
                                 <div className='w-100'>
                                   <Field
-                                    label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${reactLocalStorage.getObject("baseCurrency")})`}
-                                    name={"FinalConditionCostBaseCurrency"}
+                                    label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                    name={"FinalConditionCostSelectedCurrency"}
                                     type="text"
                                     placeholder={"-"}
                                     validate={[]}
                                     component={renderText}
                                     required={false}
+                                    className=""
+                                    customClassName=" withBorder"
                                     disabled={true}
                                     isViewFlag={true}
-                                    className=" "
-                                    customClassName=" withBorder"
                                   />
                                 </div>
                                 <Button
                                   id="addBOPImport_condition"
                                   onClick={this.conditionToggle}
                                   className={"right mt-0 mb-2"}
-                                  variant={(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency) ? `plus-icon-square` : `blurPlus-icon-square`}
+                                  variant={isViewMode ? "view-icon-primary" : (this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency) ? `plus-icon-square` : `blurPlus-icon-square`}
                                   disabled={!(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency)}
                                 />
                               </div>
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${reactLocalStorage.getObject("baseCurrency")})`}
+                                name={"FinalConditionCostBaseCurrency"}
+                                type="text"
+                                placeholder={"-"}
+                                validate={[]}
+                                component={renderText}
+                                required={false}
+                                disabled={true}
+                                isViewFlag={true}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
                             </Col>
 
                           </>}
@@ -1943,7 +1945,7 @@ class AddBOPImport extends Component {
 
                         </Row>
                         {
-                          getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                          getConfigurationKey().IsShowClientVendorBOP && costingTypeId === CBCTypeId && <Col md="3" className="d-flex align-items-center mb-3">
                             <label
                               className={`custom-checkbox`}
                               onChange={this.onIsClientVendorBOP}

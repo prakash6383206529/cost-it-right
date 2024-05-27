@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
@@ -8,7 +8,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNu
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
-import { isOverheadProfitDataChange, setOverheadProfitErrors } from '../../../actions/Costing';
+import { isOverheadProfitDataChange, setOverheadProfitErrors, setRejectionRecoveryData } from '../../../actions/Costing';
 import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
@@ -16,6 +16,8 @@ import { number, percentageLimitValidation, isNumber, checkWhiteSpaces, NoSignNo
 import { CRMHeads, WACTypeId } from '../../../../../config/constants';
 import Popup from 'reactjs-popup';
 import Toaster from '../../../../common/Toaster';
+import Button from '../../../../layout/Button';
+import AddRejectionRecovery from './AddRejectionRecovery';
 
 
 let counter = 0;
@@ -34,8 +36,10 @@ function Rejection(props) {
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
     const [percentageLimit, setPercentageLimit] = useState(false)
     const { IsIncludedSurfaceInRejection, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
-    const { SurfaceTabData } = useSelector(state => state.costing)
+    const { SurfaceTabData, rejectionRecovery, RMCCTabData } = useSelector(state => state.costing)
+    const { CostingPartDetails, PartType } = RMCCTabData[0]
     const [errorMessage, setErrorMessage] = useState('')
+    const [isOpenRecoveryDrawer, setIsOpenRecoveryDrawer] = useState(false);
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
@@ -61,6 +65,7 @@ function Rejection(props) {
         setValue('RejectionPercentage', rejectionObj?.RejectionApplicability === "Fixed" ? rejectionObj?.RejectionCost : rejectionObj?.RejectionPercentage)
         setValue('crmHeadRejection', rejectionObj && rejectionObj.RejectionCRMHead && { label: rejectionObj.RejectionCRMHead, value: 1 })
         setValue('rejectionRemark', rejectionObj && rejectionObj.Remark ? rejectionObj.Remark : '')
+        dispatch(setRejectionRecoveryData(CostingRejectionDetail.CostingRejectionRecoveryDetails ?? rejectionRecovery))
     }, [])
 
     useEffect(() => {
@@ -77,23 +82,44 @@ function Rejection(props) {
 
 
     useEffect(() => {
+        setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration.NoOfDecimalForPrice))
+        setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecovery.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice))
+    }, [rejectionObj, rejectionRecovery.RejectionRecoveryNetCost])
+
+
+    useEffect(() => {
         setTimeout(() => {
+            let rejectionRecoveryObj = {}
+            if (rejectionRecovery.ApplicabilityType !== '') {
+                const { ApplicabilityIdRef, ApplicabilityType, Value, EffectiveRecoveryPercentage, ApplicabilityCost, RejectionRecoveryNetCost } = rejectionRecovery
+                rejectionRecoveryObj.BaseCostingIdRef = CostingPartDetails.CostingId
+                rejectionRecoveryObj.ApplicabilityIdRef = ApplicabilityIdRef ?? 0
+                rejectionRecoveryObj.ApplicabilityType = ApplicabilityType
+                rejectionRecoveryObj.Type = ""
+                rejectionRecoveryObj.Value = Value
+                rejectionRecoveryObj.EffectiveRecoveryPercentage = EffectiveRecoveryPercentage
+                rejectionRecoveryObj.ApplicabilityCost = ApplicabilityCost
+                rejectionRecoveryObj.RejectionRecoveryNetCost = RejectionRecoveryNetCost
+            }
             let tempObj = {
                 "RejectionApplicabilityId": applicability ? applicability.value : '',
                 "RejectionApplicability": applicability ? applicability.label : '',
                 "RejectionPercentage": applicability.label === 'Fixed' ? '' : getValues('RejectionPercentage'),
                 "RejectionCost": applicability ? rejectionObj.RejectionCost : '',
-                "RejectionTotalCost": applicability ? rejectionObj.RejectionTotalCost : '',
+                "RejectionTotalCost": applicability ? checkForNull(rejectionObj.RejectionTotalCost) - checkForNull(rejectionRecovery.RejectionRecoveryNetCost) : '',
                 "IsSurfaceTreatmentApplicable": true,
+                "NetCost": applicability ? rejectionObj.RejectionTotalCost : '',
                 "RejectionCRMHead": getValues('crmHeadRejection') ? getValues('crmHeadRejection').label : '',
-                "Remark": rejectionObj.Remark ? rejectionObj.Remark : ''
+                "Remark": rejectionObj.Remark ? rejectionObj.Remark : '',
+                "IsRejectionRecoveryApplicable": rejectionRecovery.ApplicabilityType !== '' ? true : false,
+                "CostingRejectionRecoveryDetails": rejectionRecoveryObj
             }
 
             if (!CostingViewMode) {
                 props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }, 200)
-    }, [rejectionObj])
+    }, [rejectionObj, rejectionRecovery])
 
 
     /**
@@ -312,6 +338,21 @@ function Rejection(props) {
         dispatch(isOverheadProfitDataChange(true))
     }
 
+    const calculateRecoveryCost = (rejectionPercentage, recoveryPerantage) => {
+        const EffectiveRecovery = checkForNull(rejectionPercentage) * checkForNull(recoveryPerantage) / 100
+        let CostApplicability = 0
+        CostingPartDetails.CostingRawMaterialsCost.map(item => {
+            CostApplicability += checkForNull(item.ScrapRate) * checkForNull(item.FinishWeight)
+        })
+        const rejectionRecoveryCost = CostApplicability * EffectiveRecovery / 100
+        setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecoveryCost, initialConfiguration.NoOfDecimalForPrice))
+        dispatch(setRejectionRecoveryData({
+            ...rejectionRecovery,
+            EffectiveRecoveryPercentage: EffectiveRecovery,
+            RejectionRecoveryNetCost: rejectionRecoveryCost
+        }))
+    }
+
     /**
       * @method handleApplicabilityChange
       * @description  USED TO HANDLE APPLICABILITY CHANGE FOR REJECTION
@@ -371,7 +412,69 @@ function Rejection(props) {
         }
         button.click()
     }
+    const handleRejectionRecovery = () => {
+        if (PartType !== 'Assembly' && !(applicability.label && applicability.label.includes('RM'))) {
+            Toaster.warning('Applicability should be RM')
+            return false
+        } else if (PartType !== 'Assembly' && !getValues('RejectionPercentage')) {
+            Toaster.warning('Enter the Rejection Percentage')
+            return false
+        } else {
+            setIsOpenRecoveryDrawer(!isOpenRecoveryDrawer)
+        }
+    }
+    const closeDrawer = (type, cost) => {
+        if (type === 'cancel') {
+            setIsOpenRecoveryDrawer(false)
+        } else if (type === 'submit') {
+            setIsOpenRecoveryDrawer(false)
+            setValue('RejectionRecovery', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
+        }
+    }
+    const viewAddButtonIcon = (data, type) => {
 
+        let className = ''
+        let title = ''
+        if (data.length !== 0 || CostingViewMode) {
+            className = 'view-icon-primary'
+            title = 'View'
+        } else {
+            className = 'plus-icon-square'
+            title = 'Add'
+        }
+        if (type === "className") {
+            return className
+        } else if (type === "title") {
+            return title
+        }
+    }
+    // const RejectionRecoveryUI = useMemo(() => {
+    //     setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecovery.rejectionRecoveryCost, initialConfiguration.NoOfDecimalForPrice))
+    //     return <div className='d-flex align-items-center'>
+    //         <TextFieldHookForm
+    //             label={false}
+    //             name={'RejectionRecovery'}
+    //             Controller={Controller}
+    //             control={control}
+    //             register={register}
+    //             mandatory={false}
+    //             rules={{}}
+    //             handleChange={() => { }}
+    //             defaultValue={''}
+    //             className=""
+    //             customClassName={'withBorder w-100'}
+    //             errors={errors.RejectionRecovery}
+    //             disabled={true}
+    //         />
+    //         <Button
+    //             id="tabDiscount_otherCost"
+    //             onClick={() => handleRejectionRecovery()}
+    //             className={"right mb-4 ml-0"}
+    //             variant={viewAddButtonIcon([], "className")}
+    //             title={viewAddButtonIcon([], "title")}
+    //         />
+    //     </div>
+    // }, [applicability, rejectionRecovery.rejectionRecoveryCost])
     return (
         <>
             <Row>
@@ -405,29 +508,39 @@ function Rejection(props) {
             <Row>
                 <Col md="11" className='first-section'>
                     <Row className="costing-border-inner-section border-bottom-none m-0">
-                        <Col md="3">
+                        <Col md="2">
                             <span className="head-text">
                                 Applicability
                             </span>
                         </Col>
-                        <Col md="3">
+                        <Col md="2">
                             <span className="head-text">
                                 {applicability.label !== 'Fixed' ? 'Rejection (%)' : 'Rejection'}
                             </span>
                         </Col>
-                        {applicability.label !== 'Fixed' && <Col md="3">
+                        {applicability.label !== 'Fixed' && <Col md="2">
                             <span className="head-text">
                                 Cost (Applicability)
                             </span>
                         </Col>}
-                        <Col md={applicability.label === 'Fixed' ? '6' : '3'}>
+                        <Col md="2">
+                            <span className="head-text">
+                                Rejection
+                            </span>
+                        </Col>
+                        <Col md="2">
+                            <span className="head-text">
+                                Rejection Recovery
+                            </span>
+                        </Col>
+                        <Col md={applicability.label === 'Fixed' ? '4' : '2'}>
                             <span className="head-text">
                                 Net Rejection
                             </span>
                         </Col>
                     </Row>
                     <Row className="costing-border costing-border-with-labels pt-3 m-0 overhead-profit-tab-costing">
-                        <Col md="3">
+                        <Col md="2">
                             <SearchableSelectHookForm
                                 label={false}
                                 name={'Applicability'}
@@ -445,7 +558,7 @@ function Rejection(props) {
                                 isClearable={true}
                             />
                         </Col>
-                        <Col md="3">
+                        <Col md="2">
                             {applicability.label !== 'Fixed' ?
                                 <TextFieldHookForm
                                     label={false}
@@ -462,7 +575,10 @@ function Rejection(props) {
                                             message: 'Percentage cannot be greater than 100'
                                         },
                                     }}
-                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
+                                    handleChange={(e) => {
+                                        calculateRecoveryCost(e.target.value, rejectionRecovery.Value)
+                                        dispatch(isOverheadProfitDataChange(true))
+                                    }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
@@ -489,7 +605,7 @@ function Rejection(props) {
                                 </div>}
                         </Col>
                         {applicability.label !== 'Fixed' &&
-                            <Col md="3">
+                            <Col md="2">
                                 <TextFieldHookForm
                                     label={false}
                                     name={'RejectionCost'}
@@ -505,7 +621,7 @@ function Rejection(props) {
                                     disabled={true}
                                 />
                             </Col>}
-                        <Col md={applicability.label === 'Fixed' ? '6' : '3'}>
+                        <Col md="2">
                             <TextFieldHookForm
                                 label={false}
                                 name={'RejectionTotalCost'}
@@ -518,6 +634,49 @@ function Rejection(props) {
                                 className=""
                                 customClassName={'withBorder'}
                                 errors={errors.RejectionTotalCost}
+                                disabled={true}
+                            />
+                        </Col>
+                        <Col md="2">
+                            {/* {RejectionRecoveryUI} */}
+                            <div className='d-flex align-items-center'>
+                                <TextFieldHookForm
+                                    label={false}
+                                    name={'RejectionRecovery'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{}}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder mr-2'}
+                                    errors={errors.RejectionRecovery}
+                                    disabled={true}
+                                />
+                                <Button
+                                    id="tabDiscount_otherCost"
+                                    onClick={() => handleRejectionRecovery()}
+                                    className={"right mb-4 ml-0"}
+                                    variant={viewAddButtonIcon([], "className")}
+                                    title={viewAddButtonIcon([], "title")}
+                                />
+                            </div>
+                        </Col>
+                        <Col md={applicability.label === 'Fixed' ? '4' : '2'}>
+                            <TextFieldHookForm
+                                label={false}
+                                name={'NetRejectionCost'}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                defaultValue={''}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.NetRejectionCost}
                                 disabled={true}
                             />
                         </Col>
@@ -557,6 +716,12 @@ function Rejection(props) {
                     </div>
                 </Col>
             </Row>
+            {isOpenRecoveryDrawer && <AddRejectionRecovery
+                isOpen={isOpenRecoveryDrawer}
+                rejectionPercentage={getValues('RejectionPercentage')}
+                closeDrawer={closeDrawer}
+                calculateRecoveryCost={calculateRecoveryCost}
+            />}
 
 
         </>

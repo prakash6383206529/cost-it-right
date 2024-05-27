@@ -42,7 +42,7 @@ const InterestRateListing = (props) => {
     ICCApplicability: [],
     PaymentTermsApplicability: [],
     shown: false,
-    data: { isEditFlag: false, ID: '' },
+    data: { isEditFlag: false, ID: '', IsAssociatedData: false },
     toggleForm: false,
     isBulkUpload: false,
     ViewAccessibility: false,
@@ -155,8 +155,8 @@ const InterestRateListing = (props) => {
     * @method viewOrEditItemDetails
     * @description confirm edit oor view item
     */
-  const viewOrEditItemDetails = (Id, isViewMode) => {
-    setState((prevState) => ({ ...prevState, data: { isEditFlag: true, ID: Id, isViewMode: isViewMode }, toggleForm: true, }))
+  const viewOrEditItemDetails = (Id, isViewMode, IsAssociatedData) => {
+    setState((prevState) => ({ ...prevState, data: { isEditFlag: true, ID: Id, isViewMode: isViewMode, IsAssociatedData: IsAssociatedData }, toggleForm: true, }))
   }
 
 
@@ -194,18 +194,23 @@ const InterestRateListing = (props) => {
   * @description Renders buttons
   */
   const effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+    if (state?.showExtraData && props?.rowIndex === 0) {
+      return "Lorem Ipsum";
+    } else {
+      const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+      return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+    }
   }
 
   const buttonFormatter = (props) => {
+    const IsAssociatedData = props?.data?.IsAssociated
     const cellValue = props?.value;
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
-        {ViewAccessibility && <Button id={`interesetRateListing_view${props.rowIndex}`} className={"View mr-2 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />}
-        {EditAccessibility && <Button id={`interesetRateListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />}
-        {DeleteAccessibility && <Button id={`interesetRateListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+        {ViewAccessibility && <Button id={`interesetRateListing_view${props.rowIndex}`} className={"View mr-2 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true, IsAssociatedData)} title={"View"} />}
+        {EditAccessibility && <Button id={`interesetRateListing_edit${props.rowIndex}`} className={"Edit mr-2 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false, IsAssociatedData)} title={"Edit"} />}
+        {/* DeleteAccessibility && */ !IsAssociatedData && <Button id={`interesetRateListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
   };

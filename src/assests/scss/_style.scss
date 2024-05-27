@@ -437,7 +437,7 @@ button.add-btn {
 
 .withBorder .form-control,
 .form-control {
-  border: 1px solid $borderColor;
+  border: 1px solid $borderColor !important;
 
   &::placeholder {
     color: #A4ABC5;
@@ -3575,8 +3575,8 @@ body {
 
 .overhead-profit-tab-costing {
   .form-control[disabled] {
-    max-width: 280px;
-    width: 280px;
+    max-width: 140px;
+    width: 140px;
 
     @media screen and (max-width:$middleDesktop) {
       width: auto;
@@ -3585,14 +3585,14 @@ body {
 
   .overhead-rejection .cross-btn-container {
     @media screen and (max-width:$middleDesktop) {
-      width: 240px;
+      width: 140px;
     }
   }
 
   .form-group.inputbox.withBorder {
     input.form-control {
-      max-width: 280px;
-      width: 280px;
+      max-width: 140px;
+      width: 140px;
 
       @media screen and (max-width:$middleDesktop) {
         width: auto;

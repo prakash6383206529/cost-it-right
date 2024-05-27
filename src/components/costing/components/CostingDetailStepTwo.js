@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, setComponentDiscountOtherItemData, isDiscountDataChange, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, setComponentDiscountOtherItemData, isDiscountDataChange, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData,
+  setOtherDiscountData
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, showBopLabel } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -132,8 +133,8 @@ function CostingDetailStepTwo(props) {
         ...tempData,
         NetSurfaceTreatmentCost: data.NetSurfaceTreatmentCost,
         // TotalCost: OverAllCost,
-        BasicRate: OverAllCost + checkForNull(DiscountCostData?.AnyOtherCost),
-        TotalCost: OverAllCost + checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalNpvCost) + checkForNull(DiscountCostData?.totalConditionCost),
+        BasicRate: checkForNull(OverAllCost) + checkForNull(DiscountCostData?.AnyOtherCost),
+        TotalCost: checkForNull(OverAllCost) + checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalNpvCost) + checkForNull(DiscountCostData?.totalConditionCost),
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
       setTimeout(() => {
@@ -364,9 +365,9 @@ function CostingDetailStepTwo(props) {
           ...tempData,
           NetDiscountsCost: checkForNull(discountedCost),
           NetOtherCost: checkForNull(data.AnyOtherCost),
-          TotalCost: OverAllCost + checkForNull(data?.AnyOtherCost) + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
+          TotalCost: checkForNull(OverAllCost) + checkForNull(data?.AnyOtherCost) + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
           // TotalCost: OverAllCost + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
-          BasicRate: OverAllCost + checkForNull(data?.AnyOtherCost),
+          BasicRate: checkForNull(OverAllCost) + checkForNull(data?.AnyOtherCost),
           // BasicRate: OverAllCost,
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
@@ -432,6 +433,7 @@ function CostingDetailStepTwo(props) {
       dispatch(setOpenAllTabs(false))
       dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
       dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
+      dispatch(setOtherDiscountData({ gridData: [], totalCost: 0 }))
       props.backBtn()
     }
   }

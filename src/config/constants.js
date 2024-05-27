@@ -19,8 +19,7 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.11.208:3030/api/v1`
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10162/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
@@ -28,7 +27,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.120:81/api/v1`;
-// const BASE_URL = `http://10.10.1.100:10152/api/v1`;
+const BASE_URL = `http://10.10.1.100:10152/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`;
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -65,6 +64,7 @@ export const API = {
   getWeightCalculationLayoutType: `${BASE_URL}/configuration/radio-button-list-get-weight-calculate-layout-type`,
   getLabourTypeSelectList: `${BASE_URL}/configuration/select-list-get-labour-type`,
   getApprovalTypeSelectList: `${BASE_URL}/configuration/select-list-get-approval-type`,
+  getApprovalModuleSelectList: `${BASE_URL}/configuration/select-approval-module-level`,
 
   //LOCATION API
   getAllCities: `${BASE_URL}/configuration-location/select-list-get-vendor-city`,
@@ -627,6 +627,7 @@ export const API = {
   uploadCorrugatedBoxCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-box`,
   uploadAssemblyCosting: `${BASE_URL}/bulk-costing/save-costing-assembly`,
   uploadWiringHarnessCosting: `${BASE_URL}/bulk-costing/save-costing-wiring-harness`,
+  uploadDiecastingCosting: `${BASE_URL}/bulk-costing/save-die-costing`,
   uploadSheetMetal: `${BASE_URL}/bulk-costing/save-costing-sheet-metal-in-mhr-process`,
   getAssemblyChildPartbyAsmCostingId: `${BASE_URL}/costing/get-assembly-child-parts-by-asmCostingId`,
   getProcessAndOperationbyCostingId: `${BASE_URL}/costing/get-process-and-operation-by-asmCostingId-or-childCostingId`,
@@ -1119,6 +1120,12 @@ export const API = {
   getVendorLpsRatingList: `${BASE_URL}/vendor/get-lpsratings-status`,
   vendorClassificationStatusUpdate: `${BASE_URL}/vendor/update-classification-status`,
   lpsRatingStatusUpdate: `${BASE_URL}/vendor/update-lpsrating-status`,
+  sendForUnblocking: `${BASE_URL}/masters-approval/master-send-to-approver-by-sender`,
+  getVendorData: `${BASE_URL}/vendor/vendor-name-by-vendor-select-list`,
+  getPlantData: `${BASE_URL}/configuration/get-plant-for-deviation-approval-by-vendor`,
+  // getMonths : `${BASE_URL}/configuration/get-months-for-deviation-approval-by-vendor`,
+  getVendorPlantDetailForDeviation: `${BASE_URL}/vendor/get-vendor-plant-detail-for-deviation-approval`,
+  getOnboardingSummaryData: `${BASE_URL}/app-approval-system/get-approval-master-summary`,
 
   // NFR
   getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
@@ -1140,6 +1147,15 @@ export const VENDOR_CLASSIFICATION_DATA = 'VENDOR_CLASSIFICATION_DATA';
 export const LPS_RATING_DATA = 'LPS_RATING_DATA';
 export const UPDATE_VENDOR_CLASSIFICATION_STATUS = 'UPDATE_VENDOR_CLASSIFICATION_STATUS';
 export const UPDATE_LPS_RATING_STATUS = 'UPDATE_LPS_RATING_STATUS';
+export const MONTHS = 'MONTHS';
+export const VENDOR_DATA = 'VENDOR_DATA';
+export const VENDOR_PLANT_DATA = 'VENDOR_PLANT_DATA';
+export const DETAILS_FOR_DEVIATION_APPROVAL = 'DETAILS_FOR_DEVIATION_APPROVAL';
+export const SEND_FOR_UNBLOCKING = 'SEND_FOR_UNBLOCKING';
+export const GET_ONBOARDING_SUMMARY_DATA_LIST = 'GET_ONBOARDING_SUMMARY_DATA_LIST';
+
+
+
 
 
 
@@ -1183,6 +1199,7 @@ export const GET_COSTING_HEAD_SUCCESS = 'GET_COSTING_HEAD_SUCCESS'
 export const GET_MODEL_TYPE_SUCCESS = 'GET_MODEL_TYPE_SUCCESS'
 export const GET_LABOUR_TYPE_SELECTLIST_SUCCESS = 'GET_LABOUR_TYPE_SELECTLIST_SUCCESS'
 export const GET_APPROVAL_TYPE_SELECT_LIST = 'GET_APPROVAL_TYPE_SELECT_LIST'
+export const GET_APPROVAL_MODULE_SELECT_LIST = 'GET_APPROVAL_MODULE_SELECT_LIST'
 
 //UOM MASTER
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS'
@@ -1190,6 +1207,7 @@ export const GET_UOM_DATA_FAILURE = 'GET_UOM_DATA_FAILURE'
 export const GET_UOM_SUCCESS = 'GET_UOM_SUCCESS'
 export const UNIT_OF_MEASUREMENT_API_FAILURE = 'UNIT_OF_MEASUREMENT_API_FAILURE'
 export const GET_UNIT_TYPE_SELECTLIST_SUCCESS = 'GET_UNIT_TYPE_SELECTLIST_SUCCESS'
+
 
 //PART MASTER
 export const CREATE_PART_REQUEST = 'CREATE_PART_REQUEST'
@@ -1287,6 +1305,7 @@ export const GET_MATERIAL_LIST_SUCCESS = 'GET_MATERIAL_LIST_SUCCESS'
 export const GET_MATERIAL_LIST_TYPE_SUCCESS = 'GET_MATERIAL_LIST_TYPE_SUCCESS'
 export const RAWMATERIAL_ADDED_FOR_COSTING = 'RAWMATERIAL_ADDED_FOR_COSTING'
 export const GET_MATERIAL_TYPE_DATA_SUCCESS = 'GET_MATERIAL_TYPE_DATA_SUCCESS'
+export const RAW_MATERIAL_DETAILS = 'RAW_MATERIAL_DETAILS'
 
 //PLANT MASTER
 export const CREATE_PLANT_SUCCESS = 'CREATE_PLANT_SUCCESS'
@@ -1519,6 +1538,7 @@ export const SET_RMCCBOP_DATA = 'SET_RMCCBOP_DATA';
 export const SET_SURFACE_COST_DATA = 'SET_SURFACE_COST_DATA';
 export const SET_OVERHEAD_PROFIT_COST_DATA = 'SET_OVERHEAD_PROFIT_COST_DATA';
 export const SET_DISCOUNT_COST_DATA = 'SET_DISCOUNT_COST_DATA';
+export const SET_REJECTION_RECOVERY_DATA = 'SET_REJECTION_RECOVERY_DATA';
 export const SET_IS_TOOLCOST_USED = 'SET_IS_TOOLCOST_USED';
 export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
@@ -1634,6 +1654,7 @@ export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
 export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
 export const SET_NPV_DATA = 'SET_NPV_DATA'
 export const SET_OTHER_COST = 'SET_OTHER_COST'
+export const SET_OTHER_DISCOUNT_DATA = 'SET_OTHER_DISCOUNT_DATA'
 export const SET_OVERHEAD_PROFIT_ICC = 'SET_OVERHEAD_PROFIT_ICC'
 export const SET_YOY_COST_GRID_FOR_SAVE = 'SET_YOY_COST_GRID_FOR_SAVE'
 export const SET_QUOTATION_ID_FOR_RFQ = 'SET_QUOTATION_ID_FOR_RFQ'
@@ -1932,9 +1953,12 @@ export const REPORTS_AND_ANALYTICS = 'Reports And Analytics'
 export const USERS = 'Users'
 export const AUDIT = 'Audit'
 export const RFQ = 'RFQ'
-export const ONBOARDING = 'Onboarding'
-export const VENDOR_MANAGEMENT = 'Vendor Management'
+export const ONBOARDING = 'Onboarding & Management'
+export const VENDOR_MANAGEMENT = 'Vendor Classification Status'
+export const LPS = 'LPS Rating Status'
+
 export const APPROVAL_LISTING = 'Approval Listing'
+export const VENDOR_MANAGEMENT_ROLE = 'Vendor Management'
 
 //PAGE NAMES
 export const DASHBOARD = 'Dashboard'
@@ -1950,7 +1974,12 @@ export const PLANT = 'Plant'
 
 export const PRODUCT = 'Product'
 export const PRODUCT_ID = '4'
+//level manage
 
+export const MODULE_COSTING = 'Costing'
+export const MODULE_SIMULATION = 'Simulation'
+export const MODULE_MASTER = 'Master'
+export const MODULE_ONBOARDING = 'Onboarding&Management'
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits'
 export const LABOUR = 'Labour'
 export const REASON = 'Reason'
@@ -2061,6 +2090,8 @@ export const NFR = 'NFR'
 export const PFS1 = 'PFS1'
 export const PFS2 = 'PFS2'
 export const PFS3 = 'PFS3'
+export const CUD = 'CUD'
+export const LPSUD = 'LPSUD'
 export const ReleaseStrategyB1 = 'RSB1'
 export const ReleaseStrategyB2 = 'RSB2'
 export const ReleaseStrategyB3 = 'RSB3'
@@ -2605,7 +2636,9 @@ export const MACHINING_GROUP_BULKUPLOAD = 3
 export const CORRUGATED_BOX = 4
 export const ASSEMBLY = 5
 export const WIRINGHARNESS = 6
-export const SHEETMETAL = 7
+export const DIE_CASTING = 7
+//changed the sheet metal to 8 bcz the version 3 code is not working or deployed
+export const SHEETMETAL = 8
 
 
 export const REASON_ID = 2
@@ -2892,6 +2925,14 @@ export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('Approv
 export const RELEASESTRATEGYTYPEID6 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB6])
 export const VENDORNEEDFORMID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VendorNeedForm])
 
+//Supplier approval 
+
+export const CLASSIFICATIONAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CUD])
+
+export const LPSAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[LPSUD])
+export const LPSAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[LPSUD])
+export const CLASSIFICATIONAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[CUD])
+
 //CONSTANTS FOR MASTER APPROVAL TYPE 
 export const RMTYPE = Number(reactLocalStorage.getObject('masterType')[RAW_MATERIAL])
 export const BOPTYPE = Number(reactLocalStorage.getObject('masterType')[BOP])
@@ -2902,6 +2943,13 @@ export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGE
 //CONSTANTS FOR ONBOARDING
 export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
 export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+//CONSTANTS FOR MANAGE LEVELS RADIO BUTTON
+
+
+export const COSTING_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_COSTING])
+export const SIMULATION_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_SIMULATION])
+export const MASTER_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_MASTER])
+export const ONBOARDING_MANAGEMENT_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_ONBOARDING])
 
 //AUTOCOMPLETE IN PART AND VENDOR
 export const searchCount = 3
@@ -2942,9 +2990,9 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 export const PartTypeIDFromAPI = 2
-
+export const RMIndex = true
 //VERSION 
-export const VERSION = "V2.2.4.1";
+export const VERSION = "V2.2.16";
 
 
 

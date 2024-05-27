@@ -122,6 +122,31 @@
     @include extra-icon-styles;
 }
 
+.undo-icon {
+    @include icons("../../images/undo-red.png", 20px, 17px);
+    margin-bottom: 1px !important;
+}
+
+.undo.cancel-btn {
+    color: #fc5774;
+    border: 1px solid #fc5774;
+
+    &:hover,
+    &:focus,
+    &:active {
+        background-color: #fc5774 !important;
+        border: 1px solid #fc5774 !important;
+        color: #fff;
+        transition: all 0.3s ease-in-out;
+
+        .undo-icon {
+            transition: all 0.3s ease-in-out;
+            @include icons("../../images/undo-white.png", 20px, 17px);
+            margin-bottom: 1px !important;
+        }
+    }
+}
+
 .CalculatorIcon {
     @include icons("../../images/tool.svg", $shadowColor: #256bd1, $borderColor: #256bd1);
     background-color: #ffffff;
@@ -443,6 +468,45 @@
 
 .link-icon {
     @include icons("../../images/link.svg", 20px, 20px)
+}
+
+
+.all-modules {
+    @include icons("../../images/all-modules.png", 24px, 24px);
+    margin-bottom: 2px;
+}
+
+.cross-module {
+    @include icons("../../images/cross-icon.png", 24px, 24px);
+    margin-bottom: 2px;
+}
+
+.arrow-previous {
+    @include icons("../../images/caret-down.svg", 20px, 20px, );
+    margin-top: 3px;
+    transform: rotate(90deg);
+
+    &:focus {
+        @extend %focus;
+    }
+
+    &:disabled {
+        @extend %disabled;
+    }
+}
+
+.arrow-next {
+    @include icons("../../images/caret-down.svg", 20px, 20px, $shadowColor: none, $borderColor: none);
+    margin-top: 3px;
+    transform: rotate(-90deg);
+
+    &:focus {
+        @extend %focus;
+    }
+
+    &:disabled {
+        @extend %disabled;
+    }
 }
 
 .pinned {
