@@ -64,6 +64,7 @@ export const API = {
   getWeightCalculationLayoutType: `${BASE_URL}/configuration/radio-button-list-get-weight-calculate-layout-type`,
   getLabourTypeSelectList: `${BASE_URL}/configuration/select-list-get-labour-type`,
   getApprovalTypeSelectList: `${BASE_URL}/configuration/select-list-get-approval-type`,
+  getApprovalModuleSelectList: `${BASE_URL}/configuration/select-approval-module-level`,
 
   //LOCATION API
   getAllCities: `${BASE_URL}/configuration-location/select-list-get-vendor-city`,
@@ -1198,6 +1199,7 @@ export const GET_COSTING_HEAD_SUCCESS = 'GET_COSTING_HEAD_SUCCESS'
 export const GET_MODEL_TYPE_SUCCESS = 'GET_MODEL_TYPE_SUCCESS'
 export const GET_LABOUR_TYPE_SELECTLIST_SUCCESS = 'GET_LABOUR_TYPE_SELECTLIST_SUCCESS'
 export const GET_APPROVAL_TYPE_SELECT_LIST = 'GET_APPROVAL_TYPE_SELECT_LIST'
+export const GET_APPROVAL_MODULE_SELECT_LIST = 'GET_APPROVAL_MODULE_SELECT_LIST'
 
 //UOM MASTER
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS'
@@ -1205,6 +1207,7 @@ export const GET_UOM_DATA_FAILURE = 'GET_UOM_DATA_FAILURE'
 export const GET_UOM_SUCCESS = 'GET_UOM_SUCCESS'
 export const UNIT_OF_MEASUREMENT_API_FAILURE = 'UNIT_OF_MEASUREMENT_API_FAILURE'
 export const GET_UNIT_TYPE_SELECTLIST_SUCCESS = 'GET_UNIT_TYPE_SELECTLIST_SUCCESS'
+
 
 //PART MASTER
 export const CREATE_PART_REQUEST = 'CREATE_PART_REQUEST'
@@ -1952,6 +1955,8 @@ export const AUDIT = 'Audit'
 export const RFQ = 'RFQ'
 export const ONBOARDING = 'Onboarding & Management'
 export const VENDOR_MANAGEMENT = 'Vendor Classification Status'
+export const LPS = 'LPS Rating Status'
+
 export const APPROVAL_LISTING = 'Approval Listing'
 export const VENDOR_MANAGEMENT_ROLE = 'Vendor Management'
 
@@ -1969,7 +1974,12 @@ export const PLANT = 'Plant'
 
 export const PRODUCT = 'Product'
 export const PRODUCT_ID = '4'
+//level manage
 
+export const MODULE_COSTING = 'Costing'
+export const MODULE_SIMULATION = 'Simulation'
+export const MODULE_MASTER = 'Master'
+export const MODULE_ONBOARDING = 'Onboarding&Management'
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits'
 export const LABOUR = 'Labour'
 export const REASON = 'Reason'
@@ -2933,6 +2943,13 @@ export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGE
 //CONSTANTS FOR ONBOARDING
 export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
 export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+//CONSTANTS FOR MANAGE LEVELS RADIO BUTTON
+
+
+export const COSTING_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_COSTING])
+export const SIMULATION_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_SIMULATION])
+export const MASTER_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_MASTER])
+export const ONBOARDING_MANAGEMENT_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_ONBOARDING])
 
 //AUTOCOMPLETE IN PART AND VENDOR
 export const searchCount = 3

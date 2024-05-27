@@ -114,7 +114,7 @@ const RMIndexationListing = (props) => {
     }, []);
 
     const openModel = useCallback(() => {
-        console.log('here');
+
         setState((prev) => ({
             ...prev, isOpen: true, isEditFlag: false,
         }));

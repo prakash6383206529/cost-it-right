@@ -58,6 +58,7 @@ function ManageLevelTabs(props) {
             levelValue: levelValue,
             // isLoader: false, // Set loader state to true
         }));
+        // toggle(levelValue)
     };
 
     /**
@@ -138,7 +139,7 @@ function ManageLevelTabs(props) {
                             </NavLink>
                         </NavItem>}
                     </Nav>
-                    {isOpen && (<Level isOpen={isOpen} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} levelValue={state.level} activeTab={activeTab} />)}
+                    {isOpen && (<Level toggle={toggle} isOpen={isOpen} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} levelValue={state.level} activeTab={activeTab} />)}
                     <TabContent activeTab={activeTab}>
                         {activeTab === '1' && (
                             <TabPane tabId="1">
@@ -150,6 +151,8 @@ function ManageLevelTabs(props) {
                                     updateApi={state.updateApi}
                                     cancelButton={state.cancelButton}
                                     activeTab={activeTab}
+                                    closeDrawer={closeDrawer}
+                                    tab={state.levelType}
                                 />
                             </TabPane>
                         )}
@@ -162,6 +165,7 @@ function ManageLevelTabs(props) {
                                     mappingToggler={mappingToggler}
                                     updateApi={state.updateApi}
                                     cancelButton={state.cancelButton}
+                                    closeDrawer={closeDrawer}
                                 />
                             </TabPane>
                         )}
@@ -175,6 +179,7 @@ function ManageLevelTabs(props) {
                                     updateApi={state.updateApi}
                                     cancelButton={state.cancelButton}
                                     closeDrawer={closeDrawer}
+                                    tab={state.levelValue}
                                 />
                             </TabPane>
                         )}
@@ -187,6 +192,7 @@ function ManageLevelTabs(props) {
                                     mappingToggler={mappingToggler}
                                     updateApi={state.updateApi}
                                     cancelButton={state.cancelButton}
+                                    closeDrawer={closeDrawer}
                                 />
                             </TabPane>
                         )}
