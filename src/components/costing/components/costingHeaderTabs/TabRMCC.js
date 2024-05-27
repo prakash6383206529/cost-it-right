@@ -21,7 +21,7 @@ import ScrollToTop from '../../../common/ScrollToTop';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
-
+import { PreviousTabData } from '.';
 function TabRMCC(props) {
 
   const { handleSubmit } = useForm()
@@ -35,7 +35,7 @@ function TabRMCC(props) {
   const netPOPrice = useContext(NetPOPriceContext);
   const selectedCostingDetail = useContext(SelectedCostingDetail);
   const isPartType = useContext(IsPartType);
-
+  const previousTab = useContext(PreviousTabData) || 0;
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
@@ -1509,7 +1509,7 @@ function TabRMCC(props) {
     }
 
     dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, BasicRate: basicRate, EffectiveDate: CostingEffectiveDate, CallingFrom: 2 }, res => {
-      if (Number(props?.previousTab) === 6) {
+      if (Number(previousTab) === 6) {
         dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
       }
     }))

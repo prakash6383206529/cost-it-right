@@ -18,14 +18,11 @@ import { debounce } from 'lodash';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 import { ASSEMBLY, ASSEMBLYNAME, LEVEL0, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
-
+import { PreviousTabData } from '../../CostingHeaderTabs';
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
-
-
-
+  const previousTab = useContext(PreviousTabData) || 0;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
-
   const { handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -338,7 +335,7 @@ function SurfaceTreatment(props) {
 
     let totalPOriceForAssembly = checkForNull(basicRate) + checkForNull(discountAndOtherTabData?.totalConditionCost) + checkForNull(discountAndOtherTabData?.totalNpvCost)
     dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, EffectiveDate: CostingEffectiveDate, TotalCost: totalPOriceForAssembly, BasicRate: basicRate, NetPOPrice: totalPOriceForAssembly }, res => {
-      if (Number(props?.previousTab) === 6) {
+      if (Number(previousTab) === 6) {
         dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
       }
     }))

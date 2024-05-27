@@ -78,8 +78,6 @@ function OverheadProfit(props) {
   const [totalToolCost, setTotalToolCost] = useState(0)
   const [showWarning, setShowWarning] = useState('')
   const [showRefreshWarningMessage, setShowRefreshWarningMessage] = useState(false)
-  // const { getCostingPaymentDetails } = useSelector(state => state.costing);
-  // console.log('getCostingPaymentDetails: ', getCostingPaymentDetails);
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 

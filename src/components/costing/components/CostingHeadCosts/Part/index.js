@@ -27,7 +27,7 @@ import { MESSAGES } from '../../../../../config/message';
 import { IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
-
+import { PreviousTabData } from '../../CostingHeaderTabs';
 function PartCompoment(props) {
 
   const { rmData, bopData, ccData, item } = props;
@@ -47,7 +47,7 @@ function PartCompoment(props) {
   const netPOPrice = useContext(NetPOPriceContext);
   const isNFR = useContext(IsNFR);
   const isPartType = useContext(IsPartType);
-
+  const previousTab = useContext(PreviousTabData) || 0;
 
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
     let isOpen = IsOpen
@@ -214,7 +214,7 @@ function PartCompoment(props) {
 
   const InjectDiscountAPICall = () => {
     dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
-      if (Number(props?.previousTab) === 6) {
+      if (Number(previousTab) === 6) {
         dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
       }
     }))

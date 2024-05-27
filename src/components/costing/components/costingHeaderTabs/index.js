@@ -34,7 +34,7 @@ import { Steps } from '../TourMessages';
 import { useTranslation } from 'react-i18next';
 import { getRMFromNFR, setOpenAllTabs } from '../../../masters/nfr/actions/nfr';
 import Toaster from '../../../common/Toaster';
-
+export const PreviousTabData = React.createContext();
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
@@ -316,7 +316,7 @@ function CostingHeaderTabs(props) {
   const InjectDiscountAPICall = () => {
     if (!CostingViewMode && activeTab !== '6') {
       dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1, BasicRate: DiscountCostData?.BasicRateINR }, res => {
-        if (Number(props?.previousTab) === 6) {
+        if (Number(previousTab) === 6) {
           dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
         }
       }));
@@ -657,61 +657,63 @@ function CostingHeaderTabs(props) {
               </NavItem>
             }
           </Nav >
-          <TabContent activeTab={activeTab}>
-            <TabPane tabId="1">
-              {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) ? <TabAssemblyTechnology
-                setHeaderCost={props.setHeaderCost}
-                backBtn={props.backBtn}
-                activeTab={activeTab}
-                previousTab={previousTab}
-              /> :
-                <TabRMCC
+          <PreviousTabData.Provider value={previousTab}>
+            <TabContent activeTab={activeTab}>
+              <TabPane tabId="1">
+                {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) ? <TabAssemblyTechnology
                   setHeaderCost={props.setHeaderCost}
                   backBtn={props.backBtn}
                   activeTab={activeTab}
                   previousTab={previousTab}
-                />}
-            </TabPane>
-            <TabPane tabId="2">
-              <TabSurfaceTreatment
-                setHeaderCost={props.setHeaderCostSurfaceTab}
-                activeTab={activeTab}
-                previousTab={previousTab}
-              />
-            </TabPane>
-            <TabPane tabId="3">
-              <TabOverheadProfit
-                activeTab={activeTab}
-                setHeaderCost={props.setHeaderOverheadProfitCostTab}
-                headCostRMCCBOPData={props.headCostRMCCBOPData}
-                previousTab={previousTab}
-              />
-            </TabPane>
-            <TabPane tabId="4">
-              <TabPackagingFreight
-                activeTab={activeTab}
-                setHeaderCost={props.setHeaderPackageFreightTab}
-                toggle={props.toggle}
-                previousTab={previousTab}
-              />
-            </TabPane>
-            <TabPane tabId="5">
-              <TabToolCost
-                activeTab={activeTab}
-                setHeaderCost={props.setHeaderCostToolTab}
-                previousTab={previousTab}
-              />
-            </TabPane>
-            <TabPane tabId="6">
-              <TabDiscountOther
-                activeTab={activeTab}
-                setHeaderCost={props.setHeaderDiscountTab}
-                DiscountTabData={props.DiscountTabData}
-                toggle={props.toggle}
-                previousTab={previousTab}
-              />
-            </TabPane>
-          </TabContent>
+                /> :
+                  <TabRMCC
+                    setHeaderCost={props.setHeaderCost}
+                    backBtn={props.backBtn}
+                    activeTab={activeTab}
+                    previousTab={previousTab}
+                  />}
+              </TabPane>
+              <TabPane tabId="2">
+                <TabSurfaceTreatment
+                  setHeaderCost={props.setHeaderCostSurfaceTab}
+                  activeTab={activeTab}
+                  previousTab={previousTab}
+                />
+              </TabPane>
+              <TabPane tabId="3">
+                <TabOverheadProfit
+                  activeTab={activeTab}
+                  setHeaderCost={props.setHeaderOverheadProfitCostTab}
+                  headCostRMCCBOPData={props.headCostRMCCBOPData}
+                  previousTab={previousTab}
+                />
+              </TabPane>
+              <TabPane tabId="4">
+                <TabPackagingFreight
+                  activeTab={activeTab}
+                  setHeaderCost={props.setHeaderPackageFreightTab}
+                  toggle={props.toggle}
+                  previousTab={previousTab}
+                />
+              </TabPane>
+              <TabPane tabId="5">
+                <TabToolCost
+                  activeTab={activeTab}
+                  setHeaderCost={props.setHeaderCostToolTab}
+                  previousTab={previousTab}
+                />
+              </TabPane>
+              <TabPane tabId="6">
+                <TabDiscountOther
+                  activeTab={activeTab}
+                  setHeaderCost={props.setHeaderDiscountTab}
+                  DiscountTabData={props.DiscountTabData}
+                  toggle={props.toggle}
+                  previousTab={previousTab}
+                />
+              </TabPane>
+            </TabContent>
+          </PreviousTabData.Provider>
         </div >
       </div >
 

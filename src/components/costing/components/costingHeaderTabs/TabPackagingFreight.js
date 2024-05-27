@@ -20,7 +20,7 @@ import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/
 import { LOGISTICS } from '../../../../config/masterData';
 import { useHistory } from 'react-router';
 import { WACTypeId } from '../../../../config/constants';
-
+import { PreviousTabData } from '.';
 function TabPackagingFreight(props) {
 
   const { handleSubmit, } = useForm();
@@ -38,6 +38,7 @@ function TabPackagingFreight(props) {
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const { ComponentItemData, costingData } = useSelector(state => state.costing)
   let history = useHistory();
+  const previousTab = useContext(PreviousTabData) || 0;
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -239,7 +240,7 @@ function TabPackagingFreight(props) {
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     }
     dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, BasicRate: basicRate }, res => {
-      if (Number(props?.previousTab) === 6) {
+      if (Number(previousTab) === 6) {
         dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
       }
     }))

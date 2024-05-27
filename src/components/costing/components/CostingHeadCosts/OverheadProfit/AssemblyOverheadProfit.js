@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../../helper';
-import { getOverheadProfitTabData, gridDataAdded, isOverheadProfitDataChange, saveAssemblyOverheadProfitTab, saveAssemblyPartRowCostingCalculation, saveDiscountOtherCostTab, setComponentOverheadItemData, setOverheadProfitData } from '../../../actions/Costing';
+import { getOverheadProfitTabData, gridDataAdded, isOverheadProfitDataChange, saveAssemblyOverheadProfitTab, saveAssemblyPartRowCostingCalculation, saveCostingPaymentTermDetail, saveDiscountOtherCostTab, setComponentOverheadItemData, setOverheadProfitData } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
 import Toaster from '../../../../common/Toaster';
@@ -11,7 +11,7 @@ import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 import { WACTypeId } from '../../../../../config/constants';
-
+import { PreviousTabData } from '../../CostingHeaderTabs';
 function AssemblyOverheadProfit(props) {
   const { item } = props;
 
@@ -24,12 +24,12 @@ function AssemblyOverheadProfit(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const isPartType = useContext(IsPartType);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsOverheadProfitChange, ComponentItemDiscountData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsOverheadProfitChange, ComponentItemDiscountData, PaymentTermDataDiscountTab } = useSelector(state => state.costing)
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const partType = (IdForMultiTechnology.includes(String(costData.TechnologyId)) || costData.CostingTypeId === WACTypeId)
-
+  const previousTab = useContext(PreviousTabData) || 0;
   const dispatch = useDispatch()
 
   const toggle = (BOMLevel, PartNumber, IsCollapse) => {
@@ -94,7 +94,11 @@ function AssemblyOverheadProfit(props) {
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     }
 
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 3, BasicRate: basicRate }, res => { }))
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 3, BasicRate: basicRate }, res => {
+      if (Number(previousTab) === 6) {
+        dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
+      }
+    }))
   }
 
   /**

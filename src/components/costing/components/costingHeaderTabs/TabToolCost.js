@@ -27,7 +27,7 @@ import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../config/mas
 import { debounce } from 'lodash';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
-
+import { PreviousTabData } from '.';
 function TabToolCost(props) {
 
   const { handleSubmit } = useForm();
@@ -51,7 +51,7 @@ function TabToolCost(props) {
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const isPartType = useContext(IsPartType);
   const [loader, setLoader] = useState(false)
-
+  const previousTab = useContext(PreviousTabData) || 0;
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
   }
@@ -308,7 +308,7 @@ function TabToolCost(props) {
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     }
     dispatch(saveDiscountOtherCostTab({ ...props.ComponentItemDiscountData, BasicRate: basicRate, CallingFrom: 5 }, (res) => {
-      if (Number(props?.previousTab) === 6) {
+      if (Number(previousTab) === 6) {
         dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
       }
     }));
