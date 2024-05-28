@@ -342,9 +342,7 @@ const RMDetailListing = () => {
       <Row>
         <Col>
           <div
-            className={`ag-grid-wrapper height-width-wrapper ${(rawMaterialTypeDataList &&
-              rawMaterialTypeDataList?.length <= 0) ||
-              noData
+            className={`ag-grid-wrapper height-width-wrapper ${true
               ? "overlay-contain"
               : ""
               }`}
@@ -374,7 +372,7 @@ const RMDetailListing = () => {
                 floatingFilter={true}
                 domLayout="autoHeight"
                 // columnDefs={c}
-                rowData={showExtraData && rawMaterialTypeDataList ? [...setLoremIpsum(rawMaterialTypeDataList[0]), ...rawMaterialTypeDataList] : rawMaterialTypeDataList}
+                rowData={[]}
 
                 pagination={true}
                 paginationPageSize={defaultPageSize}

@@ -555,6 +555,21 @@ export function getNetSurfaceAreaBothSide(data) {
   return checkForNull(value)
 }
 
+export const calculationOnTco = (data) => {
+  let sum = 0;
+  for (const key in data) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      const value = parseFloat(data[key]);
+      if (!isNaN(value)) {
+        sum += value;
+      }
+    }
+  }
+
+  return sum;
+}
+
+
 export function formViewData(costingSummary, header = '', isBestCost = false) {
   let temp = []
   let dataFromAPI = costingSummary
@@ -642,6 +657,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
     PaymentTermRemark: paymentTermDetail?.Remark || '-',
   };
 
+  obj.CostingRejectionRecoveryDetails = (dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingRejectionDetail && dataFromAPI?.CostingPartDetails.CostingRejectionDetail?.CostingRejectionRecoveryDetails) ?? {}
+
   obj.nOverheadProfit = isBestCost ? (dataFromAPI && dataFromAPI?.NetOverheadAndProfitCost !== undefined ? dataFromAPI?.NetOverheadAndProfitCost : 0) :
     dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost ? dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost : 0
 
@@ -667,7 +684,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
     toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : "-",
     toolValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
   }
-
+  obj.TotalInvestmentcost = calculationOnTco((dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails) ? dataFromAPI?.CostingPartDetails?.CostingTCOResponse : {})
   obj.toolAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost : 0
 
   obj.totalToolCost = isBestCost ? (dataFromAPI && dataFromAPI?.NetToolCost !== undefined ? dataFromAPI?.NetToolCost : 0) :

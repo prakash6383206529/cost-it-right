@@ -359,9 +359,7 @@ const RMMaterialListing = () => {
       <Row>
         <Col>
           <div
-            className={`ag-grid-wrapper height-width-wrapper ${(rawMaterialTypeDataList &&
-              rawMaterialTypeDataList?.length <= 0) ||
-              noData
+            className={`ag-grid-wrapper height-width-wrapper ${true
               ? "overlay-contain"
               : ""
               }`}
@@ -391,7 +389,7 @@ const RMMaterialListing = () => {
                 floatingFilter={true}
                 domLayout="autoHeight"
                 // columnDefs={c}
-                rowData={showExtraData && rawMaterialTypeDataList ? [...setLoremIpsum(rawMaterialTypeDataList[0]), ...rawMaterialTypeDataList] : rawMaterialTypeDataList}
+                rowData={[]}
 
                 pagination={true}
                 paginationPageSize={defaultPageSize}
@@ -408,7 +406,7 @@ const RMMaterialListing = () => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
-               
+
                 <AgGridColumn field="Material Index"></AgGridColumn>
                 <AgGridColumn field="Material Name"></AgGridColumn>
                 <AgGridColumn field="UOM"></AgGridColumn>

@@ -85,6 +85,7 @@ const CostingSummaryTable = (props) => {
   const [viewConversionCostData, setViewConversionCostData] = useState([])
   const [viewRMData, setViewRMData] = useState([])
   const [viewOverheadData, setViewOverheadData] = useState([])
+  const [viewRejectionRecoveryData, setViewRejectionRecoveryData] = useState([])
   const [viewProfitData, setViewProfitData] = useState([])
   const [viewToolCost, setViewToolCost] = useState([])
   const [viewRejectAndModelType, setViewRejectAndModelType] = useState({})
@@ -534,9 +535,10 @@ const CostingSummaryTable = (props) => {
     let isIncludeSurfaceTreatmentWithOverheadAndProfit = viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit
     let isIncludeOverheadAndProfitInICC = viewCostingData[index]?.isIncludeOverheadAndProfitInICC
     let isIncludeToolCostInCCForICC = viewCostingData[index]?.isIncludeToolCostInCCForICC
-
+    let rejectionRecoveryData = viewCostingData[index]?.CostingRejectionRecoveryDetails
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
+    setViewRejectionRecoveryData(rejectionRecoveryData)
     setViewProfitData(profitData)
     setIccPaymentData(IccPaymentData)
     let obj = {
@@ -2650,6 +2652,7 @@ const CostingSummaryTable = (props) => {
                                 <br />
                                 <span className={highlighter(["overheadOn", "overheadValue"], "multiple-key")}>Overhead On</span>
                                 <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Profit On</span>
+                                <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Rejection Recovery</span>
                                 <span className={highlighter(["rejectionOn", "rejectionValue"], "multiple-key")}>Rejection On</span>
                                 <span className={highlighter(["iccOn", "iccValue"], "multiple-key")}>ICC On</span>
                                 <span className={highlighter(["paymentTerms", "paymentValue"], "multiple-key")}>Payment Terms</span>
@@ -2657,6 +2660,7 @@ const CostingSummaryTable = (props) => {
 
                               {viewCostingData &&
                                 viewCostingData?.map((data) => {
+                                  const { ApplicabilityType, EffectiveRecoveryPercentage, RejectionRecoveryNetCost } = data?.CostingRejectionRecoveryDetails
                                   return (
 
                                     <td className={tableDataClass(data)}>
@@ -2694,6 +2698,17 @@ const CostingSummaryTable = (props) => {
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
                                         </span>
                                       </div>
+                                      <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
+                                        <span className="d-inline-block w-50 small-grey-text">
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? ApplicabilityType ?? '-' : '')}
+                                        </span>{' '}
+                                        <span className="d-inline-block w-50 small-grey-text">
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? EffectiveRecoveryPercentage ?? '-' : '')}
+                                        </span>{' '}
+                                        <span className="d-inline-block w-50 small-grey-text">
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                        </span>
+                                      </div>
                                       <div style={pdfHead ? { marginTop: '-2px' } : {}} className={`d-flex ${highlighter(["rejectionOn", "rejectionValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle : '')}
@@ -2702,7 +2717,7 @@ const CostingSummaryTable = (props) => {
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle === 'Fixed' ? '-' : data?.rejectionOn.rejectionPercentage : '')}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}{!pdfHead && !drawerDetailPDF && RejectionRecoveryNetCost && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="rejection-recovery" width="280px" tooltipText={"Rejection Cost = Net Rejection Cost - Rejection Recovery Cost"} />}</span> : '')}
                                         </span>
                                       </div>
                                       <div style={pdfHead ? { marginTop: '-1px' } : {}} className={`d-flex  ${highlighter(["iccOn", "iccValue"], "multiple-key")}`}>
@@ -2737,6 +2752,7 @@ const CostingSummaryTable = (props) => {
                               overheadData={viewOverheadData}
                               profitData={viewProfitData}
                               rejectAndModelType={viewRejectAndModelType}
+                              viewRejectionRecovery={viewRejectionRecoveryData}
                               iccPaymentData={iccPaymentData}
                               closeDrawer={closeViewDrawer}
                               anchor={'right'}
@@ -2995,7 +3011,6 @@ const CostingSummaryTable = (props) => {
                                 })}
                             </tr>
                           }
-                          {props?.isRfqCosting && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} />}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
                               <td>
@@ -3161,6 +3176,7 @@ const CostingSummaryTable = (props) => {
                           </tr>
                         </>
                       }
+                      {props?.isRfqCosting && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
 
                       {
                         viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
@@ -3381,6 +3397,7 @@ const CostingSummaryTable = (props) => {
             overheadData={viewOverheadData}
             profitData={viewProfitData}
             rejectAndModelType={viewRejectAndModelType}
+            viewRejectionRecovery={viewRejectionRecoveryData}
             iccPaymentData={iccPaymentData}
             closeDrawer={closeViewDrawer}
             anchor={'right'}

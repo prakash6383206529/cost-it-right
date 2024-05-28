@@ -4,7 +4,7 @@ import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey } from '../../../../../helper';
-import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
+import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, setPaymentTermCost, } from '../../../actions/Costing';
 import Switch from "react-switch";
 import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
@@ -33,11 +33,16 @@ const PaymentTerms = React.memo((props) => {
     const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
     const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
     const [tempPaymentTermObj, setTempPaymentTermObj] = useState(PaymentTermDetail)
+
+
     const [InterestRateFixedLimit, setInterestRateFixedLimit] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
+    const [effectiveDate, setEffectiveDate] = useState("")
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+    const { getCostingPaymentDetails } = useSelector(state => state.costing);
+
 
     const PaymentTermsFieldValues = useWatch({
         control,
@@ -49,12 +54,25 @@ const PaymentTerms = React.memo((props) => {
         name: ['RepaymentPeriodPercentage', 'RepaymentPeriodFixed'],
     });
 
+
     useEffect(() => {
         if (PaymentTermDetail) {
             setValue('crmHeadPayment', PaymentTermDetail.PaymentTermCRMHead ? { label: PaymentTermDetail.PaymentTermCRMHead, value: 1 } : '')
             setValue('paymentRemark', PaymentTermDetail.Remark ? PaymentTermDetail.Remark : '')
         }
     }, []);
+    useEffect(() => {
+        if (props?.showPaymentTerms) {
+            setIsPaymentTermsApplicable(!IsPaymentTermsApplicable)
+            callPaymentTermAPI(props?.showPaymentTerms)
+            dispatch(gridDataAdded(true))
+            dispatch(isOverheadProfitDataChange(true))
+            if (PaymentTermDetail) {
+                setValue('paymentRemark', PaymentTermDetail.Remark ? PaymentTermDetail.Remark : '')
+            }
+        }
+    }, [])
+
 
     useEffect(() => {
         setTimeout(() => {
@@ -65,7 +83,7 @@ const PaymentTerms = React.memo((props) => {
                 "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
                 "InterestRate": IsPaymentTermsApplicable ? paymentTermsApplicability.label !== 'Fixed' ? getValues('RepaymentPeriodPercentage') : (getValues('RepaymentPeriodFixed')) : '',
                 "NetCost": IsPaymentTermsApplicable ? tempPaymentTermObj.NetCost : '',
-                "EffectiveDate": "",
+                "EffectiveDate": effectiveDate,
                 "PaymentTermCRMHead": tempPaymentTermObj.PaymentTermCRMHead ? tempPaymentTermObj.PaymentTermCRMHead : '',
                 "Remark": tempPaymentTermObj.Remark ? tempPaymentTermObj.Remark : ''
             }
@@ -74,42 +92,41 @@ const PaymentTerms = React.memo((props) => {
                 props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }, 200)
-    }, [tempPaymentTermObj, paymentTermsApplicability])
-
-
-    /**
-     * @method onPressPaymentTerms
-     * @description  USED TO HANDLE INVENTORY CHANGE
-     */
-    const onPressPaymentTerms = (value) => {
-        setIsPaymentTermsApplicable(!IsPaymentTermsApplicable)
-        callPaymentTermAPI(value)
-        dispatch(gridDataAdded(true))
-        dispatch(isOverheadProfitDataChange(true))
-        if (PaymentTermDetail) {
-            setValue('paymentRemark', PaymentTermDetail.Remark ? PaymentTermDetail.Remark : '')
-        }
-    }
+    }, [tempPaymentTermObj, paymentTermsApplicability, effectiveDate])
 
     /**
-     * @method callPaymentTermAPI
-     * @description ON TOGGLE OF PAYEMNT TERMS API CALL
-    */
+         * @method callPaymentTermAPI
+         * @description ON TOGGLE OF PAYEMNT TERMS API CALL
+        */
 
     const callPaymentTermAPI = (isCallAPI) => {
-        if (Object.keys(costData).length > 0 && isCallAPI && !CostingViewMode) {
+
+
+        if (Object.keys(costData).length > 0 && isCallAPI && !CostingViewMode && !getCostingPaymentDetails?.IsPaymentTerms) {
+            const getPlantId = () => {
+                const configKey = getConfigurationKey();
+                if (configKey?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) {
+                    return costData.PlantId;
+                } else if ((configKey?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) ||
+                    costData?.CostingTypeId === CBCTypeId ||
+                    costData?.CostingTypeId === NFRTypeId) {
+                    return costData.DestinationPlantId;
+                }
+                return EMPTY_GUID;
+            };
 
             const reqParams = {
                 VendorId: (costData?.CostingTypeId === VBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData.VendorId : EMPTY_GUID,
-                costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : Number(costData.CostingTypeId === WACTypeId) ? ZBCTypeId : costData.CostingTypeId,
-                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId)) ? costData.DestinationPlantId : EMPTY_GUID,
+                costingTypeId: costData.CostingTypeId === NFRTypeId ? VBCTypeId :
+                    costData.CostingTypeId === WACTypeId ? ZBCTypeId :
+                        costData.CostingTypeId,
+                plantId: getPlantId(),
                 customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
-                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : '',
+                effectiveDate: CostingEffectiveDate ? DayTime(CostingEffectiveDate).format('DD/MM/YYYY') : '',
                 rawMaterialGradeId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
                 rawMaterialChildId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
                 technologyId: null,
-            }
-
+            };
             dispatch(getPaymentTermsDataByHeads(reqParams, res => {
                 if (res && res.data && res.data.Result) {
                     let Data = res.data.Data;
@@ -130,7 +147,18 @@ const PaymentTerms = React.memo((props) => {
 
             }))
 
-        } else {
+        } else if (getCostingPaymentDetails?.IsPaymentTerms) {
+            setValue('RepaymentPeriodDays', getCostingPaymentDetails?.PaymentTermDetail.RepaymentPeriod);
+            const interestRate = getCostingPaymentDetails?.PaymentTermDetail.InterestRate !== null ? getCostingPaymentDetails?.PaymentTermDetail.InterestRate : 0;
+            setValue('RepaymentPeriodPercentage', interestRate);
+            setValue('RepaymentPeriodFixed', interestRate);
+            setPaymentTermInterestRateId(getCostingPaymentDetails?.PaymentTermDetail.InterestRateId !== EMPTY_GUID ? getCostingPaymentDetails?.PaymentTermDetail.InterestRateId : null);
+            checkPaymentTermApplicability(getCostingPaymentDetails?.PaymentTermDetail.PaymentTermApplicability);
+            setPaymentTermsApplicability({ label: getCostingPaymentDetails?.PaymentTermDetail.PaymentTermApplicability, value: getCostingPaymentDetails?.PaymentTermDetail.PaymentTermApplicability });
+        }
+
+        else {
+
             setPaymentTermsApplicability([])
             if (!CostingViewMode) {
                 props.setPaymentTermsDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
@@ -159,9 +187,11 @@ const PaymentTerms = React.memo((props) => {
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
             const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
+            const TotalCost = checkForNull(data?.totalCost - data?.NetDiscountsCost) + checkForNull(data?.AnyOtherCost)
             const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
             const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
             const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
+            let obj = {}
             switch (Text) {
                 case 'RM':
                 case 'Part Cost':
@@ -171,6 +201,11 @@ const PaymentTerms = React.memo((props) => {
                             ...tempPaymentTermObj,
                             NetCost: checkForNull(headerCosts?.NetRawMaterialsCost * RepaymentCost)
                         })
+                        obj = {
+                            ...tempPaymentTermObj,
+                            NetCost: checkForNull(headerCosts?.NetRawMaterialsCost * RepaymentCost)
+
+                        }
                     }
                     break;
 
@@ -180,6 +215,11 @@ const PaymentTerms = React.memo((props) => {
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(headerCosts.NetBoughtOutPartCost * RepaymentCost),
                     })
+                    obj = {
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(headerCosts.NetBoughtOutPartCost * RepaymentCost),
+
+                    }
                     break;
 
                 case 'CC':
@@ -188,6 +228,11 @@ const PaymentTerms = React.memo((props) => {
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(ConversionCostForCalculation * RepaymentCost),
                     })
+                    obj = {
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(ConversionCostForCalculation * RepaymentCost),
+
+                    }
                     break;
 
                 case 'RM + CC':
@@ -198,6 +243,11 @@ const PaymentTerms = React.memo((props) => {
                             ...tempPaymentTermObj,
                             NetCost: checkForNull(RMCC * RepaymentCost)
                         })
+                        obj = {
+                            ...tempPaymentTermObj,
+                            NetCost: checkForNull(RMCC * RepaymentCost)
+
+                        }
                     }
                     break;
 
@@ -209,6 +259,11 @@ const PaymentTerms = React.memo((props) => {
                             ...tempPaymentTermObj,
                             NetCost: checkForNull(RMBOP * RepaymentCost)
                         })
+                        obj = {
+                            ...tempPaymentTermObj,
+                            NetCost: checkForNull(RMBOP * RepaymentCost)
+
+                        }
                     }
                     break;
 
@@ -219,6 +274,11 @@ const PaymentTerms = React.memo((props) => {
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(BOPCC * RepaymentCost)
                     })
+                    obj = {
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(BOPCC * RepaymentCost)
+
+                    }
                     break;
 
                 case 'RM + CC + BOP':
@@ -230,6 +290,11 @@ const PaymentTerms = React.memo((props) => {
                             ...tempPaymentTermObj,
                             NetCost: checkForNull(RMBOPCC * RepaymentCost)
                         })
+                        obj = {
+                            ...tempPaymentTermObj,
+                            NetCost: checkForNull(RMBOPCC * RepaymentCost)
+
+                        }
                     }
                     break;
 
@@ -240,6 +305,11 @@ const PaymentTerms = React.memo((props) => {
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(getValues("RepaymentPeriodFixed"))
                     })
+                    obj = {
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(getValues("RepaymentPeriodFixed"))
+
+                    }
                     break;
 
                 case 'Annual ICC (%)':
@@ -249,20 +319,33 @@ const PaymentTerms = React.memo((props) => {
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(RMBOPCC * RepaymentCost)
                     })
-                    break;
-
-                case 'Net Cost':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOPCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
-
-                    setTempPaymentTermObj({
+                    obj = {
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(RMBOPCC * RepaymentCost)
+
+                    }
+                    break;
+
+                case 'Total Cost + Other Cost - Discount':
+
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull(checkForNull(TotalCost) * checkForNull(RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setTempPaymentTermObj({
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(TotalCost) * checkForNull(RepaymentCost)
                     })
+                    obj = {
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(TotalCost) * checkForNull(RepaymentCost)
+                    }
                     break;
 
                 default:
                     break;
             }
+
+
+            dispatch(setPaymentTermCost(obj, () => { }))
+
 
         }
     }
@@ -297,7 +380,9 @@ const PaymentTerms = React.memo((props) => {
         }
     }
 
-
+    const handleChangeInterestRate = (isDataChange) => {
+        dispatch(isOverheadProfitDataChange(isDataChange))
+    }
     const onRemarkPopUpClickPayment = () => {
 
         if (errors.paymentRemark !== undefined) {
@@ -328,27 +413,6 @@ const PaymentTerms = React.memo((props) => {
 
     return (
         <>
-            <Row className="mt-15 pt-15">
-                <Col md="12" className="switch mb-2">
-                    <label className="switch-level" id="Payment_Terms_switch">
-                        <Switch
-                            onChange={onPressPaymentTerms}
-                            checked={IsPaymentTermsApplicable}
-                            id="normal-switch"
-                            disabled={CostingViewMode ? true : false}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#CCC"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                        />
-                        <div className={'right-title'}>Payment Terms</div>
-                    </label>
-                </Col>
-            </Row>
             {IsPaymentTermsApplicable &&
                 <>
                     {initialConfiguration.IsShowCRMHead && <Col md="3">
@@ -437,7 +501,7 @@ const PaymentTerms = React.memo((props) => {
                                                         message: 'Percentage cannot be greater than 100'
                                                     },
                                                 }}
-                                                handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
+                                                handleChange={() => { handleChangeInterestRate(true) }}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}

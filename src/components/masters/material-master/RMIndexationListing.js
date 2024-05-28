@@ -9,7 +9,7 @@ import AddSpecification from "./AddSpecification";
 import BulkUpload from "../../massUpload/BulkUpload";
 import LoaderCustom from "../../common/LoaderCustom";
 import { RmSpecification } from "../../../config/constants";
-import { SPECIFICATIONLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import { RMINDEXATION, SPECIFICATIONLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -97,15 +97,13 @@ const RMIndexationListing = (props) => {
         []
     );
 
-    const closeDrawer = useCallback(
-        (e = "", data, type) => {
-            setState((prev) => ({ ...prev, isOpen: false, dataCount: 0, }))
-            if (type === "submit") getSpecificationListData("", "");
-
-        },
+    const closeDrawer = useCallback((e = "", data, type) => {
+        setState((prev) => ({ ...prev, isOpen: false, dataCount: 0, }))
+        if (type === "submit") getSpecificationListData("", "");
+        props.isOpen(false);
+    },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
-    );
+        []);
 
     const editItemDetails = useCallback((Id, rowData) => {
         setState((prev) => ({
@@ -114,7 +112,6 @@ const RMIndexationListing = (props) => {
     }, []);
 
     const openModel = useCallback(() => {
-        console.log('here');
         setState((prev) => ({
             ...prev, isOpen: true, isEditFlag: false,
         }));
@@ -157,9 +154,9 @@ const RMIndexationListing = (props) => {
         confirmDelete(state.deletedId);
     }, [confirmDelete, state.deletedId]);
     /**
-  * @method buttonFormatter
-  * @description Renders buttons
-  */
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     const buttonFormatter = useMemo(() => {
         return (props) => {
             const cellValue = props?.value;
@@ -248,7 +245,6 @@ const RMIndexationListing = (props) => {
 
     const onGridReady = (params) => {
         state.gridApi = params.api;
-        state.gridApi.sizeColumnsToFit();
         setState((prevState) => ({
             ...prevState,
             gridApi: params.api,
@@ -271,7 +267,7 @@ const RMIndexationListing = (props) => {
                 : rmSpecificationList
                     ? rmSpecificationList
                     : [];
-        return returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr);
+        return returnExcelColumn(RMINDEXATION, tempArr);
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -380,21 +376,21 @@ const RMIndexationListing = (props) => {
                     <Row className="pt-4">
                         <Col md={6} className="text-right mb-3 search-user-block">
                             {permissions.Add && (<Button id="rmSpecification_filter" className={"mr5 Tour_List_Add"} onClick={openModel} title={"Add"} icon={"plus"} />)}
-                            {/* {permissions.Download && (
-                            <>
+                            {permissions.Download && (
                                 <>
-                                    <ExcelFile
-                                        filename={"RM Specification"}
-                                        fileExtension={".xls"}
-                                        element={
-                                            <Button className="mr5 Tour_List_Download" id={"rmSpecification_excel_download"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                                        }
-                                    >
-                                        {onBtExport()}
-                                    </ExcelFile>
+                                    <>
+                                        <ExcelFile
+                                            filename={"RM Indexation"}
+                                            fileExtension={".xls"}
+                                            element={
+                                                <Button className="mr5 Tour_List_Download" id={"rmSpecification_excel_download"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                            }
+                                        >
+                                            {onBtExport()}
+                                        </ExcelFile>
+                                    </>
                                 </>
-                            </>
-                        )} */}
+                            )}
                             <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} className={" Tour_List_Reset"} icon={"refresh"} />
                         </Col>
                     </Row>
@@ -403,8 +399,7 @@ const RMIndexationListing = (props) => {
                 <Row>
                     <Col>
                         <div
-                            className={`ag-grid-wrapper height-width-wrapper ${(rmSpecificationList && rmSpecificationList?.length <= 0) ||
-                                noData
+                            className={`ag-grid-wrapper height-width-wrapper ${true
                                 ? "overlay-contain"
                                 : ""
                                 }`}
@@ -434,7 +429,7 @@ const RMIndexationListing = (props) => {
                                     floatingFilter={true}
                                     domLayout="autoHeight"
                                     // columnDefs={c}
-                                    rowData={tourStartData?.showExtraData ? [...setLoremIpsum(rmSpecificationList[0]), ...rmSpecificationList] : rmSpecificationList}
+                                    rowData={[]}
 
                                     pagination={true}
                                     paginationPageSize={defaultPageSize}
@@ -451,14 +446,24 @@ const RMIndexationListing = (props) => {
                                     onFilterModified={onFloatingFilterChanged}
                                     suppressRowClickSelection={true}
                                 >
-                                    <AgGridColumn field="RMName"></AgGridColumn>
-                                    <AgGridColumn field="RMGrade" headerName="Grade"></AgGridColumn>
-                                    <AgGridColumn field="RMSpec" headerName="Spec"></AgGridColumn>
-                                    <AgGridColumn
-                                        field="RawMaterialCode"
-                                        headerName="Code"
-                                        cellRenderer="hyphenFormatter"
-                                    ></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                    <AgGridColumn field="MaterialMain" headerName="Material Name (main)"></AgGridColumn>
+                                    <AgGridColumn field="MaterialName" headerName="Material Name"></AgGridColumn>
+                                    <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
+                                    <AgGridColumn field="vendorName" headerName="Vendor (Code)"></AgGridColumn>
+                                    <AgGridColumn field="clientName" headerName="Customer (Code)"></AgGridColumn>
+                                    <AgGridColumn field="exchangeRate" headerName="Exchange Rate Source"></AgGridColumn>
+                                    <AgGridColumn field="Index" headerName="Index (LME)"></AgGridColumn>
+                                    <AgGridColumn field="FromDate" headerName="From Date"></AgGridColumn>
+                                    <AgGridColumn field="ToDate" headerName="To Date"></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date"></AgGridColumn>
+                                    <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
+                                    <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                                    <AgGridColumn field="Frequencyofsettlement" headerName="Frequency of settlement"></AgGridColumn>
+                                    <AgGridColumn field="IndexPremium" headerName="Index Premium(Currency)"></AgGridColumn>
+                                    <AgGridColumn field="ExRateSrcPremium" headerName="Exchange Rate Source Premium(Currency)"></AgGridColumn>
+                                    <AgGridColumn field="indexRateCurrency" headerName="Index Rate(Currency)"></AgGridColumn>
+                                    <AgGridColumn field="basicRateBaseCurrency" headerName="Basic rate(Base Currency)"></AgGridColumn>
                                     <AgGridColumn
                                         field="SpecificationId"
                                         cellClass="ag-grid-action-container"

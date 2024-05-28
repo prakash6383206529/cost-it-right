@@ -4,7 +4,7 @@ import { useDispatch, useSelector, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
-  setComponentToolItemData, saveDiscountOtherCostTab, saveAssemblyPartRowCostingCalculation, isToolDataChange
+  setComponentToolItemData, saveDiscountOtherCostTab, saveAssemblyPartRowCostingCalculation, isToolDataChange, saveCostingPaymentTermDetail
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
@@ -27,7 +27,7 @@ import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../config/mas
 import { debounce } from 'lodash';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
-
+import { PreviousTabData } from '.';
 function TabToolCost(props) {
 
   const { handleSubmit } = useForm();
@@ -38,7 +38,7 @@ function TabToolCost(props) {
   const [rowObjData, setRowObjData] = useState([])
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
+  const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData, PaymentTermDataDiscountTab, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -51,7 +51,7 @@ function TabToolCost(props) {
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const isPartType = useContext(IsPartType);
   const [loader, setLoader] = useState(false)
-
+  const previousTab = useContext(PreviousTabData) || 0;
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
   }
@@ -307,7 +307,12 @@ function TabToolCost(props) {
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     }
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, BasicRate: basicRate, CallingFrom: 5 }, res => { }))
+    dispatch(saveDiscountOtherCostTab({ ...props.ComponentItemDiscountData, BasicRate: basicRate, CallingFrom: 5 }, (res) => {
+      if (Number(previousTab) === 6) {
+        dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
+      }
+    }));
+
   }
 
 

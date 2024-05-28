@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, } from 'react-hook-form';
-import { gridDataAdded, saveAssemblyPartRowCostingCalculation, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
+import { gridDataAdded, saveAssemblyPartRowCostingCalculation, saveCostingPaymentTermDetail, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -18,14 +18,11 @@ import { debounce } from 'lodash';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 import { ASSEMBLY, ASSEMBLYNAME, LEVEL0, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
-
+import { PreviousTabData } from '../../CostingHeaderTabs';
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
-
-
-
+  const previousTab = useContext(PreviousTabData) || 0;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
-
   const { handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -34,7 +31,7 @@ function SurfaceTreatment(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const { ComponentItemDiscountData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, isBreakupBoughtOutPartCostingFromAPI, PaymentTermDataDiscountTab } = useSelector(state => state.costing)
   const price = useContext(NetPOPriceContext)
   const costData = useContext(costingInfoContext);
 
@@ -337,7 +334,11 @@ function SurfaceTreatment(props) {
     }
 
     let totalPOriceForAssembly = checkForNull(basicRate) + checkForNull(discountAndOtherTabData?.totalConditionCost) + checkForNull(discountAndOtherTabData?.totalNpvCost)
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, EffectiveDate: CostingEffectiveDate, TotalCost: totalPOriceForAssembly, BasicRate: basicRate, NetPOPrice: totalPOriceForAssembly }, res => { }))
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, EffectiveDate: CostingEffectiveDate, TotalCost: totalPOriceForAssembly, BasicRate: basicRate, NetPOPrice: totalPOriceForAssembly }, res => {
+      if (Number(previousTab) === 6) {
+        dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
+      }
+    }))
     // }
   }
 

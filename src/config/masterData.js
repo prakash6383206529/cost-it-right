@@ -5641,7 +5641,26 @@ export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [
     { label: "Spec", value: "RMSpec", },
     { label: "Code", value: "RawMaterialCode", },
 ]
-
+export const RMINDEXATION = [
+    { label: "Costing Head", value: "CostingHead", },
+    { label: "Material Name (main)", value: "RawMaterialName", },
+    { label: "Material Name", value: "RawMaterialGrade", },
+    { label: "Plant (Code)", value: "RawMaterialSpecification", },
+    { label: "Vendor (Code)", value: "RawMaterialCode", },
+    { label: "Customer (Code)", value: "MaterialType", },
+    { label: "Exchange Rate Source", value: "Category", },
+    { label: "Index (LME)", value: "DestinationPlantName", },
+    { label: "From Date", value: "VendorName", },
+    { label: "To Date", value: "CustomerName", },
+    { label: "Effective Date", value: "CustomerName", },
+    { label: "UOM", value: "UnitOfMeasurement", },
+    { label: "Currency", value: "Currency", },
+    { label: "Frequency of settlement", value: "CustomerName", },
+    { label: "Index Premium(Currency)", value: "CustomerName", },
+    { label: "Exchange Rate Source Premium(Currency)", value: "CustomerName", },
+    { label: "Index Rate(Currency)", value: "Rate", },
+    { label: "Basic rate(Base Currency)", value: "EffectiveDate", },
+]
 export const OPERATION_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "Technology", },
@@ -8062,5 +8081,6 @@ export const NFR_BOP_STANDARD_NAME = 'BoughtOutPart'
 export const NFR_RAW_MATERIAL_NAME = 'RawMaterial'
 
 export const REJECTION_RECOVERY_APPLICABILITY = [
-    { label: "Scap Rate * Net weight", value: 1 },
+    { label: "Scrap Rate * Net Weight", value: '24' },
+    { label: "Fixed", value: '7' },
 ]
