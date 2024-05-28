@@ -8,6 +8,8 @@ import { useForm, Controller } from "react-hook-form";
 import { Drawer } from "@material-ui/core";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
+import AddGrade from "./AddGrade";
+import Button from '../../layout/Button';
 
 const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
 
@@ -29,12 +31,12 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
     const [gridData, setGridData] = useState([]);
     const [formData, setFormData] = useState({
         Index: '',
-        MaterialName: '',      
+        MaterialName: '',
         MaterialNameCustom: ''
 
     });
 
- 
+
 
     const renderListing = (label) => {
         if (label === 'Applicability') {
@@ -48,7 +50,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
 
     const handleInputChange = (selectedOption, name) => {
         const updatedFormData = { ...formData, [name]: selectedOption.value };
-        setFormData(updatedFormData);       
+        setFormData(updatedFormData);
     };
 
     const resetData = () => {
@@ -162,6 +164,12 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
     const closePopUp = () => {
         setState(prevState => ({ ...prevState, showPopup: false }));
     };
+    const indexToggler = (Id = '') => {
+        setState(prevState => ({ ...prevState, isOpenIndex: true }));
+    }
+    const closeIndex = () => {
+        setState(prevState => ({ ...prevState, isOpenIndex: false }));
+    }
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>
@@ -172,7 +180,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                 <Col>
                                     <div className={"header-wrapper left"}>
                                         <h3>
-                                            Material Standardization
+                                            Commodity Standardization
                                         </h3>
                                     </div>
                                     <div
@@ -200,7 +208,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                 </Col>
                                 <Col md="6">
                                     <SearchableSelectHookForm
-                                        label={'Material Name (In index)'}
+                                        label={'Commodity Name (In index)'}
                                         name={'MaterialName'}
                                         placeholder={'Select'}
                                         Controller={Controller}
@@ -211,26 +219,35 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         options={renderListing('Applicability')}
                                         mandatory={true}
                                         handleChange={(option) => handleInputChange(option, 'MaterialName')}
-                                        errors={errors.MaterialIndex}
+                                        errors={errors.MaterialName}
                                     />
                                 </Col>
-                                <Col md="6">
-                                    <SearchableSelectHookForm
-                                        label={'Material Name (Custom)'}
-                                        name={'MaterialNameCustom'}
-                                        placeholder={'Select'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        defaultValue={''}
-                                        options={renderListing('Applicability')}
-                                        mandatory={true}
-                                        handleChange={(option) => handleInputChange(option, 'MaterialNameCustom')}
-                                        errors={errors.MaterialNameCustom}
+                                <Col md="6" className="d-flex justify-space-between align-items-center inputwith-icon ">
+                                    <div className="w-100">
+                                        <SearchableSelectHookForm
+                                            label={'Commodity Name (Custom)'}
+                                            name={'MaterialNameCustom'}
+                                            placeholder={'Select'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: true }}
+                                            register={register}
+                                            defaultValue={''}
+                                            options={renderListing('Applicability')}
+                                            mandatory={true}
+                                            handleChange={(option) => handleInputChange(option, 'MaterialNameCustom')}
+                                            errors={errors.MaterialNameCustom}
+                                        />
+                                    </div>
+                                    <Button
+                                        id="GradeId-add"
+                                        className={"right mt-4 mb"}
+                                        variant={"plus-icon-square"}
+                                        onClick={() => indexToggler("")}
                                     />
                                 </Col>
-                                <Col md="4" className={`${initialConfiguration.IsShowCRMHead ? "mb-3" : "pt-3"} d-flex`}>
+
+                                <Col md="4" className={`${initialConfiguration.IsShowCRMHead ? "mb-3" : "pt-1"} d-flex`}>
                                     {isEdit ? (
                                         <>
                                             <button
@@ -278,8 +295,8 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                             <thead>
                                 <tr>
                                     <th>{`Index`}</th>
-                                    <th>{`Material Name (In index)`}</th>
-                                    <th>{`Material Name (Custom)`}</th>
+                                    <th>{`Commodity Name (In index)`}</th>
+                                    <th>{`Commodity Name (Custom)`}</th>
                                     <th className='text-right'>{`Action`}</th>
                                 </tr>
                             </thead>
@@ -289,7 +306,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         {gridData.map((item, index) => (
                                             <tr key={index}>
                                                 <td>{item.Index}</td>
-                                                <td>{item.MaterialName}</td>                                               
+                                                <td>{item.MaterialName}</td>
                                                 <td>{item.MaterialNameCustom}</td>
                                                 <td className='text-right'>
                                                     <button
@@ -346,7 +363,19 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                     </Row>
                 </Container>
             </Drawer>
-            {state.showPopup && (
+            {state.isOpenIndex && (
+                <AddGrade
+                    isOpen={state.isOpenIndex}
+                    closeDrawer={closeIndex}
+                    isEditFlag={isEditFlag}
+                    // RawMaterial={this.state.RawMaterial}
+                    // ID={this.state.Id}
+                    anchor={"right"}
+                    // specificationId={this.state.specificationId}
+                    isShowIndex={true}
+
+                />
+            )}            {state.showPopup && (
                 <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
             )}
         </div>
