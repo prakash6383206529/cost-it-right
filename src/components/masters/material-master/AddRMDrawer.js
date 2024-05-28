@@ -121,11 +121,11 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
     const onPopupConfirm = () => {
         cancel('cancel');
         setState(prevState => ({ ...prevState, showPopup: false }));
-      };
-    
-      const closePopUp = () => {
+    };
+
+    const closePopUp = () => {
         setState(prevState => ({ ...prevState, showPopup: false }));
-      };
+    };
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>

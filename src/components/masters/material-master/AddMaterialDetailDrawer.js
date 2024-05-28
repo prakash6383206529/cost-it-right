@@ -156,7 +156,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                 <Col>
                                     <div className={"header-wrapper left"}>
                                         <h3>
-                                            Add Material
+                                            Material Standardization
                                         </h3>
                                     </div>
                                     <div
@@ -168,7 +168,23 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                             <Row className="pl-3">
                                 <Col md="6">
                                     <SearchableSelectHookForm
-                                        label={'Material Index'}
+                                        label={'Index'}
+                                        name={'index'}
+                                        placeholder={'Select'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        defaultValue={''}
+                                        options={renderListing('Applicability')}
+                                        mandatory={true}
+                                        handleChange={handleMaterialIndexChange}
+                                        errors={errors.index}
+                                    />
+                                </Col>
+                                <Col md="6">
+                                    <SearchableSelectHookForm
+                                        label={'Material Name (In index)'}
                                         name={'MaterialName'}
                                         placeholder={'Select'}
                                         Controller={Controller}
@@ -183,19 +199,20 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                     />
                                 </Col>
                                 <Col md="6">
-                                    <TextFieldHookForm
-                                        label="Index Type"
-                                        name={"MaterialType"}
+                                    <SearchableSelectHookForm
+                                        label={'Material Name (Custom)'}
+                                        name={'MaterialNameCustom'}
+                                        placeholder={'Select'}
                                         Controller={Controller}
                                         control={control}
+                                        rules={{ required: true }}
                                         register={register}
+                                        defaultValue={''}
+                                        options={renderListing('Applicability')}
                                         mandatory={true}
-                                        handleChange={handleInputChange}
-                                        defaultValue={""}
-                                        className=""
-                                        customClassName={"withBorder"}
+                                        handleChange={handleMaterialIndexChange}
+                                        errors={errors.MaterialNameCustom}
                                     />
-
                                 </Col>
                                 <Col md="4" className={`${initialConfiguration.IsShowCRMHead ? "mb-3" : "pt-1"} d-flex`}>
                                     {isEdit ? (
@@ -244,8 +261,9 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                         <Table className="table mb-0 forging-cal-table" size="sm">
                             <thead>
                                 <tr>
-                                    <th>{`Index Name`}</th>
-                                    <th>{`Index Type`}</th>
+                                    <th>{`Index`}</th>
+                                    <th>{`Material Name (In index)`}</th>
+                                    <th>{`Material Name (Custom)`}</th>
                                     <th className='text-right'>{`Action`}</th>
                                 </tr>
                             </thead>
@@ -254,6 +272,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                     <>
                                         {gridData.map((item, index) => (
                                             <tr key={index}>
+                                                <td>{item.Index}</td>
                                                 <td>{item.MaterialName}</td>
                                                 <td>{item.MaterialType}</td>
                                                 <td className='text-right'>
