@@ -4,8 +4,8 @@ import Main from './components/Main.js';
 import { BrowserRouter, Route, } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getLoginPageInit, } from "./actions/auth/AuthActions";
+import { MsalProvider } from '@azure/msal-react';
 require('dotenv').config();
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -126,12 +126,15 @@ class App extends Component {
    */
   logUserOut = () => {
     this.setState({ isUserLoggedIn: false });
-    window.location.assign('/login');
+    // Call MSAL logout method
+    this.props.instance.logout();
+    // Clear local storage tokens and other relevant data
+    reactLocalStorage.setObject('msaltoken', null);
     reactLocalStorage.setObject("isUserLoggedIn", false);
     reactLocalStorage.setObject("userDetail", {});
     reactLocalStorage.set('ModuleId', '');
     reactLocalStorage.setObject('logoutRefresh', true);
-
+    window.location.assign('/login');
     //setTimeout(() => {
     //}, 100)
   }
@@ -139,17 +142,19 @@ class App extends Component {
   render() {
 
     return (
-      <BrowserRouter browserHistory>
-        <div>
-          <Route path="/" render={
-            (props) => <Main {...props}
-              isUserLoggedIn={this.state.isUserLoggedIn}
-              logUserIn={this.logUserIn}
-              logUserOut={this.logUserOut}
-            />
-          } />
-        </div>
-      </BrowserRouter>
+      <MsalProvider instance={this.props.instance}>
+        <BrowserRouter browserHistory>
+          <div>
+            <Route path="/" render={
+              (props) => <Main {...props}
+                isUserLoggedIn={this.state.isUserLoggedIn}
+                logUserIn={this.logUserIn}
+                logUserOut={this.logUserOut}
+              />
+            } />
+          </div>
+        </BrowserRouter>
+      </MsalProvider>
     );
   }
 }

@@ -16,6 +16,8 @@ import {
   saveAssemblyNumber,
   setIsBreakupBoughtOutPartCostingFromAPI,
   openCloseStatus,
+  saveCostingPaymentTermDetail,
+
 
 } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDateSelected } from '../../../../../helper';
@@ -25,7 +27,7 @@ import { MESSAGES } from '../../../../../config/message';
 import { IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
-
+import { PreviousTabData } from '../../CostingHeaderTabs';
 function PartCompoment(props) {
 
   const { rmData, bopData, ccData, item } = props;
@@ -34,7 +36,7 @@ function PartCompoment(props) {
   const [totalFinishWeight, setTotalFinishWeight] = useState(0);
   const [Count, setCount] = useState(0);
   const { CostingEffectiveDate, partNumberAssembly, partNumberArrayAPICall, bomLevel, assemblyNumber } = useSelector(state => state.costing)
-  const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
+  const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge, isBreakupBoughtOutPartCostingFromAPI, PaymentTermDataDiscountTab } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -45,7 +47,7 @@ function PartCompoment(props) {
   const netPOPrice = useContext(NetPOPriceContext);
   const isNFR = useContext(IsNFR);
   const isPartType = useContext(IsPartType);
-
+  const previousTab = useContext(PreviousTabData) || 0;
 
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
     let isOpen = IsOpen
@@ -211,7 +213,11 @@ function PartCompoment(props) {
   }, [IsOpen])
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => { }))
+    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+      if (Number(previousTab) === 6) {
+        dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
+      }
+    }))
   }
 
   /**

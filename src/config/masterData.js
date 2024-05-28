@@ -929,6 +929,31 @@ export const RMSpecificationXLTempData = [
         "RawMaterialCode": "RM-10000001",
     }
 ]
+/**
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const RMMaterialListing = [
+    { label: "MaterialIndex", value: "MaterialIndex" },
+    { label: "MaterialName", value: "MaterialName" },
+    { label: "UOM", value: "UOM" },
+    { label: "Currency", value: "Currency" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "IndexRate(Currency)", value: "IndexRateCurrency" },
+    { label: "PremiumCurrency", value: "PremiumCurrency" },
+]
+
+export const RMMaterialListingTempData = [
+    {
+        "MaterialIndex": "13Rf2",
+        "MaterialName": "steel",
+        "UOM": "10 mm",
+        "Currency": "USD",
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "IndexRateCurrency": "USD",
+        "PremiumCurrency": "20 mm",       
+    }
+]
+
 
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
@@ -5596,8 +5621,9 @@ export const RMLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
-    { label: "Material Name", value: "MaterialName", },
-    { label: "Material Type", value: "MaterialType", },    
+    { label: "Index", value: "Index", },
+    { label: "Material Name (In index)", value: "MaterialName", },
+    { label: "Material Name (Custom)", value: "MaterialNameCustom", },    
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [

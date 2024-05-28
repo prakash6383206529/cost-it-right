@@ -26,6 +26,7 @@ import AddRMDrawer from "./AddRMDrawer";
 import { RMMATERIALISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
 import ReactExport from "react-export-excel";
+import BulkUpload from "../../massUpload/BulkUpload";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -53,7 +54,8 @@ const RMMaterialListing = () => {
     noData: false,
     dataCount: 0,
     render: false,
-    showExtraData: false
+    showExtraData: false,
+    isBulkUpload: false,
   });
   useEffect(() => {
     getListData();
@@ -248,7 +250,7 @@ const RMMaterialListing = () => {
 
 
   };
-  const { isOpen, isEditFlag, ID, noData, showExtraData, render } = state;
+  const { isOpen, isEditFlag, ID, noData, showExtraData, render ,isBulkUpload } = state;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -305,6 +307,23 @@ const RMMaterialListing = () => {
       </ExcelSheet>
     );
   };
+  const bulkToggle = () => {
+    setState((prevState) => ({ ...prevState, isBulkUpload: true }));
+  };
+  const closeBulkUploadDrawer = () => {
+    setState(
+      (prevState) => {
+        return {
+          ...prevState,
+          isBulkUpload: false,
+        };
+      },
+      () => {
+        getListData("", "");
+      }
+    );
+  };
+
   return (
     <div
       className={`ag-grid-react min-height100vh`}
@@ -313,14 +332,16 @@ const RMMaterialListing = () => {
       <Row className="pt-4 no-filter-row">
         <Col md={6} className="text-right search-user-block pr-0">
 
-          {permissions.Add && (
+          {/* {permissions.Add && (
             <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
-          )}
+          )} */}
+          {permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+
           {permissions.Download && (
             <>
               <>
                 <ExcelFile
-                  filename={"Rm Material Listing"}
+                  filename={"RM Index Data"}
                   fileExtension={".xls"}
                   element={
                     <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
@@ -414,6 +435,16 @@ const RMMaterialListing = () => {
           closePopUp={closePopUp}
           confirmPopup={onPopupConfirm}
           message={`${MESSAGES.MATERIAL1_DELETE_ALERT}`}
+        />
+      )}
+       {isBulkUpload && (
+        <BulkUpload
+          isOpen={isBulkUpload}
+          closeDrawer={closeBulkUploadDrawer}
+          isEditFlag={false}         
+          fileName={"RM Index Data"}
+          messageLabel={"RM Index Data"}
+          anchor={"right"}
         />
       )}
     </div>
