@@ -92,7 +92,9 @@ export function TokenAPI(requestData, callback) {
             RememberMe: requestData.rememberMe || false,
             IPAddress: await getLocalIPAddress(), // Fetch local IP using WebRTC
             MacAddress: '', // Populate this field if you have the MAC address, otherwise remove it.
-            UserAgent: `${browserName} ${browserVersion}`
+            UserAgent: `${browserName} ${browserVersion}`,
+            Token: requestData.Token,
+            Audiance: requestData.audiance
         };
         // Fetch the public IP from a service (if necessary).
         // axios.get('https://api.ipify.org?format=json')
