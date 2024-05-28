@@ -28,13 +28,13 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
 
     const [gridData, setGridData] = useState([]);
     const [formData, setFormData] = useState({
-        MaterialName: '',
-        MaterialType: ''
+        Index: '',
+        MaterialName: '',      
+        MaterialNameCustom: ''
+
     });
 
-    const handleMaterialIndexChange = (selectedOption) => {
-        setFormData({ ...formData, MaterialName: selectedOption.value });
-    };
+ 
 
     const renderListing = (label) => {
         if (label === 'Applicability') {
@@ -46,16 +46,22 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
         }
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    const handleInputChange = (selectedOption, name) => {
+        const updatedFormData = { ...formData, [name]: selectedOption.value };
+        setFormData(updatedFormData);       
     };
 
     const resetData = () => {
+        setValue('Index', '');
         setValue('MaterialName', '');
-        setValue('MaterialType', '');
+        setValue('MaterialNameCustom', '');
         setIsEdit(false)
         setEditIndex('')
+        setFormData({
+            Index: '',
+            MaterialName: '',
+            MaterialNameCustom: ''
+        });
     }
 
     const deleteItem = (index) => {
@@ -75,23 +81,27 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
 
     const updateRow = () => {
         const obj = {
+            Index: formData.Index,
             MaterialName: formData.MaterialName,
-            MaterialType: formData.MaterialType
+            MaterialNameCustom: formData.MaterialNameCustom
         }
 
-        let tempArr = [...gridData];
-        tempArr[editIndex] = obj;
-        setGridData(tempArr);
+        const updatedGridData = gridData.map((item, index) =>
+            index === editIndex ? obj : item
+        );
+        setGridData(updatedGridData);
 
         setIsEdit(false);
         resetData();
     };
 
+
     const addRow = () => {
 
         const obj = {
+            Index: formData.Index,
             MaterialName: formData.MaterialName,
-            MaterialType: formData.MaterialType,
+            MaterialNameCustom: formData.MaterialNameCustom
         };
         const newGridData = [...gridData, obj];
         setGridData(newGridData);
@@ -101,14 +111,20 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
 
     const editItemDetails = (index) => {
         const editObj = gridData[index]
+        setFormData({
+            Index: editObj.Index,
+            MaterialName: editObj.MaterialName,
+            MaterialNameCustom: editObj.MaterialNameCustom
+        });
+        setValue('Index', { label: editObj.Index, value: editObj.Index })
         setValue('MaterialName', { label: editObj.MaterialName, value: editObj.MaterialName })
-        setValue('MaterialType', editObj.MaterialType)
+        setValue('MaterialNameCustom', { label: editObj.MaterialNameCustom, value: editObj.MaterialNameCustom })
         setEditIndex(index)
         setIsEdit(true)
     }
 
     const handleAddUpdateButtonClick = () => {
-        if (!formData.MaterialName || !formData.MaterialType) {
+        if (!formData.Index || !formData.MaterialName || !formData.MaterialNameCustom) {
             return;
         }
         if (isEdit) {
@@ -169,7 +185,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                 <Col md="6">
                                     <SearchableSelectHookForm
                                         label={'Index'}
-                                        name={'index'}
+                                        name={'Index'}
                                         placeholder={'Select'}
                                         Controller={Controller}
                                         control={control}
@@ -178,7 +194,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         defaultValue={''}
                                         options={renderListing('Applicability')}
                                         mandatory={true}
-                                        handleChange={handleMaterialIndexChange}
+                                        handleChange={(option) => handleInputChange(option, 'Index')}
                                         errors={errors.index}
                                     />
                                 </Col>
@@ -194,7 +210,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         defaultValue={''}
                                         options={renderListing('Applicability')}
                                         mandatory={true}
-                                        handleChange={handleMaterialIndexChange}
+                                        handleChange={(option) => handleInputChange(option, 'MaterialName')}
                                         errors={errors.MaterialIndex}
                                     />
                                 </Col>
@@ -210,11 +226,11 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         defaultValue={''}
                                         options={renderListing('Applicability')}
                                         mandatory={true}
-                                        handleChange={handleMaterialIndexChange}
+                                        handleChange={(option) => handleInputChange(option, 'MaterialNameCustom')}
                                         errors={errors.MaterialNameCustom}
                                     />
                                 </Col>
-                                <Col md="4" className={`${initialConfiguration.IsShowCRMHead ? "mb-3" : "pt-1"} d-flex`}>
+                                <Col md="4" className={`${initialConfiguration.IsShowCRMHead ? "mb-3" : "pt-3"} d-flex`}>
                                     {isEdit ? (
                                         <>
                                             <button
@@ -273,8 +289,8 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         {gridData.map((item, index) => (
                                             <tr key={index}>
                                                 <td>{item.Index}</td>
-                                                <td>{item.MaterialName}</td>
-                                                <td>{item.MaterialType}</td>
+                                                <td>{item.MaterialName}</td>                                               
+                                                <td>{item.MaterialNameCustom}</td>
                                                 <td className='text-right'>
                                                     <button
                                                         className="Edit"

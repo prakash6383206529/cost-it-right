@@ -5621,8 +5621,9 @@ export const RMLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
-    { label: "Material Name", value: "MaterialName", },
-    { label: "Material Type", value: "MaterialType", },    
+    { label: "Index", value: "Index", },
+    { label: "Material Name (In index)", value: "MaterialName", },
+    { label: "Material Name (Custom)", value: "MaterialNameCustom", },    
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
