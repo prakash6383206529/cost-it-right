@@ -318,7 +318,7 @@ const RMDetailListing = () => {
         <Col md={6} className="text-right search-user-block pr-0">
 
           {permissions.Add && (
-            <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add" icon={"plus"}/>
+            <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add" icon={"plus"} />
           )}
           {permissions.Download && (
             <>
@@ -391,8 +391,8 @@ const RMDetailListing = () => {
                 suppressRowClickSelection={true}
               >
                 <AgGridColumn field="Index" headerName="Index"></AgGridColumn>
-                <AgGridColumn field="Material Name (In index)"></AgGridColumn>
-                <AgGridColumn field="Material Name (Custom)"></AgGridColumn>
+                <AgGridColumn field="Commodity Name (In index)"></AgGridColumn>
+                <AgGridColumn field="Commodity Name (Custom)"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>}
               {
