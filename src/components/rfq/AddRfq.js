@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Tooltip, } from 'reactstrap';
+import { Row, Col, Tooltip, Button, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
-import { IsSendQuotationToPointOfContact, addDays, getTimeZone, loggedInUserId } from '../.././helper';
+import { IsSendQuotationToPointOfContact, addDays, getConfigurationKey, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { Component, EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { Assembly, BOUGHTOUTPARTSPACING, COMPONENT_PART, Component, EMPTY_DATA, FILE_URL, PRODUCT_ID, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -26,7 +26,7 @@ import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/Common
 import BulkUpload from '../massUpload/BulkUpload';
 import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
-import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
+import { ASSEMBLY, DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
@@ -35,6 +35,8 @@ import { clearGradeSelectList, clearSpecificationSelectList, getRMGradeSelectLis
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
 import TourWrapper from '../common/Tour/TourWrapper';
+import { getSelectListPartType } from '../masters/actions/Part';
+import ProcessDrawer from './ProcessDrawer';
 
 const gridOptionsPart = {}
 const gridOptionsVendor = {}
@@ -116,15 +118,24 @@ function AddRfq(props) {
     const [isNFRFlow, setIsNFRFlow] = useState(false)
     const [rmAPIList, setRMAPIList] = useState([])
     const [rmNameSelected, setRmNameSelected] = useState(false)
-    const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
-    const gradeSelectList = useSelector(state => state.material.gradeSelectList);
-    const rmSpecification = useSelector(state => state.comman.rmSpecification);
+    const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
+    const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
+    const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
+    const [partTypeList, setPartTypeList] = useState([])
+    const [partType, setPartType] = useState([]);
+    const [part, setPart] = useState([]);
+    const [drawerOpen, setDrawerOpen] = useState(false)
+    const [partTypeforRM, setPartTypeforRM] = useState([])
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
         dispatch(getPlantSelectListByType(ZBC, "RFQ", '', () => { }))
         //MINDA
         // dispatch(getPlantSelectListByType(ZBC, nfrId, () => { }))
+        dispatch(getSelectListPartType((res) => {
+            setPartTypeList(res?.data?.SelectList)
+        }))
+
         dispatch(getRawMaterialNameChild(() => { }))
         if (initialConfiguration.IsNFRConfigured) {
             dispatch(getNfrSelectList(() => { }))
@@ -452,6 +463,7 @@ function AddRfq(props) {
     */
     const renderListing = (label) => {
 
+
         const temp = [];
 
         if (label === 'plant') {
@@ -488,6 +500,17 @@ function AddRfq(props) {
                 return null
             })
             return temp;
+        }
+        if (label === 'PartType') {
+            partTypeList && partTypeList.map((item) => {
+                if (item.Value === '0') return false
+                if (item.Value === PRODUCT_ID) return false
+                if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
+                if (String(technology?.value) === String(ASSEMBLY) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
         }
     }
 
@@ -1081,7 +1104,23 @@ function AddRfq(props) {
             setIsNFRFlow(false)
         }
     }
+    /**
+        * @method handlePartChange
+        * @description  USED TO HANDLE PART CHANGE
+        */
+    const handlePartTypeChange = (newValue) => {
 
+        if (newValue && newValue !== '') {
+            setPartType(newValue)
+            setValue('PartNumber', '')
+            setPart('')
+            setPartTypeforRM(newValue.value)
+        } else {
+            setPartType([])
+        }
+        setPartName([])
+        reactLocalStorage.setObject('PartData', [])
+    }
     const handleVendorChange = (data) => {
         dispatch(getContactPerson(data.value, (res) => {
             setGetReporterListDropDown(res?.data?.SelectList)
@@ -1128,8 +1167,12 @@ function AddRfq(props) {
 
     const partFilterList = async (inputValue) => {
 
+
+
         const resultInput = inputValue.slice(0, searchCount)
+
         const nfrChange = nfrId?.value;
+
         if (inputValue?.length >= searchCount && (partName !== resultInput || nfrChange !== storeNfrId)) {
             const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value, Component)
             setPartName(resultInput)
@@ -1338,6 +1381,13 @@ function AddRfq(props) {
         }
         return value
     }
+    const DrawerToggle = () => {
+        // if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+        setDrawerOpen(true)
+    }
+    const closeDrawer = () => {
+        setDrawerOpen(false)
+    }
 
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
@@ -1357,6 +1407,7 @@ function AddRfq(props) {
     * @method render
     * @description Renders the component
     */
+
     return (
         <div className="container-fluid">
             <div className="signup-form">
@@ -1466,7 +1517,7 @@ function AddRfq(props) {
                                     </Row>
                                     <HeaderTitle title={'Part:'} />
                                     <Row className="part-detail-wrapper">
-                                        {/* <Col md="3">
+                                        <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Part Type"}
                                                 name={"PartType"}
@@ -1475,14 +1526,14 @@ function AddRfq(props) {
                                                 control={control}
                                                 rules={{ required: true }}
                                                 register={register}
-                                                // defaultValue={partType.length !== 0 ? partType : ""}
+                                                defaultValue={partType.length !== 0 ? partType : ""}
                                                 options={renderListing('PartType')}
                                                 mandatory={true}
-                                                // handleChange={handlePartTypeChange}
+                                                handleChange={handlePartTypeChange}
                                                 errors={errors.Part}
                                                 disabled={(technology.length === 0) ? true : false}
                                             />
-                                        </Col> */}
+                                        </Col>
                                         <Col md="3">
                                             <AsyncSearchableSelectHookForm
                                                 label={"Part No"}
@@ -1502,25 +1553,46 @@ function AddRfq(props) {
                                                 asyncOptions={partFilterList}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
-                                            {/* <Col className="col-md-15">
-                                                <TextFieldHookForm
-                                                    // title={titleObj.descriptionTitle}
-                                                    label="Assembly/Part Description"
-                                                    name={'Description'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.Description}
-                                                    disabled={true}
-                                                    placeholder="-"
-                                                />
-                                            </Col> */}
+
+                                        </Col>
+                                        {partType.length !== 0 && partTypeforRM === Assembly && (<Col md="3">
+                                            <button type="button" className={"user-btn mr5 Tour_List_Add"} onClick={DrawerToggle} title="Add">  <div className={"plus mr-0"}></div>{/* ADD */}</button>
+                                        </Col>)}
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                // title={titleObj.descriptionTitle}
+                                                label="Assembly/Part Description"
+                                                name={'Description'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.Description}
+                                                // disabled={true}
+                                                placeholder="-"
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"Havells Design part /Proprietary part"}
+                                                name={"PartType"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                // defaultValue={partType.length !== 0 ? partType : ""}
+                                                options={renderListing('HavellsDesignpart')}
+                                                mandatory={true}
+                                                // handleChange={handlePartTypeChange}
+                                                errors={errors.Part}
+                                            // disabled={(technology.length === 0) ? true : false}
+                                            />
                                         </Col>
                                         <Col md="3">
                                             <div className="inputbox date-section">
@@ -1552,66 +1624,71 @@ function AddRfq(props) {
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </Col>
-                                        {
-                                            checkForNull(technology?.value) !== LOGISTICS && <> <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    label="RM Name"
-                                                    name={"RMName"}
-                                                    placeholder={"Select"}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    selected={rmName ? rmName : ''}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    customClassName="costing-version"
-                                                    // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
-                                                    options={renderListingRM('rmname')}
-                                                    mandatory={false}
-                                                    handleChange={(newValue) => handleRMName(newValue)}
-                                                    disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
-                                                // errors={`${indexInside} CostingVersion`}
-                                                />
-                                            </Col>
-                                                <Col md="3">
-                                                    <SearchableSelectHookForm
-                                                        label="RM Grade"
-                                                        name={"RMGrade"}
-                                                        placeholder={"Select"}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        selected={rmgrade ? rmgrade : ''}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        customClassName="costing-version"
-                                                        // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
-                                                        options={renderListingRM('rmgrade')}
-                                                        mandatory={rmNameSelected}
-                                                        handleChange={(newValue) => handleRMGrade(newValue)}
-                                                        disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
-                                                    // errors={`${indexInside} CostingVersion`}
-                                                    />
-                                                </Col>
-                                                <Col md="3">
-                                                    <SearchableSelectHookForm
-                                                        label="RM Specification"
-                                                        name={"RMSpecification"}
-                                                        placeholder={"Select"}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        selected={rmspecification ? rmspecification : ''}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        customClassName="costing-version"
-                                                        // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
-                                                        options={renderListingRM('rmspecification')}
-                                                        mandatory={rmNameSelected}
-                                                        handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                        disabled={(dataProps?.isAddFlag ? partNoDisable || isNFRFlow : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
-                                                    // errors={`${indexInside} CostingVersion`}
-                                                    />
-                                                </Col>
-                                            </>}
+
+                                        {partType.length !== 0 && partTypeforRM !== Assembly && (
+                                            checkForNull(technology?.value) !== LOGISTICS && (
+                                                <>
+                                                    <Col md="3">
+                                                        <SearchableSelectHookForm
+                                                            label="RM Name"
+                                                            name={"RMName"}
+                                                            placeholder={"Select"}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            selected={rmName ? rmName : ''}
+                                                            rules={{ required: false }}
+                                                            register={register}
+                                                            customClassName="costing-version"
+                                                            // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                            options={renderListingRM('rmname')}
+                                                            mandatory={false}
+                                                            handleChange={(newValue) => handleRMName(newValue)}
+                                                            disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
+                                                        // errors={`${indexInside} CostingVersion`}
+                                                        />
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <SearchableSelectHookForm
+                                                            label="RM Grade"
+                                                            name={"RMGrade"}
+                                                            placeholder={"Select"}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            selected={rmgrade ? rmgrade : ''}
+                                                            rules={{ required: false }}
+                                                            register={register}
+                                                            customClassName="costing-version"
+                                                            // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                            options={renderListingRM('rmgrade')}
+                                                            mandatory={rmNameSelected}
+                                                            handleChange={(newValue) => handleRMGrade(newValue)}
+                                                            disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
+                                                        // errors={`${indexInside} CostingVersion`}
+                                                        />
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <SearchableSelectHookForm
+                                                            label="RM Specification"
+                                                            name={"RMSpecification"}
+                                                            placeholder={"Select"}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            selected={rmspecification ? rmspecification : ''}
+                                                            rules={{ required: false }}
+                                                            register={register}
+                                                            customClassName="costing-version"
+                                                            // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                            options={renderListingRM('rmspecification')}
+                                                            mandatory={rmNameSelected}
+                                                            handleChange={(newValue) => handleRMSpecification(newValue)}
+                                                            disabled={(dataProps?.isAddFlag ? partNoDisable || isNFRFlow : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
+                                                        // errors={`${indexInside} CostingVersion`}
+                                                        />
+                                                    </Col>
+                                                </>))}
+
                                         {/* <Col md="3">
                                             <NumberFieldHookForm
                                                 label="Annual Forecast Quantity"
@@ -2096,6 +2173,22 @@ function AddRfq(props) {
                                         />
                                     )
                                 }
+                                {
+                                    drawerOpen &&
+                                    (
+                                        <ProcessDrawer
+                                            isOpen={drawerOpen}
+                                            anchor={"right"}
+                                            closeDrawer={closeDrawer}
+                                            isEditFlag={false}
+                                            dataProp={dataProps}
+                                            technology={technology}
+                                            nfrId={nfrId}
+
+                                        />
+                                    )
+                                }
+
 
                             </div >
                         </div >
