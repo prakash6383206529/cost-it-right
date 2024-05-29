@@ -5,7 +5,7 @@ import Toaster from "../common/Toaster";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength10, maxLength12, required, email, minLength6, minLength7, maxLength18, maxLength11,
-  maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number, maxLength50, getNameBySplitting, getCodeBySplitting, checkSpacesInString, checkSingleSpaceInString, checkNumericInput
+  maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number, maxLength50, getNameBySplitting, getCodeBySplitting, checkSpacesInString, checkSingleSpaceInString
 } from "../../helper/validation";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
@@ -2802,7 +2802,7 @@ function UserRegistration(props) {
                         mandatory={false}
                         rules={{
                           required: false,
-                          validate: { postiveNumber, number, maxLength6, checkNumericInput }
+                          validate: { postiveNumber, number, maxLength6 }
                         }}
                         handleChange={() => { }}
                         placeholder={'Enter'}
