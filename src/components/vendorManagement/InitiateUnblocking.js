@@ -43,7 +43,7 @@ const InitiateUnblocking = (props) => {
     const [showApprvalStatus, setShowApprovalStatus] = useState(false)
     const [submit, setSubmit] = useState(true)
     const [isLoader, setIsLoader] = useState(false)
-
+    const [CanGoForApproval, setCanGoForApproval] = useState(false)
     useEffect(() => {
         setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
         dispatch(fetchVendorData());
@@ -89,6 +89,7 @@ const InitiateUnblocking = (props) => {
 
                         Toaster.warning(message);
                     } else {
+                        setCanGoForApproval(true);
                         setSubmit(false);
                     }
                 }
@@ -488,7 +489,7 @@ const InitiateUnblocking = (props) => {
                 )
             }
             {
-                (isLpsRating || isClassification) && (!props?.isMasterSummaryDrawer) && selectedVendor && ( // Render SendForApproval component only when the approval drawer should be open and selectedVendor is not null
+                (isLpsRating || isClassification) && CanGoForApproval && (!props?.isMasterSummaryDrawer) && selectedVendor && ( // Render SendForApproval component only when the approval drawer should be open and selectedVendor is not null
                     <SendForApproval
                         isOpen={showApproval}
                         closeDrawer={closeDrawer}
