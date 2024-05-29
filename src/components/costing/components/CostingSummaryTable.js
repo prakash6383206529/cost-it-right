@@ -2665,7 +2665,7 @@ const CostingSummaryTable = (props) => {
 
                               {viewCostingData &&
                                 viewCostingData?.map((data) => {
-                                  const { ApplicabilityType, EffectiveRecoveryPercentage, RejectionRecoveryNetCost } = data?.CostingRejectionRecoveryDetails
+                                  const { ApplicabilityType, EffectiveRecoveryPercentage, RejectionRecoveryNetCost } = data?.CostingRejectionRecoveryDetails || {}
                                   return (
 
                                     <td className={tableDataClass(data)}>
@@ -3217,6 +3217,18 @@ const CostingSummaryTable = (props) => {
                         </>
                       }
                       {initialConfiguration?.IsShowTCO && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
+                      {initialConfiguration?.IsShowTCO && <tr className={highlighter("nPackagingAndFreight", "main-row")}>
+                        <th>Total TCO </th>
+                        {viewCostingData &&
+                          viewCostingData?.map((data, index) => {
+                            return (
+                              <td className={tableDataClass(data)}>
+                                {displayValueWithSign(data, "TotalTCOCost")}
+                                {/* {checkForDecimalAndNull(data.TotalTCOCost, initialConfiguration.NoOfDecimalForPrice)} */}
+                              </td>
+                            )
+                          })}
+                      </tr>}
 
                       {
                         viewCostingData[0]?.technologyId !== LOGISTICS && <tr>

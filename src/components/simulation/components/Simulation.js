@@ -438,6 +438,11 @@ function Simulation(props) {
                 break;
 
             default:
+                if (Number(Object.keys(customer)?.length) > 0 || Number(Object.keys(vendor)?.length) > 0) {
+                    setTimeout(() => {
+                        setShowMasterList(true)
+                    }, 200);
+                }
                 break;
         }
     }
