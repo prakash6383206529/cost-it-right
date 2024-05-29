@@ -569,6 +569,11 @@ export const calculationOnTco = (data) => {
   return sum;
 }
 
+const TotalTCOCostCal = (tcoData, paymentData) => {
+  let sum = 0;
+  sum = checkForNull(tcoData.CalculatedIncoTermValue) + checkForNull(tcoData.CalculatedQualityPPMValue) + checkForNull(tcoData.CalculatedWarrantyValue) + checkForNull(paymentData.NetPaymentTermCost)
+  return sum
+}
 
 export function formViewData(costingSummary, header = '', isBestCost = false) {
   let temp = []
@@ -686,6 +691,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   }
   obj.TotalInvestmentcost = calculationOnTco((dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails) ? dataFromAPI?.CostingPartDetails?.CostingTCOResponse : {})
   obj.toolAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost : 0
+
+  obj.TotalTCOCost = TotalTCOCostCal((dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails) ? dataFromAPI?.CostingPartDetails?.CostingTCOResponse : {}, dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails ?? {}) + checkForNull(dataFromAPI.BasicRate) + checkForNull(dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetNpvCost)
 
   obj.totalToolCost = isBestCost ? (dataFromAPI && dataFromAPI?.NetToolCost !== undefined ? dataFromAPI?.NetToolCost : 0) :
     dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolCost : 0

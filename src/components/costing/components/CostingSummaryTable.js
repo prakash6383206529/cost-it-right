@@ -2996,20 +2996,20 @@ const CostingSummaryTable = (props) => {
                             </tr>
                           }
                           {/* initialConfiguration?.IsShowNpvCost && */
-                            <tr className={highlighter("npvCost", "main-row")}>
-                              <th>NPV Cost</th>
-                              {viewCostingData &&
-                                viewCostingData?.map((data, index) => {
-                                  return (
-                                    <td className={tableDataClass(data)}>
-                                      <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
-                                        {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                      </span>
+                            // <tr className={highlighter("npvCost", "main-row")}>
+                            //   <th>NPV Cost</th>
+                            //   {viewCostingData &&
+                            //     viewCostingData?.map((data, index) => {
+                            //       return (
+                            //         <td className={tableDataClass(data)}>
+                            //           <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
+                            //             {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                            //           </span>
 
-                                    </td>
-                                  )
-                                })}
-                            </tr>
+                            //         </td>
+                            //       )
+                            //     })}
+                            // </tr>
                           }
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
@@ -3177,6 +3177,18 @@ const CostingSummaryTable = (props) => {
                         </>
                       }
                       {props?.isRfqCosting && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
+                      {props?.isRfqCosting && <tr className={highlighter("nPackagingAndFreight", "main-row")}>
+                        <th>Total TCO </th>
+                        {viewCostingData &&
+                          viewCostingData?.map((data, index) => {
+                            return (
+                              <td className={tableDataClass(data)}>
+                                {displayValueWithSign(data, "TotalTCOCost")}
+                                {/* {checkForDecimalAndNull(data.TotalTCOCost, initialConfiguration.NoOfDecimalForPrice)} */}
+                              </td>
+                            )
+                          })}
+                      </tr>}
 
                       {
                         viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
