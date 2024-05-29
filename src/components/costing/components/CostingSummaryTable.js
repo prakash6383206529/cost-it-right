@@ -2959,7 +2959,7 @@ const CostingSummaryTable = (props) => {
                               })
                             }
                           </tr >
-                          < tr className='border-right' >
+                          {!initialConfiguration?.IsShowTCO && < tr className='border-right' >
                             <td>
                               <span className={highlighter(["paymentTerms", "paymentValue"], "multiple-key")}>Payment Terms</span>
                             </td>
@@ -2998,7 +2998,7 @@ const CostingSummaryTable = (props) => {
                                 )
                               })
                             }
-                          </tr >
+                          </tr >}
                           {showSaLineNumber() && <tr>
                             <td>
                               <span className="d-block small-grey-text"> SA Number</span>
