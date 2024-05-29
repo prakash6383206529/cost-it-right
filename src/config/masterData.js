@@ -929,6 +929,31 @@ export const RMSpecificationXLTempData = [
         "RawMaterialCode": "RM-10000001",
     }
 ]
+/**
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const RMMaterialListing = [
+    { label: "MaterialIndex", value: "MaterialIndex" },
+    { label: "MaterialName", value: "MaterialName" },
+    { label: "UOM", value: "UOM" },
+    { label: "Currency", value: "Currency" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "IndexRate(Currency)", value: "IndexRateCurrency" },
+    { label: "PremiumCurrency", value: "PremiumCurrency" },
+]
+
+export const RMMaterialListingTempData = [
+    {
+        "MaterialIndex": "13Rf2",
+        "MaterialName": "steel",
+        "UOM": "10 mm",
+        "Currency": "USD",
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "IndexRateCurrency": "USD",
+        "PremiumCurrency": "20 mm",       
+    }
+]
+
 
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
@@ -5595,13 +5620,48 @@ export const RMLISTING_DOWNLOAD_EXCEl = [
     { label: "Grade", value: "RMGrade", },
 ]
 
+export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
+    { label: "Index", value: "Index", },
+    { label: "Material Name (In index)", value: "MaterialName", },
+    { label: "Material Name (Custom)", value: "MaterialNameCustom", },    
+]
+
+export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
+    { label: "Material Index", value: "MaterialIndex", },
+    { label: "Material Name", value: "MaterialName", },
+    { label: "UOM", value: "UOM", },
+    { label: "Currency", value: "Currency", },
+    { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Index Rate (Currency)", value: "IndexRateCurrency", }, 
+    { label: "Premium Currency", value: "PremiumCurrency", },    
+]
+
 export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [
     { label: "RM Name", value: "RMName", },
     { label: "Grade", value: "RMGrade", },
     { label: "Spec", value: "RMSpec", },
     { label: "Code", value: "RawMaterialCode", },
 ]
-
+export const RMINDEXATION = [
+    { label: "Costing Head", value: "CostingHead", },
+    { label: "Material Name (main)", value: "RawMaterialName", },
+    { label: "Material Name", value: "RawMaterialGrade", },
+    { label: "Plant (Code)", value: "RawMaterialSpecification", },
+    { label: "Vendor (Code)", value: "RawMaterialCode", },
+    { label: "Customer (Code)", value: "MaterialType", },
+    { label: "Exchange Rate Source", value: "Category", },
+    { label: "Index (LME)", value: "DestinationPlantName", },
+    { label: "From Date", value: "VendorName", },
+    { label: "To Date", value: "CustomerName", },
+    { label: "Effective Date", value: "CustomerName", },
+    { label: "UOM", value: "UnitOfMeasurement", },
+    { label: "Currency", value: "Currency", },
+    { label: "Frequency of settlement", value: "CustomerName", },
+    { label: "Index Premium(Currency)", value: "CustomerName", },
+    { label: "Exchange Rate Source Premium(Currency)", value: "CustomerName", },
+    { label: "Index Rate(Currency)", value: "Rate", },
+    { label: "Basic rate(Base Currency)", value: "EffectiveDate", },
+]
 export const OPERATION_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "Technology", },
@@ -5909,17 +5969,20 @@ export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
 export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Name", value: "FullName", },
     { label: "User Name", value: "UserName", },
+    { label: "Vendor(code)", value: "VendorName", },
     { label: "Email Id", value: "EmailAddress", },
     { label: "Mobile No", value: "Mobile", },
     { label: "Phone No", value: "PhoneNumber", },
+    { label: "Point of Contact", value: "PointOfContact", },
     { label: "Department", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
     { label: "Created By", value: "CreatedBy", },
     { label: "Created Date (Created Time)", value: "CreatedDateExcel", },
     { label: "Modified Date (Modified Time)", value: "ModifiedDateExcel", },
     { label: "Modified By", value: "ModifiedBy", },
-    { label: "Status", value: "status", }
-
+    { label: "Status", value: "status", },
+    { label: "Created Date (Created Time)", value: "CreatedDate", },
+    { label: "Modified Date (Modified Time)", value: "ModifiedDate", },
 ]
 
 export const AUDIT_LISTING_DOWNLOAD_EXCEl = [
@@ -8019,5 +8082,6 @@ export const NFR_BOP_STANDARD_NAME = 'BoughtOutPart'
 export const NFR_RAW_MATERIAL_NAME = 'RawMaterial'
 
 export const REJECTION_RECOVERY_APPLICABILITY = [
-    { label: "Scap Rate * Net weight", value: 1 },
+    { label: "Scrap Rate * Net Weight", value: '24' },
+    { label: "Fixed", value: '7' },
 ]

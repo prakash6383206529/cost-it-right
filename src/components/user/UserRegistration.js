@@ -940,6 +940,7 @@ function UserRegistration(props) {
       setValue('OnboardingApprovalType', '')
     }
   };
+
   /**
    * @method headHandler
    * @description USED TO HANLE SIMULATION HEAD AND CALL HEAD LEVEL API
@@ -1778,6 +1779,7 @@ function UserRegistration(props) {
     setValue('onboardingLevel', '')
     setValue('OnboardingApprovalType', '')
     emptyLevelDropdown()
+    setOnboardingLevelEditIndex(false)
   };
 
 

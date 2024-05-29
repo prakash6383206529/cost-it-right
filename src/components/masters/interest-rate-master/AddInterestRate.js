@@ -945,7 +945,6 @@ class AddInterestRate extends Component {
                             placeholder={isViewMode ? '-' : "Enter"}
                             validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, nonZero]}
                             component={renderText}
-                            required={true}
                             onChange={(event) => this.handleChangeAnnualIccPercentage(event.target.value)}
                             disabled={isViewMode}
                             className=" "

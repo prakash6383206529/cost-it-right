@@ -59,9 +59,10 @@ import {
   GET_APPROVAL_TYPE_SELECT_LIST,
   GET_DATA_WHILE_LOADING,
   GET_DATA_FROM_REPORT,
-  TOUR_START_DATA
+  TOUR_START_DATA,
+  GET_APPROVAL_MODULE_SELECT_LIST
 } from '../config/constants';
-import { apiErrors } from '../helper/util';
+import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
 import Toaster from '../components/common/Toaster';
 
@@ -1577,15 +1578,39 @@ export function getCostMovementReport(data, callback) {
   }
 }
 
+
+/**
+ * @method selectApprovalType
+ * @description Used to fetch Labour type selectlist
+ */
+export function getApprovalModuleSelectList(callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getApprovalModuleSelectList}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_APPROVAL_MODULE_SELECT_LIST,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
 /**
  * @method getApprovalTypeSelectList
  * @description Used to fetch Labour type selectlist
  */
-export function getApprovalTypeSelectList(callback) {
+export function getApprovalTypeSelectList(id = '', callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getApprovalTypeSelectList}`, config());
-    request.then((response) => {
+    let querryParam = encodeQueryParamsAndLog({ id: id })
+    const request = axios.get(`${API.getApprovalTypeSelectList}?${querryParam}`, config()); request.then((response) => {
       if (response.data.Result) {
         dispatch({
           type: GET_APPROVAL_TYPE_SELECT_LIST,

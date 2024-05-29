@@ -724,7 +724,6 @@ function TabOverheadProfit(props) {
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Profit`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Rejection`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net ICC`}</th>
-                          <th className="py-3 align-middle costing-border-right" style={{ width: "150px" }}>{`Payment Terms`}</th>
                         </tr>
                       </thead>
                       <tbody>

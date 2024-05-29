@@ -92,9 +92,6 @@ const InitiateUnblocking = (props) => {
         }
     };
 
-
-
-
     const reset = () => {
         setSelectedPlant(null);
         setIsClassification(false);
@@ -469,7 +466,7 @@ const InitiateUnblocking = (props) => {
                     <div className="col-sm-12 Text-right bluefooter-butn mt-3">
                         <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
                             <Button
-                                id="addRMDomestic_sendForApproval"
+                                id="supplier_sendForApproval"
                                 type="submit"
                                 className="approval-btn mr5"
                                 disabled={submit}
