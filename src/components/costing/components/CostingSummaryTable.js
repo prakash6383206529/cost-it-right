@@ -129,6 +129,8 @@ const CostingSummaryTable = (props) => {
   const [editButton, setEditButton] = useState(true)
   const [pieChartButton, setPieChartButton] = useState(false)
   const [viewBomButton, setViewBomButton] = useState(true)
+  const [paymentTermsData, setPaymentTermsData] = useState([])
+  const [npvData, setNpvData] = useState([])
   const [isScrapRecoveryPercentageApplied, setIsScrapRecoveryPercentageApplied] = useState(false)
 
   const { viewCostingDetailData, viewRejectedCostingDetailData } = useSelector((state) => state.costing)
@@ -584,6 +586,10 @@ const CostingSummaryTable = (props) => {
   const viewNpvData = (index) => {
     setNpvDrawer(true)
     setNpvIndex(index)
+    setPaymentTermsData(viewCostingData[index]?.CostingPartDetails?.CostingPaymentTermDetails)
+    setNpvData(viewCostingData[index]?.CostingPartDetails?.CostingNpvResponse)
+
+
   }
 
   const viewAttachmentData = (index) => {
@@ -2655,7 +2661,6 @@ const CostingSummaryTable = (props) => {
                                 <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Rejection Recovery</span>
                                 <span className={highlighter(["rejectionOn", "rejectionValue"], "multiple-key")}>Rejection On</span>
                                 <span className={highlighter(["iccOn", "iccValue"], "multiple-key")}>ICC On</span>
-                                <span className={highlighter(["paymentTerms", "paymentValue"], "multiple-key")}>Payment Terms</span>
                               </td>
 
                               {viewCostingData &&
@@ -2733,17 +2738,7 @@ const CostingSummaryTable = (props) => {
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
                                         </span>
                                       </div>
-                                      <div style={pdfHead ? { marginTop: '-1px' } : {}} className={`d-flex ${highlighter(["paymentTerms", "paymentValue"], "multiple-key")}`}>
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentTitle : '')}
-                                        </span>{' '}
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentTitle === 'Fixed' ? '-' : data?.paymentTerms.paymentPercentage : ''}
-                                        </span>{' '}
-                                        <span className="d-inline-block w-50 small-grey-text">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
-                                        </span>
-                                      </div>
+
                                     </td>
                                   )
                                 })}
@@ -2942,6 +2937,7 @@ const CostingSummaryTable = (props) => {
                               })}
                           </tr >
                           { }
+
                           < tr className='border-right' >
                             <td>
                               <span className="d-block small-grey-text"> Any Other Cost</span>
@@ -2958,6 +2954,46 @@ const CostingSummaryTable = (props) => {
                                       </div>
                                     </td>
                                     : ""
+
+                                )
+                              })
+                            }
+                          </tr >
+                          < tr className='border-right' >
+                            <td>
+                              <span className={highlighter(["paymentTerms", "paymentValue"], "multiple-key")}>Payment Terms</span>
+                            </td>
+
+                            {
+                              viewCostingData &&
+                              viewCostingData?.map((data, index) => {
+                                return (
+
+                                  <td className={tableDataClass(data)}>
+                                    <div className={`d-flex`}>
+                                      <span className="d-inline-block w-50">
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.applicability : '')}
+                                      </span>{' '}
+                                      <span className="d-inline-block w-50">
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.percentage : '')}
+                                      </span>
+                                      <span className="d-inline-block w-50">
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.value : '')}
+                                      </span>
+                                    </div>
+
+                                    <div style={pdfHead ? { marginTop: '-1px' } : {}} className={`d-flex ${highlighter(["paymentTerms", "paymentValue"], "multiple-key")}`}>
+                                      <span className="d-inline-block w-50 small-grey-text">
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentTitle : '')}
+                                      </span>{' '}
+                                      <span className="d-inline-block w-50 small-grey-text">
+                                        {(data?.bestCost === true) ? ' ' : data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentTitle === 'Fixed' ? '-' : data?.paymentTerms.paymentPercentage : ''}
+                                      </span>{' '}
+                                      <span className="d-inline-block w-50 small-grey-text">
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
+                                      </span>
+                                    </div>
+                                  </td>
 
                                 )
                               })
@@ -2996,8 +3032,10 @@ const CostingSummaryTable = (props) => {
                             </tr>
                           }
                           {/* initialConfiguration?.IsShowNpvCost && */
-                            <tr className={highlighter("npvCost", "main-row")}>
-                              <th>NPV Cost</th>
+                            <tr>
+                              <td>
+                                <span className={`d-block small-grey-text`}>NPV Cost</span>
+                              </td>
                               {viewCostingData &&
                                 viewCostingData?.map((data, index) => {
                                   return (
@@ -3040,6 +3078,8 @@ const CostingSummaryTable = (props) => {
                                 closeDrawer={closeNpvDrawer}
                                 anchor={'right'}
                                 isPDFShow={true}
+                                CostingPaymentTermDetails={paymentTermsData}
+                                npvCostData={npvData}
                               />
                             </th></tr>
                           }
@@ -3476,6 +3516,9 @@ const CostingSummaryTable = (props) => {
           partId={viewCostingData[npvIndex]?.partId}
           vendorId={viewCostingData[npvIndex]?.vendorId}
           isRfqCosting={props?.isRfqCosting}
+          CostingPaymentTermDetails={paymentTermsData}
+          npvCostData={npvData}
+
         />
       }
     </Fragment >
