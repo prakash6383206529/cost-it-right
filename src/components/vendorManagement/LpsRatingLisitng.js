@@ -8,7 +8,7 @@ import { checkPermission, loggedInUserId, showTitleForActiveToggle } from '../..
 import Switch from "react-switch";
 import { Col, Row } from 'reactstrap';
 import NoContentFound from '../common/NoContentFound';
-import { EMPTY_DATA, LPS_RATING, VENDOR_MANAGEMENT } from '../../config/constants';
+import { EMPTY_DATA, LPS_RATING, VENDOR_MANAGEMENT, VENDOR_MANAGEMENT_ROLE } from '../../config/constants';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import LoaderCustom from '../common/LoaderCustom';
@@ -71,9 +71,10 @@ const LpsRatingListing = () => {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
     const applyPermission = (topAndLeftMenuData) => {
+
         if (topAndLeftMenuData !== undefined) {
             setIsLoader(true)
-            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === VENDOR_MANAGEMENT);
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === VENDOR_MANAGEMENT_ROLE);
             const accessData = Data && Data.Pages.find((el) => el.PageName === LPS_RATING)
             const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
             if (permissionData !== undefined) {
