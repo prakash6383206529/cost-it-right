@@ -318,13 +318,13 @@ const RMDetailListing = () => {
         <Col md={6} className="text-right search-user-block pr-0">
 
           {permissions.Add && (
-            <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
+            <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add" icon={"plus"} />
           )}
           {permissions.Download && (
             <>
               <>
                 <ExcelFile
-                  filename={"Rm Detail Material"}
+                  filename={"Standardized Material Name"}
                   fileExtension={".xls"}
                   element={
                     <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
@@ -390,9 +390,9 @@ const RMDetailListing = () => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn field="MaterialName" headerName="Material Name"></AgGridColumn>
-                <AgGridColumn field="Material Type"></AgGridColumn>
-
+                <AgGridColumn field="Index" headerName="Index"></AgGridColumn>
+                <AgGridColumn field="Commodity Name (In index)"></AgGridColumn>
+                <AgGridColumn field="Commodity Name (Custom)"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>}
               {

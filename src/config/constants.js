@@ -19,15 +19,16 @@ export const config = () => {
 
 
 // DEVELOPMENT
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.1.100:10152/api/v1`
-// const BASE_URL = `http://10.10.1.100:10162/api/v1`
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.11.208:3030/api/v1`
+//const BASE_URL = `http://10.10.1.100:10152/api/v1`
+//const BASE_URL = `http://10.10.1.100:10162/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
-// const BASE_URL = `http://10.10.8.160/api/v1`;
+// const BASE_URL = `http://10.10.8.160/api/v1`;  
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.120:81/api/v1`;
-const BASE_URL = `http://10.10.1.100:10152/api/v1`;
+//const BASE_URL = `http://10.10.1.100:10152/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`;
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -552,6 +553,8 @@ export const API = {
   getNpvDetails: `${BASE_URL}/costing/get-costing-detail-for-npv`,
   getConditionDetails: `${BASE_URL}/costing/get-costing-condition-details`,
   getCostingCondition: `${BASE_URL}/costing/get-costing-condition-master-data`,
+  getCostingPaymentTermDetail: `${BASE_URL}/costing/get-costing-payment-term-detail`,
+  saveCostingPaymentTermDetail: `${BASE_URL}/costing/save-costing-payment-term-detail`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1613,6 +1616,7 @@ export const GET_INTEREST_RATE_DATA_LIST = 'GET_INTEREST_RATE_DATA_LIST';
 export const SET_ITEM_DATA = 'SET_ITEM_DATA';
 export const SET_SURFACE_TAB_DATA = 'SET_SURFACE_TAB_DATA';
 export const SET_OVERHEAD_PROFIT_TAB_DATA = 'SET_OVERHEAD_PROFIT_TAB_DATA';
+export const SET_DISCOUNT_AND_OTHER_TAB_DATA = "SET_DISCOUNT_AND_OTHER_TAB_DATA"
 export const SET_PACKAGE_AND_FREIGHT_TAB_DATA = 'SET_PACKAGE_AND_FREIGHT_TAB_DATA';
 export const SET_TOOL_TAB_DATA = 'SET_TOOL_TAB_DATA';
 export const SET_TOOL_PROCESS_WISE_DATALIST = 'SET_TOOL_PROCESS_WISE_DATALIST';
@@ -1623,6 +1627,7 @@ export const SET_COMPONENT_OVERHEAD_ITEM_DATA = 'SET_COMPONENT_OVERHEAD_ITEM_DAT
 export const SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA = 'SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA';
 export const SET_COMPONENT_TOOL_ITEM_DATA = 'SET_COMPONENT_TOOL_ITEM_DATA';
 export const SET_COMPONENT_DISCOUNT_ITEM_DATA = 'SET_COMPONENT_DISCOUNT_ITEM_DATA';
+export const SET_COMPONENT_PAYMENT_TERMS_DATA = 'SET_COMPONENT_PAYMENT_TERMS_DATA';
 export const GET_RM_DRAWER_DATA_LIST = 'GET_RM_DRAWER_DATA_LIST';
 export const GET_PROCESS_DRAWER_DATA_LIST = 'GET_PROCESS_DRAWER_DATA_LIST';
 export const SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA = 'SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA';
@@ -2766,6 +2771,7 @@ export const SUB_ASSEMBLY = 'Sub Assembly';
 export const RMDOMESTICBULKUPLOAD = 'RM Domestic';
 export const RMIMPORTBULKUPLOAD = 'RM Import';
 export const RMSPECIFICATION = 'RM Specification'
+export const RMMATERIALBULKUPLOAD = 'RM Index Data'
 export const BOPDOMESTICBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Domestic";
 export const INSERTDOMESTICBULKUPLOAD = 'Insert Domestic';
 export const BOPIMPORTBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Import";
@@ -2993,6 +2999,9 @@ export const PartTypeIDFromAPI = 2
 export const RMIndex = true
 //VERSION 
 export const VERSION = "V2.2.16";
+export const GET_COSTING_PAYMENT_TERM_DETAIL = "GET_COSTING_PAYMENT_TERM_DETAIL"
+export const SET_PAYMENT_TERM_COST = "SET_PAYMENT_TERM_COST"
+
 
 
 

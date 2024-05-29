@@ -51,7 +51,8 @@ function CostingDetailStepTwo(props) {
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
-    PackageAndFreightTabData, ToolTabData, CostingEffectiveDate, breakupBOP } = useSelector(state => state.costing)
+    PackageAndFreightTabData, ToolTabData, CostingEffectiveDate, breakupBOP, UpdatePaymentTermCost } = useSelector(state => state.costing)
+
   const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId))
   const isNFR = useContext(IsNFR);
 
@@ -83,7 +84,8 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetSurfaceTreatmentCost) +
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
-          checkForNull(ApplyCost) - checkForNull(tempData.NetDiscountsCost)
+          checkForNull(ApplyCost) - checkForNull(tempData.NetDiscountsCost) +
+          checkForNull(UpdatePaymentTermCost?.NetCost)
       }
 
       tempData = {
@@ -126,7 +128,8 @@ function CostingDetailStepTwo(props) {
           checkForNull(data.NetSurfaceTreatmentCost) +
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
-          checkForNull(tempData.ToolCost) - checkForNull(tempData.NetDiscountsCost)
+          checkForNull(tempData.ToolCost) - checkForNull(tempData.NetDiscountsCost) +
+          checkForNull(UpdatePaymentTermCost?.NetCost)
       }
 
       tempData = {
@@ -165,7 +168,8 @@ function CostingDetailStepTwo(props) {
           tempData.NetSurfaceTreatmentCost +
           data.NetOverheadProfitCost +
           tempData.NetPackagingAndFreight +
-          tempData.ToolCost - tempData.NetDiscountsCost
+          tempData.ToolCost - tempData.NetDiscountsCost +
+          checkForNull(UpdatePaymentTermCost?.NetCost)
       }
       tempData = {
         ...tempData,
@@ -200,7 +204,8 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetSurfaceTreatmentCost) +
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(data.NetFreightPackagingCost) +
-          checkForNull(tempData.ToolCost) - checkForNull(tempData.NetDiscountsCost)
+          checkForNull(tempData.ToolCost) - checkForNull(tempData.NetDiscountsCost) +
+          checkForNull(UpdatePaymentTermCost?.NetCost)
       }
 
       tempData = {
@@ -236,7 +241,8 @@ function CostingDetailStepTwo(props) {
             checkForNull(tempData.NetSurfaceTreatmentCost) +
             checkForNull(tempData.NetOverheadAndProfitCost) +
             checkForNull(tempData.NetPackagingAndFreight) +
-            checkForNull(ApplyCost) - checkForNull(tempData.NetDiscountsCost)
+            checkForNull(ApplyCost) - checkForNull(tempData.NetDiscountsCost) +
+            checkForNull(UpdatePaymentTermCost?.NetCost)
 
           tempData = {
             ...tempData,
@@ -359,6 +365,7 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetSurfaceTreatmentCost) +
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
+          checkForNull(UpdatePaymentTermCost?.NetCost) +
           checkForNull(tempData.ToolCost) - checkForNull(discountedCost)
 
         tempData = {

@@ -3011,7 +3011,6 @@ const CostingSummaryTable = (props) => {
                                 })}
                             </tr>
                           }
-                          {props?.isRfqCosting && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} />}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
                               <td>
@@ -3177,6 +3176,7 @@ const CostingSummaryTable = (props) => {
                           </tr>
                         </>
                       }
+                      {props?.isRfqCosting && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
 
                       {
                         viewCostingData[0]?.technologyId !== LOGISTICS && <tr>

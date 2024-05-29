@@ -242,19 +242,19 @@ function RowMaterialMaster(props) {
                                 </NavItem>}
                                 {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
-                                        Material Detail
+                                        Standardized Commodity Name
                                     </NavLink>
                                 </NavItem>}
                                 {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => { toggle('6'); }}>
-                                        Create Material
+                                        Index Data
                                     </NavLink>
                                 </NavItem>}
-                                {<NavItem>
+                                {/* {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '7' })} onClick={() => { toggle('7'); }}>
                                         Material Indexation
                                     </NavLink>
-                                </NavItem>}
+                                </NavItem>} */}
                                 {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
                                 {(CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
@@ -360,10 +360,10 @@ function RowMaterialMaster(props) {
                                         <TabPane tabId="6">
                                             <RMMaterialListing />
                                         </TabPane>}
-                                    {Number(activeTab) === 7 &&
+                                    {/* {Number(activeTab) === 7 &&
                                         <TabPane tabId="7">
                                             <RMIndexationListing isOpen={isOpenCallback} />
-                                        </TabPane>}
+                                        </TabPane>} */}
                                     {Number(activeTab) === 8 &&
                                         <TabPane tabId="8">
                                             {/* {
