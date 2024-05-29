@@ -66,6 +66,7 @@ import {
   SET_DISCOUNT_AND_OTHER_TAB_DATA,
   SET_COMPONENT_PAYMENT_TERMS_DATA,
   SET_PAYMENT_TERM_COST,
+  CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2201,6 +2202,18 @@ export function isDiscountDataChange(isDataChange) {
   return (dispatch) => {
     dispatch({
       type: CHECK_IS_DISCOUNT_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
+/**
+ * @method isPaymentTermsDataChange
+ * @description THIS METHOD IS FOR CALLING PAYMENT TERMS API IF CHNAGES HAVE BEEN MADE 
+*/
+export function isPaymentTermsDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
       payload: isDataChange
     })
   }
