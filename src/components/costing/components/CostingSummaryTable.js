@@ -3031,7 +3031,7 @@ const CostingSummaryTable = (props) => {
                                 })}
                             </tr>
                           }
-                          {/* initialConfiguration?.IsShowNpvCost && */
+                          {!initialConfiguration?.IsShowTCO &&
                             <tr>
                               <td>
                                 <span className={`d-block small-grey-text`}>NPV Cost</span>
@@ -3216,7 +3216,7 @@ const CostingSummaryTable = (props) => {
                           </tr>
                         </>
                       }
-                      {props?.isRfqCosting && initialConfiguration?.IsShowTCO && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
+                      {initialConfiguration?.IsShowTCO && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
 
                       {
                         viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
