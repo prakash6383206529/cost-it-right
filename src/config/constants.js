@@ -19,12 +19,12 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+//const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.11.208:3030/api/v1`
-//const BASE_URL = `http://10.10.1.100:10152/api/v1`
+const BASE_URL = `http://10.10.1.100:10152/api/v1`
 //const BASE_URL = `http://10.10.1.100:10162/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
-// const BASE_URL = `http://10.10.8.160/api/v1`;  
+// const BASE_URL = `http://10.10.8.160/api/v1`;  //
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.120:81/api/v1`;
@@ -1562,6 +1562,7 @@ export const CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE = 'CHECK_IS_OVERHEAD_AND_P
 export const CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE = 'CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE'
 export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
 export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
+export const CHECK_IS_PAYMENT_TERMS_DATA_CHANGE = 'CHECK_IS_PAYMENT_TERMS_DATA_CHANGE'
 export const CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE = 'CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE'
 
 export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
@@ -1660,7 +1661,8 @@ export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
 export const SET_REJECTED_COSTING_VIEW_DATA = 'SET_REJECTED_COSTING_VIEW_DATA';
 export const RESET_EXCHANGE_RATE_DATA = 'RESET_EXCHANGE_RATE_DATA'
 export const SET_CALL_ST_API = 'SET_CALL_ST_API';
-
+export const GET_COSTING_PAYMENT_TERM_DETAIL = "GET_COSTING_PAYMENT_TERM_DETAIL"
+export const SET_PAYMENT_TERM_COST = "SET_PAYMENT_TERM_COST"
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
 export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
@@ -3005,10 +3007,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 export const RMIndex = true
 //VERSION 
-export const VERSION = "V2.2.16";
-export const GET_COSTING_PAYMENT_TERM_DETAIL = "GET_COSTING_PAYMENT_TERM_DETAIL"
-export const SET_PAYMENT_TERM_COST = "SET_PAYMENT_TERM_COST"
-
+export const VERSION = "V2.2.21";
 
 
 

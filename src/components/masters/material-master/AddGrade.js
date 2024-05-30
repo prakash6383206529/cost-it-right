@@ -147,7 +147,7 @@ class AddGrade extends Component {
                 </Col>}
                 {this.props.isShowIndex && <Col md="12">
                   <Field
-                    label={`Commodity Name`}
+                    label={`Commodity Name (In CIR)`}
                     name={"MaterialName"}
                     type="text"
                     placeholder={"Enter"}
