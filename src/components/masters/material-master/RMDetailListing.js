@@ -392,7 +392,7 @@ const RMDetailListing = () => {
               >
                 <AgGridColumn field="Index" headerName="Index"></AgGridColumn>
                 <AgGridColumn field="Commodity Name (In index)"></AgGridColumn>
-                <AgGridColumn field="Commodity Name (Custom)"></AgGridColumn>
+                <AgGridColumn field="Commodity Name (In CIR)"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>}
               {
