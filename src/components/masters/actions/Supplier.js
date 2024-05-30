@@ -76,6 +76,8 @@ export function getSupplierDataList(skip, obj, take, isPagination, callback) {
             isCriticalVendor: obj?.IsCriticalVendor ? obj.IsCriticalVendor : "",
             vendorTechnology: obj?.VendorTechnology ? obj?.VendorTechnology : "",
             vendorPlant: obj?.VendorPlant ? obj?.VendorPlant : "",
+            vendorClassification: obj?.VendorClassification ? obj?.VendorClassification : "",
+            vendorLPSRating: obj?.VendorLPSRating ? obj?.VendorLPSRating : "",
 
         });
         const request = axios.get(`${API.getAllSupplierAPI}?${queryParams}&${queryParams1}&${queryParams2}&${QueryParams}`, config());

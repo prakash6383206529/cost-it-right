@@ -950,7 +950,7 @@ export const RMMaterialListingTempData = [
         "Currency": "USD",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "IndexRateCurrency": "USD",
-        "PremiumCurrency": "20 mm",       
+        "PremiumCurrency": "20 mm",
     }
 ]
 
@@ -5622,8 +5622,8 @@ export const RMLISTING_DOWNLOAD_EXCEl = [
 
 export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
     { label: "Index", value: "Index", },
-    { label: "Material Name (In index)", value: "MaterialName", },
-    { label: "Material Name (Custom)", value: "MaterialNameCustom", },    
+    { label: "Commodity Name (In index)", value: "MaterialName", },
+    { label: "Commodity Name (In CIR)", value: "MaterialNameCustom", },
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
@@ -5632,8 +5632,8 @@ export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
     { label: "UOM", value: "UOM", },
     { label: "Currency", value: "Currency", },
     { label: "Effective Date", value: "EffectiveDate", },
-    { label: "Index Rate (Currency)", value: "IndexRateCurrency", }, 
-    { label: "Premium Currency", value: "PremiumCurrency", },    
+    { label: "Index Rate (Currency)", value: "IndexRateCurrency", },
+    { label: "Premium Currency", value: "PremiumCurrency", },
 ]
 
 export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [

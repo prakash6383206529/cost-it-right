@@ -122,7 +122,7 @@ class AddGrade extends Component {
                   <Col>
                     <div className={"header-wrapper left"}>
                       <h3>
-                        {isEditFlag ? "Update RM Grade" : "Add RM Grade"}
+                        {this.props.isShowIndex ? "Add Commodity" : isEditFlag ? "Update RM Grade" : "Add RM Grade"}
                       </h3>
                     </div>
                     <div
@@ -132,7 +132,7 @@ class AddGrade extends Component {
                   </Col>
                 </Row>
 
-                <Col md="12">
+                {!this.props.isShowIndex && <Col md="12">
                   <Field
                     label={`Grade`}
                     name={"Grade"}
@@ -144,7 +144,20 @@ class AddGrade extends Component {
                     className=" "
                     customClassName=" withBorder"
                   />
-                </Col>
+                </Col>}
+                {this.props.isShowIndex && <Col md="12">
+                  <Field
+                    label={`Commodity Name (In CIR)`}
+                    name={"MaterialName"}
+                    type="text"
+                    placeholder={"Enter"}
+                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
+                    component={renderText}
+                    required={true}
+                    className=" "
+                    customClassName=" withBorder"
+                  />
+                </Col>}
 
 
                 <Row className="sf-btn-footer no-gutters justify-content-between">

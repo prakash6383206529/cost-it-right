@@ -18,7 +18,8 @@ import {
   SET_PAYMENT_TERM_COST,
   GET_COSTING_PAYMENT_TERM_DETAIL,
   SET_DISCOUNT_AND_OTHER_TAB_DATA,
-  SET_COMPONENT_PAYMENT_TERMS_DATA
+  SET_COMPONENT_PAYMENT_TERMS_DATA,
+  CHECK_IS_PAYMENT_TERMS_DATA_CHANGE
 } from '../../../config/constants';
 
 const initialState = {
@@ -617,6 +618,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         checkIsDiscountChange: action.payload
+      }
+    case CHECK_IS_PAYMENT_TERMS_DATA_CHANGE:
+      return {
+        ...state,
+        loading: false,
+        checkIsPaymentTermsDataChange: action.payload
       }
     case FORGING_CALCULATOR_MACHININGSTOCK_SECTION:
       return {

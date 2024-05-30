@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import { Row, Col, Table, Container } from "reactstrap";
-import { useSelector } from "react-redux";
+import { useDispatch , useSelector } from "react-redux";
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
@@ -8,6 +8,9 @@ import { useForm, Controller } from "react-hook-form";
 import { Drawer } from "@material-ui/core";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
+import AddGrade from "./AddGrade";
+import Button from '../../layout/Button';
+import { getCommoditySelectListByType, getCommodityNameSelectListByType, getCommodityCustomNameSelectListByType } from '../../masters/actions/Indexation'
 
 const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
 
@@ -25,18 +28,53 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
+    const dispatch = useDispatch()
+    const indexCommodityData = useSelector(state => state.comman.indexCommodityData);
+    const nameCommodityData = useSelector(state => state.comman.nameCommodityData);
+    const customNameCommodityData = useSelector(state => state.comman.customNameCommodityData);
+
+    useEffect(() => {
+        dispatch(getCommoditySelectListByType(() => { }))
+        dispatch(getCommodityNameSelectListByType(() => { }))
+        dispatch(getCommodityCustomNameSelectListByType(() => { }))
+    }, [])
 
     const [gridData, setGridData] = useState([]);
     const [formData, setFormData] = useState({
         Index: '',
-        MaterialName: '',      
+        MaterialName: '',
         MaterialNameCustom: ''
 
     });
 
- 
+
 
     const renderListing = (label) => {
+        const temp = []
+        if (label === 'index') {
+            indexCommodityData && indexCommodityData.map((item) => {
+                if (item.PlantId === '0') return false
+                temp.push({ label: item.PlantNameCode, value: item.PlantId })
+                return null
+            })
+            return temp
+        }
+        if (label === 'commodityName') {
+            nameCommodityData && nameCommodityData.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+        if (label === 'commodityCustomName') {
+            customNameCommodityData && customNameCommodityData.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
         if (label === 'Applicability') {
             return [
                 { label: 'Option 1', value: 'Option1' },
@@ -48,7 +86,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
 
     const handleInputChange = (selectedOption, name) => {
         const updatedFormData = { ...formData, [name]: selectedOption.value };
-        setFormData(updatedFormData);       
+        setFormData(updatedFormData);
     };
 
     const resetData = () => {
@@ -162,17 +200,23 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
     const closePopUp = () => {
         setState(prevState => ({ ...prevState, showPopup: false }));
     };
+    const indexToggler = (Id = '') => {
+        setState(prevState => ({ ...prevState, isOpenIndex: true }));
+    }
+    const closeIndex = () => {
+        setState(prevState => ({ ...prevState, isOpenIndex: false }));
+    }
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>
                 <Container>
-                    <div className={'drawer-wrapper layout-min-width-720px'}>
+                    <div className={'drawer-wrapper layout-min-width-820px'}>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={"header-wrapper left"}>
                                         <h3>
-                                            Material Standardization
+                                            Commodity Standardization
                                         </h3>
                                     </div>
                                     <div
@@ -182,7 +226,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                 </Col>
                             </Row>
                             <Row className="pl-3">
-                                <Col md="6">
+                                <Col md="4">
                                     <SearchableSelectHookForm
                                         label={'Index'}
                                         name={'Index'}
@@ -192,15 +236,16 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         rules={{ required: true }}
                                         register={register}
                                         defaultValue={''}
-                                        options={renderListing('Applicability')}
+                                        //options={renderListing('Applicability')}
+                                        options={renderListing("index")}
                                         mandatory={true}
                                         handleChange={(option) => handleInputChange(option, 'Index')}
                                         errors={errors.index}
                                     />
                                 </Col>
-                                <Col md="6">
+                                <Col md="4">
                                     <SearchableSelectHookForm
-                                        label={'Material Name (In index)'}
+                                        label={'Commodity Name (In index)'}
                                         name={'MaterialName'}
                                         placeholder={'Select'}
                                         Controller={Controller}
@@ -208,41 +253,52 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         rules={{ required: true }}
                                         register={register}
                                         defaultValue={''}
-                                        options={renderListing('Applicability')}
+                                        //options={renderListing('Applicability')}
+                                        options={renderListing('commodityName')}
                                         mandatory={true}
                                         handleChange={(option) => handleInputChange(option, 'MaterialName')}
-                                        errors={errors.MaterialIndex}
+                                        errors={errors.MaterialName}
                                     />
                                 </Col>
-                                <Col md="6">
-                                    <SearchableSelectHookForm
-                                        label={'Material Name (Custom)'}
-                                        name={'MaterialNameCustom'}
-                                        placeholder={'Select'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        defaultValue={''}
-                                        options={renderListing('Applicability')}
-                                        mandatory={true}
-                                        handleChange={(option) => handleInputChange(option, 'MaterialNameCustom')}
-                                        errors={errors.MaterialNameCustom}
+                                <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
+                                    <div className="w-100">
+                                        <SearchableSelectHookForm
+                                            label={'Commodity Name (In CIR)'}
+                                            name={'MaterialNameCustom'}
+                                            placeholder={'Select'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: true }}
+                                            register={register}
+                                            defaultValue={''}
+                                            // options={renderListing('Applicability')}
+                                            options={renderListing('commodityCustomName')}
+                                            mandatory={true}
+                                            handleChange={(option) => handleInputChange(option, 'MaterialNameCustom')}
+                                            errors={errors.MaterialNameCustom}
+                                        />
+                                    </div>
+                                    <Button
+                                        id="GradeId-add"
+                                        className={"right mt-4 mb"}
+                                        variant={"plus-icon-square"}
+                                        onClick={() => indexToggler("")}
                                     />
                                 </Col>
-                                <Col md="4" className={`${initialConfiguration.IsShowCRMHead ? "mb-3" : "pt-3"} d-flex`}>
+
+                                <Col md="12" className={`d-flex justify-content-end  `}>
                                     {isEdit ? (
                                         <>
                                             <button
                                                 type="button"
-                                                className={"btn btn-primary mt30 pull-left mr5"}
+                                                className={"btn btn-primary pull-left mr5"}
                                                 onClick={handleAddUpdateButtonClick}
                                             >
                                                 Update
                                             </button>
                                             <button
                                                 type="button"
-                                                className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
+                                                className={"mr5 ml-1 mt-0 add-cancel-btn cancel-btn"}
                                                 onClick={() => resetData()}
                                             >
                                                 <div className={"cancel-icon"}></div>Cancel
@@ -252,7 +308,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         <>
                                             <button
                                                 type="button"
-                                                className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : 'mt15'} pull-left`}
+                                                className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : ''} pull-left`}
                                                 onClick={handleAddUpdateButtonClick}
                                             >
                                                 <div className={"plus"}></div>ADD
@@ -260,7 +316,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                             </button>
                                             <button
                                                 type="button"
-                                                className={`ml-1 ${initialConfiguration.IsShowCRMHead ? '' : 'mt15'} reset-btn`}
+                                                className={`ml-1 ${initialConfiguration.IsShowCRMHead ? '' : ''} reset-btn`}
                                                 onClick={() => resetData()}
                                             >
                                                 Reset
@@ -278,8 +334,8 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                             <thead>
                                 <tr>
                                     <th>{`Index`}</th>
-                                    <th>{`Material Name (In index)`}</th>
-                                    <th>{`Material Name (Custom)`}</th>
+                                    <th>{`Commodity Name (In index)`}</th>
+                                    <th>{`Commodity Name (In CIR)`}</th>
                                     <th className='text-right'>{`Action`}</th>
                                 </tr>
                             </thead>
@@ -289,7 +345,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         {gridData.map((item, index) => (
                                             <tr key={index}>
                                                 <td>{item.Index}</td>
-                                                <td>{item.MaterialName}</td>                                               
+                                                <td>{item.MaterialName}</td>
                                                 <td>{item.MaterialNameCustom}</td>
                                                 <td className='text-right'>
                                                     <button
@@ -346,7 +402,19 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                     </Row>
                 </Container>
             </Drawer>
-            {state.showPopup && (
+            {state.isOpenIndex && (
+                <AddGrade
+                    isOpen={state.isOpenIndex}
+                    closeDrawer={closeIndex}
+                    isEditFlag={isEditFlag}
+                    // RawMaterial={this.state.RawMaterial}
+                    // ID={this.state.Id}
+                    anchor={"right"}
+                    // specificationId={this.state.specificationId}
+                    isShowIndex={true}
+
+                />
+            )}            {state.showPopup && (
                 <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
             )}
         </div>
