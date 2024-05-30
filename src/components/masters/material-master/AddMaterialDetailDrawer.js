@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import { Row, Col, Table, Container } from "reactstrap";
-import { useSelector } from "react-redux";
+import { useDispatch , useSelector } from "react-redux";
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
@@ -10,6 +10,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import AddGrade from "./AddGrade";
 import Button from '../../layout/Button';
+import { getCommoditySelectListByType, getCommodityNameSelectListByType, getCommodityCustomNameSelectListByType } from '../../masters/actions/Indexation'
 
 const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
 
@@ -27,6 +28,16 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
+    const dispatch = useDispatch()
+    const indexCommodityData = useSelector(state => state.comman.indexCommodityData);
+    const nameCommodityData = useSelector(state => state.comman.nameCommodityData);
+    const customNameCommodityData = useSelector(state => state.comman.customNameCommodityData);
+
+    useEffect(() => {
+        dispatch(getCommoditySelectListByType(() => { }))
+        dispatch(getCommodityNameSelectListByType(() => { }))
+        dispatch(getCommodityCustomNameSelectListByType(() => { }))
+    }, [])
 
     const [gridData, setGridData] = useState([]);
     const [formData, setFormData] = useState({
@@ -39,6 +50,31 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
 
 
     const renderListing = (label) => {
+        const temp = []
+        if (label === 'index') {
+            indexCommodityData && indexCommodityData.map((item) => {
+                if (item.PlantId === '0') return false
+                temp.push({ label: item.PlantNameCode, value: item.PlantId })
+                return null
+            })
+            return temp
+        }
+        if (label === 'commodityName') {
+            nameCommodityData && nameCommodityData.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+        if (label === 'commodityCustomName') {
+            customNameCommodityData && customNameCommodityData.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
         if (label === 'Applicability') {
             return [
                 { label: 'Option 1', value: 'Option1' },
@@ -200,7 +236,8 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         rules={{ required: true }}
                                         register={register}
                                         defaultValue={''}
-                                        options={renderListing('Applicability')}
+                                        //options={renderListing('Applicability')}
+                                        options={renderListing("index")}
                                         mandatory={true}
                                         handleChange={(option) => handleInputChange(option, 'Index')}
                                         errors={errors.index}
@@ -216,7 +253,8 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         rules={{ required: true }}
                                         register={register}
                                         defaultValue={''}
-                                        options={renderListing('Applicability')}
+                                        //options={renderListing('Applicability')}
+                                        options={renderListing('commodityName')}
                                         mandatory={true}
                                         handleChange={(option) => handleInputChange(option, 'MaterialName')}
                                         errors={errors.MaterialName}
@@ -233,7 +271,8 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                             rules={{ required: true }}
                                             register={register}
                                             defaultValue={''}
-                                            options={renderListing('Applicability')}
+                                            // options={renderListing('Applicability')}
+                                            options={renderListing('commodityCustomName')}
                                             mandatory={true}
                                             handleChange={(option) => handleInputChange(option, 'MaterialNameCustom')}
                                             errors={errors.MaterialNameCustom}

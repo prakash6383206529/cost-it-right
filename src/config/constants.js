@@ -80,6 +80,10 @@ export const API = {
   getRowGrade: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-grade`,
   getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-specification`,
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
+  getCommoditySelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
+  getCommodityNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
+  getCommodityCustomNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
+
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -1188,6 +1192,9 @@ export const GET_PLANT_SELECTLIST_SUCCESS = 'GET_PLANT_SELECTLIST_SUCCESS'
 export const GET_PLANT_SELECTLIST_BY_TYPE = 'GET_PLANT_SELECTLIST_BY_TYPE'
 export const GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST = 'GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST'
 export const GET_USERS_MASTER_LEVEL_API = 'GET_USERS_MASTER_LEVEL_API'
+export const GET_COMMODITY_SELECTLIST_BY_TYPE = 'GET_COMMODITY_SELECTLIST_BY_TYPE'
+export const GET_COMMODITYNAME_SELECTLIST_BY_TYPE = 'GET_COMMODITYNAME_SELECTLIST_BY_TYPE'
+export const GET_COMMODITYCUSTOMNAME_SELECTLIST_BY_TYPE = 'GET_COMMODITYCUSTOMNAME_SELECTLIST_BY_TYPE'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
