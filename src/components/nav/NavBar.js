@@ -916,7 +916,7 @@ class SideBar extends Component {
 
         if (el.ModuleName === module) {
           return (
-            <li>
+            <li className="nav-item dropdown" onMouseOver={() => this.SetMenu(el.ModuleId)}>
               <Link
                 key={i}
                 id={this.getSpecificIdForElement(el)}
@@ -926,7 +926,7 @@ class SideBar extends Component {
                   pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
-                    PageName: "Vendor Classification Status",
+                    PageName: "Vendor Management",
                     PageURL: el.LandingPageURL,
                   },
                 }}
@@ -937,6 +937,27 @@ class SideBar extends Component {
                   alt={module + " icon"}
                 />
                 <span className="vendor_management">{el.ModuleName}</span>
+                <div className={`dropdown-menu ${this.state.showAllCategory ? "" : "sub-menu"}`}>
+                  <ul>
+                    {
+                      el && el.Pages && el.Pages.map((item, i) => {
+                        return (
+                          <li key={i} className={`mb5`}>
+                            <Link
+                              onClick={() => this.setLeftMenu(el.ModuleId)}
+                              id={this.getSpecificIdForElement(item)}
+                              to={{
+                                pathname: item.NavigationURL,
+                                state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                              }}
+                            >{item.PageName}</Link>
+                          </li>
+                        )
+
+                      })
+                    }
+                  </ul>
+                </div>
               </Link >
             </li >
           );

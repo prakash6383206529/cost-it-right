@@ -43,7 +43,7 @@ const InitiateUnblocking = (props) => {
     const [showApprvalStatus, setShowApprovalStatus] = useState(false)
     const [submit, setSubmit] = useState(true)
     const [isLoader, setIsLoader] = useState(false)
-
+    const [CanGoForApproval, setCanGoForApproval] = useState(false)
     useEffect(() => {
         setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
         dispatch(fetchVendorData());
@@ -78,17 +78,23 @@ const InitiateUnblocking = (props) => {
             obj.plantId = selectedPlant?.value ?? EMPTY_GUID;
             dispatch(checkFinalUser(obj, res => {
                 if (res?.data?.Result) {
-                    if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === true) {
-                        Toaster.warning("User does not have permission for unblocking either the plant is not associated or it is the final level approver.")
-                        approvalTypeId === LPSAPPROVALTYPEID ? setIsLpsRating(false) : setIsClassification(false)
-                    } else if (res?.data?.Data?.IsUserInApprovalFlow === false && res?.data?.Data?.IsFinalApprover === false) {
-                        Toaster.warning(`You don't have permission to initiate unblocking for the vendor against the selected plant. Either the plant is not associated, or the approval level has not been set Or may be both.`)
-                        approvalTypeId === LPSAPPROVALTYPEID ? setIsLpsRating(false) : setIsClassification(false)
-                    }
-                    else { setSubmit(false) }
+                    const { IsUserInApprovalFlow, IsFinalApprover } = res?.data?.Data || {};
 
+                    if ((IsUserInApprovalFlow === true && IsFinalApprover === true) || (IsUserInApprovalFlow === false && IsFinalApprover === false)) {
+                        approvalTypeId === LPSAPPROVALTYPEID ? setIsLpsRating(false) : setIsClassification(false);
+                        approvalTypeId === CLASSIFICATIONAPPROVALTYPEID ? setIsClassification(false) : setIsLpsRating(false);
+                        const message = IsUserInApprovalFlow === true && IsFinalApprover === true
+                            ? "User does not have permission for unblocking either the plant is not associated or it is the final level approver."
+                            : "You don't have permission to initiate unblocking for the vendor against the selected plant. Either the plant is not associated, or the approval level has not been set or maybe both.";
+
+                        Toaster.warning(message);
+                    } else {
+                        setCanGoForApproval(true);
+                        setSubmit(false);
+                    }
                 }
-            }))
+            }));
+
         }
     };
 
@@ -390,27 +396,27 @@ const InitiateUnblocking = (props) => {
                                                     <div className="left-border"><div className='d-flex'>Approval for <TooltipCustom id="Primary_Contact" customClass="mt2 pl-1 ml-5" tooltipText="Please click on the checkboxes to send approval for." /></div></div>                                                    <div className="approval-checkboxes">
                                                         {deviationData && (
                                                             <div>
-                                                                <label id={`vendorClassification_Checkbox_${deviationData?.ClassificationStatus}`} className={`custom-checkbox ${deviationData?.ClassificationStatus === "Blocked" ? "" : "disabled"}`}>
+                                                                {!deviationData?.ClassificationDeviationIsInApprovalProcess && <label id={`vendorClassification_Checkbox_${deviationData?.ClassificationStatus}`} className={`custom-checkbox ${deviationData?.ClassificationStatus === "Blocked" ? "" : "disabled"}`}>
                                                                     Classification
                                                                     <input
                                                                         type="checkbox"
                                                                         checked={isClassification}
                                                                         onChange={(e) => { setIsClassification(!isClassification); handleClassificationCheckboxChange(e); }}
-                                                                        disabled={deviationData?.ClassificationStatus === "Blocked" ? false : true}
+                                                                        disabled={deviationData?.ClassificationStatus === "Blocked" || !deviationData?.ClassificationDeviationIsInApprovalProcess ? false : true}
                                                                     />
                                                                     <span className="before-box" />
-                                                                </label>
+                                                                </label>}
 
-                                                                <label id={`LPS_Checkbox_${deviationData?.LPSRatingStatus}`} className={`custom-checkbox ${deviationData?.LPSRatingStatus === "Blocked" ? "" : "disabled"}`}>
+                                                                {!deviationData?.LPSRatingDeviationIsInApprovalProcess && <label id={`LPS_Checkbox_${deviationData?.LPSRatingStatus}`} className={`custom-checkbox ${deviationData?.LPSRatingStatus === "Blocked" ? "" : "disabled"}`}>
                                                                     LPS Rating
                                                                     <input
                                                                         type="checkbox"
                                                                         checked={isLpsRating}
                                                                         onChange={(e) => { setIsLpsRating(!isLpsRating); handleLpsRatingCheckboxChange(e); }}
-                                                                        disabled={deviationData?.LPSRatingStatus === "Blocked" ? false : true}
+                                                                        disabled={deviationData?.LPSRatingStatus === "Blocked" || !deviationData?.LPSRatingDeviationIsInApprovalProcess ? false : true}
                                                                     />
                                                                     <span className="before-box" />
-                                                                </label>
+                                                                </label>}
                                                             </div>
                                                         )}
 
@@ -460,38 +466,41 @@ const InitiateUnblocking = (props) => {
                             </>
                         )}
                     </div>
-                </div>}
-            {!isSuperAdmin && (!props?.isMasterSummaryDrawer) && (
-                <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer`}>
-                    <div className="col-sm-12 Text-right bluefooter-butn mt-3">
-                        <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
-                            <Button
-                                id="supplier_sendForApproval"
-                                type="submit"
-                                className="approval-btn mr5"
-                                disabled={submit}
-                                onClick={handleNext}
-                                icon={"send-for-approval"}
-                                buttonName={"Send For Approval"}
-                            />
+                </div >}
+            {
+                !isSuperAdmin && (!props?.isMasterSummaryDrawer) && (
+                    <Row className={`sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer`}>
+                        <div className="col-sm-12 Text-right bluefooter-butn mt-3">
+                            <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
+                                <Button
+                                    id="addRMDomestic_sendForApproval"
+                                    type="submit"
+                                    className="approval-btn mr5"
+                                    disabled={submit}
+                                    onClick={handleNext}
+                                    icon={"send-for-approval"}
+                                    buttonName={"Send For Approval"}
+                                />
+                            </div>
                         </div>
-                    </div>
-                </Row>
-            )}
-            {(isLpsRating || isClassification) && (!props?.isMasterSummaryDrawer) && selectedVendor && ( // Render SendForApproval component only when the approval drawer should be open and selectedVendor is not null
-                <SendForApproval
-                    isOpen={showApproval}
-                    closeDrawer={closeDrawer}
-                    anchor={'right'}
-                    isApprovalisting={true}
-                    deviationData={deviationData}
-                    isClassification={isClassification}
-                    isLpsRating={isLpsRating} // Pass LPS Rating approval status
-                // Add other props as needed
-                />
-            )}
+                    </Row>
+                )
+            }
+            {
+                (isLpsRating || isClassification) && CanGoForApproval && (!props?.isMasterSummaryDrawer) && selectedVendor && ( // Render SendForApproval component only when the approval drawer should be open and selectedVendor is not null
+                    <SendForApproval
+                        isOpen={showApproval}
+                        closeDrawer={closeDrawer}
+                        anchor={'right'}
+                        isApprovalisting={true}
+                        deviationData={deviationData}
+                        isClassification={isClassification}
+                        isLpsRating={isLpsRating} // Pass LPS Rating approval status
+                    // Add other props as needed
+                    />
+                )
+            }
         </>
     );
 };
-
 export default InitiateUnblocking;

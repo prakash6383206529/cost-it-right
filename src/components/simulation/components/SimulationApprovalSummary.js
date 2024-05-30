@@ -95,6 +95,7 @@ function SimulationApprovalSummary(props) {
     const [IsOpen, setIsOpen] = useState(false);
     const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState([]);
     const [textFilterSearch, setTextFilterSearch] = useState('')
+    const [approvalTypeId, setApprovalTypeId] = useState(null)
 
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
@@ -160,6 +161,7 @@ function SimulationApprovalSummary(props) {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
                 SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
+            setApprovalTypeId(ApprovalTypeId)
             let uniqueArr
             setSimulationData(res?.data?.Data)
             setDataForFetchingAllApprover({
@@ -285,7 +287,9 @@ function SimulationApprovalSummary(props) {
                 UserId: loggedInUserId(),
                 TechnologyId: technologyIdTemp,
                 Mode: 'simulation',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(simulationData.SimulationHeadId),
+                approvalTypeId: approvalTypeId,
+
+                // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(simulationData.SimulationHeadId),
                 plantId: simulationData?.SimulatedCostingList[0]?.PlantId
             }
             if (initialConfiguration?.IsMultipleUserAllowForApproval ? simulationData?.SimulatedCostingList[0]?.PlantId : true) {
