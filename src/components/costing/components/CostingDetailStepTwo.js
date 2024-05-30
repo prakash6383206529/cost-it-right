@@ -81,11 +81,11 @@ function CostingDetailStepTwo(props) {
         const ApplyCost = IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost);
         OverAllCost =
           checkForNull(data.NetTotalRMBOPCC) +
-            checkForNull(tempData.NetSurfaceTreatmentCost) +
-            checkForNull(tempData.NetOverheadAndProfitCost) +
-            checkForNull(tempData.NetPackagingAndFreight) +
-            checkForNull(ApplyCost) - checkForNull(tempData.NetDiscountsCost) +
-            initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0
+          checkForNull(tempData.NetSurfaceTreatmentCost) +
+          checkForNull(tempData.NetOverheadAndProfitCost) +
+          checkForNull(tempData.NetPackagingAndFreight) +
+          checkForNull(ApplyCost) - checkForNull(tempData.NetDiscountsCost) +
+          (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0)
       }
 
       tempData = {
@@ -125,11 +125,11 @@ function CostingDetailStepTwo(props) {
       if (tempData && tempData !== undefined) {
         OverAllCost =
           checkForNull(tempData.NetTotalRMBOPCC) +
-            checkForNull(data.NetSurfaceTreatmentCost) +
-            checkForNull(tempData.NetOverheadAndProfitCost) +
-            checkForNull(tempData.NetPackagingAndFreight) +
-            checkForNull(tempData.ToolCost) - checkForNull(tempData.NetDiscountsCost) +
-            initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0
+          checkForNull(data.NetSurfaceTreatmentCost) +
+          checkForNull(tempData.NetOverheadAndProfitCost) +
+          checkForNull(tempData.NetPackagingAndFreight) +
+          checkForNull(tempData.ToolCost) - checkForNull(tempData.NetDiscountsCost) +
+          (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0)
       }
 
       tempData = {
@@ -149,6 +149,7 @@ function CostingDetailStepTwo(props) {
     }
   }
 
+
   /**
    * @method setHeaderOverheadProfitCostTab
    * @description SET COSTS FOR TOP HEADER FROM OVERHEAD PROFIT TAB
@@ -165,11 +166,11 @@ function CostingDetailStepTwo(props) {
       if (tempData && tempData !== undefined) {
         OverAllCost =
           tempData.NetTotalRMBOPCC +
-            tempData.NetSurfaceTreatmentCost +
-            data.NetOverheadProfitCost +
-            tempData.NetPackagingAndFreight +
-            tempData.ToolCost - tempData.NetDiscountsCost +
-            initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0
+          tempData.NetSurfaceTreatmentCost +
+          data.NetOverheadProfitCost +
+          tempData.NetPackagingAndFreight +
+          tempData.ToolCost - tempData.NetDiscountsCost +
+          (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0)
       }
       tempData = {
         ...tempData,
@@ -201,11 +202,11 @@ function CostingDetailStepTwo(props) {
       if (tempData && tempData !== undefined) {
         OverAllCost =
           checkForNull(tempData.NetTotalRMBOPCC) +
-            checkForNull(tempData.NetSurfaceTreatmentCost) +
-            checkForNull(tempData.NetOverheadAndProfitCost) +
-            checkForNull(data.NetFreightPackagingCost) +
-            checkForNull(tempData.ToolCost) - checkForNull(tempData.NetDiscountsCost) +
-            initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0
+          checkForNull(tempData.NetSurfaceTreatmentCost) +
+          checkForNull(tempData.NetOverheadAndProfitCost) +
+          checkForNull(data.NetFreightPackagingCost) +
+          checkForNull(tempData.ToolCost) - checkForNull(tempData.NetDiscountsCost) +
+          (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0)
       }
 
       tempData = {
@@ -238,11 +239,12 @@ function CostingDetailStepTwo(props) {
           const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
           OverAllCost =
             checkForNull(tempData.NetTotalRMBOPCC) +
-              checkForNull(tempData.NetSurfaceTreatmentCost) +
-              checkForNull(tempData.NetOverheadAndProfitCost) +
-              checkForNull(tempData.NetPackagingAndFreight) +
-              checkForNull(ApplyCost) - checkForNull(tempData.NetDiscountsCost) +
-              initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0
+            checkForNull(tempData.NetSurfaceTreatmentCost) +
+            checkForNull(tempData.NetOverheadAndProfitCost) +
+            checkForNull(tempData.NetPackagingAndFreight) +
+            checkForNull(ApplyCost) - checkForNull(tempData.NetDiscountsCost) +
+            // checkForNull(UpdatePaymentTermCost?.NetCost)
+            (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0)
 
           tempData = {
             ...tempData,
@@ -260,6 +262,7 @@ function CostingDetailStepTwo(props) {
       }, 900)
     }
   }
+
 
   /**
    * @method findApplicabilityCost
@@ -322,7 +325,6 @@ function CostingDetailStepTwo(props) {
       return totalCost
     }
   }
-
   /**
    * @method setHeaderDiscountTab
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
@@ -365,14 +367,17 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetSurfaceTreatmentCost) +
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
-          initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0 +
-          checkForNull(tempData.ToolCost) - checkForNull(discountedCost)
+          checkForNull(tempData.ToolCost) - checkForNull(discountedCost) +
+          (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0)
+
+        //checkForNull(UpdatePaymentTermCost?.NetCost)
+
 
         tempData = {
           ...tempData,
           NetDiscountsCost: checkForNull(discountedCost),
           NetOtherCost: checkForNull(data.AnyOtherCost),
-          TotalCost: checkForNull(OverAllCost) + checkForNull(data?.AnyOtherCost) + initialConfiguration?.IsAddNPVInNetCost ? checkForNull(data.totalNpvCost) : 0 + checkForNull(data.totalConditionCost),
+          TotalCost: checkForNull(OverAllCost) + checkForNull(data?.AnyOtherCost) + (initialConfiguration?.IsAddNPVInNetCost ? checkForNull(data.totalNpvCost) : 0) /* + checkForNull(data.totalNpvCost)  */ + checkForNull(data.totalConditionCost),
           // TotalCost: OverAllCost + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
           BasicRate: checkForNull(OverAllCost) + checkForNull(data?.AnyOtherCost),
           // BasicRate: OverAllCost,

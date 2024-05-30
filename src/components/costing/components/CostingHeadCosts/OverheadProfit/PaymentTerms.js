@@ -79,18 +79,18 @@ const PaymentTerms = React.memo((props) => {
     useEffect(() => {
         setTimeout(() => {
             let tempObj = {
-                "InterestRateId": paymentTermsApplicability.label !== 'Fixed' ? (IsPaymentTermsApplicable ? PaymentTermInterestRateId : '') : null,
+                "InterestRateId": paymentTermsApplicability?.label !== 'Fixed' ? (IsPaymentTermsApplicable ? PaymentTermInterestRateId : '') : null,
                 "PaymentTermDetailId": IsPaymentTermsApplicable ? PaymentTermDetail?.InterestRateId : '',
-                "PaymentTermApplicability": Object.keys(paymentTermsApplicability).length > 0 ? paymentTermsApplicability.label : '',
+                "PaymentTermApplicability": Object.keys(paymentTermsApplicability).length > 0 ? paymentTermsApplicability?.label : '',
                 "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
                 "InterestRate": IsPaymentTermsApplicable ? paymentTermsApplicability.label !== 'Fixed' ? getValues('RepaymentPeriodPercentage') : (getValues('RepaymentPeriodFixed')) : '',
                 "NetCost": IsPaymentTermsApplicable ? tempPaymentTermObj.NetCost : '',
                 "EffectiveDate": effectiveDate,
-                "PaymentTermCRMHead": tempPaymentTermObj.PaymentTermCRMHead ? tempPaymentTermObj.PaymentTermCRMHead : '',
-                "Remark": tempPaymentTermObj.Remark ? tempPaymentTermObj.Remark : ''
+                "PaymentTermCRMHead": tempPaymentTermObj?.PaymentTermCRMHead ? tempPaymentTermObj?.PaymentTermCRMHead : '',
+                "Remark": tempPaymentTermObj?.Remark ? tempPaymentTermObj?.Remark : ''
             }
             if (!CostingViewMode) {
-                props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+                props.setPaymentTermsDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
             }
         }, 200)
     }, [tempPaymentTermObj, paymentTermsApplicability, effectiveDate])
