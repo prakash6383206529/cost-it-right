@@ -122,7 +122,7 @@ class AddGrade extends Component {
                   <Col>
                     <div className={"header-wrapper left"}>
                       <h3>
-                        {this.props.isShowIndex ? "Add Material" : isEditFlag ? "Update RM Grade" : "Add RM Grade"}
+                        {this.props.isShowIndex ? "Add Commodity" : isEditFlag ? "Update RM Grade" : "Add RM Grade"}
                       </h3>
                     </div>
                     <div
@@ -147,7 +147,7 @@ class AddGrade extends Component {
                 </Col>}
                 {this.props.isShowIndex && <Col md="12">
                   <Field
-                    label={`Material Name`}
+                    label={`Commodity Name`}
                     name={"MaterialName"}
                     type="text"
                     placeholder={"Enter"}
