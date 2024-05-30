@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Tooltip, Button, } from 'reactstrap';
+import { Row, Col, Tooltip } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
-import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
+import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI, getUOMSelectList } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, getConfigurationKey, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
@@ -26,7 +26,7 @@ import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/Common
 import BulkUpload from '../massUpload/BulkUpload';
 import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
-import { ASSEMBLY, DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
+import { ASSEMBLY, AcceptableRMUOM, DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
@@ -37,11 +37,13 @@ import { useTranslation } from 'react-i18next';
 import TourWrapper from '../common/Tour/TourWrapper';
 import { getSelectListPartType } from '../masters/actions/Part';
 import ProcessDrawer from './ProcessDrawer';
+import Button from '../layout/Button';
 
 const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
 function AddRfq(props) {
+    const dispatch = useDispatch()
     const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
     const dropzone = useRef(null);
@@ -94,13 +96,6 @@ function AddRfq(props) {
     const [isConditionalVisible, setIsConditionalVisible] = useState(false)
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [loader, setLoader] = useState(false)
-    const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
-    const dispatch = useDispatch()
-    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-    const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
-    const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
-    // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
-    const plantSelectList = useSelector(state => state.comman.plantSelectList)
     const [isBulkUpload, setisBulkUpload] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
@@ -118,17 +113,29 @@ function AddRfq(props) {
     const [isNFRFlow, setIsNFRFlow] = useState(false)
     const [rmAPIList, setRMAPIList] = useState([])
     const [rmNameSelected, setRmNameSelected] = useState(false)
-    const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
-    const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
-    const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
     const [partTypeList, setPartTypeList] = useState([])
     const [partType, setPartType] = useState([]);
     const [part, setPart] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [partTypeforRM, setPartTypeforRM] = useState([])
+    const [assemblyPartNumber, setAssemblyPartNumber] = useState('')
+    const [selectedUOM, setSelectedUOM] = useState('')
+    const [requirementDate, setRequirementDate] = useState('')
 
+    const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
+    const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
+    const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
+    const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
+    const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
+    const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
+
+    // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
+    const plantSelectList = useSelector(state => state.comman.plantSelectList)
     useEffect(() => {
         const { vbcVendorGrid } = props;
+        dispatch(getUOMSelectList(() => { }))
         dispatch(getPlantSelectListByType(ZBC, "RFQ", '', () => { }))
         //MINDA
         // dispatch(getPlantSelectListByType(ZBC, nfrId, () => { }))
@@ -465,7 +472,16 @@ function AddRfq(props) {
 
 
         const temp = [];
-
+        if (label === 'UOM') {
+            UOMSelectList && UOMSelectList?.map(item => {
+                const accept = AcceptableRMUOM.includes(item.Type)
+                if (accept === false) return false
+                if (item.Value === '0') return false
+                temp.push({ label: item.Display, value: item.Value })
+                return null
+            });
+            return temp;
+        }
         if (label === 'plant') {
             plantSelectList && plantSelectList.map((item) => {
                 if (item.PlantId === '0') return false
@@ -503,6 +519,7 @@ function AddRfq(props) {
         }
         if (label === 'PartType') {
             partTypeList && partTypeList.map((item) => {
+
                 if (item.Value === '0') return false
                 if (item.Value === PRODUCT_ID) return false
                 if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
@@ -701,6 +718,7 @@ function AddRfq(props) {
         data.PartIdList = _.uniq(temp)
         data.PlantId = getValues('plant')?.value
         data.VendorId = getValues('vendor')?.value
+
 
         dispatch(checkExistCosting(data, (res) => {
 
@@ -1110,6 +1128,7 @@ function AddRfq(props) {
         */
     const handlePartTypeChange = (newValue) => {
 
+
         if (newValue && newValue !== '') {
             setPartType(newValue)
             setValue('PartNumber', '')
@@ -1157,29 +1176,28 @@ function AddRfq(props) {
     };
 
     const removeAddedParts = (arr) => {
+
         const filteredArray = arr.filter((item) => {
+
             return !selectedparts.some((element) => {
                 return element.value === item.value;
             });
         });
         return filteredArray
     }
-
-    const partFilterList = async (inputValue) => {
-
-
-
+    const partFilterList = async (inputValue, type) => {
         const resultInput = inputValue.slice(0, searchCount)
-
         const nfrChange = nfrId?.value;
 
         if (inputValue?.length >= searchCount && (partName !== resultInput || nfrChange !== storeNfrId)) {
-            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value, Component)
+            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value, type)
+
             setPartName(resultInput)
             setStoreNfrId(nfrId?.value)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
                 let temp = [...autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)]
+
                 return removeAddedParts(temp)
 
             } else {
@@ -1312,6 +1330,9 @@ function AddRfq(props) {
         setFiveyearList(yearList)
         setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
     }
+    const handleRequirementDateChange = (value) => {
+        setRequirementDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+    }
 
     const renderListingRM = (label) => {
 
@@ -1371,7 +1392,9 @@ function AddRfq(props) {
     const handleRMSpecification = (newValue) => {
         setRMSpecification({ label: newValue?.label, value: newValue?.value })
     }
-
+    const handleChangeUOM = (newValue) => {
+        setSelectedUOM(newValue)
+    }
     const EditableCallback = (props) => {
         let value
         if (getValues('nfrId')) {
@@ -1387,6 +1410,10 @@ function AddRfq(props) {
     }
     const closeDrawer = () => {
         setDrawerOpen(false)
+    }
+    const handlePartNoChange = (value) => {
+        console.log('value: ', value);
+        setAssemblyPartNumber(value)
     }
 
     const frameworkComponents = {
@@ -1534,7 +1561,8 @@ function AddRfq(props) {
                                                 disabled={(technology.length === 0) ? true : false}
                                             />
                                         </Col>
-                                        <Col md="3">
+                                        <Col md="3" className='d-flex align-items-center' >
+
                                             <AsyncSearchableSelectHookForm
                                                 label={"Part No"}
                                                 name={"partNumber"}
@@ -1545,19 +1573,18 @@ function AddRfq(props) {
                                                 register={register}
                                                 //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
                                                 mandatory={true}
-                                                // handleChange={handleDestinationPlantChange}
-                                                handleChange={() => { }}
+                                                handleChange={(newValue) => handlePartNoChange(newValue)}
                                                 errors={errors.partNumber}
                                                 disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
                                                 isLoading={plantLoaderObj}
-                                                asyncOptions={partFilterList}
+                                                asyncOptions={(inputValue) => partFilterList(inputValue, partTypeforRM)}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
-
+                                            {partType.length !== 0 && partTypeforRM === Assembly && (
+                                                <Button id="addRMSpecificatione" className={"right"} variant="plus-icon-square" onClick={DrawerToggle} title="Add" disabled={partName?.length === 0} ></Button>
+                                            )}
                                         </Col>
-                                        {partType.length !== 0 && partTypeforRM === Assembly && (<Col md="3">
-                                            <button type="button" className={"user-btn mr5 Tour_List_Add"} onClick={DrawerToggle} title="Add">  <div className={"plus mr-0"}></div>{/* ADD */}</button>
-                                        </Col>)}
+
                                         <Col md="3">
                                             <TextFieldHookForm
                                                 // title={titleObj.descriptionTitle}
@@ -1688,6 +1715,73 @@ function AddRfq(props) {
                                                         />
                                                     </Col>
                                                 </>))}
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"UOM"}
+                                                name={`UOM`}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                customClassName="costing-version"
+                                                options={renderListing("UOM")}
+                                                mandatory={false}
+                                                handleChange={(newValue) => handleChangeUOM(newValue)}
+                                                errors={errors?.UOM}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                // title={titleObj.descriptionTitle}
+                                                label="Target Price"
+                                                name={'TagetPrice'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.Description}
+                                                // disabled={true}
+                                                placeholder="-"
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <div className="inputbox date-section">
+                                                <div className="form-group">
+                                                    <label>Requirement Timeline<span className="asterisk-required">*</span></label>
+                                                    <div id="addRFQDate_container" className="inputbox date-section">
+                                                        <DatePicker
+
+                                                            name={'RequirementDate'}
+                                                            placeholder={'Select'}
+                                                            //selected={submissionDate}
+                                                            selected={DayTime(sopdate).isValid() ? new Date(sopdate) : ''}
+                                                            onChange={handleRequirementDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            dropdownMode='select'
+                                                            minDate={new Date()}
+                                                            dateFormat="dd/MM/yyyy"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={"off"}
+                                                            mandatory={true}
+                                                            errors={errors.RequirementDate}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                        />
+                                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </Col>
 
                                         {/* <Col md="3">
                                             <NumberFieldHookForm
@@ -1842,6 +1936,82 @@ function AddRfq(props) {
                                                     isLoading={plantLoaderObj}
                                                 />
                                             )}
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                // title={titleObj.descriptionTitle}
+                                                label="Inco Terms"
+                                                name={'IncoTerms'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.IncoTerms}
+                                                disabled={true}
+                                                placeholder="-"
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                // title={titleObj.descriptionTitle}
+                                                label="Payment Terms"
+                                                name={'PaymentTerms'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.PaymentTerms}
+                                                disabled={true}
+                                                placeholder="-"
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                // title={titleObj.descriptionTitle}
+                                                label="Warrenty Terms"
+                                                name={'WarrantyTerms'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.WarrantyTerms}
+                                                disabled={true}
+                                                placeholder="-"
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                // title={titleObj.descriptionTitle}
+                                                label="LD Clause"
+                                                name={'LDClause'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.LDClause}
+                                                disabled={true}
+                                                placeholder="-"
+                                            />
                                         </Col>
                                         <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
@@ -2184,6 +2354,8 @@ function AddRfq(props) {
                                             dataProp={dataProps}
                                             technology={technology}
                                             nfrId={nfrId}
+                                            partName={partName}
+                                            AssemblyPartNumber={assemblyPartNumber}
 
                                         />
                                     )
