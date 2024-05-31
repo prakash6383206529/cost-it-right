@@ -413,7 +413,10 @@ const RMMaterialListing = () => {
                 <AgGridColumn field="Currency"></AgGridColumn>
                 <AgGridColumn field="Effective Date"></AgGridColumn>
                 <AgGridColumn field="Index Rate (Currency)"></AgGridColumn>
-                <AgGridColumn field="Premium Currency"></AgGridColumn>
+                <AgGridColumn field="Premium (Charge)"></AgGridColumn>
+                <AgGridColumn field="Exchange rate (INR)"></AgGridColumn>
+                <AgGridColumn field="Currency Rate"></AgGridColumn>
+                <AgGridColumn field="Conversion Rate (INR)"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>}
               {
