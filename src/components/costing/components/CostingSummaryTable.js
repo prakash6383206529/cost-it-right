@@ -3223,7 +3223,7 @@ const CostingSummaryTable = (props) => {
                           viewCostingData?.map((data, index) => {
                             return (
                               <td className={tableDataClass(data)}>
-                                {displayValueWithSign(data, "TotalTCOCost")}
+                                {data.CostingPartDetails && data.CostingPartDetails.CostingTCOResponse ? displayValueWithSign(data, "TotalTCOCost") : 0}
                                 {/* {checkForDecimalAndNull(data.TotalTCOCost, initialConfiguration.NoOfDecimalForPrice)} */}
                               </td>
                             )

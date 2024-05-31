@@ -370,7 +370,6 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.ToolCost) - checkForNull(discountedCost) +
           (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0)
 
-        //checkForNull(UpdatePaymentTermCost?.NetCost)
 
 
         tempData = {
