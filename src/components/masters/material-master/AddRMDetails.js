@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getAllCity, getCityByCountry, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList } from "../../../actions/Common"
-import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
+import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, RMIndex, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import { getConfigurationKey, loggedInUserId } from "../../../helper"
@@ -672,38 +672,40 @@ function AddRMDetails(props) {
                             </Col>
                         </>
                     )}
-                    <Col className="col-md-15">
-                        <SearchableSelectHookForm
-                            name="Index"
-                            label="Index (LME)"
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={true}
-                            rules={{ required: true }}
-                            placeholder={'Select'}
-                            options={renderListing("ClientList")}
-                            handleChange={handleCustomer}
-                            disabled={isEditFlag || isViewFlag}
-                            errors={errors.Index}
-                        />
-                    </Col>
-                    <Col className="col-md-15">
-                        <SearchableSelectHookForm
-                            name="ExchangeSource"
-                            label="Exchange Source"
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={true}
-                            rules={{ required: true }}
-                            placeholder={'Select'}
-                            options={renderListing("ClientList")}
-                            handleChange={handleCustomer}
-                            disabled={isEditFlag || isViewFlag}
-                            errors={errors.ExchangeSource}
-                        />
-                    </Col>
+                    {RMIndex &&
+                        <>
+                            <Col className="col-md-15">
+                                <SearchableSelectHookForm
+                                    name="Index"
+                                    label="Index (LME)"
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    rules={{ required: true }}
+                                    placeholder={'Select'}
+                                    options={renderListing("ClientList")}
+                                    handleChange={handleCustomer}
+                                    disabled={isEditFlag || isViewFlag}
+                                    errors={errors.Index}
+                                />
+                            </Col>
+                            <Col className="col-md-15">
+                                <SearchableSelectHookForm
+                                    name="ExchangeSource"
+                                    label="Exchange Source"
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    rules={{ required: true }}
+                                    placeholder={'Select'}
+                                    options={renderListing("ClientList")}
+                                    handleChange={handleCustomer}
+                                    disabled={isEditFlag || isViewFlag}
+                                    errors={errors.ExchangeSource}
+                                />
+                            </Col></>}
                 </Row>
                 <AddIndexationMaterialListing />
                 <Row>

@@ -71,6 +71,7 @@ const LpsRatingListing = () => {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
     const applyPermission = (topAndLeftMenuData) => {
+
         if (topAndLeftMenuData !== undefined) {
             setIsLoader(true)
             const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);

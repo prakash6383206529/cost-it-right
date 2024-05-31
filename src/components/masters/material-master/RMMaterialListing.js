@@ -250,7 +250,7 @@ const RMMaterialListing = () => {
 
 
   };
-  const { isOpen, isEditFlag, ID, noData, showExtraData, render ,isBulkUpload } = state;
+  const { isOpen, isEditFlag, ID, noData, showExtraData, render, isBulkUpload } = state;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -407,8 +407,8 @@ const RMMaterialListing = () => {
                 suppressRowClickSelection={true}
               >
 
-                <AgGridColumn field="Material Index"></AgGridColumn>
-                <AgGridColumn field="Material Name"></AgGridColumn>
+                <AgGridColumn field="Index"></AgGridColumn>
+                <AgGridColumn field="Commodity Name"></AgGridColumn>
                 <AgGridColumn field="UOM"></AgGridColumn>
                 <AgGridColumn field="Currency"></AgGridColumn>
                 <AgGridColumn field="Effective Date"></AgGridColumn>
@@ -437,11 +437,11 @@ const RMMaterialListing = () => {
           message={`${MESSAGES.MATERIAL1_DELETE_ALERT}`}
         />
       )}
-       {isBulkUpload && (
+      {isBulkUpload && (
         <BulkUpload
           isOpen={isBulkUpload}
           closeDrawer={closeBulkUploadDrawer}
-          isEditFlag={false}         
+          isEditFlag={false}
           fileName={"RM Index Data"}
           messageLabel={"RM Index Data"}
           anchor={"right"}

@@ -415,10 +415,10 @@ class Main extends Component {
                     <Route path="/sap-push-detail" component={SAPDetailList} />
                     <Route path="/nfr-insights-details" component={AuthMiddleware(NFRInsightsReport, NFR_INSIGHT_DETAILS)} />
                     <Route path="/login-audit" component={AuthMiddleware(LoginAudit, lOGIN_AUDIT)} />
-                    <Route path="/vendor-classification" component={AuthMiddleware(VendorManagement, VENDOR_MANAGEMENT)} />
+                    <Route path="/initiate-unblocking" component={AuthMiddleware(VendorManagement, INITIATE_UNBLOCKING)} />
                     {/* <Route path="/lps-rating" component={AuthMiddleware(LpsRatingListing, LPS_RATING)} /> */}
                     <Route path="/supplier-approval-summary" component={(CommonApproval, APPROVAL_LISTING)} />
-                    <Route path='/initiate-unblocking' component={AuthMiddleware(InitiateUnblocking, INITIATE_UNBLOCKING)} />
+                    <Route path='/initiate-unblocking ' component={AuthMiddleware(InitiateUnblocking, INITIATE_UNBLOCKING)} />
                     {/* <Route path='/supplier-approval-summary' component={SummaryDrawer} /> */}
                     {/* <Route path='/initiate-unblocking/vendor-classification' component={UnblockClassification} />
                     <Route path='/initiate-unblocking/vendor-lps' component={UnblockClassificationLps} />
