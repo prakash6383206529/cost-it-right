@@ -10,7 +10,7 @@ import { checkPermission, loggedInUserId, showTitleForActiveToggle } from '../..
 import LoaderCustom from '../common/LoaderCustom';
 import { Col, Row } from 'reactstrap';
 import NoContentFound from '../common/NoContentFound';
-import { EMPTY_DATA, MASTERS, VENDOR_CLASSIFICATION, VENDOR_MANAGEMENT } from '../../config/constants';
+import { EMPTY_DATA, MASTERS, VENDOR_CLASSIFICATION, VENDOR_MANAGEMENT, VENDOR_MANAGEMENT_ROLE } from '../../config/constants';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import DayTime from '../common/DayTimeWrapper';
