@@ -40,7 +40,7 @@ const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
 function AddRfq(props) {
-    console.log('props: ', props);
+
 
     const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
@@ -124,10 +124,7 @@ function AddRfq(props) {
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
     const rmSpecification = useSelector(state => state.comman.rmSpecification);
     const showSendButton = dataProps?.rowData?.DisplayStatus || ''
-    console.log('showSendButton: ', showSendButton);
-    const isDropdownDisabled = initialConfiguration.IsCriticalVendorConfigured && isViewFlag || (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === ''));
-    console.log('isDropdownDisabled: ', isDropdownDisabled);
-    console.log(initialConfiguration.IsCriticalVendorConfigured, isViewFlag, (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === '')));
+    const isDropdownDisabled = (initialConfiguration.IsCriticalVendorConfigured && isViewFlag) || ((!dataProps?.isAddFlag) && !(showSendButton === 'Draft' || showSendButton === ''));
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
@@ -1366,8 +1363,7 @@ function AddRfq(props) {
     * @method render
     * @description Renders the component
     */
-    console.log((initialConfiguration.IsCriticalVendorConfigured), isViewFlag,
-        (props.isEditFlag && showSendButton === 'Draft') ? false : true);
+
     return (
         <div className="container-fluid">
             <div className="signup-form">
