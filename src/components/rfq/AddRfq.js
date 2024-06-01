@@ -7,7 +7,7 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { Component, EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { Component, DRAFT, EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -40,8 +40,11 @@ const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
 function AddRfq(props) {
+
+
     const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
+
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -58,7 +61,6 @@ function AddRfq(props) {
     const currentDate = new Date()
     const currentHours = currentDate.getHours();
     const currentMinutes = currentDate.getMinutes();
-
     const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
     const [isEditAll, setIsEditAll] = useState(false);
@@ -84,6 +86,7 @@ function AddRfq(props) {
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const [partName, setPartName] = useState('')
     const [technology, setTechnology] = useState({})
+
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
     const [dateAndTime, setDateAndTime] = useState('')
@@ -113,12 +116,15 @@ function AddRfq(props) {
     const [rmspecification, setRMSpecification] = useState([])
     const [deleteToggle, setDeleteToggle] = useState(false)
     const [plant, setPlant] = useState({})
+
     const [isNFRFlow, setIsNFRFlow] = useState(false)
     const [rmAPIList, setRMAPIList] = useState([])
     const [rmNameSelected, setRmNameSelected] = useState(false)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
     const rmSpecification = useSelector(state => state.comman.rmSpecification);
+    const showSendButton = dataProps?.rowData?.DisplayStatus || ''
+    const isDropdownDisabled = (initialConfiguration.IsCriticalVendorConfigured && isViewFlag) || ((!dataProps?.isAddFlag) && !(showSendButton === 'Draft' || showSendButton === ''));
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
@@ -1357,6 +1363,7 @@ function AddRfq(props) {
     * @method render
     * @description Renders the component
     */
+
     return (
         <div className="container-fluid">
             <div className="signup-form">
@@ -1697,14 +1704,7 @@ function AddRfq(props) {
                                                 errors={errors.vendor}
                                                 isLoading={VendorLoaderObj}
                                                 asyncOptions={vendorFilterList}
-                                                disabled={
-                                                    initialConfiguration.IsCriticalVendorConfigured &&
-                                                        (Object.keys(technology).length === 0 || Object.keys(plant).length === 0)
-                                                        ? true
-                                                        : dataProps?.isAddFlag
-                                                            ? false
-                                                            : (isViewFlag || !isEditAll)
-                                                }
+                                                disabled={isDropdownDisabled}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </Col>
@@ -2034,7 +2034,7 @@ function AddRfq(props) {
                                                 </button>
                                             }
 
-                                            {!props?.isEditFlag && <button type="button" className="submit-button save-btn" value="send"
+                                            {!isDropdownDisabled && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}
                                                 disabled={isViewFlag}>
