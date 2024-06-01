@@ -150,7 +150,7 @@ export function getCommodityStandardizationDataListAPI(callback) {
 export function getCommodityIndexDataListAPI(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
-            commodityExchangeId:"", commodityExchangeName: obj.commodityExchangeName, description:"",isApplyPagination: isPagination, skip: skip, take: take
+            commodityExchangeId:"", commodityExchangeName: obj.CommodityExchangeName, description:"",isApplyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getCommodityIndexDataList}?${queryParams}`, config())
@@ -184,7 +184,7 @@ export function getCommodityIndexDataListAPI(obj, isPagination, skip, take, call
 export function getCommodityInIndexDataListAPI(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
-            commodityId:"", commodityName: obj.commodityName,commodityShortName: obj.commodityShortName, description:"",isApplyPagination: isPagination, skip: skip, take: take
+            commodityId:"", commodityName: obj.CommodityName,commodityShortName: "", description:"",isApplyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getCommodityInIndexDataList}?${queryParams}`, config())

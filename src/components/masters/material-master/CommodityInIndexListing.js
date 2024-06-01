@@ -30,6 +30,7 @@ import BulkUpload from "../../massUpload/BulkUpload";
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
 import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
 import { disabledClass } from '../../../actions/Common';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -46,7 +47,6 @@ const CommodityInIndexListing = () => {
     isOpen: false,
     isEditFlag: false,
     ID: "",
-    isOpenAssociation: false,
     gridApi: null,
     gridColumnApi: null,
     rowData: null,
@@ -70,6 +70,8 @@ const CommodityInIndexListing = () => {
   const [disableFilter, setDisableFilter] = useState(true)
   const [disableDownload, setDisableDownload] = useState(false)
   const { globalTakes } = useSelector((state) => state.pagination)
+  const [gridApi, setGridApi] = useState(null);
+  const [dataCount, setDataCount] = useState(0)
   useEffect(() => {
     getTableListData();
   }, []);
@@ -239,17 +241,24 @@ const CommodityInIndexListing = () => {
   }, [commodityInIndexDataList])
 
   const resetState = () => {
-    state.gridApi.setQuickFilter(null)
-    state.gridApi.deselectAll();
-    gridOptions.columnApi.resetColumnState();
-    gridOptions.api.setFilterModel(null);
-    if (searchRef.current) {
-      searchRef.current.value = '';
+    setNoData(false)
+    setIsFilterButtonClicked(false)
+    gridOptions?.columnApi?.resetColumnState(null);
+    gridOptions?.api?.setFilterModel(null);
+
+    for (var prop in floatingFilterData) {
+        floatingFilterData[prop] = ""
+
     }
-    setState((prevState) => ({ ...prevState, noData: false }));
+    setFloatingFilterData(floatingFilterData)
+    setWarningMessage(false)  
+    dispatch(resetStatePagination())
+    getTableListData(0, 10, true)    
+    dispatch(updateGlobalTake(10))   
+    setDataCount(0)
+    reactLocalStorage.setObject('selectedRow', {})
+}
 
-
-  };
   const { isOpen, isEditFlag, ID, showExtraData, render, isBulkUpload } = state;
 
   const isFirstColumn = (params) => {

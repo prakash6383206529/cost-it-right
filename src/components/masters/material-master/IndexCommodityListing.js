@@ -31,6 +31,7 @@ import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
 import PaginationControls from "../../common/Pagination/PaginationControls";
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -48,7 +49,6 @@ const IndexCommodityListing = () => {
     isOpen: false,
     isEditFlag: false,
     ID: "",
-    isOpenAssociation: false,
     gridApi: null,
     gridColumnApi: null,
     rowData: null,
@@ -71,6 +71,9 @@ const IndexCommodityListing = () => {
   const [noData, setNoData] = useState(false)
   const [disableFilter, setDisableFilter] = useState(true)
   const [disableDownload, setDisableDownload] = useState(false)
+  const [gridApi, setGridApi] = useState(null);
+  const [dataCount, setDataCount] = useState(0)
+  const [gridLoad, setGridLoad] = useState(false);
   useEffect(() => {
     getTableListData(0, defaultPageSize, true)
     return () => {
@@ -184,11 +187,6 @@ const IndexCommodityListing = () => {
     gridOptions?.columnApi?.resetColumnState();
     getTableListData(0, globalTakes, true)
   }
-  // const editItemDetails = (Id) => {
-  //   setState((prevState) => ({
-  //     ...prevState, isEditFlag: true, isOpen: true, ID: Id,
-  //   }));
-  // };
 
   const deleteItem = (Id) => {
     setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
@@ -281,21 +279,28 @@ const IndexCommodityListing = () => {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    state.gridApi.setQuickFilter(e.target.value);
-  };
+    gridApi.setQuickFilter(e.target.value);
+}
 
   const resetState = () => {
-    state.gridApi.setQuickFilter(null)
-    state.gridApi.deselectAll();
-    gridOptions.columnApi.resetColumnState();
-    gridOptions.api.setFilterModel(null);
-    if (searchRef.current) {
-      searchRef.current.value = '';
+    setNoData(false)
+    setIsFilterButtonClicked(false)
+    gridOptions?.columnApi?.resetColumnState(null);
+    gridOptions?.api?.setFilterModel(null);
+
+    for (var prop in floatingFilterData) {
+      floatingFilterData[prop] = ""
+
     }
-    setState((prevState) => ({ ...prevState, noData: false }));
+    setFloatingFilterData(floatingFilterData)
+    setWarningMessage(false)
+    dispatch(resetStatePagination())
+    getTableListData(0, 10, true)
+    dispatch(updateGlobalTake(10))
+    setDataCount(0)
+    reactLocalStorage.setObject('selectedRow', {})
+  }
 
-
-  };
   const { isOpen, isEditFlag, ID, showExtraData, render, isBulkUpload } = state;
 
   const isFirstColumn = (params) => {
@@ -376,7 +381,7 @@ const IndexCommodityListing = () => {
       className={`ag-grid-react min-height100vh ${permissions.Download ? "show-table-btn" : ""
         }`}
     >
-      {state.isLoader && <LoaderCustom />}
+      {state.isLoader && <LoaderCustom customClass="loader-center" />}
       <Row className="pt-4">
         <Col md={9} className="search-user-block mb-3 pl-0">
           <div className="d-flex justify-content-end bd-highlight w100">
@@ -401,8 +406,8 @@ const IndexCommodityListing = () => {
                 </>
               </>
             )}
-            <Button id={"rmSpecification_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
-            </div>
+            <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+          </div>
         </Col>
       </Row>
 
@@ -414,14 +419,10 @@ const IndexCommodityListing = () => {
               : ""
               }`}
           >
+            {/* {gridLoad && <div className={`ag-grid-wrapper height-width-wrapper  ${(indexCommodityDataList && indexCommodityDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}> */}
+
             <div className="ag-grid-header">
-              <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
-              <TourWrapper
-                buttonSpecificProp={{ id: "RM_Listing_Tour", onClick: toggleExtraData }}
-                stepsSpecificProp={{
-                  steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, bulkUpload: false, addButton: false, filterButton: false, costMovementButton: false, viewButton: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
-                }}
-              />
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
             <div
               className={`ag-theme-material ${state.isLoader && "max-loader-height"
@@ -433,7 +434,7 @@ const IndexCommodityListing = () => {
                   customClassName="no-content-found"
                 />
               )}
-              {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+              <AgGridReact
 
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -443,7 +444,6 @@ const IndexCommodityListing = () => {
                 paginationPageSize={globalTakes}
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
-                // loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={"customNoRowsOverlay"}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
@@ -457,7 +457,7 @@ const IndexCommodityListing = () => {
               >
                 <AgGridColumn field="CommodityExchangeName" headerName="Index"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
-              </AgGridReact>}
+              </AgGridReact>
 
               {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexCommodity" />}
 
