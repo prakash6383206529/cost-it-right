@@ -62,15 +62,24 @@ import {
   GET_APPROVAL_TYPE_SELECT_LIST,
   GET_DATA_WHILE_LOADING,
   GET_DATA_FROM_REPORT,
-  TOUR_START_DATA
+  TOUR_START_DATA,
+  GET_APPROVAL_TYPE_SELECT_LIST_COSTING,
+  GET_APPROVAL_TYPE_SELECT_LIST_SIMULATION,
+  GET_APPROVAL_TYPE_SELECT_LIST_MASTER,
+  GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING
 } from '../config/constants';
 
 const initialState = {
   technologyList: [],
   tourStartData: {
     showExtraData: false
-  }
+  },
+  approvalTypeCosting: [],
+  approvalTypeSimulation: [],
+  approvalTypeMaster: [],
+  approvalTypeOnboarding: [],
 };
+
 
 
 export default function commanReducer(state = initialState, action) {
@@ -493,6 +502,26 @@ export default function commanReducer(state = initialState, action) {
       return {
         ...state,
         approvalTypeSelectList: action.payload
+      }
+    case GET_APPROVAL_TYPE_SELECT_LIST_COSTING:
+      return {
+        ...state,
+        approvalTypeCosting: action.payload
+      }
+    case GET_APPROVAL_TYPE_SELECT_LIST_SIMULATION:
+      return {
+        ...state,
+        approvalTypeSimulation: action.payload
+      }
+    case GET_APPROVAL_TYPE_SELECT_LIST_MASTER:
+      return {
+        ...state,
+        approvalTypeMaster: action.payload
+      }
+    case GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING:
+      return {
+        ...state,
+        approvalTypeOnboarding: action.payload
       }
     case GET_DATA_FROM_REPORT:
       return {

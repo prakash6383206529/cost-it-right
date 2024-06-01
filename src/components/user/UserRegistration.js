@@ -11,7 +11,7 @@ import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser, getAllLevelAPI, checkHighestApprovalLevelForHeadsAndApprovalType, getOnboardingLevelById, getPlantSelectListForDepartment, getUsersOnboardingLevelAPI
 } from "../../actions/auth/AuthActions";
-import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
+import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList, getApprovalTypeSelectListUserModule } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { IsSendMailToPrimaryContact, getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
@@ -145,6 +145,13 @@ function UserRegistration(props) {
   const levelList = useSelector(state => state.auth.levelList)
   const OnboardingLevelSelectList = useSelector(state => state.auth.OnboardingLevelSelectList)
   const plantSelectListForDepartment = useSelector(state => state.auth.plantSelectListForDepartment);
+  const approvalTypeCosting = useSelector(state => state.comman.approvalTypeCosting)
+  const approvalTypeCosting1 = useSelector(state => state.comman)
+
+  console.log('approvalTypeCosting: ', approvalTypeCosting1);
+  const approvalTypeSimulation = useSelector(state => state.comman?.approvalTypeSimulation)
+  const approvalTypeMaster = useSelector(state => state.comman?.approvalTypeMaster)
+  const approvalTypeOnboarding = useSelector(state => state.comman?.approvalTypeOnboarding)
 
   const [maxLength, setMaxLength] = useState(maxLength11);
   const defaultValues = {
@@ -177,6 +184,13 @@ function UserRegistration(props) {
     sortable: false,
 
   };
+  useEffect(() => {
+    dispatch(getApprovalTypeSelectListUserModule((response) => console.log(response), '1'));
+    dispatch(getApprovalTypeSelectListUserModule((response) => console.log(response), '2'));
+    dispatch(getApprovalTypeSelectListUserModule((response) => console.log(response), '3'));
+    dispatch(getApprovalTypeSelectListUserModule((response) => console.log(response), '4'));
+  }, [dispatch]);
+
   useEffect(() => {
     if (registerUserData && props?.data?.isEditFlag) {
       setValue('FirstName', registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',)
@@ -310,6 +324,11 @@ function UserRegistration(props) {
 
   const showHidePasswordHandler = () => {
     setIsShowHidePassword(!isShowHidePassword)
+  }
+
+  const handleAccClicked = (label) => {
+    dispatch(getApprovalTypeSelectList(() => { }), label)
+
   }
 
   const checkPasswordConfirm = value => {
@@ -462,23 +481,70 @@ function UserRegistration(props) {
       })
       return temp;
     }
-    if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster' || label === 'approvalTypeOnboarding') {
-      // if (label === 'approvalType') {                 //RE
-      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false && isOnboardingEditIndex === false && isAllowMultiple) {
-        temp.push({ label: 'Select All', value: '0' });
+
+    if (label === 'approvalTypeCosting') {
+      approvalTypeCosting && approvalTypeCosting.map(item => {
+        if (item.Value === '0') {
+          temp.push({ label: "Select All", value: '0' });
+
+        } else {
+          temp.push({ label: item.Text, value: item.Value })
+        }
+      });
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
       }
-      approvalTypeSelectList && approvalTypeSelectList.map(item => {
-        if (item.Value === '0') return false
-        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId) || Number(item.Value) === Number(NFRAPPROVALTYPEID)) && label === 'approvalTypeSimulation') return false
-        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && label === 'approvalTypeMaster') return false
-        if ((Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || (!initialConfiguration.IsNFRConfigured && Number(item.Value) === Number(NFRAPPROVALTYPEID))) && label === 'approvalTypeCosting') return false
-        if (label === 'approvalTypeOnboarding' && Number(item.Value) !== VENDORNEEDFORMID && Number(item.Value) !== LPSAPPROVALTYPEID && Number(item.Value) !== CLASSIFICATIONAPPROVALTYPEID) return false;
-        if ((label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster') && Number(item.Value) === VENDORNEEDFORMID) return false;
-        const transformedText = transformApprovalItem(item);
-        temp.push({ label: transformedText, value: item.Value })
-        return null
-      })
-      return temp;
+    }
+    if (label === 'approvalTypeSimulation') {
+      approvalTypeSimulation && approvalTypeSimulation.map(item => {
+        if (item.Value === '0') {
+          temp.push({ label: "Select All", value: '0' });
+
+        } else {
+          temp.push({ label: item.Text, value: item.Value })
+        }
+      });
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
+      }
+    }
+    if (label === 'approvalTypeMaster') {
+      approvalTypeMaster && approvalTypeMaster.map(item => {
+        if (item.Value === '0') {
+          temp.push({ label: "Select All", value: '0' });
+
+        } else {
+          temp.push({ label: item.Text, value: item.Value })
+        }
+      });
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
+      }
+    }
+    if (label === 'approvalTypeOnboarding') {
+      approvalTypeOnboarding && approvalTypeOnboarding.map(item => {
+        if (item.Value === '0') {
+          temp.push({ label: "Select All", value: '0' });
+
+        } else {
+          temp.push({ label: item.Text, value: item.Value })
+        }
+      });
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
+      }
     }
     if (label === 'plant') {
       plantSelectListForDepartment?.forEach((item) => {
@@ -828,8 +894,7 @@ function UserRegistration(props) {
    */
   const costingApprovalTypeHandler = (newValue, actionMeta) => {
     if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
-      const selectedOptions = approvalTypeSelectList
-        .filter((option) => option?.Value !== '0')
+      const selectedOptions = approvalTypeCosting.filter((option) => option?.Value !== '0')
         .map(({ Text, Value }) => ({ label: Text, value: Value }));
       setCostingApprovalType(selectedOptions);
       setTimeout(() => {
@@ -856,7 +921,7 @@ function UserRegistration(props) {
    */
   const simulationApprovalTypeHandler = (newValue, actionMeta) => {
     if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
-      const selectedOptions = approvalTypeSelectList
+      const selectedOptions = approvalTypeSimulation
         .filter((option) => option?.Value !== '0')
         .map(({ Text, Value }) => ({ label: Text, value: Value }));
       setSimulationApprovalType(selectedOptions);
@@ -886,7 +951,7 @@ function UserRegistration(props) {
    */
   const masterApprovalTypeHandler = (newValue, actionMeta) => {
     if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
-      const selectedOptions = approvalTypeSelectList
+      const selectedOptions = approvalTypeMaster
         .filter((option) => option?.Value !== '0')
         .map(({ Text, Value }) => ({ label: Text, value: Value }));
       setMasterApprovalType(selectedOptions);
@@ -917,7 +982,7 @@ function UserRegistration(props) {
   const onboardingApprovalTypeHandler = (newValue, actionMeta) => {
 
     if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
-      const selectedOptions = approvalTypeSelectList
+      const selectedOptions = approvalTypeOnboarding
         .filter((option) => option?.Value !== '0')
         .map(({ Text, Value }) => ({ label: Text, value: Value }));
       setOnboardingApprovalType(selectedOptions);

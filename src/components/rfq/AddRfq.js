@@ -1774,7 +1774,7 @@ function AddRfq(props) {
                                                             errors={errors.RequirementDate}
                                                             disabledKeyboardNavigation
                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                            // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
                                                         />
                                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                                     </div>
@@ -2009,7 +2009,7 @@ function AddRfq(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.LDClause}
-                                                disabled={true}
+                                                // disabled={true}
                                                 placeholder="-"
                                             />
                                         </Col>
