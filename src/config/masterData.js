@@ -957,19 +957,31 @@ export const RMMaterialListingTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const IndexCommodityListing = [
-    { label: "Index", value: "Index" }, 
+    { label: "Index", value: "CommodityExchangeName" }, 
 ]
 export const IndexCommodityListingTempData = [
     {
-        "Index": "13CF2",      
+        "CommodityExchangeName": "13CF2",      
     }
 ]
 export const CommodityInIndexListing = [
-    { label: "Commodity (In Index)", value: "CommodityInIndex" }, 
+    { label: "Commodity (In Index)", value: "CommodityName" }, 
 ]
 export const CommodityInIndexListingTempData = [
     {
-        "CommodityInIndex": "21FD2",      
+        "CommodityName": "21FD2",      
+    }
+]
+export const StandardizedCommodityNameListing = [
+    { label: "Index", value: "CommodityExchangeName" }, 
+    { label: "Commodity (In Index)", value: "CommodityName" }, 
+    { label: "Commodity Name (In CIR)", value: "CustomMaterialName" }, 
+]
+export const StandardizedCommodityNameTempData = [
+    {
+        "CommodityExchangeName": "21FD2", 
+        "CommodityName": "al", 
+        "CustomMaterialName": "alloy",      
     }
 ]
 /**
@@ -5638,17 +5650,17 @@ export const RMLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
-    { label: "Index", value: "Index", },
-    { label: "Commodity Name (In index)", value: "MaterialName", },
-    { label: "Commodity Name (In CIR)", value: "MaterialNameCustom", },
+    { label: "Index", value: "CommodityExchangeName", },
+    { label: "Commodity Name (In Index)", value: "CommodityName", },
+    { label: "Commodity Name (In CIR)", value: "CustomMaterialName", },
 ]
 
 export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
-    { label: "Index", value: "Index", },  
+    { label: "Index", value: "CommodityExchangeName", },  
 ]
 
 export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
-    { label: "Commodity (In Index)", value: "Index", },  
+    { label: "Commodity (In Index)", value: "CommodityName", },  
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [

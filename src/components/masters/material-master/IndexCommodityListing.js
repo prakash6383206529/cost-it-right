@@ -14,13 +14,9 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
-import { PaginationWrapper } from "../../common/commonPagination";
 import { searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
-import { useRef } from "react";
-import TourWrapper from "../../common/Tour/TourWrapper";
-import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
 import { INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
@@ -28,7 +24,6 @@ import { RmMaterial } from "../../../config/constants";
 import ReactExport from "react-export-excel";
 import BulkUpload from "../../massUpload/BulkUpload";
 import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
-import PaginationControls from "../../common/Pagination/PaginationControls";
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -39,7 +34,6 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const IndexCommodityListing = () => {
   const dispatch = useDispatch();
-  const searchRef = useRef(null);
   const { indexCommodityDataList } = useSelector((state) => state.indexation);
   const { globalTakes } = useSelector((state) => state.pagination)
   const permissions = useContext(ApplyPermission);
@@ -62,7 +56,7 @@ const IndexCommodityListing = () => {
     showExtraData: false,
     isBulkUpload: false,
   });
-  const [floatingFilterData, setFloatingFilterData] = useState({ commodityExchangeName: '' })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CommodityExchangeName: '' })
   const [isLoader, setIsLoader] = useState(false);
   const [totalRecordCount, setTotalRecordCount] = useState(1)
   const [filterModel, setFilterModel] = useState({});
@@ -77,7 +71,6 @@ const IndexCommodityListing = () => {
   useEffect(() => {
     getTableListData(0, defaultPageSize, true)
     return () => {
-      ///dispatch(setSelectedRowForPagination([]))
       dispatch(resetStatePagination());
 
     }
@@ -419,7 +412,6 @@ const IndexCommodityListing = () => {
               : ""
               }`}
           >
-            {/* {gridLoad && <div className={`ag-grid-wrapper height-width-wrapper  ${(indexCommodityDataList && indexCommodityDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}> */}
 
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -461,10 +453,6 @@ const IndexCommodityListing = () => {
 
               {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexCommodity" />}
 
-              {/* {
-                // <PaginationControls gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexCommodity" />
-
-              } */}
             </div>
           </div>
         </Col>

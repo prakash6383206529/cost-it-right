@@ -89,6 +89,8 @@ export const API = {
   getCommodityStandardizationDataList: `${BASE_URL}/masters-material/get-all-material-type`,
   getCommodityIndexDataList: `${BASE_URL}/masters-material/get-commodity-exchange`,
   getCommodityInIndexDataList: `${BASE_URL}/masters-material/get-commodity`,
+  getStandardizedCommodityDataList: `${BASE_URL}/masters-material/get-commodity-material-standardization`,
+  getIndexDataList: `${BASE_URL}/masters-material/get-commodity-material-standardization`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -1209,6 +1211,10 @@ export const GET_INDEXCOMMODITY_DATALIST_SUCCESS = 'GET_INDEXCOMMODITY_DATALIST_
 export const GET_COMMODITYININDEX_DATALIST_SUCCESS ='GET_COMMODITYININDEX_DATALIST_SUCCESS'
 export const GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD = 'GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD'
 export const GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD = 'GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD'
+export const GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS ='GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS'
+export const GET_STANDARDIZEDCOMMODITY_FOR_DOWNLOAD = 'GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD'
+export const GET_INDEXDATA_LIST_SUCCESS ='GET_INDEXDATA_LIST_SUCCESS'
+export const GET_INDEXDATA_FOR_DOWNLOAD = 'GET_INDEXDATA_FOR_DOWNLOAD'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
