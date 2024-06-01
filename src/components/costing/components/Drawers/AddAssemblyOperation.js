@@ -75,9 +75,12 @@ function AddAssemblyOperation(props) {
       return null
     })
 
-    let totalOperationCost = grid && grid.length > 0 && grid.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el?.OperationCost)
-    }, 0)
+    let totalOperationCost = 0
+    if (grid?.length > 0) {
+      totalOperationCost = grid && grid?.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el?.OperationCost)
+      }, 0)
+    }
 
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostingOperationCostResponse = grid;
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetPOPrice =
