@@ -874,7 +874,7 @@ export function setDiscountAndOtherCostData(TabData, callback) {
   return (dispatch) => {
     dispatch({
       type: SET_DISCOUNT_AND_OTHER_TAB_DATA,
-      payload: TabData,
+      payload: TabData || {},
     });
     callback();
   }
@@ -1226,10 +1226,10 @@ export function getDiscountOtherCostTabData(data, callback) {
     const request = axios.get(`${API.getDiscountOtherCostTabData}/${data.CostingId}/${data.PartId}`, config());
     request.then((response) => {
       if (response.data.Result) {
-        dispatch({
-          type: SET_DISCOUNT_AND_OTHER_TAB_DATA,
-          payload: response.data.Data,
-        });
+        // dispatch({
+        //   type: SET_DISCOUNT_AND_OTHER_TAB_DATA,
+        //   payload: response.data.Data,
+        // });
         callback(response);
       }
     }).catch((error) => {

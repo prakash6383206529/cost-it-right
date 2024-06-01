@@ -2959,7 +2959,7 @@ const CostingSummaryTable = (props) => {
                               })
                             }
                           </tr >
-                          < tr className='border-right' >
+                          {!initialConfiguration?.IsShowTCO && < tr className='border-right' >
                             <td>
                               <span className={highlighter(["paymentTerms", "paymentValue"], "multiple-key")}>Payment Terms</span>
                             </td>
@@ -2998,7 +2998,7 @@ const CostingSummaryTable = (props) => {
                                 )
                               })
                             }
-                          </tr >
+                          </tr >}
                           {showSaLineNumber() && <tr>
                             <td>
                               <span className="d-block small-grey-text"> SA Number</span>
@@ -3031,21 +3031,23 @@ const CostingSummaryTable = (props) => {
                                 })}
                             </tr>
                           }
-                          {/* initialConfiguration?.IsShowNpvCost && */
-                            // <tr className={highlighter("npvCost", "main-row")}>
-                            //   <th>NPV Cost</th>
-                            //   {viewCostingData &&
-                            //     viewCostingData?.map((data, index) => {
-                            //       return (
-                            //         <td className={tableDataClass(data)}>
-                            //           <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
-                            //             {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                            //           </span>
+                          {!initialConfiguration?.IsShowTCO &&
+                            <tr>
+                              <td>
+                                <span className={`d-block small-grey-text`}>NPV Cost</span>
+                              </td>
+                              {viewCostingData &&
+                                viewCostingData?.map((data, index) => {
+                                  return (
+                                    <td className={tableDataClass(data)}>
+                                      <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
+                                        {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                      </span>
 
-                            //         </td>
-                            //       )
-                            //     })}
-                            // </tr>
+                                    </td>
+                                  )
+                                })}
+                            </tr>
                           }
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
@@ -3214,14 +3216,14 @@ const CostingSummaryTable = (props) => {
                           </tr>
                         </>
                       }
-                      {props?.isRfqCosting && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
-                      {props?.isRfqCosting && <tr className={highlighter("nPackagingAndFreight", "main-row")}>
+                      {initialConfiguration?.IsShowTCO && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
+                      {initialConfiguration?.IsShowTCO && <tr className={highlighter("nPackagingAndFreight", "main-row")}>
                         <th>Total TCO </th>
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
                             return (
                               <td className={tableDataClass(data)}>
-                                {displayValueWithSign(data, "TotalTCOCost")}
+                                {data.CostingPartDetails && data.CostingPartDetails.CostingTCOResponse ? displayValueWithSign(data, "TotalTCOCost") : 0}
                                 {/* {checkForDecimalAndNull(data.TotalTCOCost, initialConfiguration.NoOfDecimalForPrice)} */}
                               </td>
                             )

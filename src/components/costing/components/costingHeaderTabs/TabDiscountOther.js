@@ -71,7 +71,7 @@ function TabDiscountOther(props) {
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab } = useSelector(state => state.costing)
   const PaymentTermDetail = CostingInterestRateDetail && CostingInterestRateDetail.PaymentTermDetail !== null ? CostingInterestRateDetail.PaymentTermDetail : {}
 
 
@@ -130,6 +130,7 @@ function TabDiscountOther(props) {
   const isNFR = useContext(IsNFR);
   const isPartType = useContext(IsPartType);
   const [paymentTerms, setPaymentTerms] = useState(false)
+  const [paymentTermsWarning, setPaymentTermsWarning] = useState(false)
   const { getCostingPaymentDetails } = useSelector(state => state.costing);
 
 
@@ -312,7 +313,7 @@ function TabDiscountOther(props) {
   useEffect(() => {
     if (RMCCTabData && RMCCTabData[0]?.CostingId && props?.activeTab === '6') {
       let npvSum = 0
-      if (initialConfiguration?.IsShowNpvCost) {
+      if (initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowTCO) {
         dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
           if (res?.data?.DataList) {
             let Data = res?.data?.DataList
@@ -1047,6 +1048,7 @@ function TabDiscountOther(props) {
   * @description Used to Submit the form
   */
   const onSubmit = debounce((values, val, gotoNextValue) => {
+    setPaymentTermsWarning(false)
     if (errorCheckObject(ErrorObjDiscount)) return false;
     if (!getValues('discountDescriptionRemark') && discountCostApplicability?.value) {
       errors.discountDescriptionRemark = {
@@ -1146,7 +1148,7 @@ function TabDiscountOther(props) {
     let obj = {
       "LoggedInUserId": loggedInUserId(),
       "BaseCostingId": costData?.CostingId || "",
-      "NetPaymentTermCost": DiscountAndOtherCostTabData?.InterestRateId || "",
+      "NetPaymentTermCost": DiscountAndOtherCostTabData?.NetCost || "",
       "IsPaymentTerms": true,
       "PaymentTermDetail": {
         "InterestRateId": DiscountAndOtherCostTabData?.InterestRateId || "",
@@ -1735,7 +1737,15 @@ function TabDiscountOther(props) {
  * @description  set updated NetPaymentTermCost 
  */
   const setPaymentTermsDetail = (data, params) => {
-    /*  dispatch(setDiscountCost({ ...discountObj, netPaymentTermCost: data?.NetCost }, () => { })); */
+
+    let updatedPaymentTermobj = {
+      ...PaymentTermDataDiscountTab,
+      PaymentTermDetail: {
+        ...PaymentTermDataDiscountTab.PaymentTermDetail,
+        ...data
+      }
+    };
+    dispatch(setPaymentTermsDataInDiscountOtherTab(updatedPaymentTermobj, () => { }))
     dispatch(setDiscountAndOtherCostData(data, () => { }));
   };
 
@@ -1888,6 +1898,8 @@ function TabDiscountOther(props) {
                           showPaymentInDiscountTab={paymentTerms}
                           netPOPrice={netPOPrice}
                           showPaymentTerms={paymentTerms}
+                          setPaymentTermsWarning={setPaymentTermsWarning}
+                          paymentTermsWarning={paymentTermsWarning}
                         />
                       </Col>}
                     </Row>
