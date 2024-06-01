@@ -2114,7 +2114,7 @@ export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
 export const RESET_PASSWORD = '/reset-password'
 export const FORGET_PASSWORD = '/forget-password'
-export const SUPPLIER_MANAGEMENT = '/vendor-classification'
+export const SUPPLIER_MANAGEMENT = '/initiate-unblocking'
 export const lOGIN_AUDITS = '/login-audit'
 export const SUPPLIER_APPROVAL_SUMMARY = '/supplier-approval-summary'
 export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
@@ -2974,7 +2974,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 export const RMIndex = true
 //VERSION 
-export const VERSION = "V2.2.20";
+export const VERSION = "V2.2.21";
 
 
 
