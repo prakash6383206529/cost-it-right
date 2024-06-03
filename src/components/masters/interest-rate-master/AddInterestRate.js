@@ -25,6 +25,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import WarningMessage from '../../common/WarningMessage';
+import TooltipCustom from '../../common/Tooltip';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -67,7 +68,7 @@ class AddInterestRate extends Component {
       PaymentSectionFilled: {
         PaymentTermsApplicability: false,
         RepaymentPeriod: false,
-        PaymentTermPercent: false,
+        // PaymentTermPercent: false,
       }
     }
   }
@@ -320,17 +321,12 @@ class AddInterestRate extends Component {
   * @description called
   */
   handleChangePaymentTermPercentage = (newValue) => {
-
-    const PaymentSectionFilled = { ...this.state.PaymentSectionFilled };
-    PaymentSectionFilled.PaymentTermPercent = newValue ? true : false;
     if (this.state.isEditFlag) {
       if (String(newValue) === String(this.state.Data.PaymentTermPercent) && String(this.state.PaymentTermsApplicability.label) === String(this.state.Data.PaymentTermApplicability)) {
-        this.setState(prevState => ({ isDataChanged: true, PaymentSectionFilled }), () => { this.checkFilledSections(); });
+        this.setState(prevState => ({ isDataChanged: true, }));
       } else {
-        this.setState(prevState => ({ isDataChanged: false, PaymentSectionFilled }), () => { this.checkFilledSections(); });
+        this.setState(prevState => ({ isDataChanged: false }));
       }
-    } else {
-      this.setState(prevState => ({ PaymentSectionFilled }), () => { this.checkFilledSections(); });
     }
   };
   /**
@@ -445,7 +441,7 @@ class AddInterestRate extends Component {
             PaymentSectionFilled: {
               PaymentTermsApplicability: Data.PaymentTermApplicability != null,
               RepaymentPeriod: Data?.RepaymentPeriod != null,
-              PaymentTermPercent: Data?.PaymentTermPercent != null,
+              // PaymentTermPercent: Data?.PaymentTermPercent != null,
             }
           });
 
@@ -1005,6 +1001,7 @@ class AddInterestRate extends Component {
                             />
                           </Col>
                           <Col md="3">
+                            <TooltipCustom id="PaymentTermPercent" tooltipText="Manage payment term percentages here or in costing as needed." />
                             <Field
                               id="AddInterestRate_PaymentTermPercent"
                               label={`Payment Term (%)`}
