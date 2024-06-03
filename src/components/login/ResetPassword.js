@@ -95,7 +95,7 @@ function ResetPassword() {
                     <button className="btn btn-no-border">
                         <img
                             src={getConfigurationKey().LogoURL}
-                            alt={getConfigurationKey().ClientEnvironment ?? "LOGO"}
+                            alt={getConfigurationKey().ClientName ?? "LOGO"}
                             height="40"
                         />
                     </button>

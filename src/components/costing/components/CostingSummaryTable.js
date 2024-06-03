@@ -2009,7 +2009,7 @@ const CostingSummaryTable = (props) => {
                 <>
                   <Col md="12" className='pdf-header-wrapper d-flex justify-content-between'>
                     <img src={getConfigurationKey().LogoURL}
-                      alt={getConfigurationKey().ClientEnvironment ?? "LOGO"} />
+                      alt={getConfigurationKey().ClientName ?? "LOGO"} />
                     <img src={cirHeader} alt={'Cost it right'} />
                   </Col>
                   {/* <Col md="12">

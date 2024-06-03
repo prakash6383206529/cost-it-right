@@ -190,7 +190,7 @@ class Login extends Component {
             <div className="row shadow-lg">
               <div className="col-md-5 form-section">
                 <div className="text-center">
-                  <img className="logo-first" src={getConfigurationKey().LogoURL} alt={getConfigurationKey().ClientEnvironment ?? "LOGO"} />
+                  <img className="logo-first" src={getConfigurationKey().LogoURL} alt={getConfigurationKey().ClientName ?? "LOGO"} />
                 </div >
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 <form noValidate className="form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>

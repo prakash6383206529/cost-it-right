@@ -1019,7 +1019,7 @@ class SideBar extends Component {
                 <div className="py-1">
                   <img
                     src={getConfigurationKey().LogoURL}
-                    alt={getConfigurationKey().ClientEnvironment ?? "LOGO"}
+                    alt={getConfigurationKey().ClientName ?? "LOGO"}
                     // alt="Royal Enfield"     //RE
                     // MINDA
                     // alt="Minda"
