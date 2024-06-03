@@ -22,9 +22,6 @@ import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import cirHeader from "../../../assests/images/logo/CIRlogo.svg";
-import Logo from '../../../assests/images/logo/company-logo.svg';
-//MINDA
-// import Logo from '../../../assests/images/logo/company-logo.png';
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
 import BOMViewer from '../../masters/part-master/BOMViewer';
@@ -2005,7 +2002,8 @@ const CostingSummaryTable = (props) => {
               {(drawerDetailPDF || pdfHead) &&
                 <>
                   <Col md="12" className='pdf-header-wrapper d-flex justify-content-between'>
-                    <img src={Logo} alt={'Compnay-logo'} />
+                    <img src={getConfigurationKey().LogoURL}
+                      alt={getConfigurationKey().ClientEnvironment ?? "LOGO"} />
                     <img src={cirHeader} alt={'Cost it right'} />
                   </Col>
                   {/* <Col md="12">

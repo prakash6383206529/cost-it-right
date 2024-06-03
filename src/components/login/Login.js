@@ -13,14 +13,13 @@ import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
-import logo from '../../assests/images/logo/company-logo.svg'
-//MINDA
-// import logo from '../../assests/images/logo/company-logo.png'
+
 import secondLogo from '../../assests/images/logo/CIRlogo.svg'
 import CheckIcon from '../../assests/images/mail-sent.png'
 import errorImg from '../../assests/images/box.png'
 import { IV, KEY, VERSION } from '../../config/constants'
 import LoaderCustom from "../common/LoaderCustom";
+import { getConfigurationKey } from "../../helper";
 var CryptoJS = require('crypto-js')
 
 const selector = formValueSelector('Login')
@@ -160,12 +159,8 @@ class Login extends Component {
             <div className="row shadow-lg">
               <div className="col-md-5 form-section">
                 <div className="text-center">
-                  <img className="logo-first" src={logo} alt="Softude" />
-                  {/* //RE */}
-                  {/* <img className="logo-first" src={logo} alt="Royal Enfield" /> */}
-                  {/* MINDA */}
-                  {/* <img className="logo-first" src={logo} alt="Minda" /> */}
-                </div >
+                  <img className="logo-first" src={getConfigurationKey().LogoURL} alt={getConfigurationKey().ClientEnvironment ?? "LOGO"} />
+                </div>
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
                 <form

@@ -23,9 +23,6 @@ import activeCosting from '../../assests/images/costing-active.svg'
 import activeSimulation from '../../assests/images/simulation-active.svg'
 import activeUser from '../../assests/images/user-active.svg'
 import activeAudit from '../../assests/images/audit-active.svg'
-import Logo from '../../assests/images/logo/company-logo.svg'
-//MINDA
-// import Logo from '../../assests/images/logo/company-logo.png'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
@@ -998,8 +995,8 @@ class SideBar extends Component {
               <div className="logo-container">
                 <div className="py-1">
                   <img
-                    src={Logo}
-                    alt="Softude"
+                    src={getConfigurationKey().LogoURL}
+                    alt={getConfigurationKey().ClientEnvironment ?? "LOGO"}
                     // alt="Royal Enfield"     //RE
                     // MINDA
                     // alt="Minda"

@@ -1,9 +1,7 @@
 import React from 'react'
-import Logo from '../../assests/images/logo/company-logo.svg'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 //MINDA
-// import Logo from '../../assests/images/logo/company-logo.png'
 import { Nav } from 'reactstrap'
 import { PasswordFieldHookForm } from '../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
@@ -17,6 +15,7 @@ import PopupMsgWrapper from '../common/PopupMsgWrapper'
 import { useDispatch } from 'react-redux'
 import { updatePassword } from '../../actions/auth/AuthActions'
 import Toaster from '../common/Toaster'
+import { getConfigurationKey } from '../../helper'
 
 const CryptoJS = require('crypto-js')
 function ResetPassword() {
@@ -95,8 +94,8 @@ function ResetPassword() {
                 <div className="logo-container">
                     <button className="btn btn-no-border">
                         <img
-                            src={Logo}
-                            alt="Softude"
+                            src={getConfigurationKey().LogoURL}
+                            alt={getConfigurationKey().ClientEnvironment ?? "LOGO"}
                             height="40"
                         />
                     </button>
