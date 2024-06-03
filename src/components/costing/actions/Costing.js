@@ -62,6 +62,11 @@ import {
   SET_TOOL_COST_ICC,
   SET_OTHER_DISCOUNT_DATA,
   SET_REJECTION_RECOVERY_DATA,
+  GET_COSTING_PAYMENT_TERM_DETAIL,
+  SET_DISCOUNT_AND_OTHER_TAB_DATA,
+  SET_COMPONENT_PAYMENT_TERMS_DATA,
+  SET_PAYMENT_TERM_COST,
+  CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -547,6 +552,19 @@ export function setComponentDiscountOtherItemData(TabData, callback) {
     callback();
   }
 };
+/**
+ * @method setPaymentTermsDataInDiscountOtherTab
+ * @description SET COMPONENT PAYMENtERMS  DATA IN DISCOUNT OTHER ITEM DATA  
+ */
+export function setPaymentTermsDataInDiscountOtherTab(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_PAYMENT_TERMS_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
 
 /**
  * @method getBOPData
@@ -844,6 +862,19 @@ export function setOverheadProfitData(TabData, callback) {
     dispatch({
       type: SET_OVERHEAD_PROFIT_TAB_DATA,
       payload: TabData,
+    });
+    callback();
+  }
+};
+/**
+ * @method setDiscountAndOtherCostData
+ * @description SET DISCOUNT AND OTHER TAB DATA  
+ */
+export function setDiscountAndOtherCostData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_DISCOUNT_AND_OTHER_TAB_DATA,
+      payload: TabData || {},
     });
     callback();
   }
@@ -1195,6 +1226,10 @@ export function getDiscountOtherCostTabData(data, callback) {
     const request = axios.get(`${API.getDiscountOtherCostTabData}/${data.CostingId}/${data.PartId}`, config());
     request.then((response) => {
       if (response.data.Result) {
+        // dispatch({
+        //   type: SET_DISCOUNT_AND_OTHER_TAB_DATA,
+        //   payload: response.data.Data,
+        // });
         callback(response);
       }
     }).catch((error) => {
@@ -2171,6 +2206,18 @@ export function isDiscountDataChange(isDataChange) {
     })
   }
 }
+/**
+ * @method isPaymentTermsDataChange
+ * @description THIS METHOD IS FOR CALLING PAYMENT TERMS API IF CHNAGES HAVE BEEN MADE 
+*/
+export function isPaymentTermsDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
 
 /**
  * @method:setForgingCalculatorMachiningStockSection
@@ -2826,6 +2873,17 @@ export function setIncludeToolCostIcc(IsIncluded, callback) {
     callback();
   }
 };
+export function setPaymentTermCost(data, callback) {
+
+  return (dispatch) => {
+    dispatch({
+      type: SET_PAYMENT_TERM_COST,
+      payload: data || {},
+    });
+    callback();
+  }
+};
+
 
 /**
  * @method getAssemblyChildPartbyAsmCostingId
@@ -2860,6 +2918,47 @@ export function getProcessAndOperationbyAsmAndChildCostingId(asmCostingId, child
     }).catch((error) => {
       callback(error)
       dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+export function getCostingPaymentTermDetail(costingId, callback) {
+  return (dispatch) => {
+
+    const request = axios.get(`${API.getCostingPaymentTermDetail}/${costingId}`, config());
+    request.then((response) => {
+      if (response.data?.Data || response?.status === 204) {
+        const netCost = response.data?.Data?.PaymentTermDetail?.NetCost;
+        dispatch({
+          type: GET_COSTING_PAYMENT_TERM_DETAIL,
+          payload: response?.data?.Data || {},
+        });
+        dispatch({
+          type: SET_PAYMENT_TERM_COST,
+          payload: { NetCost: netCost } || {},
+        });
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+
+    });
+  };
+}
+export function saveCostingPaymentTermDetail(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingPaymentTermDetail, data, config())
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      callback(error.response)
+      if (error.response.status === 412) {
+        Toaster.warning(error?.response?.data?.Message)
+        return false
+      }
       apiErrors(error)
     })
   }

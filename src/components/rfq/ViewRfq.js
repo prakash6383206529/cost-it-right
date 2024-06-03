@@ -221,7 +221,7 @@ function RfqListing(props) {
         gridApi.deselectAll()
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
-
+        setNoData(false)
         setSelectedCostings([])
         setaddComparisonToggle(false)
     }

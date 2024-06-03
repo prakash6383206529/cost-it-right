@@ -23,10 +23,10 @@ import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkInterestRateConfigure, checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import cloudImg from '../../assests/images/uploadcloud.png';
-import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
+import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId, RMMATERIALBULKUPLOAD } from '../../config/constants';
 //MINDA
 // import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
-import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm } from '../../config/masterData';
+import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm, RMMaterialListing } from '../../config/masterData';
 import { CheckApprovalApplicableMaster, checkForSameFileUpload, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
@@ -274,6 +274,9 @@ class BulkUpload extends Component {
                             break;
                         case String(RMSPECIFICATION):
                             checkForFileHead = checkForSameFileUpload(RMSpecification, fileHeads)
+                            break;
+                        case String(RMMATERIALBULKUPLOAD):                           
+                            checkForFileHead = checkForSameFileUpload(RMMaterialListing, fileHeads)
                             break;
                         case String(BOPDOMESTICBULKUPLOAD):
 
@@ -830,26 +833,28 @@ class BulkUpload extends Component {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col md="4" className="switch mb15">
-                                        <label className="switch-level">
-                                            <div className={"left-title"}>Domestic</div>
-                                            <Switch
-                                                onChange={this.onRmToggle}
-                                                checked={this.state.isImport}
-                                                id="normal-switch"
-                                                disabled={false}
-                                                background="#4DC771"
-                                                onColor="#4DC771"
-                                                onHandleColor="#ffffff"
-                                                offColor="#4DC771"
-                                                uncheckedIcon={false}
-                                                checkedIcon={false}
-                                                height={20}
-                                                width={46}
-                                            />
-                                            <div className={"right-title"}>Import</div>
-                                        </label>
-                                    </Col>
+                                    {fileName === 'RM' &&
+                                        <Col md="4" className="switch mb15">
+                                            <label className="switch-level">
+                                                <div className={"left-title"}>Domestic</div>
+                                                <Switch
+                                                    onChange={this.onRmToggle}
+                                                    checked={this.state.isImport}
+                                                    id="normal-switch"
+                                                    disabled={false}
+                                                    background="#4DC771"
+                                                    onColor="#4DC771"
+                                                    onHandleColor="#ffffff"
+                                                    offColor="#4DC771"
+                                                    uncheckedIcon={false}
+                                                    checkedIcon={false}
+                                                    height={20}
+                                                    width={46}
+                                                />
+                                                <div className={"right-title"}>Import</div>
+                                            </label>
+                                        </Col>
+                                    }
                                 </Row>
                                 <Row className="pl-3">
                                     {isZBCVBCTemplate &&

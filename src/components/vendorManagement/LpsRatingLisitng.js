@@ -8,7 +8,7 @@ import { checkPermission, loggedInUserId, showTitleForActiveToggle } from '../..
 import Switch from "react-switch";
 import { Col, Row } from 'reactstrap';
 import NoContentFound from '../common/NoContentFound';
-import { EMPTY_DATA, LPS_RATING, VENDOR_MANAGEMENT } from '../../config/constants';
+import { EMPTY_DATA, LPS, LPS_RATING, MASTERS, VENDOR_MANAGEMENT } from '../../config/constants';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import LoaderCustom from '../common/LoaderCustom';
@@ -23,7 +23,6 @@ const LpsRatingListing = () => {
     const [cellValue, setCellValue] = useState('');
     const [cellData, setCellData] = useState('');
     const [errorMessage, setErrorMessage] = useState('')
-
     const [ActivateAccessibility, setActivateAccessibility] = useState(false);
     const [noData, setNoData] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
@@ -36,11 +35,12 @@ const LpsRatingListing = () => {
 
     const dispatch = useDispatch();
     const lpsRatingData = useSelector(state => state.supplierManagement.lpsRatingData);
+    const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData);
 
 
     useEffect(() => {
         setIsLoader(true);
-        applyPermission()
+        applyPermission(topAndLeftMenuData)
         dispatch(getLPSRatingListing((res) => {
 
 
@@ -71,10 +71,12 @@ const LpsRatingListing = () => {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
     const applyPermission = (topAndLeftMenuData) => {
+
         if (topAndLeftMenuData !== undefined) {
             setIsLoader(true)
-            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === VENDOR_MANAGEMENT);
-            const accessData = Data && Data.Pages.find((el) => el.PageName === LPS_RATING)
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
+
+            const accessData = Data && Data.Pages.find((el) => el.PageName === LPS)
             const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
             if (permissionData !== undefined) {
                 setActivateAccessibility(permissionData && permissionData.Activate ? permissionData.Activate : false);
@@ -123,7 +125,7 @@ const LpsRatingListing = () => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
 
-        // if (rowData.UserId === loggedInUserId()) return null;
+        if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex, rowData?.Status, rowData?.Status);
         return (
             <>
@@ -132,7 +134,7 @@ const LpsRatingListing = () => {
                     <Switch
                         onChange={() => handleChange(cellValue, rowData)}
                         checked={cellValue === "Blocked"}
-                        // disabled={!ActivateAccessibility}
+                        disabled={!ActivateAccessibility}
                         background="#ff6600"
                         onColor="#FC5774"
                         onHandleColor="#ffffff"

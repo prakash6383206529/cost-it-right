@@ -19,15 +19,16 @@ export const config = () => {
 
 
 // DEVELOPMENT
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.11.208:3030/api/v1`
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
-// const BASE_URL = `http://10.10.1.100:10162/api/v1`
+//const BASE_URL = `http://10.10.1.100:10162/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
-// const BASE_URL = `http://10.10.8.160/api/v1`;
+// const BASE_URL = `http://10.10.8.160/api/v1`;  //
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.120:81/api/v1`;
-const BASE_URL = `http://10.10.1.100:10152/api/v1`;
+//const BASE_URL = `http://10.10.1.100:10152/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`;
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -64,6 +65,7 @@ export const API = {
   getWeightCalculationLayoutType: `${BASE_URL}/configuration/radio-button-list-get-weight-calculate-layout-type`,
   getLabourTypeSelectList: `${BASE_URL}/configuration/select-list-get-labour-type`,
   getApprovalTypeSelectList: `${BASE_URL}/configuration/select-list-get-approval-type`,
+  getApprovalModuleSelectList: `${BASE_URL}/configuration/select-approval-module-level`,
 
   //LOCATION API
   getAllCities: `${BASE_URL}/configuration-location/select-list-get-vendor-city`,
@@ -78,6 +80,15 @@ export const API = {
   getRowGrade: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-grade`,
   getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-specification`,
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
+ 
+  ///INDEXATION
+  getCommoditySelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
+  getCommodityNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
+  getCommodityCustomNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
+  createCommodityStandardization: `${BASE_URL}/masters-material/create-material-type`,
+  getCommodityStandardizationDataList: `${BASE_URL}/masters-material/get-all-material-type`,
+  getCommodityIndexDataList: `${BASE_URL}/masters-material/get-commodity-exchange`,
+  getCommodityInIndexDataList: `${BASE_URL}/masters-material/get-commodity`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -551,6 +562,8 @@ export const API = {
   getNpvDetails: `${BASE_URL}/costing/get-costing-detail-for-npv`,
   getConditionDetails: `${BASE_URL}/costing/get-costing-condition-details`,
   getCostingCondition: `${BASE_URL}/costing/get-costing-condition-master-data`,
+  getCostingPaymentTermDetail: `${BASE_URL}/costing/get-costing-payment-term-detail`,
+  saveCostingPaymentTermDetail: `${BASE_URL}/costing/save-costing-payment-term-detail`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1185,6 +1198,18 @@ export const GET_PLANT_SELECTLIST_BY_TYPE = 'GET_PLANT_SELECTLIST_BY_TYPE'
 export const GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST = 'GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST'
 export const GET_USERS_MASTER_LEVEL_API = 'GET_USERS_MASTER_LEVEL_API'
 
+//INDEXATION
+export const GET_COMMODITY_SELECTLIST_BY_TYPE = 'GET_COMMODITY_SELECTLIST_BY_TYPE'
+export const GET_COMMODITYNAME_SELECTLIST_BY_TYPE = 'GET_COMMODITYNAME_SELECTLIST_BY_TYPE'
+export const GET_COMMODITYCUSTOMNAME_SELECTLIST_BY_TYPE = 'GET_COMMODITYCUSTOMNAME_SELECTLIST_BY_TYPE'
+export const CREATE_COMMODITY_SUCCESS = 'CREATE_COMMODITY_SUCCESS'
+export const CREATE_COMMODITY_FAILURE = 'CREATE_COMMODITY_FAILURE'
+export const GET_COMMODITYSTANDARDIZATION_DATALIST_SUCCESS = 'GET_COMMODITYSTANDARDIZATION_DATALIST_SUCCESS'
+export const GET_INDEXCOMMODITY_DATALIST_SUCCESS = 'GET_INDEXCOMMODITY_DATALIST_SUCCESS'
+export const GET_COMMODITYININDEX_DATALIST_SUCCESS ='GET_COMMODITYININDEX_DATALIST_SUCCESS'
+export const GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD = 'GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD'
+export const GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD = 'GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD'
+
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
 export const GET_CATEGORY_TYPE_DATA_SUCCESS = 'GET_CATEGORY_TYPE_DATA_SUCCESS'
@@ -1198,6 +1223,7 @@ export const GET_COSTING_HEAD_SUCCESS = 'GET_COSTING_HEAD_SUCCESS'
 export const GET_MODEL_TYPE_SUCCESS = 'GET_MODEL_TYPE_SUCCESS'
 export const GET_LABOUR_TYPE_SELECTLIST_SUCCESS = 'GET_LABOUR_TYPE_SELECTLIST_SUCCESS'
 export const GET_APPROVAL_TYPE_SELECT_LIST = 'GET_APPROVAL_TYPE_SELECT_LIST'
+export const GET_APPROVAL_MODULE_SELECT_LIST = 'GET_APPROVAL_MODULE_SELECT_LIST'
 
 //UOM MASTER
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS'
@@ -1205,6 +1231,7 @@ export const GET_UOM_DATA_FAILURE = 'GET_UOM_DATA_FAILURE'
 export const GET_UOM_SUCCESS = 'GET_UOM_SUCCESS'
 export const UNIT_OF_MEASUREMENT_API_FAILURE = 'UNIT_OF_MEASUREMENT_API_FAILURE'
 export const GET_UNIT_TYPE_SELECTLIST_SUCCESS = 'GET_UNIT_TYPE_SELECTLIST_SUCCESS'
+
 
 //PART MASTER
 export const CREATE_PART_REQUEST = 'CREATE_PART_REQUEST'
@@ -1549,6 +1576,7 @@ export const CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE = 'CHECK_IS_OVERHEAD_AND_P
 export const CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE = 'CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE'
 export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
 export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
+export const CHECK_IS_PAYMENT_TERMS_DATA_CHANGE = 'CHECK_IS_PAYMENT_TERMS_DATA_CHANGE'
 export const CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE = 'CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE'
 
 export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
@@ -1610,6 +1638,7 @@ export const GET_INTEREST_RATE_DATA_LIST = 'GET_INTEREST_RATE_DATA_LIST';
 export const SET_ITEM_DATA = 'SET_ITEM_DATA';
 export const SET_SURFACE_TAB_DATA = 'SET_SURFACE_TAB_DATA';
 export const SET_OVERHEAD_PROFIT_TAB_DATA = 'SET_OVERHEAD_PROFIT_TAB_DATA';
+export const SET_DISCOUNT_AND_OTHER_TAB_DATA = "SET_DISCOUNT_AND_OTHER_TAB_DATA"
 export const SET_PACKAGE_AND_FREIGHT_TAB_DATA = 'SET_PACKAGE_AND_FREIGHT_TAB_DATA';
 export const SET_TOOL_TAB_DATA = 'SET_TOOL_TAB_DATA';
 export const SET_TOOL_PROCESS_WISE_DATALIST = 'SET_TOOL_PROCESS_WISE_DATALIST';
@@ -1620,6 +1649,7 @@ export const SET_COMPONENT_OVERHEAD_ITEM_DATA = 'SET_COMPONENT_OVERHEAD_ITEM_DAT
 export const SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA = 'SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA';
 export const SET_COMPONENT_TOOL_ITEM_DATA = 'SET_COMPONENT_TOOL_ITEM_DATA';
 export const SET_COMPONENT_DISCOUNT_ITEM_DATA = 'SET_COMPONENT_DISCOUNT_ITEM_DATA';
+export const SET_COMPONENT_PAYMENT_TERMS_DATA = 'SET_COMPONENT_PAYMENT_TERMS_DATA';
 export const GET_RM_DRAWER_DATA_LIST = 'GET_RM_DRAWER_DATA_LIST';
 export const GET_PROCESS_DRAWER_DATA_LIST = 'GET_PROCESS_DRAWER_DATA_LIST';
 export const SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA = 'SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA';
@@ -1645,7 +1675,8 @@ export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
 export const SET_REJECTED_COSTING_VIEW_DATA = 'SET_REJECTED_COSTING_VIEW_DATA';
 export const RESET_EXCHANGE_RATE_DATA = 'RESET_EXCHANGE_RATE_DATA'
 export const SET_CALL_ST_API = 'SET_CALL_ST_API';
-
+export const GET_COSTING_PAYMENT_TERM_DETAIL = "GET_COSTING_PAYMENT_TERM_DETAIL"
+export const SET_PAYMENT_TERM_COST = "SET_PAYMENT_TERM_COST"
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
 export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
@@ -1952,6 +1983,8 @@ export const AUDIT = 'Audit'
 export const RFQ = 'RFQ'
 export const ONBOARDING = 'Onboarding & Management'
 export const VENDOR_MANAGEMENT = 'Vendor Classification Status'
+export const LPS = 'LPS Rating Status'
+
 export const APPROVAL_LISTING = 'Approval Listing'
 export const VENDOR_MANAGEMENT_ROLE = 'Vendor Management'
 
@@ -1969,7 +2002,12 @@ export const PLANT = 'Plant'
 
 export const PRODUCT = 'Product'
 export const PRODUCT_ID = '4'
+//level manage
 
+export const MODULE_COSTING = 'Costing'
+export const MODULE_SIMULATION = 'Simulation'
+export const MODULE_MASTER = 'Master'
+export const MODULE_ONBOARDING = 'Onboarding&Management'
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits'
 export const LABOUR = 'Labour'
 export const REASON = 'Reason'
@@ -2115,7 +2153,7 @@ export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
 export const RESET_PASSWORD = '/reset-password'
 export const FORGET_PASSWORD = '/forget-password'
-export const SUPPLIER_MANAGEMENT = '/vendor-classification'
+export const SUPPLIER_MANAGEMENT = '/initiate-unblocking'
 export const lOGIN_AUDITS = '/login-audit'
 export const SUPPLIER_APPROVAL_SUMMARY = '/supplier-approval-summary'
 export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
@@ -2756,6 +2794,7 @@ export const SUB_ASSEMBLY = 'Sub Assembly';
 export const RMDOMESTICBULKUPLOAD = 'RM Domestic';
 export const RMIMPORTBULKUPLOAD = 'RM Import';
 export const RMSPECIFICATION = 'RM Specification'
+export const RMMATERIALBULKUPLOAD = 'RM Index Data'
 export const BOPDOMESTICBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Domestic";
 export const INSERTDOMESTICBULKUPLOAD = 'Insert Domestic';
 export const BOPIMPORTBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Import";
@@ -2933,6 +2972,13 @@ export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGE
 //CONSTANTS FOR ONBOARDING
 export const ONBOARDINGNAME = reactLocalStorage.getObject('onboardingName')
 export const ONBOARDINGID = reactLocalStorage.getObject('onboardingId')
+//CONSTANTS FOR MANAGE LEVELS RADIO BUTTON
+
+
+export const COSTING_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_COSTING])
+export const SIMULATION_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_SIMULATION])
+export const MASTER_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_MASTER])
+export const ONBOARDING_MANAGEMENT_LEVEL = Number(reactLocalStorage.getObject('moduleType')[MODULE_ONBOARDING])
 
 //AUTOCOMPLETE IN PART AND VENDOR
 export const searchCount = 3
@@ -2975,7 +3021,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 export const RMIndex = true
 //VERSION 
-export const VERSION = "V2.2.16";
+export const VERSION = "V2.2.21";
 
 
 

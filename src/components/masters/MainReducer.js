@@ -25,6 +25,7 @@ import OutsourcingReducer from './reducers/Outsourcing';
 import AuditReducer from '../audit/reducers/AuditLisitng';
 import paginationReducer from '../common/Pagination/paginationReducer';
 import supplierManagementReducer from '../vendorManagement/Reducer';
+import indexationReducer from './reducers/Indexation';
 
 const mainReducer = {
   part: partReducer,
@@ -53,6 +54,7 @@ const mainReducer = {
   outsourcing: OutsourcingReducer,
   audit: AuditReducer,
   pagination: paginationReducer,
-  supplierManagement: supplierManagementReducer
+  supplierManagement: supplierManagementReducer,
+  indexation: indexationReducer
 }
 export default mainReducer;

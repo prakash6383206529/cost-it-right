@@ -5,7 +5,7 @@ import { Row, Col, Table, } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
   getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange, setNPVData, setPOPrice, resetExchangeRateData, setOtherCostData,
-  setOtherDiscountData
+  setOtherDiscountData, getCostingPaymentTermDetail, setDiscountAndOtherCostData, saveCostingPaymentTermDetail, setPaymentTermsDataInDiscountOtherTab, isPaymentTermsDataChange
 } from '../../actions/Costing';
 import { fetchCostingHeadsAPI, getConditionDetails, getCurrencySelectList, getNpvDetails, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -37,6 +37,7 @@ import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/
 import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import AddOtherDiscount from '../CostingHeadCosts/AdditionalOtherCost/AddOtherDiscount';
 import OtherCostDrawer from '../CostingHeadCosts/AdditionalOtherCost/OtherCostDrawer';
+import PaymentTerms from '../CostingHeadCosts/OverheadProfit/PaymentTerms';
 let counter = 0;
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -69,7 +70,14 @@ function TabDiscountOther(props) {
   const headerCosts = useContext(netHeadCostContext);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
+
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab } = useSelector(state => state.costing)
+  const PaymentTermDetail = CostingInterestRateDetail && CostingInterestRateDetail.PaymentTermDetail !== null ? CostingInterestRateDetail.PaymentTermDetail : {}
+
+
+
+
+
 
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
@@ -121,6 +129,12 @@ function TabDiscountOther(props) {
   const [costingConditionEntryType, setCostingConditionEntryType] = useState('')
   const isNFR = useContext(IsNFR);
   const isPartType = useContext(IsPartType);
+  const [paymentTerms, setPaymentTerms] = useState(false)
+  const [paymentTermsWarning, setPaymentTermsWarning] = useState(false)
+  const { getCostingPaymentDetails } = useSelector(state => state.costing);
+
+
+
 
   const fieldValues = useWatch({
     control,
@@ -158,6 +172,9 @@ function TabDiscountOther(props) {
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : ''
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+  }, [])
+  useEffect(() => {
+    dispatch(getCostingPaymentTermDetail(costData?.CostingId, () => { }))
   }, [])
   const viewAddButtonIcon = (data, type) => {
 
@@ -287,11 +304,16 @@ function TabDiscountOther(props) {
     }
   }, [])
 
-
+  useEffect(() => {
+    setDiscountObj({
+      ...discountObj,
+      paymentTermCost: UpdatePaymentTermCost?.NetCost
+    })
+  }, [UpdatePaymentTermCost])
   useEffect(() => {
     if (RMCCTabData && RMCCTabData[0]?.CostingId && props?.activeTab === '6') {
       let npvSum = 0
-      if (initialConfiguration?.IsShowNpvCost) {
+      if (initialConfiguration?.IsShowNpvCost || initialConfiguration?.IsShowTCO) {
         dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
           if (res?.data?.DataList) {
             let Data = res?.data?.DataList
@@ -302,7 +324,7 @@ function TabDiscountOther(props) {
             dispatch(isDiscountDataChange(true))
             setDiscountObj({
               ...discountObj,
-              totalNpvCost: sum
+              totalNpvCost: sum,
             })
           }
         }))
@@ -346,14 +368,16 @@ function TabDiscountOther(props) {
       let dataList = CostingDataList[0]
       const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
       setTotalCost(total)
+      dispatch(setDiscountCost({ ...discountObj, totalCost: total }, () => { }));
     }
 
-  }, [CostingDataList])
+  }, [CostingDataList, totalCost])
 
   //USED TO SET ITEM DATA THAT WILL CALL WHEN CLICK ON OTHER TAB
   useEffect(() => {
 
     dispatch(setComponentDiscountOtherItemData({}, () => { }))
+    dispatch(setPaymentTermsDataInDiscountOtherTab({}, () => { }))
     // setTimeout(() => {
     let tempFiles = [...feasibilityFiles, ...capacityFiles, ...timelineFiles]
     let updatedFiles = tempFiles.map((file) => {
@@ -431,8 +455,27 @@ function TabDiscountOther(props) {
       "Attachements": updatedFiles,
       "IsChanged": true,
     }
+    let PaymentTermobj = {
+      "LoggedInUserId": loggedInUserId(),
+      "BaseCostingId": costData?.CostingId,
+      "NetPaymentTermCost": DiscountAndOtherCostTabData?.InterestRateId,
+      "IsPaymentTerms": true,
+      "PaymentTermDetail": {
+        "InterestRateId": DiscountAndOtherCostTabData ? DiscountAndOtherCostTabData?.InterestRateId : "",
+        "PaymentTermDetailId": "",
+        "PaymentTermApplicability": DiscountAndOtherCostTabData ? DiscountAndOtherCostTabData?.PaymentTermApplicability : "",
+        "RepaymentPeriod": DiscountAndOtherCostTabData ? DiscountAndOtherCostTabData?.RepaymentPeriod : "",
+        "InterestRate": DiscountAndOtherCostTabData ? DiscountAndOtherCostTabData?.InterestRate : "",
+        "NetCost": DiscountAndOtherCostTabData ? DiscountAndOtherCostTabData?.NetCost : "",
+        "EffectiveDate": DiscountAndOtherCostTabData ? DiscountAndOtherCostTabData?.EffectiveDate : "",
+        "PaymentTermCRMHead": DiscountAndOtherCostTabData ? DiscountAndOtherCostTabData?.PaymentTermCRMHead : "",
+        "Remark": DiscountAndOtherCostTabData ? DiscountAndOtherCostTabData?.Remark : ""
+      }
+    };
 
     dispatch(setComponentDiscountOtherItemData(data, () => { }))
+    dispatch(setPaymentTermsDataInDiscountOtherTab(PaymentTermobj, () => { }))
+
     // }, 1000)
   }, [DiscountCostData, fieldValues])
   const filterAttachments = (list, value) => {
@@ -449,6 +492,7 @@ function TabDiscountOther(props) {
       dispatch(getDiscountOtherCostTabData(data, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
+
           if (Data && Data?.CostingPartDetails && Data?.CostingPartDetails?.GrandTotalCost !== null) {
             let costDetail = Data?.CostingPartDetails
             let attachmentList = filterAttachments(Data.Attachements, null)
@@ -607,7 +651,9 @@ function TabDiscountOther(props) {
   useEffect(() => {
     if (!CostingViewMode) {
 
+
       setValue('BasicRateINR', DiscountCostData && checkForDecimalAndNull(checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)), initialConfiguration?.NoOfDecimalForPrice))
+
       setValue('NetPOPriceINR', DiscountCostData && checkForDecimalAndNull(netPOPrice, initialConfiguration?.NoOfDecimalForPrice))
       // if (otherCostType.value === 'Percentage') {
       //   setValue('AnyOtherCost', DiscountCostData !== undefined ? checkForDecimalAndNull(DiscountCostData.AnyOtherCost, initialConfiguration?.NoOfDecimalForPrice) : 0)
@@ -1002,6 +1048,7 @@ function TabDiscountOther(props) {
   * @description Used to Submit the form
   */
   const onSubmit = debounce((values, val, gotoNextValue) => {
+    setPaymentTermsWarning(false)
     if (errorCheckObject(ErrorObjDiscount)) return false;
     if (!getValues('discountDescriptionRemark') && discountCostApplicability?.value) {
       errors.discountDescriptionRemark = {
@@ -1098,6 +1145,24 @@ function TabDiscountOther(props) {
       "LineNumber": getValues('LineNumber'),
       "Attachements": updatedFiles
     }
+    let obj = {
+      "LoggedInUserId": loggedInUserId(),
+      "BaseCostingId": costData?.CostingId || "",
+      "NetPaymentTermCost": DiscountAndOtherCostTabData?.NetCost || "",
+      "IsPaymentTerms": true,
+      "PaymentTermDetail": {
+        "InterestRateId": DiscountAndOtherCostTabData?.InterestRateId || "",
+        "PaymentTermDetailId": "",
+        "PaymentTermApplicability": DiscountAndOtherCostTabData?.PaymentTermApplicability || "",
+        "RepaymentPeriod": DiscountAndOtherCostTabData?.RepaymentPeriod || "",
+        "InterestRate": DiscountAndOtherCostTabData?.InterestRate || "",
+        "NetCost": DiscountAndOtherCostTabData?.NetCost || "",
+        "EffectiveDate": DiscountAndOtherCostTabData?.EffectiveDate || "",
+        "PaymentTermCRMHead": DiscountAndOtherCostTabData?.PaymentTermCRMHead || "",
+        "Remark": DiscountAndOtherCostTabData?.Remark || ""
+      }
+    };
+
     if (costData.IsAssemblyPart === true && !partType) {
       let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate, '', '', isPartType)
       if (!CostingViewMode) {
@@ -1123,6 +1188,10 @@ function TabDiscountOther(props) {
           }
         }
       }))
+
+      if (checkIsPaymentTermsDataChange === true) {
+        dispatch(saveCostingPaymentTermDetail(obj, res => { }))
+      }
     }
 
     setTimeout(() => {
@@ -1145,6 +1214,7 @@ function TabDiscountOther(props) {
         dispatch(gridDataAdded(true))
         dispatch(isDiscountDataChange(false))
         dispatch(setComponentDiscountOtherItemData({}, () => { }))
+        dispatch(setPaymentTermsDataInDiscountOtherTab({}, () => { }))
 
       }
     }, 500);
@@ -1654,6 +1724,30 @@ function TabDiscountOther(props) {
       }}
     />
   }
+  /**
+ * @method handlePaymentTerm
+ * @description  handlePaymentTerm
+ */
+  const handlePaymentTerm = () => {
+    setPaymentTerms(!paymentTerms)
+    dispatch(getCostingPaymentTermDetail(costData?.CostingId, () => { }))
+  }
+  /**
+ * @method setPaymentTermsDetail
+ * @description  set updated NetPaymentTermCost 
+ */
+  const setPaymentTermsDetail = (data, params) => {
+
+    let updatedPaymentTermobj = {
+      ...PaymentTermDataDiscountTab,
+      PaymentTermDetail: {
+        ...PaymentTermDataDiscountTab.PaymentTermDetail,
+        ...data
+      }
+    };
+    dispatch(setPaymentTermsDataInDiscountOtherTab(updatedPaymentTermobj, () => { }))
+    dispatch(setDiscountAndOtherCostData(data, () => { }));
+  };
 
   return (
     <>
@@ -1773,26 +1867,62 @@ function TabDiscountOther(props) {
                       <TooltipCustom disabledIcon={true} width="280px" id="otherCost" tooltipText={"Other Cost = Sum of other cost added in other cost drawer"} />
                       {otherCostUI}
                     </Col >
-                    <Col md="3">
-                      <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Price = (Total Cost - Hundi/Discount Value) + Total Other Cost"} />
-                      <TextFieldHookForm
-                        label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
-                        name={'BasicRateINR'}
-                        Controller={Controller}
-                        id="basic-rate"
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{}}
-                        handleChange={() => { }}
-                        defaultValue={""}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.BasicRateINR}
-                        disabled={true}
-                        hidden={initialConfiguration?.IsBasicRateAndCostingConditionVisible ? false : true}
-                      />
-                    </Col >
+
+                    <Col md="8"><div className="left-border mt-1">Payment Terms:</div></Col>
+                    <Col md="4" className="text-right">
+                      <button className="btn btn-small-primary-circle YOY-acc ml-1" type="button" onClick={() => { handlePaymentTerm() }}>
+                        {paymentTerms ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
+                    </Col>
+                    <Row>
+                      {/* net cost *(90- usersvalues 60)/30 *1% */}
+                      {paymentTerms && <Col md="12" className='payment-terms'>
+                        <PaymentTerms
+                          Controller={Controller}
+                          control={control}
+                          //  rules={rules}
+                          register={register}
+                          // defaultValue={}
+                          setValue={setValue}
+                          getValues={getValues}
+                          errors={errors}
+                          useWatch={useWatch}
+                          CostingInterestRateDetail={getCostingPaymentDetails?.PaymentTermDetaill}
+                          setPaymentTermsDetail={setPaymentTermsDetail}
+                          PaymentTermDetail={getCostingPaymentDetails?.PaymentTermDetaill}
+                          data={DiscountCostData}
+                          showPaymentInDiscountTab={paymentTerms}
+                          netPOPrice={netPOPrice}
+                          showPaymentTerms={paymentTerms}
+                          setPaymentTermsWarning={setPaymentTermsWarning}
+                          paymentTermsWarning={paymentTermsWarning}
+                        />
+                      </Col>}
+                    </Row>
+                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
+                      <Col md="3">
+                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Price = (Total Cost - Hundi/Discount Value) + Total Other Cost"} />
+                        <TextFieldHookForm
+                          label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
+                          name={'BasicRateINR'}
+                          Controller={Controller}
+                          id="basic-rate"
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          rules={{}}
+                          handleChange={() => { }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.BasicRateINR}
+                          disabled={true}
+                        />
+                      </Col >}
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible ? costingConditionUI : ''}
                     {
                       isConditionCostingOpen && <AddConditionCosting

@@ -10,7 +10,7 @@ import { checkPermission, loggedInUserId, showTitleForActiveToggle } from '../..
 import LoaderCustom from '../common/LoaderCustom';
 import { Col, Row } from 'reactstrap';
 import NoContentFound from '../common/NoContentFound';
-import { EMPTY_DATA, VENDOR_CLASSIFICATION, VENDOR_MANAGEMENT } from '../../config/constants';
+import { EMPTY_DATA, MASTERS, VENDOR_CLASSIFICATION, VENDOR_MANAGEMENT, VENDOR_MANAGEMENT_ROLE } from '../../config/constants';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import DayTime from '../common/DayTimeWrapper';
@@ -37,17 +37,18 @@ const VendorClassificationListing = () => {
 
     const dispatch = useDispatch();
     const supplierManagement = useSelector(state => state?.supplierManagement?.vendorData) || [];
+    const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData);
 
     useEffect(() => {
-        applyPermission()
+        applyPermission(topAndLeftMenuData)
         getTableListData()
 
-    }, [dispatch]);
+    }, [topAndLeftMenuData]);
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
             setIsLoader(true)
-            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === VENDOR_MANAGEMENT);
-            const accessData = Data && Data.Pages.find((el) => el.PageName === VENDOR_CLASSIFICATION)
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
+            const accessData = Data && Data.Pages.find((el) => el.PageName === VENDOR_MANAGEMENT)
             const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
             if (permissionData !== undefined) {
                 setActivateAccessibility(permissionData && permissionData.Activate ? permissionData.Activate : false);
@@ -124,7 +125,7 @@ const VendorClassificationListing = () => {
     const statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        // if (rowData.UserId === loggedInUserId()) return null;
+        if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex, rowData?.Status, rowData?.Status);
         return (
             <>
@@ -133,7 +134,7 @@ const VendorClassificationListing = () => {
                     <Switch
                         onChange={() => handleChange(cellValue, rowData)}
                         checked={cellValue === "Blocked"}
-                        // disabled={!ActivateAccessibility}
+                        disabled={!ActivateAccessibility}
                         background="#ff6600"
                         onColor="#FC5774"
                         onHandleColor="#ffffff"

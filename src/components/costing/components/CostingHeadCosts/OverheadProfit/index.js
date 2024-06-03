@@ -4,14 +4,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isMultiTechnologyCosting, OverheadAndProfitTooltip, } from '../../../../../helper';
-import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
+import { fetchModelTypeAPI } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, PART_COST, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
 import { SelectedCostingDetail, ViewCostingContext } from '../../CostingDetails';
 import Rejection from './Rejection';
 import Icc from './Icc';
-import PaymentTerms from './PaymentTerms';
 import { Link } from 'react-scroll'
 import { ASSEMBLY, IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import _, { debounce } from 'lodash';
@@ -35,9 +34,9 @@ function OverheadProfit(props) {
 
   const { CostingOverheadDetail, CostingProfitDetail, CostingRejectionDetail, CostingInterestRateDetail } = props.data?.CostingPartDetails;
 
+
   const ICCApplicabilityDetail = CostingInterestRateDetail && CostingInterestRateDetail.ICCApplicabilityDetail !== null ? CostingInterestRateDetail.ICCApplicabilityDetail : {}
 
-  const PaymentTermDetail = CostingInterestRateDetail && CostingInterestRateDetail.PaymentTermDetail !== null ? CostingInterestRateDetail.PaymentTermDetail : {}
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const defaultValues = {
@@ -53,14 +52,6 @@ function OverheadProfit(props) {
     InterestRatePercentage: ICCApplicabilityDetail !== null ? ICCApplicabilityDetail.InterestRate : '',
     InterestRateCost: ICCApplicabilityDetail !== null ? checkForDecimalAndNull(ICCApplicabilityDetail.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '',
     NetICCTotal: ICCApplicabilityDetail !== null ? checkForDecimalAndNull(ICCApplicabilityDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '',
-
-    //PAYMENT TERMS FIELDS
-    //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT
-    // PaymentTermsApplicability: PaymentTermDetail !== null ? PaymentTermDetail.PaymentTermApplicability : '',
-    // RepaymentPeriodDays: PaymentTermDetail !== null ? PaymentTermDetail.RepaymentPeriod : '',
-    // RepaymentPeriodPercentage: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '',
-    // RepaymentPeriodCost: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '',
-    // RepaymentPeriodFixed: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : ''
   }
 
   const { register, handleSubmit, control, clearErrors, setValue, getValues, formState: { errors } } = useForm({
@@ -87,7 +78,6 @@ function OverheadProfit(props) {
   const [totalToolCost, setTotalToolCost] = useState(0)
   const [showWarning, setShowWarning] = useState('')
   const [showRefreshWarningMessage, setShowRefreshWarningMessage] = useState(false)
-
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
@@ -268,7 +258,6 @@ function OverheadProfit(props) {
   useEffect(() => {
     if (!CostingViewMode) {
       dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
-      dispatch(getPaymentTermsAppliSelectListKeyValue((res) => { }))
       setApplicabilityList(_.map(costingHead, 'Text'))
     }
   }, []);
@@ -2260,8 +2249,8 @@ function OverheadProfit(props) {
               data={data}
               setRejectionDetail={props.setRejectionDetail}
             />
-            {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
-            {/* <Icc
+
+            <Icc
               Controller={Controller}
               control={control}
               //  rules={rules}
@@ -2274,24 +2263,7 @@ function OverheadProfit(props) {
               CostingInterestRateDetail={CostingInterestRateDetail}
               data={data}
               setICCDetail={props.setICCDetail}
-            /> */}
-
-            {/* <PaymentTerms
-              Controller={Controller}
-              control={control}
-              //  rules={rules}
-              register={register}
-              defaultValue={defaultValues}
-              setValue={setValue}
-              getValues={getValues}
-              errors={errors}
-              useWatch={useWatch}
-              CostingInterestRateDetail={CostingInterestRateDetail}
-              PaymentTermDetail={PaymentTermDetail}
-              data={data}
-              setPaymentTermsDetail={props.setPaymentTermsDetail}
-            /> */}
-
+            />
             <Row className=" no-gutters justify-content-between btn-sticky-container overhead-profit-save-btn">
               <div className="col-sm-12 text-right bluefooter-butn ">
                 {!CostingViewMode && <button

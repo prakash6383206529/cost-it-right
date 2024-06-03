@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
-import {
-  getMaterialTypeDataListAPI,
-  deleteMaterialTypeAPI,
-} from "../actions/Material";
-import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import { getCommodityStandardizationDataListAPI } from "../actions/Indexation";import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
@@ -67,7 +63,7 @@ const RMDetailListing = () => {
   const getListData = () => {
     setState((prevState) => ({ ...prevState, isLoader: true }));
     dispatch(
-      getMaterialTypeDataListAPI((res) =>
+      getCommodityStandardizationDataListAPI((res) =>
         setState((prevState) => ({ ...prevState, isLoader: false }))
       )
     );
@@ -117,25 +113,8 @@ const RMDetailListing = () => {
   const deleteItem = (Id) => {
     setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
   };
-  /**
-   * @method confirmDelete
-   * @description confirm delete Raw Material
-   */
 
-  const confirmDelete = (ID) => {
-    dispatch(
-      deleteMaterialTypeAPI(ID, (res) => {
-        if (res.status === 417 && res.data.Result === false) {
-          Toaster.error(res.data.Message);
-        } else if (res && res.data && res.data.Result === true) {
-          Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
-          setState((prevState) => ({ ...prevState, dataCount: 0 }));
-          getListData();
-        }
-      })
-    );
-    setState((prevState) => ({ ...prevState, showPopup: false }));
-  };
+
   /**
     * @method toggleExtraData
    * @description Handle specific module tour state to display lorem data
@@ -147,7 +126,7 @@ const RMDetailListing = () => {
     }, 100);
   }
   const onPopupConfirm = () => {
-    confirmDelete(state.deletedId);
+    //confirmDelete(state.deletedId);
   };
 
   const closePopUp = () => {
@@ -318,13 +297,13 @@ const RMDetailListing = () => {
         <Col md={6} className="text-right search-user-block pr-0">
 
           {permissions.Add && (
-            <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
+            <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add" icon={"plus"} />
           )}
           {permissions.Download && (
             <>
               <>
                 <ExcelFile
-                  filename={"Rm Detail Material"}
+                  filename={"Standardized Material Name"}
                   fileExtension={".xls"}
                   element={
                     <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
@@ -342,9 +321,7 @@ const RMDetailListing = () => {
       <Row>
         <Col>
           <div
-            className={`ag-grid-wrapper height-width-wrapper ${(rawMaterialTypeDataList &&
-              rawMaterialTypeDataList?.length <= 0) ||
-              noData
+            className={`ag-grid-wrapper height-width-wrapper ${true
               ? "overlay-contain"
               : ""
               }`}
@@ -374,7 +351,7 @@ const RMDetailListing = () => {
                 floatingFilter={true}
                 domLayout="autoHeight"
                 // columnDefs={c}
-                rowData={showExtraData && rawMaterialTypeDataList ? [...setLoremIpsum(rawMaterialTypeDataList[0]), ...rawMaterialTypeDataList] : rawMaterialTypeDataList}
+                rowData={[]}
 
                 pagination={true}
                 paginationPageSize={defaultPageSize}
@@ -392,9 +369,9 @@ const RMDetailListing = () => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn field="MaterialName" headerName="Material Name"></AgGridColumn>
-                <AgGridColumn field="Material Type"></AgGridColumn>
-
+                <AgGridColumn field="Index" headerName="Index"></AgGridColumn>
+                <AgGridColumn field="Commodity Name (In index)"></AgGridColumn>
+                <AgGridColumn field="Commodity Name (In CIR)"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>}
               {

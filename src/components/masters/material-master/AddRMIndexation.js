@@ -2,29 +2,21 @@ import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getAllCity, getCityByCountry, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList } from "../../../actions/Common"
 import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
-import { getCostingSpecificTechnology } from "../../costing/actions/Costing"
-import { getConfigurationKey, loggedInUserId } from "../../../helper"
-import { SetRawMaterialDetails, fileUploadRMDomestic, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild } from "../actions/Material"
 import { useForm, Controller, useWatch } from "react-hook-form"
 import { Row, Col, Label } from 'reactstrap'
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, } from '../../layout/HookFormInputs';
 import LoaderCustom from "../../common/LoaderCustom"
 import { reactLocalStorage } from "reactjs-localstorage"
-import Button from '../../layout/Button';
-import Toaster from "../../common/Toaster"
 import {
     acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation, maxLength512, number, integerOnly,
     checkForNull
 } from "../../../helper/validation";
 import 'react-dropzone-uploader/dist/styles.css';
-import { getClientSelectList } from "../actions/Client"
-import { Switch } from "react-router-dom/cjs/react-router-dom.min"
 import { MESSAGES } from "../../../config/message"
 import AsyncSelect from 'react-select/async';
 import { autoCompleteDropdown } from "../../common/CommonFunctions"
 import HeaderTitle from "../../common/HeaderTitle"
 function AddRMIndexation(props) {
-    console.log('props: ', props);
     // const { isEditFlag, isViewFlag } = data
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
         mode: 'onChange',
@@ -97,21 +89,8 @@ function AddRMIndexation(props) {
         } else {
             setState(prevState => ({ ...prevState, plants: [] }));
         }
-        dispatch(SetRawMaterialDetails({ Plants: newValue }, () => { }))
-        props?.commonFunction(newValue ? newValue.value : '')
     }
-    /**
- * @method handleTechnology
- * @description called
- */
-    const handleTechnology = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setState(prevState => ({ ...prevState, technology: newValue }));
-        } else {
-            setState(prevState => ({ ...prevState, technology: [] }));
-        }
-        dispatch(SetRawMaterialDetails({ Technology: newValue }, () => { }))
-    }
+
     /**
 * @method handleCustomer
 * @description called
@@ -122,7 +101,6 @@ function AddRMIndexation(props) {
         } else {
             setState(prevState => ({ ...prevState, customer: [] }));
         }
-        dispatch(SetRawMaterialDetails({ customer: newValue }, () => { }))
     };
     /**
  * @method handleVendor
@@ -135,21 +113,10 @@ function AddRMIndexation(props) {
         } else {
             setState(prevState => ({ ...prevState, vendor: [] }));
         }
-        dispatch(SetRawMaterialDetails({ Vendor: newValue }, () => { }))
     }
 
 
 
-    /**
-* @method setDisableFalseFunction
-* @description setDisableFalseFunction
-*/
-    const setDisableFalseFunction = () => {
-        const loop = checkForNull(dropzone.current.files.length) - checkForNull(state.files.length)
-        if (checkForNull(loop) === 1 || checkForNull(dropzone.current.files.length) === checkForNull(state.files.length)) {
-            setState(prevState => ({ ...prevState, setDisable: false, attachmentLoader: false }))
-        }
-    }
     /**
      * @method onPressVendor
      * @description Used for Vendor checked
@@ -194,7 +161,7 @@ function AddRMIndexation(props) {
    * @description used to Reset form
    */
     const cancelHandler = (type) => {
-        props?.hideForm(type)
+        props?.closeDrawer('', '', type)
     }
     return (
         <Fragment>
@@ -259,7 +226,7 @@ function AddRMIndexation(props) {
                         />
                     </Col>
 
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <SearchableSelectHookForm
                             label={'Material Name (main)'}
                             name="mainMaterial"
@@ -276,7 +243,7 @@ function AddRMIndexation(props) {
                             errors={errors.mainMaterial}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <SearchableSelectHookForm
                             label={'Material Name'}
                             name="Material"
@@ -293,7 +260,7 @@ function AddRMIndexation(props) {
                             errors={errors.Material}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <SearchableSelectHookForm
                             label={'Plant (Code)'}
                             name="plant"
@@ -310,7 +277,7 @@ function AddRMIndexation(props) {
                             errors={errors.plant}
                         />
                     </Col>
-                    {state.costingTypeId === VBCTypeId && <Col md="3">
+                    {state.costingTypeId !== CBCTypeId && <Col className="col-md-15">
                         <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                         <div className="d-flex justify-space-between align-items-center p-relative async-select">
                             <div className="fullinput-icon p-relative">
@@ -325,7 +292,7 @@ function AddRMIndexation(props) {
                                     onKeyDown={(onKeyDown) => {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
-                                    onBlur={() => setState({ showErrorOnFocus: true })}
+                                // onBlur={() => setState({ showErrorOnFocus: true })}
                                 />
                             </div>
                             {/* {!props.isEditFlag && (
@@ -343,7 +310,7 @@ function AddRMIndexation(props) {
                     </Col>}
                     {state.costingTypeId === CBCTypeId && (
                         <>
-                            < div className="col-md-3">
+                            <Col className="col-md-15">
                                 <SearchableSelectHookForm
                                     name="clientName"
                                     label="Customer (Code)"
@@ -358,7 +325,7 @@ function AddRMIndexation(props) {
                                     disabled={false}
                                     errors={errors.clientName}
                                 />
-                            </div>
+                            </Col>
                         </>
                     )}
                 </Row>
@@ -369,7 +336,7 @@ function AddRMIndexation(props) {
                             customClass={'underLine-title'}
                         />
                     </Col>
-                    <Col md="3" className='dropdown-flex'>
+                    <Col className="col-md-15">
                         <SearchableSelectHookForm
                             label={'Exchange Rate Source'}
                             name="exchangeRate"
@@ -386,7 +353,7 @@ function AddRMIndexation(props) {
                             errors={errors.exchangeRate}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <SearchableSelectHookForm
                             label={'Index (LME)'}
                             name="index"
@@ -404,7 +371,7 @@ function AddRMIndexation(props) {
                         />
                     </Col>
 
-                    <Col md="3" className="form-group mb-0">
+                    <Col className="col-md-15">
                         <div className="inputbox date-section">
                             <DatePickerHookForm
                                 name={`fromDate`}
@@ -432,7 +399,7 @@ function AddRMIndexation(props) {
                             />
                         </div>
                     </Col>
-                    <Col md="3" className="form-group mb-0">
+                    <Col className="col-md-15">
                         <div className="inputbox date-section">
                             <DatePickerHookForm
                                 name={`toDate`}
@@ -460,7 +427,7 @@ function AddRMIndexation(props) {
                             />
                         </div>
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <div id="EffectiveDate_Container" className="inputbox date-section">
                             <DatePickerHookForm
                                 name={`EffectiveDate`}
@@ -488,7 +455,7 @@ function AddRMIndexation(props) {
                             />
                         </div>
                     </Col>
-                    <Col md="3" className='dropdown-flex'>
+                    <Col className="col-md-15">
                         <SearchableSelectHookForm
                             name="UnitOfMeasurement"
                             label="UOM"
@@ -506,7 +473,7 @@ function AddRMIndexation(props) {
                             errors={errors.UnitOfMeasurement}
                         />
                     </Col>
-                    <Col md="3" className='dropdown-flex'>
+                    <Col className="col-md-15">
                         <SearchableSelectHookForm
                             name="currency"
                             label="Currency"
@@ -524,7 +491,7 @@ function AddRMIndexation(props) {
                             disabled={false}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <TextFieldHookForm
                             label={`Frequency of settlement`}
                             name={"frequencyOfSettlement"}
@@ -545,7 +512,7 @@ function AddRMIndexation(props) {
                             errors={errors.frequencyOfSettlement}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <TextFieldHookForm
                             label={`Index Premium(Currency)`}
                             name={"indexPremium"}
@@ -566,7 +533,7 @@ function AddRMIndexation(props) {
                             errors={errors.indexPremium}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <TextFieldHookForm
                             label={`Exchange Rate Source Premium(Currency)`}
                             name={"ExRateSrcPremium"}
@@ -587,7 +554,7 @@ function AddRMIndexation(props) {
                             errors={errors.ExRateSrcPremium}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <TextFieldHookForm
                             label={`Index Rate(Currency)`}
                             name={"indexRateCurrency"}
@@ -608,7 +575,7 @@ function AddRMIndexation(props) {
                             errors={errors.indexRateCurrency}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col className="col-md-15">
                         <TextFieldHookForm
                             label={`Basic rate(Base Currency)`}
                             name={"basicRateBaseCurrency"}
@@ -650,8 +617,8 @@ function AddRMIndexation(props) {
                                 className="user-btn save-btn"
                                 disabled={false}
                             >
-                                {" "}
                                 <div className={"save-icon"}></div>
+                                {"SAVE"}
                                 {/* {isEditFlag ? "UPDATE" : "SAVE"} */}
                             </button>
                         </div>
