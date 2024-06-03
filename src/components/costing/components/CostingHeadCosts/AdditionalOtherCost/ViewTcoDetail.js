@@ -55,8 +55,8 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && checkForDecimalAndNull(CostingTCOResponse?.CalculatedIncoTermValue, initialConfiguration.NoOfDecimalForPrice)) ?? '-' : ''))
                             ])}
                             {renderDiv([
-                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && PaymentTermDetail.PaymentTermApplicability) ?? '-' : '')),
-                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && PaymentTermDetail.RepaymentPeriod) ? PaymentTermDetail.RepaymentPeriod + " Days" : '-' : '')),
+                                renderSpan(data?.bestCost === true ? '4' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && PaymentTermDetail?.PaymentTermApplicability) ? PaymentTermDetail?.PaymentTermApplicability : '-' : '-')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && PaymentTermDetail?.RepaymentPeriod) ? PaymentTermDetail?.RepaymentPeriod + " Days" : '-' : '')),
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && checkForDecimalAndNull(PaymentTermDetail?.NetCost, initialConfiguration.NoOfDecimalForPrice)) ?? '-' : ''))
                             ])}
                             {renderDiv([
