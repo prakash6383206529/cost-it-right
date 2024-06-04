@@ -23,6 +23,8 @@ import Switch from 'react-switch'
 import RMIndexationListing from './RMIndexationListing';
 import RMDetailListing from './RMDetailListing';
 import RMMaterialListing from './RMMaterialListing';
+import IndexCommodityListing from './IndexCommodityListing';
+import CommodityInIndexListing from './CommodityInIndexListing';
 export const ApplyPermission = React.createContext();
 function RowMaterialMaster(props) {
 
@@ -242,25 +244,35 @@ function RowMaterialMaster(props) {
                                 </NavItem>}
                                 {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
-                                        Material Detail
+                                        Index
                                     </NavLink>
                                 </NavItem>}
                                 {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => { toggle('6'); }}>
-                                        Create Material
+                                        Commodity(In Index)
                                     </NavLink>
                                 </NavItem>}
                                 {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '7' })} onClick={() => { toggle('7'); }}>
-                                        Material Indexation
+                                        Standardized Commodity Name
                                     </NavLink>
                                 </NavItem>}
+                                {<NavItem>
+                                    <NavLink className={classnames({ active: activeTab === '8' })} onClick={() => { toggle('8'); }}>
+                                        Index Data
+                                    </NavLink>
+                                </NavItem>}
+                                {/* {<NavItem>
+                                    <NavLink className={classnames({ active: activeTab === '7' })} onClick={() => { toggle('7'); }}>
+                                        Material Indexation
+                                    </NavLink>
+                                </NavItem>} */}
                                 {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
                                 {(CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
                                     {/* {ViewRMAccessibility && <NavItem> */}
-                                    <NavLink className={classnames({ active: activeTab === '8' })} onClick={() => {
-                                        toggle('8');
+                                    <NavLink className={classnames({ active: activeTab === '9' })} onClick={() => {
+                                        toggle('9');
                                         // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                     }}>
                                         Approval Status
@@ -354,18 +366,26 @@ function RowMaterialMaster(props) {
                                         </TabPane>}
                                     {Number(activeTab) === 5 &&
                                         <TabPane tabId="5">
-                                            <RMDetailListing />
+                                            <IndexCommodityListing />
                                         </TabPane>}
                                     {Number(activeTab) === 6 &&
                                         <TabPane tabId="6">
-                                            <RMMaterialListing />
+                                            <CommodityInIndexListing />
                                         </TabPane>}
                                     {Number(activeTab) === 7 &&
                                         <TabPane tabId="7">
-                                            <RMIndexationListing isOpen={isOpenCallback} />
+                                            <RMDetailListing />
                                         </TabPane>}
                                     {Number(activeTab) === 8 &&
                                         <TabPane tabId="8">
+                                            <RMMaterialListing />
+                                        </TabPane>}
+                                    {/* {Number(activeTab) === 7 &&
+                                        <TabPane tabId="7">
+                                            <RMIndexationListing isOpen={isOpenCallback} />
+                                        </TabPane>} */}
+                                    {Number(activeTab) === 9 &&
+                                        <TabPane tabId="9">
                                             {/* {
                                             this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                         } */}

@@ -300,6 +300,12 @@ function CostingHeaderTabs(props) {
       setMultipleRMApplied(true)
     }
   }, [RMCCTabData]);
+  useEffect(() => {
+    if (activeTab && previousTab) {
+      InjectDiscountAPICall();
+    }
+  }, [activeTab]);
+
   const callAssemblyAPi = (tabId) => {
     if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {
       const tabData = RMCCTabData && RMCCTabData[0]

@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react"
 import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList } from "../../../actions/Common"
-import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, RMIndex, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import { IsShowFreightAndShearingCostFields, getConfigurationKey, labelWithUOMAndCurrency, labelWithUOMAndUOM, loggedInUserId, showRMScrapKeys } from "../../../helper"
@@ -17,7 +17,7 @@ import Toaster from "../../common/Toaster"
 import {
     acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation, positiveAndDecimalNumber, maxLength15, number, decimalNumberLimit3, maxLength10, decimalLengthsix,
     checkForNull,
-    checkForDecimalAndNull,
+    checkForDecimalAndNull, integerOnly
 } from "../../../helper/validation";
 import DayTime from "../../common/DayTimeWrapper"
 import { AcceptableRMUOM } from "../../../config/masterData"
@@ -766,6 +766,90 @@ function AddRMFinancialDetails(props) {
                         disabled={isEditFlag || isViewFlag}
                     />
                 </Col>}
+                {RMIndex && <><Col className="col-md-15">
+                    <TextFieldHookForm
+                        label={`Frequency of settlement`}
+                        name={"frequencyOfSettlement"}
+                        placeholder={"Enter"}
+                        defaultValue={''}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        rules={{
+                            required: false,
+                            validate: { number, integerOnly },
+                        }}
+                        mandatory={false}
+                        className=" "
+                        customClassName=" withBorder"
+                        disabled={false}
+                        handleChange={() => { }}
+                        errors={errors.frequencyOfSettlement}
+                    />
+                </Col>
+                    <Col className="col-md-15">
+                        <TextFieldHookForm
+                            label={`Index Premium(Currency)`}
+                            name={"indexPremium"}
+                            placeholder={"Enter"}
+                            defaultValue={''}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            rules={{
+                                required: false,
+                                validate: { number, integerOnly },
+                            }}
+                            mandatory={false}
+                            className=" "
+                            customClassName=" withBorder"
+                            disabled={false}
+                            handleChange={() => { }}
+                            errors={errors.indexPremium}
+                        />
+                    </Col>
+                    <Col className="col-md-15">
+                        <TextFieldHookForm
+                            label={`Exchange Rate Source Premium(Currency)`}
+                            name={"ExRateSrcPremium"}
+                            placeholder={"Enter"}
+                            defaultValue={''}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            rules={{
+                                required: false,
+                                validate: { number, integerOnly },
+                            }}
+                            mandatory={false}
+                            className=" "
+                            customClassName=" withBorder"
+                            disabled={false}
+                            handleChange={() => { }}
+                            errors={errors.ExRateSrcPremium}
+                        />
+                    </Col>
+                    <Col className="col-md-15">
+                        <TextFieldHookForm
+                            label={`Index Rate(Currency)`}
+                            name={"indexRateCurrency"}
+                            placeholder={"Enter"}
+                            defaultValue={''}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            rules={{
+                                required: false,
+                                validate: { number, integerOnly },
+                            }}
+                            mandatory={false}
+                            className=" "
+                            customClassName=" withBorder"
+                            disabled={false}
+                            handleChange={() => { }}
+                            errors={errors.indexRateCurrency}
+                        />
+                    </Col></>}
                 <>
                     {states.isImport &&
                         <Col className="col-md-15">
@@ -1641,6 +1725,62 @@ function AddRMFinancialDetails(props) {
                         />
                     </Col>
                 </>
+                {RMIndex && <><Col className="col-md-15">
+                    <div className="inputbox date-section">
+                        <DatePickerHookForm
+                            name={`fromDate`}
+                            label={'From Date'}
+                            // handleChange={(date) => {
+                            //     handleFromEffectiveDateChange(date);
+                            // }}
+                            rules={{ required: true }}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            showMonthDropdown
+                            showYearDropdown
+                            dateFormat="DD/MM/YYYY"
+                            // maxDate={maxDate}
+                            placeholder="Select date"
+                            customClassName="withBorder"
+                            className="withBorder"
+                            autoComplete={"off"}
+                            disabledKeyboardNavigation
+                            onChangeRaw={(e) => e.preventDefault()}
+                            disabled={false}
+                            mandatory={true}
+                            errors={errors && errors.fromDate}
+                        />
+                    </div>
+                </Col>
+                    <Col className="col-md-15">
+                        <div className="inputbox date-section">
+                            <DatePickerHookForm
+                                name={`toDate`}
+                                label={'To Date'}
+                                // handleChange={(date) => {
+                                //     handleToEffectiveDateChange(date);
+                                // }}
+                                rules={{ required: true }}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                showMonthDropdown
+                                showYearDropdown
+                                dateFormat="DD/MM/YYYY"
+                                // minDate={minDate}
+                                placeholder="Select date"
+                                customClassName="withBorder"
+                                className="withBorder"
+                                autoComplete={"off"}
+                                disabledKeyboardNavigation
+                                onChangeRaw={(e) => e.preventDefault()}
+                                disabled={false}
+                                mandatory={true}
+                                errors={errors && errors.toDate}
+                            />
+                        </div>
+                    </Col></>}
                 <Col className="col-md-15">
                     <div className="inputbox date-section mb-5">
                         <DatePickerHookForm

@@ -929,7 +929,49 @@ export const RMSpecificationXLTempData = [
         "RawMaterialCode": "RM-10000001",
     }
 ]
+/**
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const RMMaterialListing = [
+    { label: "MaterialIndex", value: "MaterialIndex" },
+    { label: "MaterialName", value: "MaterialName" },
+    { label: "UOM", value: "UOM" },
+    { label: "Currency", value: "Currency" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "IndexRate(Currency)", value: "IndexRateCurrency" },
+    { label: "PremiumCurrency", value: "PremiumCurrency" },
+]
 
+export const RMMaterialListingTempData = [
+    {
+        "MaterialIndex": "13Rf2",
+        "MaterialName": "steel",
+        "UOM": "10 mm",
+        "Currency": "USD",
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "IndexRateCurrency": "USD",
+        "PremiumCurrency": "20 mm",
+    }
+]
+/**
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const IndexCommodityListing = [
+    { label: "Index", value: "Index" }, 
+]
+export const IndexCommodityListingTempData = [
+    {
+        "Index": "13CF2",      
+    }
+]
+export const CommodityInIndexListing = [
+    { label: "Commodity (In Index)", value: "CommodityInIndex" }, 
+]
+export const CommodityInIndexListingTempData = [
+    {
+        "CommodityInIndex": "21FD2",      
+    }
+]
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -5596,8 +5638,17 @@ export const RMLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
-    { label: "Material Name", value: "MaterialName", },
-    { label: "Material Type", value: "MaterialType", },    
+    { label: "Index", value: "Index", },
+    { label: "Commodity Name (In index)", value: "MaterialName", },
+    { label: "Commodity Name (In CIR)", value: "MaterialNameCustom", },
+]
+
+export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
+    { label: "Index", value: "Index", },  
+]
+
+export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
+    { label: "Commodity (In Index)", value: "Index", },  
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
@@ -5606,8 +5657,8 @@ export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
     { label: "UOM", value: "UOM", },
     { label: "Currency", value: "Currency", },
     { label: "Effective Date", value: "EffectiveDate", },
-    { label: "Index Rate (Currency)", value: "IndexRateCurrency", }, 
-    { label: "Premium Currency", value: "PremiumCurrency", },    
+    { label: "Index Rate (Currency)", value: "IndexRateCurrency", },
+    { label: "Premium Currency", value: "PremiumCurrency", },
 ]
 
 export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [

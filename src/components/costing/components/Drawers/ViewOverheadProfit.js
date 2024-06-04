@@ -395,11 +395,11 @@ function ViewOverheadProfit(props) {
             </thead>
             <tbody>
               <tr>
-                <td>{viewRejectionRecovery.ApplicabilityType}</td>
-                <td>{viewRejectionRecovery.Value ? checkForDecimalAndNull(viewRejectionRecovery.Value, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                <td>{viewRejectionRecovery.EffectiveRecoveryPercentage ? checkForDecimalAndNull(viewRejectionRecovery.EffectiveRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                <td>{viewRejectionRecovery.ApplicabilityCost ? checkForDecimalAndNull(viewRejectionRecovery.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                <td>{viewRejectionRecovery.RejectionRecoveryNetCost ? checkForDecimalAndNull(viewRejectionRecovery.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                <td>{viewRejectionRecovery?.ApplicabilityType}</td>
+                <td>{viewRejectionRecovery?.Value ? checkForDecimalAndNull(viewRejectionRecovery?.Value, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                <td>{viewRejectionRecovery?.EffectiveRecoveryPercentage ? checkForDecimalAndNull(viewRejectionRecovery?.EffectiveRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                <td>{viewRejectionRecovery?.ApplicabilityCost ? checkForDecimalAndNull(viewRejectionRecovery?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                <td>{viewRejectionRecovery?.RejectionRecoveryNetCost ? checkForDecimalAndNull(viewRejectionRecovery?.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
               </tr>
             </tbody>
           </Table>
