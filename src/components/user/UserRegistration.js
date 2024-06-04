@@ -15,7 +15,7 @@ import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectLis
 import { MESSAGES } from "../../config/message";
 import { IsSendMailToPrimaryContact, getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
-import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, LPSAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, ONBOARDINGID, ONBOARDINGNAME, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
+import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, ONBOARDINGID, ONBOARDINGNAME, VBC_VENDOR_TYPE, VENDORNEEDFOR, ZBC, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -23,7 +23,7 @@ import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown, transformApprovalItem } from "../common/CommonFunctions";
+import { autoCompleteDropdown } from "../common/CommonFunctions";
 import _, { debounce } from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
@@ -32,6 +32,7 @@ import TourWrapper from "../common/Tour/TourWrapper";
 import { useTranslation } from "react-i18next";
 import { Steps } from "./TourMessages";
 import TooltipCustom from "../common/Tooltip";
+import { label } from "react-dom-factories";
 
 
 var CryptoJS = require('crypto-js')
@@ -48,10 +49,8 @@ const gridOptions = {
 };
 function UserRegistration(props) {
 
-  let child = React.createRef();
   const { t } = useTranslation("UserRegistration")
   const [token, setToken] = useState("");
-  const [countryCode, setCountryCode] = useState(false);
   const [lowerCaseCheck, setLowerCaseCheck] = useState(false);
   const [upperCaseCheck, setUpperCaseCheck] = useState(false);
   const [numberCheck, setNumberCheck] = useState(false);
@@ -124,7 +123,6 @@ function UserRegistration(props) {
   const [costingTableChanged, setCostingTableChanged] = useState(false)
   const [simulationTableChanged, setSimulationTableChanged] = useState(false)
   const [masterTableChanged, setMasterTableChanged] = useState(false)
-  const [onboardingTableChanged, setOnboardingTableChanged] = useState(false)
   const [isDepartmentUpdated, setIsDepartmentUpdated] = useState(false)
   const [selectedPlants, setSelectedPlants] = useState([])
   const dispatch = useDispatch()
@@ -141,19 +139,15 @@ function UserRegistration(props) {
   const masterLevelSelectList = useSelector(state => state.auth.masterLevelSelectList)
   const registerUserData = useSelector(state => state.auth.registerUserData)
   const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
-  const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
   const levelList = useSelector(state => state.auth.levelList)
   const OnboardingLevelSelectList = useSelector(state => state.auth.OnboardingLevelSelectList)
   const plantSelectListForDepartment = useSelector(state => state.auth.plantSelectListForDepartment);
   const approvalTypeCosting = useSelector(state => state.comman.approvalTypeCosting)
-  const approvalTypeCosting1 = useSelector(state => state.comman)
 
-  console.log('approvalTypeCosting: ', approvalTypeCosting1);
   const approvalTypeSimulation = useSelector(state => state.comman?.approvalTypeSimulation)
   const approvalTypeMaster = useSelector(state => state.comman?.approvalTypeMaster)
   const approvalTypeOnboarding = useSelector(state => state.comman?.approvalTypeOnboarding)
 
-  const [maxLength, setMaxLength] = useState(maxLength11);
   const defaultValues = {
     FirstName: props?.data?.isEditFlag && registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',
     MiddleName: props?.data?.isEditFlag && registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '',
@@ -185,10 +179,11 @@ function UserRegistration(props) {
 
   };
   useEffect(() => {
-    dispatch(getApprovalTypeSelectListUserModule((response) => console.log(response), '1'));
-    dispatch(getApprovalTypeSelectListUserModule((response) => console.log(response), '2'));
-    dispatch(getApprovalTypeSelectListUserModule((response) => console.log(response), '3'));
-    dispatch(getApprovalTypeSelectListUserModule((response) => console.log(response), '4'));
+    dispatch(getApprovalTypeSelectListUserModule(() => {}, '1'));
+    dispatch(getApprovalTypeSelectListUserModule(() => {}, '2'));
+    dispatch(getApprovalTypeSelectListUserModule(() => {}, '3'));
+    dispatch(getApprovalTypeSelectListUserModule(() => {}, '4'));
+    
   }, [dispatch]);
 
   useEffect(() => {
@@ -568,9 +563,13 @@ function UserRegistration(props) {
    * @description Used to handle 
   */
   const departmentHandler = (newValue, actionMeta) => {
+    if(selectedPlants.length > 0){
+      setValue('plant', [])
+    }
     if (getConfigurationKey().IsMultipleDepartmentAllowed) {
       setDepartment(newValue)
     } else {
+
       setDepartment([newValue])
       dispatch(getPlantSelectListForDepartment(newValue.value, res => { }))
     }

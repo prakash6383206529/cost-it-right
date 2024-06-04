@@ -409,7 +409,9 @@ const InitiateUnblocking = (props) => {
                                         <Row>
                                             <Col md="3">
                                                 <div className="approval-section mb-2 mt-2">
-                                                    <div className="left-border"><div className='d-flex'>Approval for <TooltipCustom id="Primary_Contact" customClass="mt2 pl-1 ml-5" tooltipText="Please click on the checkboxes to send approval for." /></div></div>                                                    <div className="approval-checkboxes">
+                                                    <div className="left-border"><div className='d-flex'>Approval for <TooltipCustom id="Primary_Contact" customClass="mt2 pl-1 ml-5" 
+      tooltipText="Click checkboxes to send deviation fro approval. If unavailable for LPS or classification, deviation is under approval or approved."
+      /></div></div>                                                    <div className="approval-checkboxes">
                                                         {deviationData && (
                                                             <div>
                                                                 {!deviationData?.ClassificationDeviationIsInApprovalProcess && <label id={`vendorClassification_Checkbox_${deviationData?.ClassificationStatus}`} className={`custom-checkbox ${deviationData?.ClassificationStatus === "Blocked" ? "" : "disabled"}`}>
