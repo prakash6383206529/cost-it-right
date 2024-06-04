@@ -325,81 +325,80 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                     )}
                                 </Col>
                             </Row >
-                        </form>
-                    </div>
-
-                    <br />
-                    <Col md="12" className="mb-2 pl-2 pr-3">
-                        <Table className="table mb-0 forging-cal-table" size="sm">
-                            <thead>
-                                <tr>
-                                    <th>{`Index`}</th>
-                                    <th>{`Commodity Name (In index)`}</th>
-                                    <th>{`Commodity Name (In CIR)`}</th>
-                                    <th className='text-right'>{`Action`}</th>
-                                </tr>
-                            </thead>
-                            <tbody >
-                                {gridData.length > 0 ? (
-                                    <>
-                                        {gridData.map((item, index) => (
-                                            <tr key={index}>
-                                                <td>{item.Index}</td>
-                                                <td>{item.MaterialName}</td>
-                                                <td>{item.MaterialNameCustom}</td>
-                                                <td className='text-right'>
-                                                    <button
-                                                        className="Edit"
-                                                        title='Edit'
-                                                        type={"button"}
-                                                        onClick={() => editItemDetails(index)}
-                                                    />
-                                                    <button
-                                                        className="Delete ml-1"
-                                                        title='Delete'
-                                                        type={"button"}
-                                                        onClick={() => deleteItem(index)}
-                                                    />
+                            <br />
+                            <Col md="12" className="mb-2 pl-2 pr-3">
+                                <Table className="table mb-0 forging-cal-table" size="sm">
+                                    <thead>
+                                        <tr>
+                                            <th>{`Index`}</th>
+                                            <th>{`Commodity Name (In index)`}</th>
+                                            <th>{`Commodity Name (In CIR)`}</th>
+                                            <th className='text-right'>{`Action`}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        {gridData.length > 0 ? (
+                                            <>
+                                                {gridData.map((item, index) => (
+                                                    <tr key={index}>
+                                                        <td>{item.Index}</td>
+                                                        <td>{item.MaterialName}</td>
+                                                        <td>{item.MaterialNameCustom}</td>
+                                                        <td className='text-right'>
+                                                            <button
+                                                                className="Edit"
+                                                                title='Edit'
+                                                                type={"button"}
+                                                                onClick={() => editItemDetails(index)}
+                                                            />
+                                                            <button
+                                                                className="Delete ml-1"
+                                                                title='Delete'
+                                                                type={"button"}
+                                                                onClick={() => deleteItem(index)}
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </>
+                                        ) : (
+                                            <tr>
+                                                <td colSpan={4}>
+                                                    <NoContentFound title={EMPTY_DATA} />
                                                 </td>
                                             </tr>
-                                        ))}
-                                    </>
-                                ) : (
-                                    <tr>
-                                        <td colSpan={4}>
-                                            <NoContentFound title={EMPTY_DATA} />
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </Table>
-                    </Col>
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </Col>
 
-                    <Row className=" no-gutters justify-content-between">
-                        <div className="col-md-12">
-                            <div className="text-right ">
-                                <button
-                                    id="AddMaterialType_Cancel"
-                                    type="button"
-                                    onClick={cancelHandler}
-                                    value="CANCEL"
-                                    className="mr15 cancel-btn"
-                                >
-                                    <div className={"cancel-icon"}></div>
-                                    CANCEL
-                                </button>
-                                <button
-                                    id="AddMaterialType_Save"
-                                    type="submit"
-                                    className="user-btn save-btn"
-                                >
-                                    {" "}
-                                    <div className={"save-icon"}></div>
-                                    {isEditFlag ? "UPDATE" : "SAVE"}
-                                </button>
-                            </div>
-                        </div>
-                    </Row>
+                            <Row className=" no-gutters justify-content-between">
+                                <div className="col-md-12">
+                                    <div className="text-right ">
+                                        <button
+                                            id="AddMaterialType_Cancel"
+                                            type="button"
+                                            onClick={cancelHandler}
+                                            value="CANCEL"
+                                            className="mr15 cancel-btn"
+                                        >
+                                            <div className={"cancel-icon"}></div>
+                                            CANCEL
+                                        </button>
+                                        <button
+                                            id="AddMaterialType_Save"
+                                            type="submit"
+                                            className="user-btn save-btn"
+                                        >
+                                            {" "}
+                                            <div className={"save-icon"}></div>
+                                            {isEditFlag ? "UPDATE" : "SAVE"}
+                                        </button>
+                                    </div>
+                                </div>
+                            </Row>
+                        </form>
+                    </div>
                 </Container>
             </Drawer>
             {state.isOpenIndex && (

@@ -953,8 +953,25 @@ export const RMMaterialListingTempData = [
         "PremiumCurrency": "20 mm",
     }
 ]
-
-
+/**
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const IndexCommodityListing = [
+    { label: "Index", value: "Index" }, 
+]
+export const IndexCommodityListingTempData = [
+    {
+        "Index": "13CF2",      
+    }
+]
+export const CommodityInIndexListing = [
+    { label: "Commodity (In Index)", value: "CommodityInIndex" }, 
+]
+export const CommodityInIndexListingTempData = [
+    {
+        "CommodityInIndex": "21FD2",      
+    }
+]
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -5624,6 +5641,14 @@ export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
     { label: "Index", value: "Index", },
     { label: "Commodity Name (In index)", value: "MaterialName", },
     { label: "Commodity Name (In CIR)", value: "MaterialNameCustom", },
+]
+
+export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
+    { label: "Index", value: "Index", },  
+]
+
+export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
+    { label: "Commodity (In Index)", value: "Index", },  
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [

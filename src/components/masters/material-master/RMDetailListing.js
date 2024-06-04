@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
-import {
-  getMaterialTypeDataListAPI,
-  deleteMaterialTypeAPI,
-} from "../actions/Material";
-import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import { getCommodityStandardizationDataListAPI } from "../actions/Indexation";import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
@@ -67,7 +63,7 @@ const RMDetailListing = () => {
   const getListData = () => {
     setState((prevState) => ({ ...prevState, isLoader: true }));
     dispatch(
-      getMaterialTypeDataListAPI((res) =>
+      getCommodityStandardizationDataListAPI((res) =>
         setState((prevState) => ({ ...prevState, isLoader: false }))
       )
     );
@@ -117,25 +113,8 @@ const RMDetailListing = () => {
   const deleteItem = (Id) => {
     setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
   };
-  /**
-   * @method confirmDelete
-   * @description confirm delete Raw Material
-   */
 
-  const confirmDelete = (ID) => {
-    dispatch(
-      deleteMaterialTypeAPI(ID, (res) => {
-        if (res.status === 417 && res.data.Result === false) {
-          Toaster.error(res.data.Message);
-        } else if (res && res.data && res.data.Result === true) {
-          Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
-          setState((prevState) => ({ ...prevState, dataCount: 0 }));
-          getListData();
-        }
-      })
-    );
-    setState((prevState) => ({ ...prevState, showPopup: false }));
-  };
+
   /**
     * @method toggleExtraData
    * @description Handle specific module tour state to display lorem data
@@ -147,7 +126,7 @@ const RMDetailListing = () => {
     }, 100);
   }
   const onPopupConfirm = () => {
-    confirmDelete(state.deletedId);
+    //confirmDelete(state.deletedId);
   };
 
   const closePopUp = () => {

@@ -19,9 +19,9 @@ export const config = () => {
 
 
 // DEVELOPMENT
-//const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.11.208:3030/api/v1`
-const BASE_URL = `http://10.10.1.100:10152/api/v1`
+// const BASE_URL = `http://10.10.1.100:10152/api/v1`
 //const BASE_URL = `http://10.10.1.100:10162/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
 // const BASE_URL = `http://10.10.8.160/api/v1`;  //
@@ -80,10 +80,15 @@ export const API = {
   getRowGrade: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-grade`,
   getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-specification`,
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
+ 
+  ///INDEXATION
   getCommoditySelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
   getCommodityNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
   getCommodityCustomNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
-
+  createCommodityStandardization: `${BASE_URL}/masters-material/create-material-type`,
+  getCommodityStandardizationDataList: `${BASE_URL}/masters-material/get-all-material-type`,
+  getCommodityIndexDataList: `${BASE_URL}/masters-material/get-commodity-exchange`,
+  getCommodityInIndexDataList: `${BASE_URL}/masters-material/get-commodity`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -1192,9 +1197,18 @@ export const GET_PLANT_SELECTLIST_SUCCESS = 'GET_PLANT_SELECTLIST_SUCCESS'
 export const GET_PLANT_SELECTLIST_BY_TYPE = 'GET_PLANT_SELECTLIST_BY_TYPE'
 export const GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST = 'GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST'
 export const GET_USERS_MASTER_LEVEL_API = 'GET_USERS_MASTER_LEVEL_API'
+
+//INDEXATION
 export const GET_COMMODITY_SELECTLIST_BY_TYPE = 'GET_COMMODITY_SELECTLIST_BY_TYPE'
 export const GET_COMMODITYNAME_SELECTLIST_BY_TYPE = 'GET_COMMODITYNAME_SELECTLIST_BY_TYPE'
 export const GET_COMMODITYCUSTOMNAME_SELECTLIST_BY_TYPE = 'GET_COMMODITYCUSTOMNAME_SELECTLIST_BY_TYPE'
+export const CREATE_COMMODITY_SUCCESS = 'CREATE_COMMODITY_SUCCESS'
+export const CREATE_COMMODITY_FAILURE = 'CREATE_COMMODITY_FAILURE'
+export const GET_COMMODITYSTANDARDIZATION_DATALIST_SUCCESS = 'GET_COMMODITYSTANDARDIZATION_DATALIST_SUCCESS'
+export const GET_INDEXCOMMODITY_DATALIST_SUCCESS = 'GET_INDEXCOMMODITY_DATALIST_SUCCESS'
+export const GET_COMMODITYININDEX_DATALIST_SUCCESS ='GET_COMMODITYININDEX_DATALIST_SUCCESS'
+export const GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD = 'GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD'
+export const GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD = 'GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
