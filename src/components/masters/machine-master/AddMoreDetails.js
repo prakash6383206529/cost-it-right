@@ -220,14 +220,14 @@ class AddMoreDetails extends Component {
 
   commonFunction(plantId = '') {
     let levelDetailsTemp = []
-    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.CostingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
     let obj = {
       TechnologyId: MACHINE_MASTER_ID,
       DepartmentId: userDetails().DepartmentId,
       UserId: loggedInUserId(),
       Mode: 'master',
-      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.CostingTypeId),
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       plantId: plantId
     }
     if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
@@ -246,10 +246,14 @@ class AddMoreDetails extends Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
+    console.log('nextProps: ', nextProps);
 
+    console.log('this.props.data: ', this.props.data);
+    this.setState({ selectedCustomer: this?.props?.data?.selectedCustomer, costingTypeId: this?.props?.data?.costingTypeId })
     setTimeout(() => {
       if (nextProps.data !== this.props.data) {
         const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId, vendorName, client } = nextProps.data;
+        console.log('selectedCustomer: ', selectedCustomer);
         if (selectedPlants && Object.keys(selectedPlants)?.length > 0) {
           this.handlePlants(selectedPlants)
           if (machineType.value) {
@@ -292,7 +296,7 @@ class AddMoreDetails extends Component {
           minDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '',
           selectedCustomer: selectedCustomer,
           selectedVedor: selectedVedor,
-          CostingTypeId: costingTypeId
+          costingTypeId: costingTypeId
         }, () => {
           // if (machineType && machineType.value) {
           //   this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
@@ -633,7 +637,7 @@ class AddMoreDetails extends Component {
             obj.effectiveDate = effectiveDate
             obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
             obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
-            obj.customerId = this.state.customerId ? this.state.customerId : ''
+            obj.customerId = this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : ''
             this.props.getPowerCostUnit(obj, res => {
               let Data = res?.data?.DynamicData;
               if (res && res.data && res.data.Message !== '') {
@@ -893,7 +897,7 @@ class AddMoreDetails extends Component {
         obj.effectiveDate = date
         obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
         obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
-        obj.customerId = this.state.customerId ? this.state.customerId : ''
+        obj.customerId = this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : ''
         this.props.getPowerCostUnit(obj, res => {
           let Data = res?.data?.DynamicData;
           if (res && res.data && res.data.Message !== '') {
@@ -1006,7 +1010,7 @@ class AddMoreDetails extends Component {
           obj.effectiveDate = effectiveDate
           obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
           obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
-          obj.customerId = this.state.customerId ? this.state.customerId : ''
+          obj.customerId = this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : ''
           this.props.getPowerCostUnit(obj, res => {
             let Data = res.data.DynamicData;
             if (res && res.data && res.data.Message !== '') {
@@ -2024,7 +2028,7 @@ class AddMoreDetails extends Component {
 
     let requestData = {
       IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
-      CostingTypeId: this.state.CostingTypeId,
+      CostingTypeId: this.state.costingTypeId,
       MachineId: MachineID,
       Manufacture: values.Manufacture,
       YearOfManufacturing: values.YearOfManufacturing,
@@ -2082,8 +2086,8 @@ class AddMoreDetails extends Component {
       TotalLabourCostPerYear: values.TotalLabourCostPerYear, // Need to look for this
       IsVendor: false,
       IsDetailedEntry: true,
-      VendorId: this.state.CostingTypeId !== VBCTypeId ? userDetail.ZBCSupplierInfo.VendorId : this.state.selectedVedor.value,
-      VendorName: this.state.CostingTypeId !== VBCTypeId ? '' : this.state.selectedVedor.label,
+      VendorId: this.state.costingTypeId !== VBCTypeId ? userDetail.ZBCSupplierInfo.VendorId : this.state.selectedVedor.value,
+      VendorName: this.state.costingTypeId !== VBCTypeId ? '' : this.state.selectedVedor.label,
       MachineNumber: values.MachineNumber,
       MachineName: values.MachineName,
       MachineTypeId: machineType ? machineType.value : '',
@@ -2105,8 +2109,8 @@ class AddMoreDetails extends Component {
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
       PowerEntryId: powerIdFromAPI,
-      CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
-      CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
+      CustomerId: this.state.costingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
+      CustomerName: this.state.costingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
       selectedCustomer: this.state.selectedCustomer,
       selectedVedor: this.state.selectedVedor,
       LoanCRMHead: crmHeads.LoanCRMHead ? crmHeads.LoanCRMHead : '',
@@ -2184,7 +2188,7 @@ class AddMoreDetails extends Component {
       }
       const formData = {
         IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
-        CostingTypeId: this.state.CostingTypeId,
+        CostingTypeId: this.state.costingTypeId,
         MachineId: MachineID,
         Manufacture: values.Manufacture,
         YearOfManufacturing: values.YearOfManufacturing,
@@ -2241,8 +2245,8 @@ class AddMoreDetails extends Component {
         TotalLabourCostPerYear: values.TotalLabourCostPerYear, //need to ask from where it come
         IsVendor: false,
         IsDetailedEntry: true,
-        VendorId: this.state.CostingTypeId !== VBCTypeId ? userDetail.ZBCSupplierInfo.VendorId : this.state.selectedVedor.value,
-        VendorName: this.state.CostingTypeId !== VBCTypeId ? '' : this.state.selectedVedor.label,
+        VendorId: this.state.costingTypeId !== VBCTypeId ? userDetail.ZBCSupplierInfo.VendorId : this.state.selectedVedor.value,
+        VendorName: this.state.costingTypeId !== VBCTypeId ? '' : this.state.selectedVedor.label,
         MachineNumber: values.MachineNumber,
         MachineName: values.MachineName,
         MachineTypeId: machineType ? machineType.value : '',
@@ -2265,8 +2269,8 @@ class AddMoreDetails extends Component {
         FuelEntryId: this.state.FuelEntryId,
         IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
         PowerEntryId: powerIdFromAPI,
-        CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
-        CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
+        CustomerId: this.state.costingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
+        CustomerName: this.state.costingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
         selectedCustomer: this.state.selectedCustomer ? this.state.selectedCustomer : '',
         selectedVedor: this.state.selectedVedor,
         LoanCRMHead: crmHeads.LoanCRMHead ? crmHeads.LoanCRMHead : '',
@@ -4611,7 +4615,7 @@ class AddMoreDetails extends Component {
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntry={false}
-              costingTypeId={this.state.CostingTypeId}
+              costingTypeId={this.state.costingTypeId}
               levelDetails={this.state.levelDetails}
             />
           )
