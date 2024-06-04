@@ -478,30 +478,33 @@ function UserRegistration(props) {
     }
 
     if (label === 'approvalTypeCosting') {
-      approvalTypeCosting && approvalTypeCosting.map(item => {
-        if (item.Value === '0') {
-          temp.push({ label: "Select All", value: '0' });
-
-        } else {
-          temp.push({ label: item.Text, value: item.Value })
+      approvalTypeCosting && approvalTypeCosting.forEach(item => {
+        if (item.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value });
         }
       });
-      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+          // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isEditIndex) {
+        temp.unshift({ label: "Select All", value: '0' });
+      }
+          const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
       if (isSelectAllOnly) {
         return [];
       } else {
         return temp;
       }
     }
+    
     if (label === 'approvalTypeSimulation') {
       approvalTypeSimulation && approvalTypeSimulation.map(item => {
-        if (item.Value === '0') {
-          temp.push({ label: "Select All", value: '0' });
-
-        } else {
-          temp.push({ label: item.Text, value: item.Value })
+        if (item.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value });
         }
       });
+          // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isSimulationEditIndex) {
+        temp.unshift({ label: "Select All", value: '0' });
+      }
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
       if (isSelectAllOnly) {
         return [];
@@ -511,13 +514,14 @@ function UserRegistration(props) {
     }
     if (label === 'approvalTypeMaster') {
       approvalTypeMaster && approvalTypeMaster.map(item => {
-        if (item.Value === '0') {
-          temp.push({ label: "Select All", value: '0' });
-
-        } else {
-          temp.push({ label: item.Text, value: item.Value })
+        if (item.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value });
         }
       });
+          // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isMasterEditIndex) {
+        temp.unshift({ label: "Select All", value: '0' });
+      }
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
       if (isSelectAllOnly) {
         return [];
@@ -527,13 +531,14 @@ function UserRegistration(props) {
     }
     if (label === 'approvalTypeOnboarding') {
       approvalTypeOnboarding && approvalTypeOnboarding.map(item => {
-        if (item.Value === '0') {
-          temp.push({ label: "Select All", value: '0' });
-
-        } else {
-          temp.push({ label: item.Text, value: item.Value })
+        if (item.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value });
         }
       });
+          // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isOnboardingEditIndex) {
+        temp.unshift({ label: "Select All", value: '0' });
+      }
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
       if (isSelectAllOnly) {
         return [];
