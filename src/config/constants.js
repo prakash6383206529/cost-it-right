@@ -2059,9 +2059,9 @@ export const OUTSOURCING = "Outsourcing"
 export const INSIGHT_SIMULATION_REPORT = "Simulation Insights"
 export const NFR_INSIGHT_DETAILS = 'NFR Insights' //MINDA
 export const lOGIN_AUDIT = 'Login Audit'
-export const VENDOR_CLASSIFICATION = 'Vendor Classification'
+export const VENDOR_CLASSIFICATION = 'Vendor Classification Status'
 export const INITIATE_UNBLOCKING = 'Initiate Unblocking'
-export const LPS_RATING = 'LPS Rating'
+export const LPS_RATING = 'LPS Rating Status'
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
