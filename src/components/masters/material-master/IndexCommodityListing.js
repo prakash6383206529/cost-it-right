@@ -388,7 +388,7 @@ const IndexCommodityListing = () => {
               <>
                 <>
                   <ExcelFile
-                    filename={"Index Commodity"}
+                    filename={"Index"}
                     fileExtension={".xls"}
                     element={
                       <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
@@ -471,8 +471,8 @@ const IndexCommodityListing = () => {
           isOpen={isBulkUpload}
           closeDrawer={closeBulkUploadDrawer}
           isEditFlag={false}
-          fileName={"Index Commodity"}
-          messageLabel={"Index Commodity"}
+          fileName={"Index"}
+          messageLabel={"Index"}
           anchor={"right"}
         />
       )}

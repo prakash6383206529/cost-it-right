@@ -418,7 +418,7 @@ const RMMaterialListing = () => {
               <>
                 <>
                   <ExcelFile
-                    filename={"RM Index Data"}
+                    filename={"Index Data"}
                     fileExtension={".xls"}
                     element={
                       <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
@@ -466,7 +466,7 @@ const RMMaterialListing = () => {
                 floatingFilter={true}
                 domLayout="autoHeight"
                 // columnDefs={c}
-                rowData={[]}
+                rowData={rmIndexDataList}
 
                 pagination={true}
                 paginationPageSize={defaultPageSize}
@@ -484,16 +484,16 @@ const RMMaterialListing = () => {
                 suppressRowClickSelection={true}
               >
 
-                <AgGridColumn field="Index" headerName="Index"></AgGridColumn>
-                <AgGridColumn field="Commodity Name"></AgGridColumn>
-                <AgGridColumn field="UOM"></AgGridColumn>
-                <AgGridColumn field="Currency"></AgGridColumn>
-                <AgGridColumn field="Effective Date"></AgGridColumn>
-                <AgGridColumn field="Index Rate (Currency)"></AgGridColumn>
-                <AgGridColumn field="Premium (Charge)"></AgGridColumn>
-                <AgGridColumn field="Exchange rate (INR)"></AgGridColumn>
-                <AgGridColumn field="Currency Rate"></AgGridColumn>
-                <AgGridColumn field="Conversion Rate (INR)"></AgGridColumn>
+                <AgGridColumn field="CommodityExchangeName" headerName="Index"></AgGridColumn>
+                <AgGridColumn field="CommodityName" headerName="Commodity Name" ></AgGridColumn>
+                <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                <AgGridColumn field="EffectiveDate" headerName="Effective Date"></AgGridColumn>
+                <AgGridColumn field="Rate" headerName="Index Rate (Currency)"></AgGridColumn>
+                <AgGridColumn field="ExchangeRateSourceName" headerName="Premium (Charge)"></AgGridColumn>
+                <AgGridColumn field="ExchangeRate" headerName="Exchange rate (INR)"></AgGridColumn>
+                <AgGridColumn field="CurrencyCharge" headerName="Currency Rate"></AgGridColumn>
+                <AgGridColumn field="RateConversion" headerName="Conversion Rate (INR)"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
 
@@ -519,8 +519,8 @@ const RMMaterialListing = () => {
           isOpen={isBulkUpload}
           closeDrawer={closeBulkUploadDrawer}
           isEditFlag={false}
-          fileName={"RM Index Data"}
-          messageLabel={"RM Index Data"}
+          fileName={"Index Data"}
+          messageLabel={"Index Data"}
           anchor={"right"}
         />
       )}

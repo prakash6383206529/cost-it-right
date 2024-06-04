@@ -164,9 +164,9 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', false, true), updatedTempData);
             case 'Overhead':
                 return this.returnExcelColumn(Overhead, OverheadTempData);
-            case 'RM Index Data':
+            case 'Index Data':
                 return this.returnExcelColumn(RMMaterialListing, RMMaterialListingTempData);
-            case 'Index Commodity':
+            case 'Index':
                 return this.returnExcelColumn(IndexCommodityListing, IndexCommodityListingTempData);
             case 'Commodity (In Index)':
                 return this.returnExcelColumn(CommodityInIndexListing, CommodityInIndexListingTempData);

@@ -933,24 +933,30 @@ export const RMSpecificationXLTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const RMMaterialListing = [
-    { label: "MaterialIndex", value: "MaterialIndex" },
-    { label: "MaterialName", value: "MaterialName" },
-    { label: "UOM", value: "UOM" },
-    { label: "Currency", value: "Currency" },
-    { label: "EffectiveDate", value: "EffectiveDate" },
-    { label: "IndexRate(Currency)", value: "IndexRateCurrency" },
-    { label: "PremiumCurrency", value: "PremiumCurrency" },
+    { label: "Index", value: "CommodityExchangeName", },
+    { label: "Commodity Name", value: "CommodityName", },
+    { label: "UOM", value: "UOM", },
+    { label: "Currency", value: "Currency", },
+    { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Index Rate (Currency)", value: "Rate", },
+    { label: "Premium (Charge)", value: "ExchangeRateSourceName", },
+    { label: "Exchange rate (INR)", value: "ExchangeRate", },
+    { label: "Currency Rate", value: "CurrencyCharge", },
+    { label: "Conversion Rate (INR)", value: "RateConversion", },
 ]
 
 export const RMMaterialListingTempData = [
     {
-        "MaterialIndex": "13Rf2",
-        "MaterialName": "steel",
+        "CommodityExchangeName": "13Rf2",
+        "CommodityName": "steel",
         "UOM": "10 mm",
         "Currency": "USD",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IndexRateCurrency": "USD",
-        "PremiumCurrency": "20 mm",
+        "Rate": "USD",
+        "ExchangeRateSourceName": "20 mm",
+        "ExchangeRate": "20 mm",
+        "CurrencyCharge": "USD",
+        "RateConversion": "20 mm",
     }
 ]
 /**
@@ -965,7 +971,7 @@ export const IndexCommodityListingTempData = [
     }
 ]
 export const CommodityInIndexListing = [
-    { label: "Commodity (In Index)", value: "CommodityName" }, 
+    { label: "Index", value: "CommodityName" }, 
 ]
 export const CommodityInIndexListingTempData = [
     {
@@ -974,7 +980,7 @@ export const CommodityInIndexListingTempData = [
 ]
 export const StandardizedCommodityNameListing = [
     { label: "Index", value: "CommodityExchangeName" }, 
-    { label: "Commodity (In Index)", value: "CommodityName" }, 
+    { label: "Commodity Name (In Index)", value: "CommodityName" }, 
     { label: "Commodity Name (In CIR)", value: "CustomMaterialName" }, 
 ]
 export const StandardizedCommodityNameTempData = [
@@ -5664,13 +5670,16 @@ export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
-    { label: "Material Index", value: "MaterialIndex", },
-    { label: "Material Name", value: "MaterialName", },
+    { label: "Index", value: "CommodityExchangeName", },
+    { label: "Commodity Name", value: "CommodityName", },
     { label: "UOM", value: "UOM", },
     { label: "Currency", value: "Currency", },
     { label: "Effective Date", value: "EffectiveDate", },
-    { label: "Index Rate (Currency)", value: "IndexRateCurrency", },
-    { label: "Premium Currency", value: "PremiumCurrency", },
+    { label: "Index Rate (Currency)", value: "Rate", },
+    { label: "Premium (Charge)", value: "ExchangeRateSourceName", },
+    { label: "Exchange rate (INR)", value: "ExchangeRate", },
+    { label: "Currency Rate", value: "CurrencyCharge", },
+    { label: "Conversion Rate (INR)", value: "RateConversion", },
 ]
 
 export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [

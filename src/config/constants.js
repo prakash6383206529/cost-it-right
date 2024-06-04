@@ -82,15 +82,21 @@ export const API = {
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
  
   ///INDEXATION
-  getCommoditySelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
-  getCommodityNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
-  getCommodityCustomNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
-  createCommodityStandardization: `${BASE_URL}/masters-material/create-material-type`,
+  getCommoditySelectList: `${BASE_URL}/masters-material/select-list-commodity-exchange`,
+  getCommodityNameSelectList: `${BASE_URL}/masters-material/select-list-commodity`,
+  getCommodityCustomNameSelectList: `${BASE_URL}/masters-material/select-list-commodity-custom-material-name`,
+  createCommodityStandardization: `${BASE_URL}/masters-material/create-commodity-material-standardization`,
   getCommodityStandardizationDataList: `${BASE_URL}/masters-material/get-all-material-type`,
   getCommodityIndexDataList: `${BASE_URL}/masters-material/get-commodity-exchange`,
   getCommodityInIndexDataList: `${BASE_URL}/masters-material/get-commodity`,
   getStandardizedCommodityDataList: `${BASE_URL}/masters-material/get-commodity-material-standardization`,
-  getIndexDataList: `${BASE_URL}/masters-material/get-commodity-material-standardization`,
+  getIndexDataList: `${BASE_URL}/masters-material/get-commodity-material-details`,
+  deleteIndexData: `${BASE_URL}/masters-material/delete-commodity-material-details`,
+  updateIndexData: `${BASE_URL}/masters-material/update-commodity-material-details`,
+  createIndexData: `${BASE_URL}/masters-material/create-commodity-material-details`,
+  bulkUploadIndexData:`${BASE_URL}/masters-material/bulk-upload-for-commodity-material-details`,
+  bulkUploadStandardizedCommodity:`${BASE_URL}/masters-material/bulk-upload-for-commodity-exchange`,
+  updateCommodityStandardization:`${BASE_URL}/update-commodity-material-standardization`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -2799,8 +2805,11 @@ export const SUB_ASSEMBLY = 'Sub Assembly';
 //MASTER NAMES FOR BULK UPLOAD
 export const RMDOMESTICBULKUPLOAD = 'RM Domestic';
 export const RMIMPORTBULKUPLOAD = 'RM Import';
-export const RMSPECIFICATION = 'RM Specification'
-export const RMMATERIALBULKUPLOAD = 'RM Index Data'
+export const RMSPECIFICATION = 'RM Specification';
+export const RMMATERIALBULKUPLOAD = 'RM Index Data';
+export const INDEXCOMMODITYBULKUPLOAD = 'Index';
+export const RMDETAILBULKUPLOAD = 'Standardized Commodity Name';
+export const COMMODITYININDEXBULKUPLOAD = 'Commodity (In Index)';
 export const BOPDOMESTICBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Domestic";
 export const INSERTDOMESTICBULKUPLOAD = 'Insert Domestic';
 export const BOPIMPORTBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Import";

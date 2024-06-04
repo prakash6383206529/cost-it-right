@@ -361,7 +361,7 @@ const RMDetailListing = () => {
               <>
                 <>
                   <ExcelFile
-                    filename={"Standardized Material Name"}
+                    filename={"Standardized Commodity Name"}
                     fileExtension={".xls"}
                     element={
                       <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />

@@ -1,6 +1,6 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Table, Container } from "reactstrap";
-import { useDispatch , useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
@@ -10,7 +10,13 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import AddGrade from "./AddGrade";
 import Button from '../../layout/Button';
-import { getCommoditySelectListByType, getCommodityNameSelectListByType, getCommodityCustomNameSelectListByType } from '../../masters/actions/Indexation'
+import {
+    getCommoditySelectListByType, getCommodityNameSelectListByType, getCommodityCustomNameSelectListByType,
+    getStandardizedCommodityListAPI, createCommodityStandardizationData, updateCommodityStandardization
+} from '../../masters/actions/Indexation'
+import { debounce } from 'lodash';
+import Toaster from '../../common/Toaster';
+import { loggedInUserId } from "../../../helper/auth";
 
 const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
 
@@ -34,6 +40,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
     const customNameCommodityData = useSelector(state => state.comman.customNameCommodityData);
 
     useEffect(() => {
+        //dispatch(getStandardizedCommodityListAPI(() => { }))
         dispatch(getCommoditySelectListByType(() => { }))
         dispatch(getCommodityNameSelectListByType(() => { }))
         dispatch(getCommodityCustomNameSelectListByType(() => { }))
@@ -116,6 +123,58 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
             addRow()
         }
     };
+
+    // const onSubmit = debounce(values => {
+    //     if (isEditFlag) {
+    //     //   if (Number(materialTypeData?.materialTypeData?.Density) === Number(values.CalculatedDensityValue) && materialTypeData?.materialTypeData?.MaterialType === values.MaterialType) {
+    //     //     cancel('cancel');
+    //     //     return false;
+    //     //   }
+
+    //       setState(prevState => ({ ...prevState, setDisable: true }));
+
+    //       const updateData = {
+    //         //Index: ID,
+    //         ModifiedBy: loggedInUserId(),
+    //         CreatedDate: '',
+    //         MaterialName: values.MaterialName,
+    //         MaterialNameCustom: values.MaterialNameCustom,
+    //         IsActive: true,
+    //       };
+
+    //       dispatch(updateCommodityStandardization(updateData, res => {
+    //         setState(prevState => ({ ...prevState, setDisable: false }));
+    //         if (res?.data?.Result) {
+    //           Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
+    //           dispatch(getStandardizedCommodityListAPI('', res => { }));
+    //           reset();
+    //           toggleDrawer('', updateData, 'submit');
+    //         }
+    //       }));
+    //     } else {
+    //       setState(prevState => ({ ...prevState, setDisable: true }));
+
+    //       const formData = {
+    //         Index: values.Index,
+    //         MaterialName: values.MaterialName,
+    //         MaterialNameCustom: values.MaterialNameCustom,
+    //         // MaterialType: values.MaterialType,
+    //         // CalculatedDensityValue: values.CalculatedDensityValue,
+    //         CreatedBy: loggedInUserId(),
+    //         IsActive: true,
+    //       };
+
+    //       dispatch(createCommodityStandardizationData(formData, res => {
+    //         setState(prevState => ({ ...prevState, setDisable: false }));
+    //         if (res?.data?.Result) {
+    //           Toaster.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
+    //           dispatch(getStandardizedCommodityListAPI('', res => { }));
+    //           reset();
+    //           toggleDrawer('', formData, 'submit');
+    //         }
+    //       }));
+    //     }
+    //   }, 500);
 
     const updateRow = () => {
         const obj = {
@@ -236,11 +295,11 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         rules={{ required: true }}
                                         register={register}
                                         defaultValue={''}
-                                        //options={renderListing('Applicability')}
-                                        options={renderListing("index")}
+                                        options={renderListing('Applicability')}
+                                        //options={renderListing("index")}
                                         mandatory={true}
                                         handleChange={(option) => handleInputChange(option, 'Index')}
-                                        errors={errors.index}
+                                        errors={errors.Index}
                                     />
                                 </Col>
                                 <Col md="4">
@@ -253,8 +312,8 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                         rules={{ required: true }}
                                         register={register}
                                         defaultValue={''}
-                                        //options={renderListing('Applicability')}
-                                        options={renderListing('commodityName')}
+                                        options={renderListing('Applicability')}
+                                        //options={renderListing('commodityName')}
                                         mandatory={true}
                                         handleChange={(option) => handleInputChange(option, 'MaterialName')}
                                         errors={errors.MaterialName}
@@ -271,8 +330,8 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                             rules={{ required: true }}
                                             register={register}
                                             defaultValue={''}
-                                            // options={renderListing('Applicability')}
-                                            options={renderListing('commodityCustomName')}
+                                            options={renderListing('Applicability')}
+                                            //options={renderListing('commodityCustomName')}
                                             mandatory={true}
                                             handleChange={(option) => handleInputChange(option, 'MaterialNameCustom')}
                                             errors={errors.MaterialNameCustom}
