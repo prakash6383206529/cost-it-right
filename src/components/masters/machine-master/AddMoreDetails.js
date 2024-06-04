@@ -246,10 +246,14 @@ class AddMoreDetails extends Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    console.log('nextProps: ', nextProps);
 
-    console.log('this.props.data: ', this.props.data);
-    this.setState({ selectedCustomer: this?.props?.data?.selectedCustomer, costingTypeId: this?.props?.data?.costingTypeId })
+    this.setState({
+      selectedCustomer: this?.props?.data?.selectedCustomer, costingTypeId: this?.props?.data?.costingTypeId, selectedVedor: this?.props?.data?.selectedVedor,
+      selectedPlants: this?.props?.data?.selectedPlants, effectiveDate: this?.props?.data?.effectiveDate
+
+    })
+    this.props.change('MachineNumber', this?.props?.data?.machineNo)
+    this.props.change('EffectiveDate', this?.props?.data?.effectiveDate)
     setTimeout(() => {
       if (nextProps.data !== this.props.data) {
         const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId, vendorName, client } = nextProps.data;
