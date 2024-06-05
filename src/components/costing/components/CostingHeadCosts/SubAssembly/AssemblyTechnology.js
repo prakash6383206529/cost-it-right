@@ -237,7 +237,7 @@ function AssemblyTechnology(props) {
             checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
 
-        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
         dispatch(gridDataAdded(true))
     }
@@ -372,7 +372,7 @@ function AssemblyTechnology(props) {
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
             item.TotalOperationCost = item?.CostingPartDetails?.TotalOperationCost
-            let request = formatMultiTechnologyUpdate(item, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+            let request = formatMultiTechnologyUpdate(item, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
             }))
 
