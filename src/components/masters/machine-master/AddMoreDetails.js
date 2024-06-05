@@ -249,7 +249,7 @@ class AddMoreDetails extends Component {
 
     this.setState({
       selectedCustomer: this?.props?.data?.selectedCustomer, costingTypeId: this?.props?.data?.costingTypeId, selectedVedor: this?.props?.data?.selectedVedor,
-      selectedPlants: this?.props?.data?.selectedPlants, effectiveDate: this?.props?.data?.effectiveDate
+      selectedPlants: this?.props?.data?.selectedPlants, effectiveDate: this?.props?.data?.effectiveDate, vendorId: this?.props?.data?.selectedVedor?.value
 
     })
     this.props.change('MachineNumber', this?.props?.data?.machineNo)
@@ -2419,12 +2419,45 @@ class AddMoreDetails extends Component {
   * @description POWER OPEN  AND CLOSE
   */
   powerToggle = () => {
-    const { isPowerOpen, machineType, selectedPlants, effectiveDate } = this.state
+    const { isPowerOpen, machineType, selectedPlants, effectiveDate, IsUsesSolarPower, machineFullValue } = this.state
+    console.log('isPowerOpen: ', isPowerOpen);
     const { fieldsObj } = this.props
+    const { initialConfiguration } = this.props
     if ((checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) || effectiveDate === '' || Object.keys(selectedPlants).length === 0 || machineType.length === 0) {
       Toaster.warning('Please fill all mandatory fields');
       scroll.scrollToTop();
       return false;
+    }
+    if (!isPowerOpen) {
+
+      setTimeout(() => {
+        let obj = {}
+        obj.plantId = this.state.selectedPlants?.value
+        obj.effectiveDate = effectiveDate
+        obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
+        obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
+        obj.customerId = this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : ''
+        this.props.getPowerCostUnit(obj, res => {
+          let Data = res?.data?.DynamicData;
+          if (res && res.data && res.data.Message !== '') {
+            Toaster.warning(res.data.Message)
+            machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
+            this.setState({
+              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
+              powerIdFromAPI: Data?.PowerId
+            })
+            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+          } else {
+            //  if(IsUsesSolarPower)
+            machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data?.SolarPowerRatePerUnit : Data?.NetPowerCostPerUnit
+            this.setState({
+              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue?.PowerCostPerUnit, powerId: Data?.PowerId },
+              powerIdFromAPI: Data?.PowerId
+            })
+            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data?.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+          }
+        })
+      }, 1000);
     }
     this.setState({ isPowerOpen: !isPowerOpen })
   }
