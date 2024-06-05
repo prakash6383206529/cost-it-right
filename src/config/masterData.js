@@ -957,19 +957,19 @@ export const RMMaterialListingTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const IndexCommodityListing = [
-    { label: "Index", value: "Index" }, 
+    { label: "Index", value: "Index" },
 ]
 export const IndexCommodityListingTempData = [
     {
-        "Index": "13CF2",      
+        "Index": "13CF2",
     }
 ]
 export const CommodityInIndexListing = [
-    { label: "Commodity (In Index)", value: "CommodityInIndex" }, 
+    { label: "Commodity (In Index)", value: "CommodityInIndex" },
 ]
 export const CommodityInIndexListingTempData = [
     {
-        "CommodityInIndex": "21FD2",      
+        "CommodityInIndex": "21FD2",
     }
 ]
 /**
@@ -5644,11 +5644,11 @@ export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
-    { label: "Index", value: "Index", },  
+    { label: "Index", value: "Index", },
 ]
 
 export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
-    { label: "Commodity (In Index)", value: "Index", },  
+    { label: "Commodity (In Index)", value: "Index", },
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
@@ -5902,8 +5902,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Profit RM Percentage", value: "ProfitRMPercentage", },
     { label: "Profit Fixed Percentage", value: "ProfitFixedPercentage", },
 
-    { label: "Payment Terms On", value: "PaymentTermsOn", },
-    { label: "Payment Term Cost", value: "PaymentTermCost", },
+
     { label: "Packaging Cost Percentage", value: "PackagingCostPercentage", },
     { label: "Packaging Cost", value: "PackagingCost", },
     { label: "Freight Percentage", value: "FreightPercentage", },
@@ -5925,6 +5924,8 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Quantity", value: "NCCPartQuantity", },
     { label: "Is Regularized", value: "IsRegularized", },
     { label: "Basic Price", value: "BasicRate", },
+    { label: "Payment Terms On", value: "PaymentTermsOn", },
+    { label: "Payment Term Cost", value: "PaymentTermCost", },
     { label: "Net Cost Other Currency", value: "NetPOPriceOtherCurrency", },
     { label: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
