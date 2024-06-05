@@ -180,7 +180,7 @@ function AddRMMaster(props) {
 
 
     const onSubmit = debounce(handleSubmit((values) => {
-        console.log('values: ', values);
+        
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -312,10 +312,7 @@ function AddRMMaster(props) {
         let nonFinancialDataNotChanged = (JSON.stringify(rawMaterailDetails.Files) === JSON.stringify(DataToChange?.FileList) && values?.Remarks === DataToChange?.Remark)
         if (state.isEditFlag) {
             if (!isRMAssociated) {
-
-                console.log('financialDataNotChanged: ', financialDataNotChanged);
-                console.log('nonFinancialDataNotChanged: ', nonFinancialDataNotChanged);
-                if (financialDataNotChanged && nonFinancialDataNotChanged) {
+                                                if (financialDataNotChanged && nonFinancialDataNotChanged) {
                     if (!state.isFinalApprovar) {
                         Toaster.warning('Please change data to send RM for approval')
                         return false
@@ -367,7 +364,7 @@ function AddRMMaster(props) {
             return false
         }
     }
-    // console.log('showSendForApproval: ', showSendForApproval());
+    // 
 
     return (
         state.isLoader ? <LoaderCustom customClass="loader-center" /> :

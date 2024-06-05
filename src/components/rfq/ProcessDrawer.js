@@ -30,7 +30,7 @@ function ViewDrawer(props) {
     const dropzone = useRef(null);
 
     const { isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber } = props
-    console.log('AssemblyPartNumber: ', AssemblyPartNumber);
+    
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -276,7 +276,7 @@ function ViewDrawer(props) {
     }
 
     const deleteFile = (FileId, OriginalFileName) => {
-        console.log('FileId, OriginalFileName: ', FileId, OriginalFileName);
+        
         if (dataProps?.isAddFlag ? false : dataProps?.isViewFlag || !isEditAll) {
             return false
         }
@@ -296,7 +296,7 @@ function ViewDrawer(props) {
         }
     }
     const handleChangeStatus = ({ meta, file }, status) => {
-        console.log('file: ', file, status);
+        
         if (status === 'removed') {
             const removedFileName = file.name;
             let tempArr = files.filter(item => item.OriginalFileName !== removedFileName);

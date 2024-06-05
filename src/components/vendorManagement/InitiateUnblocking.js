@@ -26,7 +26,7 @@ import LoaderCustom from '../common/LoaderCustom';
 const InitiateUnblocking = (props) => {
     const location = useLocation();
     const { plantId , vendorId } = location.state || {};
-    console.log('plantId , vendorId: ', plantId , vendorId);
+    
   
     const dispatch = useDispatch();
     const { register, control, setValue, formState: { errors } } = useForm({

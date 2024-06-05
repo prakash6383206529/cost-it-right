@@ -1370,17 +1370,7 @@ setAlreadyInDeviation(true)
         }
         return value
     }
-    // const DrawerToggle = () => {
-    //     // if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
-    //     setDrawerOpen(true)
-    // }
-    // const closeDrawer = () => {
-    //     setDrawerOpen(false)
-    // }
-    // const handlePartNoChange = (value) => {
-    //     console.log('value: ', value);
-    //     setAssemblyPartNumber(value)
-    // }
+    
 
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
