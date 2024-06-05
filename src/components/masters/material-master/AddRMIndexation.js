@@ -58,7 +58,7 @@ function AddRMIndexation(props) {
 
     useEffect(() => {
         console.log('useeffect');
-        dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
+        dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
     }, [])
 
     /**

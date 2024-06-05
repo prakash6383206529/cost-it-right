@@ -27,7 +27,7 @@ function NFRInsightStatusDetailsDrawer(props) {
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
-        dispatch(getPlantSelectListByType(ZBC, '', '', () => { }))
+        dispatch(getPlantSelectListByType(ZBC, 'NFR', '', () => { }))
 
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
