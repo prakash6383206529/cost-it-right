@@ -258,6 +258,24 @@ export function checkExistCosting(data, callback) {
     };
 }
 
+//CHECK FOR VENDOR AND PLANT FOR LPS AND SCN
+export function checkLPSAndSCN(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getVendorPlantClassificationLpsratingForRFQ}?vendorId=${data.VendorId}&plantId=${data.PlantId}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                callback({ error: 'Unexpected result format' });
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback({ error });
+        });
+    };
+}
+
 export function checkRFQBulkUpload(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.checkRFQBulkUpload, data, config());

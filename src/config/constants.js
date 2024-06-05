@@ -292,6 +292,7 @@ export const API = {
   getReporterList: `${BASE_URL}/rfq-user/get-user-select-list`,
   getContactPerson: `${BASE_URL}/rfq-quotation/get-contact-person-by-vendor-selectlist`,
   getVendorNameByVendorSelectList: `${BASE_URL}/vendor/vendor-name-by-vendor-select-list`,
+  getVendorPlantClassificationLpsratingForRFQ : `${BASE_URL}/vendor/check-vendor-plant-classification-lpsrating-for-rfq`,
 
   //BOP DOMESTIC
   createBOP: `${BASE_URL}/masters-bought-out-part/create-bought-out-part`,

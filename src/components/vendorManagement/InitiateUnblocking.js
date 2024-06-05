@@ -9,7 +9,7 @@ import Button from '../layout/Button';
 import SendForApproval from './approval/SendForApproval';
 import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_GUID, LPSAPPROVALTYPEID, ONBOARDINGID, searchCount } from '../../config/constants';
 import Switch from "react-switch";
-
+import { useLocation } from 'react-router-dom';
 import TooltipCustom from '../common/Tooltip';
 import { loggedInUserId, showTitleForActiveToggle, userDetails, userTechnologyLevelDetailsWithoutCostingToApproval } from '../../helper';
 import { getUsersOnboardingLevelAPI } from '../../actions/auth/AuthActions';
@@ -24,6 +24,10 @@ import { MESSAGES } from '../../config/message';
 import LoaderCustom from '../common/LoaderCustom';
 
 const InitiateUnblocking = (props) => {
+    const location = useLocation();
+    const { plantId , vendorId } = location.state || {};
+    console.log('plantId , vendorId: ', plantId , vendorId);
+  
     const dispatch = useDispatch();
     const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
@@ -44,12 +48,22 @@ const InitiateUnblocking = (props) => {
     const [submit, setSubmit] = useState(true)
     const [isLoader, setIsLoader] = useState(false)
     const [CanGoForApproval, setCanGoForApproval] = useState(false)
+
+    useEffect(() => {
+if(vendorId?.label !== '' && plantId?.label  !== '' ){
+    setValue('vendor', vendorId)
+    setSelectedVendor(vendorId)
+    if(plantId){
+        setValue('Plant', plantId)
+        setSelectedPlant(plantId)
+    }
+}
+    }, [location.state]);
     useEffect(() => {
         setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
         dispatch(fetchVendorData());
         if (selectedVendor) {
             dispatch(fetchVendorDependentPlantData(selectedVendor.value));
-            // dispatch(fetchDeviationApprovalData(selectedVendor.Value, selectedPlant.Value)); // Use selectedVendor.Value and selectedPlant.Value to access the values
 
         }
     }, [selectedVendor]);
@@ -62,6 +76,7 @@ const InitiateUnblocking = (props) => {
                     return true
                 } else if (res?.status === 204) {
                     setIsLoader(false);
+                    return false
                 }
             }));
         }
@@ -362,7 +377,7 @@ const InitiateUnblocking = (props) => {
                                 <div className="form-group">
                                     <AsyncSearchableSelectHookForm
                                         label={'Supplier (Code)'}
-                                        name={'SelectVendor'}
+                                        name={'vendor'}
                                         placeholder={'Select'}
                                         Controller={Controller}
                                         control={control}
@@ -373,7 +388,7 @@ const InitiateUnblocking = (props) => {
                                         asyncOptions={vendorFilterList}
                                         mandatory={true}
                                         handleChange={handleVendorChange}
-                                        errors={errors.SelectVendor}
+                                        errors={errors.vendor}
                                         NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                     />
                                 </div>
