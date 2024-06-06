@@ -811,15 +811,17 @@ function LossStandardTable(props) {
                 {`Burning Loss Weight: `}
                 {checkForDecimalAndNull(burningWeight, trim)}
               </span>}
-            <span className="w-50 d-inline-block">
+            {!props.isStamping && <span className="w-50 d-inline-block">
               {`${props.isPlastic ? 'Other' : 'Net'} Loss Weight: `}
               {checkForDecimalAndNull(findLostWeight(tableData), trim)}
-            </span>
+            </span>}
           </div>
         </Col>
       </Row>
     </Fragment>
   )
 }
-
+LossStandardTable.defualtProps = {
+  isStamping: false
+}
 export default React.memo(LossStandardTable)
