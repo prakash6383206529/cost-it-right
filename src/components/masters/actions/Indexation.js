@@ -152,7 +152,7 @@ export function getCommodityStandardizationDataListAPI(callback) {
 export function getCommodityIndexDataListAPI(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
-            commodityExchangeId:"", commodityExchangeName: obj.CommodityExchangeName, description:"",isApplyPagination: isPagination, skip: skip, take: take
+            IndexExchangeId:"", indexExchangeName: obj.IndexExchangeName, description:"",isApplyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getCommodityIndexDataList}?${queryParams}`, config())
@@ -220,7 +220,7 @@ export function getCommodityInIndexDataListAPI(obj, isPagination, skip, take, ca
 export function getStandardizedCommodityListAPI(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
-            commodityMaterialStandardizationId:"", customMaterialName: obj.CustomMaterialName,commodityName: obj.CommodityName, commodityExchangeName:obj.CommodityExchangeName,Remark: '', isApplyPagination: isPagination, skip: skip, take: take
+            commodityStandardizationId:"", commodityStandardName: obj.CommodityStandardName,commodityName: obj.CommodityName, indexExchangeName:obj.IndexExchangeName,Remark: '', isApplyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getStandardizedCommodityDataList}?${queryParams}`, config())
@@ -256,7 +256,7 @@ export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
         const queryParams = encodeQueryParamsAndLog({
             commodityMaterialDetailId:"", rate: obj.Rate,currencyCharge: obj.CurrencyCharge, exchangeRate:obj.ExchangeRate,
             rateConversion: obj.RateConversion, exchangeRateSourceName: obj.ExchangeRateSourceName, effectiveDate:obj.EffectiveDate, commodityName:obj.CommodityName,
-            commodityExchangeName: obj.CommodityExchangeName, uom: obj.UOM, currency: obj.Currency,
+            indexExchangeName: obj.IndexExchangeName, uom: obj.UOM, currency: obj.Currency,
             Remark: '', isApplyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
@@ -384,6 +384,25 @@ export function updateCommodityStandardization(requestData, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+/**
+ * @method createCommodityCustomName
+ * @description create commodity Custom Name
+ */
+export function createCommodityCustomName(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createCommodityCustomName, data, config());
+        request.then((response) => {
+            if (response?.data.Result) {
+                dispatch({ type: CREATE_COMMODITY_SUCCESS, });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
     };
 }
  

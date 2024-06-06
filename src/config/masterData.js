@@ -933,7 +933,7 @@ export const RMSpecificationXLTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const RMMaterialListing = [
-    { label: "Index", value: "CommodityExchangeName", },
+    { label: "Index", value: "IndexExchangeName", },
     { label: "Commodity Name", value: "CommodityName", },
     { label: "UOM", value: "UOM", },
     { label: "Currency", value: "Currency", },
@@ -947,27 +947,27 @@ export const RMMaterialListing = [
 
 export const RMMaterialListingTempData = [
     {
-        "CommodityExchangeName": "13Rf2",
-        "CommodityName": "steel",
-        "UOM": "10 mm",
+        "IndexExchangeName": "LME",
+        "CommodityName": "CU",
+        "UOM": "kg",
         "Currency": "USD",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "Rate": "USD",
-        "ExchangeRateSourceName": "20 mm",
-        "ExchangeRate": "20 mm",
-        "CurrencyCharge": "USD",
-        "RateConversion": "20 mm",
+        "Rate": "10",
+        "ExchangeRateSourceName": "SBI",
+        "ExchangeRate": "84",
+        "CurrencyCharge": "0.5",
+        "RateConversion": "1056",
     }
 ]
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const IndexCommodityListing = [
-    { label: "Index", value: "CommodityExchangeName" }, 
+    { label: "Index", value: "IndexExchangeName" }, 
 ]
 export const IndexCommodityListingTempData = [
     {
-        "CommodityExchangeName": "13CF2",      
+        "IndexExchangeName": "13CF2",      
     }
 ]
 export const CommodityInIndexListing = [
@@ -979,13 +979,13 @@ export const CommodityInIndexListingTempData = [
     }
 ]
 export const StandardizedCommodityNameListing = [
-    { label: "Index", value: "CommodityExchangeName" }, 
+    { label: "Index", value: "IndexExchangeName" }, 
     { label: "Commodity Name (In Index)", value: "CommodityName" }, 
     { label: "Commodity Name (In CIR)", value: "CustomMaterialName" }, 
 ]
 export const StandardizedCommodityNameTempData = [
     {
-        "CommodityExchangeName": "21FD2", 
+        "IndexExchangeName": "21FD2", 
         "CommodityName": "al", 
         "CustomMaterialName": "alloy",      
     }
@@ -5656,13 +5656,13 @@ export const RMLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
-    { label: "Index", value: "CommodityExchangeName", },
+    { label: "Index", value: "IndexExchangeName", },
     { label: "Commodity Name (In Index)", value: "CommodityName", },
     { label: "Commodity Name (In CIR)", value: "CustomMaterialName", },
 ]
 
 export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
-    { label: "Index", value: "CommodityExchangeName", },  
+    { label: "Index", value: "IndexExchangeName", },  
 ]
 
 export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
@@ -5670,7 +5670,7 @@ export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
-    { label: "Index", value: "CommodityExchangeName", },
+    { label: "Index", value: "IndexExchangeName", },
     { label: "Commodity Name", value: "CommodityName", },
     { label: "UOM", value: "UOM", },
     { label: "Currency", value: "Currency", },

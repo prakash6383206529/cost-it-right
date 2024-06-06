@@ -56,7 +56,7 @@ const IndexCommodityListing = () => {
     showExtraData: false,
     isBulkUpload: false,
   });
-  const [floatingFilterData, setFloatingFilterData] = useState({ CommodityExchangeName: '' })
+  const [floatingFilterData, setFloatingFilterData] = useState({ IndexExchangeName: '' })
   const [isLoader, setIsLoader] = useState(false);
   const [totalRecordCount, setTotalRecordCount] = useState(1)
   const [filterModel, setFilterModel] = useState({});
@@ -98,7 +98,7 @@ const IndexCommodityListing = () => {
         setDisableDownload(false)
         dispatch(disabledClass(false))
         setTimeout(() => {
-          let button = document.getElementById('Excel-Downloads-outsourcing')
+          let button = document.getElementById('Excel-Downloads-indexCommodity')
           button && button.click()
         }, 500);
       }
@@ -238,7 +238,7 @@ const IndexCommodityListing = () => {
             title="Delete"
             variant="Delete"
             className={"Tour_List_Delete"}
-            id={`addSpecificationList_delete${props?.rowIndex}`}
+            id={`indexCommodityList_delete${props?.rowIndex}`}
             onClick={() => deleteItem(cellValue)}
           />
         )}
@@ -380,9 +380,9 @@ const IndexCommodityListing = () => {
           <div className="d-flex justify-content-end bd-highlight w100">
             <div className="d-flex justify-content-end bd-highlight w100">
               {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-              <Button id="outsourcingListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
+              <Button id="indexCommodityListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
             </div>
-            {permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+            {permissions.BulkUpload && (<Button id="indexCommodity_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
 
             {permissions.Download && (
               <>
@@ -391,7 +391,7 @@ const IndexCommodityListing = () => {
                     filename={"Index"}
                     fileExtension={".xls"}
                     element={
-                      <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <Button id={"Excel-Downloads-Rm IndexCommodity List"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                     }
                   >
                     {onBtExport()}
@@ -399,7 +399,7 @@ const IndexCommodityListing = () => {
                 </>
               </>
             )}
-            <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+            <Button id={"indexCommodity_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
           </div>
         </Col>
       </Row>
@@ -447,7 +447,7 @@ const IndexCommodityListing = () => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn field="CommodityExchangeName" headerName="Index"></AgGridColumn>
+                <AgGridColumn field="IndexExchangeName" headerName="Index"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
 

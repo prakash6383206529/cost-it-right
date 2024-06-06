@@ -58,7 +58,7 @@ const RMMaterialListing = () => {
     showExtraData: false,
     isBulkUpload: false,
   });
-  const [floatingFilterData, setFloatingFilterData] = useState({ CommodityExchangeName: '' })
+  const [floatingFilterData, setFloatingFilterData] = useState({ IndexExchangeName: '' })
   const [isLoader, setIsLoader] = useState(false);
   const [totalRecordCount, setTotalRecordCount] = useState(1)
   const [filterModel, setFilterModel] = useState({});
@@ -91,7 +91,7 @@ const RMMaterialListing = () => {
         setDisableDownload(false)
         dispatch(disabledClass(false))
         setTimeout(() => {
-          let button = document.getElementById('Excel-Downloads-outsourcing')
+          let button = document.getElementById('Excel-Downloads-rmMaterialList')
           button && button.click()
         }, 500);
       }
@@ -245,7 +245,7 @@ const RMMaterialListing = () => {
           <Button
             title="Edit"
             variant="Edit"
-            id={`addSpecificationList_edit${props?.rowIndex}`}
+            id={`rmMaterialList_edit${props?.rowIndex}`}
             className="mr-2 Tour_List_Edit"
             onClick={() => editItemDetails(cellValue, rowData)}
           />
@@ -255,7 +255,7 @@ const RMMaterialListing = () => {
             title="Delete"
             variant="Delete"
             className={"Tour_List_Delete"}
-            id={`addSpecificationList_delete${props?.rowIndex}`}
+            id={`rmMaterialList_edit_delete${props?.rowIndex}`}
             onClick={() => deleteItem(cellValue)}
           />
         )}
@@ -407,12 +407,12 @@ const RMMaterialListing = () => {
           <div className="d-flex justify-content-end bd-highlight w100">
             <div className="d-flex justify-content-end bd-highlight w100">
               {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-              <Button id="outsourcingListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
+              <Button id="rmMaerialListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
             </div>
             {/* {permissions.Add && (
             <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
           )} */}
-            {permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+            {permissions.BulkUpload && (<Button id="rmMaterialListing_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
 
             {permissions.Download && (
               <>
@@ -421,7 +421,7 @@ const RMMaterialListing = () => {
                     filename={"Index Data"}
                     fileExtension={".xls"}
                     element={
-                      <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <Button id={"Excel-Downloads-Rm MaterialList"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                     }
                   >
                     {onBtExport()}
@@ -429,7 +429,7 @@ const RMMaterialListing = () => {
                 </>
               </>
             )}
-            <Button id={"rmSpecification_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+            <Button id={"rmMaterialListing_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
           </div>
         </Col>
       </Row>
@@ -484,7 +484,7 @@ const RMMaterialListing = () => {
                 suppressRowClickSelection={true}
               >
 
-                <AgGridColumn field="CommodityExchangeName" headerName="Index"></AgGridColumn>
+                <AgGridColumn field="IndexExchangeName" headerName="Index"></AgGridColumn>
                 <AgGridColumn field="CommodityName" headerName="Commodity Name" ></AgGridColumn>
                 <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>

@@ -177,7 +177,7 @@ const CommodityInIndexListing = () => {
             title="Delete"
             variant="Delete"
             className={"Tour_List_Delete"}
-            id={`addSpecificationList_delete${props?.rowIndex}`}
+            id={`commodityInIndexList_delete${props?.rowIndex}`}
             onClick={() => deleteItem(cellValue)}
           />
         )}
@@ -273,7 +273,7 @@ const CommodityInIndexListing = () => {
         setDisableDownload(false)
         dispatch(disabledClass(false))
         setTimeout(() => {
-          let button = document.getElementById('Excel-Downloads-outsourcing')
+          let button = document.getElementById('Excel-Downloads-commodityInIndex')
           button && button.click()
         }, 500);
       }
@@ -390,9 +390,9 @@ const CommodityInIndexListing = () => {
           <div className="d-flex justify-content-end bd-highlight w100">
             <div className="d-flex justify-content-end bd-highlight w100">
               {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-              <Button id="outsourcingListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
+              <Button id="commodityInIndexList_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
             </div>
-            {permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+            {permissions.BulkUpload && (<Button id="commodityInIndex_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
 
             {permissions.Download && (
               <>
@@ -401,7 +401,7 @@ const CommodityInIndexListing = () => {
                     filename={"Commodity (In Index)"}
                     fileExtension={".xls"}
                     element={
-                      <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <Button id={"Excel-Downloads-Rm CommodityInIndex List"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                     }
                   >
                     {onBtExport()}
@@ -409,7 +409,7 @@ const CommodityInIndexListing = () => {
                 </>
               </>
             )}
-            <Button id={"rmSpecification_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+            <Button id={"commodityInIndex_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
           </div>
         </Col>
       </Row>
