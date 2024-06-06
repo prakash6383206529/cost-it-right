@@ -14,7 +14,7 @@ import {
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_COSTING, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -658,9 +658,13 @@ class AddMachineRate extends Component {
   * @description called
   */
   moreDetailsToggler = (Id, editFlag) => {
-    const { selectedTechnology } = this.state;
+    const { selectedTechnology, vendorName, costingTypeId } = this.state;
     if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
       Toaster.warning('Technology should not be empty.')
+      return false;
+    }
+    if (costingTypeId === VBCTypeId && vendorName.length === 0) {
+      Toaster.warning('Vendor and Technology should not be empty.')
       return false;
     }
 
@@ -668,7 +672,11 @@ class AddMachineRate extends Component {
       isEditFlag: editFlag,
       Id: Id,
       isIncompleteMachine: (this.state.isEditFlag && !this.state.IsDetailedEntry) ? true : false,
-      isViewMode: this.state.isViewMode || this.state.isViewFlag
+      isViewMode: this.state.isViewMode || this.state.isViewFlag,
+      costingTypeId: costingTypeId,
+      selectedTechnology: selectedTechnology,
+      vendorName: vendorName ?? [],
+
     }
     this.props.displayMoreDetailsForm(data)
   }
@@ -2135,6 +2143,7 @@ export default connect(mapStateToProps, {
   enableReinitialize: true,
   touchOnChange: true,
   onSubmitFail: errors => {
+    console.log('errors: ', errors);
     focusOnError(errors);
   },
 })(withTranslation(['MachineMaster'])(AddMachineRate)),
