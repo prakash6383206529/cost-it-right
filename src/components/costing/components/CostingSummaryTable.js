@@ -51,6 +51,7 @@ import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from './TourMessages'
 import { useTranslation } from 'react-i18next';
 import ViewTcoDetail from './CostingHeadCosts/AdditionalOtherCost/ViewTcoDetail'
+import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -165,6 +166,9 @@ const CostingSummaryTable = (props) => {
   const [openNpvDrawer, setNpvDrawer] = useState(false);
   const [isOpenRejectedCosting, setIsOpenRejectedCosting] = useState(false);
   const [isFinalCommonApproval, setIsFinalCommonApproval] = useState(false);
+  const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
+  const [costingId, setCostingId] = useState("");
+
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
     process: false,
@@ -420,6 +424,7 @@ const CostingSummaryTable = (props) => {
 
   const closeNpvDrawer = () => {
     setNpvDrawer(false)
+    setTcoAndNpvDrawer(false)
   }
 
   /**
@@ -590,6 +595,11 @@ const CostingSummaryTable = (props) => {
     setNpvData(viewCostingData[index]?.CostingPartDetails?.CostingNpvResponse)
 
 
+  }
+  const viewTcoData = (data, index) => {
+    setCostingId(data?.costingId)
+    setTcoAndNpvDrawer(true)
+    //setNpvData(viewCostingData[index]?.CostingPartDetails?.CostingNpvResponse)
   }
 
   const viewAttachmentData = (index) => {
@@ -3225,6 +3235,17 @@ const CostingSummaryTable = (props) => {
                               <td className={tableDataClass(data)}>
                                 {data.CostingPartDetails && data.CostingPartDetails.CostingTCOResponse ? displayValueWithSign(data, "TotalTCOCost") : 0}
                                 {/* {checkForDecimalAndNull(data.TotalTCOCost, initialConfiguration.NoOfDecimalForPrice)} */}
+                                {
+                                  (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
+                                  <button
+                                    id="view_tcoCost"
+                                    type="button"
+                                    title='View'
+                                    className="float-right mb-0 View "
+                                    onClick={() => viewTcoData(data, index)}
+                                  >
+                                  </button>
+                                }
                               </td>
                             )
                           })}
@@ -3530,6 +3551,23 @@ const CostingSummaryTable = (props) => {
           isRfqCosting={props?.isRfqCosting}
           CostingPaymentTermDetails={paymentTermsData}
           npvCostData={npvData}
+
+        />
+      }
+      {
+        tcoAndNpvDrawer && <AddNpvCost
+          npvData={npvData}
+          isOpen={tcoAndNpvDrawer}
+          viewCostingData={viewCostingData}
+          costingSummary={true}
+          tableData={[]}
+          npvIndex={npvIndex}
+          closeDrawer={closeNpvDrawer}
+          anchor={'right'}
+          partId={viewCostingData[npvIndex]?.partId}
+          vendorId={viewCostingData[npvIndex]?.vendorId}
+          isRfqCosting={props?.isRfqCosting}
+          costingId={costingId}
 
         />
       }

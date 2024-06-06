@@ -67,6 +67,7 @@ import {
   SET_COMPONENT_PAYMENT_TERMS_DATA,
   SET_PAYMENT_TERM_COST,
   CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
+  GET_TCO_DATA,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2929,13 +2930,14 @@ export function getCostingPaymentTermDetail(costingId, callback) {
     request.then((response) => {
       if (response.data?.Data || response?.status === 204) {
         const netCost = response.data?.Data?.PaymentTermDetail?.NetCost;
+        //const applicabilityCost = response.data?.Data?.ApplicabilityCost;
         dispatch({
           type: GET_COSTING_PAYMENT_TERM_DETAIL,
           payload: response?.data?.Data || {},
         });
         dispatch({
           type: SET_PAYMENT_TERM_COST,
-          payload: { NetCost: netCost } || {},
+          payload: { NetCost: netCost/* , ApplicabilityCost: applicabilityCost  */ } || {},
         });
       } else {
         Toaster.error(MESSAGES.SOME_ERROR);
@@ -2962,4 +2964,24 @@ export function saveCostingPaymentTermDetail(data, callback) {
       apiErrors(error)
     })
   }
+}
+export function getCostingTcoDetails(costingId, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getCostingTcoDetails}?costingId=${costingId}`, config());
+    request.then((response) => {
+      if (response.data?.Data || response?.status === 204) {
+        dispatch({
+          type: GET_TCO_DATA,
+          payload: response?.data?.Data || {},
+        });
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+
+    });
+  };
 }

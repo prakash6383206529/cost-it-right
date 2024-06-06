@@ -569,7 +569,7 @@ export const calculationOnTco = (data) => {
   return sum;
 }
 
-const TotalTCOCostCal = (tcoData, paymentData) => {
+export const TotalTCOCostCal = (tcoData, paymentData) => {
   let sum = 0;
   sum = checkForNull(tcoData?.CalculatedIncoTermValue) + checkForNull(tcoData?.CalculatedQualityPPMValue) + checkForNull(tcoData?.CalculatedWarrantyValue) + checkForNull(paymentData?.NetPaymentTermCost)
 

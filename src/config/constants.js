@@ -21,7 +21,11 @@ export const config = () => {
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.11.208:3030/api/v1`
-// const BASE_URL = `http://10.10.1.100:10152/api/v1`
+//const BASE_URL = `http://10.10.1.100:3011/api/v1`
+//const BASE_URL = `http://10.10.1.100:3010/api/v1`
+//const BASE_URL = `http://10.10.1.100:103011/api/v1`
+//const BASE_URL = `http://10.10.1.100:103013/api/v1`
+
 //const BASE_URL = `http://10.10.1.100:10162/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
 // const BASE_URL = `http://10.10.8.160/api/v1`;  //
@@ -80,7 +84,7 @@ export const API = {
   getRowGrade: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-grade`,
   getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-specification`,
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
- 
+
   ///INDEXATION
   getCommoditySelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
   getCommodityNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
@@ -564,6 +568,7 @@ export const API = {
   getCostingCondition: `${BASE_URL}/costing/get-costing-condition-master-data`,
   getCostingPaymentTermDetail: `${BASE_URL}/costing/get-costing-payment-term-detail`,
   saveCostingPaymentTermDetail: `${BASE_URL}/costing/save-costing-payment-term-detail`,
+  getCostingTcoDetails: `${BASE_URL}/costing/get-costing-tco-details`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1206,7 +1211,7 @@ export const CREATE_COMMODITY_SUCCESS = 'CREATE_COMMODITY_SUCCESS'
 export const CREATE_COMMODITY_FAILURE = 'CREATE_COMMODITY_FAILURE'
 export const GET_COMMODITYSTANDARDIZATION_DATALIST_SUCCESS = 'GET_COMMODITYSTANDARDIZATION_DATALIST_SUCCESS'
 export const GET_INDEXCOMMODITY_DATALIST_SUCCESS = 'GET_INDEXCOMMODITY_DATALIST_SUCCESS'
-export const GET_COMMODITYININDEX_DATALIST_SUCCESS ='GET_COMMODITYININDEX_DATALIST_SUCCESS'
+export const GET_COMMODITYININDEX_DATALIST_SUCCESS = 'GET_COMMODITYININDEX_DATALIST_SUCCESS'
 export const GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD = 'GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD'
 export const GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD = 'GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD'
 
@@ -1594,7 +1599,7 @@ export const COSTING_ACC_OPEN_CLOSE_STATUS = 'COSTING_ACC_OPEN_CLOSE_STATUS'
 export const SET_TOOL_COST_ICC = 'SET_TOOL_COST_ICC'
 
 export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
-
+export const GET_TCO_DATA = 'GET_TCO_DATA'
 //WEIGHT CALCULATION COSTING
 
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';

@@ -84,11 +84,11 @@ function PartOverheadProfit(props) {
         "IsIncludeToolCostWithOverheadAndProfit": props?.IsIncludeToolCost,
         "IsIncludeOverheadAndProfitInICC": props?.IncludeOverheadProfitInIcc,
         "IsIncludeToolCostInCCForICC": props?.IncludeToolcostInCCForICC,
-        "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost),
+        "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost),
         "BasicRate": basicRate,
         "CostingPartDetails": {
           ...item?.CostingPartDetails,
-          NetOverheadAndProfitCost: checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost),
+          NetOverheadAndProfitCost: checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost),
         },
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,

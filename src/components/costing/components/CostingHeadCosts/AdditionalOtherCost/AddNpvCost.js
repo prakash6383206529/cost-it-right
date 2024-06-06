@@ -17,6 +17,7 @@ import HeaderTitle from '../../../../common/HeaderTitle'
 import LoaderCustom from '../../../../common/LoaderCustom'
 import YOYCost from './YOYCost'
 import TooltipCustom from '../../../../common/Tooltip'
+import Tco from './Tco'
 
 function AddNpvCost(props) {
     const { partId, vendorId } = props
@@ -309,7 +310,7 @@ function AddNpvCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.LossOfType}
-                                                disabled={props.CostingViewMode}
+                                                disabled={props.CostingViewMode || initialConfiguration?.IsShowTCO}
                                             />
                                         </Col>
                                         <Col md="2" className='px-1'>
@@ -337,7 +338,7 @@ function AddNpvCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.NpvPercentage}
-                                                disabled={props.CostingViewMode || disableNpvPercentage || disableAllFields}
+                                                disabled={props.CostingViewMode || disableNpvPercentage || disableAllFields || initialConfiguration?.IsShowTCO}
                                             />
                                         </Col>
                                         <Col md="2" className='px-1'>
@@ -357,7 +358,7 @@ function AddNpvCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Quantity}
-                                                disabled={props.CostingViewMode || disableAllFields || disableQuantity}
+                                                disabled={props.CostingViewMode || disableAllFields || disableQuantity || initialConfiguration?.IsShowTCO}
                                             />
                                         </Col>
                                         <Col md="2" className='px-1'>
@@ -379,7 +380,7 @@ function AddNpvCost(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Total}
-                                                disabled={props.CostingViewMode || disableTotalCost || disableAllFields}
+                                                disabled={props.CostingViewMode || disableTotalCost || disableAllFields || initialConfiguration?.IsShowTCO}
                                             />
                                         </Col>
                                         <Col md="3" className="mt-4 pt-1">
@@ -388,6 +389,7 @@ function AddNpvCost(props) {
                                                 type="button"
                                                 className={"user-btn  pull-left mt-1"}
                                                 onClick={addData}
+                                            // disabled={initialConfiguration?.IsShowTCO}
                                             >
                                                 <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
                                             </button>
@@ -395,6 +397,7 @@ function AddNpvCost(props) {
                                                 type="button"
                                                 className={"reset-btn pull-left mt-1 ml5"}
                                                 onClick={resetData}
+                                            // disabled={initialConfiguration?.IsShowTCO}
                                             >
                                                 Reset
                                             </button>
@@ -412,6 +415,8 @@ function AddNpvCost(props) {
                                         </>
                                     }
                                     {initialConfiguration?.IsShowNpvCost && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
+                                    {initialConfiguration?.IsShowTCO && <Tco costingId={props?.costingId} />}
+
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
                                         <div className='firefox-spaces'>
                                             <Col md="12" className={'mt25 firefox-spaces'}>

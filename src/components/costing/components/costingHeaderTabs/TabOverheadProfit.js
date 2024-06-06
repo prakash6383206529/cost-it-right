@@ -243,8 +243,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.OverheadCost = OverheadCost;
           i.CostingPartDetails.ProfitCost = ProfitCost;
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
-            checkForNull(i?.CostingPartDetails?.ICCCost) +
-            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
+            checkForNull(i?.CostingPartDetails?.ICCCost)
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
           i.CostingPartDetails.ModelType = modelType.label;
           i.CostingPartDetails.ModelTypeId = modelType.value;
@@ -258,8 +257,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.OverheadCost = OverheadCost;
           i.CostingPartDetails.ProfitCost = ProfitCost;
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
-            checkForNull(i?.CostingPartDetails?.ICCCost) +
-            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
+            checkForNull(i?.CostingPartDetails?.ICCCost)
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
           i.CostingPartDetails.ModelType = modelType.label;
           i.CostingPartDetails.ModelTypeId = modelType.value;
@@ -310,8 +308,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.ProfitCost = ProfitCost;
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
-            checkForNull(i?.CostingPartDetails?.ICCCost) +
-            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
+            checkForNull(i?.CostingPartDetails?.ICCCost)
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
 
           formatData(data, params, i.CostingChildPartDetails)
@@ -321,8 +318,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.ProfitCost = ProfitCost;
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
-            checkForNull(i?.CostingPartDetails?.ICCCost) +
-            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
+            checkForNull(i?.CostingPartDetails?.ICCCost)
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
 
         } else {
@@ -364,8 +360,8 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +     // IF PROBLEM IN TOTAL COST OF OVERHEAD PROFIT TAB COMMENT THIS
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
             checkForNull(rejectionObj.RejectionTotalCost) +
-            checkForNull(i?.CostingPartDetails?.ICCCost) +
-            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
+            checkForNull(i?.CostingPartDetails?.ICCCost)
+
 
           formatData(rejectionObj, params, i.CostingChildPartDetails)
 
@@ -375,9 +371,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
             checkForNull(i?.CostingPartDetails?.ProfitCost) +
             checkForNull(rejectionObj.RejectionTotalCost) +
-            checkForNull(i?.CostingPartDetails?.ICCCost) +
-            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
-
+            checkForNull(i?.CostingPartDetails?.ICCCost)
         } else {
           i.IsOpen = false;
           formatData(rejectionObj, params, i.CostingChildPartDetails)

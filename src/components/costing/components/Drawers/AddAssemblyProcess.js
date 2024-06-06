@@ -25,7 +25,7 @@ function AddAssemblyProcess(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const drawerRef = useRef();
   const isPartType = useContext(IsPartType);
-
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   // useEffect(() => {
   //   let obj = {
   //     CostingProcessCostResponse: subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingProcessCostResponse
@@ -111,7 +111,7 @@ function AddAssemblyProcess(props) {
       checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
       checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
-    let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+    let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
     dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
     dispatch(gridDataAdded(true))
 
