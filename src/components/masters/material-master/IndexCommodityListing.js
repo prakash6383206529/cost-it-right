@@ -14,13 +14,9 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
-import { PaginationWrapper } from "../../common/commonPagination";
 import { searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
-import { useRef } from "react";
-import TourWrapper from "../../common/Tour/TourWrapper";
-import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
 import { INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
@@ -28,7 +24,6 @@ import { RmMaterial } from "../../../config/constants";
 import ReactExport from "react-export-excel";
 import BulkUpload from "../../massUpload/BulkUpload";
 import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
-import PaginationControls from "../../common/Pagination/PaginationControls";
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -39,7 +34,6 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const IndexCommodityListing = () => {
   const dispatch = useDispatch();
-  const searchRef = useRef(null);
   const { indexCommodityDataList } = useSelector((state) => state.indexation);
   const { globalTakes } = useSelector((state) => state.pagination)
   const permissions = useContext(ApplyPermission);
@@ -62,7 +56,7 @@ const IndexCommodityListing = () => {
     showExtraData: false,
     isBulkUpload: false,
   });
-  const [floatingFilterData, setFloatingFilterData] = useState({ commodityExchangeName: '' })
+  const [floatingFilterData, setFloatingFilterData] = useState({ IndexExchangeName: '' })
   const [isLoader, setIsLoader] = useState(false);
   const [totalRecordCount, setTotalRecordCount] = useState(1)
   const [filterModel, setFilterModel] = useState({});
@@ -77,7 +71,6 @@ const IndexCommodityListing = () => {
   useEffect(() => {
     getTableListData(0, defaultPageSize, true)
     return () => {
-      ///dispatch(setSelectedRowForPagination([]))
       dispatch(resetStatePagination());
 
     }
@@ -105,7 +98,7 @@ const IndexCommodityListing = () => {
         setDisableDownload(false)
         dispatch(disabledClass(false))
         setTimeout(() => {
-          let button = document.getElementById('Excel-Downloads-outsourcing')
+          let button = document.getElementById('Excel-Downloads-indexCommodity')
           button && button.click()
         }, 500);
       }
@@ -245,7 +238,7 @@ const IndexCommodityListing = () => {
             title="Delete"
             variant="Delete"
             className={"Tour_List_Delete"}
-            id={`addSpecificationList_delete${props?.rowIndex}`}
+            id={`indexCommodityList_delete${props?.rowIndex}`}
             onClick={() => deleteItem(cellValue)}
           />
         )}
@@ -387,18 +380,18 @@ const IndexCommodityListing = () => {
           <div className="d-flex justify-content-end bd-highlight w100">
             <div className="d-flex justify-content-end bd-highlight w100">
               {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-              <Button id="outsourcingListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
+              <Button id="indexCommodityListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
             </div>
-            {permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+            {permissions.BulkUpload && (<Button id="indexCommodity_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
 
             {permissions.Download && (
               <>
                 <>
                   <ExcelFile
-                    filename={"Index Commodity"}
+                    filename={"Index"}
                     fileExtension={".xls"}
                     element={
-                      <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <Button id={"Excel-Downloads-Rm IndexCommodity List"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                     }
                   >
                     {onBtExport()}
@@ -406,7 +399,7 @@ const IndexCommodityListing = () => {
                 </>
               </>
             )}
-            <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+            <Button id={"indexCommodity_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
           </div>
         </Col>
       </Row>
@@ -419,7 +412,6 @@ const IndexCommodityListing = () => {
               : ""
               }`}
           >
-            {/* {gridLoad && <div className={`ag-grid-wrapper height-width-wrapper  ${(indexCommodityDataList && indexCommodityDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}> */}
 
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -455,16 +447,12 @@ const IndexCommodityListing = () => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn field="CommodityExchangeName" headerName="Index"></AgGridColumn>
+                <AgGridColumn field="IndexExchangeName" headerName="Index"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
 
               {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexCommodity" />}
 
-              {/* {
-                // <PaginationControls gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexCommodity" />
-
-              } */}
             </div>
           </div>
         </Col>
@@ -483,8 +471,8 @@ const IndexCommodityListing = () => {
           isOpen={isBulkUpload}
           closeDrawer={closeBulkUploadDrawer}
           isEditFlag={false}
-          fileName={"Index Commodity"}
-          messageLabel={"Index Commodity"}
+          fileName={"Index"}
+          messageLabel={"Index"}
           anchor={"right"}
         />
       )}

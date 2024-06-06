@@ -249,7 +249,7 @@ function RowMaterialMaster(props) {
                                 </NavItem>}
                                 {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => { toggle('6'); }}>
-                                        Commodity(In Index)
+                                        Commodity (In Index)
                                     </NavLink>
                                 </NavItem>}
                                 {<NavItem>

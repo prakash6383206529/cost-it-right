@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
-import {
-  getMaterialTypeDataListAPI,
-  deleteMaterialTypeAPI,
-} from "../actions/Material";
+import { deleteMaterialTypeAPI } from "../actions/Material";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
@@ -14,11 +11,9 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
-import { PaginationWrapper } from "../../common/commonPagination";
 import { searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
-import { useRef } from "react";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
@@ -27,6 +22,13 @@ import { RMMATERIALISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
 import ReactExport from "react-export-excel";
 import BulkUpload from "../../massUpload/BulkUpload";
+import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
+import WarningMessage from '../../common/WarningMessage';
+import { disabledClass } from '../../../actions/Common';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
+import { getIndexDataListAPI } from "../actions/Indexation";
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -34,16 +36,15 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const RMMaterialListing = () => {
   const dispatch = useDispatch();
-  const searchRef = useRef(null);
-  const { rawMaterialTypeDataList } = useSelector((state) => state.material);
+  const { rmIndexDataList } = useSelector((state) => state.indexation);
   const permissions = useContext(ApplyPermission);
+  const { globalTakes } = useSelector((state) => state.pagination)
   const { t } = useTranslation("common")
 
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
     ID: "",
-    isOpenAssociation: false,
     gridApi: null,
     gridColumnApi: null,
     rowData: null,
@@ -57,23 +58,66 @@ const RMMaterialListing = () => {
     showExtraData: false,
     isBulkUpload: false,
   });
+  const [floatingFilterData, setFloatingFilterData] = useState({ IndexExchangeName: '' })
+  const [isLoader, setIsLoader] = useState(false);
+  const [totalRecordCount, setTotalRecordCount] = useState(1)
+  const [filterModel, setFilterModel] = useState({});
+  const [warningMessage, setWarningMessage] = useState(false)
+  const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+  const [noData, setNoData] = useState(false)
+  const [disableFilter, setDisableFilter] = useState(true)
+  const [disableDownload, setDisableDownload] = useState(false)
+  const [gridApi, setGridApi] = useState(null);
+  const [dataCount, setDataCount] = useState(0)
+  const [gridLoad, setGridLoad] = useState(false);
   useEffect(() => {
-    getListData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    getTableListData(0, defaultPageSize, true)
+    return () => {
+      dispatch(resetStatePagination());
 
-  /**+-
-   * @method getListData
-   * @description Get list data
-   */
-  const getListData = () => {
-    setState((prevState) => ({ ...prevState, isLoader: true }));
-    dispatch(
-      getMaterialTypeDataListAPI((res) =>
-        setState((prevState) => ({ ...prevState, isLoader: false }))
-      )
-    );
-  };
+    }
+  }, [])
+  const getTableListData = (skip = 0, take = 10, isPagination = true) => {
+    if (isPagination === true || isPagination === null) setIsLoader(true)
+    let dataObj = { ...floatingFilterData }
+    dispatch(getIndexDataListAPI(dataObj, isPagination, skip, take, (res) => {
+      if (isPagination === true || isPagination === null) setIsLoader(false)
+      if ((res && res.status === 204) || res.length === 0) {
+        setTotalRecordCount(0)
+        dispatch(updatePageNumber(0))
+        // setPageNo(0)
+      }
+      if (res && isPagination === false) {
+        setDisableDownload(false)
+        dispatch(disabledClass(false))
+        setTimeout(() => {
+          let button = document.getElementById('Excel-Downloads-rmMaterialList')
+          button && button.click()
+        }, 500);
+      }
+      if (res) {
+        let isReset = true
+        setTimeout(() => {
+          for (var prop in floatingFilterData) {
+            if (floatingFilterData[prop] !== "") {
+              isReset = false
+            }
+          }
+          // Sets the filter model via the grid API
+          isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+
+        }, 300);
+
+        setTimeout(() => {
+          setWarningMessage(false)
+        }, 330);
+
+        setTimeout(() => {
+          setIsFilterButtonClicked(false)
+        }, 600);
+      }
+    }))
+  }
   /**
    * @method closeDrawer
    * @description  used to cancel filter form
@@ -83,7 +127,7 @@ const RMMaterialListing = () => {
       ...prevState, isOpen: false, isLoader: type === "submit" ? true : prevState.isLoader, dataCount: type === "submit" ? 0 : prevState.dataCount,
     }));
     if (type === "submit") {
-      getListData();
+      getTableListData();
     }
   };
   /**
@@ -92,17 +136,46 @@ const RMMaterialListing = () => {
    */
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      rawMaterialTypeDataList.length !== 0 &&
-        setState((prevState) => ({
-          ...prevState, noData: searchNocontentFilter(value, prevState.noData),
-        }));
+      if (rmIndexDataList?.length !== 0) {
+        setNoData(searchNocontentFilter(value, noData))
+      }
     }, 500);
-  };
-  /**
-   * @method closeDrawer
-   * @description  used to cancel filter form
-   */
+    setDisableFilter(false)
+    const model = gridOptions?.api?.getFilterModel();
+    setFilterModel(model)
+    if (!isFilterButtonClicked) {
+      setWarningMessage(true)
+    }
 
+    if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+      let isFilterEmpty = true
+      if (model !== undefined && model !== null) {
+        if (Object.keys(model).length > 0) {
+          isFilterEmpty = false
+          for (var property in floatingFilterData) {
+            if (property === value.column.colId) {
+              floatingFilterData[property] = ""
+            }
+          }
+          setFloatingFilterData(floatingFilterData)
+        }
+
+        if (isFilterEmpty) {
+          setWarningMessage(false)
+          for (var prop in floatingFilterData) {
+            floatingFilterData[prop] = ""
+          }
+          setFloatingFilterData(floatingFilterData)
+        }
+      } else {
+        setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+      }
+
+    } else {
+
+      setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+    }
+  }
   /**
    * @method editItemDetails
    * @description edit Raw Material
@@ -119,10 +192,6 @@ const RMMaterialListing = () => {
   const deleteItem = (Id) => {
     setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
   };
-  /**
-   * @method confirmDelete
-   * @description confirm delete Raw Material
-   */
 
   const confirmDelete = (ID) => {
     dispatch(
@@ -132,16 +201,13 @@ const RMMaterialListing = () => {
         } else if (res && res.data && res.data.Result === true) {
           Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
           setState((prevState) => ({ ...prevState, dataCount: 0 }));
-          getListData();
+          getTableListData();
         }
       })
     );
     setState((prevState) => ({ ...prevState, showPopup: false }));
   };
-  /**
-    * @method toggleExtraData
-   * @description Handle specific module tour state to display lorem data
-   */
+
   const toggleExtraData = (showTour) => {
     setState((prevState) => ({ ...prevState, render: true, showExtraData: showTour }));
     setTimeout(() => {
@@ -162,11 +228,6 @@ const RMMaterialListing = () => {
     }));
   };
 
-
-  /**
-   * @method buttonFormatter
-   * @description show and hide edit and delete
-   */
   const buttonFormatter = (props) => {
     const { showExtraData } = state
     const cellValue = props?.valueFormatted
@@ -184,7 +245,7 @@ const RMMaterialListing = () => {
           <Button
             title="Edit"
             variant="Edit"
-            id={`addSpecificationList_edit${props?.rowIndex}`}
+            id={`rmMaterialList_edit${props?.rowIndex}`}
             className="mr-2 Tour_List_Edit"
             onClick={() => editItemDetails(cellValue, rowData)}
           />
@@ -194,16 +255,14 @@ const RMMaterialListing = () => {
             title="Delete"
             variant="Delete"
             className={"Tour_List_Delete"}
-            id={`addSpecificationList_delete${props?.rowIndex}`}
+            id={`rmMaterialList_edit_delete${props?.rowIndex}`}
             onClick={() => deleteItem(cellValue)}
           />
         )}
       </>
     );
   };
-  /**
-   * @method hyphenFormatter
-   */
+
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
     return cellValue !== " " &&
@@ -234,29 +293,43 @@ const RMMaterialListing = () => {
     state.gridApi.setQuickFilter(e.target.value);
   };
 
-  /**
-   * @method resetState
-   * @description Resets the state
-   */
+
   const resetState = () => {
-    state.gridApi.setQuickFilter(null)
-    state.gridApi.deselectAll();
-    gridOptions.columnApi.resetColumnState();
-    gridOptions.api.setFilterModel(null);
-    if (searchRef.current) {
-      searchRef.current.value = '';
+    setNoData(false)
+    setIsFilterButtonClicked(false)
+    gridOptions?.columnApi?.resetColumnState(null);
+    gridOptions?.api?.setFilterModel(null);
+
+    for (var prop in floatingFilterData) {
+      floatingFilterData[prop] = ""
+
     }
-    setState((prevState) => ({ ...prevState, noData: false }));
+    setFloatingFilterData(floatingFilterData)
+    setWarningMessage(false)
+    dispatch(resetStatePagination())
+    getTableListData(0, 10, true)
+    dispatch(updateGlobalTake(10))
+    setDataCount(0)
+    reactLocalStorage.setObject('selectedRow', {})
+  }
 
+  const onSearch = () => {
+    setWarningMessage(false)
+    setIsFilterButtonClicked(true)
+    dispatch(updatePageNumber(1))
+    dispatch(updateCurrentRowIndex(0))
+    gridOptions?.columnApi?.resetColumnState();
+    getTableListData(0, globalTakes, true)
+  }
 
-  };
-  const { isOpen, isEditFlag, ID, noData, showExtraData, render, isBulkUpload } = state;
+  const { isOpen, isEditFlag, ID, showExtraData, render, isBulkUpload } = state;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
     return thisIsFirstColumn;
   };
+  
   const defaultColDef = {
     resizable: true,
     filter: true,
@@ -274,8 +347,8 @@ const RMMaterialListing = () => {
     tempArr =
       tempArr && tempArr.length > 0
         ? tempArr
-        : rawMaterialTypeDataList
-          ? rawMaterialTypeDataList
+        : rmIndexDataList
+          ? rmIndexDataList
           : [];
     return returnExcelColumn(RMMATERIALISTING_DOWNLOAD_EXCEl, tempArr);
   };
@@ -319,7 +392,7 @@ const RMMaterialListing = () => {
         };
       },
       () => {
-        getListData("", "");
+        getTableListData("", "");
       }
     );
   };
@@ -328,31 +401,36 @@ const RMMaterialListing = () => {
     <div
       className={`ag-grid-react min-height100vh`}
     >
-      {state.isLoader && <LoaderCustom />}
-      <Row className="pt-4 no-filter-row">
-        <Col md={6} className="text-right search-user-block pr-0">
-
-          {/* {permissions.Add && (
+      {state.isLoader && <LoaderCustom customClass="loader-center" />}
+      <Row className="pt-4">
+        <Col md={9} className="search-user-block mb-3 pl-0">
+          <div className="d-flex justify-content-end bd-highlight w100">
+            <div className="d-flex justify-content-end bd-highlight w100">
+              {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+              <Button id="rmMaerialListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
+            </div>
+            {/* {permissions.Add && (
             <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
           )} */}
-          {permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+            {permissions.BulkUpload && (<Button id="rmMaterialListing_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
 
-          {permissions.Download && (
-            <>
+            {permissions.Download && (
               <>
-                <ExcelFile
-                  filename={"RM Index Data"}
-                  fileExtension={".xls"}
-                  element={
-                    <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                  }
-                >
-                  {onBtExport()}
-                </ExcelFile>
+                <>
+                  <ExcelFile
+                    filename={"Index Data"}
+                    fileExtension={".xls"}
+                    element={
+                      <Button id={"Excel-Downloads-Rm MaterialList"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                    }
+                  >
+                    {onBtExport()}
+                  </ExcelFile>
+                </>
               </>
-            </>
-          )}
-          <Button id={"rmSpecification_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+            )}
+            <Button id={"rmMaterialListing_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+          </div>
         </Col>
       </Row>
 
@@ -365,7 +443,7 @@ const RMMaterialListing = () => {
               }`}
           >
             <div className="ag-grid-header">
-              <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
               <TourWrapper
                 buttonSpecificProp={{ id: "RM_Listing_Tour", onClick: toggleExtraData }}
                 stepsSpecificProp={{
@@ -383,13 +461,12 @@ const RMMaterialListing = () => {
                   customClassName="no-content-found"
                 />
               )}
-              {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
-
+              <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout="autoHeight"
                 // columnDefs={c}
-                rowData={[]}
+                rowData={rmIndexDataList}
 
                 pagination={true}
                 paginationPageSize={defaultPageSize}
@@ -407,24 +484,21 @@ const RMMaterialListing = () => {
                 suppressRowClickSelection={true}
               >
 
-                <AgGridColumn field="Index"></AgGridColumn>
-                <AgGridColumn field="Commodity Name"></AgGridColumn>
-                <AgGridColumn field="UOM"></AgGridColumn>
-                <AgGridColumn field="Currency"></AgGridColumn>
-                <AgGridColumn field="Effective Date"></AgGridColumn>
-                <AgGridColumn field="Index Rate (Currency)"></AgGridColumn>
-                <AgGridColumn field="Premium (Charge)"></AgGridColumn>
-                <AgGridColumn field="Exchange rate (INR)"></AgGridColumn>
-                <AgGridColumn field="Currency Rate"></AgGridColumn>
-                <AgGridColumn field="Conversion Rate (INR)"></AgGridColumn>
+                <AgGridColumn field="IndexExchangeName" headerName="Index"></AgGridColumn>
+                <AgGridColumn field="CommodityName" headerName="Commodity Name" ></AgGridColumn>
+                <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                <AgGridColumn field="EffectiveDate" headerName="Effective Date"></AgGridColumn>
+                <AgGridColumn field="Rate" headerName="Index Rate (Currency)"></AgGridColumn>
+                <AgGridColumn field="ExchangeRateSourceName" headerName="Premium (Charge)"></AgGridColumn>
+                <AgGridColumn field="ExchangeRate" headerName="Exchange rate (INR)"></AgGridColumn>
+                <AgGridColumn field="CurrencyCharge" headerName="Currency Rate"></AgGridColumn>
+                <AgGridColumn field="RateConversion" headerName="Conversion Rate (INR)"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
-              </AgGridReact>}
-              {
-                <PaginationWrapper
-                  gridApi={state.gridApi}
-                  setPage={onPageSizeChanged}
-                />
-              }
+              </AgGridReact>
+
+              {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData"/>}
+
             </div>
           </div>
         </Col>
@@ -445,8 +519,8 @@ const RMMaterialListing = () => {
           isOpen={isBulkUpload}
           closeDrawer={closeBulkUploadDrawer}
           isEditFlag={false}
-          fileName={"RM Index Data"}
-          messageLabel={"RM Index Data"}
+          fileName={"Index Data"}
+          messageLabel={"Index Data"}
           anchor={"right"}
         />
       )}
