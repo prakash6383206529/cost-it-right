@@ -405,4 +405,39 @@ export function createCommodityCustomName(data, callback) {
         });
     };
 }
- 
+/**
+ * @method bulkUploadIndex
+ * @description upload bulk Index
+ */
+  export function bulkUploadIndex(data, callback) {
+    return (dispatch) => {
+      const request = axios.post(API.bulkUploadIndex, data, config());
+      request.then((response) => {
+        if (response.status === 200) {
+          callback(response);
+        }
+      }).catch((error) => {
+        dispatch({ type: API_FAILURE });
+        apiErrors(error);
+        callback(error);
+      });
+    };
+  } 
+/**
+ * @method bulkUploadCommodityInIndex
+ * @description upload bulk Commodity In Index
+ */
+export function bulkUploadCommodityInIndex(data, callback) {
+    return (dispatch) => {
+      const request = axios.post(API.bulkUploadCommodityInIndex, data, config());
+      request.then((response) => {
+        if (response.status === 200) {
+          callback(response);
+        }
+      }).catch((error) => {
+        dispatch({ type: API_FAILURE });
+        apiErrors(error);
+        callback(error);
+      });
+    };
+  } 

@@ -457,7 +457,7 @@ const CommodityInIndexListing = () => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn field="CommodityName" headerName="Index"></AgGridColumn>
+                <AgGridColumn field="CommodityName" headerName="Commodity (In Index)"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>}
 

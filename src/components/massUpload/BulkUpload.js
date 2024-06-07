@@ -6,6 +6,7 @@ import { checkForNull, getJsDateFromExcel, isDateFormatter } from "../../helper/
 import {
     bulkUploadRM, bulkfileUploadRM, bulkUploadRMSpecification,
 } from '../masters/actions/Material';
+import { bulkUploadCommodityInIndex, bulkUploadIndex, bulkUploadIndexData, bulkUploadStandardizedCommodity } from '../masters/actions/Indexation'
 import { bulkUploadMachine, bulkUploadMachineMoreZBC } from '../masters/actions/MachineMaster';
 import { fuelBulkUpload } from '../masters/actions/Fuel';
 import { labourBulkUpload } from '../masters/actions/Labour';
@@ -698,7 +699,35 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Vendor') {
+        } else if (fileName === 'Index') {
+            this.props.bulkUploadIndex(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        }
+        else if (fileName === 'Commodity (In Index)') {
+            this.props.bulkUploadCommodityInIndex(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        }
+        else if (fileName === 'Standardized Commodity Name') {
+            this.props.bulkUploadStandardizedCommodity(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        }
+        else if (fileName === 'Index Data') {
+            this.props.bulkUploadIndexData(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        }
+        else if (fileName === 'Vendor') {
             this.props.vendorBulkUpload(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
@@ -1199,7 +1228,11 @@ export default connect(mapStateToProps, {
     bulkUploadBudgetMaster,
     checkRFQBulkUpload,
     getUsersMasterLevelAPI,
-    checkFinalUser
+    checkFinalUser,
+    bulkUploadIndex,
+    bulkUploadCommodityInIndex,
+    bulkUploadIndexData,
+    bulkUploadStandardizedCommodity
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

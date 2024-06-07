@@ -971,7 +971,7 @@ export const IndexCommodityListingTempData = [
     }
 ]
 export const CommodityInIndexListing = [
-    { label: "Index", value: "CommodityName" }, 
+    { label: "Commodity (In Index)", value: "CommodityName" }, 
 ]
 export const CommodityInIndexListingTempData = [
     {

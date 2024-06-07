@@ -94,10 +94,12 @@ export const API = {
   deleteIndexData: `${BASE_URL}/masters-material/delete-commodity-material-details`,
   updateIndexData: `${BASE_URL}/masters-material/update-commodity-material-details`,
   createIndexData: `${BASE_URL}/masters-material/create-commodity-material-details`,
-  bulkUploadIndexData:`${BASE_URL}/masters-material/bulk-upload-for-commodity-material-details`,
-  bulkUploadStandardizedCommodity:`${BASE_URL}/masters-material/bulk-upload-for-commodity-exchange`,
+  bulkUploadIndexData:`${BASE_URL}/masters-material/bulk-upload-for-commodity-index-rate-details`,
+  bulkUploadStandardizedCommodity:`${BASE_URL}/masters-material/bulk-upload-for-commodity-standardization`,
   updateCommodityStandardization:`${BASE_URL}/masters-material/update-commodity-standardization`,
   createCommodityCustomName:`${BASE_URL}/masters-material/create-commodity-standard-name`,
+  bulkUploadIndex:`${BASE_URL}/masters-material/bulk-upload-for-index-exchange`,
+  bulkUploadCommodityInIndex:`${BASE_URL}/masters-material/bulk-upload-for-commodity`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
