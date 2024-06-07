@@ -309,19 +309,19 @@ function RunSimulationDrawer(props) {
 
         let obj = {}
 
-        const Overhead = selectedData.includes("Overhead")
-        const Profit = selectedData.includes("Profit")
-        const Rejection = selectedData.includes("Rejection")
-        const DiscountOtherCost = selectedData.includes("Discount And Other Cost")
-        const PaymentTerms = selectedData.includes("Payment Terms")
-        const Inventory = selectedData.includes("ICC")
-        const AdditionalDiscount = selectedData.includes("Additional Discount")
-        const AdditionalOtherCost = selectedData.includes("Additional Other Cost")
-        const Tool = selectedData.includes("Tool")
-        const Packaging = selectedData.includes("Packaging")
-        const Freight = selectedData.includes("Freight")
-        const BOPHandlingCharge = selectedData.includes(`${showBopLabel()} Handling Charge`)
-        const LatestExchangeRate = selectedData.includes("Latest Exchange Rate")
+        const Overhead = selectedData?.includes("Overhead")
+        const Profit = selectedData?.includes("Profit")
+        const Rejection = selectedData?.includes("Rejection")
+        const DiscountOtherCost = selectedData?.includes("Discount And Other Cost")
+        const PaymentTerms = selectedData?.includes("Payment Terms")
+        const Inventory = selectedData?.includes("ICC")
+        const AdditionalDiscount = selectedData?.includes("Additional Discount")
+        const AdditionalOtherCost = selectedData?.includes("Additional Other Cost")
+        const Tool = selectedData?.includes("Tool")
+        const Packaging = selectedData?.includes("Packaging")
+        const Freight = selectedData?.includes("Freight")
+        const BOPHandlingCharge = selectedData?.includes(`${showBopLabel()} Handling Charge`)
+        const LatestExchangeRate = selectedData?.includes("Latest Exchange Rate")
 
         let temp = []
         obj.IsOverhead = Overhead
