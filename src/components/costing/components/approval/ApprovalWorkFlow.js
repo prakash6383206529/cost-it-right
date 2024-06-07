@@ -4,11 +4,13 @@ import { APPROVED, REJECTED, PENDING } from '../../../../config/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import Popup from 'reactjs-popup'
 import { getAllApproverList } from '../../../../actions/auth/AuthActions'
+import LoaderCustom from '../../../common/LoaderCustom'
 
 function ApprovalWorkFlow(props) {
   const { approvalLevelStep, approverData } = props
   const { initialConfiguration } = useSelector(state => state.auth)
   const [approverList, setApproverList] = useState([])
+  const [ loading, setLoading ] = useState(true) // Set loading to true by default, will be set to false after the data is fetched [set setLoading]
   // const [approval, setApproval] = useState([])
   const dispatch = useDispatch()
   useEffect(() => {
@@ -22,13 +24,16 @@ function ApprovalWorkFlow(props) {
         if (res && res?.data) {
           setApproverList(res?.data?.DataList)
         }
+        setLoading(false)  // Set loading to false after the data is fetched
       }))
+    } else {
+      setLoading(false)  // Set loading to false if no data is to be fetched
     }
   }, [approverData])
   const approverListUI = () => {
     switch (approverList?.length) {
       case 0:
-        return 'toto'
+        return ''
       case 1:
         return approverList[0].UserName;
       default:
@@ -44,6 +49,9 @@ function ApprovalWorkFlow(props) {
           </Popup>
         </>
     }
+  }
+  if (loading) {
+    return <LoaderCustom />  // Display a loader while fetching data
   }
   if (!approvalLevelStep || !props.approvalNo || !approverData) {
     return null;
