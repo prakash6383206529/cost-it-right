@@ -20,7 +20,7 @@ import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, handleDepartmentHeader, showSaLineNumber, showBopLabel } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
+import { checkFinalUser, setCostingViewData, storePartNumber } from '../../costing/actions/Costing';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
@@ -271,6 +271,9 @@ function SimulationApprovalSummary(props) {
             //     }))
             // } else {
         }))
+        return () => {
+            dispatch(storePartNumber(''))
+        }
     }, [])
     useEffect(() => {
         if (simulationData && Object.keys(simulationData)?.length > 0) {
@@ -459,6 +462,7 @@ function SimulationApprovalSummary(props) {
             simulationId: simulationDetail?.SimulationId,
             costingId: data?.CostingId
         }
+        dispatch(storePartNumber({ partId: data?.PartId, partNumber: data?.PartNumber }))
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting, 'Old Costing')
