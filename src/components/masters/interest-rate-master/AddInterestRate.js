@@ -236,6 +236,7 @@ class AddInterestRate extends Component {
   handleICCApplicability = (newValue, actionMeta) => {
     const ICCSectionFilled = { ...this.state.ICCSectionFilled };
     ICCSectionFilled.ICCApplicability = newValue ? true : false;
+    this.props.change("ICCPercent", '')
 
     if (newValue && newValue !== '') {
       this.setState(prevState => ({ ICCApplicability: newValue, ICCSectionFilled }), () => { this.checkFilledSections(); });
@@ -259,6 +260,8 @@ class AddInterestRate extends Component {
     const PaymentSectionFilled = { ...this.state.PaymentSectionFilled };
     PaymentSectionFilled.PaymentTermsApplicability = newValue ? true : false;
 
+    this.props.change("RepaymentPeriod", '')
+    this.props.change("PaymentTermPercent", '')
     if (newValue && newValue !== '') {
       this.setState(prevState => ({
         PaymentTermsApplicability: newValue,

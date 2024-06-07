@@ -63,6 +63,11 @@ export function showBopLabel() {
   return getConfigurationKey().BOPLabel
 }
 
+//FUNCTION TO HANDLE BOP LABEL 
+export function showBopLabelReverse(label) {
+  return getConfigurationKey().BOPLabel === label ? 'BOP' : label
+}
+
 /* function to handle freight and shearing cost fields*/
 export function IsShowFreightAndShearingCostFields() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')

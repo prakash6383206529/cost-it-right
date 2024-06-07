@@ -49,6 +49,9 @@ function ViewMultipleTechnology(props) {
         setOpemDrawer(false)
         let tempObj = reactLocalStorage.getObject('viewCostingData')
         dispatch(setCostingViewData(tempObj))
+        setTimeout(() => {
+            reactLocalStorage.setObject('viewCostingData', [])
+        }, 300);
     }
 
     const multipleCost = () => {

@@ -62,6 +62,7 @@ import {
   SET_TOOL_COST_ICC,
   SET_OTHER_DISCOUNT_DATA,
   SET_REJECTION_RECOVERY_DATA,
+  SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1682,7 +1683,7 @@ export function getSingleCostingDetails(costingId, callback) {
 export const setCostingViewData = (data) => (dispatch) => {
   let temp = []
   // temp.push(VIEW_COSTING_DATA)
-  data?.map((val) => (
+  data && data?.map((val) => (
     temp.push(val)
   ))
   dispatch({
@@ -2863,4 +2864,15 @@ export function getProcessAndOperationbyAsmAndChildCostingId(asmCostingId, child
       apiErrors(error)
     })
   }
+}
+
+export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
+  let temp = []
+  data && data?.map((val) => (
+    temp.push(val)
+  ))
+  dispatch({
+    type: SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
+    payload: temp,
+  })
 }
