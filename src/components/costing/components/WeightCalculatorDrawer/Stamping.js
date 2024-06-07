@@ -127,7 +127,7 @@ function Stamping(props) {
     updatedValue.ScrapCost = scrapCost
     updatedValue.ScrapWeight = scrapWeight
     updatedValue.scrapRecovery = Number(getValues('scrapRecoveryPer'))
-    updatedValue.netRMCost = netRMCost
+    updatedValue.materialCost = netRMCost
     updatedValue.grossWeight = grossWeight
     setDataToSend(updatedValue)
   }
@@ -290,7 +290,7 @@ function Stamping(props) {
               />
               <Row className={'mt25'}>
                 <Col md="3" >
-                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Input Weight = (Gross Weight + Runner Weight + Other Loss Weight)'} />
+                  <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Input Weight = (Gross Weight + Other Loss Weight)'} />
                   <TextFieldHookForm
                     label={`Input Weight(Kg)`}
                     name={'grossWeight'}

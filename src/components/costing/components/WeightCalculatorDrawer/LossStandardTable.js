@@ -808,7 +808,7 @@ function LossStandardTable(props) {
           <div className="col-md-12 text-right bluefooter-butn border">
             {props.isPlastic &&
               <span className="w-50 d-inline-block text-left">
-                {`Burning Loss Weight: `}
+                {`${props.isStamping ? "Total" : "Burning"} Loss Weight: `}
                 {checkForDecimalAndNull(burningWeight, trim)}
               </span>}
             {!props.isStamping && <span className="w-50 d-inline-block">
