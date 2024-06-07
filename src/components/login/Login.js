@@ -10,13 +10,14 @@ import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
-import logo from '../../assests/images/logo/company-logo.svg';
+import logo from '../../assests/images/logo/company-logo.svg'
 import secondLogo from '../../assests/images/logo/CIRlogo.svg';
 import CheckIcon from '../../assests/images/mail-sent.png';
 import errorImg from '../../assests/images/box.png';
-import { IV, KEY, VERSION } from '../../config/constants';
+import { IV, KEY, VERSION, showLogoFromDataBase } from '../../config/constants';
 import LoaderCustom from "../common/LoaderCustom";
 import { MsalAuthLogin } from "../../../src/components/login/MsalAuthLogin";
+import { getConfigurationKey } from "../../helper";
 
 const CryptoJS = require('crypto-js');
 
@@ -190,8 +191,8 @@ class Login extends Component {
             <div className="row shadow-lg">
               <div className="col-md-5 form-section">
                 <div className="text-center">
-                  <img className="logo-first" src={logo} alt="Softude" />
-                </div>
+                  <img className="logo-first" src={showLogoFromDataBase ? getConfigurationKey().LogoURL : logo} alt={showLogoFromDataBase ? getConfigurationKey().ClientName ?? "LOGO" : 'Softude'} />
+                </div >
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 <form noValidate className="form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                   <div className="input-group mail">
@@ -244,11 +245,13 @@ class Login extends Component {
                 <div className="text-center p-relative pt-5">
                   <MsalAuthLogin setToken={this.setToken} setIsLoginWithMsal={this.setIsLoginWithMsal} setAudience={this.setAudience} />
                 </div>
-                {buttonFlag && (
-                  <div className="forgot-link d-flex pt-2 justify-content-center">
-                    <span id="userNotFound" className="btn btn-link" onClick={this.forgotConfirm}>{'Forgot Password ?'}</span>
-                  </div>
-                )}
+                {
+                  buttonFlag && (
+                    <div className="forgot-link d-flex pt-2 justify-content-center">
+                      <span id="userNotFound" className="btn btn-link" onClick={this.forgotConfirm}>{'Forgot Password ?'}</span>
+                    </div>
+                  )
+                }
                 <div className="forget-wrapper">
                   {userNotFound && (
                     <div className="text-help userNotFound text-center">The provided user does not exist.</div>
@@ -264,15 +267,15 @@ class Login extends Component {
                   <span className="mt-0">Powered By</span>
                   <img className="logo-second" src={secondLogo} alt="Cost It Right" />
                 </div>
-              </div>
+              </div >
               <div className="col-md-7 p-0 right-sideimg">
                 <img src={errorImg} alt='error-icon' />
               </div>
-            </div>
-          </div>
-        </div>
+            </div >
+          </div >
+        </div >
         <p className="login-version">{VERSION}</p>
-      </div>
+      </div >
     );
   }
 }
