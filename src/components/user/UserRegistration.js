@@ -122,6 +122,7 @@ function UserRegistration(props) {
   const [isUpdateResponded, setIsUpdateResponded] = useState(false)
   const [costingTableChanged, setCostingTableChanged] = useState(false)
   const [simulationTableChanged, setSimulationTableChanged] = useState(false)
+  const [onboardingTableChanged, setOnboardingTableChanged] = useState(false)
   const [masterTableChanged, setMasterTableChanged] = useState(false)
   const [isDepartmentUpdated, setIsDepartmentUpdated] = useState(false)
   const [selectedPlants, setSelectedPlants] = useState([])
@@ -2067,6 +2068,7 @@ function UserRegistration(props) {
     let isForcefulUpdatedForMaster = false;
     let isForcefulUpdatedForCosting = false;
     let isForcefulUpdatedForSimulation = false;
+    let isForcefulUpdatedForOnboarding = false;
 
     if (JSON.stringify(masterLevelGrid) !== JSON.stringify(oldMasterLevelGrid)) {
       isForcefulUpdatedForMaster = true;
@@ -2074,15 +2076,20 @@ function UserRegistration(props) {
       isForcefulUpdatedForSimulation = true;
     } if (JSON.stringify(TechnologyLevelGrid) !== JSON.stringify(oldTechnologyLevelGrid)) {
       isForcefulUpdatedForCosting = true;
-    } if (isDepartmentUpdate || isPlantUpdate) {
+    } if (JSON.stringify(onboardingLevelGrid) !== JSON.stringify(oldOnboardingLevelGrid)) {
+      isForcefulUpdatedForOnboarding = true;
+    }
+     if (isDepartmentUpdate || isPlantUpdate) {
       isForcefulUpdatedForMaster = true;
       isForcefulUpdatedForSimulation = true;
       isForcefulUpdatedForCosting = true;
+      isForcefulUpdatedForOnboarding = true;
     }
     setIsDepartmentUpdated(isDepartmentUpdate || isPlantUpdate);
     setCostingTableChanged(isForcefulUpdatedForCosting);
     setMasterTableChanged(isForcefulUpdatedForMaster);
     setSimulationTableChanged(isForcefulUpdatedForSimulation);
+    setOnboardingTableChanged(isForcefulUpdatedForOnboarding);
     let plantArray = []
     selectedPlants && selectedPlants.map(item => {
       let obj = {
@@ -2155,8 +2162,9 @@ function UserRegistration(props) {
         updatedData.IsForcefulUpdatedForMaster = isForcefulUpdatedForMaster
         updatedData.IsForcefulUpdatedForSimulation = isForcefulUpdatedForSimulation
         updatedData.IsUpdateOnboarding = onboaringUpdate
+        updatedData.IsForcefulUpdatedForOnboarding = isForcefulUpdatedForOnboarding
       }
-      if (isDepartmentUpdate || isForcefulUpdatedForCosting || isForcefulUpdatedForMaster || isForcefulUpdatedForSimulation || isPlantUpdate) {
+      if (isDepartmentUpdate || isForcefulUpdatedForCosting || isForcefulUpdatedForMaster || isForcefulUpdatedForSimulation || isPlantUpdate || isForcefulUpdatedForOnboarding) {
         setShowPopup(true)
         setUpdatedObj(updatedData)
 
@@ -2437,8 +2445,11 @@ function UserRegistration(props) {
       if (masterTableChanged) {
         messages.push(`master`);
       }
-      if (costingTableChanged && simulationTableChanged && masterTableChanged) {
-        return `costing, simulation, and master`;
+      if(onboardingTableChanged) {
+        messages.push(`onboarding`);
+      }
+      if (costingTableChanged && simulationTableChanged && masterTableChanged && onboardingTableChanged) {
+        return `costing, simulation, onboarding and master`;
       }
       // Join the messages based on the state values
       return messages.join(' and ');

@@ -4,7 +4,7 @@ import { Col, Nav, NavItem, NavLink, Row, TabContent, Table, TabPane } from 'rea
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import NoContentFound from '../common/NoContentFound'
-import { Assembly, EMPTY_DATA, FILE_URL, searchCount } from '../../config/constants'
+import { Assembly, Component, EMPTY_DATA, FILE_URL, searchCount } from '../../config/constants'
 import { useSelector, useDispatch } from 'react-redux'
 import { getRMGradeSelectListByRawMaterial } from '../masters/actions/Material'
 import { fetchSpecificationDataAPI } from '../../actions/Common'
@@ -29,7 +29,7 @@ function ViewDrawer(props) {
     const dispatch = useDispatch()
     const dropzone = useRef(null);
 
-    const { isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber } = props
+    const { type,isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber } = props
     
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -63,7 +63,9 @@ function ViewDrawer(props) {
 
     useEffect(() => {
         setValue('AssemblyPartNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
-
+if(type === Component){
+    setValue('partNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
+}
     }, [AssemblyPartNumber])
     const removeAddedParts = (arr) => {
         const filteredArray = arr.filter((item) => {
@@ -413,7 +415,8 @@ function ViewDrawer(props) {
                                                 // handleChange={handleDestinationPlantChange}
                                                 handleChange={() => { }}
                                                 errors={errors.partNumber}
-                                                // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                disabled={type === Component? true : false}
+
                                                 isLoading={plantLoaderObj}
                                                 asyncOptions={partFilterList}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}

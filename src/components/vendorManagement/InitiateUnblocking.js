@@ -152,12 +152,13 @@ if(vendorId?.label !== '' && plantId?.label  !== '' ){
 
 
     const statusButtonFormatter = (status, fieldName) => {
+        console.log('status: ', status);
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
                     <Switch
                         // onChange={() => handleChange(cellValue, rowData)}
-                        checked={status === "Blocked"}
+                        checked={status === false}
                         disabled={true}
                         background="#ff6600"
                         onColor="#FC5774"
@@ -486,9 +487,9 @@ if(vendorId?.label !== '' && plantId?.label  !== '' ){
                                                     <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorName ?? '-'}</td>
                                                     <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.PlantName ?? '-'}</td>
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorClassification ?? '-'}</td>}
-                                                    {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.ClassificationStatus, "ClassificationStatus")}</td>}
+                                                    {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.ClassificationDeviationIsApproved, "ClassificationStatus")}</td>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorLPSRating ?? '-'}</td>}
-                                                    {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.LPSRatingStatus, "LPSRatingStatus")}</td>}
+                                                    {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.LPSRatingDeviationIsApproved, "LPSRatingStatus")}</td>}
                                                     <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.Division ?? '-'}</td>
                                                     {/* <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.DepartmentName ?? '-'}</td> */}
                                                 </tr>
