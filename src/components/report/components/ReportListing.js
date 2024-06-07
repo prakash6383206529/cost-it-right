@@ -557,7 +557,7 @@ function ReportListing(props) {
                         <AgGridColumn field="NetPOPrice" headerName={`Net PO Price (${reactLocalStorage.getObject("baseCurrency")})`}></AgGridColumn>
                         <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                         <AgGridColumn field="NetPOPriceInCurrency" headerName="Net PO Price Currency"></AgGridColumn>
-                        <AgGridColumn field="Remark" headerName="Remark" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="Remark" headerName="Remark123" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedBy" headerName="CreatedBy" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                         <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
