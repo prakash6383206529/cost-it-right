@@ -130,17 +130,19 @@ const CostingSummaryTable = (props) => {
   const [viewBomButton, setViewBomButton] = useState(true)
   const [isScrapRecoveryPercentageApplied, setIsScrapRecoveryPercentageApplied] = useState(false)
 
-  const { viewCostingDetailData, viewRejectedCostingDetailData } = useSelector((state) => state.costing)
+  const { viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly } = useSelector((state) => state.costing)
 
   useEffect(() => {
-    if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
+    if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
       setViewCostingData(viewCostingDetailData)
-    } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData.length > 0 && props?.isRejectedSummaryTable) {
+    } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData?.length > 0 && props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
       setViewCostingData(viewRejectedCostingDetailData)
+    } else if (viewCostingDetailDataForAssembly && viewCostingDetailDataForAssembly?.length > 0 && props?.isFromAssemblyTechnology) {
+      setViewCostingData(viewCostingDetailDataForAssembly)
     }
 
 
-  }, [viewCostingDetailData, viewRejectedCostingDetailData])
+  }, [viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly])
 
   useEffect(() => {
     setIsScrapRecoveryPercentageApplied((_.map(viewCostingData, 'IsScrapRecoveryPercentageApplied') || []).some(value => value === true));
