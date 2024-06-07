@@ -2,11 +2,12 @@ import React from 'react'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 //MINDA
+import Logo from '../../assests/images/logo/company-logo.svg'
 import { Nav } from 'reactstrap'
 import { PasswordFieldHookForm } from '../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { IVRFQ, KEYRFQ, RESET_PASSWORD, VERSION } from '../../config/constants'
+import { IVRFQ, KEYRFQ, RESET_PASSWORD, VERSION, showLogoFromDataBase } from '../../config/constants'
 import { required, minLength6, maxLength18, checkWhiteSpaces, strongPassword } from "../../helper/validation";
 import { useHistory, useLocation } from 'react-router-dom'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -94,8 +95,7 @@ function ResetPassword() {
                 <div className="logo-container">
                     <button className="btn btn-no-border">
                         <img
-                            src={getConfigurationKey().LogoURL}
-                            alt={getConfigurationKey().ClientName ?? "LOGO"}
+                            src={showLogoFromDataBase ? getConfigurationKey().LogoURL : Logo} alt={showLogoFromDataBase ? getConfigurationKey().ClientName ?? "LOGO" : 'Softude'}
                             height="40"
                         />
                     </button>

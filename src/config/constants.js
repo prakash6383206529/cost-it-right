@@ -80,7 +80,7 @@ export const API = {
   getRowGrade: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-grade`,
   getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-specification`,
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
- 
+
   ///INDEXATION
   getCommoditySelectList: `${BASE_URL}/masters-material/select-list-index-exchange`,
   getCommodityNameSelectList: `${BASE_URL}/masters-material/select-list-commodity`,
@@ -94,10 +94,10 @@ export const API = {
   deleteIndexData: `${BASE_URL}/masters-material/delete-commodity-material-details`,
   updateIndexData: `${BASE_URL}/masters-material/update-commodity-material-details`,
   createIndexData: `${BASE_URL}/masters-material/create-commodity-material-details`,
-  bulkUploadIndexData:`${BASE_URL}/masters-material/bulk-upload-for-commodity-material-details`,
-  bulkUploadStandardizedCommodity:`${BASE_URL}/masters-material/bulk-upload-for-commodity-exchange`,
-  updateCommodityStandardization:`${BASE_URL}/masters-material/update-commodity-standardization`,
-  createCommodityCustomName:`${BASE_URL}/masters-material/create-commodity-standard-name`,
+  bulkUploadIndexData: `${BASE_URL}/masters-material/bulk-upload-for-commodity-material-details`,
+  bulkUploadStandardizedCommodity: `${BASE_URL}/masters-material/bulk-upload-for-commodity-exchange`,
+  updateCommodityStandardization: `${BASE_URL}/masters-material/update-commodity-standardization`,
+  createCommodityCustomName: `${BASE_URL}/masters-material/create-commodity-standard-name`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -301,7 +301,7 @@ export const API = {
   getReporterList: `${BASE_URL}/rfq-user/get-user-select-list`,
   getContactPerson: `${BASE_URL}/rfq-quotation/get-contact-person-by-vendor-selectlist`,
   getVendorNameByVendorSelectList: `${BASE_URL}/vendor/vendor-name-by-vendor-select-list`,
-  getVendorPlantClassificationLpsratingForRFQ : `${BASE_URL}/vendor/check-vendor-plant-classification-lpsrating-for-rfq`,
+  getVendorPlantClassificationLpsratingForRFQ: `${BASE_URL}/vendor/check-vendor-plant-classification-lpsrating-for-rfq`,
 
   //BOP DOMESTIC
   createBOP: `${BASE_URL}/masters-bought-out-part/create-bought-out-part`,
@@ -1216,12 +1216,12 @@ export const CREATE_COMMODITY_SUCCESS = 'CREATE_COMMODITY_SUCCESS'
 export const CREATE_COMMODITY_FAILURE = 'CREATE_COMMODITY_FAILURE'
 export const GET_COMMODITYSTANDARDIZATION_DATALIST_SUCCESS = 'GET_COMMODITYSTANDARDIZATION_DATALIST_SUCCESS'
 export const GET_INDEXCOMMODITY_DATALIST_SUCCESS = 'GET_INDEXCOMMODITY_DATALIST_SUCCESS'
-export const GET_COMMODITYININDEX_DATALIST_SUCCESS ='GET_COMMODITYININDEX_DATALIST_SUCCESS'
+export const GET_COMMODITYININDEX_DATALIST_SUCCESS = 'GET_COMMODITYININDEX_DATALIST_SUCCESS'
 export const GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD = 'GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD'
 export const GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD = 'GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD'
-export const GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS ='GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS'
+export const GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS = 'GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS'
 export const GET_STANDARDIZEDCOMMODITY_FOR_DOWNLOAD = 'GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD'
-export const GET_INDEXDATA_LIST_SUCCESS ='GET_INDEXDATA_LIST_SUCCESS'
+export const GET_INDEXDATA_LIST_SUCCESS = 'GET_INDEXDATA_LIST_SUCCESS'
 export const GET_INDEXDATA_FOR_DOWNLOAD = 'GET_INDEXDATA_FOR_DOWNLOAD'
 
 //CATEGORY MASTER
@@ -3042,6 +3042,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 export const PartTypeIDFromAPI = 2
 export const RMIndex = true
+export const showLogoFromDataBase = false
 //VERSION 
 export const VERSION = "V2.2.21";
 

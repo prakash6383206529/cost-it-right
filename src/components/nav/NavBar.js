@@ -27,10 +27,11 @@ import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import activeRFQ from '../../assests/images/rfqActive.svg'
+import Logo from '../../assests/images/logo/company-logo.svg'
 import RFQ from '../../assests/images/rfq.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 // import Calculator from "../common/Calculator/component/Calculator";
-import { CBC_COSTING, COSTING, SIMULATION, VBC_COSTING, VERSION, ZBC_COSTING } from '../../config/constants';
+import { CBC_COSTING, COSTING, SIMULATION, VBC_COSTING, VERSION, ZBC_COSTING, showLogoFromDataBase } from '../../config/constants';
 import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
@@ -1018,8 +1019,7 @@ class SideBar extends Component {
               <div className="logo-container">
                 <div className="py-1">
                   <img
-                    src={getConfigurationKey().LogoURL}
-                    alt={getConfigurationKey().ClientName ?? "LOGO"}
+                    src={showLogoFromDataBase ? getConfigurationKey().LogoURL : Logo} alt={showLogoFromDataBase ? getConfigurationKey().ClientName ?? "LOGO" : 'Softude'}
                     // alt="Royal Enfield"     //RE
                     // MINDA
                     // alt="Minda"

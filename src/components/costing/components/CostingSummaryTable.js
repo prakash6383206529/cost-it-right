@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showLogoFromDataBase, } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -28,6 +28,7 @@ import BOMViewer from '../../masters/part-master/BOMViewer';
 import _, { debounce } from 'lodash'
 import ReactExport from 'react-export-excel';
 import ExcelIcon from '../../../assests/images/excel.svg';
+import Logo from '../../../assests/images/logo/company-logo.svg';
 import { DIE_CASTING, IdForMultiTechnology, PLASTIC } from '../../../config/masterData'
 import ViewMultipleTechnology from './Drawers/ViewMultipleTechnology'
 import TooltipCustom from '../../common/Tooltip'
@@ -2008,8 +2009,7 @@ const CostingSummaryTable = (props) => {
               {(drawerDetailPDF || pdfHead) &&
                 <>
                   <Col md="12" className='pdf-header-wrapper d-flex justify-content-between'>
-                    <img src={getConfigurationKey().LogoURL}
-                      alt={getConfigurationKey().ClientName ?? "LOGO"} />
+                    <img src={showLogoFromDataBase ? getConfigurationKey().LogoURL : Logo} alt={showLogoFromDataBase ? getConfigurationKey().ClientName ?? "LOGO" : 'Softude'} />
                     <img src={cirHeader} alt={'Cost it right'} />
                   </Col>
                   {/* <Col md="12">
