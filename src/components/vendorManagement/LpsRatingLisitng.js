@@ -27,23 +27,15 @@ const LpsRatingListing = () => {
     const [noData, setNoData] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [gridApi, setGridApi] = useState(null);
-
-
-
-
-
-
+    const [gridLoad, setGridLoad] = useState(false);
     const dispatch = useDispatch();
     const lpsRatingData = useSelector(state => state.supplierManagement.lpsRatingData);
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData);
-
 
     useEffect(() => {
         setIsLoader(true);
         applyPermission(topAndLeftMenuData)
         dispatch(getLPSRatingListing((res) => {
-
-
             if (res.errorMessage) {
                 setErrorMessage(res.errorMessage);
                 setIsLoader(false);
@@ -74,8 +66,8 @@ const LpsRatingListing = () => {
 
         if (topAndLeftMenuData !== undefined) {
             setIsLoader(true)
+            setGridLoad(true)
             const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
-
             const accessData = Data && Data.Pages.find((el) => el.PageName === LPS)
             const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
             if (permissionData !== undefined) {
@@ -187,7 +179,7 @@ const LpsRatingListing = () => {
                 <Row className="no-filter-row">
                     <Col md={6} className="text-right filter-block"></Col>
                 </Row>
-                {<div className={`ag-grid-wrapper height-width-wrapper`}>
+                {gridLoad && <div className={`ag-grid-wrapper height-width-wrapper`}>
                     <div className={`ag-theme-material`}>
                         {isLoader && <LoaderCustom customClass="loader-center" />}
                         {!isLoader && lpsRatingData && lpsRatingData?.length > 0 &&
@@ -214,9 +206,7 @@ const LpsRatingListing = () => {
 
                             </AgGridReact>
                         }
-                        {!isLoader && (!lpsRatingData || lpsRatingData?.length === 0) &&
-                            <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
-                        }
+
                     </div>
                 </div>}
 

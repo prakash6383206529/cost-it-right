@@ -301,6 +301,7 @@ export const API = {
   getReporterList: `${BASE_URL}/rfq-user/get-user-select-list`,
   getContactPerson: `${BASE_URL}/rfq-quotation/get-contact-person-by-vendor-selectlist`,
   getVendorNameByVendorSelectList: `${BASE_URL}/vendor/vendor-name-by-vendor-select-list`,
+  getVendorPlantClassificationLpsratingForRFQ : `${BASE_URL}/vendor/check-vendor-plant-classification-lpsrating-for-rfq`,
 
   //BOP DOMESTIC
   createBOP: `${BASE_URL}/masters-bought-out-part/create-bought-out-part`,
@@ -1237,6 +1238,11 @@ export const GET_MODEL_TYPE_SUCCESS = 'GET_MODEL_TYPE_SUCCESS'
 export const GET_LABOUR_TYPE_SELECTLIST_SUCCESS = 'GET_LABOUR_TYPE_SELECTLIST_SUCCESS'
 export const GET_APPROVAL_TYPE_SELECT_LIST = 'GET_APPROVAL_TYPE_SELECT_LIST'
 export const GET_APPROVAL_MODULE_SELECT_LIST = 'GET_APPROVAL_MODULE_SELECT_LIST'
+export const GET_APPROVAL_TYPE_SELECT_LIST_COSTING = 'GET_APPROVAL_TYPE_SELECT_LIST_COSTING'
+export const GET_APPROVAL_TYPE_SELECT_LIST_SIMULATION = 'GET_APPROVAL_TYPE_SELECT_LIST_SIMULATION'
+export const GET_APPROVAL_TYPE_SELECT_LIST_MASTER = 'GET_APPROVAL_TYPE_SELECT_LIST_MASTER'
+export const GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING = 'GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING'
+
 
 //UOM MASTER
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS'
@@ -2067,9 +2073,9 @@ export const OUTSOURCING = "Outsourcing"
 export const INSIGHT_SIMULATION_REPORT = "Simulation Insights"
 export const NFR_INSIGHT_DETAILS = 'NFR Insights' //MINDA
 export const lOGIN_AUDIT = 'Login Audit'
-export const VENDOR_CLASSIFICATION = 'Vendor Classification'
+export const VENDOR_CLASSIFICATION = 'Vendor Classification Status'
 export const INITIATE_UNBLOCKING = 'Initiate Unblocking'
-export const LPS_RATING = 'LPS Rating'
+export const LPS_RATING = 'LPS Rating Status'
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
