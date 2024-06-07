@@ -122,7 +122,7 @@ function AddRfq(props) {
     const [selectedUOM, setSelectedUOM] = useState('')
     const [requirementDate, setRequirementDate] = useState('')
     // below key is for managing the fields required for havells
-    const [havellsKey, setHavellsKey] = useState(true)
+    const [havellsKey, setHavellsKey] = useState(false)
 const [ popupMessage , setPopupMessage ] = useState('')
 const [ blocked , setBlocked ] = useState(false)
 const [vendorId , setVendorId ] = useState('')
@@ -1968,7 +1968,8 @@ return false
                                                 />
                                             )}
                                         </Col>
-                                        <Col md="3">
+{havellsKey &&(<>
+<Col md="3">
                                             <TextFieldHookForm
                                                 // title={titleObj.descriptionTitle}
                                                 label="Inco Terms"
@@ -2044,6 +2045,7 @@ return false
                                                 placeholder="-"
                                             />
                                         </Col>
+                                        </>)}
                                         <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
                                                 id="add_vendor"
