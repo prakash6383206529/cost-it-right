@@ -731,14 +731,15 @@ const  [ alreadyInDeviation  , setAlreadyInDeviation ]  = useState(false)
             }
             let Data = res?.data?.Data;
    if (res?.data?.Result && Data  &&((Data?.LPSRatingIsBlocked || Data?.ClassificationIsBlocked)) ){
-     
+    const additionalMessage = " Do you want to send this for deviation approval to unblock the plant?";
+
     if(  Data?.ClassificationDeviationIsInApprovalProcess &&  Data?.LPSRatingDeviationIsInApprovalProcess ){
         setShowPopup(true) 
         setBlocked(true)
         setPopupMessage(res?.data?.Message);
 setAlreadyInDeviation(true)
 return false
-    } else  {   setPopupMessage(res?.data?.Message);
+    } else  {   setPopupMessage(res?.data?.Message + additionalMessage);
                 setShowPopup(true) 
                 setVendorId(getValues('vendor'));
       setPlantId(getValues('plant')); 
