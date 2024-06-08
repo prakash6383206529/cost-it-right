@@ -453,6 +453,7 @@ function MasterSendForApproval(props) {
                 // REJECT CONDITION
                 setIsLoader(true)
                 dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
+                    setIsDisable(false)
                     setIsLoader(false)
                     if (res?.data?.Result) {
                         Toaster.success('Token Rejected')
