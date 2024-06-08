@@ -25,9 +25,9 @@ import LoaderCustom from '../common/LoaderCustom';
 
 const InitiateUnblocking = (props) => {
     const location = useLocation();
-    const { plantId , vendorId } = location.state || {};
-    
-  
+    const { plantId, vendorId } = location.state || {};
+
+
     const dispatch = useDispatch();
     const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
@@ -35,6 +35,7 @@ const InitiateUnblocking = (props) => {
     });
     const vendorPlantData = useSelector((state) => state.supplierManagement.vendorPlantData)
     const deviationData = useSelector((state) => state.supplierManagement.deviationData)
+    console.log('deviationData: ', deviationData);
     const [shouldMakeApiCalls, setShouldMakeApiCalls] = useState(false)
 
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
@@ -50,14 +51,14 @@ const InitiateUnblocking = (props) => {
     const [CanGoForApproval, setCanGoForApproval] = useState(false)
 
     useEffect(() => {
-if(vendorId?.label !== '' && plantId?.label  !== '' ){
-    setValue('vendor', vendorId)
-    setSelectedVendor(vendorId)
-    if(plantId){
-        setValue('Plant', plantId)
-        setSelectedPlant(plantId)
-    }
-}
+        if (vendorId?.label !== '' && plantId?.label !== '') {
+            setValue('vendor', vendorId)
+            setSelectedVendor(vendorId)
+            if (plantId) {
+                setValue('Plant', plantId)
+                setSelectedPlant(plantId)
+            }
+        }
     }, [location.state]);
     useEffect(() => {
         setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
@@ -418,19 +419,22 @@ if(vendorId?.label !== '' && plantId?.label  !== '' ){
                         {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
 
                         {((selectedVendor && selectedPlant) || (props?.isMasterSummaryDrawer)) && (
+
                             <>
 
                                 {(!props?.isMasterSummaryDrawer) && <div>
+                                    {console.log(!deviationData?.LPSRatingDeviationIsInApprovalProcess || !deviationData?.LPSRatingDeviationIsApproved, "CONd")}
                                     <div className="vendor-details">
                                         <Row>
                                             <Col md="3">
                                                 <div className="approval-section mb-2 mt-2">
-                                                    <div className="left-border"><div className='d-flex'>Approval for <TooltipCustom id="Primary_Contact" customClass="mt2 pl-1 ml-5" 
-      tooltipText="Click checkboxes to send deviation fro approval. If unavailable for LPS or classification, deviation is under approval or approved."
-      /></div></div>                                                    <div className="approval-checkboxes">
+                                                    <div className="left-border"><div className='d-flex'>Approval for <TooltipCustom id="Primary_Contact" customClass="mt2 pl-1 ml-5"
+                                                        tooltipText="Click checkboxes to send deviation for approval. If unavailable for LPS or classification, deviation is under approval or approved."
+                                                    /></div></div>
+                                                    <div className="approval-checkboxes">
                                                         {deviationData && (
                                                             <div>
-                                                                {!deviationData?.ClassificationDeviationIsInApprovalProcess && <label id={`vendorClassification_Checkbox_${deviationData?.ClassificationStatus}`} className={`custom-checkbox ${deviationData?.ClassificationStatus === "Blocked" ? "" : "disabled"}`}>
+                                                                {(!deviationData?.ClassificationDeviationIsInApprovalProcess && !deviationData?.ClassificationDeviationIsApproved) && <label id={`vendorClassification_Checkbox_${deviationData?.ClassificationStatus}`} className={`custom-checkbox ${deviationData?.ClassificationStatus === "Blocked" ? "" : "disabled"}`}>
                                                                     Classification
                                                                     <input
                                                                         type="checkbox"
@@ -441,7 +445,7 @@ if(vendorId?.label !== '' && plantId?.label  !== '' ){
                                                                     <span className="before-box" />
                                                                 </label>}
 
-                                                                {!deviationData?.LPSRatingDeviationIsInApprovalProcess && <label id={`LPS_Checkbox_${deviationData?.LPSRatingStatus}`} className={`custom-checkbox ${deviationData?.LPSRatingStatus === "Blocked" ? "" : "disabled"}`}>
+                                                                {(!deviationData?.LPSRatingDeviationIsInApprovalProcess && !deviationData?.LPSRatingDeviationIsApproved) && <label id={`LPS_Checkbox_${deviationData?.LPSRatingStatus}`} className={`custom-checkbox ${deviationData?.LPSRatingStatus === "Blocked" ? "" : "disabled"}`}>
                                                                     LPS Rating
                                                                     <input
                                                                         type="checkbox"
