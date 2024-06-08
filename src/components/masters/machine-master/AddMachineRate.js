@@ -158,6 +158,7 @@ class AddMachineRate extends Component {
       this.setState({ isFinalApprovar: data?.isFinalApprovar, finalApprovalLoader: false })
       return true
     }
+
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
       this.props.getProcessesSelectList(() => { })
@@ -669,7 +670,6 @@ class AddMachineRate extends Component {
       Toaster.warning('Vendor and Technology should not be empty.')
       return false;
     }
-
     let data = {
       isEditFlag: editFlag,
       Id: Id,
@@ -678,6 +678,8 @@ class AddMachineRate extends Component {
       costingTypeId: costingTypeId,
       selectedTechnology: selectedTechnology,
       vendorName: vendorName ?? [],
+      selectedPlants: this.state.selectedPlants,
+      selectedEffectiveDate: this.props.fieldsObj.EffectiveDate
 
     }
     this.props.displayMoreDetailsForm(data)
@@ -2145,7 +2147,6 @@ export default connect(mapStateToProps, {
   enableReinitialize: true,
   touchOnChange: true,
   onSubmitFail: errors => {
-    console.log('errors: ', errors);
     focusOnError(errors);
   },
 })(withTranslation(['MachineMaster'])(AddMachineRate)),
