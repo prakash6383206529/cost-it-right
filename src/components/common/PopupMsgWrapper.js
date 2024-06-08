@@ -11,8 +11,10 @@ function PopupMsgWrapper(props) {
   function confirmHandler(e) {
     props.confirmPopup(e)
     setTimeout(() => {
+      console.log('props.redirectPath: ', props.redirectPath);
       document.querySelector('body').removeAttribute('style')
-      if (props.redirectPath !== '') {
+      if (props.redirectPath !== '' && props?.redirectPath !== null && props?.redirectPath !== undefined) {
+        console.log("Props");
         history.push(SUPPLIER_MANAGEMENT, { vendorId: props.vendorId, plantId: props.plantId });
       }
     }, 200);
