@@ -54,6 +54,12 @@ const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
 
+  const { register, control, formState: { errors }, setValue, getValues } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+
+
   const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ, compareButtonPressed, showEditSOBButton, partTypeValue, technology } = props
   const { t } = useTranslation("Costing")
   const [totalCost, setTotalCost] = useState(0)
@@ -130,8 +136,35 @@ const CostingSummaryTable = (props) => {
   const [paymentTermsData, setPaymentTermsData] = useState([])
   const [npvData, setNpvData] = useState([])
   const [isScrapRecoveryPercentageApplied, setIsScrapRecoveryPercentageApplied] = useState(false)
+  const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
+  const partInfo = useSelector((state) => state.costing.partInfo)
+  const partNumber = useSelector(state => state.costing.partNo);
+  const [pdfName, setPdfName] = useState('')
+  const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
+  const [viewBomPartId, setViewBomPartId] = useState("");
+  const [dataSelected, setDataSelected] = useState([]);
+  const [IsNccCosting, setIsNccCosting] = useState(false);
+  const [isLogisticsTechnology, setIsLogisticsTechnology] = useState(false);
+  const [openNpvDrawer, setNpvDrawer] = useState(false);
+  const [isOpenRejectedCosting, setIsOpenRejectedCosting] = useState(false);
+  const [isFinalCommonApproval, setIsFinalCommonApproval] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState({
+    BOP: false,
+    process: false,
+    operation: false
+  })
+  const [pieChartDataArray, setPieChartDataArray] = useState([])
+  const [count, setCount] = useState(0);
+  const [disableSendForApproval, setDisableSendForApproval] = useState(false)
+  const [cssObj, setCssObj] = useState({})
+  const [rfqCosting, setRfqCosting] = useState(props?.isRfqCosting)
 
   const { viewCostingDetailData, viewRejectedCostingDetailData } = useSelector((state) => state.costing)
+
+
+  const componentRef = useRef();
+  const onBeforeContentResolve = useRef(null)
+  const onBeforeContentResolveDetail = useRef(null)
 
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
@@ -151,37 +184,11 @@ const CostingSummaryTable = (props) => {
 
 
 
-  const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
-  const partInfo = useSelector((state) => state.costing.partInfo)
-  const partNumber = useSelector(state => state.costing.partNo);
-  const [pdfName, setPdfName] = useState('')
-  const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
-  const [viewBomPartId, setViewBomPartId] = useState("");
-  const [dataSelected, setDataSelected] = useState([]);
-  const [IsNccCosting, setIsNccCosting] = useState(false);
-  const [isLogisticsTechnology, setIsLogisticsTechnology] = useState(false);
-  const [openNpvDrawer, setNpvDrawer] = useState(false);
-  const [isOpenRejectedCosting, setIsOpenRejectedCosting] = useState(false);
-  const [isFinalCommonApproval, setIsFinalCommonApproval] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState({
-    BOP: false,
-    process: false,
-    operation: false
-  })
-  const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId) || String(viewCostingData[0]?.technologyId) === WACTypeId)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
-  const { register, control, formState: { errors }, setValue, getValues } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-  });
 
-  const componentRef = useRef();
-  const onBeforeContentResolve = useRef(null)
-  const onBeforeContentResolveDetail = useRef(null)
-  const [pieChartDataArray, setPieChartDataArray] = useState([])
-  const [count, setCount] = useState(0);
-  const [disableSendForApproval, setDisableSendForApproval] = useState(false)
-  const [cssObj, setCssObj] = useState({})
-  const [rfqCosting, setRfqCosting] = useState(props?.isRfqCosting)
+  const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId) || String(viewCostingData[0]?.technologyId) === WACTypeId)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+
+
+
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology);
@@ -199,9 +206,11 @@ const CostingSummaryTable = (props) => {
       setMultipleCostings([])
     }
   }, [compareButtonPressed])
+
   useEffect(() => {
     setViewPieChart({ 0: false })
   }, [props.partNumber.value])
+
   useEffect(() => {
     if (viewCostingData && viewCostingData.length > 0 && viewCostingData[0]) {
 
@@ -225,6 +234,7 @@ const CostingSummaryTable = (props) => {
 
     }
   }, [viewCostingData]);
+
   useEffect(() => {
 
     if (!viewMode && viewCostingData?.length !== 0 && partInfo && count === 0 && technologyId) {
@@ -3514,7 +3524,7 @@ const CostingSummaryTable = (props) => {
       }
 
       {
-        openNpvDrawer && <ViewOtherCostDrawer
+        npvData && openNpvDrawer && <ViewOtherCostDrawer
           isOpen={openNpvDrawer}
           viewCostingData={viewCostingData}
           costingSummary={true}
