@@ -238,7 +238,7 @@ function AddRejectionRecovery(props) {
                                     </Col>
                                     <Col md="12">
                                         <TextFieldHookForm
-                                            label="Net Rejection Recovery"
+                                            label="Net Rejection Recovery Cost"
                                             name={'NetRejectionRecovery'}
                                             Controller={Controller}
                                             control={control}
