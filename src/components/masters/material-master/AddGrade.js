@@ -6,6 +6,7 @@ import { required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, hash
 import { renderText, } from "../../layout/FormInputs";
 import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getMaterialTypeSelectList } from '../actions/Material';
 import { getRawMaterialSelectList } from '../../../actions/Common';
+import { createCommodityCustomName } from '../actions/Indexation';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -77,17 +78,33 @@ class AddGrade extends Component {
         }
       })
     } else {
-
-      values.RawMaterialId = RawMaterial.value;
-      values.CreatedBy = loggedInUserId();
-
-      this.props.reset()
-      this.props.createRMGradeAPI(values, (res) => {
-        if (res.data.Result) {
-          Toaster.success(MESSAGES.GRADE_ADD_SUCCESS);
-          this.toggleDrawer('', values, 'submit')
+      if (this.props.isShowIndex) {
+        let obj = {
+          LoggedInUserId: loggedInUserId(),
+          CommodityStandardName: values.MaterialName
         }
-      });
+        this.props.reset();
+        this.props.createCommodityCustomName(obj, (res) => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.COMMODITYNAME_ADD_SUCCESS);
+            this.toggleDrawer('', obj, 'submit');
+          }
+        });
+      }
+      else {
+        values.RawMaterialId = RawMaterial.value;
+        values.CreatedBy = loggedInUserId();
+
+        this.props.reset()
+        this.props.createRMGradeAPI(values, (res) => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.GRADE_ADD_SUCCESS);
+            this.toggleDrawer('', values, 'submit')
+          }
+        });
+
+      }
+
     }
   }
 
@@ -220,6 +237,7 @@ export default connect(mapStateToProps,
     getMaterialTypeSelectList,
     getRMGradeDataAPI,
     updateRMGradeAPI,
+    createCommodityCustomName
   })(reduxForm({
     form: 'AddGrade',
     enableReinitialize: true,

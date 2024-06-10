@@ -139,7 +139,6 @@ function ApprovalSummary(props) {
         const { IsRFQCostingApproval, PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
           ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
           CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, NfrId, NfrGroupIdForPFS2, NfrGroupIdForPFS3, IsNFRPFS2PushedButtonShow, IsNFRPFS3PushedButtonShow } = res?.data?.Data?.Costings[0];
-        console.log('ApprovalTypeId: ', ApprovalTypeId);
         setApprovalTypeId(ApprovalTypeId)
         setIsRFQCostingApproval(IsRFQCostingApproval)
         dispatch(setQuotationIdForRFQ(QuotationId))

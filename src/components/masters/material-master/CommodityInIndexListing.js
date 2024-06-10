@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { deleteMaterialTypeAPI } from "../actions/Material";
+import { getCommodityInIndexDataListAPI } from "../actions/Indexation";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
@@ -14,31 +15,25 @@ import LoaderCustom from "../../common/LoaderCustom";
 import { searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
-import TourWrapper from "../../common/Tour/TourWrapper";
-import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
-import AddRMDrawer from "./AddRMDrawer";
-import { RMMATERIALISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import { COMMODITYININDEXlISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
+import WarningMessage from '../../common/WarningMessage';
 import ReactExport from "react-export-excel";
 import BulkUpload from "../../massUpload/BulkUpload";
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
-import WarningMessage from '../../common/WarningMessage';
+import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
-import { getIndexDataListAPI } from "../actions/Indexation";
-
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-const RMMaterialListing = () => {
+const CommodityInIndexListing = () => {
   const dispatch = useDispatch();
-  const { rmIndexDataList } = useSelector((state) => state.indexation);
+  const { commodityInIndexDataList } = useSelector((state) => state.indexation);
   const permissions = useContext(ApplyPermission);
-  const { globalTakes } = useSelector((state) => state.pagination)
   const { t } = useTranslation("common")
 
   const [state, setState] = useState({
@@ -58,7 +53,7 @@ const RMMaterialListing = () => {
     showExtraData: false,
     isBulkUpload: false,
   });
-  const [floatingFilterData, setFloatingFilterData] = useState({ IndexExchangeName: '' })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CommodityName: '' })
   const [isLoader, setIsLoader] = useState(false);
   const [totalRecordCount, setTotalRecordCount] = useState(1)
   const [filterModel, setFilterModel] = useState({});
@@ -67,76 +62,17 @@ const RMMaterialListing = () => {
   const [noData, setNoData] = useState(false)
   const [disableFilter, setDisableFilter] = useState(true)
   const [disableDownload, setDisableDownload] = useState(false)
+  const { globalTakes } = useSelector((state) => state.pagination)
   const [gridApi, setGridApi] = useState(null);
   const [dataCount, setDataCount] = useState(0)
-  const [gridLoad, setGridLoad] = useState(false);
   useEffect(() => {
-    getTableListData(0, defaultPageSize, true)
-    return () => {
-      dispatch(resetStatePagination());
+    getTableListData();
+  }, []);
 
-    }
-  }, [])
-  const getTableListData = (skip = 0, take = 10, isPagination = true) => {
-    if (isPagination === true || isPagination === null) setIsLoader(true)
-    let dataObj = { ...floatingFilterData }
-    dispatch(getIndexDataListAPI(dataObj, isPagination, skip, take, (res) => {
-      if (isPagination === true || isPagination === null) setIsLoader(false)
-      if ((res && res.status === 204) || res.length === 0) {
-        setTotalRecordCount(0)
-        dispatch(updatePageNumber(0))
-        // setPageNo(0)
-      }
-      if (res && isPagination === false) {
-        setDisableDownload(false)
-        dispatch(disabledClass(false))
-        setTimeout(() => {
-          let button = document.getElementById('Excel-Downloads-rmMaterialList')
-          button && button.click()
-        }, 500);
-      }
-      if (res) {
-        let isReset = true
-        setTimeout(() => {
-          for (var prop in floatingFilterData) {
-            if (floatingFilterData[prop] !== "") {
-              isReset = false
-            }
-          }
-          // Sets the filter model via the grid API
-          isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
 
-        }, 300);
-
-        setTimeout(() => {
-          setWarningMessage(false)
-        }, 330);
-
-        setTimeout(() => {
-          setIsFilterButtonClicked(false)
-        }, 600);
-      }
-    }))
-  }
-  /**
-   * @method closeDrawer
-   * @description  used to cancel filter form
-   */
-  const closeDrawer = (e = "", formData, type) => {
-    setState((prevState) => ({
-      ...prevState, isOpen: false, isLoader: type === "submit" ? true : prevState.isLoader, dataCount: type === "submit" ? 0 : prevState.dataCount,
-    }));
-    if (type === "submit") {
-      getTableListData();
-    }
-  };
-  /**
-   * @method onFloatingFilterChanged
-   * @description Filter data when user type in searching input
-   */
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      if (rmIndexDataList?.length !== 0) {
+      if (commodityInIndexDataList?.length !== 0) {
         setNoData(searchNocontentFilter(value, noData))
       }
     }, 500);
@@ -176,19 +112,13 @@ const RMMaterialListing = () => {
       setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
     }
   }
-  /**
-   * @method editItemDetails
-   * @description edit Raw Material
-   */
+
   const editItemDetails = (Id) => {
     setState((prevState) => ({
       ...prevState, isEditFlag: true, isOpen: true, ID: Id,
     }));
   };
-  /**
-   * @method deleteItem
-   * @description confirm delete Raw Material
-   */
+
   const deleteItem = (Id) => {
     setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
   };
@@ -228,6 +158,7 @@ const RMMaterialListing = () => {
     }));
   };
 
+
   const buttonFormatter = (props) => {
     const { showExtraData } = state
     const cellValue = props?.valueFormatted
@@ -241,28 +172,21 @@ const RMMaterialListing = () => {
 
     return (
       <>
-        {isEditbale && (
-          <Button
-            title="Edit"
-            variant="Edit"
-            id={`rmMaterialList_edit${props?.rowIndex}`}
-            className="mr-2 Tour_List_Edit"
-            onClick={() => editItemDetails(cellValue, rowData)}
-          />
-        )}
         {isDeleteButton && (
           <Button
             title="Delete"
             variant="Delete"
             className={"Tour_List_Delete"}
-            id={`rmMaterialList_edit_delete${props?.rowIndex}`}
+            id={`commodityInIndexList_delete${props?.rowIndex}`}
             onClick={() => deleteItem(cellValue)}
           />
         )}
       </>
     );
   };
-
+  /**
+   * @method hyphenFormatter
+   */
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
     return cellValue !== " " &&
@@ -288,11 +212,25 @@ const RMMaterialListing = () => {
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
   };
 
-
   const onFilterTextBoxChanged = (e) => {
     state.gridApi.setQuickFilter(e.target.value);
   };
+  useEffect(() => {
+    getTableListData(0, defaultPageSize, true)
+    return () => {
+      ///dispatch(setSelectedRowForPagination([]))
+      dispatch(resetStatePagination());
 
+    }
+  }, [])
+  useEffect(() => {
+    if (commodityInIndexDataList?.length > 0) {
+      setTotalRecordCount(commodityInIndexDataList[0].TotalRecordCount)
+    }
+    else {
+      setNoData(false)
+    }
+  }, [commodityInIndexDataList])
 
   const resetState = () => {
     setNoData(false)
@@ -313,15 +251,6 @@ const RMMaterialListing = () => {
     reactLocalStorage.setObject('selectedRow', {})
   }
 
-  const onSearch = () => {
-    setWarningMessage(false)
-    setIsFilterButtonClicked(true)
-    dispatch(updatePageNumber(1))
-    dispatch(updateCurrentRowIndex(0))
-    gridOptions?.columnApi?.resetColumnState();
-    getTableListData(0, globalTakes, true)
-  }
-
   const { isOpen, isEditFlag, ID, showExtraData, render, isBulkUpload } = state;
 
   const isFirstColumn = (params) => {
@@ -329,7 +258,50 @@ const RMMaterialListing = () => {
     var thisIsFirstColumn = displayedColumns[0] === params.column;
     return thisIsFirstColumn;
   };
-  
+
+  const getTableListData = (skip = 0, take = 10, isPagination = true) => {
+    if (isPagination === true || isPagination === null) setIsLoader(true)
+    let dataObj = { ...floatingFilterData }
+    dispatch(getCommodityInIndexDataListAPI(dataObj, isPagination, skip, take, (res) => {
+      if (isPagination === true || isPagination === null) setIsLoader(false)
+      if ((res && res.status === 204) || res.length === 0) {
+        setTotalRecordCount(0)
+        dispatch(updatePageNumber(0))
+        // setPageNo(0)
+      }
+      if (res && isPagination === false) {
+        setDisableDownload(false)
+        dispatch(disabledClass(false))
+        setTimeout(() => {
+          let button = document.getElementById('Excel-Downloads-commodityInIndex')
+          button && button.click()
+        }, 500);
+      }
+      if (res) {
+        let isReset = true
+        setTimeout(() => {
+          for (var prop in floatingFilterData) {
+            if (floatingFilterData[prop] !== "") {
+              isReset = false
+            }
+          }
+          // Sets the filter model via the grid API
+          isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+
+        }, 300);
+
+        setTimeout(() => {
+          setWarningMessage(false)
+        }, 330);
+
+        setTimeout(() => {
+          setIsFilterButtonClicked(false)
+        }, 600);
+      }
+    }))
+  }
+
+
   const defaultColDef = {
     resizable: true,
     filter: true,
@@ -341,16 +313,29 @@ const RMMaterialListing = () => {
     hyphenFormatter: hyphenFormatter,
     customNoRowsOverlay: NoContentFound,
   };
+
   const onBtExport = () => {
     let tempArr = [];
     tempArr = state.gridApi && state.gridApi?.getSelectedRows();
     tempArr =
       tempArr && tempArr.length > 0
         ? tempArr
-        : rmIndexDataList
-          ? rmIndexDataList
+        : commodityInIndexDataList
+          ? commodityInIndexDataList
           : [];
-    return returnExcelColumn(RMMATERIALISTING_DOWNLOAD_EXCEl, tempArr);
+    return returnExcelColumn(COMMODITYININDEXlISTING_DOWNLOAD_EXCEl, tempArr);
+  };
+
+  const onSearch = () => {
+    setWarningMessage(false)
+    setIsFilterButtonClicked(true)
+    dispatch(updatePageNumber(1))
+    dispatch(updateCurrentRowIndex(0))
+    gridOptions?.columnApi?.resetColumnState();
+    getTableListData(0, globalTakes, true)
+  }
+  const bulkToggle = () => {
+    setState((prevState) => ({ ...prevState, isBulkUpload: true }));
   };
 
   const returnExcelColumn = (data = [], TempData) => {
@@ -380,9 +365,6 @@ const RMMaterialListing = () => {
       </ExcelSheet>
     );
   };
-  const bulkToggle = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: true }));
-  };
   const closeBulkUploadDrawer = () => {
     setState(
       (prevState) => {
@@ -399,29 +381,27 @@ const RMMaterialListing = () => {
 
   return (
     <div
-      className={`ag-grid-react min-height100vh`}
+      className={`ag-grid-react min-height100vh ${permissions.Download ? "show-table-btn" : ""
+        }`}
     >
-      {state.isLoader && <LoaderCustom customClass="loader-center" />}
+      {state.isLoader && <LoaderCustom />}
       <Row className="pt-4">
         <Col md={9} className="search-user-block mb-3 pl-0">
           <div className="d-flex justify-content-end bd-highlight w100">
             <div className="d-flex justify-content-end bd-highlight w100">
               {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-              <Button id="rmMaerialListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
+              <Button id="commodityInIndexList_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
             </div>
-            {/* {permissions.Add && (
-            <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
-          )} */}
-            {permissions.BulkUpload && (<Button id="rmMaterialListing_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+            {permissions.BulkUpload && (<Button id="commodityInIndex_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
 
             {permissions.Download && (
               <>
                 <>
                   <ExcelFile
-                    filename={"Index Data"}
+                    filename={"Commodity (In Index)"}
                     fileExtension={".xls"}
                     element={
-                      <Button id={"Excel-Downloads-Rm MaterialList"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      <Button id={"Excel-Downloads-Rm CommodityInIndex List"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                     }
                   >
                     {onBtExport()}
@@ -429,7 +409,7 @@ const RMMaterialListing = () => {
                 </>
               </>
             )}
-            <Button id={"rmMaterialListing_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+            <Button id={"commodityInIndex_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
           </div>
         </Col>
       </Row>
@@ -444,12 +424,6 @@ const RMMaterialListing = () => {
           >
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
-              <TourWrapper
-                buttonSpecificProp={{ id: "RM_Listing_Tour", onClick: toggleExtraData }}
-                stepsSpecificProp={{
-                  steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, bulkUpload: false, addButton: false, filterButton: false, costMovementButton: false, viewButton: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
-                }}
-              />
             </div>
             <div
               className={`ag-theme-material ${state.isLoader && "max-loader-height"
@@ -461,17 +435,17 @@ const RMMaterialListing = () => {
                   customClassName="no-content-found"
                 />
               )}
-              <AgGridReact
+              {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout="autoHeight"
-                // columnDefs={c}
-                rowData={rmIndexDataList}
-
+                rowData={commodityInIndexDataList}
                 pagination={true}
-                paginationPageSize={defaultPageSize}
+                paginationPageSize={globalTakes}
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
+                // loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={"customNoRowsOverlay"}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
@@ -483,28 +457,16 @@ const RMMaterialListing = () => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
-
-                <AgGridColumn field="IndexExchangeName" headerName="Index"></AgGridColumn>
-                <AgGridColumn field="CommodityName" headerName="Commodity Name" ></AgGridColumn>
-                <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                <AgGridColumn field="EffectiveDate" headerName="Effective Date"></AgGridColumn>
-                <AgGridColumn field="Rate" headerName="Index Rate (Currency)"></AgGridColumn>
-                <AgGridColumn field="ExchangeRateSourceName" headerName="Premium (Charge)"></AgGridColumn>
-                <AgGridColumn field="ExchangeRate" headerName="Exchange rate (INR)"></AgGridColumn>
-                <AgGridColumn field="CurrencyCharge" headerName="Currency Rate"></AgGridColumn>
-                <AgGridColumn field="RateConversion" headerName="Conversion Rate (INR)"></AgGridColumn>
+                <AgGridColumn field="CommodityName" headerName="Index"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
-              </AgGridReact>
+              </AgGridReact>}
 
-              {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData"/>}
+              {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="CommodityInIndex" />}
 
             </div>
           </div>
         </Col>
       </Row>
-
-      {isOpen && (<AddRMDrawer isEditFlag={isEditFlag} isOpen={isOpen} closeDrawer={closeDrawer} anchor={"right"} />)}
 
       {state.showPopup && (
         <PopupMsgWrapper
@@ -519,8 +481,8 @@ const RMMaterialListing = () => {
           isOpen={isBulkUpload}
           closeDrawer={closeBulkUploadDrawer}
           isEditFlag={false}
-          fileName={"Index Data"}
-          messageLabel={"Index Data"}
+          fileName={"Commodity (In Index)"}
+          messageLabel={"Commodity (In Index)"}
           anchor={"right"}
         />
       )}
@@ -528,4 +490,4 @@ const RMMaterialListing = () => {
   );
 };
 
-export default RMMaterialListing;
+export default CommodityInIndexListing;

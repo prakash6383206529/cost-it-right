@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Table, Container } from "reactstrap";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
@@ -10,15 +10,22 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import AddGrade from "./AddGrade";
 import Button from '../../layout/Button';
+import {
+    getCommoditySelectListByType, getCommodityNameSelectListByType, getCommodityCustomNameSelectListByType,
+    getStandardizedCommodityListAPI, createCommodityStandardizationData, updateCommodityStandardization,
+} from '../../masters/actions/Indexation'
+import { debounce, values } from 'lodash';
+import Toaster from '../../common/Toaster';
+import { loggedInUserId } from "../../../helper/auth";
 
-const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
-
+const AddMaterialDetailDrawer = (props) => {
+    const { isEditFlag, isOpen, closeDrawer, anchor } = props;
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const [isEdit, setIsEdit] = useState(false);
     const [editIndex, setEditIndex] = useState('')
     const [state, setState] = useState({
         isShowForm: false,
-        MaterialTypeId: '',
+        ///MaterialTypeId: '',
         DataToChange: [],
         setDisable: false,
         showPopup: false,
@@ -27,42 +34,78 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
+    const dispatch = useDispatch()
+    const { indexCommodityData } = useSelector((state) => state.indexation);
+    const { nameCommodityData } = useSelector((state) => state.indexation);
+    const { customNameCommodityData } = useSelector((state) => state.indexation);
+    //const { standardizedCommodityDataList } = useSelector((state) => state.indexation);
+    useEffect(() => {
+        dispatch(getStandardizedCommodityListAPI(() => { }))
+        dispatch(getCommoditySelectListByType(() => { }))
+        dispatch(getCommodityNameSelectListByType(() => { }))
+        dispatch(getCommodityCustomNameSelectListByType((res) => { }))
+
+    }, [])
 
     const [gridData, setGridData] = useState([]);
     const [formData, setFormData] = useState({
-        Index: '',
-        MaterialName: '',
-        MaterialNameCustom: ''
+        CommodityExchangeName: '',
+        CommodityName: '',
+        CustomMaterialName: ''
 
     });
 
 
 
     const renderListing = (label) => {
-        if (label === 'Applicability') {
-            return [
-                { label: 'Option 1', value: 'Option1' },
-                { label: 'Option 2', value: 'Option2' },
-                { label: 'Option 3', value: 'Option3' },
-            ];
+        const temp = []
+        if (label === 'CommodityExchangeName') {
+            indexCommodityData && indexCommodityData.map((item) => {
+                if (item.Value === '--0--') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
         }
+        if (label === 'CommodityName') {
+            nameCommodityData && nameCommodityData.map((item) => {
+                if (item.Value === '--0--') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+        if (label === 'CustomMaterialName') {
+            customNameCommodityData && customNameCommodityData.map((item) => {
+                if (item.Value === '--0--') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+        // if (label === 'Applicability') {
+        //     return [
+        //         { label: 'Option 1', value: 'Option1' },
+        //         { label: 'Option 2', value: 'Option2' },
+        //         { label: 'Option 3', value: 'Option3' },
+        //     ];
+        // }
     };
 
     const handleInputChange = (selectedOption, name) => {
         const updatedFormData = { ...formData, [name]: selectedOption.value };
         setFormData(updatedFormData);
     };
-
     const resetData = () => {
-        setValue('Index', '');
-        setValue('MaterialName', '');
-        setValue('MaterialNameCustom', '');
+        setValue('CommodityExchangeName', '');
+        setValue('CommodityName', '');
+        setValue('CustomMaterialName', '');
         setIsEdit(false)
         setEditIndex('')
         setFormData({
-            Index: '',
-            MaterialName: '',
-            MaterialNameCustom: ''
+            CommodityExchangeName: '',
+            CommodityName: '',
+            CustomMaterialName: ''
         });
     }
 
@@ -73,19 +116,83 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
         resetData();
     };
 
-    const onSubmit = () => {
-        if (isEdit) {
-            updateRow()
+    // const onSubmit = () => {
+    //     if (isEdit) {
+    //         updateRow()
+    //     } else {
+    //         addRow()
+    //     }
+    // };
+
+    const onSubmit = debounce(values => {
+        console.log('onssavebutton: ', values);
+        if (isEdit) {          
+            setState(prevState => ({ ...prevState, setDisable: true }));
+
+            //   const updateData = {
+            //     Index: values.Index,
+            //     ModifiedBy: loggedInUserId(),            
+            //     MaterialName: values.MaterialName,
+            //     MaterialNameCustom: values.MaterialNameCustom,
+            //     IsActive: true,
+            //   };
+            const updateData = {
+                CommodityExchangeName: values.CommodityExchangeName,
+                ModifiedBy: loggedInUserId(),
+                CommodityName: values.CommodityName,
+                CustomMaterialName: values.CustomMaterialName,
+                IsActive: true,
+            };
+
+            dispatch(updateCommodityStandardization(updateData, res => {
+                setState(prevState => ({ ...prevState, setDisable: false }));
+                if (res?.data?.Result) {
+                    Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
+                    dispatch(getStandardizedCommodityListAPI('', res => { }));
+                    reset();
+                    toggleDrawer('', updateData, 'submit');
+                }
+            }));
         } else {
-            addRow()
+            setState(prevState => ({ ...prevState, setDisable: true }));
+
+            // const formData = {
+            //     Index: values.Index,
+            //     MaterialName: values.MaterialName,
+            //     MaterialNameCustom: values.MaterialNameCustom,
+            //     // MaterialType: values.MaterialType,
+            //     // CalculatedDensityValue: values.CalculatedDensityValue,
+            //     CreatedBy: loggedInUserId(),
+            //     IsActive: true,
+            // };
+
+            const formDataToSubmit = {
+
+                CommodityExchangeName: values.CommodityExchangeName,
+                CommodityName: values.CommodityName,
+                CustomMaterialName: values.CustomMaterialName,
+                CreatedBy: loggedInUserId(),
+                IsActive: true,
+            };
+            dispatch(createCommodityStandardizationData(formDataToSubmit, res => {
+
+                setState(prevState => ({ ...prevState, setDisable: false }));
+
+                if (res?.data?.Result) {
+                    Toaster.success(MESSAGES.COMMODITYNAME_ADD_SUCCESS);
+                    dispatch(getStandardizedCommodityListAPI('', res => { }));
+                    reset();
+                    toggleDrawer('', formDataToSubmit, 'submit');
+                }
+            }));
         }
-    };
+    }, 500);
 
     const updateRow = () => {
         const obj = {
-            Index: formData.Index,
-            MaterialName: formData.MaterialName,
-            MaterialNameCustom: formData.MaterialNameCustom
+            CommodityExchangeName: formData.CommodityExchangeName,
+            CommodityName: formData.CommodityName,
+            CustomMaterialName: formData.CustomMaterialName
         }
 
         const updatedGridData = gridData.map((item, index) =>
@@ -101,10 +208,12 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
     const addRow = () => {
 
         const obj = {
-            Index: formData.Index,
-            MaterialName: formData.MaterialName,
-            MaterialNameCustom: formData.MaterialNameCustom
+
+            CommodityExchangeName: formData.CommodityExchangeName,
+            CommodityName: formData.CommodityName,
+            CustomMaterialName: formData.CustomMaterialName
         };
+        //console.log('formData: ', formData);
         const newGridData = [...gridData, obj];
         setGridData(newGridData);
 
@@ -114,19 +223,19 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
     const editItemDetails = (index) => {
         const editObj = gridData[index]
         setFormData({
-            Index: editObj.Index,
-            MaterialName: editObj.MaterialName,
-            MaterialNameCustom: editObj.MaterialNameCustom
+            CommodityExchangeName: editObj.CommodityExchangeName,
+            CommodityName: editObj.CommodityName,
+            CustomMaterialName: editObj.CustomMaterialName
         });
-        setValue('Index', { label: editObj.Index, value: editObj.Index })
-        setValue('MaterialName', { label: editObj.MaterialName, value: editObj.MaterialName })
-        setValue('MaterialNameCustom', { label: editObj.MaterialNameCustom, value: editObj.MaterialNameCustom })
+        setValue('CommodityExchangeName', { label: editObj.CommodityExchangeName, value: editObj.CommodityExchangeName })
+        setValue('CommodityName', { label: editObj.CommodityName, value: editObj.CommodityName })
+        setValue('CustomMaterialName', { label: editObj.CustomMaterialName, value: editObj.CustomMaterialName })
         setEditIndex(index)
         setIsEdit(true)
     }
 
     const handleAddUpdateButtonClick = () => {
-        if (!formData.Index || !formData.MaterialName || !formData.MaterialNameCustom) {
+        if (!formData.CommodityExchangeName || !formData.CommodityName || !formData.CustomMaterialName) {
             return;
         }
         if (isEdit) {
@@ -145,7 +254,7 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
     };
     const cancel = (type) => {
         reset();
-        // dispatch(getMaterialTypeDataAPI('', res => { }));
+        dispatch(getStandardizedCommodityListAPI('', res => { }));
         toggleDrawer('', '', type);
     };
 
@@ -170,6 +279,81 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
     const closeIndex = () => {
         setState(prevState => ({ ...prevState, isOpenIndex: false }));
     }
+    // const closeFuelDrawer = (e = '', reqData = {}) => {
+    //     console.log('reqData: ', reqData);
+    //     setState(prevState => ({ ...prevState, isOpenIndex: false }));
+    //     setTimeout(() => {
+    //         dispatch(getCommodityCustomNameSelectListByType((res) => {
+    //             console.log('res: ', res);
+
+    //             //let obj = customNameCommodityData.find(item => item.CommodityStandardName === reqData.MaterialName)
+    //                 /*TO SHOW FUEL NAME VALUE PRE FILLED FROM DRAWER*/
+    //                 if (Object.keys(reqData).length > 0) {
+    //                     let obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName)
+
+
+    //                 //     setValue({ CustomMaterialName: obj ? { label: obj.CustomMaterialName, value: obj.CustomMaterialName } : [] });
+    //                 //     // setValue({ CustomMaterialName: fuelObj && fuelObj !== undefined ? { label: fuelObj.CustomMaterialName, value: fuelObj.CustomMaterialName } : [] })
+    //                 //     //setValue('CustomMaterialName', { label: editObj.CustomMaterialName, value: editObj.CustomMaterialName })
+    //                 setValue({ CustomMaterialName: obj ? { label: obj.CustomMaterialName, value: obj.CustomMaterialName } : [] });
+    //                  }
+    //                // setValue({ CustomMaterialName: obj ? { label: obj.CustomMaterialName, value: obj.CustomMaterialName } : [] });
+    //         })
+    // )}, 500);
+
+    // }
+
+    const closeFuelDrawer = (e = '', reqData = {}) => {
+        console.log('reqData: ', reqData);
+        setState(prevState => ({ ...prevState, isOpenIndex: false }));
+
+        // dispatch(getCommodityCustomNameSelectListByType((res) => {
+        //     console.log('res: ', res);
+
+        //     const customNameCommodityData = res.data; // Assuming res.data contains your data
+        //     console.log('customNameCommodityData: ', customNameCommodityData);
+
+        //     // if (Object.keys(reqData).length > 0) {
+        //     //     let obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
+
+        //     //     setValue({ CustomMaterialName: obj ? { label: obj.CustomMaterialName, value: obj.CustomMaterialName } : [] });
+
+        //     // }
+        //     // if (Object.keys(reqData).length > 0) {
+        //     //     let obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
+        //     //     console.log('obj: ', obj);
+
+        //     //     if (obj) {
+        //     //         setValue('CustomMaterialName', { label: obj.CustomMaterialName, value: obj.CustomMaterialName });
+        //     //     }
+        //     // }
+        //     let obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
+        //     console.log('obj: ', obj);
+
+        //     if (obj) {
+        //         setValue('CustomMaterialName', { label: obj.CustomMaterialName, value: obj.CustomMaterialName });
+        //     }
+        // }));
+        dispatch(getCommodityCustomNameSelectListByType())
+        .then((res) => {
+            console.log('res: ', res);
+
+            const customNameCommodityData = res.data; // Assuming res.data contains your data
+            console.log('customNameCommodityData: ', customNameCommodityData);
+
+            const obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
+            console.log('obj: ', obj);
+
+            if (obj) {
+                setValue('CustomMaterialName', { label: obj.CustomMaterialName, value: obj.CustomMaterialName });
+            }
+        })
+        .catch((error) => {
+            console.error('Error fetching custom name commodity data:', error);
+            // Handle the error accordingly
+        });
+    }
+    
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>
@@ -193,32 +377,35 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                 <Col md="4">
                                     <SearchableSelectHookForm
                                         label={'Index'}
-                                        name={'Index'}
+                                        name={'CommodityExchangeName'}
                                         placeholder={'Select'}
                                         Controller={Controller}
                                         control={control}
                                         rules={{ required: true }}
                                         register={register}
                                         defaultValue={''}
-                                        options={renderListing('Applicability')}
+                                        //options={renderListing('Applicability')}
+                                        options={renderListing("CommodityExchangeName")}
                                         mandatory={true}
-                                        handleChange={(option) => handleInputChange(option, 'Index')}
-                                        errors={errors.index}
+                                        handleChange={(option) => handleInputChange(option, 'CommodityExchangeName')}
+                                        errors={errors.Index}
+                                    ///handleChangeDescription={handleRMChange}
                                     />
                                 </Col>
                                 <Col md="4">
                                     <SearchableSelectHookForm
-                                        label={'Commodity Name (In index)'}
-                                        name={'MaterialName'}
+                                        label={'Commodity Name (In Index)'}
+                                        name={'CommodityName'}
                                         placeholder={'Select'}
                                         Controller={Controller}
                                         control={control}
                                         rules={{ required: true }}
                                         register={register}
                                         defaultValue={''}
-                                        options={renderListing('Applicability')}
+                                        //options={renderListing('Applicability')}
+                                        options={renderListing('CommodityName')}
                                         mandatory={true}
-                                        handleChange={(option) => handleInputChange(option, 'MaterialName')}
+                                        handleChange={(option) => handleInputChange(option, 'CommodityName')}
                                         errors={errors.MaterialName}
                                     />
                                 </Col>
@@ -226,16 +413,17 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                     <div className="w-100">
                                         <SearchableSelectHookForm
                                             label={'Commodity Name (In CIR)'}
-                                            name={'MaterialNameCustom'}
+                                            name={'CustomMaterialName'}
                                             placeholder={'Select'}
                                             Controller={Controller}
                                             control={control}
                                             rules={{ required: true }}
                                             register={register}
                                             defaultValue={''}
-                                            options={renderListing('Applicability')}
+                                            //options={renderListing('Applicability')}
+                                            options={renderListing('CustomMaterialName')}
                                             mandatory={true}
-                                            handleChange={(option) => handleInputChange(option, 'MaterialNameCustom')}
+                                            handleChange={(option) => handleInputChange(option, 'CustomMaterialName')}
                                             errors={errors.MaterialNameCustom}
                                         />
                                     </div>
@@ -286,88 +474,90 @@ const AddMaterialDetailDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) =>
                                     )}
                                 </Col>
                             </Row >
-                        </form>
-                    </div>
-
-                    <br />
-                    <Col md="12" className="mb-2 pl-2 pr-3">
-                        <Table className="table mb-0 forging-cal-table" size="sm">
-                            <thead>
-                                <tr>
-                                    <th>{`Index`}</th>
-                                    <th>{`Commodity Name (In index)`}</th>
-                                    <th>{`Commodity Name (In CIR)`}</th>
-                                    <th className='text-right'>{`Action`}</th>
-                                </tr>
-                            </thead>
-                            <tbody >
-                                {gridData.length > 0 ? (
-                                    <>
-                                        {gridData.map((item, index) => (
-                                            <tr key={index}>
-                                                <td>{item.Index}</td>
-                                                <td>{item.MaterialName}</td>
-                                                <td>{item.MaterialNameCustom}</td>
-                                                <td className='text-right'>
-                                                    <button
-                                                        className="Edit"
-                                                        title='Edit'
-                                                        type={"button"}
-                                                        onClick={() => editItemDetails(index)}
-                                                    />
-                                                    <button
-                                                        className="Delete ml-1"
-                                                        title='Delete'
-                                                        type={"button"}
-                                                        onClick={() => deleteItem(index)}
-                                                    />
+                            <br />
+                            <Col md="12" className="mb-2 pl-2 pr-3">
+                                <Table className="table mb-0 forging-cal-table" size="sm">
+                                    <thead>
+                                        <tr>
+                                            <th>{`Index`}</th>
+                                            <th>{`Commodity Name (In index)`}</th>
+                                            <th>{`Commodity Name (In CIR)`}</th>
+                                            <th className='text-right'>{`Action`}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        {gridData.length > 0 ? (
+                                            <>
+                                                {gridData.map((item, index) => (
+                                                    <tr key={index}>
+                                                        <td>{item.CommodityExchangeName}</td>
+                                                        <td>{item.CommodityName}</td>
+                                                        <td>{item.CustomMaterialName}</td>
+                                                        <td className='text-right'>
+                                                            <button
+                                                                className="Edit"
+                                                                title='Edit'
+                                                                type={"button"}
+                                                                onClick={() => editItemDetails(index)}
+                                                            />
+                                                            <button
+                                                                className="Delete ml-1"
+                                                                title='Delete'
+                                                                type={"button"}
+                                                                onClick={() => deleteItem(index)}
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </>
+                                        ) : (
+                                            <tr>
+                                                <td colSpan={4}>
+                                                    <NoContentFound title={EMPTY_DATA} />
                                                 </td>
                                             </tr>
-                                        ))}
-                                    </>
-                                ) : (
-                                    <tr>
-                                        <td colSpan={4}>
-                                            <NoContentFound title={EMPTY_DATA} />
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </Table>
-                    </Col>
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </Col>
 
-                    <Row className=" no-gutters justify-content-between">
-                        <div className="col-md-12">
-                            <div className="text-right ">
-                                <button
-                                    id="AddMaterialType_Cancel"
-                                    type="button"
-                                    onClick={cancelHandler}
-                                    value="CANCEL"
-                                    className="mr15 cancel-btn"
-                                >
-                                    <div className={"cancel-icon"}></div>
-                                    CANCEL
-                                </button>
-                                <button
-                                    id="AddMaterialType_Save"
-                                    type="submit"
-                                    className="user-btn save-btn"
-                                >
-                                    {" "}
-                                    <div className={"save-icon"}></div>
-                                    {isEditFlag ? "UPDATE" : "SAVE"}
-                                </button>
-                            </div>
-                        </div>
-                    </Row>
+                            <Row className=" no-gutters justify-content-between">
+                                <div className="col-md-12">
+                                    <div className="text-right ">
+                                        <button
+                                            id="AddMaterialType_Cancel"
+                                            type="button"
+                                            onClick={cancelHandler}
+                                            value="CANCEL"
+                                            className="mr15 cancel-btn"
+                                        >
+                                            <div className={"cancel-icon"}></div>
+                                            CANCEL
+                                        </button>
+                                        <button
+                                            id="AddMaterialType_Save"
+                                            type="submit"
+                                            className="user-btn save-btn"
+                                        >
+                                            {" "}
+                                            <div className={"save-icon"}></div>
+                                            {isEditFlag ? "UPDATE" : "SAVE"}
+                                        </button>
+                                    </div>
+                                </div>
+                            </Row>
+                        </form>
+                    </div>
                 </Container>
             </Drawer>
             {state.isOpenIndex && (
                 <AddGrade
                     isOpen={state.isOpenIndex}
-                    closeDrawer={closeIndex}
+                    // closeDrawer={closeIndex}
+                    closeDrawer={closeFuelDrawer}
                     isEditFlag={isEditFlag}
+                    //CustomMaterialName={state.CustomMaterialName}
+                    //commodityCustom_Id={commodityCustom_Id}
                     // RawMaterial={this.state.RawMaterial}
                     // ID={this.state.Id}
                     anchor={"right"}

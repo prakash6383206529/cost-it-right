@@ -16,7 +16,9 @@ import {
     BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData,
     VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA,
     VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA,
-    ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData, RMDomesticCBC, RMDomesticCBCTempData, RMImportCBC, RMImportCBCTempData, MachineCBC, MachineCBCTempData, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, BOP_CBC_DOMESTIC_TempData, VOLUME_BUDGETED_CBC_TEMPDATA, VOLUME_ACTUAL_CBC_TEMPDATA, CBCOperationTempData, VOLUME_ACTUAL_CBC, VOLUME_BUDGETED_CBC, CBCOperation, CBCInterestRateTempData, CBCInterestRate, AddRFQUpload, AddRFQTempData, BUDGET_ZBC, BUDGET_ZBC_TEMPDATA, BUDGET_VBC_TEMPDATA, BUDGET_VBC, BUDGET_CBC_TEMPDATA, BUDGET_CBC, ZBCOperationSmallForm, VBCOperationSmallForm, CBCOperationSmallForm, DETAILED_BOP, BOP_DETAILED_DOMESTIC, BOP_DETAILED_DOMESTIC_TempData, BOP_DETAILED_IMPORT, BOP_DETAILED_IMPORT_TempData, RMMaterialListing, RMMaterialListingTempData
+    ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData, RMDomesticCBC, RMDomesticCBCTempData, RMImportCBC, RMImportCBCTempData, MachineCBC, MachineCBCTempData, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, BOP_CBC_DOMESTIC_TempData, VOLUME_BUDGETED_CBC_TEMPDATA, VOLUME_ACTUAL_CBC_TEMPDATA, CBCOperationTempData, VOLUME_ACTUAL_CBC, VOLUME_BUDGETED_CBC, CBCOperation, CBCInterestRateTempData, CBCInterestRate, AddRFQUpload, AddRFQTempData, BUDGET_ZBC, BUDGET_ZBC_TEMPDATA, BUDGET_VBC_TEMPDATA, BUDGET_VBC, BUDGET_CBC_TEMPDATA, BUDGET_CBC, ZBCOperationSmallForm, VBCOperationSmallForm, CBCOperationSmallForm, DETAILED_BOP, BOP_DETAILED_DOMESTIC, BOP_DETAILED_DOMESTIC_TempData, BOP_DETAILED_IMPORT, BOP_DETAILED_IMPORT_TempData, RMMaterialListing, RMMaterialListingTempData,
+    IndexCommodityListing, IndexCommodityListingTempData, CommodityInIndexListing, CommodityInIndexListingTempData,
+    StandardizedCommodityNameTempData, StandardizedCommodityNameListing
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
@@ -157,13 +159,19 @@ class Downloadxls extends React.Component {
             case 'RM Specification':
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMSpecification), RMSpecificationXLTempData);
             case 'Vendor':
-                ({ updatedLabels, updatedTempData } = updateBOPValues(Vendor, VendorTempData, bopMasterName));
+                ({ updatedLabels, updatedTempData } = updateBOPValues(Vendor, VendorTempData, bopMasterName, 'label'));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', false, true), updatedTempData);
             case 'Overhead':
                 return this.returnExcelColumn(Overhead, OverheadTempData);
-            case 'RM Index Data':
+            case 'Index Data':
                 return this.returnExcelColumn(RMMaterialListing, RMMaterialListingTempData);
+            case 'Index':
+                return this.returnExcelColumn(IndexCommodityListing, IndexCommodityListingTempData);
+            case 'Commodity (In Index)':
+                return this.returnExcelColumn(CommodityInIndexListing, CommodityInIndexListingTempData);
+            case 'Standardized Commodity Name':
+                return this.returnExcelColumn(StandardizedCommodityNameListing, StandardizedCommodityNameTempData);
             case 'Fuel':
                 return this.returnExcelColumn(Fuel, FuelTempData);
             case 'Profit':
@@ -205,11 +213,11 @@ class Downloadxls extends React.Component {
             case CBCADDMORE:
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(MHRMoreZBC), MHRMoreZBCTempData);
             case `${showBopLabel()} Domestic`:
-                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, bopMasterName));
+                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, bopMasterName, 'label'));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
             case `${showBopLabel()} Import`:
-                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, bopMasterName));
+                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, bopMasterName, 'label'));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_IMPORT, '', true), BOP_ZBC_IMPORT_TempData);
             case 'Actual Volume':
@@ -248,21 +256,21 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
             case `${showBopLabel()} Domestic`:
                 if (bopType === DETAILED_BOP) {
-                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_DETAILED_DOMESTIC, BOP_DETAILED_DOMESTIC_TempData, bopMasterName));
+                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_DETAILED_DOMESTIC, BOP_DETAILED_DOMESTIC_TempData, bopMasterName, 'label'));
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
                 } else {
-                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_VBC_DOMESTIC, BOP_VBC_DOMESTIC_TempData, bopMasterName));
+                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_VBC_DOMESTIC, BOP_VBC_DOMESTIC_TempData, bopMasterName, 'label'));
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
                 }
             case `${showBopLabel()} Import`:
                 if (bopType === DETAILED_BOP) {
-                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_DETAILED_IMPORT, BOP_DETAILED_IMPORT_TempData, bopMasterName));
+                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_DETAILED_IMPORT, BOP_DETAILED_IMPORT_TempData, bopMasterName, 'label'));
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
                 } else {
-                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData, bopMasterName));
+                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData, bopMasterName, 'label'));
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
                 }
@@ -300,11 +308,11 @@ class Downloadxls extends React.Component {
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineCBC, CBCTypeId), MachineCBCTempData);
             case `${showBopLabel()} Domestic`:
-                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_CBC_DOMESTIC, BOP_CBC_DOMESTIC_TempData, bopMasterName));
+                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_CBC_DOMESTIC, BOP_CBC_DOMESTIC_TempData, bopMasterName, 'label'));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), updatedTempData);
             case `${showBopLabel()} Import`:
-                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, bopMasterName));
+                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, bopMasterName, 'label'));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), updatedTempData);
             case 'Actual Volume':

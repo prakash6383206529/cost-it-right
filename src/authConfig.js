@@ -1,13 +1,15 @@
 import { LogLevel } from "@azure/msal-browser";
-
+import { getConfigurationKey } from './helper/auth'
 
 export const msalConfig = {
+
   auth: {
-    clientId: "e8df7aec-28a2-4e03-bda9-a8e4029a404c",
-    authority:
-      "https://login.microsoftonline.com/2b0a3b04-16bd-4638-be57-5622527eb55e",
-    redirectUri: "http://localhost:3001/",
+    clientId: getConfigurationKey()?.ClientId,
+    authority: getConfigurationKey()?.Authority,
+    redirectUri: getConfigurationKey()?.RedirectURL
   },
+
+
   cache: {
     cacheLocation: "localStorage",
     storeAuthStateInCookie: true,

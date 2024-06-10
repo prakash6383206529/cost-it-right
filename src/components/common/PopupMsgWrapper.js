@@ -1,13 +1,22 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import confirmImg from '../../assests/images/confirm.svg';
+import { useHistory } from 'react-router-dom';
+import { SUPPLIER_MANAGEMENT } from '../../config/constants';
 
 
 function PopupMsgWrapper(props) {
+  const history = useHistory();
+
   function confirmHandler(e) {
     props.confirmPopup(e)
     setTimeout(() => {
+      console.log('props.redirectPath: ', props.redirectPath);
       document.querySelector('body').removeAttribute('style')
+      if (props.redirectPath !== '' && props?.redirectPath !== null && props?.redirectPath !== undefined) {
+        console.log("Props");
+        history.push(SUPPLIER_MANAGEMENT, { vendorId: props.vendorId, plantId: props.plantId });
+      }
     }, 200);
 
   }

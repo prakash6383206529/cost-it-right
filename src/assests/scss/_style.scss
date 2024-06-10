@@ -437,7 +437,7 @@ button.add-btn {
 
 .withBorder .form-control,
 .form-control {
-  border: 1px solid $borderColor !important;
+  border: 1px solid $borderColor;
 
   &::placeholder {
     color: #A4ABC5;
@@ -9123,5 +9123,11 @@ iframe {
 .process-defination {
   .tooltip-inner {
     margin-right: 24px;
+  }
+}
+
+.editable-grid {
+  .form-control {
+    border: 1px solid $borderColor !important;
   }
 }

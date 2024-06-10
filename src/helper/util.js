@@ -194,7 +194,7 @@ export function convertISOToUtcForTime(date) {
  * @param res
  */
 export function stripHtml(text) {
-  return text.replace(/<[^>]+>/g, '')
+  return text?.replace(/<[^>]+>/g, '')
 }
 
 /**
@@ -319,7 +319,7 @@ export const stringToArray = (str) => {
  * @descriptin DISPLAY TITLE
  **/
 export const displayTitle = (text) => {
-  return text.replace(/\r?\n|\r/g, '')
+  return text?.replace(/\r?\n|\r/g, '')
 }
 
 export function displayPublishOnDate(date) {
@@ -561,7 +561,7 @@ export const calculationOnTco = (data) => {
     if (Object.prototype.hasOwnProperty.call(data, key)) {
       const value = parseFloat(data[key]);
       if (!isNaN(value)) {
-        sum += value;
+        sum += checkForNull(value);
       }
     }
   }
@@ -571,7 +571,8 @@ export const calculationOnTco = (data) => {
 
 const TotalTCOCostCal = (tcoData, paymentData) => {
   let sum = 0;
-  sum = checkForNull(tcoData.CalculatedIncoTermValue) + checkForNull(tcoData.CalculatedQualityPPMValue) + checkForNull(tcoData.CalculatedWarrantyValue) + checkForNull(paymentData.NetPaymentTermCost)
+  sum = checkForNull(tcoData?.CalculatedIncoTermValue) + checkForNull(tcoData?.CalculatedQualityPPMValue) + checkForNull(tcoData?.CalculatedWarrantyValue) + checkForNull(paymentData?.NetPaymentTermCost)
+
   return sum
 }
 
@@ -652,7 +653,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   }
 
 
-  const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail;
+  const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail;
 
   obj.paymentTerms = {
     paymentTitle: paymentTermDetail?.PaymentTermApplicability || '-',
@@ -692,7 +693,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.TotalInvestmentcost = calculationOnTco((dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails) ? dataFromAPI?.CostingPartDetails?.CostingTCOResponse : {})
   obj.toolAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost : 0
 
-  obj.TotalTCOCost = TotalTCOCostCal((dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails) ? dataFromAPI?.CostingPartDetails?.CostingTCOResponse : {}, dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails ?? {}) + checkForNull(dataFromAPI.BasicRate) + checkForNull(dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetNpvCost)
+  obj.TotalTCOCost = dataFromAPI?.CostingPartDetails?.CostingTCOResponse ? TotalTCOCostCal((dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails) ? dataFromAPI?.CostingPartDetails?.CostingTCOResponse : {}, dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails ?? {}) + checkForNull(dataFromAPI.NetPOPrice) + checkForNull(dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetNpvCost) : 0
 
   obj.totalToolCost = isBestCost ? (dataFromAPI && dataFromAPI?.NetToolCost !== undefined ? dataFromAPI?.NetToolCost : 0) :
     dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolCost : 0
@@ -802,8 +803,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.rejectionApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0
   obj.iccApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-'
   obj.iccApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0
-  obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.PaymentTermApplicability : '-'
-  obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.NetCost : 0
+  obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability : '-'
+  obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.NetCost ? dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.NetCost : 0
   obj.toolMaintenanceCostApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0
   obj.toolMaintenanceCostApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0
   obj.otherDiscountType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType : 0
@@ -886,7 +887,7 @@ export const applySuperScripts = (cell) => {
     const capIndex = cell && cell.indexOf('^');
     const superNumber = cell.substring(capIndex + 1, capIndex + 2);
     const capWithNumber = cell.substring(capIndex, capIndex + 2);
-    return cell.replace(capWithNumber, superNumber.sup());
+    return cell?.replace(capWithNumber, superNumber.sup());
   } else {
     return '';
   }
@@ -1187,10 +1188,10 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
   bulkUploadArray = [...array]
   if (isBOP) {
     bulkUploadArray = bulkUploadArray.map(item =>
-      item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
+      item?.replace('BOP', bopMasterName)?.replace('BoughtOutPart', bopMasterName)
     );
     fileHeads = fileHeads.map(item =>
-      item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
+      item?.replace('BOP', bopMasterName)?.replace('BoughtOutPart', bopMasterName)
 
     );
 
@@ -1380,13 +1381,13 @@ export function getValueFromLabel(currency, currencySelectList) {
   return data[0]
 }
 // get updated  dynamic bop labels 
-export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '') {
+export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '', labelName) {
 
   const bopRegex = /BOP|BoughtOutPart/gi;
   const updatedLabels = bopLabels.map(label => ({
     ...label,
-    label: label.label.replace(bopRegex, bopReplacement),
-    value: label.value.replace(bopRegex, bopReplacement),
+    [labelName]: label[labelName]?.replace(bopRegex, bopReplacement),
+    value: label.value?.replace(bopRegex, bopReplacement),
 
   }));
 
@@ -1394,7 +1395,7 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
     const newDataItem = {};
     for (let key in dataItem) {
       if (dataItem.hasOwnProperty(key)) {
-        const newKey = key.replace(bopRegex, bopReplacement);
+        const newKey = key?.replace(bopRegex, bopReplacement);
         newDataItem[newKey] = dataItem[key];
       }
     }
@@ -1478,4 +1479,13 @@ export function displayNavigationLength() {
     default:
       return 7;
   }
+}
+
+export const changeBOPLabel = (arr, bopReplacement) => {
+  const bopRegex = /BOP|BoughtOutPart/gi;
+  let tempArr = []
+  arr && arr?.map(element => {
+    tempArr.push(element?.replace(bopRegex, bopReplacement))
+  })
+  return tempArr
 }
