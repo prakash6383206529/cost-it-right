@@ -124,7 +124,7 @@ function AddRfq(props) {
     const [selectedUOM, setSelectedUOM] = useState('')
     const [requirementDate, setRequirementDate] = useState('')
     // below key is for managing the fields required for havells
-    const [havellsKey, setHavellsKey] = useState(true)
+    const [havellsKey, setHavellsKey] = useState(false)
     const [popupMessage, setPopupMessage] = useState('')
     const [blocked, setBlocked] = useState(false)
     const [vendorId, setVendorId] = useState('')
