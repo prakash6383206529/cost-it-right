@@ -626,7 +626,7 @@ const BOPDomesticListing = (props) => {
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allBopDataList ? allBopDataList : [])
-    const { updatedLabels, updatedTempData } = updateBOPValues(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr, bopMasterName)
+    const { updatedLabels, updatedTempData } = updateBOPValues(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr, bopMasterName, 'label')
 
     return returnExcelColumn(updatedLabels, updatedTempData)
   };

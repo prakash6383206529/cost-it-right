@@ -644,7 +644,7 @@ const VendorListing = () => {
 
     tempArr = tempArr && tempArr.length > 0 ? tempArr : allSupplierDataList ? allSupplierDataList : [];
     //return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
-    const { updatedLabels, updatedTempData } = updateBOPValues(VENDOR_DOWNLOAD_EXCEl, tempArr, bopMasterName)
+    const { updatedLabels, updatedTempData } = updateBOPValues(VENDOR_DOWNLOAD_EXCEl, tempArr, bopMasterName, 'label')
 
     return returnExcelColumn(updatedLabels, updatedTempData)
   };

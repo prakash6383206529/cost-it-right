@@ -7,7 +7,7 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, getConfigurationKey, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { Assembly, BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, EMPTY_DATA, FILE_URL, PRODUCT_ID, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { Assembly, Component, DRAFT, BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, EMPTY_DATA, FILE_URL, PRODUCT_ID, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -46,6 +46,7 @@ function AddRfq(props) {
     const dispatch = useDispatch()
     const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
+
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -62,7 +63,6 @@ function AddRfq(props) {
     const currentDate = new Date()
     const currentHours = currentDate.getHours();
     const currentMinutes = currentDate.getMinutes();
-
     const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
     const [isEditAll, setIsEditAll] = useState(false);
@@ -88,6 +88,7 @@ function AddRfq(props) {
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const [partName, setPartName] = useState('')
     const [technology, setTechnology] = useState({})
+
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
     const [dateAndTime, setDateAndTime] = useState('')
@@ -110,6 +111,7 @@ function AddRfq(props) {
     const [rmspecification, setRMSpecification] = useState([])
     const [deleteToggle, setDeleteToggle] = useState(false)
     const [plant, setPlant] = useState({})
+
     const [isNFRFlow, setIsNFRFlow] = useState(false)
     const [rmAPIList, setRMAPIList] = useState([])
     const [rmNameSelected, setRmNameSelected] = useState(false)
@@ -1940,17 +1942,7 @@ function AddRfq(props) {
                                                 errors={errors.vendor}
                                                 isLoading={VendorLoaderObj}
                                                 asyncOptions={vendorFilterList}
-                                                disabled={
-                                                    isDropdownDisabled
-                                                }
-                                                // disabled={
-                                                //     initialConfiguration.IsCriticalVendorConfigured &&
-                                                //         (Object.keys(technology).length === 0 || Object.keys(plant).length === 0)
-                                                //         ? true
-                                                //         : dataProps?.isAddFlag
-                                                //             ? false
-                                                //             : (isViewFlag || !isEditAll)
-                                                // }
+                                                disabled={isDropdownDisabled}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </Col>

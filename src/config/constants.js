@@ -20,7 +20,6 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.11.208:3030/api/v1`
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
 //const BASE_URL = `http://10.10.1.100:10162/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
@@ -1696,6 +1695,8 @@ export const RESET_EXCHANGE_RATE_DATA = 'RESET_EXCHANGE_RATE_DATA'
 export const SET_CALL_ST_API = 'SET_CALL_ST_API';
 export const GET_COSTING_PAYMENT_TERM_DETAIL = "GET_COSTING_PAYMENT_TERM_DETAIL"
 export const SET_PAYMENT_TERM_COST = "SET_PAYMENT_TERM_COST"
+export const SET_COSTING_VIEW_DATA_FOR_ASSEMBLY = 'SET_COSTING_VIEW_DATA_FOR_ASSEMBLY';
+
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
 export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
@@ -3044,7 +3045,7 @@ export const PartTypeIDFromAPI = 2
 export const RMIndex = true
 export const showLogoFromDataBase = false
 //VERSION 
-export const VERSION = "V2.2.21";
+export const VERSION = "V2.2.22.1";
 
 
 

@@ -136,6 +136,26 @@ const CostingSummaryTable = (props) => {
   const [paymentTermsData, setPaymentTermsData] = useState([])
   const [npvData, setNpvData] = useState([])
   const [isScrapRecoveryPercentageApplied, setIsScrapRecoveryPercentageApplied] = useState(false)
+
+  const { viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly } = useSelector((state) => state.costing)
+
+  useEffect(() => {
+    if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
+      setViewCostingData(viewCostingDetailData)
+    } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData?.length > 0 && props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
+      setViewCostingData(viewRejectedCostingDetailData)
+    } else if (viewCostingDetailDataForAssembly && viewCostingDetailDataForAssembly?.length > 0 && props?.isFromAssemblyTechnology) {
+      setViewCostingData(viewCostingDetailDataForAssembly)
+    }
+
+
+  }, [viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly])
+
+  useEffect(() => {
+    setIsScrapRecoveryPercentageApplied((_.map(viewCostingData, 'IsScrapRecoveryPercentageApplied') || []).some(value => value === true));
+  }, [viewCostingData])
+
+
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
   const partInfo = useSelector((state) => state.costing.partInfo)
   const partNumber = useSelector(state => state.costing.partNo);
@@ -158,10 +178,6 @@ const CostingSummaryTable = (props) => {
   const [disableSendForApproval, setDisableSendForApproval] = useState(false)
   const [cssObj, setCssObj] = useState({})
   const [rfqCosting, setRfqCosting] = useState(props?.isRfqCosting)
-
-  const { viewCostingDetailData, viewRejectedCostingDetailData } = useSelector((state) => state.costing)
-
-
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
   const onBeforeContentResolveDetail = useRef(null)

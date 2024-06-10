@@ -265,7 +265,9 @@ class AddMachineRate extends Component {
       selectedVedor: vendorName,
       costingTypeId: costingTypeId,
       vendorName: vendorName,
-      client: client
+      client: client,
+      machineNo: fieldsObj?.MachineNumber,
+      effectiveDate: effectiveDate
 
     }
     setTimeout(() => {
