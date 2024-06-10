@@ -530,7 +530,7 @@ function Rejection(props) {
                         </Col>
                         <Col md="2">
                             <span className="head-text">
-                                Rejection Recovery
+                                Rejection Recovery Cost
                             </span>
                         </Col>
                         <Col md={applicability.label === 'Fixed' ? '4' : '2'}>

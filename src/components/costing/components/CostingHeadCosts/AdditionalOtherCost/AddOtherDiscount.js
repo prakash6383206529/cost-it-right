@@ -122,7 +122,7 @@ function AddOtherDiscount(props) {
 
         gridData.push(obj)
         const sumOfNetCost = gridData.reduce((acc, obj) => acc + Number(obj.NetCost), 0);
-        if (costData.TotalCost < sumOfNetCost) {
+        if (CostingDataList[0].TotalCost < sumOfNetCost) {
             Toaster.warning("Discount should not be greater than Total Cost.")
             return false
         }
