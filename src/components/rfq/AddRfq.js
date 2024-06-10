@@ -122,7 +122,7 @@ function AddRfq(props) {
     const [selectedUOM, setSelectedUOM] = useState('')
     const [requirementDate, setRequirementDate] = useState('')
     // below key is for managing the fields required for havells
-    const [havellsKey, setHavellsKey] = useState(false)
+    const [havellsKey, setHavellsKey] = useState(true)
     const [popupMessage, setPopupMessage] = useState('')
     const [blocked, setBlocked] = useState(false)
     const [vendorId, setVendorId] = useState('')
@@ -2106,6 +2106,10 @@ function AddRfq(props) {
                                                                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
                                                                 {IsSendQuotationToPointOfContact() && (
                                                                     <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
+                                                                {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms'></AgGridColumn>}
+                                                                {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms'></AgGridColumn>}
+                                                                {vendorList && havellsKey && <AgGridColumn field='WarrentyTerms' header='Warrenty Terms'></AgGridColumn>}
+                                                                {vendorList && havellsKey && <AgGridColumn field='LDClause' header='LD Clause'></AgGridColumn>}
                                                                 <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
                                                                 <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                             </AgGridReact>
