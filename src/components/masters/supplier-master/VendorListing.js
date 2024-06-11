@@ -644,7 +644,7 @@ const VendorListing = () => {
 
     tempArr = tempArr && tempArr.length > 0 ? tempArr : allSupplierDataList ? allSupplierDataList : [];
     //return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
-    const { updatedLabels, updatedTempData } = updateBOPValues(VENDOR_DOWNLOAD_EXCEl, tempArr, bopMasterName)
+    const { updatedLabels, updatedTempData } = updateBOPValues(VENDOR_DOWNLOAD_EXCEl, tempArr, bopMasterName, 'label')
 
     return returnExcelColumn(updatedLabels, updatedTempData)
   };
@@ -804,7 +804,7 @@ const VendorListing = () => {
 
               {getConfigurationKey()?.IsCriticalVendorConfigured && (<AgGridColumn field="IsCriticalVendor" headerName="Potential Vendor" ></AgGridColumn>)}
               <AgGridColumn field="VendorClassification" headerName="Vendor Classification" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
-              <AgGridColumn field="VendorLPSRating" headerName="Vendor LPSRating" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+              <AgGridColumn field="VendorLPSRating" headerName="Vendor LPS Rating" cellRenderer={"hyphenFormatter"}></AgGridColumn>
               <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}              ></AgGridColumn>
               <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"}              ></AgGridColumn>
             </AgGridReact>

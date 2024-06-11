@@ -12,7 +12,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import _ from 'lodash';
 import NoContentFound from '../../../../common/NoContentFound';
-import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
+import { getSingleCostingDetails, gridDataAdded, setCostingViewData, setCostingViewDataForAssemblyTechnology } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
 import { AWAITING_APPROVAL_ID, CBCTypeId, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID, VBCTypeId, WACTypeId } from '../../../../../config/constants';
@@ -118,15 +118,15 @@ function EditPartCost(props) {
             effectiveDate: CostingEffectiveDate
         }
 
-        !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
+        !props?.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
         let isViewMode = false
-        if ((CostingViewMode || props.costingSummary) ? true : false) {
+        if ((CostingViewMode || props?.costingSummary) ? true : false) {
             isViewMode = true
         } else {
             isViewMode = false
         }
-        const tempData = viewCostingData[props.index]
-        if (props.simulationMode && String(tempData.CostingHeading) === String("New Costing") && (Number(tempData.SimulationStatusId) === Number(REJECTEDID) || Number(tempData.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData.SimulationStatusId) === Number(AWAITING_APPROVAL_ID))) {
+        const tempData = viewCostingData && viewCostingData[props?.index]
+        if (props?.simulationMode && String(tempData?.CostingHeading) === String("New Costing") && (Number(tempData?.SimulationStatusId) === Number(REJECTEDID) || Number(tempData?.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData?.SimulationStatusId) === Number(AWAITING_APPROVAL_ID))) {
             dispatch(getSettledSimulationCostingDetails(props?.SimulationId, props?.tabAssemblyIndividualPartDetail?.CostingId, isViewMode, (res) => {
 
             }))
@@ -153,7 +153,7 @@ function EditPartCost(props) {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        props.closeDrawer('')
+        props?.closeDrawer('')
     };
 
     const netCostCalculator = (gridIndex, currentGrid = []) => {
@@ -281,7 +281,7 @@ function EditPartCost(props) {
                     let dataFromAPI = res.data.Data
                     const tempObj = formViewData(dataFromAPI)
                     setTechnologyName(tempObj[0].technology)
-                    dispatch(setCostingViewData(tempObj))
+                    dispatch(setCostingViewDataForAssemblyTechnology(tempObj))
                 }
             },
             ))
@@ -437,7 +437,7 @@ function EditPartCost(props) {
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
             dispatch(gridDataAdded(true))
         }
-        props.closeDrawer('')
+        props?.closeDrawer('')
 
         // SAVE API FOR PART COST
         // dispatch(saveEditPartCostDetails((res) => { }))
@@ -445,9 +445,9 @@ function EditPartCost(props) {
 
     return (
         <div>
-            <Drawer className={`${props.costingSummary ? '' : 'bottom-drawer'}`}
-                anchor={props.anchor}
-                open={props.isOpen}
+            <Drawer className={`${props?.costingSummary ? '' : 'bottom-drawer'}`}
+                anchor={props?.anchor}
+                open={props?.isOpen}
                 BackdropProps={props?.costingSummary && { style: { opacity: 0 } }}>
                 <div className="container-fluid">
                     <div className={'drawer-wrapper drawer-1500px master-summary-drawer'}>
@@ -475,7 +475,7 @@ function EditPartCost(props) {
                                         </tr>
                                     </thead>
                                 </Table>
-                                {!props.costingSummary && <div className='add-container'>
+                                {!props?.costingSummary && <div className='add-container'>
                                     <SearchableSelectHookForm
                                         label={`Costing Number`}
                                         name={`CostingNumber`}
@@ -498,7 +498,7 @@ function EditPartCost(props) {
                                         <div className={"plus "}></div>Add
                                     </button>
                                 </div>}
-                                <Table className={`table cr-brdr-main mb-0 rmcc-main-headings ${props.costingSummary ? 'mt-2' : ''}`}>
+                                <Table className={`table cr-brdr-main mb-0 rmcc-main-headings ${props?.costingSummary ? 'mt-2' : ''}`}>
                                     <thead>
                                         <tr >
                                             {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
@@ -543,7 +543,7 @@ function EditPartCost(props) {
                                                                         options={optionsForDelta}
                                                                         mandatory={true}
                                                                         handleChange={(e) => handleDeltaSignChange(e, index)}
-                                                                        disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                        disabled={CostingViewMode || props?.costingSummary ? true : false}
                                                                     />
 
                                                                     <NumberFieldHookForm
@@ -564,7 +564,7 @@ function EditPartCost(props) {
                                                                         defaultValue={''}
                                                                         className=""
                                                                         customClassName={'withBorder'}
-                                                                        disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                        disabled={CostingViewMode || props?.costingSummary ? true : false}
                                                                         errors={errors?.PartCostFields && errors?.PartCostFields[index]?.DeltaValue}
                                                                     />
                                                                 </div>
@@ -592,7 +592,7 @@ function EditPartCost(props) {
                                                                 defaultValue={''}
                                                                 className=""
                                                                 customClassName={'withBorder'}
-                                                                disabled={(CostingViewMode || props.costingSummary || costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? true : false}
+                                                                disabled={(CostingViewMode || props?.costingSummary || costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? true : false}
                                                             />
                                                         </td>
                                                         <td >
@@ -626,7 +626,7 @@ function EditPartCost(props) {
                                                                 type="button"
                                                                 className={'Delete mr-2 align-middle'}
                                                                 onClick={() => deleteDetails(item, index)}
-                                                                disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                disabled={CostingViewMode || props?.costingSummary ? true : false}
                                                             >
                                                             </button>
                                                         </td>
@@ -646,7 +646,7 @@ function EditPartCost(props) {
                                 </Table >
                             </Col >
                         </form >
-                        {!props.costingSummary && <Row className="mx-0 mb-3" >
+                        {!props?.costingSummary && <Row className="mx-0 mb-3" >
                             <Col align="right">
                                 <button
                                     type={'submit'}
@@ -672,8 +672,9 @@ function EditPartCost(props) {
                     //   selectedRowData={selectedRowData}
                     isSimulation={false}
                     simulationDrawer={false}
-                    fromCostingSummary={props.costingSummary}
+                    fromCostingSummary={props?.costingSummary}
                     selectedTechnology={technologyName}
+                    isFromAssemblyTechnology={true}
                 />
             }
         </div >

@@ -68,7 +68,7 @@ function PartCompoment(props) {
     setTimeout(() => {
       if ((partNumberAssembly !== '' && partNumberAssembly !== PartNumber) ||
         (partNumberAssembly !== '' && partNumberAssembly === PartNumber && bomLevel !== BOMLevel)) {
-        Toaster.warning('Close Accordian first.')
+        Toaster.warning('Close accordion first.')
         return false
       }
 

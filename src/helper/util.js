@@ -194,7 +194,7 @@ export function convertISOToUtcForTime(date) {
  * @param res
  */
 export function stripHtml(text) {
-  return text.replace(/<[^>]+>/g, '')
+  return text?.replace(/<[^>]+>/g, '')
 }
 
 /**
@@ -319,7 +319,7 @@ export const stringToArray = (str) => {
  * @descriptin DISPLAY TITLE
  **/
 export const displayTitle = (text) => {
-  return text.replace(/\r?\n|\r/g, '')
+  return text?.replace(/\r?\n|\r/g, '')
 }
 
 export function displayPublishOnDate(date) {
@@ -887,7 +887,7 @@ export const applySuperScripts = (cell) => {
     const capIndex = cell && cell.indexOf('^');
     const superNumber = cell.substring(capIndex + 1, capIndex + 2);
     const capWithNumber = cell.substring(capIndex, capIndex + 2);
-    return cell.replace(capWithNumber, superNumber.sup());
+    return cell?.replace(capWithNumber, superNumber.sup());
   } else {
     return '';
   }
@@ -1188,10 +1188,10 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
   bulkUploadArray = [...array]
   if (isBOP) {
     bulkUploadArray = bulkUploadArray.map(item =>
-      item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
+      item?.replace('BOP', bopMasterName)?.replace('BoughtOutPart', bopMasterName)
     );
     fileHeads = fileHeads.map(item =>
-      item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
+      item?.replace('BOP', bopMasterName)?.replace('BoughtOutPart', bopMasterName)
 
     );
 
@@ -1381,13 +1381,13 @@ export function getValueFromLabel(currency, currencySelectList) {
   return data[0]
 }
 // get updated  dynamic bop labels 
-export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '') {
+export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '', labelName) {
 
   const bopRegex = /BOP|BoughtOutPart/gi;
   const updatedLabels = bopLabels.map(label => ({
     ...label,
-    label: label.label.replace(bopRegex, bopReplacement),
-    value: label.value.replace(bopRegex, bopReplacement),
+    [labelName]: label[labelName]?.replace(bopRegex, bopReplacement),
+    value: label.value?.replace(bopRegex, bopReplacement),
 
   }));
 
@@ -1395,7 +1395,7 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
     const newDataItem = {};
     for (let key in dataItem) {
       if (dataItem.hasOwnProperty(key)) {
-        const newKey = key.replace(bopRegex, bopReplacement);
+        const newKey = key?.replace(bopRegex, bopReplacement);
         newDataItem[newKey] = dataItem[key];
       }
     }
@@ -1479,4 +1479,13 @@ export function displayNavigationLength() {
     default:
       return 7;
   }
+}
+
+export const changeBOPLabel = (arr, bopReplacement) => {
+  const bopRegex = /BOP|BoughtOutPart/gi;
+  let tempArr = []
+  arr && arr?.map(element => {
+    tempArr.push(element?.replace(bopRegex, bopReplacement))
+  })
+  return tempArr
 }

@@ -35,6 +35,7 @@ import {
 
 } from '../../../config/constants';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
+import { showBopLabel, updateBOPValues } from '../../../helper';
 
 const initialState = {
     selectedRowForPagination: [],
@@ -155,7 +156,7 @@ export default function SimulationReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                applicabilityHeadListSimulation: action.payload
+                applicabilityHeadListSimulation: updateBOPValues(action.payload, [], showBopLabel(), 'Text')?.updatedLabels
             }
         case SET_SELECTED_TECHNOLOGY_SIMULATION:
             return {

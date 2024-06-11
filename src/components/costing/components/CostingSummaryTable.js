@@ -16,21 +16,19 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showLogoFromDataBase, } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import cirHeader from "../../../assests/images/logo/CIRlogo.svg";
-import Logo from '../../../assests/images/logo/company-logo.svg';
-//MINDA
-// import Logo from '../../../assests/images/logo/company-logo.png';
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
 import BOMViewer from '../../masters/part-master/BOMViewer';
 import _, { debounce } from 'lodash'
 import ReactExport from 'react-export-excel';
 import ExcelIcon from '../../../assests/images/excel.svg';
+import Logo from '../../../assests/images/logo/company-logo.svg';
 import { DIE_CASTING, IdForMultiTechnology, PLASTIC } from '../../../config/masterData'
 import ViewMultipleTechnology from './Drawers/ViewMultipleTechnology'
 import TooltipCustom from '../../common/Tooltip'
@@ -56,6 +54,12 @@ import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
+
+  const { register, control, formState: { errors }, setValue, getValues } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+
 
   const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ, compareButtonPressed, showEditSOBButton, partTypeValue, technology } = props
   const { t } = useTranslation("Costing")
@@ -134,24 +138,23 @@ const CostingSummaryTable = (props) => {
   const [npvData, setNpvData] = useState([])
   const [isScrapRecoveryPercentageApplied, setIsScrapRecoveryPercentageApplied] = useState(false)
 
-  const { viewCostingDetailData, viewRejectedCostingDetailData } = useSelector((state) => state.costing)
+  const { viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly } = useSelector((state) => state.costing)
 
   useEffect(() => {
-    if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
+    if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
       setViewCostingData(viewCostingDetailData)
-    } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData.length > 0 && props?.isRejectedSummaryTable) {
+    } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData?.length > 0 && props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
       setViewCostingData(viewRejectedCostingDetailData)
+    } else if (viewCostingDetailDataForAssembly && viewCostingDetailDataForAssembly?.length > 0 && props?.isFromAssemblyTechnology) {
+      setViewCostingData(viewCostingDetailDataForAssembly)
     }
 
 
-  }, [viewCostingDetailData, viewRejectedCostingDetailData])
+  }, [viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly])
 
   useEffect(() => {
     setIsScrapRecoveryPercentageApplied((_.map(viewCostingData, 'IsScrapRecoveryPercentageApplied') || []).some(value => value === true));
   }, [viewCostingData])
-
-  const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
-
 
 
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
@@ -174,20 +177,38 @@ const CostingSummaryTable = (props) => {
     process: false,
     operation: false
   })
-  const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId) || String(viewCostingData[0]?.technologyId) === WACTypeId)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
-  const { register, control, formState: { errors }, setValue, getValues } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-  });
-
-  const componentRef = useRef();
-  const onBeforeContentResolve = useRef(null)
-  const onBeforeContentResolveDetail = useRef(null)
   const [pieChartDataArray, setPieChartDataArray] = useState([])
   const [count, setCount] = useState(0);
   const [disableSendForApproval, setDisableSendForApproval] = useState(false)
   const [cssObj, setCssObj] = useState({})
   const [rfqCosting, setRfqCosting] = useState(props?.isRfqCosting)
+  const componentRef = useRef();
+  const onBeforeContentResolve = useRef(null)
+  const onBeforeContentResolveDetail = useRef(null)
+
+  useEffect(() => {
+    if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
+      setViewCostingData(viewCostingDetailData)
+    } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData.length > 0 && props?.isRejectedSummaryTable) {
+      setViewCostingData(viewRejectedCostingDetailData)
+    }
+
+
+  }, [viewCostingDetailData, viewRejectedCostingDetailData])
+
+  useEffect(() => {
+    setIsScrapRecoveryPercentageApplied((_.map(viewCostingData, 'IsScrapRecoveryPercentageApplied') || []).some(value => value === true));
+  }, [viewCostingData])
+
+  const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
+
+
+
+
+  const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId) || String(viewCostingData[0]?.technologyId) === WACTypeId)       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+
+
+
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology);
@@ -205,9 +226,11 @@ const CostingSummaryTable = (props) => {
       setMultipleCostings([])
     }
   }, [compareButtonPressed])
+
   useEffect(() => {
     setViewPieChart({ 0: false })
   }, [props.partNumber.value])
+
   useEffect(() => {
     if (viewCostingData && viewCostingData.length > 0 && viewCostingData[0]) {
 
@@ -231,6 +254,7 @@ const CostingSummaryTable = (props) => {
 
     }
   }, [viewCostingData]);
+
   useEffect(() => {
 
     if (!viewMode && viewCostingData?.length !== 0 && partInfo && count === 0 && technologyId) {
@@ -2021,7 +2045,7 @@ const CostingSummaryTable = (props) => {
               {(drawerDetailPDF || pdfHead) &&
                 <>
                   <Col md="12" className='pdf-header-wrapper d-flex justify-content-between'>
-                    <img src={Logo} alt={'Compnay-logo'} />
+                    <img src={showLogoFromDataBase ? getConfigurationKey().LogoURL : Logo} alt={showLogoFromDataBase ? getConfigurationKey().ClientName ?? "LOGO" : 'Softude'} />
                     <img src={cirHeader} alt={'Cost it right'} />
                   </Col>
                   {/* <Col md="12">
@@ -3537,7 +3561,7 @@ const CostingSummaryTable = (props) => {
       }
 
       {
-        openNpvDrawer && <ViewOtherCostDrawer
+        npvData && openNpvDrawer && <ViewOtherCostDrawer
           isOpen={openNpvDrawer}
           viewCostingData={viewCostingData}
           costingSummary={true}

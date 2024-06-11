@@ -20,7 +20,8 @@ import {
   SET_DISCOUNT_AND_OTHER_TAB_DATA,
   SET_COMPONENT_PAYMENT_TERMS_DATA,
   CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
-  GET_TCO_DATA
+  GET_TCO_DATA,
+  SET_COSTING_VIEW_DATA_FOR_ASSEMBLY
 } from '../../../config/constants';
 
 const initialState = {
@@ -856,6 +857,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         getTcoDetails: action.payload
+      }
+    case SET_COSTING_VIEW_DATA_FOR_ASSEMBLY:
+      return {
+        ...state,
+        loading: false,
+        viewCostingDetailDataForAssembly: action.payload,
       }
     default:
       return state

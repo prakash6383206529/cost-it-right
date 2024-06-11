@@ -1,4 +1,5 @@
 // /** Import constant */
+import _ from 'lodash'
 import {
     AUTH_API_REQUEST,
     AUTH_API_FAILURE,
@@ -46,6 +47,7 @@ import {
     MANAGE_LEVEL_TAB_API
 } from '../../src/config/constants'
 import DayTime from '../components/common/DayTimeWrapper'
+import { showBopLabel, updateBOPValues } from '../helper'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
 
@@ -344,11 +346,17 @@ export default function authReducer(state = initialState, action) {
                 masterLevelSelectList: action.payload
             }
         case GET_TOP_AND_LEFT_MENU_DATA:
+            const arrayTemp = action.payload && action.payload?.map(item => {
+                let tempArr = _.cloneDeep(item)
+                const arr = updateBOPValues(tempArr?.Pages, [], showBopLabel(), 'PageName')?.updatedLabels
+                tempArr.Pages = arr
+                return tempArr
+            })
             return {
                 ...state,
                 loading: false,
                 error: true,
-                topAndLeftMenuData: action.payload
+                topAndLeftMenuData: arrayTemp
             }
         case GET_MASTER_SELECT_LIST:
             return {

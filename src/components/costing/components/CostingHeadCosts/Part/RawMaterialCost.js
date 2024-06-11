@@ -417,7 +417,7 @@ function RawMaterialCost(props) {
         }
         break;
       case ELECTRICAL_STAMPING:
-        dispatch(getRawMaterialCalculationForMachining(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForPlastic(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;

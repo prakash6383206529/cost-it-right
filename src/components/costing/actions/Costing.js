@@ -68,6 +68,7 @@ import {
   SET_PAYMENT_TERM_COST,
   CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
   GET_TCO_DATA,
+  SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1718,7 +1719,7 @@ export function getSingleCostingDetails(costingId, callback) {
 export const setCostingViewData = (data) => (dispatch) => {
   let temp = []
   // temp.push(VIEW_COSTING_DATA)
-  data?.map((val) => (
+  data && data?.map((val) => (
     temp.push(val)
   ))
   dispatch({
@@ -2984,4 +2985,15 @@ export function getCostingTcoDetails(costingId, callback) {
 
     });
   };
+}
+
+export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
+  let temp = []
+  data && data?.map((val) => (
+    temp.push(val)
+  ))
+  dispatch({
+    type: SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
+    payload: temp,
+  })
 }
