@@ -98,6 +98,12 @@ export const MESSAGES = {
   ASSOCIATED_ADDED_SUCCESS: 'Raw Material associated successfully.',
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
 
+  //INDEXATION
+  INDEX_ADD_SUCCESS: 'Index added successfully',
+  INDEX_DELETE_ALERT: 'Are you sure you want to delete this Record?',
+  INDEX_DELETE_SUCCESS: 'Record deleted successfully',
+  INDEX_UPDATE_SUCCESS: 'Record updated successfully',
+  DELETE: 'Are you sure you want to delete this Record?',
   //OVERHEAD AND PROFIT
   OVERHEAD_ADDED_SUCCESS: 'Overhead added successfully',
   PROFIT_ADDED_SUCCESS: 'Profit added successfully',

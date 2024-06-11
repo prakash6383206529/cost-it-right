@@ -270,7 +270,7 @@ const Level = (props) => {
   */
   const onPressRadioLevel = (label) => {
 
-    dispatch(getApprovalTypeSelectList(label, () => { }))
+    dispatch(getApprovalTypeSelectList(() => { }), label)
     reset();
     setValue('ApprovalType', '');
     setValue('TechnologyId', '');

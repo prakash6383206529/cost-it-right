@@ -932,62 +932,75 @@ export const RMSpecificationXLTempData = [
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
-export const RMMaterialListing = [
+export const IndexDataListing = [
     { label: "Index", value: "IndexExchangeName", },
-    { label: "Commodity Name", value: "CommodityName", },
-    { label: "UOM", value: "UOM", },
+    { label: "CommodityName", value: "CommodityName", },
+    { label: "UOM", value: "UOM2", },
     { label: "Currency", value: "Currency", },
-    { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Indexed On", value: "EffectiveDate", },
     { label: "Index Rate (Currency)", value: "Rate", },
-    { label: "Premium (Charge)", value: "ExchangeRateSourceName", },
-    { label: "Exchange rate (INR)", value: "ExchangeRate", },
-    { label: "Currency Rate", value: "CurrencyCharge", },
-    { label: "Conversion Rate (INR)", value: "RateConversion", },
+    // { label: "Premium (Charge)", value: "ExchangeRateSourceName", },
+    { label: "ExchangeRateSourceName", value: "ExchangeRateSourceName", },
+    { label: "Exchangerate", value: "ExchangeRate", },
+    // { label: "Currency Rate", value: "CurrencyCharge", },
+    // { label: "Conversion Rate (INR)", value: "RateConversion", },
 ]
 
-export const RMMaterialListingTempData = [
+export const IndexDataListingTempData = [
     {
         "IndexExchangeName": "LME",
         "CommodityName": "CU",
-        "UOM": "kg",
+        "UOM2": "kg",
         "Currency": "USD",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Rate": "10",
         "ExchangeRateSourceName": "SBI",
         "ExchangeRate": "84",
-        "CurrencyCharge": "0.5",
-        "RateConversion": "1056",
+        // "CurrencyCharge": "0.5",
+        // "RateConversion": "1056",
     }
 ]
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const IndexCommodityListing = [
-    { label: "Index", value: "IndexExchangeName" }, 
+    { label: "Index", value: "IndexExchangeName" },
 ]
 export const IndexCommodityListingTempData = [
     {
-        "IndexExchangeName": "13CF2",      
+        "IndexExchangeName": "13CF2",
+    }
+]
+export const CommodityStandard = [
+    { label: "Commodity (Standard)", value: "CommodityStandardName" },
+]
+export const CommodityStandardTempData = [
+    {
+        "CommodityStandardName": "Alluminum",
+    }, {
+        "CommodityStandardName": "Zinc",
     }
 ]
 export const CommodityInIndexListing = [
-    { label: "Commodity (In Index)", value: "CommodityName" }, 
+    { label: "Index", value: "IndexExchangeName" },
+    { label: "Commodity (In Index)", value: "CommodityName" },
 ]
 export const CommodityInIndexListingTempData = [
     {
-        "CommodityName": "21FD2",      
+        "IndexExchangeName": "LME",
+        "CommodityName": "Al",
     }
 ]
 export const StandardizedCommodityNameListing = [
-    { label: "Index", value: "IndexExchangeName" }, 
-    { label: "Commodity Name (In Index)", value: "CommodityName" }, 
-    { label: "Commodity Name (In CIR)", value: "CustomMaterialName" }, 
+    { label: "Index", value: "IndexExchangeName" },
+    { label: "Commodity Name (In Index)", value: "CommodityName" },
+    { label: "Commodity Name (In CIR)", value: "CustomMaterialName" },
 ]
 export const StandardizedCommodityNameTempData = [
     {
-        "IndexExchangeName": "21FD2", 
-        "CommodityName": "al", 
-        "CustomMaterialName": "alloy",      
+        "IndexExchangeName": "21FD2",
+        "CommodityName": "al",
+        "CustomMaterialName": "alloy",
     }
 ]
 /**
@@ -5662,11 +5675,14 @@ export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
-    { label: "Index", value: "IndexExchangeName", },  
+    { label: "Index", value: "IndexExchangeName", },
 ]
 
 export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
-    { label: "Commodity (In Index)", value: "CommodityName", },  
+    { label: "Commodity (In Index)", value: "CommodityName", },
+]
+export const COMMODITYSTANDARD_DOWNLOAD_EXCEl = [
+    { label: "Commodity Name (Standard)", value: "CommodityStandardName", },
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
