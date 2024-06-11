@@ -957,19 +957,19 @@ export const RMMaterialListingTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const IndexCommodityListing = [
-    { label: "Index", value: "Index" }, 
+    { label: "Index", value: "Index" },
 ]
 export const IndexCommodityListingTempData = [
     {
-        "Index": "13CF2",      
+        "Index": "13CF2",
     }
 ]
 export const CommodityInIndexListing = [
-    { label: "Commodity (In Index)", value: "CommodityInIndex" }, 
+    { label: "Commodity (In Index)", value: "CommodityInIndex" },
 ]
 export const CommodityInIndexListingTempData = [
     {
-        "CommodityInIndex": "21FD2",      
+        "CommodityInIndex": "21FD2",
     }
 ]
 /**
@@ -1029,33 +1029,88 @@ export const Overhead = [
     { label: 'ModelType', value: 'ModelType', },
     { label: 'OverheadApplicability', value: 'OverheadApplicability', },
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
-    { label: 'OverheadMachiningCCPercentage', value: 'OverheadMachiningCCPercentage', },
+    { label: 'OverheadCCPercentage', value: 'OverheadCCPercentage', },
     { label: 'OverheadBOPPercentage', value: 'OverheadBOPPercentage', },
     { label: 'OverheadRMPercentage', value: 'OverheadRMPercentage', },
-    { label: 'VendorName', value: 'VendorName', },
-    { label: 'VendorCode', value: 'VendorCode', },
-    { label: 'PlantName', value: 'PlantName' },
-    { label: 'PlantCode', value: 'PlantCode' },
+    { label: 'PlantCode', value: 'PlantCode', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remarks', value: 'Remarks', },
 ]
 
 export const OverheadTempData = [
     {
         'CostingHead': 'Costing Head',
-        'ModelType': 'High',
+        'ModelType': 'High volume',
         'OverheadApplicability': 'RM',
-        'OverheadPercentage': '10',
-        'OverheadMachiningCCPercentage': '10',
-        'OverheadBOPPercentage': '10',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '',
         'OverheadRMPercentage': '10',
-        'VendorName': 'Vendor123',
-        'VendorCode': 'Vendor Code1',
-        "PlantName": '1511',
-        "PlantCode": '1511',
+        "PlantCode": '0503',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text',
     }
 ]
 
+
+export const OverheadVBC = [
+    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'OverheadApplicability', value: 'OverheadApplicability', },
+    { label: 'OverheadPercentage', value: 'OverheadPercentage', },
+    { label: 'OverheadCCPercentage', value: 'OverheadCCPercentage', },
+    { label: 'OverheadBOPPercentage', value: 'OverheadBOPPercentage', },
+    { label: 'OverheadRMPercentage', value: 'OverheadRMPercentage', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'PlantCode', value: 'PlantCode' },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remarks', value: 'Remarks', },
+]
+
+export const OverheadVBC_TempData = [
+    {
+        'CostingHead': 'Costing Head',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'RM',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '',
+        'OverheadRMPercentage': '10',
+        'VendorCode': '1313',
+        "PlantCode": '0503',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
+    }
+]
+export const OverheadCBC = [
+    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'OverheadApplicability', value: 'OverheadApplicability', },
+    { label: 'OverheadPercentage', value: 'OverheadPercentage', },
+    { label: 'OverheadCCPercentage', value: 'OverheadCCPercentage', },
+    { label: 'OverheadBOPPercentage', value: 'OverheadBOPPercentage', },
+    { label: 'OverheadRMPercentage', value: 'OverheadRMPercentage', },
+    { label: 'PlantCode', value: 'PlantCode' },
+    { label: "CustomerCode", value: "CustomerName" },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remarks', value: 'Remarks', },
+]
+
+export const OverheadCBC_TempData = [
+    {
+        'CostingHead': 'Costing Head',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'RM',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '',
+        'OverheadRMPercentage': '10',
+        "PlantCode": '3456',
+        "CustomerName": 'C-10006',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
+    }
+]
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -1894,33 +1949,87 @@ export const Profit = [
     { label: 'ModelType', value: 'ModelType', },
     { label: 'ProfitApplicability', value: 'ProfitApplicability', },
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
-    { label: 'ProfitMachiningCCPercentage', value: 'ProfitMachiningCCPercentage', },
+    { label: 'ProfitCCPercentage', value: 'ProfitCCPercentage', },
     { label: 'ProfitBOPPercentage', value: 'ProfitBOPPercentage', },
     { label: 'ProfitRMPercentage', value: 'ProfitRMPercentage', },
-    { label: 'VendorName', value: 'VendorName', },
-    { label: 'VendorCode', value: 'VendorCode', },
-    { label: 'PlantName', value: 'PlantName' },
     { label: 'PlantCode', value: 'PlantCode' },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remarks', value: 'Remarks', },
 ]
 
 export const ProfitTempData = [
     {
         'CostingHead': 'CostingHead',
-        'ModelType': 'High',
+        'ModelType': 'High volume',
         'ProfitApplicability': 'RM',
-        'ProfitPercentage': '10',
-        'ProfitMachiningCCPercentage': '10',
-        'ProfitBOPPercentage': '10',
+        'ProfitPercentage': '',
+        'ProfitCCPercentage': '',
+        'ProfitBOPPercentage': '',
         'ProfitRMPercentage': '10',
-        'VendorName': 'Vendor Name',
-        'VendorCode': 'Vendor Code123',
-        "PlantName": '1511',
-        "PlantCode": '1511',
+        "PlantCode": '3456',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text',
     }
 ]
 
+export const ProfitVBC = [
+    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'ProfitApplicability', value: 'ProfitApplicability', },
+    { label: 'ProfitPercentage', value: 'ProfitPercentage', },
+    { label: 'ProfitCCPercentage', value: 'ProfitCCPercentage', },
+    { label: 'ProfitBOPPercentage', value: 'ProfitBOPPercentage', },
+    { label: 'ProfitRMPercentage', value: 'ProfitRMPercentage', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'PlantCode', value: 'PlantCode' },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remarks', value: 'Remarks', }
+]
+
+export const ProfitTempDataVBC = [
+    {
+        'CostingHead': 'CostingHead',
+        'ModelType': 'High volume',
+        'ProfitApplicability': 'RM',
+        'ProfitPercentage': '',
+        'ProfitCCPercentage': '',
+        'ProfitBOPPercentage': '',
+        'ProfitRMPercentage': '10',
+        'VendorCode': '1313',
+        "PlantCode": '3456',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
+    }
+]
+export const ProfitCBC = [
+    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'ModelType', value: 'ModelType', },
+    { label: 'ProfitApplicability', value: 'ProfitApplicability', },
+    { label: 'ProfitPercentage', value: 'ProfitPercentage', },
+    { label: 'ProfitCCPercentage', value: 'ProfitCCPercentage', },
+    { label: 'ProfitBOPPercentage', value: 'ProfitBOPPercentage', },
+    { label: 'ProfitRMPercentage', value: 'ProfitRMPercentage', },
+    { label: 'PlantCode', value: 'PlantCode' },
+    { label: 'CustomerCode', value: 'CustomerName' },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remarks', value: 'Remarks', }
+]
+
+export const ProfitTempDataCBC = [
+    {
+        'CostingHead': 'CostingHead',
+        'ModelType': 'High volume',
+        'ProfitApplicability': 'RM',
+        'ProfitPercentage': '',
+        'ProfitCCPercentage': '',
+        'ProfitBOPPercentage': '',
+        'ProfitRMPercentage': '10',
+        "PlantCode": '3456',
+        "CustomerName": 'C-10006',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
+    }
+]
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -2043,6 +2152,7 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
+    { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
@@ -2058,6 +2168,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
@@ -2070,6 +2181,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
@@ -2082,6 +2194,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
@@ -2100,6 +2213,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
+    { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'ClientApprovedVendor', value: 'IsClientVendorBOP', },
@@ -2118,6 +2232,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
         "IsClientVendorBOP": "YES",
@@ -2135,6 +2250,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
         "IsClientVendorBOP": "NO",
@@ -2152,6 +2268,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
         "IsClientVendorBOP": "YES",
@@ -2172,6 +2289,7 @@ export const BOP_DETAILED_DOMESTIC = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
+    { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
@@ -2189,6 +2307,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
         'VendorCode': 'Sys01',
@@ -2205,6 +2324,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
         'VendorCode': 'Sys01',
@@ -2221,6 +2341,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
         'VendorCode': 'Sys01',
@@ -2243,6 +2364,7 @@ export const BOP_ZBC_IMPORT = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
+    { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
@@ -2261,6 +2383,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': 'Plant101',
         'VendorName': 'Systematix',
@@ -2277,6 +2400,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': 'Plant101',
         'VendorName': 'Systematix',
@@ -2293,6 +2417,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': 'Plant101',
         'VendorName': 'Systematix',
@@ -2311,6 +2436,7 @@ export const BOP_CBC_DOMESTIC = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
+    { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
@@ -2327,6 +2453,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
@@ -2340,6 +2467,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
@@ -2353,6 +2481,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
@@ -2372,6 +2501,7 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
+    { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
@@ -2395,6 +2525,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "YES",
@@ -2414,6 +2545,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "YES",
@@ -2433,6 +2565,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "NO",
@@ -2458,6 +2591,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
+    { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'ClientApprovedVendor', value: 'IsClientVendorBOP', },
@@ -2481,6 +2615,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "YES",
@@ -2499,6 +2634,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "YES",
@@ -2517,6 +2653,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "NO",
@@ -2537,6 +2674,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
+    { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
@@ -2556,6 +2694,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': '1032',
         "CustomerCode": "C-10008",
@@ -2572,6 +2711,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': '1032',
         "CustomerCode": "C-10008",
@@ -2588,6 +2728,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
+        'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': '1032',
         "CustomerCode": "C-10008",
@@ -5400,6 +5541,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "BOP Part Category", value: "BoughtOutPartCategory", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
+    { label: "SAP Code", value: "SAPCode", },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor", },
     //MINDA
@@ -5426,6 +5568,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "UOM", value: "UOM" },
     { label: "Currency", value: "Currency" },
     { label: "Specification", value: "Specification" },
+    { label: "SAP Code", value: "SAPCode", },
     { label: "Plant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "Vendor" },
     //MINDA
@@ -5644,11 +5787,11 @@ export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
-    { label: "Index", value: "Index", },  
+    { label: "Index", value: "Index", },
 ]
 
 export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
-    { label: "Commodity (In Index)", value: "Index", },  
+    { label: "Commodity (In Index)", value: "Index", },
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [

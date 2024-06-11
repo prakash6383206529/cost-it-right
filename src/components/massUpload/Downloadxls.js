@@ -8,7 +8,7 @@ import {
     RMSpecification, RMSpecificationXLTempData,
     Vendor, VendorTempData,
     Labour, LabourTempData,
-    Overhead, OverheadTempData, Profit, ProfitTempData,
+    Overhead, OverheadTempData, OverheadVBC, OverheadVBC_TempData, OverheadCBC, OverheadCBC_TempData, Profit, ProfitTempData, ProfitVBC, ProfitTempDataVBC, ProfitCBC, ProfitTempDataCBC,
     ZBCOperation, ZBCOperationTempData, VBCOperation, VBCOperationTempData,
     MachineZBC, MachineZBCTempData, MachineVBC, MachineVBCTempData, MHRMoreZBC, MHRMoreZBCTempData,
     PartComponent, PartComponentTempData, ProductComponent, ProductComponentTempData, BOMUploadTempData, BOMUpload,
@@ -217,6 +217,13 @@ class Downloadxls extends React.Component {
                 ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, bopMasterName));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_IMPORT, '', true), BOP_ZBC_IMPORT_TempData);
+
+            case `Overhead`:
+
+                return this.returnExcelColumn(Overhead, OverheadTempData);
+            case `Profit`:
+
+                return this.returnExcelColumn(Profit, ProfitTempData);
             case 'Actual Volume':
                 return this.returnExcelColumn(VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA);
             case 'Budgeted Volume':
@@ -271,6 +278,12 @@ class Downloadxls extends React.Component {
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
                 }
+            case `Overhead`:
+
+                return this.returnExcelColumn(OverheadVBC, OverheadVBC_TempData);
+            case `Profit`:
+
+                return this.returnExcelColumn(ProfitVBC, ProfitTempDataVBC);
             case 'Actual Volume':
                 return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_ACTUAL_VBC), VOLUME_ACTUAL_VBC_TEMPDATA);
             case 'Budgeted Volume':
@@ -312,6 +325,11 @@ class Downloadxls extends React.Component {
                 ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, bopMasterName));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), updatedTempData);
+            case `Overhead`:
+
+                return this.returnExcelColumn(OverheadCBC, OverheadCBC_TempData);
+            case `Profit`:
+                return this.returnExcelColumn(ProfitCBC, ProfitTempDataCBC);
             case 'Actual Volume':
                 return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_ACTUAL_CBC, CBCTypeId), VOLUME_ACTUAL_CBC_TEMPDATA);
             case 'Budgeted Volume':

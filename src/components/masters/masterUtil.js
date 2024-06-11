@@ -382,7 +382,8 @@ export const bopQueryParms = (isPagination, skip, take, obj) => {
         take: take,
         NumberOfPieces: obj.NumberOfPieces !== undefined ? obj.NumberOfPieces : "",
         VendorId: obj?.VendorId !== undefined ? obj?.VendorId : "",
-        CustomerId: obj?.CustomerId !== undefined ? obj?.CustomerId : ""
+        CustomerId: obj?.CustomerId !== undefined ? obj?.CustomerId : "",
+        SAPCode: obj?.SAPCode !== undefined ? obj?.SAPCode : ""
     });
 
     return queryParams;

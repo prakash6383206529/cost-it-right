@@ -26,6 +26,7 @@ const OverheadProfit = () => {
     AddAccessibility: false,
     EditAccessibility: false,
     DeleteAccessibility: false,
+    BulkUploadAccessibility: false,
     DownloadAccessibility: false,
     stopApiCallOnCancel: false,
     permissions: {}
@@ -61,6 +62,10 @@ const OverheadProfit = () => {
           AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
           EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
           DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          BulkUploadAccessibility:
+            permmisionData && permmisionData.BulkUpload
+              ? permmisionData.BulkUpload
+              : false,
           DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
         }))
       }
