@@ -27,7 +27,7 @@ import MasterSendForApproval from "../MasterSendForApproval";
 import WarningMessage from "../../common/WarningMessage";
 
 function AddRMMaster(props) {
-    const { data } = props
+    const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -457,7 +457,9 @@ function AddRMMaster(props) {
                         useWatch={useWatch}
                         DataToChange={state.DataToChange}
                         data={data}
-                        commonFunction={commonFunction} />
+                        commonFunction={commonFunction}
+                        AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
+                        EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE} />
                     <AddRMFinancialDetails states={state}
                         Controller={Controller}
                         control={control}
@@ -468,53 +470,52 @@ function AddRMMaster(props) {
                         useWatch={useWatch}
                         DataToChange={state.DataToChange}
                         data={data} />
-                    <Row>
-                        <RemarksAndAttachments Controller={Controller}
-                            control={control}
-                            register={register}
-                            setValue={setValue}
-                            getValues={getValues}
-                            errors={errors}
-                            useWatch={useWatch}
-                            DataToChange={state.DataToChange}
-                            data={data} />
+                    <RemarksAndAttachments Controller={Controller}
+                        control={control}
+                        register={register}
+                        setValue={setValue}
+                        getValues={getValues}
+                        errors={errors}
+                        useWatch={useWatch}
+                        DataToChange={state.DataToChange}
+                        data={data} />
+                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                        <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                            {state.disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
+                            <Button
+                                id="addBOPIMport_cancel"
+                                className="mr15"
+                                onClick={cancel}
+                                disabled={false}
+                                variant="cancel-btn"
+                                icon="cancel-icon"
+                                buttonName="Cancel"
+                            />
+                            {!isViewFlag && <>
+                                {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.isFinalApprovar) && getConfigurationKey().IsMasterApprovalAppliedConfigure) || (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.CostingTypePermission) ?
+                                    <Button
+                                        id="addRMDomestic_sendForApproval"
+                                        type="button"
+                                        className="approval-btn mr5"
+                                        disabled={isViewFlag || state.disableSendForApproval}
+                                        onClick={onSubmit}
+                                        icon={showSendForApproval() ? "send-for-approval" : "save-icon"}
+                                        buttonName={showSendForApproval() ? "Send For Approval" : 'Update'}
+                                    />
+                                    :
+                                    <Button
+                                        id="addRMDomestic_updateSave"
+                                        type="button"
+                                        className="mr5"
+                                        disabled={isViewFlag || state.disableSendForApproval}
+                                        onClick={onSubmit}
+                                        icon={"save-icon"}
+                                        buttonName={data.isEditFlag ? "Update" : "Save"}
+                                    />
+                                }
+                            </>}
+                        </div>
                     </Row>
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer"></Row>
-                    <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
-                        {state.disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
-                        <Button
-                            id="addBOPIMport_cancel"
-                            className="mr15"
-                            onClick={cancel}
-                            disabled={false}
-                            variant="cancel-btn"
-                            icon="cancel-icon"
-                            buttonName="Cancel"
-                        />
-                        {!isViewFlag && <>
-                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.isFinalApprovar) && getConfigurationKey().IsMasterApprovalAppliedConfigure) || (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.CostingTypePermission) ?
-                                <Button
-                                    id="addRMDomestic_sendForApproval"
-                                    type="button"
-                                    className="approval-btn mr5"
-                                    disabled={isViewFlag || state.disableSendForApproval}
-                                    onClick={onSubmit}
-                                    icon={showSendForApproval() ? "send-for-approval" : "save-icon"}
-                                    buttonName={showSendForApproval() ? "Send For Approval" : 'Update'}
-                                />
-                                :
-                                <Button
-                                    id="addRMDomestic_updateSave"
-                                    type="button"
-                                    className="mr5"
-                                    disabled={isViewFlag || state.disableSendForApproval}
-                                    onClick={onSubmit}
-                                    icon={"save-icon"}
-                                    buttonName={data.isEditFlag ? "Update" : "Save"}
-                                />
-                            }
-                        </>}
-                    </div>
                 </form>
                 {
                     state.approveDrawer && (

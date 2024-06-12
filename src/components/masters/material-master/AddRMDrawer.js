@@ -148,7 +148,7 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
                             <Row className="pl-3">
                                 <Col md="6">
                                     <SearchableSelectHookForm
-                                        label={'Material Index'}
+                                        label={'Commodity (In CIR)'}
                                         name={'MaterialIndex'}
                                         placeholder={'Select'}
                                         Controller={Controller}

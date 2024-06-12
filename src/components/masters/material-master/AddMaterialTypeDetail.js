@@ -161,7 +161,7 @@ const AddMaterialTypeDetail = () => {
             <Row className="pl-3">
                 <Col md="4">
                     <SearchableSelectHookForm
-                        label={'Material Index'}
+                        label={'Commodity (In CIR)'}
                         name={'MaterialIndex'}
                         placeholder={'Select'}
                         Controller={Controller}
@@ -243,7 +243,7 @@ const AddMaterialTypeDetail = () => {
             <Table className="table mb-0 forging-cal-table" size="sm">
                 <thead>
                     <tr>
-                        <th>{`Material Index`}</th>
+                        <th>{`Commodity (In CIR)`}</th>
                         <th>{`Percentage (%)`}</th>
                         <th className='text-right'>{`Action`}</th>
                     </tr>
@@ -255,20 +255,20 @@ const AddMaterialTypeDetail = () => {
                                 <tr key={index}>
                                     <td>{item.MaterialIndex}</td>
                                     <td>{item.Percentage}</td>
-                                        <td className='text-right'>
-                                            <button
-                                                className="Edit"
-                                                title='Edit'
-                                                type={"button"}
-                                                onClick={() => editItemDetails(index)}
-                                            />
-                                            <button
-                                                className="Delete ml-1"
-                                                title='Delete'
-                                                type={"button"}
-                                                onClick={() => deleteItem(index)}
-                                            />
-                                        </td>
+                                    <td className='text-right'>
+                                        <button
+                                            className="Edit"
+                                            title='Edit'
+                                            type={"button"}
+                                            onClick={() => editItemDetails(index)}
+                                        />
+                                        <button
+                                            className="Delete ml-1"
+                                            title='Delete'
+                                            type={"button"}
+                                            onClick={() => deleteItem(index)}
+                                        />
+                                    </td>
                                 </tr>
                             ))}
                             <tr className='table-footer'>

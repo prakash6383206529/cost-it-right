@@ -1606,7 +1606,7 @@ export function getApprovalModuleSelectList(callback) {
  * @method getApprovalTypeSelectList
  * @description Used to fetch Labour type selectlist
  */
-export function getApprovalTypeSelectList(id = '', callback) {
+export function getApprovalTypeSelectList(callback, id = '') {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     let querryParam = encodeQueryParamsAndLog({ id: id })
