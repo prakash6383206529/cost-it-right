@@ -159,13 +159,13 @@ function RubberWeightCalculator(props) {
 
     const percentageChange = (e) => {
         calculateNetSCrapRate()
-        calculateNetRmRate()
+        calculateNetRmRate(e.target.value)
     }
-    const calculateNetRmRate = () => {
+    const calculateNetRmRate = (percentageValue) => {
 
         let grossRMRate = 0;
         grossRMRate = rmData && rmData.reduce((acc, val, index) => {
-            const Percentage = getValues(`${rmGridFields}.${index}.Percentage`)
+            const Percentage = percentageValue
             return acc + checkForNull(Percentage * val.RMRate / 100)
 
         }, 0)
