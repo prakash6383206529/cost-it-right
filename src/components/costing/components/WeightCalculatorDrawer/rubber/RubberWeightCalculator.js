@@ -6,7 +6,7 @@ import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } fro
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { saveRawMaterialCalculationForRubberCompound } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
-import { debounce, trim } from 'lodash'
+import _, { debounce, trim } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalAndNumberValidation } from "../../../../../helper/validation";
 import NoContentFound from '../../../../common/NoContentFound'
@@ -157,16 +157,16 @@ function RubberWeightCalculator(props) {
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 
-    const percentageChange = (e) => {
+    const percentageChange = (e, index) => {
         calculateNetSCrapRate()
-        calculateNetRmRate(e.target.value)
+        calculateNetRmRate(e.target.value, index)
     }
-    const calculateNetRmRate = (percentageValue) => {
+    const calculateNetRmRate = (percentageValue, indexTemp) => {
 
         let grossRMRate = 0;
         grossRMRate = rmData && rmData.reduce((acc, val, index) => {
-            const Percentage = percentageValue
-            return acc + checkForNull(Percentage * val.RMRate / 100)
+            const Percentage = (indexTemp === index) ? percentageValue : getValues(`rmGridFields.${index}.Percentage`)
+            return acc + (checkForNull(Percentage) * checkForNull(val.RMRate) / 100)
 
         }, 0)
         let obj = { ...dataToSend }
@@ -558,7 +558,7 @@ function RubberWeightCalculator(props) {
                                                             defaultValue={''}
                                                             className=""
                                                             customClassName={'withBorder'}
-                                                            handleChange={(e) => { percentageChange(e) }}
+                                                            handleChange={(e) => { percentageChange(e, index) }}
                                                             errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].Percentage : ''}
                                                             disabled={props.CostingViewMode || disablePercentFields}
                                                         />
