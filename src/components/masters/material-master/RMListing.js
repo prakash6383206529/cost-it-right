@@ -53,7 +53,8 @@ const RMListing = (props) => {
     noData: false,
     dataCount: 0,
     render: false,
-    showExtraData: false
+    showExtraData: false,
+    isViewFlag: false
   });
   useEffect(() => {
     getListData();
@@ -77,6 +78,7 @@ const RMListing = (props) => {
    * @description  used to cancel filter form
    */
   const closeDrawer = (e = "", formData, type) => {
+    console.log('type: ', type);
     setState((prevState) => ({
       ...prevState, isOpen: false, isLoader: type === "submit" ? true : prevState.isLoader, dataCount: type === "submit" ? 0 : prevState.dataCount,
     }));
@@ -111,6 +113,15 @@ const RMListing = (props) => {
   const editItemDetails = (Id) => {
     setState((prevState) => ({
       ...prevState, isEditFlag: true, isOpen: true, ID: Id,
+    }));
+  };
+  /**
+ * @method viewItemDetails
+ * @description View Raw Material
+ */
+  const viewItemDetails = (Id) => {
+    setState((prevState) => ({
+      ...prevState, isViewFlag: true, isOpen: true, ID: Id,
     }));
   };
   /**
@@ -180,10 +191,21 @@ const RMListing = (props) => {
     let isEditbale = false
     let isDeleteButton = false
     isEditbale = permissions.Edit;
+    let isViewButton = permissions.View
+    console.log('isViewButtom: ', isViewButton);
     isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete);
 
     return (
       <>
+        {isViewButton && (
+          <Button
+            title="View"
+            variant="View"
+            id={`addSpecificationList_view${props?.rowIndex}`}
+            className="mr-2 Tour_List_View"
+            onClick={() => viewItemDetails(cellValue, rowData)}
+          />
+        )}
         {isEditbale && (
           <Button
             title="Edit"
@@ -422,6 +444,7 @@ const RMListing = (props) => {
           isEditFlag={isEditFlag}
           ID={ID}
           anchor={"right"}
+          isViewFlag={state.isViewFlag}
         />
       )}
       {state.isOpenAssociation && (

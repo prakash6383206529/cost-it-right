@@ -994,13 +994,13 @@ export const CommodityInIndexListingTempData = [
 export const StandardizedCommodityNameListing = [
     { label: "Index", value: "IndexExchangeName" },
     { label: "Commodity Name (In Index)", value: "CommodityName" },
-    { label: "Commodity Name (In CIR)", value: "CustomMaterialName" },
+    { label: "Commodity Name (In CIR)", value: "CommodityStandardName" },
 ]
 export const StandardizedCommodityNameTempData = [
     {
         "IndexExchangeName": "21FD2",
         "CommodityName": "al",
-        "CustomMaterialName": "alloy",
+        "CommodityStandardName": "alloy",
     }
 ]
 /**
@@ -5688,14 +5688,16 @@ export const COMMODITYSTANDARD_DOWNLOAD_EXCEl = [
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
     { label: "Index", value: "IndexExchangeName", },
     { label: "Commodity Name", value: "CommodityName", },
+    { label: "Index UOM", value: "IndexUOM", },
     { label: "UOM", value: "UOM", },
     { label: "Currency", value: "Currency", },
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
     { label: "Effective Date", value: "EffectiveDate", },
-    { label: "Index Rate (Currency)", value: "Rate", },
-    { label: "Premium (Charge)", value: "ExchangeRateSourceName", },
-    { label: "Exchange rate (INR)", value: "ExchangeRate", },
-    { label: "Currency Rate", value: "CurrencyCharge", },
-    { label: "Conversion Rate (INR)", value: "RateConversion", },
+    { label: "Index Rate/Index UOM", value: "RatePerIndexUOM", },
+    { label: "Index Rate/UOM", value: "RatePerConvertedUOM", },
+    { label: `Exchange rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "ExchangeRate", },
+    { label: "Conversion Rate/Index UOM", value: "RateConversionPerIndexUOM", },
+    { label: "Conversion Rate/UOM", value: "RateConversionPerConvertedUOM", },
 ]
 
 export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [

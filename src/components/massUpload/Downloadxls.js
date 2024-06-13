@@ -174,7 +174,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(IndexCommodityListing, IndexCommodityListingTempData);
             case 'Commodity (In Index)':
                 return this.returnExcelColumn(CommodityInIndexListing, CommodityInIndexListingTempData);
-            case 'Standardized Commodity Name':
+            case 'Commodity Standardization':
                 return this.returnExcelColumn(StandardizedCommodityNameListing, StandardizedCommodityNameTempData);
             case 'Commodity Standard':
                 return this.returnExcelColumn(CommodityStandard, CommodityStandardTempData);

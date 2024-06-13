@@ -582,10 +582,10 @@ export function createMaterialTypeAPI(data, callback) {
  * @method getMaterialTypeDataAPI
  * @description get material type data
  */
-export function getMaterialTypeDataAPI(MaterialTypeId, callback) {
+export function getMaterialTypeDataAPI(rawMaterialId, gradeId, callback) {
     return (dispatch) => {
-        if (MaterialTypeId !== '') {
-            axios.get(`${API.getMaterialTypeDataAPI}/${MaterialTypeId}`, config())
+        if (rawMaterialId !== '') {
+            axios.get(`${API.getMaterialTypeDataAPI}?materialTypeId=${rawMaterialId}?rawMaterialGradeId=${gradeId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_MATERIAL_TYPE_DATA_SUCCESS,

@@ -11,7 +11,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
-import { searchNocontentFilter, setLoremIpsum } from "../../../helper";
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
 import TourWrapper from "../../common/Tour/TourWrapper";
@@ -26,8 +26,9 @@ import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
-import { getIndexDataListAPI } from "../actions/Indexation";
+import { deleteIndexDetailData, getIndexDataListAPI } from "../actions/Indexation";
 import AddRMDrawer from "../material-master/AddRMDrawer";
+import DayTime from "../../common/DayTimeWrapper";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -195,11 +196,11 @@ const IndexDataListing = () => {
 
     const confirmDelete = (ID) => {
         dispatch(
-            deleteMaterialTypeAPI(ID, (res) => {
+            deleteIndexDetailData(ID, (res) => {
                 if (res.status === 417 && res.data.Result === false) {
                     Toaster.error(res.data.Message);
                 } else if (res && res.data && res.data.Result === true) {
-                    Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
+                    Toaster.success(MESSAGES.INDEX_DELETE_SUCCESS);
                     setState((prevState) => ({ ...prevState, dataCount: 0 }));
                     getTableListData();
                 }
@@ -229,11 +230,13 @@ const IndexDataListing = () => {
     };
 
     const buttonFormatter = (props) => {
+        console.log('props: ', props);
         const { showExtraData } = state
         const cellValue = props?.valueFormatted
             ? props.valueFormatted
             : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        console.log('cellValue: ', cellValue);
+        const rowData = props?.data?.CommodityIndexRateDetailId;
         let isEditbale = false
         let isDeleteButton = false
         isEditbale = permissions.Edit;
@@ -241,7 +244,7 @@ const IndexDataListing = () => {
 
         return (
             <>
-                {isEditbale && (
+                {/* {isEditbale && (
                     <Button
                         title="Edit"
                         variant="Edit"
@@ -249,14 +252,14 @@ const IndexDataListing = () => {
                         className="mr-2 Tour_List_Edit"
                         onClick={() => editItemDetails(cellValue, rowData)}
                     />
-                )}
+                )} */}
                 {isDeleteButton && (
                     <Button
                         title="Delete"
                         variant="Delete"
                         className={"Tour_List_Delete"}
                         id={`rmMaterialList_edit_delete${props?.rowIndex}`}
-                        onClick={() => deleteItem(cellValue)}
+                        onClick={() => deleteItem(rowData)}
                     />
                 )}
             </>
@@ -336,10 +339,33 @@ const IndexDataListing = () => {
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn,
     };
+    const priceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (
+            <>
+
+                {cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''}
+            </>
+        )
+    }
+    /**
+* @method effectiveDateFormatter
+* @description Renders buttons
+*/
+    const effectiveDateFormatter = (props) => {
+        if (showExtraData && props?.rowIndex === 0) {
+            return "Lorem Ipsum";
+        } else {
+            const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+            return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        }
+    }
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         hyphenFormatter: hyphenFormatter,
         customNoRowsOverlay: NoContentFound,
+        priceFormatter: priceFormatter,
+        effectiveDateFormatter: effectiveDateFormatter
     };
     const onBtExport = () => {
         let tempArr = [];
@@ -384,17 +410,8 @@ const IndexDataListing = () => {
         setState((prevState) => ({ ...prevState, isBulkUpload: true }));
     };
     const closeBulkUploadDrawer = () => {
-        setState(
-            (prevState) => {
-                return {
-                    ...prevState,
-                    isBulkUpload: false,
-                };
-            },
-            () => {
-                getTableListData("", "");
-            }
-        );
+        setState((prevState) => ({ ...prevState, isBulkUpload: false }));
+        resetState()
     };
 
     return (
@@ -486,14 +503,17 @@ const IndexDataListing = () => {
 
                                 <AgGridColumn field="IndexExchangeName" headerName="Index"></AgGridColumn>
                                 <AgGridColumn field="CommodityName" headerName="Commodity Name" ></AgGridColumn>
-                                <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                <AgGridColumn field="IndexUOM" headerName="Index UOM"></AgGridColumn>
+                                <AgGridColumn field="ConvertedUOM" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Indexed On"></AgGridColumn>
-                                <AgGridColumn field="Rate" headerName="Index Rate (Currency)"></AgGridColumn>
-                                {/* <AgGridColumn field="CurrencyCharge" headerName="Premium (Charge)"></AgGridColumn> */}
                                 <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>
-                                <AgGridColumn field="ExchangeRate" headerName="Exchange rate (INR)"></AgGridColumn>
-                                <AgGridColumn field="RateConversion" headerName="Conversion Rate (INR)"></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" headerName="Indexed On" cellRenderer='effectiveDateFormatter'></AgGridColumn>
+                                <AgGridColumn field="RatePerIndexUOM" headerName="Index Rate/Index UOM" cellRenderer='priceFormatter'></AgGridColumn>
+                                <AgGridColumn field="RatePerConvertedUOM" headerName="Index Rate/UOM" cellRenderer='priceFormatter'></AgGridColumn>
+                                {/* <AgGridColumn field="CurrencyCharge" headerName="Premium (Charge)"></AgGridColumn> */}
+                                <AgGridColumn field="ExchangeRate" headerName={`Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='priceFormatter'></AgGridColumn>
+                                <AgGridColumn field="RateConversionPerIndexUOM" headerName="Conversion Rate/Index UOM" cellRenderer='priceFormatter'></AgGridColumn>
+                                <AgGridColumn field="RateConversionPerConvertedUOM" headerName="Conversion Rate/UOM " cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                             </AgGridReact>
 
@@ -511,7 +531,7 @@ const IndexDataListing = () => {
                     isOpen={state.showPopup}
                     closePopUp={closePopUp}
                     confirmPopup={onPopupConfirm}
-                    message={`${MESSAGES.MATERIAL1_DELETE_ALERT}`}
+                    message={`${MESSAGES.DELETE}`}
                 />
             )}
             {isBulkUpload && (
