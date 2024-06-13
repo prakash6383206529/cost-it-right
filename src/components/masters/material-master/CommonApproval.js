@@ -267,7 +267,9 @@ function CommonApproval(props) {
 
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-
+        if (props?.OnboardingApprovalId === ONBOARDINGID) {
+            gridApi.sizeColumnsToFit();
+        }
         for (var prop in floatingFilterData) {
 
             if (prop !== "DepartmentCode") {
