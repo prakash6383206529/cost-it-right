@@ -26,7 +26,7 @@ import Downloadxls, { checkInterestRateConfigure, checkLabourRateConfigure, chec
 import cloudImg from '../../assests/images/uploadcloud.png';
 import {
     ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId, RMMATERIALBULKUPLOAD,
-    INDEXCOMMODITYBULKUPLOAD, COMMODITYININDEXBULKUPLOAD, RMDETAILBULKUPLOAD,
+    INDEXCOMMODITYBULKUPLOAD, COMMODITYININDEXBULKUPLOAD, COMMODITYSTANDARDIZATION,
     RMMASTER,
     COMMODITYSTANDARD,
     OVERHEADBULKUPLOAD,
@@ -465,7 +465,7 @@ class BulkUpload extends Component {
                         case String(COMMODITYININDEXBULKUPLOAD):
                             checkForFileHead = checkForSameFileUpload(CommodityInIndexListing, fileHeads)
                             break;
-                        case String(RMDETAILBULKUPLOAD):
+                        case String(COMMODITYSTANDARDIZATION):
                             checkForFileHead = checkForSameFileUpload(StandardizedCommodityNameListing, fileHeads)
                             break;
                         case String(COMMODITYSTANDARD):
@@ -499,7 +499,7 @@ class BulkUpload extends Component {
                             val.map((el, i) => {
 
 
-                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string' && el !== '') {
+                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'Indexed On') && typeof el === 'string' && el !== '') {
                                     if (isDateFormatter(el)) {
                                         el = el.replaceAll('/', '-')
                                         let str = el.substring(el.indexOf("-") + 1);
@@ -510,7 +510,7 @@ class BulkUpload extends Component {
                                         el = dateTemp
                                     }
                                 }
-                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'DateOfModification') && typeof el === 'number') {
+                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'DateOfModification' || fileHeads[i] === 'Indexed On') && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
                                     const date = new Date();
                                     const shortDateFormat = date.toLocaleDateString(undefined, { dateStyle: 'short' });
@@ -604,8 +604,11 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'Index') {
                                     fileHeads[i] = 'IndexExchangeName'
                                 }
-                                if (fileHeads[i] === 'Commodity (In Index)') {
+                                if (fileHeads[i] === 'Commodity (In Index)' || fileHeads[i] === 'Commodity Name (In Index)') {
                                     fileHeads[i] = 'CommodityName'
+                                }
+                                if (fileHeads[i] === 'Commodity (Standard)' || fileHeads[i] === 'Commodity Name (In CIR)') {
+                                    fileHeads[i] = 'CommodityStandardName'
                                 }
                                 if (fileHeads[i] === 'Index Rate (Currency)') {
                                     fileHeads[i] = 'Rate'
@@ -765,7 +768,7 @@ class BulkUpload extends Component {
             });
 
         }
-        else if (fileName === 'Standardized Commodity Name') {
+        else if (fileName === 'Commodity Standardization') {
             this.props.bulkUploadStandardizedCommodity(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)

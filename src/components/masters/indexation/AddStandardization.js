@@ -48,8 +48,9 @@ const AddStandardization = (props) => {
                 const data = res.data.DataList[0]
                 console.log('data: ', data);
                 setValue('IndexExchangeName', { label: data.IndexExchangeName, value: data.IndexExchangeId })
-                setValue('CommodityName', { label: data.CommodityName, value: data.CommodityId })
+                setValue('CommodityName', { label: data.CommodityName, value: data.IndexExchangeCommodityLinkingId })
                 setValue('CommodityStandardName', { label: data.CommodityStandardName, value: data.CommodityStandardId })
+                setCommodityStandardizationId(data.CommodityStandardizationId)
             }))
         }
 
@@ -62,7 +63,7 @@ const AddStandardization = (props) => {
         CommodityStandardName: ''
 
     });
-
+    const [commodityStandardizationId, setCommodityStandardizationId] = useState('');
 
 
     const renderListing = (label) => {
@@ -107,81 +108,39 @@ const AddStandardization = (props) => {
             }
         }
     };
-    // const resetData = () => {
-    //     setValue('IndexExchangeName', '');
-    //     setValue('CommodityName', '');
-    //     setValue('CommodityStandardName', '');
-    //     setIsEdit(false)
-    //     setEditIndex('')
-    //     setFormData({
-    //         IndexExchangeName: '',
-    //         CommodityName: '',
-    //         CommodityStandardName: ''
-    //     });
-    // }
-
-
-
 
     const onSubmit = debounce((values) => {
-        console.log('gridData: ', gridData);
-        // if (isEditMode) {
-        //     setState(prevState => ({ ...prevState, setDisable: true }));
 
-        //     //   const updateData = {
-        //     //     Index: values.Index,
-        //     //     ModifiedBy: loggedInUserId(),            
-        //     //     MaterialName: values.MaterialName,
-        //     //     MaterialNameCustom: values.MaterialNameCustom,
-        //     //     IsActive: true,
-        //     //   };
-        //     const updateData = {
-        //         IndexExchangeName: values.IndexExchangeName,
-        //         ModifiedBy: loggedInUserId(),
-        //         CommodityName: values.CommodityName,
-        //         CommodityStandardName: values.CommodityStandardName,
-        //         IsActive: true,
-        //     };
-
-        // dispatch(updateCommodityStandardization(updateData, res => {
-        //     setState(prevState => ({ ...prevState, setDisable: false }));
-        //     if (res?.data?.Result) {
-        //         Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
-        //         dispatch(getStandardizedCommodityListAPI('', res => { }));
-        //         reset();
-        //         toggleDrawer('', updateData, 'submit');
-        //     }
-        // }));
-        // } else {
-        setState(prevState => ({ ...prevState, setDisable: true }));
-
-        // const formData = {
-        //     Index: values.Index,
-        //     MaterialName: values.MaterialName,
-        //     MaterialNameCustom: values.MaterialNameCustom,
-        //     // MaterialType: values.MaterialType,
-        //     // CalculatedDensityValue: values.CalculatedDensityValue,
-        //     CreatedBy: loggedInUserId(),
-        //     IsActive: true,
-        // };
         if (!isEditFlag) {
-            const formDataToSubmit = [...gridData]
+            const formDataToSubmit = gridData.map(item => ({
+                ...item,
+                LoggedInUserId: loggedInUserId()
+            }));
             dispatch(createCommodityStandardization(formDataToSubmit, res => {
 
                 setState(prevState => ({ ...prevState, setDisable: false }));
 
                 if (res?.data?.Result) {
                     Toaster.success(MESSAGES.COMMODITYNAME_ADD_SUCCESS);
-                    // dispatch(getStandardizedCommodityListAPI('', res => { }));
                     reset();
                     toggleDrawer('', formDataToSubmit, 'submit');
                 }
             }));
         } else {
+            const updatedFormData =
+            {
+                "CommodityStandardizationId": commodityStandardizationId,
+                "CommodityStandardId": getValues('CommodityStandardName') ? getValues('CommodityStandardName')?.value : '',
+                "IndexExchangeCommodityLinkingId": getValues('CommodityName') ? getValues('CommodityName')?.value : '',
+                "LoggedInUserId": loggedInUserId(),
+            }
 
+            dispatch(updateCommodityStandardization(updatedFormData, res => {
+                Toaster.success(MESSAGES.COMMODITYNAME_UPDATE_SUCCESS);
+                reset();
+                toggleDrawer('', updatedFormData, 'submit');
+            }))
         }
-
-        // }
     }, 500);
 
 
@@ -193,7 +152,6 @@ const AddStandardization = (props) => {
     };
     const cancel = (type) => {
         reset();
-        // dispatch(getStandardizedCommodityListAPI('', res => { }));
         toggleDrawer('', '', type);
     };
 
@@ -213,10 +171,12 @@ const AddStandardization = (props) => {
         setState(prevState => ({ ...prevState, showPopup: false }));
     };
     const indexToggler = (Id = '') => {
-        setState(prevState => ({ ...prevState, isOpenIndex: true }));
+        setState(prevState => ({ ...prevState, isOpenCommodity: true }));
     }
-    const closeIndex = () => {
-        setState(prevState => ({ ...prevState, isOpenIndex: false }));
+    const closeCommodityDrawer = (e, formData, type) => {
+        setState(prevState => ({ ...prevState, isOpenCommodity: false }));
+        if (type !== 'cancel')
+            dispatch(getCommodityCustomNameSelectListByType((res) => { }))
     }
     const addData = () => {
         if (!getValues('IndexExchangeName') || !getValues('CommodityName') || !getValues('CommodityStandardName')) {
@@ -475,10 +435,10 @@ const AddStandardization = (props) => {
                     </div>
                 </Container>
             </Drawer>
-            {state.isOpenIndex && (
+            {state.isOpenCommodity && (
                 <AddGrade
-                    isOpen={state.isOpenIndex}
-                    // closeDrawer={closeIndex}
+                    isOpen={state.isOpenCommodity}
+                    closeDrawer={closeCommodityDrawer}
                     // closeDrawer={closeFuelDrawer}
                     isEditFlag={isEditFlag}
                     //CommodityStandardName={state.CommodityStandardName}

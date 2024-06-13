@@ -449,7 +449,7 @@ const CommodityStandardListing = () => {
                     isOpen={state.showPopup}
                     closePopUp={closePopUp}
                     confirmPopup={onPopupConfirm}
-                    message={`${MESSAGES.MATERIAL1_DELETE_ALERT}`}
+                    message={`${MESSAGES.DELETE}`}
                 />
             )}
             {isBulkUpload && (

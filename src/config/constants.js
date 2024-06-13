@@ -107,6 +107,8 @@ export const API = {
   bulkUploadCommodityStandard: `${BASE_URL}/masters-material/bulk-upload-for-commodity-standard`,
   deleteCommodityStandard: `${BASE_URL}/masters-material/delete-commodity-standard`,
   deleteCommodityStandardization: `${BASE_URL}/masters-material/delete-commodity-standardization`,
+  deleteIndexDetailData: `${BASE_URL}/masters-material/delete-commodity-index-rate-details`,
+  getAssociatedMaterial: `${BASE_URL}//masters-material/get-material-type`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -2822,7 +2824,7 @@ export const RMMASTER = 'RM';
 export const RMSPECIFICATION = 'RM Specification';
 export const RMMATERIALBULKUPLOAD = 'Index Data';
 export const INDEXCOMMODITYBULKUPLOAD = 'Index';
-export const RMDETAILBULKUPLOAD = 'Standardized Commodity Name';
+export const COMMODITYSTANDARDIZATION = 'Commodity Standardization';
 export const COMMODITYININDEXBULKUPLOAD = 'Commodity (In Index)';
 export const COMMODITYSTANDARD = 'Commodity Standard'
 export const BOPDOMESTICBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Domestic";

@@ -67,7 +67,6 @@ class AddGrade extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    console.log('values: ', values);
     const { ID, isEditFlag, RawMaterial, } = this.props;
     if (!this.props.isShowCommodity && !this.props.isShowIndex) {
       if (isEditFlag) {
@@ -108,7 +107,7 @@ class AddGrade extends Component {
       }
       this.props.reset();
       this.props.createCommodityCustomName(obj, (res) => {
-        if (res.data.Result) {
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.COMMODITYNAME_ADD_SUCCESS);
           this.toggleDrawer('', obj, 'submit');
         }

@@ -17,7 +17,7 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
         MaterialTypeId: '',
         DataToChange: [],
         setDisable: false,
-        showPopup: false,
+        showPopup: false
     });
 
 
@@ -126,6 +126,7 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
     const closePopUp = () => {
         setState(prevState => ({ ...prevState, showPopup: false }));
     };
+
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>

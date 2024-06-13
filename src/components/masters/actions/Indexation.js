@@ -435,7 +435,7 @@ export function bulkUploadStandardizedCommodity(data, callback) {
 export function getAssociatedMaterial(rawMaterialId, gradeId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAssociatedMaterial}?rawMaterialId=${rawMaterialId}?gradeId=${gradeId}`, config());
+        const request = axios.get(`${API.getAssociatedMaterial}?materialTypeId=${rawMaterialId}?rawMaterialGradeId=${gradeId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -615,6 +615,24 @@ export function deleteCommodityStandard(commodityStandardId, callback) {
         dispatch({ type: API_REQUEST });
         const queryParams = `commodityStandardId=${commodityStandardId}&loggedInUserId=${userDetails().LoggedInUserId}`
         axios.delete(`${API.deleteCommodityStandard}?${queryParams}`, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                callback(error.response);
+                dispatch({ type: API_FAILURE });
+            });
+    };
+}
+
+/**
+ * @method deleteIndexDetailData
+ * @description delete Index Detail Data API
+ */
+export function deleteIndexDetailData(commodityIndexRateDetailId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParams = `commodityIndexRateDetailId=${commodityIndexRateDetailId}&loggedInUserId=${userDetails().LoggedInUserId}`
+        axios.delete(`${API.deleteIndexDetailData}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

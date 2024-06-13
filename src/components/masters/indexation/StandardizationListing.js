@@ -327,17 +327,8 @@ const StandardizationListing = () => {
         return returnExcelColumn(RMDETAILLISTING_DOWNLOAD_EXCEl, tempArr);
     };
     const closeBulkUploadDrawer = () => {
-        setState(
-            (prevState) => {
-                return {
-                    ...prevState,
-                    isBulkUpload: false,
-                };
-            },
-            () => {
-                getTableListData("", "");
-            }
-        );
+        setState((prevState) => ({ ...prevState, isBulkUpload: false }));
+        resetState()
     };
     const returnExcelColumn = (data = [], TempData) => {
         let temp = [];
@@ -388,7 +379,7 @@ const StandardizationListing = () => {
                             <>
                                 <>
                                     <ExcelFile
-                                        filename={"Standardized Commodity Name"}
+                                        filename={"Commodity Standardization"}
                                         fileExtension={".xls"}
                                         element={
                                             <Button id={"Excel-Downloads-RmDetailList"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
@@ -467,7 +458,7 @@ const StandardizationListing = () => {
                     isOpen={state.showPopup}
                     closePopUp={closePopUp}
                     confirmPopup={onPopupConfirm}
-                    message={`${MESSAGES.MATERIAL1_DELETE_ALERT}`}
+                    message={`${MESSAGES.COMMODITYNAME_DELETE_ALERT}`}
                 />
             )}
             {isBulkUpload && (
@@ -475,8 +466,8 @@ const StandardizationListing = () => {
                     isOpen={isBulkUpload}
                     closeDrawer={closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={"Standardized Commodity Name"}
-                    messageLabel={"Standardized Commodity Name"}
+                    fileName={"Commodity Standardization"}
+                    messageLabel={"Commodity Standardization"}
                     anchor={"right"}
                 />
             )}
