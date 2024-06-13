@@ -32,7 +32,6 @@ import TourWrapper from "../common/Tour/TourWrapper";
 import { useTranslation } from "react-i18next";
 import { Steps } from "./TourMessages";
 import TooltipCustom from "../common/Tooltip";
-import { label } from "react-dom-factories";
 
 
 var CryptoJS = require('crypto-js')
@@ -180,11 +179,11 @@ function UserRegistration(props) {
 
   };
   useEffect(() => {
-    dispatch(getApprovalTypeSelectListUserModule(() => {}, '1'));
-    dispatch(getApprovalTypeSelectListUserModule(() => {}, '2'));
-    dispatch(getApprovalTypeSelectListUserModule(() => {}, '3'));
-    dispatch(getApprovalTypeSelectListUserModule(() => {}, '4'));
-    
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '1'));
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '2'));
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '3'));
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '4'));
+
   }, [dispatch]);
 
   useEffect(() => {
@@ -320,11 +319,6 @@ function UserRegistration(props) {
 
   const showHidePasswordHandler = () => {
     setIsShowHidePassword(!isShowHidePassword)
-  }
-
-  const handleAccClicked = (label) => {
-    dispatch(getApprovalTypeSelectList(() => { }), label)
-
   }
 
   const checkPasswordConfirm = value => {
@@ -484,25 +478,25 @@ function UserRegistration(props) {
           temp.push({ label: item.Text, value: item.Value });
         }
       });
-          // Add "Select All" at the 0th position if isEditIndex is false
+      // Add "Select All" at the 0th position if isEditIndex is false
       if (!isEditIndex) {
         temp.unshift({ label: "Select All", value: '0' });
       }
-          const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
       if (isSelectAllOnly) {
         return [];
       } else {
         return temp;
       }
     }
-    
+
     if (label === 'approvalTypeSimulation') {
       approvalTypeSimulation && approvalTypeSimulation.map(item => {
         if (item.Value !== '0') {
           temp.push({ label: item.Text, value: item.Value });
         }
       });
-          // Add "Select All" at the 0th position if isEditIndex is false
+      // Add "Select All" at the 0th position if isEditIndex is false
       if (!isSimulationEditIndex) {
         temp.unshift({ label: "Select All", value: '0' });
       }
@@ -519,7 +513,7 @@ function UserRegistration(props) {
           temp.push({ label: item.Text, value: item.Value });
         }
       });
-          // Add "Select All" at the 0th position if isEditIndex is false
+      // Add "Select All" at the 0th position if isEditIndex is false
       if (!isMasterEditIndex) {
         temp.unshift({ label: "Select All", value: '0' });
       }
@@ -536,7 +530,7 @@ function UserRegistration(props) {
           temp.push({ label: item.Text, value: item.Value });
         }
       });
-          // Add "Select All" at the 0th position if isEditIndex is false
+      // Add "Select All" at the 0th position if isEditIndex is false
       if (!isOnboardingEditIndex) {
         temp.unshift({ label: "Select All", value: '0' });
       }
@@ -569,7 +563,7 @@ function UserRegistration(props) {
    * @description Used to handle 
   */
   const departmentHandler = (newValue, actionMeta) => {
-    if(selectedPlants.length > 0){
+    if (selectedPlants.length > 0) {
       setValue('plant', [])
     }
     if (getConfigurationKey().IsMultipleDepartmentAllowed) {
@@ -2079,7 +2073,7 @@ function UserRegistration(props) {
     } if (JSON.stringify(onboardingLevelGrid) !== JSON.stringify(oldOnboardingLevelGrid)) {
       isForcefulUpdatedForOnboarding = true;
     }
-     if (isDepartmentUpdate || isPlantUpdate) {
+    if (isDepartmentUpdate || isPlantUpdate) {
       isForcefulUpdatedForMaster = true;
       isForcefulUpdatedForSimulation = true;
       isForcefulUpdatedForCosting = true;
@@ -2445,7 +2439,7 @@ function UserRegistration(props) {
       if (masterTableChanged) {
         messages.push(`master`);
       }
-      if(onboardingTableChanged) {
+      if (onboardingTableChanged) {
         messages.push(`onboarding`);
       }
       if (costingTableChanged && simulationTableChanged && masterTableChanged && onboardingTableChanged) {
