@@ -3045,7 +3045,7 @@ export const PartTypeIDFromAPI = 2
 export const RMIndex = true
 export const showLogoFromDataBase = false
 //VERSION 
-export const VERSION = "V2.2.22.2";
+export const VERSION = "V2.2.22.3";
 
 
 
