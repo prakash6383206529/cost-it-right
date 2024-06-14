@@ -1,10 +1,10 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
-import { fetchSpecificationDataAPI, getAllCity, getCityByCountry, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList } from "../../../actions/Common"
+import { fetchSpecificationDataAPI, getAllCity, getCityByCountry, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList, getExchangeRateSource } from "../../../actions/Common"
 import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, RMIndex, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import { getConfigurationKey, loggedInUserId } from "../../../helper"
-import { SetRawMaterialDetails, fileUploadRMDomestic, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild } from "../actions/Material"
+import { SetRawMaterialDetails, fileUploadRMDomestic, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild, SetCommodityIndexAverage } from "../actions/Material"
 import { useForm, Controller, useWatch } from "react-hook-form"
 import { Row, Col } from 'reactstrap'
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, TextAreaHookForm, } from '../../layout/HookFormInputs';
@@ -30,7 +30,7 @@ import { getClientSelectList } from "../actions/Client"
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import HeaderTitle from "../../common/HeaderTitle"
 import Association from "./Association"
-import { getAssociatedMaterial, getAssociatedMaterialDetails } from "../actions/Indexation"
+import { getAssociatedMaterial, getAssociatedMaterialDetails, getIndexSelectList } from "../actions/Indexation"
 function AddRMDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data } = props
     const { isEditFlag, isViewFlag } = data
@@ -41,6 +41,8 @@ function AddRMDetails(props) {
         technology: [],
         plants: [],
         customer: [],
+        index: [],
+        exchangeRate: [],
         inputLoader: false,
         vendorFilter: [],
         showErrorOnFocus: false,
@@ -69,6 +71,7 @@ function AddRMDetails(props) {
     });
 
     const dispatch = useDispatch()
+    const { indexCommodityData } = useSelector((state) => state.indexation);
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const customerSelectList = useSelector((state) => state.client.clientSelectList)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -78,11 +81,18 @@ function AddRMDetails(props) {
     const categoryList = useSelector((state) => state.comman.categoryList)
     const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList)
     const cityList = useSelector((state) => state.comman.cityList)
+    const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList);
+
+
+
+
     useEffect(() => {
         dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
         dispatch(getRawMaterialCategory((res) => { }))
+        dispatch(getExchangeRateSource((res) => { }))
+        dispatch(getIndexSelectList('', (res) => { }));
         dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
         dispatch(getAllCity(cityId => {
             dispatch(getCityByCountry(cityId, 0, () => { }))
@@ -132,7 +142,7 @@ function AddRMDetails(props) {
                 HasDifferentSource: Data.HasDifferentSource,
                 source: Data.Source,
                 sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
-                customer: { label: Data.CustomerName, value: Data.CustomerId }
+                customer: { label: Data.CustomerName, value: Data.CustomerId },
             }))
         }
     }, [])
@@ -163,6 +173,25 @@ function AddRMDetails(props) {
             });
             return temp;
         }
+
+        if (label === 'IndexExchangeName') {
+            indexCommodityData && indexCommodityData.map((item) => {
+                if (item.Value === '--0--') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+        if (label === 'ExchangeSource') {
+            exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+                if (item.Value === '--Exchange Rate Source Name--') return false
+
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+
         if (label === 'Technology') {
             technologySelectList && technologySelectList.map((item) => {
                 if (item.Value === '0') return false
@@ -230,7 +259,11 @@ function AddRMDetails(props) {
         dispatch(getMaterialTypeDataAPI('', gradeId, (res) => {
             if (res) {
                 let Data = res.data.Data
+
+
                 setValue('Material', { label: Data.MaterialType, value: Data.MaterialTypeId })
+                dispatch(SetCommodityIndexAverage(Data.MaterialTypeId, 0, '', 0, '', '', ''))
+
                 dispatch(getMaterialTypeDataAPI(Data.MaterialTypeId, '', (res) => {
                     let Data = res.data.Data
                     setState(prevState => ({ ...prevState, commodityDetails: Data.MaterialCommodityStandardDetails }))
@@ -276,6 +309,26 @@ function AddRMDetails(props) {
         }
         dispatch(SetRawMaterialDetails({ customer: newValue }, () => { }))
     };
+    const handleIndex = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            setState(prevState => ({ ...prevState, index: newValue }));
+        } else {
+            setState(prevState => ({ ...prevState, index: [] }));
+        }
+        // dispatch(SetRawMaterialDetails({ customer: newValue }, () => { }))
+        dispatch(SetCommodityIndexAverage('', newValue?.value, '', 0, '', '', ''))
+    };
+
+    const handleExchangeRate = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            setState(prevState => ({ ...prevState, exchange: newValue }));
+        } else {
+            setState(prevState => ({ ...prevState, exchangeRate: [] }));
+        }
+        // dispatch(SetRawMaterialDetails({ customer: newValue }, () => { }))
+        dispatch(SetCommodityIndexAverage('', 0, '', 0, newValue?.value, '', ''))
+    };
+
     /**
  * @method handleVendor
  * @description called
@@ -294,6 +347,8 @@ function AddRMDetails(props) {
    * @description  used to handle row material selection
    */
     const handleRM = (newValue, actionMeta) => {
+
+
         if (newValue && newValue !== '') {
             delete errors.RawMaterialCode
             setState(prevState => ({ ...prevState, rmName: newValue, rmGrade: [], rmCode: [], rmSpec: [], rmCategory: [], isCodeDisabled: true }));
@@ -313,6 +368,9 @@ function AddRMDetails(props) {
  * @description  used to handle row material grade selection
  */
     const handleGrade = (newValue, actionMeta) => {
+
+
+
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, rmGrade: newValue, rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: true }));
             dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
@@ -728,15 +786,15 @@ function AddRMDetails(props) {
                             <Col className="col-md-15">
                                 <SearchableSelectHookForm
                                     name="Index"
-                                    label="Index (LME)"
+                                    label="Index"
                                     Controller={Controller}
                                     control={control}
                                     register={register}
                                     mandatory={true}
                                     rules={{ required: true }}
                                     placeholder={'Select'}
-                                    options={renderListing("ClientList")}
-                                    handleChange={handleCustomer}
+                                    options={renderListing("IndexExchangeName")}
+                                    handleChange={handleIndex}
                                     disabled={isEditFlag || isViewFlag}
                                     errors={errors.Index}
                                 />
@@ -751,8 +809,8 @@ function AddRMDetails(props) {
                                     mandatory={true}
                                     rules={{ required: true }}
                                     placeholder={'Select'}
-                                    options={renderListing("ClientList")}
-                                    handleChange={handleCustomer}
+                                    options={renderListing("ExchangeSource")}
+                                    handleChange={handleExchangeRate}
                                     disabled={isEditFlag || isViewFlag}
                                     errors={errors.ExchangeSource}
                                 />

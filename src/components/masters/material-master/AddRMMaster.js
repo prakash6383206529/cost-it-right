@@ -3,6 +3,7 @@ import { Row, Col, Label } from 'reactstrap';
 import AddRMDetails from "./AddRMDetails"
 import AddRMFinancialDetails from "./AddRMFinancialDetails"
 import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, RM_MASTER_ID, VBCTypeId, ZBCTypeId } from "../../../config/constants"
+import { getCommodityIndexRateAverage } from '../../../../src/actions/Common';
 import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { useForm, Controller, useWatch, } from 'react-hook-form';
@@ -53,6 +54,50 @@ function AddRMMaster(props) {
     })
     const isViewFlag = data?.isViewFlag ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
+    const commodityAverage = useSelector((state) => state.material.commodityAverage)
+
+
+
+
+    useEffect(() => {
+
+        // Check if commodityAverage is an object and has keys
+        if (commodityAverage && Object.keys(commodityAverage).length > 0) {
+            const {
+                materialTypeId,
+                indexExchangeId,
+                unitOfMeasurementId,
+                currencyId,
+                exchangeRateSourceName,
+                fromDate,
+                toDate
+            } = commodityAverage;
+
+            const isValid = (
+                materialTypeId && materialTypeId.trim() !== '' &&
+                indexExchangeId && indexExchangeId > 0 &&
+                unitOfMeasurementId && unitOfMeasurementId.trim() !== '' &&
+                currencyId && currencyId > 0 &&
+                exchangeRateSourceName && exchangeRateSourceName.trim() !== '' &&
+                fromDate && fromDate.trim() !== '' &&
+                toDate && toDate.trim() !== ''
+            );
+
+            if (isValid) {
+
+                dispatch(getCommodityIndexRateAverage(
+                    materialTypeId,
+                    indexExchangeId,
+                    unitOfMeasurementId,
+                    currencyId,
+                    exchangeRateSourceName,
+                    fromDate,
+                    toDate,
+                    () => { console.log('Callback after dispatch'); }
+                ));
+            }
+        }
+    }, [commodityAverage]);
     const fieldValue = useWatch({
         control,
         name: ['Remarks']

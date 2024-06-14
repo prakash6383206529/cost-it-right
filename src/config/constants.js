@@ -19,8 +19,9 @@ export const config = () => {
 
 
 // DEVELOPMENT
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+//const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 const BASE_URL = `http://10.10.8.109:8070/api/v1`
+//const BASE_URL = `http://10.10.8.109:8070/api/v1`
 // const BASE_URL = `http://10.10.8.109:8070/api/v1`
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
@@ -81,6 +82,18 @@ export const API = {
   getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-specification`,
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
 
+
+  //add exchnage rate
+
+  getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
+
+  //add frequency of settlement
+
+  getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
+
+  // add commodity index rate average
+
+  getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
   ///INDEXATION
   getCommoditySelectList: `${BASE_URL}/masters-material/select-list-index-exchange`,
   getCommodityNameInIndexSelectList: `${BASE_URL}/masters-material/select-list-index-exchange-commodity-linking`,
@@ -1330,7 +1343,14 @@ export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
 export const STATUS_COLUMN_DATA = 'STATUS_COLUMN_DATA'
 export const IS_RESET = 'IS_RESET'
 
+//RM EXCHANGE RATE SOURCE
+export const GET_RM_EXCHANGE_RATE_SOURCE = 'GET_RM_EXCHANGE_RATE_SOURCE'
+//COST FREQUENCY OF SETTLEMENT
+export const GET_COST_FREQUENCY_SETTLEMENT = 'GET_COST_FREQUENCY_SETTLEMENT'
 
+// COMMODITY INDEX RATE AVERAGE
+export const COMMODITY_INDEX_RATE_AVERAGE = 'COMMODITY_INDEX_RATE_AVERAGE'
+export const GET_COMMODITY_INDEX_RATE_AVERAGE = 'GET_COMMODITY_INDEX_RATE_AVERAGE'
 //RAW MATERIAL APPROVAL
 export const GET_RM_APPROVAL_LIST = 'GET_RM_APPROVAL_LIST'
 export const GET_ALL_MASTER_APPROVAL_DEPARTMENT = 'GET_ALL_MASTER_APPROVAL_DEPARTMENT'
@@ -1356,6 +1376,8 @@ export const GET_MATERIAL_LIST_TYPE_SUCCESS = 'GET_MATERIAL_LIST_TYPE_SUCCESS'
 export const RAWMATERIAL_ADDED_FOR_COSTING = 'RAWMATERIAL_ADDED_FOR_COSTING'
 export const GET_MATERIAL_TYPE_DATA_SUCCESS = 'GET_MATERIAL_TYPE_DATA_SUCCESS'
 export const RAW_MATERIAL_DETAILS = 'RAW_MATERIAL_DETAILS'
+
+
 
 //PLANT MASTER
 export const CREATE_PLANT_SUCCESS = 'CREATE_PLANT_SUCCESS'
@@ -2929,6 +2951,20 @@ export const CRMHeads = [
 
 ]
 
+export const CostData = [
+  { label: "Local Logistic", value: 100 },
+  { label: "Yield Loss", value: 200 },
+  { label: "Packaging and Freight", value: 150 },
+  { label: "Overhead Cost", value: 250 },
+  { label: "Profit Cost", value: 300 },
+  { label: "Discount Cost", value: 50 },
+  { label: "Freight Cost", value: 120 },
+  { label: "Shearing Cost", value: 180 }
+];
+export const typeData = [
+  { label: "Percentage", value: 'Percentage' },
+  { label: "Fixed", value: 'Fixed' }
+];
 
 export const LANGUAGES = [
   { value: 'en-US', label: 'English - EN', },

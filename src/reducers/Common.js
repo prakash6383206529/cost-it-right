@@ -62,11 +62,15 @@ import {
   GET_APPROVAL_TYPE_SELECT_LIST,
   GET_DATA_WHILE_LOADING,
   GET_DATA_FROM_REPORT,
-  TOUR_START_DATA
+  TOUR_START_DATA,
+  GET_RM_EXCHANGE_RATE_SOURCE,
+  GET_COST_FREQUENCY_SETTLEMENT
 } from '../config/constants';
 
 const initialState = {
   technologyList: [],
+  exchangeRateSourceList: [],
+
   tourStartData: {
     showExtraData: false
   }
@@ -504,6 +508,24 @@ export default function commanReducer(state = initialState, action) {
         ...state,
         tourStartData: action.payload
       }
+
+    case GET_RM_EXCHANGE_RATE_SOURCE:
+
+
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        exchangeRateSourceList: action.payload
+      };
+    case GET_COST_FREQUENCY_SETTLEMENT:
+
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        frequencyOfSettlement: action.payload
+      };
     default:
       return state;
   }

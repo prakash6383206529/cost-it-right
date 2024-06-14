@@ -60,7 +60,10 @@ import {
   GET_DATA_WHILE_LOADING,
   GET_DATA_FROM_REPORT,
   TOUR_START_DATA,
-  GET_APPROVAL_MODULE_SELECT_LIST
+  GET_APPROVAL_MODULE_SELECT_LIST,
+  GET_RM_EXCHANGE_RATE_SOURCE,
+  GET_COST_FREQUENCY_SETTLEMENT,
+  GET_COMMODITY_INDEX_RATE_AVERAGE
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1750,4 +1753,75 @@ export function TourStartAction(data) {
       payload: data
     })
   }
+}
+export function getExchangeRateSource(callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getExchangeRateSource}`, config());
+    request.then((response) => {
+      if (response?.data.Result || response?.status === 204) {
+        const payload = response?.status === 204 ? [] : response?.data.SelectList;
+
+        dispatch({
+          type: GET_RM_EXCHANGE_RATE_SOURCE,
+          payload: payload,
+        });
+        callback(response);
+
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+export function getFrequencySettlement(callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getFrequencySettlement}`, config());
+    request.then((response) => {
+      if (response?.data.Result || response?.status === 204) {
+        const payload = response?.status === 204 ? [] : response?.data.SelectList;
+
+        dispatch({
+          type: GET_COST_FREQUENCY_SETTLEMENT,
+          payload: payload,
+        });
+        callback(response);
+
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+// /**
+//  * @method getMaterialTypeDataAPI
+//  * @description get material type data
+//  */
+export function getCommodityIndexRateAverage(materialTypeId, indexExchangeId, unitOfMeasurementId, currencyId, exchangeRateSourceName, fromDate, toDate, callback) {
+  return (dispatch) => {
+    if (materialTypeId || indexExchangeId || unitOfMeasurementId || currencyId || exchangeRateSourceName) {
+      axios.get(`${API.getCommodityIndexRateAverage}?materialTypeId=${materialTypeId}?indexExchangeId=${indexExchangeId}?unitOfMeasurementId=${unitOfMeasurementId}?currencyId=${currencyId}?exchangeRateSourceName=${exchangeRateSourceName}?fromDate=${fromDate}?toDate=${toDate}`, config())
+        .then((response) => {
+          dispatch({
+            type: GET_COMMODITY_INDEX_RATE_AVERAGE,
+            payload: response?.data.Data,
+          });
+          callback(response)
+        }).catch((error) => {
+          dispatch({ type: API_FAILURE });
+          apiErrors(error);
+        });
+    } else {
+      dispatch({
+        type: GET_COMMODITY_INDEX_RATE_AVERAGE,
+        payload: {},
+      });
+      callback()
+    }
+  };
 }
