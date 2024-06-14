@@ -4,7 +4,8 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
   setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, setComponentDiscountOtherItemData, isDiscountDataChange, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData,
-  setOtherDiscountData
+  setOtherDiscountData,
+  setCostingtype
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, showBopLabel } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -182,6 +183,7 @@ function CostingDetailStepTwo(props) {
         IsRMCutOffApplicable: data?.IsRMCutOffApplicable
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
+      console.log('setHeaderCostRMCCTab: ', tempArr);
 
       dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => {
       }))
@@ -213,6 +215,7 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
       setTimeout(() => {
+        console.log('setHeaderCostSurfaceTab: ', tempArr);
         dispatch(setCostingDataList('setHeaderCostSurfaceTab', tempArr, () => {
           dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
           dispatch(setSurfaceCostData(data, () => { }))
@@ -243,7 +246,7 @@ function CostingDetailStepTwo(props) {
         BasicRate: checkForNull(basicRate),
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
-
+      console.log("setHeaderOverheadProfitCostTab: ", tempArr);
       dispatch(setCostingDataList('setHeaderOverheadProfitCostTab', tempArr, () => {
       }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
@@ -272,7 +275,7 @@ function CostingDetailStepTwo(props) {
         BasicRate: checkForNull(basicRate),
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
-
+      console.log("setHeaderPackageFreightTab: ", tempArr);
       dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => {
       }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
@@ -304,6 +307,7 @@ function CostingDetailStepTwo(props) {
         }
 
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
+        console.log("setHeaderCostToolTab: ", tempArr);
         dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => {
         }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
@@ -405,6 +409,7 @@ function CostingDetailStepTwo(props) {
           totalNpvCost: data.totalNpvCost,
           totalConditionCost: data.totalConditionCost
         }
+        console.log('1111: ', discountValues);
         dispatch(setDiscountCost(discountValues, () => { }))
         tempData = {
           ...tempData,
@@ -423,6 +428,7 @@ function CostingDetailStepTwo(props) {
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
+        console.log("setHeaderDiscountTab: ", tempArr);
         dispatch(setCostingDataList('setHeaderDiscountTab', tempArr, () => {
         }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
@@ -485,6 +491,7 @@ function CostingDetailStepTwo(props) {
       dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
       dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
       dispatch(setOtherDiscountData({ gridData: [], totalCost: 0 }))
+      dispatch(setCostingtype({}))
       props.backBtn()
     }
   }
@@ -553,6 +560,7 @@ function CostingDetailStepTwo(props) {
                   < div class="table-responsive costing-header-table" >
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       {costingData?.TechnologyId !== LOGISTICS && <thead>
+                        console.log('aaaaaaaa: ', costingData);
                         <tr>
                           <th style={{ width: '100px' }}>{``}</th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`${partType ? "Part Cost/ Assembly" : `${costingData?.IsAssemblyPart ? 'RM Cost/ Assembly' : 'RM Cost/Pc'}`}`}</span></th>

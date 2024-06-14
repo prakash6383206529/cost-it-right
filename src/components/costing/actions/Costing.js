@@ -69,6 +69,7 @@ import {
   CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
   GET_TCO_DATA,
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
+  SET_RFQ_COSTING_TYPE,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2996,4 +2997,14 @@ export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
     type: SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
     payload: temp,
   })
+}
+export function setCostingtype(costingType) {
+
+  return (dispatch) => {
+    dispatch({
+      type: SET_RFQ_COSTING_TYPE,
+      payload: costingType || {},
+    });
+    // callback();
+  }
 }
