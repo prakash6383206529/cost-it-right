@@ -13,7 +13,9 @@ import NoContentFound from '../../common/NoContentFound'
 
 const gridOptions = {};
 function AddIndexationMaterialListing(props) {
-
+    console.log('props: ', props);
+    const CommodityDetails = props.commodityDetails
+    console.log('CommodityDetails: ', CommodityDetails);
     const { setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -111,14 +113,15 @@ function AddIndexationMaterialListing(props) {
                                 {props.isOpen && (
                                     <Row>
                                         <Col md="12">
-                                            <div className={`ag-grid-wrapper budgeting-table  ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
+                                            {console.log('CommodityDetails: ', CommodityDetails)}
+                                            <div className={`ag-grid-wrapper budgeting-table  ${CommodityDetails && CommodityDetails?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                                                 <div className="ag-theme-material" >
                                                     <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
                                                         domLayout='autoHeight'
                                                         // columnDefs={c}
-                                                        rowData={initialTableData}
+                                                        rowData={CommodityDetails}
                                                         onCellValueChanged={onCellValueChanged}
                                                         pagination={true}
                                                         paginationPageSize={12}
