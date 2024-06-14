@@ -22,6 +22,7 @@ import { getVendorNameByVendorSelectList } from '../../actions/Common';
 import _ from 'lodash'
 import { MESSAGES } from '../../config/message';
 import LoaderCustom from '../common/LoaderCustom';
+import DayTime from '../common/DayTimeWrapper';
 
 const InitiateUnblocking = (props) => {
     const location = useLocation();
@@ -481,6 +482,9 @@ const InitiateUnblocking = (props) => {
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <th>Classification Status</th>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <th>LPS Rating</th>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <th>LPS Rating Status</th>}
+                                                    {((props?.isMasterSummaryDrawer)) && <th>Deviation Duration</th>}
+                                                    {((props?.isMasterSummaryDrawer)) && <th>Deviation Start Date</th>}
+                                                    {((props?.isMasterSummaryDrawer)) && <th>Deviation End Date</th>}
                                                     <th>Division</th>
                                                     {/* <th>Department (Code)</th> */}
 
@@ -494,6 +498,9 @@ const InitiateUnblocking = (props) => {
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.ClassificationDeviationIsApproved, "ClassificationStatus")}</td>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorLPSRating ?? '-'}</td>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.LPSRatingDeviationIsApproved, "LPSRatingStatus")}</td>}
+                                                    {((props?.isMasterSummaryDrawer)) && <td>{props?.deviationData?.DeviationDuration}</td>}
+                                                    {((props?.isMasterSummaryDrawer)) && <td>{props?.deviationData?.DeviationApprovalStartDate ? DayTime(props?.deviationData?.DeviationApprovalStartDate).format('DD/MM/YYYY') : '-'}</td>}
+                                                    {((props?.isMasterSummaryDrawer)) && <td>{props?.deviationData?.DeviationApprovalEndDate ? DayTime(props?.deviationData?.DeviationApprovalEndDate).format('DD/MM/YYYY') : '-'}</td>}
                                                     <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.Division ?? '-'}</td>
                                                     {/* <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.DepartmentName ?? '-'}</td> */}
                                                 </tr>
