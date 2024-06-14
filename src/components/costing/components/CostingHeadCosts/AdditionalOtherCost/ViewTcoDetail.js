@@ -32,6 +32,7 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                         <span className="d-block small-grey-text">SPQ</span>
                         <span className="d-block small-grey-text">Lead Time</span>
                         <span className="d-block small-grey-text">LD Clause</span>
+                        <span className="d-block small-grey-text">UOM</span>
                         <span className="d-block small-grey-text">Available Capacity</span>
                         <span className="d-block small-grey-text">Investment Cost</span>
                     </>
@@ -55,7 +56,7 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && checkForDecimalAndNull(CostingTCOResponse?.CalculatedIncoTermValue, initialConfiguration.NoOfDecimalForPrice)) ?? '-' : ''))
                             ])}
                             {renderDiv([
-                                renderSpan(data?.bestCost === true ? '4' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && PaymentTermDetail?.PaymentTermApplicability) ? PaymentTermDetail?.PaymentTermApplicability : '-' : '-')),
+                                renderSpan(data?.bestCost === true ? '' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && PaymentTermDetail?.PaymentTermApplicability) ? PaymentTermDetail?.PaymentTermApplicability : '-' : '-')),
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && PaymentTermDetail?.RepaymentPeriod) ? PaymentTermDetail?.RepaymentPeriod + " Days" : '-' : '')),
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && checkForDecimalAndNull(PaymentTermDetail?.NetCost, initialConfiguration.NoOfDecimalForPrice)) ?? '-' : ''))
                             ])}
@@ -89,6 +90,11 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.LdClause) ?? '-' : ''))
+                            ])}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.UOMSymbol) ?? '-' : ''))
                             ])}
                             {renderDiv([
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
