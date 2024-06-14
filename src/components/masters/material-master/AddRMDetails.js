@@ -4,7 +4,7 @@ import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, RMIndex, SPACEBAR, VBCTy
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import { getConfigurationKey, loggedInUserId } from "../../../helper"
-import { SetRawMaterialDetails, fileUploadRMDomestic, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild } from "../actions/Material"
+import { SetRawMaterialDetails, fileUploadRMDomestic, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild } from "../actions/Material"
 import { useForm, Controller, useWatch } from "react-hook-form"
 import { Row, Col } from 'reactstrap'
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, TextAreaHookForm, } from '../../layout/HookFormInputs';
@@ -65,6 +65,7 @@ function AddRMDetails(props) {
         isCommodityOpen: false,
         isOpenAssociation: false,
         isVendorAccOpen: false,
+        commodityDetails: [],
     });
 
     const dispatch = useDispatch()
@@ -225,13 +226,16 @@ function AddRMDetails(props) {
    * @method getmaterial
    * @description get material name on the basis of raw material and  grade
    */
-    const getmaterial = (rawMaterialId, gradeId) => {
-        dispatch(getAssociatedMaterial(rawMaterialId, gradeId, (res) => {
-            console.log('res: ', res);
+    const getmaterial = (gradeId) => {
+        dispatch(getMaterialTypeDataAPI('', gradeId, (res) => {
             if (res) {
-                data = res
-                dispatch(getAssociatedMaterialDetails(res.materialId, (res) => { }))
-                console.log('res:detail ', res);
+                let Data = res.data.Data
+                setValue('Material', { label: Data.MaterialType, value: Data.MaterialTypeId })
+                dispatch(getMaterialTypeDataAPI(Data.MaterialTypeId, '', (res) => {
+                    let Data = res.data.Data
+                    setState(prevState => ({ ...prevState, commodityDetails: Data.MaterialCommodityStandardDetails }))
+
+                }))
             }
         }))
     }
@@ -311,10 +315,8 @@ function AddRMDetails(props) {
     const handleGrade = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, rmGrade: newValue, rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: true }));
-            dispatch(fetchSpecificationDataAPI(state.rmGrade.value, (res) => { }))
-            if (newValue?.value && state.rmName?.value) {
-                getmaterial(state.rmName?.value, newValue?.value)
-            }
+            dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
+            getmaterial(newValue?.value)
         } else {
             setState(prevState => ({ ...prevState, rmGrade: [], rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: false }));
             dispatch(fetchSpecificationDataAPI(0, (res) => { }))
@@ -368,7 +370,7 @@ function AddRMDetails(props) {
                 setValue('RawMaterialName', { label: Data.RawMaterialName, value: Data.RawMaterialId, })
                 setValue('RawMaterialGrade', { label: Data.GradeName, value: Data.GradeId })
                 setValue('RawMaterialSpecification', { label: Data.Specification, value: Data.SpecificationId })
-                getmaterial(Data.RawMaterialId, Data.GradeId)
+                getmaterial(Data.GradeId)
             }))
         } else {
             setState({ rmCode: [], RawMaterial: [], RMGrade: [], RMSpec: [], isDisabled: false })
@@ -806,6 +808,7 @@ function AddRMDetails(props) {
                 </Col>
                 <AddIndexationMaterialListing
                     isOpen={state.isCommodityOpen}
+                    commodityDetails={state.commodityDetails}
                 />
             </Row>
             <Row className="mb-3 accordian-container">

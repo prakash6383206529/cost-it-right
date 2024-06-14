@@ -10,7 +10,7 @@ import Toaster from '../../common/Toaster';
 import { getCommodityCustomNameSelectListByType } from "../actions/Indexation";
 
 const AddMaterialTypeDetail = (props) => {
-    const { tableData } = props;
+    const { tableData, tableDataState } = props;
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const [isEdit, setIsEdit] = useState(false);
     const [editIndex, setEditIndex] = useState('')
@@ -21,9 +21,8 @@ const AddMaterialTypeDetail = (props) => {
     });
     const dispatch = useDispatch();
     const [gridData, setGridData] = useState([]);
-    console.log('gridData: ', gridData);
     const [formData, setFormData] = useState({
-        CommodityStandard: '',
+        CommodityStandardName: '',
         Percentage: ''
     });
     const [isEditMode, setIsEditMode] = useState(false)
@@ -31,7 +30,11 @@ const AddMaterialTypeDetail = (props) => {
     useEffect(() => {
         dispatch(getCommodityCustomNameSelectListByType((res) => { }))
     }, [])
-
+    useEffect(() => {
+        setGridData(tableDataState)
+        let percentage = tableDataState && tableDataState.map((item) => item.Percentage)
+        calculateTotalPercentage(percentage)
+    }, [tableDataState])
     const [percentageTotal, setPercentageTotal] = useState(0);
 
     const renderListing = (label) => {
@@ -47,10 +50,12 @@ const AddMaterialTypeDetail = (props) => {
     };
 
     const calculateTotalPercentage = (data) => {
+        console.log('data: ', data);
         let totalPercentage = 0;
         for (let i = 0; i < data.length; i++) {
             totalPercentage += parseFloat(data[i].Percentage);
         }
+        console.log('totalPercentage: ', totalPercentage);
         return totalPercentage;
     }
 
@@ -64,7 +69,7 @@ const AddMaterialTypeDetail = (props) => {
             setEditIndex('');
             setIsEditMode(false);
             reset({
-                CommodityStandard: '',
+                CommodityStandardName: '',
                 Percentage: '',
             });
         };
@@ -72,22 +77,22 @@ const AddMaterialTypeDetail = (props) => {
     };
 
     const addData = () => {
-        if (!getValues('CommodityStandard') || !getValues('Percentage')) {
+        if (!getValues('CommodityStandardName') || !getValues('Percentage')) {
             Toaster.warning("Please enter all details to add a row.");
             return false;
         }
-        if (errors.CommodityStandard || errors.Percentage) return false;
+        if (errors.CommodityStandardName || errors.Percentage) return false;
 
         const newData = {
-            CommodityStandard: getValues('CommodityStandard') ? getValues('CommodityStandard').label : '',
+            CommodityStandardName: getValues('CommodityStandardName') ? getValues('CommodityStandardName').label : '',
             Percentage: getValues('Percentage') ? Number(getValues('Percentage')) : '',
-            CommodityStandardId: getValues('CommodityStandard') ? Number(getValues('CommodityStandard')?.value) : '',
+            CommodityStandardId: getValues('CommodityStandardName') ? Number(getValues('CommodityStandardName')?.value) : '',
         };
 
         let isDuplicate = false;
         gridData.map((item, index) => {
             if (index !== editIndex) {
-                if ((item.CommodityStandard === newData.CommodityStandard || item.CommodityStandardId === newData.CommodityStandardId) &&
+                if ((item.CommodityStandardName === newData.CommodityStandardName || item.CommodityStandardId === newData.CommodityStandardId) &&
                     item.Percentage === newData.Percentage) {
                     isDuplicate = true;
                 }
@@ -134,13 +139,13 @@ const AddMaterialTypeDetail = (props) => {
             setIsEditMode(true);
 
             let Data = gridData[indexValue];
-            setValue('CommodityStandard', { label: Data.CommodityStandard, value: Data.CommodityStandardId });
+            setValue('CommodityStandardName', { label: Data.CommodityStandardName, value: Data.CommodityStandardId });
             setValue('Percentage', Data.Percentage);
         }
     };
 
     const handleAddUpdateButtonClick = () => {
-        if (!getValues('CommodityStandard') || !getValues('Percentage')) {
+        if (!getValues('CommodityStandardName') || !getValues('Percentage')) {
             return;
         }
         addData();
@@ -152,7 +157,7 @@ const AddMaterialTypeDetail = (props) => {
                 <Col md="4">
                     <SearchableSelectHookForm
                         label={'Commodity (In CIR)'}
-                        name={'CommodityStandard'}
+                        name={'CommodityStandardName'}
                         placeholder={'Select'}
                         Controller={Controller}
                         control={control}
@@ -161,8 +166,8 @@ const AddMaterialTypeDetail = (props) => {
                         defaultValue={''}
                         options={renderListing('CommodityStandardName')}
                         mandatory={true}
-                        handleChange={(option) => handleInputChange(option, 'CommodityStandard')}
-                        errors={errors.CommodityStandard}
+                        handleChange={(option) => handleInputChange(option, 'CommodityStandardName')}
+                        errors={errors.CommodityStandardName}
                     />
                 </Col>
                 <Col md="4">
@@ -243,7 +248,7 @@ const AddMaterialTypeDetail = (props) => {
                         <>
                             {gridData.map((item, index) => (
                                 <tr key={index}>
-                                    <td>{item.CommodityStandard}</td>
+                                    <td>{item.CommodityStandardName}</td>
                                     <td>{item.Percentage}</td>
                                     <td className='text-right'>
                                         <button

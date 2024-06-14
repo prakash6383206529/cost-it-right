@@ -168,7 +168,7 @@ class AddSpecification extends Component {
   }
 
   setDensity = (ID) => {
-    this.props.getMaterialTypeDataAPI(ID, res => {
+    this.props.getMaterialTypeDataAPI(ID, '', res => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         this.props.change('Density', Data.Density)
