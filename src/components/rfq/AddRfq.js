@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN } from './actions/rfq';
+import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -122,13 +122,21 @@ function AddRfq(props) {
     const [selectedUOM, setSelectedUOM] = useState('')
     const [requirementDate, setRequirementDate] = useState('')
     // below key is for managing the fields required for havells
-    const [havellsKey, setHavellsKey] = useState(false)
-const [ popupMessage , setPopupMessage ] = useState('')
-const [ blocked , setBlocked ] = useState(false)
-const [vendorId , setVendorId ] = useState('')
-const [plantId , setPlantId ] = useState('')
-const  [ alreadyInDeviation  , setAlreadyInDeviation ]  = useState(false)
-  const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
+    const [havellsKey, setHavellsKey] = useState(true)
+    const [popupMessage, setPopupMessage] = useState('')
+    const [blocked, setBlocked] = useState(false)
+    const [vendorId, setVendorId] = useState('')
+    const [plantId, setPlantId] = useState('')
+    const [alreadyInDeviation, setAlreadyInDeviation] = useState(false)
+    const [tableData, setTableData] = useState([])
+    const [specificationList, setSpecificationList] = useState([])
+    const [childPartFiles, setChildPartFiles] = useState([])
+
+
+
+
+
+    const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
     const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
@@ -140,6 +148,8 @@ const  [ alreadyInDeviation  , setAlreadyInDeviation ]  = useState(false)
     const isDropdownDisabled = initialConfiguration.IsCriticalVendorConfigured && isViewFlag || (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === ''));
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
+    const { getRfqVendorDetail, getTargetprice } = useSelector((state) => state.rfq)
+
     useEffect(() => {
         const { vbcVendorGrid } = props;
         dispatch(getUOMSelectList(() => { }))
@@ -593,6 +603,7 @@ const  [ alreadyInDeviation  , setAlreadyInDeviation ]  = useState(false)
         obj.Timezone = getTimeZone()
         let temppartArr = []
         let partIdList = _.uniq(_.map(list, 'PartId'))
+        let childPartIdList = _.uniq(_.map(tableData, 'PartId'));
         partIdList && partIdList?.map((item) => {
             let temppartObj = {}
             let partListArr = []
@@ -624,7 +635,66 @@ const  [ alreadyInDeviation  , setAlreadyInDeviation ]  = useState(false)
             }
             temppartObj.RMDetails = rmList
             temppartObj.SOPQuantityDetails = partListArr
-            temppartArr.push(temppartObj)
+            temppartObj.IsChildPart = false
+            temppartObj.PartType = getValues('partType')?.label
+
+            temppartObj.HavellsDesignPart = getValues('PartType')?.value
+            temppartObj.TargetPrice = getTargetprice?.TargetPrice
+            temppartObj.TimeLine = "";
+            temppartObj.Remarks = getValues('remark')
+            temppartObj.PartAttachments = childPartFiles
+            let PartSpecificationList = {};
+            let PartSpecification = [];
+
+            if (specificationList?.length > 0) {
+                specificationList.map((item) => {
+                    let specObj = {
+                        "Specification": item?.Specification,
+                        "Value": item?.Value,
+                        "LoggedInUserId": loggedInUserId()
+                    };
+                    PartSpecification.push(specObj);
+                    return null;
+                });
+            }
+
+            PartSpecificationList.QuotationPartIdRef = partObject?.PartSpecificationList?.QuotationPartIdRef || 0;
+            PartSpecificationList.PartSpecification = PartSpecification;
+
+            temppartObj.PartSpecificationList = PartSpecificationList;
+
+            temppartArr.push(temppartObj);
+
+            // Child Part Details
+            childPartIdList && childPartIdList.map((childItem) => {
+                tableData && tableData.map((item2) => {
+                    if (item2?.PartId === childItem) {
+                        let childPartObj = {};
+                        childPartObj.PartId = item2?.PartId;
+                        childPartObj.RMDetails = [{
+                            "RawMaterialChildId": item2?.RmChildId,
+                            "RawMaterialGradeId": item2?.RmGradeId,
+                            "RawMaterialSpecificationId": item2?.RmSpecificationId
+                        }];
+                        childPartObj.SOPQuantityDetails = [];
+                        childPartObj.IsChildPart = true;
+                        childPartObj.PartType = null;
+                        childPartObj.PartSpecificationList = {
+                            "QuotationPartIdRef": null,
+                            "PartSpecification": null
+                        };
+
+                        childPartObj.HavellsDesignPart = null
+                        childPartObj.TargetPrice = null
+                        childPartObj.TimeLine = null
+                        childPartObj.Remarks = null
+                        childPartObj.PartAttachments = []
+                        temppartArr.push(childPartObj);
+                    }
+                    return null;
+                });
+            });
+
             return null
         })
 
@@ -723,106 +793,118 @@ const  [ alreadyInDeviation  , setAlreadyInDeviation ]  = useState(false)
         data.PartIdList = _.uniq(temp)
         data.PlantId = getValues('plant')?.value
         data.VendorId = getValues('vendor')?.value
-          dispatch(checkLPSAndSCN(data, (res,err) => {
+        dispatch(checkLPSAndSCN(data, (res, err) => {
             if (err) {
                 Toaster.error('An error occurred while checking LPS and SCN.');
-                
+
                 return;
             }
             let Data = res?.data?.Data;
-   if (res?.data?.Result && Data  &&((Data?.LPSRatingIsBlocked || Data?.ClassificationIsBlocked)) ){
-    const additionalMessage = " Do you want to send this for deviation approval to unblock the plant?";
+            if (res?.data?.Result && Data && ((Data?.LPSRatingIsBlocked || Data?.ClassificationIsBlocked))) {
+                const additionalMessage = " Do you want to send this for deviation approval to unblock the plant?";
 
-    if(  Data?.ClassificationDeviationIsInApprovalProcess &&  Data?.LPSRatingDeviationIsInApprovalProcess ){
-        setShowPopup(true) 
-        setBlocked(true)
-        setPopupMessage(res?.data?.Message);
-setAlreadyInDeviation(true)
-return false
-    } else  {   setPopupMessage(res?.data?.Message + additionalMessage);
-                setShowPopup(true) 
-                setVendorId(getValues('vendor'));
-      setPlantId(getValues('plant')); 
-                setBlocked(true)
-        return false}
-    
-    }
-    dispatch(checkExistCosting(data, (res) => {
-            if (res?.data?.DynamicData?.IsExist) {
-                Toaster.warning("Costing already exists for this vendor.")
-                return false
-            } else {
-
-                let obj = {}
-                obj.VendorId = getValues('vendor')?.value
-                obj.ContactPersonId = getValues('contactPerson')?.value
-                obj.Vendor = getValues('vendor')?.label
-                obj.ContactPerson = getValues('contactPerson')?.label
-                if (obj.VendorId === null || obj.VendorId === undefined) {
-                    Toaster.warning("Please fill all the mandatory fields first.");
-                    return false;
+                if (Data?.ClassificationDeviationIsInApprovalProcess && Data?.LPSRatingDeviationIsInApprovalProcess) {
+                    setShowPopup(true)
+                    setBlocked(true)
+                    setPopupMessage(res?.data?.Message);
+                    setAlreadyInDeviation(true)
+                    return false
+                } else {
+                    setPopupMessage(res?.data?.Message + additionalMessage);
+                    setShowPopup(true)
+                    setVendorId(getValues('vendor'));
+                    setPlantId(getValues('plant'));
+                    setBlocked(true)
+                    return false
                 }
 
-                // Check IsSendQuotationToPointOfContact() result and ContactPersonId
-                if (IsSendQuotationToPointOfContact() && (obj.ContactPersonId === null || obj.ContactPersonId === undefined)) {
-                    Toaster.warning("Please fill all the mandatory fields first.");
-                    return false;
-                }
+            }
+            dispatch(checkExistCosting(data, (res) => {
+                if (res?.data?.DynamicData?.IsExist) {
+                    Toaster.warning("Costing already exists for this vendor.")
+                    return false
+                } else {
+
+                    let obj = {}
+                    obj.VendorId = getValues('vendor')?.value
+                    obj.ContactPersonId = getValues('contactPerson')?.value
+                    obj.Vendor = getValues('vendor')?.label
+                    obj.ContactPerson = getValues('contactPerson')?.label
+                    obj.IncoTermsIdRef = getValues('IncoTerms')?.value
+                    obj.IncoTerm = getValues('IncoTerms')?.value
+                    obj.PaymentTermsIdRef = getValues('PaymentTerms')?.label
+                    obj.PaymentTerm = getValues('PaymentTerms')?.label
+                    obj.WarrentyTerms = getValues('WarrantyTerms')?.label
+                    obj.LDClause = getValues('LDClause')
+                    if (obj.VendorId === null || obj.VendorId === undefined) {
+                        Toaster.warning("Please fill all the mandatory fields first.");
+                        return false;
+                    }
+
+                    // Check IsSendQuotationToPointOfContact() result and ContactPersonId
+                    if (IsSendQuotationToPointOfContact() && (obj.ContactPersonId === null || obj.ContactPersonId === undefined)) {
+                        Toaster.warning("Please fill all the mandatory fields first.");
+                        return false;
+                    }
 
 
-                if (!updateButtonVendorTable) {
-                    vendorList && vendorList.map((item) => {
-                        if (item.VendorId === obj.VendorId) {
-                            isDuplicateEntry = true
-                        }
-                        return null
-                    })
-                }
-
-                if (isDuplicateEntry) {
-                    Toaster.warning("This vendor is already added.")
-                    return false;
-                }
-
-                let arr = [...vendorList, obj]
-
-                if (updateButtonVendorTable) {       //EDIT CASE
-                    arr = []
-                    vendorList && vendorList.map((item) => {
-                        if (JSON.stringify(selectedRowVendorTable) === JSON.stringify(item)) {
-                            return false
-                        } else {
-                            arr.push(item)
-                        }
-                        return null
-                    })
-
-                    arr.map((item) => {
-                        if (item.VendorId === obj.VendorId) {
-                            isDuplicateEntry = true
-                        }
-                        return null
-                    })
+                    if (!updateButtonVendorTable) {
+                        vendorList && vendorList.map((item) => {
+                            if (item.VendorId === obj.VendorId) {
+                                isDuplicateEntry = true
+                            }
+                            return null
+                        })
+                    }
 
                     if (isDuplicateEntry) {
                         Toaster.warning("This vendor is already added.")
                         return false;
                     }
 
-                    arr.push(obj)
+                    let arr = [...vendorList, obj]
+
+                    if (updateButtonVendorTable) {       //EDIT CASE
+                        arr = []
+                        vendorList && vendorList.map((item) => {
+                            if (JSON.stringify(selectedRowVendorTable) === JSON.stringify(item)) {
+                                return false
+                            } else {
+                                arr.push(item)
+                            }
+                            return null
+                        })
+
+                        arr.map((item) => {
+                            if (item.VendorId === obj.VendorId) {
+                                isDuplicateEntry = true
+                            }
+                            return null
+                        })
+
+                        if (isDuplicateEntry) {
+                            Toaster.warning("This vendor is already added.")
+                            return false;
+                        }
+
+                        arr.push(obj)
+                    }
+
+                    setVendorList(arr)
+                    setValue('vendor', "")
+                    setValue('contactPerson', "")
+                    setValue('LDClause', "")
+                    setValue('WarrantyTerms', "")
+                    setValue('PaymentTerms', "")
+                    setValue('IncoTerms', "")
+                    setUpdateButtonVendorTable(false)
+                    setGetReporterListDropDown([])
                 }
 
-                setVendorList(arr)
-                setValue('vendor', "")
-                setValue('contactPerson', "")
-                setUpdateButtonVendorTable(false)
-                setGetReporterListDropDown([])
-            }
+            }))
 
         }))
-
-    }))
-}
+    }
 
 
     const addRowPartNoTable = () => {
@@ -1096,6 +1178,10 @@ return false
         setUpdateButtonVendorTable(false)
         setValue('vendor', "")
         setValue('contactPerson', "")
+        setValue('WarrantyTerms', "")
+        setValue('PaymentTerms', "")
+        setValue('IncoTerms', "")
+        setValue('LDClause', "")
         setGetReporterListDropDown([])
     }
 
@@ -1154,7 +1240,7 @@ return false
         * @description  USED TO HANDLE PART CHANGE
         */
     const handlePartTypeChange = (newValue) => {
-                    if (newValue && newValue !== '') {
+        if (newValue && newValue !== '') {
             setPartType(newValue)
             setValue('PartNumber', '')
             setPart('')
@@ -1170,6 +1256,12 @@ return false
             setGetReporterListDropDown(res?.data?.SelectList)
             setValue('contactPerson', "")
         }))
+        // dispatch(getrRqVendorDetails(data.value, (res) => {
+        //     setValue('WarrantyTerms', res?.Data?.WarrantyTerms)
+        //     setValue('PaymentTerms', res?.Data?.PaymentTerms)
+        //     setValue('IncoTerms', res?.Data?.IncoTerms)
+
+        // }))
     }
     const vendorFilterList = async (inputValue) => {
         if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1437,7 +1529,7 @@ return false
         setDrawerOpen(false)
     }
     const handlePartNoChange = (value) => {
-        
+
         setAssemblyPartNumber(value)
     }
 
@@ -1569,7 +1661,7 @@ return false
                                     </Row>
                                     <HeaderTitle title={'Part:'} />
                                     <Row className="part-detail-wrapper">
-                                       {   havellsKey &&  <Col md="3">
+                                        {havellsKey && <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Part Type"}
                                                 name={"PartType"}
@@ -1610,7 +1702,7 @@ return false
                                             )}
                                         </Col>
 
-                                       { havellsKey && <Col md="3">
+                                        {havellsKey && <Col md="3">
                                             <TextFieldHookForm
                                                 // title={titleObj.descriptionTitle}
                                                 label="Assembly/Part Description"
@@ -1630,7 +1722,7 @@ return false
                                             />
                                         </Col>
                                         }
-                                        { havellsKey && <Col md="3">
+                                        {havellsKey && <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Havells Design part /Proprietary part"}
                                                 name={"PartType"}
@@ -1741,76 +1833,76 @@ return false
                                                         />
                                                     </Col>
                                                 </>))}
-                                       { havellsKey &&(
-                                        <>
-                                        <Col md="3">
-                                            <SearchableSelectHookForm
-                                                label={"UOM"}
-                                                name={`UOM`}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                customClassName="costing-version"
-                                                options={renderListing("UOM")}
-                                                mandatory={false}
-                                                handleChange={(newValue) => handleChangeUOM(newValue)}
-                                                errors={errors?.UOM}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <TextFieldHookForm
-                                                // title={titleObj.descriptionTitle}
-                                                label="Target Price"
-                                                name={'TagetPrice'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.Description}
-                                                // disabled={true}
-                                                placeholder="-"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <div className="inputbox date-section">
-                                                <div className="form-group">
-                                                    <label>Requirement Timeline<span className="asterisk-required">*</span></label>
-                                                    <div id="addRFQDate_container" className="inputbox date-section">
-                                                        <DatePicker
+                                        {havellsKey && (
+                                            <>
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        label={"UOM"}
+                                                        name={`UOM`}
+                                                        placeholder={"Select"}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        customClassName="costing-version"
+                                                        options={renderListing("UOM")}
+                                                        mandatory={false}
+                                                        handleChange={(newValue) => handleChangeUOM(newValue)}
+                                                        errors={errors?.UOM}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        // title={titleObj.descriptionTitle}
+                                                        label="Target Price"
+                                                        name={'TagetPrice'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.Description}
+                                                        // disabled={true}
+                                                        placeholder="-"
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <div className="inputbox date-section">
+                                                        <div className="form-group">
+                                                            <label>Requirement Timeline<span className="asterisk-required">*</span></label>
+                                                            <div id="addRFQDate_container" className="inputbox date-section">
+                                                                <DatePicker
 
-                                                            name={'RequirementDate'}
-                                                            placeholder={'Select'}
-                                                            //selected={submissionDate}
-                                                            selected={DayTime(sopdate).isValid() ? new Date(sopdate) : ''}
-                                                            onChange={handleRequirementDateChange}
-                                                            showMonthDropdown
-                                                            showYearDropdown
-                                                            dropdownMode='select'
-                                                            minDate={new Date()}
-                                                            dateFormat="dd/MM/yyyy"
-                                                            placeholderText="Select date"
-                                                            className="withBorder"
-                                                            autoComplete={"off"}
-                                                            mandatory={true}
-                                                            errors={errors.RequirementDate}
-                                                            disabledKeyboardNavigation
-                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                            // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
-                                                        />
-                                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                                    name={'RequirementDate'}
+                                                                    placeholder={'Select'}
+                                                                    //selected={submissionDate}
+                                                                    selected={DayTime(sopdate).isValid() ? new Date(sopdate) : ''}
+                                                                    onChange={handleRequirementDateChange}
+                                                                    showMonthDropdown
+                                                                    showYearDropdown
+                                                                    dropdownMode='select'
+                                                                    minDate={new Date()}
+                                                                    dateFormat="dd/MM/yyyy"
+                                                                    placeholderText="Select date"
+                                                                    className="withBorder"
+                                                                    autoComplete={"off"}
+                                                                    mandatory={true}
+                                                                    errors={errors.RequirementDate}
+                                                                    disabledKeyboardNavigation
+                                                                    onChangeRaw={(e) => e.preventDefault()}
+                                                                // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                                />
+                                                                {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
 
-                                        </Col>
-                                        </>)}
+                                                </Col>
+                                            </>)}
 
                                         {/* <Col md="3">
                                             <NumberFieldHookForm
@@ -1969,83 +2061,83 @@ return false
                                                 />
                                             )}
                                         </Col>
-{havellsKey &&(<>
-<Col md="3">
-                                            <TextFieldHookForm
-                                                // title={titleObj.descriptionTitle}
-                                                label="Inco Terms"
-                                                name={'IncoTerms'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.IncoTerms}
-                                                disabled={true}
-                                                placeholder="-"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <TextFieldHookForm
-                                                // title={titleObj.descriptionTitle}
-                                                label="Payment Terms"
-                                                name={'PaymentTerms'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.PaymentTerms}
-                                                disabled={true}
-                                                placeholder="-"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <TextFieldHookForm
-                                                // title={titleObj.descriptionTitle}
-                                                label="Warrenty Terms"
-                                                name={'WarrantyTerms'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.WarrantyTerms}
-                                                disabled={true}
-                                                placeholder="-"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <TextFieldHookForm
-                                                // title={titleObj.descriptionTitle}
-                                                label="LD Clause"
-                                                name={'LDClause'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.LDClause}
-                                                // disabled={true}
-                                                placeholder="-"
-                                            />
-                                        </Col>
+                                        {havellsKey && (<>
+                                            <Col md="3">
+                                                <TextFieldHookForm
+                                                    // title={titleObj.descriptionTitle}
+                                                    label="Inco Terms"
+                                                    name={'IncoTerms'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    handleChange={() => { }}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.IncoTerms}
+                                                    disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <TextFieldHookForm
+                                                    // title={titleObj.descriptionTitle}
+                                                    label="Payment Terms"
+                                                    name={'PaymentTerms'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    handleChange={() => { }}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.PaymentTerms}
+                                                    disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <TextFieldHookForm
+                                                    // title={titleObj.descriptionTitle}
+                                                    label="Warrenty Terms"
+                                                    name={'WarrantyTerms'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    handleChange={() => { }}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.WarrantyTerms}
+                                                    disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <TextFieldHookForm
+                                                    // title={titleObj.descriptionTitle}
+                                                    label="LD Clause"
+                                                    name={'LDClause'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    handleChange={() => { }}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.LDClause}
+                                                    // disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col>
                                         </>)}
                                         <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
@@ -2351,7 +2443,7 @@ return false
                                                 </button>
                                             }
 
-                                            {!isDropdownDisabled&& <button type="button" className="submit-button save-btn" value="send"
+                                            {!isDropdownDisabled && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}
                                                 disabled={isViewFlag}>
@@ -2391,6 +2483,14 @@ return false
                                             partName={partName}
                                             AssemblyPartNumber={assemblyPartNumber}
                                             type={partTypeforRM}
+                                            tableData={tableData}
+                                            setTableData={setTableData}
+                                            specificationList={specificationList}
+                                            setSpecificationList={setSpecificationList}
+                                            setChildPartFiles={setChildPartFiles}
+                                            childPartFiles={childPartFiles}
+
+
 
                                         />
                                     )
@@ -2405,8 +2505,8 @@ return false
 
             {/* </Drawer > */}
             {
-                showPopup && <PopupMsgWrapper disablePopup={alreadyInDeviation}  vendorId={vendorId}
-                plantId={plantId} redirectPath={ blocked ? "/initiate-unblocking" : ""} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={blocked ? `${popupMessage}` : `${MESSAGES.RFQ_ADD_SUCCESS}`} />
+                showPopup && <PopupMsgWrapper disablePopup={alreadyInDeviation} vendorId={vendorId}
+                    plantId={plantId} redirectPath={blocked ? "/initiate-unblocking" : ""} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={blocked ? `${popupMessage}` : `${MESSAGES.RFQ_ADD_SUCCESS}`} />
             }
         </div >
     );

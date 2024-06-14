@@ -10,6 +10,8 @@ import {
     SELECTED_ROW_ARRAY,
     SET_QUOTATION_ID_FOR_RFQ,
     GET_NFR_SELECT_LIST,
+    GET_RFQ_VENDOR_DETAIL,
+    GET_TARGET_PRICE,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -431,4 +433,49 @@ export function getPartNFRRMList(nfrId, partId, callback) {
             callback(error)
         });
     };
+}
+export function getTargetPrice(plantId, technologyId, partId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getTargetPrice}?partId=${partId}&plantId=${plantId}&technologyId=${technologyId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: GET_TARGET_PRICE,
+                    payload: response.status === 204 ? [] : response.DataList
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function getrRqVendorDetails(vendorId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getrRqVendorDetails}?vendorId=${vendorId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: GET_RFQ_VENDOR_DETAIL,
+                    payload: response.status === 204 ? [] : response.DataList
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function getAssemblyChildpart(partNumber, callback) {
+    return axios.get(`${API.getAssemblyChildpart}?${partNumber ? `&partNumber=${partNumber}` : ''}}`, config()).catch(error => {
+        apiErrors(error);
+        callback(error);
+        return Promise.reject(error)
+    });
 }

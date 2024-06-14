@@ -22,6 +22,7 @@ import { REMARKMAXLENGTH } from '../../config/masterData'
 import Dropzone from 'react-dropzone-uploader'
 import LoaderCustom from '../common/LoaderCustom'
 import Toaster from '../common/Toaster'
+import { fileUploadQuotation, getAssemblyChildpart } from './actions/rfq'
 
 
 
@@ -29,8 +30,8 @@ function ViewDrawer(props) {
     const dispatch = useDispatch()
     const dropzone = useRef(null);
 
-    const { type,isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber } = props
-    
+    const { type, isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, childPartFiles, setChildPartFiles } = props
+
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -41,7 +42,7 @@ function ViewDrawer(props) {
     const [rmspecification, setRMSpecification] = useState([])
     const [rmName, setRMName] = useState([])
     const [rmgrade, setRMGrade] = useState([])
-    const [tableData, setTableData] = useState([])
+
     const [rmNameSelected, setRmNameSelected] = useState(false)
     const [selectedparts, setSelectedParts] = useState([])
     const [partName, setPartName] = useState('')
@@ -63,9 +64,9 @@ function ViewDrawer(props) {
 
     useEffect(() => {
         setValue('AssemblyPartNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
-if(type === Component){
-    setValue('partNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
-}
+        if (type === Component) {
+            setValue('partNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
+        }
     }, [AssemblyPartNumber])
     const removeAddedParts = (arr) => {
         const filteredArray = arr.filter((item) => {
@@ -81,7 +82,7 @@ if(type === Component){
         const resultInput = inputValue.slice(0, searchCount)
         const nfrChange = nfrId?.value;
         if (inputValue?.length >= searchCount && (partName !== resultInput || nfrChange !== storeNfrId)) {
-            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value, Assembly)
+            const res = await getAssemblyChildpart(AssemblyPartNumber)
             setPartName(resultInput)
             setStoreNfrId(nfrId?.value)
             let partDataAPI = res?.data?.DataList
@@ -199,11 +200,14 @@ if(type === Component){
      * @method addRow
      * @description For updating and adding row
      */
-    const addRow = () => {
+    const addRow = (activeTab) => {
         const formData = getValues();
-
         const partNumberLabel = formData.partNumber?.label || '-';
+        const partIdRef = formData.partNumber?.value || '-';
         const rmNameLabel = formData.RMName?.label || '-';
+        const rmChildId = formData.RMName?.value || '-';
+        const rmGradeId = formData.RMGrade?.value || '-';
+        const rmSpecificationId = formData.RMSpecification?.value || '-';
         const rmGradeLabel = formData.RMGrade?.label || '-';
         const rmSpecificationLabel = formData.RMSpecification?.label || '-';
         const specificationValue = formData.Specification || '-';
@@ -211,19 +215,32 @@ if(type === Component){
 
         const obj = {
             PartNumber: partNumberLabel,
+            partId: partIdRef,
             RmName: rmNameLabel,
+            RmChildId: rmChildId,
             RmGrade: rmGradeLabel,
+            RmGradeId: rmGradeId,
+            RmSpecificationId: rmSpecificationId,
             RmSpecification: rmSpecificationLabel,
-            Specification: specificationValue,
-            Value: value
+            childPart: true,
         };
+        const specificationObj = {
+            Specification: specificationValue,
+            Value: value,
+        }
 
         if (isEdit) {
+            const newspecificationData = [...specificationList]
+            newspecificationData[editIndex] = specificationObj
+            setSpecificationList(newspecificationData);
             const newData = [...tableData];
             newData[editIndex] = obj;
             setTableData(newData);
             setIsEdit(false);
             setEditIndex(null);
+        } else if (activeTab === "2") {
+            setSpecificationList(prevData => [...specificationList, specificationObj]);
+
         } else {
             setTableData(prevData => [...prevData, obj]);
         }
@@ -239,6 +256,7 @@ if(type === Component){
     const cancelUpdate = () => {
         setIsEdit(false);
         setTableData([]);
+        setSpecificationList([]);
         resetFormAndDropdowns();
     };
 
@@ -246,26 +264,37 @@ if(type === Component){
       * @method deleteRow
       * @description Deleting single row from table
       */
-    const deleteRow = (index) => {
+    const deleteRow = (index, activeTab) => {
         const tempObj = tableData[index];
-        const newData = [...tableData];
-        newData.splice(index, 1);
-        setTableData(newData);
+
+
+        if (activeTab === "2") {
+            const newSpecificationList = [...specificationList];
+            newSpecificationList.splice(index, 1);
+            setSpecificationList(newSpecificationList);
+        } else {
+            const newData = [...tableData];
+            newData.splice(index, 1);
+            setTableData(newData);
+        }
     };
     /**
      * @method editRow
      * @description for filling the row above table for editing
      */
-    const editRow = (index) => {
+    const editRow = (index, activeTab) => {
         setIsEdit(true);
-        const tempObj = tableData[index];
-
-        setValue('partNumber', { label: tempObj.PartNumber, value: tempObj.PartNumber });
-        setValue('RMName', { label: tempObj.RmName, value: tempObj.RmName });
-        setValue('RMGrade', { label: tempObj.RmGrade, value: tempObj.RmGrade });
-        setValue('RMSpecification', { label: tempObj.RmSpecification, value: tempObj.RmSpecification });
-        setValue('Specification', tempObj.Specification);
-        setValue('Value', tempObj.Value);
+        if (activeTab === "2") {
+            const editSpecification = rmSpecification[index]
+            setValue('Specification', editSpecification.Specification);
+            setValue('Value', editSpecification.Value);
+        } else {
+            const tempObj = tableData[index];
+            setValue('partNumber', { label: tempObj.PartNumber, value: tempObj.PartNumber });
+            setValue('RMName', { label: tempObj.RmName, value: tempObj.RmName });
+            setValue('RMGrade', { label: tempObj.RmGrade, value: tempObj.RmGrade });
+            setValue('RMSpecification', { label: tempObj.RmSpecification, value: tempObj.RmSpecification });
+        }
 
         setEditIndex(index);
     };
@@ -278,18 +307,20 @@ if(type === Component){
     }
 
     const deleteFile = (FileId, OriginalFileName) => {
-        
+
         if (dataProps?.isAddFlag ? false : dataProps?.isViewFlag || !isEditAll) {
             return false
         }
         if (FileId != null) {
             let tempArr = files.filter((item) => item.FileId !== FileId)
             setFiles(tempArr);
+            setChildPartFiles(tempArr)
             setIsOpen(!IsOpen)
         }
         if (FileId == null) {
             let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
             setFiles(tempArr)
+            setChildPartFiles(tempArr)
             setIsOpen(!IsOpen)
         }
         // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
@@ -298,11 +329,12 @@ if(type === Component){
         }
     }
     const handleChangeStatus = ({ meta, file }, status) => {
-        
+
         if (status === 'removed') {
             const removedFileName = file.name;
             let tempArr = files.filter(item => item.OriginalFileName !== removedFileName);
             setFiles(tempArr);
+            setChildPartFiles(tempArr)
             setIsOpen(prevState => !prevState);
         }
 
@@ -313,26 +345,26 @@ if(type === Component){
             setAttachmentLoader(false);
             setIsDisable(true);
 
-            // dispatch(fileUploadQuotation(data, (res) => {
-            //     if ('response' in res) {
-            //         status = res.response.status;
-            //         dropzone.current.files.pop();
-            //         setAttachmentLoader(false);
-            //     } else {
-            //         let Data = res.data[0];
-            //         setFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
-            //     }
-            //     setApiCallCounter(prevCounter => prevCounter - 1);
+            dispatch(fileUploadQuotation(data, (res) => {
+                if ('response' in res) {
+                    status = res.response.status;
+                    dropzone.current.files.pop();
+                    setAttachmentLoader(false);
+                } else {
+                    let Data = res.data[0];
+                    setFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
+                }
+                setApiCallCounter(prevCounter => prevCounter - 1);
 
-            //     // Check if this is the last API call after decrement
-            //     if (apiCallCounter - 1 === 0) {
-            //         setAttachmentLoader(false);
-            //         setIsDisable(false);
-            //         setTimeout(() => {
-            //             setIsOpen(prevState => !prevState);
-            //         }, 500);
-            //     }
-            // }));
+                // Check if this is the last API call after decrement
+                if (apiCallCounter - 1 === 0) {
+                    setAttachmentLoader(false);
+                    setIsDisable(false);
+                    setTimeout(() => {
+                        setIsOpen(prevState => !prevState);
+                    }, 500);
+                }
+            }));
         }
 
         if (status === 'rejected_file_type') {
@@ -415,7 +447,7 @@ if(type === Component){
                                                 // handleChange={handleDestinationPlantChange}
                                                 handleChange={() => { }}
                                                 errors={errors.partNumber}
-                                                disabled={type === Component? true : false}
+                                                disabled={type === Component ? true : false}
 
                                                 isLoading={plantLoaderObj}
                                                 asyncOptions={partFilterList}
@@ -662,7 +694,7 @@ if(type === Component){
                                             <button
                                                 type="button"
                                                 className={'btn btn-primary mt30 pull-left mr5'}
-                                                onClick={() => addRow()}
+                                                onClick={() => addRow(activeTab)}
                                             >
                                                 Update
                                             </button>
@@ -681,7 +713,7 @@ if(type === Component){
                                             <button
                                                 type="button"
                                                 className={'user-btn mt30 pull-left'}
-                                                onClick={addRow}
+                                                onClick={() => addRow(activeTab)}
                                             // disabled={props.CostingViewMode || disableAll}
                                             >
                                                 <div className={'plus'}></div>ADD
@@ -714,40 +746,51 @@ if(type === Component){
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {tableData &&
-                                            tableData?.map((item, index) => {
-                                                return (
-                                                    <Fragment>
-                                                        <tr key={index}>
-                                                            {activeTab === "2" && (<td>{(item.Specification !== null) ? item.Specification : '-'}</td>)}
-                                                            {activeTab === "2" && (<td>{(item.Value !== null) ? item.Value : '-'}</td>)}
-                                                            {activeTab === "1" && (<td>{(item.PartNumber !== null) ? item.PartNumber : '-'}</td>)}
-                                                            {activeTab === "1" && (<td>{(item.RmGrade !== null) ? item.RmGrade : '-'}</td>)}
-                                                            {activeTab === "1" && (<td>{(item.RmName !== null) ? item.RmName : '-'}</td>)}
-                                                            {activeTab === "1" && (<td>{(item.RmSpecification !== null) ? item.RmSpecification : '-'}</td>)}
-                                                            <td>
-                                                                {
-                                                                    <React.Fragment>
-                                                                        <button
-                                                                            className="Edit mr-2"
-                                                                            type={'button'}
-                                                                            title='Edit'
-                                                                            onClick={() => editRow(index)}
-                                                                        />
-                                                                        <button
-                                                                            className="Delete"
-                                                                            title='Delete'
-                                                                            type={'button'}
-                                                                            onClick={() => deleteRow(index)}
-                                                                        />
-                                                                    </React.Fragment>
-                                                                }
-                                                            </td>
-                                                        </tr>
-                                                    </Fragment>
-                                                )
-                                            })}
-                                        {tableData && tableData.length === 0 && (
+                                        {activeTab === "1" && tableData && tableData.length > 0 ? (
+                                            tableData?.map((item, index) => (
+                                                <tr key={index}>
+                                                    <td>{item.PartNumber !== null ? item.PartNumber : '-'}</td>
+                                                    <td>{item.RmGrade !== null ? item.RmGrade : '-'}</td>
+                                                    <td>{item.RmName !== null ? item.RmName : '-'}</td>
+                                                    <td>{item.RmSpecification !== null ? item.RmSpecification : '-'}</td>
+                                                    <td>
+                                                        <button
+                                                            className="Edit mr-2"
+                                                            type="button"
+                                                            title="Edit"
+                                                            onClick={() => editRow(index, activeTab)}
+                                                        />
+                                                        <button
+                                                            className="Delete"
+                                                            type="button"
+                                                            title="Delete"
+                                                            onClick={() => deleteRow(index, activeTab)}
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : activeTab === "2" && specificationList && specificationList.length > 0 ? (
+                                            specificationList.map((item, index) => (
+                                                <tr key={index}>
+                                                    <td>{item.Specification !== null ? item.Specification : '-'}</td>
+                                                    <td>{item.Value !== null ? item.Value : '-'}</td>
+                                                    <td>
+                                                        <button
+                                                            className="Edit mr-2"
+                                                            type={'button'}
+                                                            title='Edit'
+                                                            onClick={() => editRow(index)}
+                                                        />
+                                                        <button
+                                                            className="Delete"
+                                                            title='Delete'
+                                                            type={'button'}
+                                                            onClick={() => deleteRow(index)}
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
                                             <tr>
                                                 <td colspan="15">
                                                     <NoContentFound title={EMPTY_DATA} />
