@@ -3257,7 +3257,7 @@ const CostingSummaryTable = (props) => {
                           viewCostingData?.map((data, index) => {
                             return (
                               <td className={tableDataClass(data)}>
-                                {data.CostingPartDetails && data.CostingPartDetails.CostingTCOResponse ? displayValueWithSign(data, "TotalTCOCost") : 0}
+                                {displayValueWithSign(data, "TotalTCOCost")}
                                 {/* {checkForDecimalAndNull(data.TotalTCOCost, initialConfiguration.NoOfDecimalForPrice)} */}
                                 {
                                   (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
@@ -3592,6 +3592,8 @@ const CostingSummaryTable = (props) => {
           vendorId={viewCostingData[npvIndex]?.vendorId}
           isRfqCosting={props?.isRfqCosting}
           costingId={costingId}
+          totalCostFromSummary={true}
+
 
         />
       }
