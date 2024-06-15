@@ -213,9 +213,9 @@ function ViewRM(props) {
               {!isPDFShow && viewCostingData[props.index]?.technologyId !== Ferrous_Casting && viewCostingData[props.index]?.technologyId !== RUBBER && (getTechnology.includes(viewCostingData[props.index]?.technologyId)) && < th > {`Calculator`}</th>}
               {IsShowFreightAndShearingCostFields() && <th>{`Freight Cost`}</th>}
               {IsShowFreightAndShearingCostFields() && <th>{`Shearing Cost`}</th>}
-              {viewCostingData[0].technologyId === (PLASTIC || ELECTRICAL_STAMPING) && <th>{`Burning Loss Weight`}</th>}
-              {viewCostingData[0].technologyId === DIE_CASTING && <th>Casting Weight</th>}
-              {viewCostingData[0].technologyId === DIE_CASTING && <th>Melting Loss (Loss%)</th>}
+              {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && <th>{`Burning Loss Weight`}</th>}
+              {viewCostingData[0]?.technologyId === DIE_CASTING && <th>Casting Weight</th>}
+              {viewCostingData[0]?.technologyId === DIE_CASTING && <th>Melting Loss (Loss%)</th>}
               <th >{`Net RM Cost ${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''}`}</th>
               {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
               <th className="costing-border-right">{`Remark`}</th>

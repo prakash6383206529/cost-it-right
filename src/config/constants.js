@@ -3044,8 +3044,11 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 export const RMIndex = true
 export const showLogoFromDataBase = false
+
+export const showDynamicKeys = true
+
 //VERSION 
-export const VERSION = "V2.2.22.4";
+export const VERSION = "V2.2.22.5";
 
 
 

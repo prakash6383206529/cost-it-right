@@ -36,7 +36,6 @@ const InitiateUnblocking = (props) => {
     });
     const vendorPlantData = useSelector((state) => state.supplierManagement.vendorPlantData)
     const deviationData = useSelector((state) => state.supplierManagement.deviationData)
-    console.log('deviationData: ', deviationData);
     const [shouldMakeApiCalls, setShouldMakeApiCalls] = useState(false)
 
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
@@ -154,7 +153,6 @@ const InitiateUnblocking = (props) => {
 
 
     const statusButtonFormatter = (status, fieldName) => {
-        console.log('status: ', status);
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
@@ -424,7 +422,6 @@ const InitiateUnblocking = (props) => {
                             <>
 
                                 {(!props?.isMasterSummaryDrawer) && <div>
-                                    {console.log(!deviationData?.LPSRatingDeviationIsInApprovalProcess || !deviationData?.LPSRatingDeviationIsApproved, "CONd")}
                                     <div className="vendor-details">
                                         <Row>
                                             <Col md="3">
