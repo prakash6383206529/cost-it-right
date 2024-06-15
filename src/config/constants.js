@@ -3048,7 +3048,7 @@ export const showLogoFromDataBase = false
 export const showDynamicKeys = false
 
 //VERSION 
-export const VERSION = "V2.2.22.4";
+export const VERSION = "V2.2.22.5";
 
 
 
