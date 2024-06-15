@@ -3045,7 +3045,7 @@ export const PartTypeIDFromAPI = 2
 export const RMIndex = true
 export const showLogoFromDataBase = false
 
-export const showDynamicKeys = false
+export const showDynamicKeys = true
 
 //VERSION 
 export const VERSION = "V2.2.22.5";
