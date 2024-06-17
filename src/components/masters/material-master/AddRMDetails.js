@@ -92,7 +92,7 @@ function AddRMDetails(props) {
         dispatch(getRawMaterialNameChild(() => { }))
         dispatch(getRawMaterialCategory((res) => { }))
         dispatch(getExchangeRateSource((res) => { }))
-        dispatch(getIndexSelectList('', (res) => { }));
+        dispatch(getIndexSelectList((res) => { }));
         dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
         dispatch(getAllCity(cityId => {
             dispatch(getCityByCountry(cityId, 0, () => { }))

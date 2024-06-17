@@ -1,18 +1,13 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useState } from 'react'
 import { Row, Col, Container, Table } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
-import { NumberFieldHookForm, TextFieldHookForm, SearchableSelectHookForm } from '../../../../src/components/layout/HookFormInputs'
-import { useForm, Controller, useWatch } from 'react-hook-form'
-import TooltipCustom from '../../../../src/components/common/Tooltip'
+import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../src/components/layout/HookFormInputs'
+import { useForm, Controller } from 'react-hook-form'
 import NoContentFound from '../../../../src/components/common/NoContentFound'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull } from "../../../../src/helper/validation";
-import { getConfigurationKey } from "../../../../src/helper/auth";
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { EMPTY_DATA } from '../../../../src/config/constants'
-import { trim } from 'lodash'
-import { getCostingCondition } from '../../../../src/actions/Common'
-import { setOtherCostData } from '../../../../src/components/costing/actions/Costing';
 import Toaster from '../../../../src/components/common/Toaster';
 
 function AddOtherCostDrawer(props) {
@@ -27,44 +22,18 @@ function AddOtherCostDrawer(props) {
     };
 
 
-    const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, isFromMaster, EntryType } = props
-    // const [tableData, setTableData] = useState(props?.tableData)
-    const [tableData, setTableData] = useState([]);
+    const { currency, basicRateCurrency, isFromImport, isFromMaster } = props
 
-    // const [tableData, setTableData] = useState([])
+    const [tableData, setTableData] = useState([]);
     const [disableTotalCost, setDisableTotalCost] = useState(true)
     const [disableAllFields, setDisableAllFields] = useState(true)
     const [editIndex, setEditIndex] = useState('')
     const [isEditMode, setIsEditMode] = useState(false)
-    const [conditionDropdown, setConditionDropdown] = useState([])
-    const [selectedType, setSelectedType] = useState([])
-    const [typeDropdown, setTypeDropdown] = useState([])
     const [type, setType] = useState('')
     const [totalCostCurrency, setTotalCostCurrency] = useState('')
-    const [totalCostBase, setTotalCostBase] = useState('')
-    const [disableBase, setDisableBase] = useState(false)
     const [disableCurrency, setDisableCurrency] = useState(false)
     const [disableEntryType, setDisableEntryType] = useState(false)
-    const [costingConditionEntryType, setCostingConditionEntryType] = useState(props?.costingConditionEntryType)
-
-
-
-    const dispatch = useDispatch();
-    const { otherCostData } = useSelector(state => state.costing)
-    const [gridData, setgridData] = useState(otherCostData.gridData);
-
-    useEffect(() => {
-
-        if (tableData?.length === 0) {
-
-            setDisableEntryType(false)
-            setValue('ConditionEntryType', '')
-        }
-    }, [tableData]);
-
-
     const totalCostCurrencySum = calculateSumOfValues();
-
 
     const editData = (indexValue, operation) => {
         if (operation === 'delete') {
@@ -80,8 +49,6 @@ function AddOtherCostDrawer(props) {
 
         let selectedData = tableData[indexValue];
         setDisableAllFields(false);
-
-        // Populate form fields with the existing data of the selected row
         setValue('Cost', {
             label: selectedData.ConditionCost,
             value: selectedData.ConditionCost
@@ -92,28 +59,19 @@ function AddOtherCostDrawer(props) {
         });
         setValue('Percentage', selectedData.Percentage);
         setValue('CostCurrency', selectedData.CostCurrency);
-
-        // If you have other fields to set, you can add them here
-        // For example, if you have 'CostBase' and 'Quantity' fields:
-        setValue('CostBase', selectedData.CostBase);
-        setValue('Quantity', selectedData.Quantity);
-
-        // Update state for total cost and entry type if needed
         setTotalCostCurrency(selectedData.CostCurrency);
-        setTotalCostBase(selectedData.CostBase);
-        setCostingConditionEntryType(selectedData.CostingConditionEntryTypeId);
         setType(selectedData.ConditionType);
 
         // Update UI state based on the type
-        if (selectedData.ConditionType === 'Fixed' || selectedData.ConditionType === 'Quantity') {
+        if (selectedData.ConditionType === 'Fixed') {
             setDisableTotalCost(false);
             setDisableCurrency(false);
-            setDisableBase(false);
+
             setDisableAllFields(true);
         } else {
             setDisableAllFields(false);
             setDisableCurrency(true);
-            setDisableBase(true);
+
             setDisableTotalCost(true);
         }
     };
@@ -129,21 +87,6 @@ function AddOtherCostDrawer(props) {
         editData(indexValue, operation)
     }
 
-
-
-    const conditionEntryTypeDropdown = [
-        {
-            label: 'Domestic',
-            value: 0,
-        },
-        {
-            label: 'Import',
-            value: 1,
-        },
-    ]
-
-
-    //
     const { register, control, setValue, getValues, handleSubmit, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -153,7 +96,6 @@ function AddOtherCostDrawer(props) {
 
 
     const toggleCondition = () => {
-        // isFromImport ? type === 'Fixed' ? 'mb-3' : 'mt-4 pt-1' : type === 'Percentage' ? 'mb-3' : 'mt-4 pt-1'
         let cssClass = '';
         if (isFromImport) {
             if (type === "") {
@@ -186,48 +128,38 @@ function AddOtherCostDrawer(props) {
         setType(e?.value)
         setValue('Type', e?.value)
         setValue('Percentage', '')
-        setValue('Quantity', '')
         setValue('CostCurrency', '')
-        setValue('CostBase', '')
         setDisableEntryType(true)
-        if (e?.value === 'Fixed' || e?.value === 'Quantity') {
+        if (e?.value === 'Fixed') {
             setDisableTotalCost(false)
             setDisableCurrency(false)
-            setDisableBase(false)
             setDisableAllFields(true)
             setValue('Percentage', '')
         } else if (e?.value === 'Percentage') {
 
             setDisableAllFields(false)
             setDisableTotalCost(true)
-            setDisableCurrency(true) // Disable cost field
-            setDisableBase(true) // Disable cost base field
+            setDisableCurrency(true)
             setTotalCostCurrency('')
-            setTotalCostBase('')
+
         } else {
             setDisableAllFields(false)
             setDisableTotalCost(true)
             setTotalCostCurrency('')
-            setTotalCostBase('')
         }
     }
-
-
 
 
     const onPercentChange = (e) => {
         if (e?.target?.value) {
             let costCurrency = checkForNull((e.target.value) / 100) * checkForNull(basicRateCurrency)
-            let costBase = checkForNull((e.target.value) / 100) * checkForNull(basicRateBase)
-            setValue('CostBase', checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
             setValue('CostCurrency', checkForDecimalAndNull(costCurrency, initialConfiguration.NoOfDecimalForPrice))
             setTotalCostCurrency(costCurrency)
-            setTotalCostBase(costBase)
+
         } else {
-            setValue('CostBase', '')
             setValue('CostCurrency', '')
             setTotalCostCurrency('')
-            setTotalCostBase('')
+
         }
     }
 
@@ -237,24 +169,17 @@ function AddOtherCostDrawer(props) {
 
 
     const handleCostChangeCurrency = (e) => {
-        errors.CostBase = {}
         if (e?.target?.value) {
-            const costBase = checkForNull(e.target.value) * checkForNull(currencyValue)
-            setValue("CostBase", checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
-            const ConditionCostPerQuantity = checkForNull(e.target.value) / checkForNull(getValues('Quantity'))
-            setValue("ConditionCostPerQuantity", checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration.NoOfDecimalForPrice))
-            setDisableBase(true)
+
             setTotalCostCurrency(e.target.value)
-            setTotalCostBase(costBase)
-            setValue("ConditionCostPerQuantity", checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration.NoOfDecimalForPrice))
-            setDisableBase(true)
+
+
             setTotalCostCurrency(e.target.value)
-            setTotalCostBase(costBase)
+
         } else {
-            setValue("CostBase", '')
-            setDisableBase(false)
+
             setTotalCostCurrency('')
-            setTotalCostBase('')
+
         }
     }
 
@@ -263,8 +188,7 @@ function AddOtherCostDrawer(props) {
    * @description RENDER LISTING IN DROPDOWN
    */
     const renderListing = (label) => {
-        const temp = [];
-        let tempList = [];
+
         if (label === 'Cost') {
             return [
 
@@ -297,6 +221,13 @@ function AddOtherCostDrawer(props) {
         const typeLabel = getValues('Type')?.label;
         const isPercentageEnabled = typeLabel === 'Percentage';
         const isCostCurrencyEnabled = !isPercentageEnabled;
+
+        // Check if the Cost field is selected
+        const costValue = getValues('Cost');
+        if (!costValue) {
+            Toaster.warning("Cost must be selected to add a row");
+            return true;
+        }
 
         labels.forEach(label => {
             if (isPercentageEnabled && (label === 'Cost' || label === 'CostCurrency')) {
@@ -337,48 +268,6 @@ function AddOtherCostDrawer(props) {
         }
     };
 
-    // const validation = () => {
-    //     let labels = ['Type', 'Cost', 'Percentage', 'CostCurrency'];
-    //     let count = 0;
-
-    //     labels.forEach(label => {
-    //         const typeLabel = getValues('Type')?.label;
-    //         const isPercentageEnabled = typeLabel === 'Percentage';
-    //         const isCostCurrencyEnabled = !isPercentageEnabled;
-
-    //         if (isPercentageEnabled && (label === 'CostCurrency' || label === 'Percentage')) {
-    //             return; // Skip validation for CostCurrency and Percentage if Percentage is enabled
-    //         } else if (isCostCurrencyEnabled && label === 'Percentage') {
-    //             return; // Skip validation for Percentage if CostCurrency is disabled
-    //         } else {
-    //             if (!getValues(label)) {
-    //                 count++;
-    //             }
-    //         }
-    //     });
-
-    //     if (count > 0) {
-    //         Toaster.warning("Please fill all details");
-    //         return true;
-    //     } else {
-    //         const conditionType = getValues('Type')?.label;
-    //         const conditionCost = getValues('Cost')?.label;
-    //         let isDuplicate = false;
-
-    //         tableData && tableData.forEach(item => {
-    //             if (String(item.ConditionType) === String(conditionType) && String(item.ConditionCost) === String(conditionCost)) {
-    //                 isDuplicate = true;
-    //             }
-    //         });
-
-    //         if (isDuplicate && !isEditMode) {
-    //             Toaster.warning("Duplicate entries are not allowed");
-    //             return true;
-    //         } else {
-    //             return false;
-    //         }
-    //     }
-    // };
 
 
     const onSubmit = data => {
@@ -439,8 +328,6 @@ function AddOtherCostDrawer(props) {
         const commonReset = () => {
             setDisableAllFields(true);
             setDisableTotalCost(true);
-            setTotalCostCurrency('');
-            setTotalCostBase('');
             setType('');
             setEditIndex('');
             setIsEditMode(false)
@@ -449,37 +336,19 @@ function AddOtherCostDrawer(props) {
                 Type: '',
                 Percentage: '',
                 CostCurrency: '',
-                // CostBase: '',
-                // ConditionCostPerQuantity: '',
-                // Quantity: '',
-                ConditionEntryType: type === 'reset' && tableData.length === 0 ? '' : undefined,
             });
         };
-
-        if (type === 'reset') {
-            setDisableEntryType(tableData.length === 0 ? false : true);
-            setCostingConditionEntryType(tableData.length === 0 ? '' : costingConditionEntryType);
-        } else {
-            setDisableEntryType(true);
-        }
-
         commonReset();
     };
-    const onFinalSubmit = () => {
-        //props.closeDrawer('submit', otherCostTotal, gridData)
 
 
-        // dispatch(setOtherCostData({ gridData: gridData, otherCostTotal: otherCostTotal }))
-    }
-
-    const checkCondtionDisabled = props.ViewMode || (tableData && tableData?.length === 0 && !props.isFromMaster && (costingConditionEntryType === '' || costingConditionEntryType === undefined || costingConditionEntryType === null))
+    const checkCondtionDisabled = props.ViewMode || (tableData && tableData?.length === 0 && !props.isFromMaster)
 
 
     return (
 
         <div>
             <Drawer anchor={props.anchor} open={props.isOpen}
-            // onClose={(e) => toggleDrawer(e)}
             >
                 <div className={`ag-grid-react hidepage-size`}>
                     <Container className="add-bop-drawer">
@@ -500,25 +369,7 @@ function AddOtherCostDrawer(props) {
                                 <div className='hidepage-size'>
 
                                     <Row>
-                                        {!isFromMaster && <Col md="3" className='px-2'>
-                                            <SearchableSelectHookForm
-                                                label={`Entry Type`}
-                                                name={'ConditionEntryType'}
-                                                placeholder={'Select'}
-                                                Controller={Controller}
-                                                isClearable={true}
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                options={conditionEntryTypeDropdown}
-                                                //handleChange={onConditionEntryTypeChange}
-                                                defaultValue={tableData.CostingConditionEntryTypeId ?? ''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.ConditionEntryType}
-                                                disabled={disableEntryType}
-                                            />
-                                        </Col>}
+
                                         <Col md="3" className='px-2'>
                                             <SearchableSelectHookForm
                                                 label={`Cost`}
@@ -587,7 +438,7 @@ function AddOtherCostDrawer(props) {
                                                 />
                                             </Col >}
                                         <Col md={3} className={'px-2'}>
-                                            {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Price'} />}
+
                                             <TextFieldHookForm
                                                 label={`Cost (${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")})`}
                                                 name={'CostCurrency'}
@@ -609,69 +460,7 @@ function AddOtherCostDrawer(props) {
                                                 disabled={props.ViewMode || disableTotalCost || disableCurrency}
                                             />
                                         </Col>
-                                        {
-                                            isFromImport && <Col md={3} className='px-2'>
-                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-currency'} tooltipText={`Cost = Cost (${currency?.label}) * Currency (${currencyValue})`} />
-                                                <TextFieldHookForm
-                                                    label={`Cost (${reactLocalStorage.getObject("baseCurrency")})`}
-                                                    name={'CostBase'}
-                                                    id={'cost-by-currency'}
-                                                    Controller={Controller}
-                                                    type="number"
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={true}
-                                                    rules={{
-                                                        required: true,
-                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                                                    }}
-                                                    // handleChange={handleCostChangeBase}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.CostBase}
-                                                    disabled={props.ViewMode || disableTotalCost || disableBase}
-                                                />
-                                            </Col>
-                                        }
-                                        {
-                                            type === 'Quantity' && <>
-                                                <Col md={3} className='px-2'>
-                                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity'} tooltipText={`Cost/Pc = Cost (${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")}) / Quantity`} />
-                                                    <TextFieldHookForm
-                                                        label={`Cost/Pc (${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")})`}
-                                                        name={'ConditionCostPerQuantity'}
-                                                        id={'cost-per-quantity'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.ConditionCostPerQuantity}
-                                                        disabled={true}
-                                                    />
-                                                </Col>
-                                                {isFromImport && <Col md={3} className='px-2'>
-                                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity-coversion'} tooltipText={`Cost/Pc = Cost (${reactLocalStorage.getObject("baseCurrency")})  / Quantity`} />
-                                                    <TextFieldHookForm
-                                                        label={`Cost/Pc (${reactLocalStorage.getObject("baseCurrency")})`}
-                                                        name={'CostPerQuantityConversion'}
-                                                        id={'cost-per-quantity-coversion'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.CostPerQuantityConversion}
-                                                        disabled={true}
-                                                    />
-                                                </Col>}
-                                            </>
-                                        }
+
                                         <Col md="3" className={toggleCondition()}>
                                             <button
                                                 type="button"
@@ -740,53 +529,6 @@ function AddOtherCostDrawer(props) {
                                                 </tr>
                                             </tbody>
                                         </Table>
-                                        {/* <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
-                                            <tbody>
-                                                <tr className='thead'>
-                                                    <th>{`Cost`}</th>
-                                                    <th>{`Type`}</th>
-                                                    <th>{`Percentage (%)`}</th>
-                                                    <th> {`Cost (${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")})`} </th>
-                                                    {!props.hideAction && <th className='text-right'>{`Action`}</th>}
-                                                </tr>
-
-                                                {tableData && tableData.map((item, index) => (
-                                                    <Fragment key={index}>
-                                                        <tr>
-                                                            <td>{item.ConditionCost}</td>
-                                                            <td>{item.ConditionType}</td>
-                                                            <td>{item.Percentage !== '-' ? checkForDecimalAndNull(item.Percentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>
-                                                            <td>{item.CostCurrency !== '-' ? item.CostCurrency : '-'}</td>
-                                                            {!props.hideAction && (
-                                                                <td>
-                                                                    <div className='text-right'>
-                                                                        <button title='Edit' className="Edit mr-1" type='button' onClick={() => editDeleteData(index, 'edit')} disabled={props.ViewMode} />
-                                                                        <button title='Delete' className="Delete mr-1" type='button' onClick={() => editDeleteData(index, 'delete')} disabled={props.ViewMode} />
-                                                                    </div>
-                                                                </td>
-                                                            )}
-                                                        </tr>
-                                                    </Fragment>
-                                                ))}
-
-                                                {tableData && tableData.length === 0 && (
-                                                    <tr>
-                                                        <td colSpan="5">
-                                                            <NoContentFound title={EMPTY_DATA} />
-                                                        </td>
-                                                    </tr>
-                                                )}
-
-                                                <tr className='table-footer'>
-                                                    <td colSpan={initialConfiguration.IsShowCRMHead ? 4 : 5} className='text-right'>
-                                                        Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):
-                                                    </td>
-                                                    <td colSpan={2}>
-                                                        {checkForDecimalAndNull(totalCostCurrencySum, initialConfiguration.NoOfDecimalForPrice)}
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </Table> */}
 
                                     </Col>
 
@@ -803,7 +545,6 @@ function AddOtherCostDrawer(props) {
                                             type={'button'}
                                             className="submit-button save-btn"
                                             onClick={props.closeDrawer}
-                                            //onClick={onFinalSubmit}
                                             disabled={props.ViewMode}
                                         >
                                             <div className={"save-icon"}></div>
@@ -819,8 +560,13 @@ function AddOtherCostDrawer(props) {
         </div >
     )
 }
-
 export default React.memo(AddOtherCostDrawer)
+
+
+
+
+
+
 
 
 

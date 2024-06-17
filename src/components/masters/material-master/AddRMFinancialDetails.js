@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react"
-import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement, getCommodityIndexRateAverage } from "../../../actions/Common"
+import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement } from "../../../actions/Common"
 import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, RMIndex, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
@@ -807,7 +807,7 @@ function AddRMFinancialDetails(props) {
                                 errors={errors.UnitOfMeasurement}
                             />
                         </Col>
-                        {states.isImport && <Col className="col-md-15">
+                        {true && <Col className="col-md-15">
                             <SearchableSelectHookForm
                                 name="currency"
                                 label="Currency"
@@ -844,6 +844,65 @@ function AddRMFinancialDetails(props) {
                             />
 
                         </Col>
+
+                            {RMIndex && <><Col className="col-md-15">
+                                <div className="inputbox date-section">
+                                    <DatePickerHookForm
+                                        name={`fromDate`}
+                                        label={'From Date'}
+                                        // handleChange={(date) => {
+                                        //     handleFromEffectiveDateChange(date);
+                                        // }}
+                                        rules={{ required: true }}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        showMonthDropdown
+                                        showYearDropdown
+                                        dateFormat="DD/MM/YYYY"
+                                        // maxDate={maxDate}
+                                        placeholder="Select date"
+                                        customClassName="withBorder"
+                                        className="withBorder"
+                                        autoComplete={"off"}
+                                        disabledKeyboardNavigation
+                                        onChangeRaw={(e) => e.preventDefault()}
+                                        disabled={false}
+                                        mandatory={true}
+                                        errors={errors && errors.fromDate}
+                                    />
+                                </div>
+                            </Col>
+                                <Col className="col-md-15">
+                                    <div className="inputbox date-section">
+                                        <DatePickerHookForm
+                                            name={`toDate`}
+                                            label={'To Date'}
+                                            // handleChange={(date) => {
+                                            //     handleToEffectiveDateChange(date);
+                                            // }}
+                                            rules={{ required: true }}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dateFormat="DD/MM/YYYY"
+                                            // minDate={minDate}
+                                            placeholder="Select date"
+                                            customClassName="withBorder"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                            disabled={false}
+                                            mandatory={true}
+                                            errors={errors && errors.toDate}
+                                        />
+                                    </div>
+                                </Col></>}
+
+
                             {/* <Col className="col-md-15">
                                 <TextFieldHookForm
                                     label={`Index Premium(Currency)`}
@@ -1341,7 +1400,7 @@ function AddRMFinancialDetails(props) {
                                     </Col>
                                 </>
                             }
-                            {/* add new condition cost */}
+                            {/* add new other cost */}
                             {true && states.costingTypeId === ZBCTypeId && <>
                                 {states.isImport && <Col className="col-md-15">
                                     <div className='d-flex align-items-center'>
@@ -1397,7 +1456,7 @@ function AddRMFinancialDetails(props) {
                                     </div>
                                 </Col>
                             </>}
-                            {states.isImport && <Col className="col-md-15">
+                            {/* {states.isImport && <Col className="col-md-15">
                                 <TextFieldHookForm
                                     label={labelWithUOMAndCurrency("Local Logistic ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
                                     name={"LocalLogisticSelectedCurrency"}
@@ -1415,9 +1474,9 @@ function AddRMFinancialDetails(props) {
                                     customClassName=" withBorder"
                                     errors={errors.LocalLogisticSelectedCurrency}
                                 />
-                            </Col>}
+                            </Col>} */}
 
-                            <Col className="col-md-15">
+                            {/* <Col className="col-md-15">
                                 <TextFieldHookForm
                                     label={labelWithUOMAndCurrency("Local Logistic ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                     name={"LocalLogisticBaseCurrency"}
@@ -1436,8 +1495,8 @@ function AddRMFinancialDetails(props) {
                                     mandatory={true}
                                     errors={errors.LocalLogisticBaseCurrency}
                                 />
-                            </Col>
-                            {states.isImport && <Col className="col-md-15">
+                            </Col> */}
+                            {/* {states.isImport && <Col className="col-md-15">
                                 <TextFieldHookForm
                                     label={labelWithUOMAndCurrency("Yield Loss ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
                                     name={"YieldLossSelectedCurrency"}
@@ -1631,7 +1690,7 @@ function AddRMFinancialDetails(props) {
                                     mandatory={true}
                                     errors={errors.DiscountCostBaseCurrency}
                                 />
-                            </Col>
+                            </Col> */}
                             {/* //RE */}
                             {IsShowFreightAndShearingCostFields() && (
                                 <>
@@ -1968,7 +2027,7 @@ function AddRMFinancialDetails(props) {
                 true && state.isOpenOtherCostDrawer &&
                 <AddOtherCostDrawer
                     isOpen={state.isOpenOtherCostDrawer}
-                    tableData={state.conditionTableData}
+                    //tableData={state.conditionTableData}
                     closeDrawer={closeOtherCostToggle}
                     anchor={'right'}
                     basicRateCurrency={state.FinalBasicPriceSelectedCurrency}
