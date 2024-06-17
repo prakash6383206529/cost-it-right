@@ -60,10 +60,8 @@ function AddRMMaster(props) {
 
 
     useEffect(() => {
-        console.log('i m ggggg: ', commodityAverage);
         // Check if commodityAverage is an object and has keys
         if (commodityAverage && Object.keys(commodityAverage).length > 0) {
-            console.log('i m ffrom master: ', commodityAverage);
 
             const {
                 materialTypeId,
