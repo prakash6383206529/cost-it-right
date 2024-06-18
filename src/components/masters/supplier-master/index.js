@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import classnames from "classnames";
 import ScrollToTop from "../../common/ScrollToTop";
-import { MASTERS, PART } from "../../../config/constants";
+import { MASTERS, PART, VENDOR_MANAGEMENT_ROLE } from "../../../config/constants";
 import { checkPermission } from "../../../helper/util";
 import { MESSAGES } from "../../../config/message";
 import { resetStatePagination } from "../../common/Pagination/paginationAction";
@@ -23,6 +23,7 @@ const VendorMaster = () => {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration);
     const disabledClass = useSelector((state) => state.comman.disabledClass);
     const [permissionData, setPermissionData] = useState({});
+    const [isVendorManagement, setIsVendorManagement] = useState(false);
 
     useEffect(() => {
         applyPermission(topAndLeftMenuData); toggle("1");
@@ -32,6 +33,10 @@ const VendorMaster = () => {
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
             const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
+            const isVendorManagement = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === VENDOR_MANAGEMENT_ROLE);;
+            if (isVendorManagement.ModuleName === VENDOR_MANAGEMENT_ROLE) {
+                setIsVendorManagement(true);
+            }
             const accessData = Data && Data.Pages.find((el) => el.PageName === PART);
             const permmisionDataAccess = accessData && accessData.Actions && checkPermission(accessData.Actions);
             if (permmisionDataAccess !== undefined) {
@@ -70,7 +75,7 @@ const VendorMaster = () => {
                             </Nav>
                             <TabContent activeTab={state.activeTab}>
                                 {state.activeTab === "1" && (
-                                    <TabPane tabId="1"><VendorListing />
+                                    <TabPane tabId="1"><VendorListing isVendorManagement={isVendorManagement} />
                                     </TabPane>
                                 )}
                                 {state.activeTab === "2" && (

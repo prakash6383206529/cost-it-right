@@ -38,7 +38,8 @@ import { useTranslation } from "react-i18next";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
-const VendorListing = () => {
+const VendorListing = (props) => {
+  console.log('props: ', props);
   const dispatch = useDispatch();
   const { t } = useTranslation("common")
 
@@ -803,8 +804,8 @@ const VendorListing = () => {
               <AgGridColumn field="City" headerName="City" cellRenderer={"hyphenFormatter"}></AgGridColumn>
 
               {getConfigurationKey()?.IsCriticalVendorConfigured && (<AgGridColumn field="IsCriticalVendor" headerName="Potential Vendor" ></AgGridColumn>)}
-              <AgGridColumn field="VendorClassification" headerName="Vendor Classification" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
-              <AgGridColumn field="VendorLPSRating" headerName="Vendor LPSRating" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+              {props.isVendorManagement && <AgGridColumn field="VendorClassification" headerName="Vendor Classification" cellRenderer={"hyphenFormatter"} ></AgGridColumn>}
+              {props.isVendorManagement && <AgGridColumn field="VendorLPSRating" headerName="Vendor LPSRating" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
               <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}              ></AgGridColumn>
               <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"}              ></AgGridColumn>
             </AgGridReact>
