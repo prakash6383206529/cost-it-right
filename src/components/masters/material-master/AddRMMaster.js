@@ -18,7 +18,7 @@ import { CheckApprovalApplicableMaster, checkForDecimalAndNull, checkForNull, ge
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { fetchSpecificationDataAPI } from "../../../actions/Common";
-import { SetRawMaterialDetails, createRM, getRMDataById, updateRMAPI } from "../actions/Material";
+import { SetRawMaterialDetails, createRM, getRMDataById, updateRMAPI, getMaterialTypeDataAPI } from "../actions/Material";
 import DayTime from "../../common/DayTimeWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
 import { isFinalApprover } from "../../costing/actions/Approval";
@@ -26,6 +26,8 @@ import { checkFinalUser } from "../../costing/actions/Costing";
 import { getUsersMasterLevelAPI } from "../../../actions/auth/AuthActions";
 import MasterSendForApproval from "../MasterSendForApproval";
 import WarningMessage from "../../common/WarningMessage";
+import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
+import HeaderTitle from "../../common/HeaderTitle";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
@@ -51,11 +53,14 @@ function AddRMMaster(props) {
         approvalObj: {},
         levelDetails: {},
         isDateChanged: false,
+        isCommodityOpen: false,
+
+        commodityDetails: [],
+
     })
     const isViewFlag = data?.isViewFlag ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const commodityAverage = useSelector((state) => state.material.commodityAverage)
-
 
 
 
@@ -104,8 +109,35 @@ function AddRMMaster(props) {
         control,
         name: ['Remarks']
     })
+    const fieldValueGrade = useWatch({
+        control,
+        name: ['RawMaterialGrade']
+    })
+
     useEffect(() => {
-    }, [fieldValue])
+
+        if (getValues('RawMaterialGrade')) {
+            const commodityVal = getValues('RawMaterialGrade').value;
+            dispatch(getMaterialTypeDataAPI('', commodityVal, (res) => {
+                if (res) {
+                    let Data = res.data.Data
+
+
+                    setValue('Material', { label: Data.MaterialType, value: Data.MaterialTypeId })
+                    dispatch(getMaterialTypeDataAPI(Data.MaterialTypeId, '', (res) => {
+                        let Data = res.data.Data
+                        setState(prevState => ({ ...prevState, commodityDetails: Data.MaterialCommodityStandardDetails }))
+
+                    }))
+                }
+            }))
+        }
+    }, [fieldValueGrade])
+
+    const commodityToggle = () => {
+        setState(prevState => ({ ...prevState, isCommodityOpen: !state.isCommodityOpen }))
+    }
+
     useEffect(() => {
         getDetails(data)
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
@@ -227,7 +259,7 @@ function AddRMMaster(props) {
 
 
     const onSubmit = debounce(handleSubmit((values) => {
-        console.log('values: ', values);
+
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -517,6 +549,38 @@ function AddRMMaster(props) {
                         useWatch={useWatch}
                         DataToChange={state.DataToChange}
                         data={data} />
+
+                    <Row className="mb-3 accordian-container">
+                        <Col md="6" className='d-flex align-items-center'>
+                            <HeaderTitle
+                                title={'Commodity Details:'}
+                                customClass={'Personal-Details'}
+                            />
+                        </Col>
+                        <Col md="6">
+                            <div className={'right-details text-right'}>
+                                <button className="btn btn-small-primary-circle ml-1" onClick={commodityToggle} type="button">{state.isCommodityOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
+                            </div>
+                        </Col>
+                        <AddIndexationMaterialListing
+                            states={state}
+                            isOpen={state.isCommodityOpen}
+                            commodityDetails={state.commodityDetails}
+                        />
+                    </Row>
+
+                    {/* {state.commodityDetails !== undefined && (
+                        <AddIndexationMaterialListing
+                            states={state}
+                            isOpen={state.isCommodityOpen}
+
+                            commodityDetails={state.commodityDetails}
+                        />
+                    )} */}
+
+
+
+
                     <RemarksAndAttachments Controller={Controller}
                         control={control}
                         register={register}

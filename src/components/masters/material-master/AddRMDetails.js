@@ -594,9 +594,7 @@ function AddRMDetails(props) {
     const rmToggle = () => {
         setState(prevState => ({ ...prevState, isRmOpen: !state.isRmOpen }))
     }
-    const commodityToggle = () => {
-        setState(prevState => ({ ...prevState, isCommodityOpen: !state.isCommodityOpen }))
-    }
+
     const openVendorAcc = () => {
         setState(prevState => ({ ...prevState, isVendorAccOpen: !state.isVendorAccOpen }))
     }
@@ -852,23 +850,7 @@ function AddRMDetails(props) {
                 }
 
             </Row>
-            <Row className="mb-3 accordian-container">
-                <Col md="6" className='d-flex align-items-center'>
-                    <HeaderTitle
-                        title={'Commodity Details:'}
-                        customClass={'Personal-Details'}
-                    />
-                </Col>
-                <Col md="6">
-                    <div className={'right-details text-right'}>
-                        <button className="btn btn-small-primary-circle ml-1" onClick={commodityToggle} type="button">{state.isCommodityOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
-                    </div>
-                </Col>
-                <AddIndexationMaterialListing
-                    isOpen={state.isCommodityOpen}
-                    commodityDetails={state.commodityDetails}
-                />
-            </Row>
+
             <Row className="mb-3 accordian-container">
                 <Col md="6" className='d-flex align-items-center'>
                     <HeaderTitle

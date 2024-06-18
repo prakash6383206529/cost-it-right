@@ -1,3 +1,4 @@
+
 import React from 'react'
 import { Row, Col } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
@@ -13,9 +14,10 @@ import NoContentFound from '../../common/NoContentFound'
 
 const gridOptions = {};
 function AddIndexationMaterialListing(props) {
-    console.log('props: ', props);
-    const CommodityDetails = props.commodityDetails
-    console.log('CommodityDetails: ', CommodityDetails);
+
+    const CommodityDetails = props.commodityDetails ? props.commodityDetails : [];
+
+
     const { setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -113,7 +115,7 @@ function AddIndexationMaterialListing(props) {
                                 {props.isOpen && (
                                     <Row>
                                         <Col md="12">
-                                            {console.log('CommodityDetails: ', CommodityDetails)}
+
                                             <div className={`ag-grid-wrapper budgeting-table  ${CommodityDetails && CommodityDetails?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                                                 <div className="ag-theme-material" >
                                                     <AgGridReact

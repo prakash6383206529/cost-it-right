@@ -1896,70 +1896,21 @@ function AddRMFinancialDetails(props) {
                                     customClassName=" withBorder"
                                 />
                             </Col>
-                        </>
-
-                    </div>
-                }
-            </Row >
-            <Row className="mb-3 accordian-container">
-                <Col md="6" className='d-flex align-items-center'>
-                    <HeaderTitle
-                        title={'Date:'}
-                        customClass={'Personal-Details'}
-                    />
-                </Col>
-                <Col md="6">
-                    <div className={'right-details text-right'}>
-                        <button className="btn btn-small-primary-circle ml-1" onClick={dateToggle} type="button">{state.isDateOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
-                    </div>
-                </Col>
-                {
-                    state.isDateOpen &&
-                    <div className="accordian-content row mx-0 w-100">
-                        {RMIndex && <><Col className="col-md-15">
-                            <div className="inputbox date-section">
-                                <DatePickerHookForm
-                                    name={`fromDate`}
-                                    label={'From Date'}
-                                    // handleChange={(date) => {
-                                    //     handleFromEffectiveDateChange(date);
-                                    // }}
-                                    rules={{ required: true }}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    showMonthDropdown
-                                    showYearDropdown
-                                    dateFormat="DD/MM/YYYY"
-                                    // maxDate={maxDate}
-                                    placeholder="Select date"
-                                    customClassName="withBorder"
-                                    className="withBorder"
-                                    autoComplete={"off"}
-                                    disabledKeyboardNavigation
-                                    onChangeRaw={(e) => e.preventDefault()}
-                                    disabled={false}
-                                    mandatory={true}
-                                    errors={errors && errors.fromDate}
-                                />
-                            </div>
-                        </Col>
                             <Col className="col-md-15">
-                                <div className="inputbox date-section">
+                                <div className="inputbox date-section mb-5">
                                     <DatePickerHookForm
-                                        name={`toDate`}
-                                        label={'To Date'}
-                                        // handleChange={(date) => {
-                                        //     handleToEffectiveDateChange(date);
-                                        // }}
+                                        name={`effectiveDate`}
+                                        label={'Effective Date'}
                                         rules={{ required: true }}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
+                                        selected={state.effectiveDate !== "" ? DayTime(state.effectiveDate).format('DD/MM/YYYY') : ""}
+                                        handleChange={handleEffectiveDateChange}
                                         showMonthDropdown
                                         showYearDropdown
                                         dateFormat="DD/MM/YYYY"
-                                        // minDate={minDate}
+                                        dropdownMode="select"
                                         placeholder="Select date"
                                         customClassName="withBorder"
                                         className="withBorder"
@@ -1968,43 +1919,15 @@ function AddRMFinancialDetails(props) {
                                         onChangeRaw={(e) => e.preventDefault()}
                                         disabled={false}
                                         mandatory={true}
-                                        errors={errors && errors.toDate}
+                                        errors={errors && errors.effectiveDate}
                                     />
                                 </div>
-                            </Col></>}
-                        <Col className="col-md-15">
-                            <div className="inputbox date-section mb-5">
-                                <DatePickerHookForm
-                                    name={`effectiveDate`}
-                                    label={'Effective Date'}
-                                    rules={{ required: true }}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    selected={state.effectiveDate !== "" ? DayTime(state.effectiveDate).format('DD/MM/YYYY') : ""}
-                                    handleChange={handleEffectiveDateChange}
-                                    showMonthDropdown
-                                    showYearDropdown
-                                    dateFormat="DD/MM/YYYY"
-                                    dropdownMode="select"
-                                    placeholder="Select date"
-                                    customClassName="withBorder"
-                                    className="withBorder"
-                                    autoComplete={"off"}
-                                    disabledKeyboardNavigation
-                                    onChangeRaw={(e) => e.preventDefault()}
-                                    disabled={false}
-                                    mandatory={true}
-                                    errors={errors && errors.effectiveDate}
-                                />
-                            </div>
-                        </Col>
+                            </Col>
+                        </>
 
                     </div>
                 }
-            </Row>
-
-
+            </Row >
 
             {
                 getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && state.isOpenConditionDrawer &&
