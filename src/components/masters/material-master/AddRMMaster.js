@@ -568,19 +568,6 @@ function AddRMMaster(props) {
                             commodityDetails={state.commodityDetails}
                         />
                     </Row>
-
-                    {/* {state.commodityDetails !== undefined && (
-                        <AddIndexationMaterialListing
-                            states={state}
-                            isOpen={state.isCommodityOpen}
-
-                            commodityDetails={state.commodityDetails}
-                        />
-                    )} */}
-
-
-
-
                     <RemarksAndAttachments Controller={Controller}
                         control={control}
                         register={register}
