@@ -684,8 +684,8 @@ function AddToComparisonDrawer(props) {
           obj.ScrapRecoveryPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ScrapRecoveryPercentage
           obj.IsShowCheckBoxForApproval = dataFromAPI?.IsShowCheckBoxForApproval
           obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.IsScrapRecoveryPercentageApplied
-          obj.OtherCostDetailsOverhead = setDynamicKeys(dummyData, 'OverHead')
-          obj.OtherCostDetailsProcess = setDynamicKeys(dummyData, 'Process')
+          obj.OtherCostDetailsOverhead = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'OverHead')
+          obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 
