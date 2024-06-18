@@ -50,6 +50,12 @@ export function PaginationWrappers(props) {
             case 'CommodityInIndex':
                 getDataList(newSkip, numericPageSize, true)
                 break;
+            case 'StandardizedCommodity':
+                getDataList(newSkip, numericPageSize, true)
+                break;
+            case 'IndexData':
+                getDataList(newSkip, numericPageSize, true)
+                break;
 
             default:
                 break;

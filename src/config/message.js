@@ -74,6 +74,9 @@ export const MESSAGES = {
   DELETE_RAW_MATERIAL_SUCCESS: 'Raw Material details deleted successfully',
   RAW_MATERIAL_DETAILS_UPDATE_SUCCESS: 'Raw material details updated successfully',
 
+  //INDEXATION
+  COMMODITYNAME_ADD_SUCCESS: 'Commodity added successfully',
+
   //RM GRADE
   GRADE_ADD_SUCCESS: 'RM grade added successfully',
   RM_GRADE_DELETE_ALERT: 'Are you sure you want to delete this grade?',

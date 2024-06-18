@@ -237,7 +237,7 @@ function CostingDetailSimulationDrawer(props) {
                                     </Row >
                                 }
                                 {isReportLoader && <LoaderCustom customClass={"report-costing"} />}
-                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props?.simulationDrawer} simulationMode={true} viewMode={true} master={masterID} isSimulationDone={isSimulation} drawerViewMode={true} isImpactDrawer={props?.isImpactDrawer} costingIdExist={true} fromCostingSummary={props?.fromCostingSummary} isRfqCosting={props?.isRfqCosting} isRejectedSummaryTable={props?.isRejectedSummaryTable} selectedTechnology={props?.selectedTechnology} />
+                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props?.simulationDrawer} simulationMode={true} viewMode={true} master={masterID} isSimulationDone={isSimulation} drawerViewMode={true} isImpactDrawer={props?.isImpactDrawer} costingIdExist={true} fromCostingSummary={props?.fromCostingSummary} isRfqCosting={props?.isRfqCosting} isRejectedSummaryTable={props?.isRejectedSummaryTable} selectedTechnology={props?.selectedTechnology} isFromAssemblyTechnology={props?.isFromAssemblyTechnology} />
                             </form>
                         </div>
                     </Container>

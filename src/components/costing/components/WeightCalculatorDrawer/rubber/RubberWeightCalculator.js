@@ -6,7 +6,7 @@ import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } fro
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { saveRawMaterialCalculationForRubberCompound } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
-import { debounce, trim } from 'lodash'
+import _, { debounce, trim } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalAndNumberValidation } from "../../../../../helper/validation";
 import NoContentFound from '../../../../common/NoContentFound'
@@ -74,9 +74,9 @@ function RubberWeightCalculator(props) {
 
         setTotalAdditionalRmCost(Number(checkForNull(total)))
         let grossRmRate = checkForNull(Number(getValues('grossRMRate')))
-        setValue('netTotalRmRate', checkForDecimalAndNull(Number(grossRmRate) + Number(total), getConfigurationKey().NoOfDecimalForPrice))
+        setValue('netTotalRmRate', checkForDecimalAndNull(Number(grossRmRate), getConfigurationKey().NoOfDecimalForPrice))
         let obj = { ...dataToSend }
-        obj.NetRMRate = Number(grossRmRate) + Number(total)
+        obj.NetRMRate = Number(grossRmRate)
         setDataToSend(obj)
 
         if (tableData && tableData.length === 0) {
@@ -138,6 +138,7 @@ function RubberWeightCalculator(props) {
 
             let rmCost = ((grossWeight * netRmRate) - checkForNull(Number(scrapCost)))
             setValue('rmCost', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
+            setValue('applicablityAdditional', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
 
             let obj = dataToSend
             obj.ScrapCost = scrapCost
@@ -157,25 +158,25 @@ function RubberWeightCalculator(props) {
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 
-    const percentageChange = (e) => {
+    const percentageChange = (e, index) => {
         calculateNetSCrapRate()
-        calculateNetRmRate()
+        calculateNetRmRate(e.target.value, index)
     }
-    const calculateNetRmRate = () => {
+    const calculateNetRmRate = (percentageValue, indexTemp) => {
 
         let grossRMRate = 0;
         grossRMRate = rmData && rmData.reduce((acc, val, index) => {
-            const Percentage = getValues(`${rmGridFields}.${index}.Percentage`)
-            return acc + checkForNull(Percentage * val.RMRate / 100)
+            const Percentage = (indexTemp === index) ? percentageValue : getValues(`rmGridFields.${index}.Percentage`)
+            return acc + (checkForNull(Percentage) * checkForNull(val.RMRate) / 100)
 
         }, 0)
         let obj = { ...dataToSend }
         obj.GrossRMRate = grossRMRate
-        obj.NetRMRate = Number(grossRMRate) + Number(totalAdditionalRmCost)
+        obj.NetRMRate = Number(grossRMRate)
         setDataToSend(obj)
         setValue('grossRMRate', checkForDecimalAndNull(grossRMRate, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue('applicablityAdditional', checkForDecimalAndNull(grossRMRate, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue('netTotalRmRate', checkForDecimalAndNull(Number(grossRMRate) + Number(totalAdditionalRmCost), getConfigurationKey().NoOfDecimalForPrice))
+        setValue('applicablityAdditional', checkForDecimalAndNull(obj.RawMaterialCost, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('netTotalRmRate', checkForDecimalAndNull(Number(grossRMRate), getConfigurationKey().NoOfDecimalForPrice))
     }
 
     const calculateNetSCrapRate = () => {
@@ -312,13 +313,15 @@ function RubberWeightCalculator(props) {
 
             let value = checkForNull(Number(getValues('rejectionValue')))
             let rmCost = checkForNull(Number(getValues('rmCost')))
+            let totalTableCost = checkForNull(getTotal(tableData))
+
             let obj = { ...dataToSend }
 
             if (value && rmCost) {
                 if (String(e.label) === String('Fixed')) {
-                    setValue('netRmc', checkForDecimalAndNull(value + rmCost, getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('netRmc', checkForDecimalAndNull(value + rmCost + totalTableCost, getConfigurationKey().NoOfDecimalForPrice))
                     setValue('rejectionCost', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
-                    obj.NetRawMaterialCost = value + rmCost
+                    obj.NetRawMaterialCost = value + rmCost + totalTableCost
                     obj.RejectionCost = value
                 } else {
 
@@ -330,9 +333,9 @@ function RubberWeightCalculator(props) {
                         }, 100);
                         return false
                     } else {
-                        setValue('netRmc', checkForDecimalAndNull(rmCost + ((value / 100) * rmCost), getConfigurationKey().NoOfDecimalForPrice))
+                        setValue('netRmc', checkForDecimalAndNull(rmCost + ((value / 100) * rmCost) + totalTableCost, getConfigurationKey().NoOfDecimalForPrice))
                         setValue('rejectionCost', checkForDecimalAndNull((value / 100) * rmCost, getConfigurationKey().NoOfDecimalForPrice))
-                        obj.NetRawMaterialCost = rmCost + ((value / 100) * rmCost)
+                        obj.NetRawMaterialCost = rmCost + ((value / 100) * rmCost) + totalTableCost
                         obj.RejectionCost = ((value / 100) * rmCost)
                     }
                 }
@@ -346,14 +349,16 @@ function RubberWeightCalculator(props) {
 
         let value = checkForNull(Number(e.target.value))
         let rmCost = checkForNull(Number(getValues('rmCost')))
+        let totalTableCost = checkForNull(getTotal(tableData))
+
         let obj = { ...dataToSend }
 
         if (rejectionCostType) {
 
             if (String(rejectionCostType.label) === String('Fixed')) {
-                setValue('netRmc', checkForDecimalAndNull(value + rmCost, getConfigurationKey().NoOfDecimalForPrice))
+                setValue('netRmc', checkForDecimalAndNull(value + rmCost + totalTableCost, getConfigurationKey().NoOfDecimalForPrice))
                 setValue('rejectionCost', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
-                obj.NetRawMaterialCost = value + rmCost
+                obj.NetRawMaterialCost = value + rmCost + totalTableCost
                 obj.RejectionCost = value
 
             } else {
@@ -367,8 +372,8 @@ function RubberWeightCalculator(props) {
                     return false
                 } else {
                     setValue('rejectionCost', checkForDecimalAndNull((value / 100) * rmCost, getConfigurationKey().NoOfDecimalForPrice))
-                    setValue('netRmc', checkForDecimalAndNull(rmCost + ((value / 100) * rmCost), getConfigurationKey().NoOfDecimalForPrice))
-                    obj.NetRawMaterialCost = rmCost + ((value / 100) * rmCost)
+                    setValue('netRmc', checkForDecimalAndNull(rmCost + ((value / 100) * rmCost) + totalTableCost, getConfigurationKey().NoOfDecimalForPrice))
+                    obj.NetRawMaterialCost = rmCost + ((value / 100) * rmCost) + totalTableCost
                     obj.RejectionCost = ((value / 100) * rmCost)
                 }
             }
@@ -381,13 +386,15 @@ function RubberWeightCalculator(props) {
 
         let value = checkForNull(Number(getValues('rejectionValue')))
         let rmCost = checkForNull(Number(getValues('rmCost')))
+        let totalTableCost = checkForNull(getTotal(tableData))
+
         let obj = dataToSend
 
         if (value && rmCost && rejectionCostType) {
             if (String(rejectionCostType.label) === String('Fixed')) {
-                setValue('netRmc', checkForDecimalAndNull(value + rmCost, getConfigurationKey().NoOfDecimalForPrice))
+                setValue('netRmc', checkForDecimalAndNull(value + rmCost + totalTableCost, getConfigurationKey().NoOfDecimalForPrice))
                 setValue('rejectionCost', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
-                obj.NetRawMaterialCost = value + rmCost
+                obj.NetRawMaterialCost = value + rmCost + totalTableCost
                 obj.RejectionCost = value
             } else {
                 if (value > 100) {
@@ -398,16 +405,16 @@ function RubberWeightCalculator(props) {
                     }, 100);
                     return false
                 } else {
-                    setValue('netRmc', checkForDecimalAndNull(rmCost + ((value / 100) * rmCost), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('netRmc', checkForDecimalAndNull(rmCost + ((value / 100) * rmCost) + totalTableCost, getConfigurationKey().NoOfDecimalForPrice))
                     setValue('rejectionCost', checkForDecimalAndNull((value / 100) * rmCost, getConfigurationKey().NoOfDecimalForPrice))
-                    obj.NetRawMaterialCost = rmCost + ((value / 100) * rmCost)
+                    obj.NetRawMaterialCost = rmCost + ((value / 100) * rmCost) + totalTableCost
                     obj.RejectionCost = ((value / 100) * rmCost)
                 }
             }
             setDataToSend(obj)
         } else {
 
-            setValue('netRmc', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
+            setValue('netRmc', checkForDecimalAndNull(rmCost + totalTableCost, getConfigurationKey().NoOfDecimalForPrice))
             obj.NetRawMaterialCost = rmCost
         }
     }
@@ -558,7 +565,7 @@ function RubberWeightCalculator(props) {
                                                             defaultValue={''}
                                                             className=""
                                                             customClassName={'withBorder'}
-                                                            handleChange={(e) => { percentageChange(e) }}
+                                                            handleChange={(e) => { percentageChange(e, index) }}
                                                             errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].Percentage : ''}
                                                             disabled={props.CostingViewMode || disablePercentFields}
                                                         />
@@ -586,6 +593,182 @@ function RubberWeightCalculator(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.grossRMRate}
+                                        disabled={true}
+                                    />
+                                </Col>
+                            </Row>
+
+                            <Row className={'mt25 mx-0'}>
+                                <Col md="3" >
+                                    <TooltipCustom disabledIcon={true} width={"240px"} id={'netTotalRmRate'} tooltipText={`Net RM Rate = Gross RM Rate + Total Additional RM Cost`} />
+                                    <TextFieldHookForm
+                                        label={`Net RM Rate`}
+                                        name={'netTotalRmRate'}
+                                        id={'netTotalRmRate'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            pattern: {
+
+                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                message: 'Invalid Number.',
+                                            },
+
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.netTotalRmRate}
+                                        disabled={true}
+                                    />
+                                </Col>
+
+                                <Col md="3" >
+                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'NetScrapRate'} tooltipText={'Net Scrap Rate = (RM1 Scrap Rate * Percentage / 100) + (RM2 Scrap Rate * Percentage / 100) + ....'} />
+                                    <TextFieldHookForm
+                                        label={`Net Scrap Rate`}
+                                        name={'NetScrapRate'}
+                                        id={'NetScrapRate'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.NetScrapRate}
+                                        disabled={true}
+                                    />
+                                </Col>
+
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Gross Weight (Kg)`}
+                                        name={'grossWeight'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            validate: { number, decimalAndNumberValidation },
+                                            min: {
+                                                value: getValues('finishedWeight'),
+                                                message: 'Gross weight should not be lesser than finish weight.'
+                                            },
+                                        }}
+                                        handleChange={handleGrossWeight}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.grossWeight}
+                                        disabled={props.CostingViewMode}
+                                    />
+                                </Col>
+
+
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Finished Weight (Kg)`}
+                                        name={'finishedWeight'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            validate: { number, decimalAndNumberValidation },
+                                            max: {
+                                                value: getValues('grossWeight'),
+                                                message: 'Finish weight should not be greater than gross weight.'
+                                            },
+                                        }}
+                                        handleChange={handleFinishWeight}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.finishedWeight}
+                                        disabled={props.CostingViewMode}
+                                    />
+                                </Col>
+
+                                <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-weight'} tooltipText={'Scrap weight = (Gross weight - Finish weight)'} />
+                                    <TextFieldHookForm
+                                        label={`Scrap Weight (Kg)`}
+                                        name={'scrapWeight'}
+                                        id={'scrap-weight'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.scrapWeight}
+                                        disabled={true}
+                                    />
+                                </Col>
+
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Scrap Recovery Percentage`}
+                                        name={'scrapRecoveryPercentage'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                            max: {
+                                                value: 100,
+                                                message: 'Percentage cannot be greater than 100'
+                                            },
+                                        }}
+                                        handleChange={() => { }}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.scrapRecoveryPercentage}
+                                        disabled={props.CostingViewMode}
+                                    />
+                                </Col>
+
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'scrapcost'} tooltipText={'Scrap cost = (Net Scrap Rate*Scrap Weight*Scrap Recovery Percentage)/100'} />
+                                    <TextFieldHookForm
+                                        label={`Scrap Cost`}
+                                        name={'scrapCost'}
+                                        id={'scrapcost'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.scrapCost}
+                                        disabled={true}
+                                    />
+                                </Col>
+
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'rmcost'} tooltipText={'RM Cost = (Gross Weight *Net RM Rate)-Scrap Cost '} />
+                                    <TextFieldHookForm
+                                        label={`RM Cost`}
+                                        name={'rmCost'}
+                                        id={'rmcost'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.rmCost}
                                         disabled={true}
                                     />
                                 </Col>
@@ -807,182 +990,6 @@ function RubberWeightCalculator(props) {
                                     </Col>
                                 </Row>
                             </Fragment>
-
-                            <Row className={'mt25 mx-0'}>
-                                <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} width={"240px"} id={'netTotalRmRate'} tooltipText={`Net RM Rate = Gross RM Rate + Total Additional RM Cost`} />
-                                    <TextFieldHookForm
-                                        label={`Net RM Rate`}
-                                        name={'netTotalRmRate'}
-                                        id={'netTotalRmRate'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
-                                            },
-
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.netTotalRmRate}
-                                        disabled={true}
-                                    />
-                                </Col>
-
-                                <Col md="3" >
-                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'NetScrapRate'} tooltipText={'Net Scrap Rate = (RM1 Scrap Rate * Percentage / 100) + (RM2 Scrap Rate * Percentage / 100) + ....'} />
-                                    <TextFieldHookForm
-                                        label={`Net Scrap Rate`}
-                                        name={'NetScrapRate'}
-                                        id={'NetScrapRate'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NetScrapRate}
-                                        disabled={true}
-                                    />
-                                </Col>
-
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Gross Weight (Kg)`}
-                                        name={'grossWeight'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            validate: { number, decimalAndNumberValidation },
-                                            min: {
-                                                value: getValues('finishedWeight'),
-                                                message: 'Gross weight should not be lesser than finish weight.'
-                                            },
-                                        }}
-                                        handleChange={handleGrossWeight}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.grossWeight}
-                                        disabled={props.CostingViewMode}
-                                    />
-                                </Col>
-
-
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Finished Weight (Kg)`}
-                                        name={'finishedWeight'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            validate: { number, decimalAndNumberValidation },
-                                            max: {
-                                                value: getValues('grossWeight'),
-                                                message: 'Finish weight should not be greater than gross weight.'
-                                            },
-                                        }}
-                                        handleChange={handleFinishWeight}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.finishedWeight}
-                                        disabled={props.CostingViewMode}
-                                    />
-                                </Col>
-
-                                <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-weight'} tooltipText={'Scrap weight = (Gross weight - Finish weight)'} />
-                                    <TextFieldHookForm
-                                        label={`Scrap Weight (Kg)`}
-                                        name={'scrapWeight'}
-                                        id={'scrap-weight'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.scrapWeight}
-                                        disabled={true}
-                                    />
-                                </Col>
-
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Scrap Recovery Percentage`}
-                                        name={'scrapRecoveryPercentage'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                            max: {
-                                                value: 100,
-                                                message: 'Percentage cannot be greater than 100'
-                                            },
-                                        }}
-                                        handleChange={() => { }}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.scrapRecoveryPercentage}
-                                        disabled={props.CostingViewMode}
-                                    />
-                                </Col>
-
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrapcost'} tooltipText={'Scrap cost = (Net Scrap Rate*Scrap Weight*Scrap Recovery Percentage)/100'} />
-                                    <TextFieldHookForm
-                                        label={`Scrap Cost`}
-                                        name={'scrapCost'}
-                                        id={'scrapcost'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.scrapCost}
-                                        disabled={true}
-                                    />
-                                </Col>
-
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'rmcost'} tooltipText={'RM Cost = (Gross Weight *Net RM Rate)-Scrap Cost '} />
-                                    <TextFieldHookForm
-                                        label={`RM Cost`}
-                                        name={'rmCost'}
-                                        id={'rmcost'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.rmCost}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>
 
                             <Row className={`mb-3 ${true ? 'mx-0' : ''}`}>
                                 <Col md="12">

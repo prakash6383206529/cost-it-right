@@ -76,7 +76,6 @@ function AddRMFinancialDetails(props) {
         showCircleJali: false,
         showScrap: false
     })
-    // console.log('showScrapKeys: ', showScrapKeys);
     const dispatch = useDispatch()
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
@@ -496,7 +495,6 @@ function AddRMFinancialDetails(props) {
     }
     const checkTechnology = () => {
         let obj = showRMScrapKeys(rawMaterailDetails?.Technology ? rawMaterailDetails?.Technology?.value : props?.DataToChange.TechnologyId)
-        // console.log('rawMaterailDetails: ', rawMaterailDetails);
         setShowScrapKeys(obj)
         setState(prevState => ({ ...prevState, showScrapKeys: obj }))
     }

@@ -12,7 +12,7 @@ function PopupMsgWrapper(props) {
     props.confirmPopup(e)
     setTimeout(() => {
       document.querySelector('body').removeAttribute('style')
-      if (props.redirectPath !== '') {
+      if (props.redirectPath !== '' && props?.redirectPath !== null && props?.redirectPath !== undefined) {
         history.push(SUPPLIER_MANAGEMENT, { vendorId: props.vendorId, plantId: props.plantId });
       }
     }, 200);

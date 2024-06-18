@@ -22,12 +22,13 @@ import { getVendorNameByVendorSelectList } from '../../actions/Common';
 import _ from 'lodash'
 import { MESSAGES } from '../../config/message';
 import LoaderCustom from '../common/LoaderCustom';
+import DayTime from '../common/DayTimeWrapper';
 
 const InitiateUnblocking = (props) => {
     const location = useLocation();
-    const { plantId , vendorId } = location.state || {};
-    
-  
+    const { plantId, vendorId } = location.state || {};
+
+
     const dispatch = useDispatch();
     const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
@@ -50,14 +51,14 @@ const InitiateUnblocking = (props) => {
     const [CanGoForApproval, setCanGoForApproval] = useState(false)
 
     useEffect(() => {
-if(vendorId?.label !== '' && plantId?.label  !== '' ){
-    setValue('vendor', vendorId)
-    setSelectedVendor(vendorId)
-    if(plantId){
-        setValue('Plant', plantId)
-        setSelectedPlant(plantId)
-    }
-}
+        if (vendorId?.label !== '' && plantId?.label !== '') {
+            setValue('vendor', vendorId)
+            setSelectedVendor(vendorId)
+            if (plantId) {
+                setValue('Plant', plantId)
+                setSelectedPlant(plantId)
+            }
+        }
     }, [location.state]);
     useEffect(() => {
         setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
@@ -152,7 +153,6 @@ if(vendorId?.label !== '' && plantId?.label  !== '' ){
 
 
     const statusButtonFormatter = (status, fieldName) => {
-        console.log('status: ', status);
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
@@ -418,6 +418,7 @@ if(vendorId?.label !== '' && plantId?.label  !== '' ){
                         {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
 
                         {((selectedVendor && selectedPlant) || (props?.isMasterSummaryDrawer)) && (
+
                             <>
 
                                 {(!props?.isMasterSummaryDrawer) && <div>
@@ -425,12 +426,13 @@ if(vendorId?.label !== '' && plantId?.label  !== '' ){
                                         <Row>
                                             <Col md="3">
                                                 <div className="approval-section mb-2 mt-2">
-                                                    <div className="left-border"><div className='d-flex'>Approval for <TooltipCustom id="Primary_Contact" customClass="mt2 pl-1 ml-5" 
-      tooltipText="Click checkboxes to send deviation fro approval. If unavailable for LPS or classification, deviation is under approval or approved."
-      /></div></div>                                                    <div className="approval-checkboxes">
+                                                    <div className="left-border"><div className='d-flex'>Approval for <TooltipCustom id="Primary_Contact" customClass="mt2 pl-1 ml-5"
+                                                        tooltipText="Click checkboxes to send deviation for approval. If unavailable for LPS or classification, deviation is under approval or approved."
+                                                    /></div></div>
+                                                    <div className="approval-checkboxes">
                                                         {deviationData && (
                                                             <div>
-                                                                {!deviationData?.ClassificationDeviationIsInApprovalProcess && <label id={`vendorClassification_Checkbox_${deviationData?.ClassificationStatus}`} className={`custom-checkbox ${deviationData?.ClassificationStatus === "Blocked" ? "" : "disabled"}`}>
+                                                                {(!deviationData?.ClassificationDeviationIsInApprovalProcess && !deviationData?.ClassificationDeviationIsApproved) && <label id={`vendorClassification_Checkbox_${deviationData?.ClassificationStatus}`} className={`custom-checkbox ${deviationData?.ClassificationStatus === "Blocked" ? "" : "disabled"}`}>
                                                                     Classification
                                                                     <input
                                                                         type="checkbox"
@@ -441,7 +443,7 @@ if(vendorId?.label !== '' && plantId?.label  !== '' ){
                                                                     <span className="before-box" />
                                                                 </label>}
 
-                                                                {!deviationData?.LPSRatingDeviationIsInApprovalProcess && <label id={`LPS_Checkbox_${deviationData?.LPSRatingStatus}`} className={`custom-checkbox ${deviationData?.LPSRatingStatus === "Blocked" ? "" : "disabled"}`}>
+                                                                {(!deviationData?.LPSRatingDeviationIsInApprovalProcess && !deviationData?.LPSRatingDeviationIsApproved) && <label id={`LPS_Checkbox_${deviationData?.LPSRatingStatus}`} className={`custom-checkbox ${deviationData?.LPSRatingStatus === "Blocked" ? "" : "disabled"}`}>
                                                                     LPS Rating
                                                                     <input
                                                                         type="checkbox"
@@ -477,6 +479,9 @@ if(vendorId?.label !== '' && plantId?.label  !== '' ){
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <th>Classification Status</th>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <th>LPS Rating</th>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <th>LPS Rating Status</th>}
+                                                    {((props?.isMasterSummaryDrawer)) && <th>Deviation Duration</th>}
+                                                    {((props?.isMasterSummaryDrawer)) && <th>Deviation Start Date</th>}
+                                                    {((props?.isMasterSummaryDrawer)) && <th>Deviation End Date</th>}
                                                     <th>Division</th>
                                                     {/* <th>Department (Code)</th> */}
 
@@ -490,6 +495,9 @@ if(vendorId?.label !== '' && plantId?.label  !== '' ){
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.ClassificationDeviationIsApproved, "ClassificationStatus")}</td>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.VendorLPSRating ?? '-'}</td>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'LPSRating') || !props?.isMasterSummaryDrawer) && <td>{statusButtonFormatter((props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.LPSRatingDeviationIsApproved, "LPSRatingStatus")}</td>}
+                                                    {((props?.isMasterSummaryDrawer)) && <td>{props?.deviationData?.DeviationDuration}</td>}
+                                                    {((props?.isMasterSummaryDrawer)) && <td>{props?.deviationData?.DeviationApprovalStartDate ? DayTime(props?.deviationData?.DeviationApprovalStartDate).format('DD/MM/YYYY') : '-'}</td>}
+                                                    {((props?.isMasterSummaryDrawer)) && <td>{props?.deviationData?.DeviationApprovalEndDate ? DayTime(props?.deviationData?.DeviationApprovalEndDate).format('DD/MM/YYYY') : '-'}</td>}
                                                     <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.Division ?? '-'}</td>
                                                     {/* <td>{(props?.isMasterSummaryDrawer ? props.deviationData : deviationData)?.DepartmentName ?? '-'}</td> */}
                                                 </tr>

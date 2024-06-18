@@ -20,11 +20,10 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.11.208:3030/api/v1`
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
-//const BASE_URL = `http://10.10.1.100:10162/api/v1`
-// const BASE_URL = `http://10.10.1.100:10172/api/v1`
-// const BASE_URL = `http://10.10.8.160/api/v1`;  //
+// const BASE_URL = `http://10.10.1.100:10162/api/v1`
+//const BASE_URL = `http://10.10.1.100:10172/api/v1`
+// const BASE_URL = `http://10.10.8.160/api/v1`;//
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.120:81/api/v1`;
@@ -82,13 +81,22 @@ export const API = {
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
 
   ///INDEXATION
-  getCommoditySelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
-  getCommodityNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
-  getCommodityCustomNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
-  createCommodityStandardization: `${BASE_URL}/masters-material/create-material-type`,
+  getCommoditySelectList: `${BASE_URL}/masters-material/select-list-index-exchange`,
+  getCommodityNameSelectList: `${BASE_URL}/masters-material/select-list-commodity`,
+  getCommodityCustomNameSelectList: `${BASE_URL}/masters-material/select-list-commodity-standard-name`,
+  createCommodityStandardization: `${BASE_URL}/masters-material/create-commodity-standardization`,
   getCommodityStandardizationDataList: `${BASE_URL}/masters-material/get-all-material-type`,
-  getCommodityIndexDataList: `${BASE_URL}/masters-material/get-commodity-exchange`,
+  getCommodityIndexDataList: `${BASE_URL}/masters-material/get-index-exchange`,
   getCommodityInIndexDataList: `${BASE_URL}/masters-material/get-commodity`,
+  getStandardizedCommodityDataList: `${BASE_URL}/masters-material/get-commodity-standardization`,
+  getIndexDataList: `${BASE_URL}/masters-material/get-commodity-index-rate-details`,
+  deleteIndexData: `${BASE_URL}/masters-material/delete-commodity-material-details`,
+  updateIndexData: `${BASE_URL}/masters-material/update-commodity-material-details`,
+  createIndexData: `${BASE_URL}/masters-material/create-commodity-material-details`,
+  bulkUploadIndexData: `${BASE_URL}/masters-material/bulk-upload-for-commodity-material-details`,
+  bulkUploadStandardizedCommodity: `${BASE_URL}/masters-material/bulk-upload-for-commodity-exchange`,
+  updateCommodityStandardization: `${BASE_URL}/masters-material/update-commodity-standardization`,
+  createCommodityCustomName: `${BASE_URL}/masters-material/create-commodity-standard-name`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -1213,6 +1221,10 @@ export const GET_INDEXCOMMODITY_DATALIST_SUCCESS = 'GET_INDEXCOMMODITY_DATALIST_
 export const GET_COMMODITYININDEX_DATALIST_SUCCESS = 'GET_COMMODITYININDEX_DATALIST_SUCCESS'
 export const GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD = 'GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD'
 export const GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD = 'GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD'
+export const GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS = 'GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS'
+export const GET_STANDARDIZEDCOMMODITY_FOR_DOWNLOAD = 'GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD'
+export const GET_INDEXDATA_LIST_SUCCESS = 'GET_INDEXDATA_LIST_SUCCESS'
+export const GET_INDEXDATA_FOR_DOWNLOAD = 'GET_INDEXDATA_FOR_DOWNLOAD'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
@@ -1686,6 +1698,8 @@ export const RESET_EXCHANGE_RATE_DATA = 'RESET_EXCHANGE_RATE_DATA'
 export const SET_CALL_ST_API = 'SET_CALL_ST_API';
 export const GET_COSTING_PAYMENT_TERM_DETAIL = "GET_COSTING_PAYMENT_TERM_DETAIL"
 export const SET_PAYMENT_TERM_COST = "SET_PAYMENT_TERM_COST"
+export const SET_COSTING_VIEW_DATA_FOR_ASSEMBLY = 'SET_COSTING_VIEW_DATA_FOR_ASSEMBLY';
+
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
 export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
@@ -2805,8 +2819,11 @@ export const SUB_ASSEMBLY = 'Sub Assembly';
 //MASTER NAMES FOR BULK UPLOAD
 export const RMDOMESTICBULKUPLOAD = 'RM Domestic';
 export const RMIMPORTBULKUPLOAD = 'RM Import';
-export const RMSPECIFICATION = 'RM Specification'
-export const RMMATERIALBULKUPLOAD = 'RM Index Data'
+export const RMSPECIFICATION = 'RM Specification';
+export const RMMATERIALBULKUPLOAD = 'Index Data';
+export const INDEXCOMMODITYBULKUPLOAD = 'Index';
+export const RMDETAILBULKUPLOAD = 'Standardized Commodity Name';
+export const COMMODITYININDEXBULKUPLOAD = 'Commodity (In Index)';
 export const BOPDOMESTICBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Domestic";
 export const INSERTDOMESTICBULKUPLOAD = 'Insert Domestic';
 export const BOPIMPORTBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Import";
@@ -3032,8 +3049,12 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 export const PartTypeIDFromAPI = 2
 export const RMIndex = true
+export const showLogoFromDataBase = false
+
+export const showDynamicKeys = true
+
 //VERSION 
-export const VERSION = "V2.2.21";
+export const VERSION = "V2.2.22.5";
 
 
 

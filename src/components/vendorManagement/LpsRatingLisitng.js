@@ -15,6 +15,9 @@ import LoaderCustom from '../common/LoaderCustom';
 import Toaster from '../common/Toaster';
 import DayTime from '../common/DayTimeWrapper';
 import { filterParams } from '../common/DateFilter';
+import Button from '../layout/Button';
+
+const gridOptions = {};
 
 const LpsRatingListing = () => {
     const searchRef = useRef(null);
@@ -169,15 +172,32 @@ const LpsRatingListing = () => {
         effectiveDateFormatter: effectiveDateFormatter
     };
 
+    const resetState = () => {
+        gridApi.setQuickFilter(null)
+        gridApi.deselectAll();
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+        if (searchRef.current) {
+            searchRef.current.value = '';
+        }
+    }
+
     return (
         <>
             {/* {(isLoader) ? <LoaderCustom customClass="loader-center" /> : */}
 
             <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
-                <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
-
-                <Row className="no-filter-row">
-                    <Col md={6} className="text-right filter-block"></Col>
+                <Row className="pb-4 mb-3 no-filter-row zindex-2">
+                    <Col md={3}>
+                        <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+                    </Col>
+                    <Col md={9}>
+                        <div className="d-flex justify-content-end bd-highlight w100 ">
+                            <div className="d-flex">
+                                <Button id={"LPSRating_Listing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                            </div>
+                        </div>
+                    </Col>
                 </Row>
                 {gridLoad && <div className={`ag-grid-wrapper height-width-wrapper`}>
                     <div className={`ag-theme-material`}>
@@ -190,6 +210,7 @@ const LpsRatingListing = () => {
                                 rowData={lpsRatingData}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 onGridReady={onGridReady}
+                                gridOptions={gridOptions}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
                                     imagClass: 'imagClass pt-3'
