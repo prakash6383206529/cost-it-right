@@ -3046,9 +3046,10 @@ export const RMIndex = true
 export const showLogoFromDataBase = false
 
 export const showDynamicKeys = true
+export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V2.2.22.5";
+export const VERSION = "V2.2.22.6";
 
 
 
