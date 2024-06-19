@@ -33,8 +33,8 @@ const VendorMaster = () => {
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
             const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
-            const isVendorManagement = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === VENDOR_MANAGEMENT_ROLE);;
-            if (isVendorManagement.ModuleName === VENDOR_MANAGEMENT_ROLE) {
+            const isVendorManagement = topAndLeftMenuData && topAndLeftMenuData?.find((el) => el?.ModuleName === VENDOR_MANAGEMENT_ROLE);;
+            if (isVendorManagement?.ModuleName === VENDOR_MANAGEMENT_ROLE) {
                 setIsVendorManagement(true);
             }
             const accessData = Data && Data.Pages.find((el) => el.PageName === PART);
