@@ -60,7 +60,7 @@ const ViewDetailedForms = (props) => {
 
                 if (isAddMoreDetails === true) {
                     return (
-                        <AddMoreDetails editDetails={{ Id: data.id, isViewMode: true, isViewFlag: true, isEditFlag: true }}
+                        <AddMoreDetails editDetails={state.editDetails}
                             data={{ isViewFlag: true, isCostingDrawer: true }}
                             hideMoreDetailsForm={hideMoreDetailsForm} isMachineAssociated={state.isMachineAssociated} />
                     );
