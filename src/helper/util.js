@@ -1629,3 +1629,6 @@ export const changeBOPLabel = (arr, bopReplacement) => {
   })
   return tempArr
 }
+export const getFilteredDropdownOptions = (options, selectedValues) => {
+  return options.filter(option => !selectedValues.includes(option.value));
+};

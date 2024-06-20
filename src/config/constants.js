@@ -20,6 +20,7 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+//const BASE_URL = `http://10.10.11.81:8080/api/v1`
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10162/api/v1`
 //const BASE_URL = `http://10.10.1.100:10172/api/v1`
@@ -30,6 +31,8 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 //const BASE_URL = `http://10.10.1.100:10152/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`;
 //FILE URL
+//http://10.10.8.120:1005/
+
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -1083,8 +1086,11 @@ export const API = {
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   createNFRBOMDetails: `${BASE_URL}/nfr/create-nfr-bom-details`,
-  getrRqVendorDetails: `${BASE_URL}/rfq-quotation/get-rfq-vendor-details`,
+  getrRqVendorDetails: `${BASE_URL}/rfq-quotation/get-rfq-vendor-detail`,
   getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
+  saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
+  getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
+  getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -1137,7 +1143,8 @@ export const API = {
   getCommunicationHistory: `${BASE_URL}/rfq-quotation/get-communication-history`,
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
-  getAssemblyChildpart: `${BASE_URL}/rfq-quotation/get-assembly-childpart`,
+  getAssemblyChildpart: `${BASE_URL}/rfq-quotation/get-assembly-child-part`,
+  getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
 
   //vendor management
   getVendorClassificationList: `${BASE_URL}/vendor/get-classifications-status`,
@@ -1937,6 +1944,9 @@ export const SET_SAP_DATA = 'SET_SAP_DATA'
 export const GET_ASSEMBLY_CHILD_SELECT_LIST = 'GET_ASSEMBLY_CHILD_SELECT_LIST'
 export const GET_RFQ_VENDOR_DETAIL = 'GET_RFQ_VENDOR_DETAIL'
 export const GET_TARGET_PRICE = 'GET_TARGET_PRICE'
+export const GET_ASSEMBLY_CHILD_PART = "GET_ASSEMBLY_CHILD_PART"
+export const GET_RFQ_PART_DETAILS = "GET_RFQ_PART_DETAILS"
+export const GET_RFQ_RAISE_NUMBER = "GET_RFQ_RAISE_NUMBER"
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'

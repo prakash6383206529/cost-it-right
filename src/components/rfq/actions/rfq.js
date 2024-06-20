@@ -12,6 +12,9 @@ import {
     GET_NFR_SELECT_LIST,
     GET_RFQ_VENDOR_DETAIL,
     GET_TARGET_PRICE,
+    GET_ASSEMBLY_CHILD_PART,
+    GET_RFQ_PART_DETAILS,
+    GET_RFQ_RAISE_NUMBER,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -22,7 +25,7 @@ import Toaster from '../../common/Toaster';
 export function getQuotationList(DepartmentCode, Timezone, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${''}&LoggedInUserId=${loggedInUserId()}&Timezone=${Timezone}`, config());
+        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${DepartmentCode}&LoggedInUserId=${loggedInUserId()}&Timezone=${Timezone}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -432,15 +435,44 @@ export function getPartNFRRMList(nfrId, partId, callback) {
         });
     };
 }
-export function getTargetPrice(plantId, technologyId, partId, callback) {
+export function getTargetPrice(plantId, partId, technologyId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getTargetPrice}?partId=${partId}&plantId=${plantId}&technologyId=${technologyId}`, config());
+        const request = axios.get(`${API.getTargetPrice}?plantId=${plantId}&partId=${partId}&technologyId=${technologyId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
                 dispatch({
                     type: GET_TARGET_PRICE,
-                    payload: response.status === 204 ? [] : response.DataList
+                    payload: response.status === 204 ? [] : response?.data?.Data
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function setVendorDetails(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_RFQ_VENDOR_DETAIL,
+            payload: data || {},
+        });
+    }
+};
+export function getAssemblyChildpart(partId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getAssemblyChildpart}?partId=${partId}`, config());
+        request.then((response) => {
+
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: GET_ASSEMBLY_CHILD_PART,
+                    payload: response.status === 204 ? [] : response?.data?.DataList
                 })
 
                 callback(response);
@@ -459,7 +491,7 @@ export function getrRqVendorDetails(vendorId, callback) {
 
                 dispatch({
                     type: GET_RFQ_VENDOR_DETAIL,
-                    payload: response.status === 204 ? [] : response.DataList
+                    payload: response.status === 204 ? [] : response?.data?.Data
                 })
 
                 callback(response);
@@ -470,10 +502,20 @@ export function getrRqVendorDetails(vendorId, callback) {
         });
     };
 }
-export function getAssemblyChildpart(partNumber, callback) {
-    return axios.get(`${API.getAssemblyChildpart}?${partNumber ? `&partNumber=${partNumber}` : ''}}`, config()).catch(error => {
-        apiErrors(error);
-        callback(error);
-        return Promise.reject(error)
-    });
+
+export function saveRfqPartDetails(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(API.saveRfqPartDetails, data, config());
+        request.then((response) => {
+
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
 }

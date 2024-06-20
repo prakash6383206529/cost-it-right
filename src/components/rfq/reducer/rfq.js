@@ -1,4 +1,4 @@
-import { CHECK_RFQ_BULK_UPLOAD, GET_NFR_SELECT_LIST, GET_RFQ_VENDOR_DETAIL, GET_TARGET_PRICE, SELECTED_ROW_ARRAY, SET_QUOTATION_ID_FOR_RFQ } from "../../../config/constants";
+import { CHECK_RFQ_BULK_UPLOAD, GET_ASSEMBLY_CHILD_PART, GET_NFR_SELECT_LIST, GET_RFQ_PART_DETAILS, GET_RFQ_RAISE_NUMBER, GET_RFQ_VENDOR_DETAIL, GET_TARGET_PRICE, SELECTED_ROW_ARRAY, SET_QUOTATION_ID_FOR_RFQ } from "../../../config/constants";
 
 const initialState = {
     checkRFQPartBulkUpload: [],
@@ -42,6 +42,24 @@ export default function RFQReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 getTargetprice: action.payload,
+            }
+        case GET_ASSEMBLY_CHILD_PART:
+            return {
+                ...state,
+                loading: false,
+                getChildParts: action.payload,
+            }
+        case GET_RFQ_PART_DETAILS:
+            return {
+                ...state,
+                loading: false,
+                getRfqPartDetails: action.payload,
+            }
+        case GET_RFQ_RAISE_NUMBER:
+            return {
+                ...state,
+                loading: false,
+                getRfqRaiseNumber: action.payload,
             }
         default:
             return state;

@@ -15,22 +15,20 @@ import { MESSAGES } from '../../config/message'
 import classnames from 'classnames';
 import redcrossImg from '../../assests/images/red-cross.png'
 
-import { alphaNumeric, checkWhiteSpaces, required } from '../../helper'
+import { alphaNumeric, checkWhiteSpaces, getFilteredDropdownOptions, required } from '../../helper'
 import Button from '../layout/Button'
 import HeaderTitle from '../common/HeaderTitle'
 import { REMARKMAXLENGTH } from '../../config/masterData'
 import Dropzone from 'react-dropzone-uploader'
 import LoaderCustom from '../common/LoaderCustom'
 import Toaster from '../common/Toaster'
-import { fileUploadQuotation, getAssemblyChildpart } from './actions/rfq'
-
-
+import { fileUploadQuotation, getAssemblyChildpart, getRfqPartDetails } from './actions/rfq'
 
 function ViewDrawer(props) {
     const dispatch = useDispatch()
     const dropzone = useRef(null);
 
-    const { type, isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, childPartFiles, setChildPartFiles } = props
+    const { type, isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark } = props
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -39,6 +37,8 @@ function ViewDrawer(props) {
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
     const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
+    const { getChildParts } = useSelector(state => state?.rfq);
+
     const [rmspecification, setRMSpecification] = useState([])
     const [rmName, setRMName] = useState([])
     const [rmgrade, setRMGrade] = useState([])
@@ -50,9 +50,8 @@ function ViewDrawer(props) {
     const [inputLoader, setInputLoader] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
     const [activeTab, setActiveTab] = useState("1");
-    const [specification, setSpecification] = useState([])
+    const [specification, setSpecification] = useState("")
     const [editIndex, setEditIndex] = useState(null);  // To keep track of the index being edited
-    const [remark, setRemark] = useState("");  // State for remark
     const [files, setFiles] = useState([]);  // State for files
     const [attachmentLoader, setAttachmentLoader] = useState(false);
     const plantLoaderObj = { isLoader: inputLoader }
@@ -60,14 +59,50 @@ function ViewDrawer(props) {
     const [IsOpen, setIsOpen] = useState(false);
     const [isDisable, setIsDisable] = useState(false)
     const [valueState, setValueState] = useState('')
-
-
+    const [selectedValues, setSelectedValues] = useState([]);
+    const [childPart, setChildPart] = useState([])
     useEffect(() => {
         setValue('AssemblyPartNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
         if (type === Component) {
             setValue('partNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
         }
+        dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => { }))
     }, [AssemblyPartNumber])
+    // useEffect(() => {
+    //     dispatch(getRfqPartDetails((res) => { }))
+    // }, [])
+
+    // useEffect(() => {
+    //     // if ((isEditFlag || isViewFlag) && getChildParts) {
+    //     //const partList = getChildParts() || [];
+    //     const partList = rfq?.PartList || [];
+
+    //     const allSpecifications = partList.flatMap(part =>
+    //         part.PartSpecificationList?.PartSpecification || []
+    //     );
+
+    //     setSpecificationList(allSpecifications);
+    //     const allRMDetails = partList.flatMap(part =>
+    //         part.RMDetails || []
+    //     );
+    //     setTableData(allRMDetails);
+    //     const allRemarks = partList
+    //         ? partList
+    //             .filter(part => !part.IsChildPart) // Filter out parts where IsChildPart is false
+    //             .map(part => part.Remarks)         // Map to an array of remarks
+    //             .join(", ")                        // Join remarks into a single string separated by ", "
+    //         : "";
+    //     
+    //     setValue('remark', allRemarks)
+
+    //     setRemark(allRemarks);
+    //     const allFiles = partList.flatMap(part =>
+    //         part.PartAttachments || []
+    //     );
+
+    //     setChildPartFiles(allFiles);
+    // }, [getChildParts]);
+
     const removeAddedParts = (arr) => {
         const filteredArray = arr.filter((item) => {
             return !selectedparts.some((element) => {
@@ -76,38 +111,15 @@ function ViewDrawer(props) {
         });
         return filteredArray
     }
-    const partFilterList = async (inputValue) => {
+    const validateForm = () => {
+        return (
+            specification !== '' &&
+            valueState !== '' &&
+            remark !== '' &&
+            files.length > 0
+        );
+    };
 
-
-        const resultInput = inputValue.slice(0, searchCount)
-        const nfrChange = nfrId?.value;
-        if (inputValue?.length >= searchCount && (partName !== resultInput || nfrChange !== storeNfrId)) {
-            const res = await getAssemblyChildpart(AssemblyPartNumber)
-            setPartName(resultInput)
-            setStoreNfrId(nfrId?.value)
-            let partDataAPI = res?.data?.DataList
-            if (inputValue) {
-                let temp = [...autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)]
-                return removeAddedParts(temp)
-
-            } else {
-                return removeAddedParts([...partDataAPI])
-            }
-        }
-        else {
-            if (inputValue?.length < searchCount) return false
-            else {
-                let partData = reactLocalStorage.getObject('PartData')
-                if (inputValue) {
-                    let arr = [...autoCompleteDropdownPart(inputValue, partData, false, [], false)]
-                    return removeAddedParts([...arr])
-                } else {
-                    return removeAddedParts([...partData])
-                }
-            }
-        }
-
-    }
     const toggleDrawer = (event) => {
 
         if (
@@ -121,6 +133,15 @@ function ViewDrawer(props) {
     const renderListingRM = (label) => {
 
         let opts1 = []
+        if (label === 'childPartName') {
+            const opts1 = [];
+
+            getChildParts && getChildParts?.map(item => {
+                // if (item.Value === '0') return false;
+                opts1.push({ label: item.Text, value: item.Value })
+            });
+            return getFilteredDropdownOptions(opts1, selectedValues);
+        }
         if (label === 'rmname') {
             if (rawMaterialNameSelectList?.length > 0) {
                 let opts = [...rawMaterialNameSelectList]
@@ -132,6 +153,7 @@ function ViewDrawer(props) {
                     return null
                 })
             }
+            return opts1
         }
         if (label === 'rmgrade') {
             if (gradeSelectList?.length > 0) {
@@ -144,6 +166,7 @@ function ViewDrawer(props) {
                     return null
                 })
             }
+            return opts1
         }
 
         if (label === 'rmspecification') {
@@ -157,9 +180,14 @@ function ViewDrawer(props) {
                     return null
                 })
             }
+            return opts1
         }
+    }
+    const handleChildPart = (newValue) => {
 
-        return opts1
+        setSelectedValues(prevSelected => [...prevSelected, newValue?.value]);
+        setChildPart({ label: newValue?.label, value: newValue?.value })
+
     }
     const handleRMName = (newValue) => {
         setRMName({ label: newValue?.label, value: newValue?.value })
@@ -178,8 +206,10 @@ function ViewDrawer(props) {
     const handleRMSpecification = (newValue) => {
         setRMSpecification({ label: newValue?.label, value: newValue?.value })
     }
+    const handleRemarkChange = (newValue) => {
+        setRemark(newValue);
+    }
     const resetFormAndDropdowns = () => {
-
         setValue('partNumber', '')
         setValue('RMName', '')
         setValue('RMGrade', '')
@@ -189,17 +219,16 @@ function ViewDrawer(props) {
     };
 
     const handleSpecification = (newValue) => {
-        setSpecification({ label: newValue?.label, value: newValue?.value })
+        setSpecification(newValue)
     }
 
     const handleValue = (value) => {
         setValueState(value)
     }
-
     /**
-     * @method addRow
-     * @description For updating and adding row
-     */
+         * @method addRow
+         * @description For updating and adding row
+         */
     const addRow = (activeTab) => {
         const formData = getValues();
         const partNumberLabel = formData.partNumber?.label || '-';
@@ -226,6 +255,7 @@ function ViewDrawer(props) {
         };
         const specificationObj = {
             Specification: specificationValue,
+            SpecificationId: rmSpecificationId,
             Value: value,
         }
 
@@ -238,25 +268,64 @@ function ViewDrawer(props) {
             setTableData(newData);
             setIsEdit(false);
             setEditIndex(null);
+            resetFormAndDropdowns();
         } else if (activeTab === "2") {
-            setSpecificationList(prevData => [...specificationList, specificationObj]);
+            const specification = getValues('Specification');
+            const IsValueMissing = !getValues('Value');
+            if (specification !== undefined && IsValueMissing) {
+                Toaster.warning("Please enter value");
+            }
+
+            else if (specificationList.length >= 3) {
+                Toaster.warning("You can only add up to 3 specifications.");
+            } else {
+
+                setSpecificationList(prevData => [...prevData, specificationObj]);
+                resetFormAndDropdowns();
+            }
 
         } else {
-            setTableData(prevData => [...prevData, obj]);
-        }
+            const { label } = getValues('RMName') || {};
+            const isRMGradeMissing = !getValues('RMGrade');
+            const isRMSpecificationMissing = !getValues('RMSpecification');
+            if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
+                const missingRequirements = [];
+                if (isRMGradeMissing) {
+                    missingRequirements.push('RM Grade');
+                }
+                if (isRMSpecificationMissing) {
+                    missingRequirements.push('RM Specification');
+                }
+                const message = `Please select ${missingRequirements.join(' and ')}`;
+                Toaster.warning(message);
+            } else {
 
-        resetFormAndDropdowns(); // Reset form and dropdowns after adding or updating
+                setTableData(prevData => [...prevData, obj]);
+
+                resetFormAndDropdowns();
+            }
+        }
     };
 
 
-
     const rateTableReset = () => {
-        cancelUpdate()
+        setTableData([]);
+        setSpecificationList([]);
+        resetFormAndDropdowns();
+    }
+    const handleCloseDrawer = () => {
+        const isFormValid = validateForm(); // Implement this function to check form validity
+        if (!isFormValid) {
+            Toaster.warning('Please fill in all required fields.');
+        } else {
+            props?.closeDrawer('');
+        }
+
     }
     const cancelUpdate = () => {
         setIsEdit(false);
-        setTableData([]);
-        setSpecificationList([]);
+        // setTableData([]);
+        // setSpecificationList([]);
         resetFormAndDropdowns();
     };
 
@@ -266,16 +335,19 @@ function ViewDrawer(props) {
       */
     const deleteRow = (index, activeTab) => {
         const tempObj = tableData[index];
-
-
         if (activeTab === "2") {
             const newSpecificationList = [...specificationList];
             newSpecificationList.splice(index, 1);
             setSpecificationList(newSpecificationList);
         } else {
+            if (type === Component) {
+                setValue('partNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
+            }
+            const removedItemPartNumber = tempObj.partId;
             const newData = [...tableData];
             newData.splice(index, 1);
             setTableData(newData);
+            setSelectedValues(prevSelected => prevSelected.filter(value => value !== removedItemPartNumber));
         }
     };
     /**
@@ -285,7 +357,7 @@ function ViewDrawer(props) {
     const editRow = (index, activeTab) => {
         setIsEdit(true);
         if (activeTab === "2") {
-            const editSpecification = rmSpecification[index]
+            const editSpecification = specificationList[index]
             setValue('Specification', editSpecification.Specification);
             setValue('Value', editSpecification.Value);
         } else {
@@ -307,7 +379,6 @@ function ViewDrawer(props) {
     }
 
     const deleteFile = (FileId, OriginalFileName) => {
-
         if (dataProps?.isAddFlag ? false : dataProps?.isViewFlag || !isEditAll) {
             return false
         }
@@ -353,6 +424,7 @@ function ViewDrawer(props) {
                 } else {
                     let Data = res.data[0];
                     setFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
+                    setChildPartFiles(prevFiles => [...prevFiles, Data]);
                 }
                 setApiCallCounter(prevCounter => prevCounter - 1);
 
@@ -434,7 +506,7 @@ function ViewDrawer(props) {
 
                                     <Col md="3">
                                         <div className='mt5 flex-grow-1'>
-                                            <AsyncSearchableSelectHookForm
+                                            <SearchableSelectHookForm
                                                 label={"Part No"}
                                                 name={"partNumber"}
                                                 placeholder={"Select"}
@@ -445,13 +517,12 @@ function ViewDrawer(props) {
                                                 //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
                                                 mandatory={true}
                                                 // handleChange={handleDestinationPlantChange}
-                                                handleChange={() => { }}
+                                                handleChange={(newValue) => handleChildPart(newValue)}
                                                 errors={errors.partNumber}
                                                 disabled={type === Component ? true : false}
 
                                                 isLoading={plantLoaderObj}
-                                                asyncOptions={partFilterList}
-                                                NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                                options={renderListingRM('childPartName')}
                                             />
                                         </div>
                                     </Col>
@@ -471,7 +542,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmname')}
                                             mandatory={false}
                                             handleChange={(newValue) => handleRMName(newValue)}
-                                        // disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
+                                            disabled={isViewFlag || tableData.length > 0}
                                         // errors={`${indexInside} CostingVersion`}
                                         />
                                     </Col>
@@ -490,8 +561,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmgrade')}
                                             mandatory={rmNameSelected}
                                             handleChange={(newValue) => handleRMGrade(newValue)}
-                                        // disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
-                                        // errors={`${indexInside} CostingVersion`}
+                                            disabled={isViewFlag || tableData.length > 0}                                        // errors={`${indexInside} CostingVersion`}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -509,8 +579,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmspecification')}
                                             mandatory={rmNameSelected}
                                             handleChange={(newValue) => handleRMSpecification(newValue)}
-                                        // disabled={(dataProps?.isAddFlag ? partNoDisable || isNFRFlow : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
-                                        // errors={`${indexInside} CostingVersion`}
+                                            disabled={isViewFlag || tableData.length > 0}                                        // errors={`${indexInside} CostingVersion`}
                                         />
                                     </Col>
 
@@ -552,7 +621,7 @@ function ViewDrawer(props) {
                                                         required: true,
                                                         validate: { alphaNumeric, checkWhiteSpaces },
                                                     }}
-                                                    handleChange={(newValue) => handleSpecification(newValue)}
+                                                    handleChange={(e) => handleSpecification(e.target.value)}
                                                     defaultValue={''}
                                                     className=""
                                                     customClassName={'withBorder'}
@@ -574,7 +643,7 @@ function ViewDrawer(props) {
                                                         required: true,
                                                         validate: { alphaNumeric, checkWhiteSpaces },
                                                     }}
-                                                    handleChange={(newValue) => handleValue(newValue)}
+                                                    handleChange={(e) => handleValue(e.target.value)}
                                                     defaultValue={''}
                                                     className=""
                                                     customClassName={'withBorder'}
@@ -605,7 +674,7 @@ function ViewDrawer(props) {
                                             // options={renderListing("DestinationPlant")}
                                             mandatory={true}
                                             customClassName={"withBorder"}
-                                            handleChange={() => { }}
+                                            handleChange={(e) => { handleRemarkChange(e.target.value) }}
                                             errors={errors.remark}
                                             // disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                             rowHeight={6}
@@ -714,14 +783,14 @@ function ViewDrawer(props) {
                                                 type="button"
                                                 className={'user-btn mt30 pull-left'}
                                                 onClick={() => addRow(activeTab)}
-                                            // disabled={props.CostingViewMode || disableAll}
+                                                disabled={activeTab === "1" ? (isViewFlag || tableData.length > 0) : false}                                        // errors={`${indexInside} CostingVersion`}
                                             >
                                                 <div className={'plus'}></div>ADD
                                             </button>
                                             <button
                                                 type="button"
                                                 className={"mr15 ml-1 mt30 reset-btn"}
-                                                // disabled={props.CostingViewMode || disableAll}
+                                                disabled={activeTab === "1" ? (isViewFlag || tableData.length > 0) : false}
                                                 onClick={rateTableReset}
                                             >
                                                 Reset
@@ -779,13 +848,13 @@ function ViewDrawer(props) {
                                                             className="Edit mr-2"
                                                             type={'button'}
                                                             title='Edit'
-                                                            onClick={() => editRow(index)}
+                                                            onClick={() => editRow(index, activeTab)}
                                                         />
                                                         <button
                                                             className="Delete"
                                                             title='Delete'
                                                             type={'button'}
-                                                            onClick={() => deleteRow(index)}
+                                                            onClick={() => deleteRow(index, activeTab)}
                                                         />
                                                     </td>
                                                 </tr>
@@ -817,10 +886,12 @@ function ViewDrawer(props) {
                                     />
                                     <Button
                                         id="rm-specification-submit"
-                                        type="submit"
+                                        type="button"
                                         className="save-btn"
-                                        //   disabled={setDisable}
-                                        icon={"save-icon"}
+                                        icon="save-icon"
+                                        onClick={() => {
+                                            handleCloseDrawer();
+                                        }}
                                         buttonName={isEditFlag ? "Update" : "Save"}
                                     />
                                 </div>
