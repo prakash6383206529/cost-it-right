@@ -76,6 +76,9 @@ export const MESSAGES = {
 
   //INDEXATION
   COMMODITYNAME_ADD_SUCCESS: 'Commodity added successfully',
+  COMMODITYNAME_UPDATE_SUCCESS: 'Commodity updated successfully',
+  COMMODITYNAME_DELETE_ALERT: 'Are you sure you want to delete this commodity?',
+  DELETE_COMMODITYNAME_SUCCESS: 'Commodity deleted successfully',
 
   //RM GRADE
   GRADE_ADD_SUCCESS: 'RM grade added successfully',
@@ -97,6 +100,13 @@ export const MESSAGES = {
   DELETE_MATERIAL_SUCCESS: 'Raw material deleted successfully',
   ASSOCIATED_ADDED_SUCCESS: 'Raw Material associated successfully.',
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
+
+  //INDEXATION
+  INDEX_ADD_SUCCESS: 'Index added successfully',
+  INDEX_DELETE_ALERT: 'Are you sure you want to delete this Record?',
+  INDEX_DELETE_SUCCESS: 'Record deleted successfully',
+  INDEX_UPDATE_SUCCESS: 'Record updated successfully',
+  DELETE: 'Are you sure you want to delete this Record?',
 
   //OVERHEAD AND PROFIT
   OVERHEAD_ADDED_SUCCESS: 'Overhead added successfully',

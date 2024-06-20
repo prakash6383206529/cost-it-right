@@ -78,7 +78,7 @@ const BOPDomesticListing = (props) => {
     inRangeDate: [],
     analyticsDrawer: false,
     selectedRowData: [],
-    floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NumberOfPieces: "", NetCostWithoutConditionCost: "", NetConditionCost: "", IsBreakupBoughtOutPart: "", TechnologyName: "", },
+    floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NumberOfPieces: "", NetCostWithoutConditionCost: "", NetConditionCost: "", IsBreakupBoughtOutPart: "", TechnologyName: "", SAPCode: "" },
     warningMessage: false,
     filterModel: {},
     // pageNo: 1,
@@ -882,6 +882,7 @@ const BOPDomesticListing = (props) => {
                 <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                 <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                 <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}

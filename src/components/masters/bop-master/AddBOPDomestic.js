@@ -110,6 +110,7 @@ class AddBOPDomestic extends Component {
       toolTipTextNetCost: {},
       toolTipTextBasicPrice: '',
       IsBreakupBoughtOutPart: false,
+      SAPCode: [],
     }
   }
 
@@ -237,6 +238,7 @@ class AddBOPDomestic extends Component {
       'BoughtOutPartName',
       'BOPCategory',
       'Specification',
+      "SAPCode",
       'Plant',
       "UOM",
       "cutOffPrice",
@@ -366,6 +368,7 @@ class AddBOPDomestic extends Component {
               conditionTableData: Data.BoughtOutPartConditionsDetails,
               FinalBasicPriceBaseCurrency: Data.NetCostWithoutConditionCost,
               IsBreakupBoughtOutPart: Data.IsBreakupBoughtOutPart,
+              SAPCode: Data.SAPCode !== undefined ? { label: Data.SAPCode, value: Data.SAPCode } : []
             }, () => {
               this.toolTipNetCost()
               this.setState({ isLoader: false })
@@ -854,6 +857,7 @@ class AddBOPDomestic extends Component {
     formData.BoughtOutPartName = values.BoughtOutPartName
     formData.CategoryId = BOPCategory.value
     formData.Specification = values.Specification
+    formData.SAPCode = values.SAPCode
     formData.UnitOfMeasurementId = UOM.value
     formData.Vendor = vendorName.value
     formData.Source = values.Source
@@ -1330,6 +1334,20 @@ class AddBOPDomestic extends Component {
                               />
                             </Col>
                           )}
+                          <Col md="3">
+                            <Field
+                              label={`SAP Code`}
+                              name={"SAPCode"}
+                              id='bop_SAP_Code_form_zero_based'
+                              type="text"
+                              placeholder={isViewMode ? "-" : "Enter"}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, hashValidation]}
+                              component={renderText}
+                              disabled={isEditFlag ? true : false}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
                         </Row>
 
                         <Row>

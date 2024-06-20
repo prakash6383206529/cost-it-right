@@ -40,7 +40,7 @@ import {
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
   DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL, MASTER_COST_MOVEMENT_REPORT, RESET_PASSWORD, FORGET_PASSWORD, NFR_INSIGHT_DETAILS, INSIGHT_SIMULATION_REPORT, lOGIN_AUDIT, VENDOR_MANAGEMENT, SUPPLIER_MANAGEMENT, lOGIN_AUDITS, INITIATE_UNBLOCKING, SUPPLIER_APPROVAL_SUMMARY, APPROVAL_LISTING,
-  LPS,
+  LPS,INDEXATION
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -83,7 +83,7 @@ import InitiateUnblocking from './vendorManagement/InitiateUnblocking'
 import LpsRatingListing from './vendorManagement/LpsRatingLisitng'
 import VendorMaster from './masters/supplier-master'
 import VendorClassificationListing from './vendorManagement/VendorClassificationListing'
-
+import Indexation from './masters/indexation'
 
 
 const CustomHeader = {
@@ -421,6 +421,7 @@ class Main extends Component {
                     <Route path='/initiate-unblocking ' component={AuthMiddleware(InitiateUnblocking, INITIATE_UNBLOCKING)} />
                     <Route path='/vendor-classification' component={AuthMiddleware(VendorClassificationListing, VENDOR_MANAGEMENT)} />
                     <Route path='/lps-rating' component={AuthMiddleware(LpsRatingListing, LPS)} />
+                              <Route path='/material-indexation' component={AuthMiddleware(Indexation, INDEXATION,)} />
 
 
 
