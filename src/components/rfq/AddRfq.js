@@ -138,6 +138,8 @@ function AddRfq(props) {
     const [havellsDesignPart, setHavellsDesignPart] = useState([])
     const [targetPrice, setTargetPrice] = useState("")
     const [rfqRaiseNumber, setRfqRaiseNumber] = useState('')
+    const [quotationIdentity, setQuotationIdentity] = useState('')
+    const [partIdentity, setPartIdentity] = useState(0)
 
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
@@ -152,14 +154,18 @@ function AddRfq(props) {
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
 
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
-    const { getRfqVendorDetail, getTargetprice } = useSelector((state) => state.rfq)
+    const { getRfqVendorDetail, getTargetprice, getPartIndentity } = useSelector((state) => state.rfq)
+    console.log('getPartIndentity: ', getPartIndentity);
+    const [viewMode, setViewMode] = useState(false)
     const [havellsPartTypeList, setHavellsPartTypeList] = useState([]);
-    // useEffect(() => {
-    //     dispatch(getRfqRaiseNumber((res) => {
-    //         setValue('RfqNumber', res?.data?.Data)
-    //         setRfqRaiseNumber(res?.data?.Data)
-    //     }))
-    // }, [])
+    useEffect(() => {
+
+        const obj = createQuotationObject(null);
+        dispatch(createRfqQuotation(obj, (res) => {
+
+            setQuotationIdentity(res?.data?.Identity)
+        }))
+    }, [])
 
     useEffect(() => {
         const partTypeString = initialConfiguration?.HavellsPartTypeList;
@@ -472,12 +478,26 @@ function AddRfq(props) {
     }
 
     const deleteItemPartTable = (rowData, final) => {
+        dispatch(deleteQuotationPartDetail(getPartIndentity), (res) => { })
         let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
         setPartList(arr)
         setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData })
+
+
         onResetPartNoTable()
     }
-    const editItemPartTable = (rowData, final) => {
+    const editItemPartTable = (rowData, final, viewMode) => {
+        console.log('rowData: ', rowData);
+        setViewMode(viewMode)
+        console.log('partIdentity: ', getPartIndentity);
+        console.log('partIdentity number: ', Number(getPartIndentity));
+        // dispatch(getRfqPartDetails(getPartIndentity), (res) => {
+        //     console.log('res: ', res);
+
+
+
+
+        // })
         setDrawerOpen(true)
 
     }
@@ -507,6 +527,28 @@ function AddRfq(props) {
         })
 
     }
+    function createQuotationObject(isSent, quotationId) {
+        return {
+            QuotationId: quotationId ? quotationId : null,
+            QuotationNumber: apiData.QuotationNumber ? apiData.QuotationNumber : null,
+            Remark: getValues('remark') || null,
+            TechnologyId: getValues('technology')?.value || null,
+            PlantId: getValues('plant')?.value || null,
+            LoggedInUserId: loggedInUserId(),
+            StatusId: null,
+            IsSent: isSent,
+            IsConditionallyVisible: isConditionalVisible,
+            VisibilityMode: visibilityMode?.label || null,
+            VisibilityDate: dateAndTime || null,
+            VisibilityDuration: getValues('Time') || null,
+            LastSubmissionDate: submissionDate ? DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss') : null,
+            VendorList: vendorList && vendorList.length > 0 ? vendorList : null,
+            Timezone: getTimeZone() || null,
+            Attachments: files && files.length > 0 ? files : null,
+            NfrId: nfrId?.value || null,
+            // QuotationPartIds: quotationPartIds, // If needed, uncomment and pass the parameter
+        };
+    };
 
     /**
     * @method renderListing
@@ -590,6 +632,7 @@ function AddRfq(props) {
     }
 
     const onSubmit = (data, e, isSent) => {
+
         //dispatch(getTargetPrice(plant, technology, assemblyPartNumber, (res) => { }))
         // dispatch(getRfqPartDetails( (res) => {
         //const quotationPartIds = res?.data?.Data.map(item => item.QuotationPartId);
@@ -619,145 +662,29 @@ function AddRfq(props) {
         } else if (Object.keys(errors).length > 0) {
             return false
         }
-        let obj = {}
-        obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
-        obj.QuotationNumber = apiData.QuotationNumber ? apiData.QuotationNumber : ""
-        obj.Remark = getValues('remark')
-        obj.TechnologyId = getValues('technology').value
-        obj.PlantId = getValues('plant')?.value
-        obj.LoggedInUserId = loggedInUserId()
-        obj.StatusId = ''
-        obj.IsSent = isSent
-        obj.IsConditionallyVisible = isConditionalVisible
-        obj.VisibilityMode = visibilityMode?.label
-        obj.VisibilityDate = dateAndTime
-        obj.VisibilityDuration = getValues('Time')
-        obj.LastSubmissionDate = DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss')
-        obj.VendorList = vendorList
-        obj.Timezone = getTimeZone()
-        //let temppartArr = []
-        // let partIdList = _.uniq(_.map(list, 'PartId'))
-        // let childPartIdList = _.uniq(_.map(tableData, 'partId'));
-        // partIdList && partIdList?.map((item) => {
-        //     let temppartObj = {}
-        //     let partListArr = []
-        //     let partObject = []
-        //     temppartObj.PartId = item
-        //     list && list.map((item1, index) => {
-        //         let partListObj = {}
-        //         if (item1?.PartId === item) {
-        //             partListObj.PartNumber = item1?.PartNo
-        //             partListObj.YearName = item1?.YearName
-        //             partListObj.Quantity = item1?.Quantity
-        //             partListArr.push(partListObj)
-        //             if (index === 2) {
-        //                 partObject = item1
-        //             }
-        //         }
-        //         return null
-        //     })
 
-        //     let rmList = []
-        //     if (isNFRFlow) {
-        //         let arrList = rmAPIList && rmAPIList?.filter(element => element?.partName?.value === item)[0]?.RmList
-        //         rmList = arrList && arrList?.filter(element => element?.RawMaterialChildId || element?.RawMaterialGradeId || element?.RawMaterialSpecificationId)
-        //     } else {
-        //         tableData && tableData.map((item2) => {
+        const obj = createQuotationObject(isSent, quotationIdentity);
 
-
-
-        //             if (item2?.partId === item) {
-
-
-        //                 rmList = [{
-        //                     "RawMaterialChildId": item2?.RmChildId || null,
-        //                     "RawMaterialGradeId": item2?.RmGradeId || null,
-        //                     "RawMaterialSpecificationId": item2?.RmSpecificationId || null
-        //                 }]
-        //             }
-        //         })
-        //     }
-        //     temppartObj.RMDetails = rmList
-        //     temppartObj.SOPQuantityDetails = partListArr
-        //     temppartObj.IsChildPart = false
-
-
-        //     temppartObj.TargetPrice = getTargetprice?.TargetPrice || 0
-        //     temppartObj.TimeLine = getValues('RequirementDate');
-
-        //     temppartObj.Remarks = remark
-        //     temppartObj.PartAttachments = childPartFiles
-        //     temppartObj.PartType = getValues('partType')?.label || ''
-        //     temppartObj.HavellsDesignPart = getValues('PartType')?.value || ''
-        //     let PartSpecificationList = {};
-        //     let PartSpecification = [];
-
-        //     if (specificationList?.length > 0) {
-        //         specificationList.forEach((item) => {
-        //             let specObj = {
-        //                 Specification: item?.Specification,
-        //                 Value: item?.Value,
-        //                 LoggedInUserId: loggedInUserId()
-        //             };
-        //             PartSpecification.push(specObj);
-        //         });
-        //     }
-
-        //     // Populate PartSpecificationList object
-        //     PartSpecificationList = {
-        //         QuotationPartIdRef: temppartObj?.PartId || 0,
-        //         PartSpecification: PartSpecification
-        //     };
-
-        //     // Assuming temppartObj already exists and you're assigning PartSpecificationList to it
-        //     temppartObj.PartSpecificationList = PartSpecificationList;
-
-        //     temppartArr.push(temppartObj);
-
-        //     // Child Part Details
-        //     if (partType?.label === "Assembly") {
-
-        //         childPartIdList && childPartIdList.map((childItem) => {
-        //             tableData && tableData.map((item2) => {
-
-
-        //                 if (item2?.partId === childItem) {
-
-        //                     let childPartObj = {};
-        //                     childPartObj.PartId = item2?.partId;
-        //                     childPartObj.RMDetails = [{
-        //                         "RawMaterialChildId": item2?.RmChildId,
-        //                         "RawMaterialGradeId": item2?.RmGradeId,
-        //                         "RawMaterialSpecificationId": item2?.RmSpecificationId
-        //                     }];
-        //                     childPartObj.SOPQuantityDetails = [];
-        //                     childPartObj.IsChildPart = true;
-        //                     childPartObj.PartType = null;
-        //                     childPartObj.PartSpecificationList = {
-        //                         "QuotationPartIdRef": null,
-        //                         "PartSpecification": null
-        //                     };
-
-        //                     childPartObj.HavellsDesignPart = null
-        //                     childPartObj.TargetPrice = null
-        //                     childPartObj.TimeLine = null
-        //                     childPartObj.Remarks = null
-        //                     childPartObj.PartAttachments = []
-        //                     temppartArr.push(childPartObj);
-        //                 }
-        //                 return null;
-        //             });
-        //         })
-        //     }
-
-        //     return null
-        // })
-
-        // obj.PartList = temppartArr
-        //obj.QuotaionPartIds = quotationPartIds
-        obj.Attachments = files
-        obj.IsSent = isSent
-        obj.NfrId = nfrId?.value
+        // let obj = {}
+        // obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
+        // obj.QuotationNumber = apiData.QuotationNumber ? apiData.QuotationNumber : ""
+        // obj.Remark = getValues('remark')
+        // obj.TechnologyId = getValues('technology').value
+        // obj.PlantId = getValues('plant')?.value
+        // obj.LoggedInUserId = loggedInUserId()
+        // obj.StatusId = ''
+        // obj.IsSent = isSent
+        // obj.IsConditionallyVisible = isConditionalVisible
+        // obj.VisibilityMode = visibilityMode?.label
+        // obj.VisibilityDate = dateAndTime
+        // obj.VisibilityDuration = getValues('Time')
+        // obj.LastSubmissionDate = DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss')
+        // obj.VendorList = vendorList
+        // obj.Timezone = getTimeZone()
+        // //obj.QuotaionPartIds = quotationPartIds
+        // obj.Attachments = files
+        // obj.IsSent = isSent
+        // obj.NfrId = nfrId?.value
         if (dataProps?.isEditFlag) {
             dispatch(updateRfqQuotation(obj, (res) => {
                 if (res?.data?.Result) {
@@ -824,7 +751,9 @@ function AddRfq(props) {
         const row = props?.data;
         return (
             <>
-                {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props, true)} />}
+                {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {/* {show && < button title='View' className="View mr-2 align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props, viewMode = true)} />} */}
+
                 {/*  {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
                 {show && <button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
             </>
@@ -1166,6 +1095,7 @@ function AddRfq(props) {
                         newObjTemp.PartNo = partNumber?.label;
                         newObjTemp.PartId = getValues('partNumber')?.value;
 
+
                         if (index === 2) {
                             newObjTemp.PartNumber = partNumber?.label;
                             newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
@@ -1175,6 +1105,7 @@ function AddRfq(props) {
                             newObjTemp.RawMaterialGradeId = rmgrade?.value ?? '-';
                             newObjTemp.RMSpecification = rmspecification?.label ?? '-';
                             newObjTemp.RawMaterialSpecificationId = rmspecification?.value ?? '-';
+                            newObjTemp.Indetity = 0
                         }
                         if (nfrId) {
                             if (index === 0) {
@@ -1204,9 +1135,10 @@ function AddRfq(props) {
                     });
 
                     let arr = [...partList, ...arrTemp];
+                    console.log('arr: ', arr);
 
-                    console.log('partType: ', partType);
-                    console.log(getValues('partType')?.label);
+
+
                     let obj = {}
                     let temppartArr = []
                     let tempArr = [...arr]
@@ -1217,7 +1149,7 @@ function AddRfq(props) {
                         }
                         return item
                     })
-                    obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
+                    obj.QuotationId = quotationIdentity ? quotationIdentity : ""
                     obj.TechnologyId = getValues('technology').value
                     obj.PlantId = getValues('plant')?.value
                     obj.LoggedInUserId = loggedInUserId()
@@ -1262,8 +1194,8 @@ function AddRfq(props) {
                         temppartObj.RMDetails = rmList
                         temppartObj.SOPQuantityDetails = partListArr
                         temppartObj.IsChildPart = false
-                        temppartObj.QuotationPartId = ""
-                        temppartObj.PartType = getValues('partType')?.label || ''
+                        // temppartObj.QuotationPartId = ""
+                        temppartObj.PartType = partType?.label || ''
                         temppartObj.TargetPrice = getTargetprice?.TargetPrice || 0
                         temppartObj.TimeLine = getValues('RequirementDate');
                         temppartObj.Remarks = remark
@@ -1331,16 +1263,25 @@ function AddRfq(props) {
                     })
 
                     obj.PartList = temppartArr
-                    console.log('obj: ', obj);
+
 
                     dispatch(saveRfqPartDetails(obj, (res) => {
                         console.log('res: ', res);
+
                         if (res?.data?.Result) {
+
+                            setPartIdentity(res?.data?.Identity);
                             onResetPartNoTable();
                             setTableData([]);
                             setSpecificationList([]);
+                            console.log('arr: ', arr);
+                            let tempData = arr && arr.filter(item => item.PartId === getValues('partNumber')?.value)
+                            console.log('tempData: ', tempData);
+                            // tempData = { ...arr, Indetity: res?.data?.Identity }
+                            // tempArr = Object.assign([...arr], { [index]: tempData })
                         }
                     }))
+
                     setPartList(arr);
                     setValue('partNumber', "");
                     setSOPDate('');
@@ -1353,6 +1294,8 @@ function AddRfq(props) {
                     setRMName('');
                     setRMGrade('');
                     setRMSpecification('');
+                    setTableData([]);
+                    setSpecificationList([]);
                     dispatch(clearGradeSelectList([]));
                     dispatch(clearSpecificationSelectList([]));
                 }));
@@ -2722,6 +2665,7 @@ function AddRfq(props) {
                                             setRemark={setRemark}
                                             remark={remark}
                                             isViewFlag={dataProps?.isViewFlag}
+                                            viewMode={viewMode}
 
 
 

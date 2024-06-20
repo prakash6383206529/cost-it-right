@@ -14,7 +14,8 @@ import {
     GET_TARGET_PRICE,
     GET_ASSEMBLY_CHILD_PART,
     GET_RFQ_PART_DETAILS,
-    GET_RFQ_RAISE_NUMBER,
+
+    GET_PART_IDENTITY,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -25,7 +26,7 @@ import Toaster from '../../common/Toaster';
 export function getQuotationList(DepartmentCode, Timezone, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${DepartmentCode}&LoggedInUserId=${loggedInUserId()}&Timezone=${Timezone}`, config());
+        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${""}&LoggedInUserId=${loggedInUserId()}&Timezone=${Timezone}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -502,20 +503,58 @@ export function getrRqVendorDetails(vendorId, callback) {
         });
     };
 }
+export function getRfqPartDetails(partId, callback) {
+    console.log('partId: ', partId);
+    const quotationPartId = Number(partId)
+    console.log(Number(partId));
+    return (dispatch) => {
+        const request = axios.get(`${API.getRfqPartDetails}?quotationPartId=${quotationPartId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
 
+                dispatch({
+                    type: GET_RFQ_PART_DETAILS,
+                    payload: response.status === 204 ? [] : response?.data?.Data
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
 export function saveRfqPartDetails(data, callback) {
 
     return (dispatch) => {
         const request = axios.post(API.saveRfqPartDetails, data, config());
         request.then((response) => {
-
+            console.log('response: ', response);
             if (response.data.Result) {
+                dispatch({
+                    type: GET_PART_IDENTITY,
+                    payload: response.status === 204 ? [] : response?.data?.Identity
+                })
                 callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
             callback(error)
+        });
+    };
+}
+export function deleteQuotationPartDetail(partId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.deleteQuotationPartDetail}?partId=${partId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
         });
     };
 }

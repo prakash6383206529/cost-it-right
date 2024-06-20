@@ -37,7 +37,8 @@ function ViewDrawer(props) {
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
     const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
-    const { getChildParts } = useSelector(state => state?.rfq);
+    const { getChildParts, getRfqPartDetails } = useSelector(state => state?.rfq);
+
 
     const [rmspecification, setRMSpecification] = useState([])
     const [rmName, setRMName] = useState([])
@@ -69,7 +70,7 @@ function ViewDrawer(props) {
         dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => { }))
     }, [AssemblyPartNumber])
     // useEffect(() => {
-    //     dispatch(getRfqPartDetails((res) => { }))
+    //     dispatch(getRfqPartDetails((AssemblyPartNumber?.value) => { }))
     // }, [])
 
     // useEffect(() => {
@@ -281,6 +282,7 @@ function ViewDrawer(props) {
             } else {
 
                 setSpecificationList(prevData => [...prevData, specificationObj]);
+
                 resetFormAndDropdowns();
             }
 
