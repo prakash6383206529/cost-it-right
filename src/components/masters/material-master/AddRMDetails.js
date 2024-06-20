@@ -800,7 +800,7 @@ function AddRMDetails(props) {
                             <Col className="col-md-15">
                                 <SearchableSelectHookForm
                                     name="ExchangeSource"
-                                    label="Exchange Source"
+                                    label="Exchange Rate Source"
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -829,19 +829,19 @@ function AddRMDetails(props) {
                                             handleChange={handleRM}
                                             // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
                                             className="fullinput-icon"
-                                            disabled={isEditFlag || isViewFlag || state.isDisabled}
+                                            disabled={isEditFlag || isViewFlag || RMIndex}
                                             errors={errors.Material}
                                             isClearable={true}
                                         />
                                     </div>
-                                    {(!props.isEditFlag) && (
+                                    {/* {(!props.isEditFlag) && (
                                         <Button
                                             id="addRMDomestic_RMToggle"
                                             onClick={openAssociationDrawer}
                                             className={"right"}
                                             variant="plus-icon-square"
                                         />
-                                    )}
+                                    )} */}
                                 </div>
                             </Col>
                         </>}

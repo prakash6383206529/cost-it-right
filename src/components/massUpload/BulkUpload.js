@@ -619,6 +619,12 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'Indexed On') {
                                     fileHeads[i] = 'EffectiveDate'
                                 }
+                                if (fileHeads[i] === 'From Currency') {
+                                    fileHeads[i] = 'FromCurrency'
+                                }
+                                if (fileHeads[i] === 'To Currency') {
+                                    fileHeads[i] = 'ToCurrency'
+                                }
                                 obj[fileHeads[i]] = el;
                                 return null;
                             })

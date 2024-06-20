@@ -54,65 +54,51 @@ function AddRMMaster(props) {
         levelDetails: {},
         isDateChanged: false,
         isCommodityOpen: false,
-
         commodityDetails: [],
+        avgBasicRate: [],
 
     })
     const isViewFlag = data?.isViewFlag ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const commodityAverage = useSelector((state) => state.material.commodityAverage)
 
-
-
-    useEffect(() => {
-        // Check if commodityAverage is an object and has keys
-        if (commodityAverage && Object.keys(commodityAverage).length > 0) {
-
-            const {
-                materialTypeId,
-                indexExchangeId,
-                unitOfMeasurementId,
-                currencyId,
-                exchangeRateSourceName,
-                fromDate,
-                toDate
-
-            } = commodityAverage;
-
-
-            const isValid = (
-                materialTypeId && materialTypeId.trim() !== '' &&
-                indexExchangeId && indexExchangeId > 0 &&
-                unitOfMeasurementId && unitOfMeasurementId.trim() !== '' &&
-                currencyId && currencyId > 0 &&
-                exchangeRateSourceName && exchangeRateSourceName.trim() !== '' &&
-                fromDate && fromDate.trim() !== '' &&
-                toDate && toDate.trim() !== ''
-            );
-
-            if (isValid) {
-
-                dispatch(getCommodityIndexRateAverage(
-                    materialTypeId,
-                    indexExchangeId,
-                    unitOfMeasurementId,
-                    currencyId,
-                    exchangeRateSourceName,
-                    fromDate,
-                    toDate,
-                    () => { console.log('Callback after dispatch'); }
-                ));
-            }
-        }
-    }, [commodityAverage]);
-    const fieldValue = useWatch({
+    const avgValues = useWatch({
         control,
-        name: ['Remarks']
+        name: ['Material', 'Index', 'ExchangeSource', 'fromDate', 'toDate']
     })
     const fieldValueGrade = useWatch({
         control,
         name: ['RawMaterialGrade']
     })
+    useEffect(() => {
+        if (getValues('Material') && getValues('Index') && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate')) {
+            dispatch(getCommodityIndexRateAverage(
+                getValues('Material')?.value,
+                getValues('Index').value,
+                '',
+                '',
+                getValues('ExchangeSource')?.label,
+                DayTime(getValues('fromDate')).format('YYYY-MM-DD'),
+                DayTime(getValues('toDate')).format('YYYY-MM-DD'),
+                (res) => {
+                    console.log(res);
+                    setValue('UnitOfMeasurement', { label: res?.data?.Data, value: res?.data?.Identity })
+                    const updatedCommodityDetails = state.commodityDetails.map(detail => {
+                        const avgRate = res?.data?.DataList.find(rate => rate.MaterialCommodityStandardDetailsId === detail.MaterialCommodityStandardDetailsId);
+                        return {
+                            ...detail,
+                            BasicRate: avgRate ? avgRate.RateConversionPerConvertedUOM : null
+                        };
+                    });
+                    setState(prevState => ({ ...prevState, commodityDetails: updatedCommodityDetails }));
+                    if (res?.status === 200 && res?.data?.Result === false) {
+                        Toaster.warning(res?.data?.Message)
+                        return false
+                    }
+                }
+            ));
+        }
+    }, [avgValues])
 
     useEffect(() => {
 
@@ -121,8 +107,6 @@ function AddRMMaster(props) {
             dispatch(getMaterialTypeDataAPI('', commodityVal, (res) => {
                 if (res) {
                     let Data = res.data.Data
-
-
                     setValue('Material', { label: Data.MaterialType, value: Data.MaterialTypeId })
                     dispatch(getMaterialTypeDataAPI(Data.MaterialTypeId, '', (res) => {
                         let Data = res.data.Data
@@ -392,8 +376,6 @@ function AddRMMaster(props) {
         if (state.isEditFlag) {
             if (!isRMAssociated) {
 
-                console.log('financialDataNotChanged: ', financialDataNotChanged);
-                console.log('nonFinancialDataNotChanged: ', nonFinancialDataNotChanged);
                 if (financialDataNotChanged && nonFinancialDataNotChanged) {
                     if (!state.isFinalApprovar) {
                         Toaster.warning('Please change data to send RM for approval')
@@ -446,7 +428,6 @@ function AddRMMaster(props) {
             return false
         }
     }
-    // console.log('showSendForApproval: ', showSendForApproval());
 
     return (
         state.isLoader ? <LoaderCustom customClass="loader-center" /> :

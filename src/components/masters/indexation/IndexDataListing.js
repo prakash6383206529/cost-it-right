@@ -505,7 +505,7 @@ const IndexDataListing = () => {
                                 <AgGridColumn field="CommodityName" headerName="Commodity Name" ></AgGridColumn>
                                 <AgGridColumn field="IndexUOM" headerName="Index UOM"></AgGridColumn>
                                 <AgGridColumn field="ConvertedUOM" headerName="UOM"></AgGridColumn>
-                                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                                <AgGridColumn field="Currency" headerName="Currency (From/To)"></AgGridColumn>
                                 <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Indexed On" cellRenderer='effectiveDateFormatter'></AgGridColumn>
                                 <AgGridColumn field="RatePerIndexUOM" headerName="Index Rate/Index UOM" cellRenderer='priceFormatter'></AgGridColumn>

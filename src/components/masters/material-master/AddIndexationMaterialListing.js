@@ -89,6 +89,15 @@ function AddIndexationMaterialListing(props) {
         sortable: false,
         editable: true
     };
+    const priceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (
+            <>
+
+                {cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''}
+            </>
+        )
+    }
     const commonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (
@@ -99,10 +108,12 @@ function AddIndexationMaterialListing(props) {
             </>
         )
     }
+
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
         commonFormatter: commonFormatter,
         customNoRowsOverlay: NoContentFound,
+        priceFormatter: priceFormatter
     };
 
     return (
@@ -115,7 +126,6 @@ function AddIndexationMaterialListing(props) {
                                 {props.isOpen && (
                                     <Row>
                                         <Col md="12">
-
                                             <div className={`ag-grid-wrapper budgeting-table  ${CommodityDetails && CommodityDetails?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                                                 <div className="ag-theme-material" >
                                                     <AgGridReact
@@ -138,9 +148,9 @@ function AddIndexationMaterialListing(props) {
                                                         suppressColumnVirtualisation={true}
                                                         stopEditingWhenCellsLoseFocus={true}
                                                     >
-                                                        <AgGridColumn width={115} field="materialName" headerName="Material Name" editable={false}></AgGridColumn>
+                                                        <AgGridColumn width={115} field="CommodityStandardName" headerName="Commodity Name" editable={false}></AgGridColumn>
                                                         <AgGridColumn width={115} field="Percentage" headerName="Percentage" editable={false}></AgGridColumn>
-                                                        <AgGridColumn width={115} field="BasicRate" headerName="Basic Rate" editable={false}></AgGridColumn>
+                                                        <AgGridColumn width={115} field="BasicRate" headerName="Basic Rate" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="ProcessingCost" headerName="Premium Charges" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="ProcessingCost" headerName="Processing Cost" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="ImportFreight" headerName="Import Freight" cellRenderer='commonFormatter'></AgGridColumn>
@@ -151,13 +161,14 @@ function AddIndexationMaterialListing(props) {
                                                     </AgGridReact>
                                                 </div>
                                             </div>
-                                        </Col>
-                                    </Row>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                        </Col >
+                                    </Row >
+                                )
+                                }
+                            </div >
+                        </div >
+                    </div >
+                </div >
             </div >
         </>
     );

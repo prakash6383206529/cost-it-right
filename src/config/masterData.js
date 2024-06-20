@@ -936,14 +936,12 @@ export const IndexDataListing = [
     { label: "Index", value: "IndexExchangeName", },
     { label: "CommodityName", value: "CommodityName", },
     { label: "UOM", value: "UOM2", },
-    { label: "Currency", value: "Currency", },
+    { label: "From Currency", value: "FromCurrency", },
+    { label: "To Currency", value: "ToCurrency", },
     { label: "Indexed On", value: "EffectiveDate", },
     { label: "Index Rate (Currency)", value: "Rate", },
-    // { label: "Premium (Charge)", value: "ExchangeRateSourceName", },
     { label: "ExchangeRateSourceName", value: "ExchangeRateSourceName", },
     { label: "Exchangerate", value: "ExchangeRate", },
-    // { label: "Currency Rate", value: "CurrencyCharge", },
-    // { label: "Conversion Rate (INR)", value: "RateConversion", },
 ]
 
 export const IndexDataListingTempData = [
@@ -951,13 +949,12 @@ export const IndexDataListingTempData = [
         "IndexExchangeName": "LME",
         "CommodityName": "CU",
         "UOM2": "kg",
-        "Currency": "USD",
+        "FromCurrency": "USD",
+        "ToCurrency": "INR",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Rate": "10",
         "ExchangeRateSourceName": "SBI",
         "ExchangeRate": "84",
-        // "CurrencyCharge": "0.5",
-        // "RateConversion": "1056",
     }
 ]
 /**

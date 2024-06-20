@@ -1804,8 +1804,8 @@ export function getFrequencySettlement(callback) {
 //  */
 export function getCommodityIndexRateAverage(materialTypeId, indexExchangeId, unitOfMeasurementId, currencyId, exchangeRateSourceName, fromDate, toDate, callback) {
   return (dispatch) => {
-    if (materialTypeId || indexExchangeId || unitOfMeasurementId || currencyId || exchangeRateSourceName) {
-      axios.get(`${API.getCommodityIndexRateAverage}?materialTypeId=${materialTypeId}?indexExchangeId=${indexExchangeId}?unitOfMeasurementId=${unitOfMeasurementId}?currencyId=${currencyId}?exchangeRateSourceName=${exchangeRateSourceName}?fromDate=${fromDate}?toDate=${toDate}`, config())
+    if (materialTypeId || indexExchangeId || exchangeRateSourceName) {
+      axios.get(`${API.getCommodityIndexRateAverage}?materialTypeId=${materialTypeId}&indexExchangeId=${indexExchangeId}&unitOfMeasurementId=${''}&toCurrencyId=${currencyId ?? ''}&exchangeRateSourceName=${exchangeRateSourceName}&fromDate=${fromDate}&toDate=${toDate}`, config())
         .then((response) => {
           dispatch({
             type: GET_COMMODITY_INDEX_RATE_AVERAGE,

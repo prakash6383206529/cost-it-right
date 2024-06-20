@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Table } from "reactstrap";
-import { checkForDecimalAndNull, checkWhiteSpaces, percentageLimitValidation, number } from "../../../helper"
+import { checkForDecimalAndNull, checkWhiteSpaces, percentageLimitValidation, number } from "../../../helper";
 import { useDispatch, useSelector } from "react-redux";
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { useForm, Controller } from "react-hook-form";
 import Toaster from '../../common/Toaster';
 import { getCommodityCustomNameSelectListByType } from "../actions/Indexation";
 
 const AddMaterialTypeDetail = (props) => {
     const { tableData, tableDataState } = props;
-    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+    const initialConfiguration = useSelector(state => state.auth.initialConfiguration);
     const [isEdit, setIsEdit] = useState(false);
-    const [editIndex, setEditIndex] = useState('')
+    const [editIndex, setEditIndex] = useState('');
+    const [originalPercentage, setOriginalPercentage] = useState(0);
 
     const { register, formState: { errors }, control, setValue, getValues, handleSubmit, reset } = useForm({
         mode: 'onChange',
@@ -25,55 +26,52 @@ const AddMaterialTypeDetail = (props) => {
         CommodityStandardName: '',
         Percentage: ''
     });
-    const [isEditMode, setIsEditMode] = useState(false)
+    const [isEditMode, setIsEditMode] = useState(false);
     const { customNameCommodityData } = useSelector((state) => state.indexation);
+
     useEffect(() => {
-        dispatch(getCommodityCustomNameSelectListByType((res) => { }))
-    }, [])
+        dispatch(getCommodityCustomNameSelectListByType((res) => { }));
+    }, [dispatch]);
+
     useEffect(() => {
-        setGridData(tableDataState)
-        let percentage = tableDataState && tableDataState.map((item) => item.Percentage)
-        calculateTotalPercentage(percentage)
-    }, [tableDataState])
+        setGridData(tableDataState);
+        setPercentageTotal(calculateTotalPercentage(tableDataState));
+    }, [tableDataState]);
+
     const [percentageTotal, setPercentageTotal] = useState(0);
 
     const renderListing = (label) => {
-        const temp = []
+        const temp = [];
         if (label === 'CommodityStandardName') {
             customNameCommodityData && customNameCommodityData.map((item) => {
-                if (item.Value === '--0--') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
+                if (item.Value === '--0--') return false;
+                temp.push({ label: item.Text, value: item.Value });
+                return null;
+            });
+            return temp;
         }
     };
 
     const calculateTotalPercentage = (data) => {
-        console.log('data: ', data);
-        let totalPercentage = 0;
-        for (let i = 0; i < data.length; i++) {
-            totalPercentage += parseFloat(data[i].Percentage);
-        }
-        console.log('totalPercentage: ', totalPercentage);
-        return totalPercentage;
-    }
+        return data.reduce((total, item) => {
+            let percentage = (typeof item === 'object' && item.Percentage !== undefined) ? parseFloat(item.Percentage) : parseFloat(item);
+            return total + (isNaN(percentage) ? 0 : percentage);
+        }, 0);
+    };
 
     const handleInputChange = (selectedOption, name) => {
         const updatedFormData = { ...formData, [name]: selectedOption.value };
         setFormData(updatedFormData);
     };
 
-    const resetData = (type = '') => {
-        const commonReset = () => {
-            setEditIndex('');
-            setIsEditMode(false);
-            reset({
-                CommodityStandardName: '',
-                Percentage: '',
-            });
-        };
-        commonReset();
+    const resetData = () => {
+        setEditIndex('');
+        setIsEditMode(false);
+        setOriginalPercentage(0);
+        reset({
+            CommodityStandardName: '',
+            Percentage: '',
+        });
     };
 
     const addData = () => {
@@ -105,15 +103,29 @@ const AddMaterialTypeDetail = (props) => {
             return false;
         }
 
-        const newGridData = isEditMode ? [...gridData.slice(0, editIndex), newData, ...gridData.slice(editIndex + 1)] : [...gridData, newData];
-        const totalPercentage = calculateTotalPercentage(newGridData);
-        if (totalPercentage <= 100) {
-            setGridData(newGridData);
-            setPercentageTotal(totalPercentage);
-            tableData(newGridData)
-            resetData();
+        let newGridData;
+        if (isEditMode) {
+            const totalPercentage = calculateTotalPercentage(gridData) - originalPercentage + newData.Percentage;
+            if (totalPercentage <= 100) {
+                newGridData = [...gridData.slice(0, editIndex), newData, ...gridData.slice(editIndex + 1)];
+                setGridData(newGridData);
+                setPercentageTotal(totalPercentage);
+                tableData(newGridData);
+                resetData();
+            } else {
+                Toaster.warning("Total percentage cannot exceed 100.");
+            }
         } else {
-            Toaster.warning("Total percentage cannot exceed 100.");
+            newGridData = [...gridData, newData];
+            const totalPercentage = calculateTotalPercentage(newGridData);
+            if (totalPercentage <= 100) {
+                setGridData(newGridData);
+                setPercentageTotal(totalPercentage);
+                tableData(newGridData);
+                resetData();
+            } else {
+                Toaster.warning("Total percentage cannot exceed 100.");
+            }
         }
         setIsEditMode(false);
         setEditIndex('');
@@ -121,26 +133,21 @@ const AddMaterialTypeDetail = (props) => {
 
     const editData = (indexValue, operation) => {
         if (operation === 'delete') {
-            let temp = [];
-            gridData && gridData.map((item, index) => {
-                if (index !== indexValue) {
-                    temp.push(item);
-                }
-                return null;
-            });
+            const temp = gridData.filter((item, index) => index !== indexValue);
             setGridData(temp);
             setPercentageTotal(calculateTotalPercentage(temp));
             resetData();
-            tableData(temp)
+            tableData(temp);
         }
 
         if (operation === 'edit') {
             setEditIndex(indexValue);
             setIsEditMode(true);
 
-            let Data = gridData[indexValue];
-            setValue('CommodityStandardName', { label: Data.CommodityStandardName, value: Data.CommodityStandardId });
-            setValue('Percentage', Data.Percentage);
+            const data = gridData[indexValue];
+            setOriginalPercentage(data.Percentage); // Store the original percentage
+            setValue('CommodityStandardName', { label: data.CommodityStandardName, value: data.CommodityStandardId });
+            setValue('Percentage', data.Percentage);
         }
     };
 
@@ -152,7 +159,7 @@ const AddMaterialTypeDetail = (props) => {
     };
 
     return <>
-        <form >
+        <form>
             <Row className="pl-3">
                 <Col md="4">
                     <SearchableSelectHookForm
@@ -219,7 +226,6 @@ const AddMaterialTypeDetail = (props) => {
                                 onClick={handleAddUpdateButtonClick}
                             >
                                 <div className={"plus"}></div>ADD
-
                             </button>
                             <button
                                 type="button"
@@ -231,7 +237,7 @@ const AddMaterialTypeDetail = (props) => {
                         </>
                     )}
                 </Col>
-            </Row >
+            </Row>
         </form>
         <br />
         <Col md="12" className="mb-2 pl-2 pr-3">
@@ -243,7 +249,7 @@ const AddMaterialTypeDetail = (props) => {
                         <th className='text-right'>{`Action`}</th>
                     </tr>
                 </thead>
-                <tbody >
+                <tbody>
                     {gridData.length > 0 ? (
                         <>
                             {gridData.map((item, index) => (
@@ -286,5 +292,6 @@ const AddMaterialTypeDetail = (props) => {
             </Table>
         </Col>
     </>
-}
+};
+
 export default AddMaterialTypeDetail;
