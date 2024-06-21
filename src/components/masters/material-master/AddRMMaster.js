@@ -81,7 +81,6 @@ function AddRMMaster(props) {
                 DayTime(getValues('fromDate')).format('YYYY-MM-DD'),
                 DayTime(getValues('toDate')).format('YYYY-MM-DD'),
                 (res) => {
-                    console.log(res);
                     setValue('UnitOfMeasurement', { label: res?.data?.Data, value: res?.data?.Identity })
                     const updatedCommodityDetails = state.commodityDetails.map(detail => {
                         const avgRate = res?.data?.DataList.find(rate => rate.MaterialCommodityStandardDetailsId === detail.MaterialCommodityStandardDetailsId);

@@ -609,7 +609,7 @@ function AddRMFinancialDetails(props) {
         }));
     };
     // const handleFrequencyChange = (value) => {
-    //     console.log('value: ', value);
+    //     
     //     switch (value) {
     //         case 'Weekly':
     //             setState(prevState => ({ ...prevState, dateRange: 6 }));
@@ -647,7 +647,7 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, toEffectiveDate: date, minDate: date }));
     };
     const handleToEffectiveDateChange = (date) => {
-        console.log('DayTimeto ', DayTime(date).format('YYYY-MM-DD'));
+        
         setState(prevState => ({ ...prevState, toEffectiveDate: date, maxDate: date }));
     }
     const handleVendor = () => {

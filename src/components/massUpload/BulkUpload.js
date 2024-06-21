@@ -631,7 +631,6 @@ class BulkUpload extends Component {
                             if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && this.state.costingTypeId === VBCTypeId && this.state.bopType !== DETAILED_BOP) {
                                 obj.IsBreakupBoughtOutPart = "No"
                             }
-                            console.log('obj: ', obj);
                             fileData.push(obj)
                             obj = {}
                         }
@@ -698,7 +697,7 @@ class BulkUpload extends Component {
     onSubmit = (values) => {
         const { fileData, costingTypeId, IsFinalApprover, bopType } = this.state;
         const { fileName, typeOfEntryId } = this.props;
-        console.log('fileName: ', fileName);
+        
         if (fileData.length === 0) {
             Toaster.warning('Please select a file to upload.')
             return false

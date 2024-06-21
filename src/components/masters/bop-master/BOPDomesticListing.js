@@ -6,7 +6,6 @@ import { getBOPDataList, deleteBOP } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import { PaginationWrapper } from '../../common/commonPagination'
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
@@ -798,10 +797,8 @@ const BOPDomesticListing = (props) => {
     }
   }
 
-
   return (
     <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-      {/* {state.isLoader && <LoaderCustom />} */}
       {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
       {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
       <form noValidate >

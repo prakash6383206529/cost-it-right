@@ -205,7 +205,7 @@ const StandardizationListing = () => {
         }));
     }, []);
     const buttonFormatter = (props) => {
-        console.log('props: ', props);
+        
         const { showExtraData } = state
         const cellValue = props?.data?.CommodityStandardizationId
         let isEditbale = false

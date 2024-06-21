@@ -54,7 +54,7 @@ const CommodityStandardListing = () => {
         render: false,
         showExtraData: false
     });
-    console.log('here');
+    
     const [warningMessage, setWarningMessage] = useState(false)
     const [disableDownload, setDisableDownload] = useState(false)
     const [floatingFilterData, setFloatingFilterData] = useState({ IndexExchangeName: '' })
@@ -201,7 +201,7 @@ const CommodityStandardListing = () => {
         setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
     };
     const buttonFormatter = (props) => {
-        console.log('props: ', props);
+        
         const { showExtraData } = state
         const cellValue = props?.valueFormatted
             ? props.valueFormatted

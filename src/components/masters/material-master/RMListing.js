@@ -78,7 +78,6 @@ const RMListing = (props) => {
    * @description  used to cancel filter form
    */
   const closeDrawer = (e = "", formData, type) => {
-    console.log('type: ', type);
     setState((prevState) => ({
       ...prevState, isOpen: false, isLoader: type === "submit" ? true : prevState.isLoader, dataCount: type === "submit" ? 0 : prevState.dataCount,
     }));
@@ -192,7 +191,6 @@ const RMListing = (props) => {
     let isDeleteButton = false
     isEditbale = permissions.Edit;
     let isViewButton = permissions.View
-    console.log('isViewButtom: ', isViewButton);
     isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete);
 
     return (

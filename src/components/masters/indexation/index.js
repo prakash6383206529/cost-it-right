@@ -89,7 +89,7 @@ function Indexation(props) {
             const permmisionDataRMANDGRADE = accessDataRMANDGRADE && accessDataRMANDGRADE.Actions && checkPermission(accessDataRMANDGRADE.Actions)
 
             if (permmisionData !== undefined) {
-                console.log('permmisionData: ', permmisionData);
+                
                 setPermissionData(permmisionData);
                 setViewRMAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false);
                 setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false);
