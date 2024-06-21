@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { getStandardizedCommodityListAPI } from "../actions/Indexation";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import { getCommodityStandardizationDataListAPI } from "../actions/Indexation";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
@@ -259,7 +260,7 @@ const RMDetailListing = () => {
     setDataCount(0)
     reactLocalStorage.setObject('selectedRow', {})
   }
-  const { isOpen, isEditFlag, ID, showExtraData, render,isBulkUpload } = state;
+  const { isOpen, isEditFlag, ID, showExtraData, render, isBulkUpload } = state;
   const onSearch = () => {
     setWarningMessage(false)
     setIsFilterButtonClicked(true)
@@ -287,7 +288,6 @@ const RMDetailListing = () => {
     hyphenFormatter: hyphenFormatter,
     customNoRowsOverlay: NoContentFound,
   };
-
   const onBtExport = () => {
     let tempArr = [];
     tempArr = state.gridApi && state.gridApi?.getSelectedRows();
@@ -425,7 +425,7 @@ const RMDetailListing = () => {
                 <AgGridColumn field="CommodityStandardName" headerName="Commodity Name (In CIR)"></AgGridColumn>
                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>}
-     
+
               {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="StandardizedCommodity" />}
 
             </div>

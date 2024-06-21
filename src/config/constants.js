@@ -3047,8 +3047,12 @@ export const PartTypeIDFromAPI = 2
 export const RMIndex = true
 export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
+
+export const showDynamicKeys = true
+export const hideDetailOfRubbercalci = true
+
 //VERSION 
-export const VERSION = "V2.2.22.1";
+export const VERSION = "V2.2.22.6";
 
 
 

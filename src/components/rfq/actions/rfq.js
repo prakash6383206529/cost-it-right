@@ -216,12 +216,10 @@ export function getMultipleCostingDetails(selectedRows, callback) {
             } else {
                 Toaster.error(MESSAGES.SOME_ERROR)
             }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
         })
-            .catch((error) => {
-
-                dispatch({ type: API_FAILURE })
-                apiErrors(error)
-            })
     }
 }
 
