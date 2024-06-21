@@ -5,12 +5,12 @@ import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
-import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants'
+import { CRMHeads, EMPTY_DATA, showPaperCorrugatedBox } from '../../../../../config/constants'
 import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
-import { calculateNetLandedCost, calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
+import { calculateNetLandedCost, calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, corrugatedBoxPermission, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
-import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, } from '../../../actions/CostWorking'
+import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForMonoCartonCorrugatedBox, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, } from '../../../actions/CostWorking'
 import { IsNFR, ViewCostingContext } from '../../CostingDetails'
 import { DISPLAY_G, DISPLAY_KG, DISPLAY_MG } from '../../../../../config/constants'
 import TooltipCustom from '../../../../common/Tooltip'
@@ -70,6 +70,7 @@ function RawMaterialCost(props) {
   const [rmNameList, setRMNameList] = useState([])
   const [inputValue, setInputValue] = useState('');
   const [deleteIndex, setDeleteIndex] = useState('');
+  const [calculatorTpyeStore, setCalculatorTypeStore] = useState('CorrugatedAndMonoCartonBox')
   const [isMultiCalculatorData, setIsMultiCalculatorData] = useState(false);
   const [headerPinned, setHeaderPinned] = useState(true)
   const [tourState, setTourState] = useState({
@@ -187,6 +188,9 @@ function RawMaterialCost(props) {
         index: props.index,
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
+      }
+      if (Number(costData?.TechnologyId) === CORRUGATEDBOX) {
+        setCalculatorTypeStore(gridData[0].CalculatorType ?? '')
       }
       if (!CostingViewMode && gridData) {
         gridData && gridData.map(item => {
@@ -342,11 +346,11 @@ function RawMaterialCost(props) {
     }
     setDrawerOpen(false)
   }
-  const setCalculatorData = (res, index) => {
+  const setCalculatorData = (res, index, calculatorType = '') => {
     let tempArr = []
     let tempData = gridData[index]
     const data = res && res.data && res.data.Data ? res.data.Data : {}
-    tempData = { ...tempData, WeightCalculatorRequest: ferrousCalculatorReset === true ? {} : data }
+    tempData = { ...tempData, CalculatorType: Number(costData?.TechnologyId) === CORRUGATEDBOX ? calculatorType : {}, WeightCalculatorRequest: ferrousCalculatorReset === true ? {} : data }
     tempArr = Object.assign([...gridData], { [index]: tempData })
     setTimeout(() => {
       setGridData(tempArr)
@@ -357,7 +361,7 @@ function RawMaterialCost(props) {
    * @method toggleWeightCalculator
    * @description TOGGLE WEIGHT CALCULATOR DRAWER
    */
-  const toggleWeightCalculator = debounce((index) => {
+  const toggleWeightCalculator = debounce((index, calculatorType = '') => {
     setEditIndex(index)
     let tempData = gridData[index]
     if (technologyForDensity.includes(costData?.TechnologyId)) {
@@ -390,9 +394,15 @@ function RawMaterialCost(props) {
         }))
         break;
       case CORRUGATEDBOX:
-        dispatch(getRawMaterialCalculationForCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
-          setCalculatorData(res, index)
-        }))
+        if (calculatorType === 'CorrugatedAndMonoCartonBox') {
+          dispatch(getRawMaterialCalculationForMonoCartonCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index, 'CorrugatedAndMonoCartonBox')
+          }))
+        } else {
+          dispatch(getRawMaterialCalculationForCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index)
+          }))
+        }
         break;
       case DIE_CASTING:
         dispatch(getRawMaterialCalculationForDieCasting(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
@@ -431,6 +441,7 @@ function RawMaterialCost(props) {
    * @description HIDE WEIGHT CALCULATOR DRAWER
    */
   const closeWeightDrawer = (e = '', weightData = {}, originalWeight = {}) => {
+
 
     dispatch(setFerrousCalculatorReset(false))
 
@@ -795,7 +806,7 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
-
+    setCalculatorTypeStore(weightData?.CalculatorType ?? '')
     let tempArr = []
     let tempData = gridData[editIndex]
     let grossWeight
@@ -849,6 +860,7 @@ function RawMaterialCost(props) {
         BurningLossWeight: weightData.BurningValue,
         ScrapWeight: scrapWeight,
         IsCalculaterAvailable: true,
+        CalculatorType: weightData?.CalculatorType
         // IsScrapRecoveryPercentageApplied: true
       }
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
@@ -863,6 +875,9 @@ function RawMaterialCost(props) {
         counter = 0 //USED FOR ERROR HANDLING 
       }, 400)
       errors.rmGridFields = []
+      if (tempArr) {
+        tempArr[0].CalculatorType = weightData?.CalculatorType
+      }
       setGridData(tempArr)
 
       if (Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
@@ -880,6 +895,7 @@ function RawMaterialCost(props) {
           item.ScrapRecoveryPercentage = RecoveryPercentage
           item.ScrapWeight = weightData?.CostingFerrousCalculationRawMaterials[index]?.ScrapWeight ? weightData?.CostingFerrousCalculationRawMaterials[index]?.ScrapWeight : 0
           item.Percentage = weightData.CostingFerrousCalculationRawMaterials[index].Percentage
+          item.CalculatorType = weightData?.CalculatorType
           // item.IsScrapRecoveryPercentageApplied = true
         })
         setTimeout(() => {
@@ -1311,6 +1327,7 @@ function RawMaterialCost(props) {
     return true
   }
 
+  const disabledForMonoCartonCorrugated = (costData?.TechnologyId === CORRUGATEDBOX && calculatorTpyeStore === 'CorrugatedAndMonoCartonBox')
   /**
    * @method render
    * @description Renders the component
@@ -1341,11 +1358,11 @@ function RawMaterialCost(props) {
                   buttonName={"RM"}
                 />
               }
-              {((costData?.TechnologyId === Ferrous_Casting || costData?.TechnologyId === RUBBER) && gridData?.length !== 0) && <button
+              {((costData?.TechnologyId === Ferrous_Casting || costData?.TechnologyId === RUBBER || (costData?.TechnologyId === CORRUGATEDBOX && corrugatedBoxPermission().CorrugatedAndMonoCartonBox)) && gridData?.length !== 0) && <button
                 className="secondary-btn"
                 type={'button'}
-                onClick={() => toggleWeightCalculator(0)}
-                disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}><div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
+                onClick={() => toggleWeightCalculator(0, 'CorrugatedAndMonoCartonBox')}
+                disabled={(CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false) || (costData?.TechnologyId === CORRUGATEDBOX && calculatorTpyeStore === 'CorrugatedBox')}><div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
 
 
             </Col>
@@ -1431,7 +1448,7 @@ function RawMaterialCost(props) {
                                   className={`CalculatorIcon cr-cl-icon RM_calculator${index}`}
                                   type={'button'}
                                   onClick={() => toggleWeightCalculator(index)}
-                                  disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}
+                                  disabled={(CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false || disabledForMonoCartonCorrugated)}
                                 /> : '-'}
                               </td>
                             }
@@ -1461,7 +1478,7 @@ function RawMaterialCost(props) {
                                       handleGrossWeightChange(e?.target?.value, index)
                                     }}
                                     errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
-                                    disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || item?.dataFromNFRAPI) ? true : false}
+                                    disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || item?.dataFromNFRAPI || disabledForMonoCartonCorrugated) ? true : false}
                                   />
                                 </div>
                               </td>
@@ -1490,7 +1507,7 @@ function RawMaterialCost(props) {
                                         handleFinishWeightChange(e?.target?.value, index)
                                       }}
                                       errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                      disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied) || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || item?.dataFromNFRAPI) ? true : false}
+                                      disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied) || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || item?.dataFromNFRAPI || disabledForMonoCartonCorrugated) ? true : false}
                                     />
                                   </div>
                                 </td></>
