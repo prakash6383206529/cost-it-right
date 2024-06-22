@@ -20,7 +20,8 @@ import { showPaperCorrugatedBox } from '../../../../config/constants'
 import PaperCorrugatedBox from './corrugatedBox/PaperCorrugatedBox'
 
 function OpenWeightCalculator(props) {
-  const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox } = props
+  const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox, calculatorType } = props
+
   let appyMasterBatch;
   let totalRM;
   if (!isSummary) {
@@ -142,7 +143,7 @@ function OpenWeightCalculator(props) {
         )
 
       case CORRUGATEDBOX:
-        if (rmData[0].CalculatorType === 'CorrugatedAndMonoCartonBox') {
+        if (calculatorType === 'CorrugatedAndMonoCartonBox') {
           return (
             <PaperCorrugatedBox
               rmRowData={props.rmRowData}

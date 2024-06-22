@@ -70,9 +70,10 @@ function RawMaterialCost(props) {
   const [rmNameList, setRMNameList] = useState([])
   const [inputValue, setInputValue] = useState('');
   const [deleteIndex, setDeleteIndex] = useState('');
-  const [calculatorTpyeStore, setCalculatorTypeStore] = useState('CorrugatedAndMonoCartonBox')
+  const [calculatorTypeStore, setCalculatorTypeStore] = useState(costData.TechnologyId === CORRUGATEDBOX ? item?.CostingPartDetails?.CalculatorType : '')
   const [isMultiCalculatorData, setIsMultiCalculatorData] = useState(false);
   const [headerPinned, setHeaderPinned] = useState(true)
+
   const [tourState, setTourState] = useState({
     steps: []
   })
@@ -189,9 +190,7 @@ function RawMaterialCost(props) {
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
       }
-      if (Number(costData?.TechnologyId) === CORRUGATEDBOX) {
-        setCalculatorTypeStore(gridData[0].CalculatorType ?? '')
-      }
+
       if (!CostingViewMode && gridData) {
         gridData && gridData.map(item => {
           if (item.ScrapRecoveryPercentage !== 0) {
@@ -395,8 +394,10 @@ function RawMaterialCost(props) {
         break;
       case CORRUGATEDBOX:
         if (calculatorType === 'CorrugatedAndMonoCartonBox') {
+          setCalculatorTypeStore(calculatorType)
           dispatch(getRawMaterialCalculationForMonoCartonCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
             setCalculatorData(res, index, 'CorrugatedAndMonoCartonBox')
+
           }))
         } else {
           dispatch(getRawMaterialCalculationForCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
@@ -1327,7 +1328,7 @@ function RawMaterialCost(props) {
     return true
   }
 
-  const disabledForMonoCartonCorrugated = (costData?.TechnologyId === CORRUGATEDBOX && calculatorTpyeStore === 'CorrugatedAndMonoCartonBox')
+  const disabledForMonoCartonCorrugated = (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore === 'CorrugatedAndMonoCartonBox')
   /**
    * @method render
    * @description Renders the component
@@ -1362,7 +1363,7 @@ function RawMaterialCost(props) {
                 className="secondary-btn"
                 type={'button'}
                 onClick={() => toggleWeightCalculator(0, 'CorrugatedAndMonoCartonBox')}
-                disabled={(CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false) || (costData?.TechnologyId === CORRUGATEDBOX && calculatorTpyeStore === 'CorrugatedBox')}><div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
+                disabled={(CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false) || (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore === 'CorrugatedBox')}><div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
 
 
             </Col>
@@ -1815,6 +1816,7 @@ function RawMaterialCost(props) {
             rmData={gridData}
             isSummary={false}
             DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
+            calculatorType={calculatorTypeStore}
           />
         )
       }

@@ -70,14 +70,14 @@ function PaperCorrugatedBox(props) {
 
 
     useEffect(() => {
-        if (rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.CorrugatedAndMonoCartonBoxWeightCalculatorId) {
+        if (rmRowData && rmRowData?.WeightCalculatorRequest && rmRowData?.WeightCalculatorRequest?.CorrugatedAndMonoCartonBoxWeightCalculatorId) {
             const { WeightCalculatorRequest } = rmRowData
             boxDetailsInputFields.map((item) => {
                 setValueCalculatorForm(item.name, checkForDecimalAndNull(WeightCalculatorRequest[item.name], NoOfDecimalForPrice))
             })
 
             let tableDataTemp = []
-            WeightCalculatorRequest.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial.length !== 0 && WeightCalculatorRequest.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial.map(item => {
+            WeightCalculatorRequest?.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial?.length !== 0 && WeightCalculatorRequest?.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial?.map(item => {
                 setValueTableForm(`GSM${item.RawMaterialIdRef}`, checkForDecimalAndNull(item.GSM, NoOfDecimalForPrice))
                 setValueTableForm(`flutePercentage${item.RawMaterialIdRef}`, checkForDecimalAndNull(item.FlutePercentage, NoOfDecimalForPrice))
                 setValueTableForm(`fluteValue${item.RawMaterialIdRef}`, checkForDecimalAndNull(item.FluteValue, NoOfDecimalForPrice))
@@ -289,6 +289,7 @@ function PaperCorrugatedBox(props) {
                                         isMulti={true}
                                         errors={errorsTableForm.RawMaterial}
                                         disabled={false}
+                                        handleChange={() => { }}
                                     />
                                 </Col>
                                 <Col md="5">
