@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI, getUOMSelectList } from '../.././actions/Common';
-import { getCostingSpecificTechnology, getExistingCosting, } from '../costing/actions/Costing'
+import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
 import { BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, PREDRAFT, PRODUCT_ID, RFQ, RFQVendor, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
@@ -47,10 +47,15 @@ function AddRfq(props) {
     const permissions = useContext(ApplyPermission);
 
     const Vendor = permissions.permissionDataVendor
+
+
     const Part = permissions.permissionDataPart
+
+
     const dispatch = useDispatch()
     const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
+
 
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
@@ -152,6 +157,7 @@ function AddRfq(props) {
     const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
     const showSendButton = dataProps?.rowData?.DisplayStatus || ''
+
     const isDropdownDisabled = (initialConfiguration.IsCriticalVendorConfigured && isViewFlag) || (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === ''));
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
@@ -163,12 +169,20 @@ function AddRfq(props) {
     const [havellsKey, setHavellsKey] = useState(true)
     const [storePartsDetail, setStorePartsDetail] = useState([])
     const [partEffectiveDate, setPartEffectiveDate] = useState('')
-    const [disabledPartUid, setDisabledPartUId] = useState(false)
 
-    const [disabledVendoUi, setDisabledVendoUId] = useState(false)
+    const [disabledPartUid, setDisabledPartUId] = useState(true)
+
+
+
+
+    const [disabledVendoUi, setDisabledVendoUId] = useState(true)
+
+
+
 
     const isPartEffectiveDateValid = partEffectiveDate && new Date(partEffectiveDate).getTime() > new Date().getTime();
     const effectiveMinDate = isPartEffectiveDateValid ? new Date(partEffectiveDate) : new Date();
+
     useEffect(() => {
         if (dataProps?.isAddFlag) {
             const obj = createQuotationObject(null);
@@ -178,13 +192,13 @@ function AddRfq(props) {
         }
     }, [])
 
+
     useEffect(() => {
         if (showSendButton === DRAFT) {
+            setDisabledVendoUId((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
+        } else if (dataProps?.isAddFlag || showSendButton === PREDRAFT) {
 
-            setDisabledVendoUId((Vendor?.add || Vendor?.edit) ? false : true)
-        } else if (showSendButton === PREDRAFT) {
-
-            setDisabledPartUId((Part?.add || Part?.edit) ? false : true)
+            setDisabledPartUId((Part && (Part?.Add || Part?.Edit)) ? false : true)
         }
     }, [showSendButton, Vendor, Part])
     useEffect(() => {
@@ -510,9 +524,9 @@ function AddRfq(props) {
     const deleteItemPartTable = (rowData, final) => {
 
 
-        dispatch(deleteQuotationPartDetail(rowData?.QuotationPartId), (res) => {
-
-        })
+        dispatch(deleteQuotationPartDetail(rowData?.QuotationPartId, (res) => {
+            Toaster.success('Part has been deleted successfully')
+        }))
         let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
         setPartList(arr)
         setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData })
@@ -705,10 +719,10 @@ function AddRfq(props) {
             }
             return item
         })
-        if (/* !(initialConfiguration?.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ) */!havellsKey && vendorList.length === 0) {
+        if (Vendor?.add || Vendor?.edit || !havellsKey && vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
-        } else if (/* !(initialConfiguration?.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ)  */!havellsKey && partList.length === 0) {
+        } else if (Part?.add || Part?.edit || !havellsKey && partList.length === 0) {
             Toaster.warning("Please enter part details")
             return false
         } else if (!havellsKey && files?.length === 0) {
@@ -1376,6 +1390,7 @@ function AddRfq(props) {
                     dispatch(saveRfqPartDetails(obj, (res) => {
 
                         if (res?.data?.Result) {
+                            Toaster.success('Part Details has been added successfully.');
                             setPartIdentity(res?.data?.Identity);
                             // onResetPartNoTable();
                             // setTableData([]);
@@ -1921,7 +1936,7 @@ function AddRfq(props) {
     const handlePartNoChange = (value) => {
 
         setAssemblyPartNumber(value)
-        dispatch(getExistingCosting(value.value, (res) => {
+        dispatch(getPartInfo(value?.value, (res) => {
 
             setValue("Description", res.data?.Data?.Description);
             setPartEffectiveDate(res.data.Data?.EffectiveDate);
@@ -2119,7 +2134,7 @@ function AddRfq(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Description}
-                                                disabled={disabledPartUid}
+                                                disabled={true}
                                                 placeholder="-"
                                             />
                                         </Col>
@@ -2274,7 +2289,7 @@ function AddRfq(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.Description}
-                                                    disabled={disabledPartUid}
+                                                    disabled={true}
                                                     placeholder="-"
                                                 />
                                             </Col>
@@ -2460,7 +2475,7 @@ function AddRfq(props) {
                                                     // handleChange={handleDestinationPlantChange}
                                                     handleChange={() => { }}
                                                     errors={errors.contactPerson}
-                                                    disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll) || disabledVendoUi}
+                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                     isLoading={plantLoaderObj}
                                                 />
                                             )}
@@ -2481,7 +2496,7 @@ function AddRfq(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.IncoTerms}
-                                                    disabled={disabledVendoUi}
+                                                    disabled={true}
                                                     placeholder="-"
                                                 />
                                             </Col>
@@ -2500,7 +2515,7 @@ function AddRfq(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.PaymentTerms}
-                                                    disabled={disabledVendoUi}
+                                                    disabled={true}
                                                     placeholder="-"
                                                 />
                                             </Col>
@@ -2531,7 +2546,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 className={'user-btn pull-left'}
                                                 onClick={() => addRowVendorTable()}
-                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll) || disabledVendoUi}
+                                                disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                             >
                                                 <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
                                             </button>
@@ -2542,7 +2557,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 value="CANCEL"
                                                 className="reset ml-2"
-                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll) || disabledVendoUi}
+                                                disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                             >
                                                 <div className={''}></div>
                                                 RESET
@@ -2837,7 +2852,7 @@ function AddRfq(props) {
                                             {!isDropdownDisabled && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}
-                                                disabled={isViewFlag || partList.length === 0}>
+                                                disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
                                             </button>}
