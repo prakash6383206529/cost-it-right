@@ -144,7 +144,7 @@ class AddMoreDetails extends Component {
       finalApprovalLoader: true,
       showPopup: false,
       levelDetails: {},
-      selectedCustomer: [],
+      selectedCustomer: editDetails.selectedCustomer ?? [],
       selectedVedor: editDetails.vendorName ?? [],
       costingTypeId: editDetails?.costingTypeId,
       CostingTypeId: editDetails?.costingTypeId,
