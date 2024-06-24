@@ -1,3 +1,4 @@
+
 import React from 'react'
 import { Row, Col } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
@@ -12,14 +13,16 @@ import { useForm } from 'react-hook-form'
 import NoContentFound from '../../common/NoContentFound'
 
 const gridOptions = {};
-function AddIndexationMaterialListing() {
+function AddIndexationMaterialListing(props) {
+
+    const CommodityDetails = props.commodityDetails ? props.commodityDetails : [];
+
 
     const { setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
 
-    const [acc1, setAcc1] = useState(false)
     const [tableData, setTableData] = useState([]);
     const initialTableData = [
         {
@@ -86,6 +89,15 @@ function AddIndexationMaterialListing() {
         sortable: false,
         editable: true
     };
+    const priceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (
+            <>
+
+                {cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''}
+            </>
+        )
+    }
     const commonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (
@@ -96,10 +108,12 @@ function AddIndexationMaterialListing() {
             </>
         )
     }
+
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
         commonFormatter: commonFormatter,
         customNoRowsOverlay: NoContentFound,
+        priceFormatter: priceFormatter
     };
 
     return (
@@ -109,30 +123,17 @@ function AddIndexationMaterialListing() {
                     <div className="login-container signup-form">
                         <div className="row">
                             <div className="col-md-12">
-                                <Row>
-                                    <Col md="8"></Col>
-                                    <Col md="4" className="text-right">
-                                        <button id="Dashboard_Simulation_Accordian" className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
-                                            {acc1 ? (
-                                                <i className="fa fa-minus" ></i>
-                                            ) : (
-                                                <i className="fa fa-plus"></i>
-                                            )}
-                                        </button>
-                                    </Col>
-                                </Row>
-                                <br/>
-                                {acc1 && (
+                                {props.isOpen && (
                                     <Row>
                                         <Col md="12">
-                                            <div className={`ag-grid-wrapper budgeting-table  ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
+                                            <div className={`ag-grid-wrapper budgeting-table  ${CommodityDetails && CommodityDetails?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                                                 <div className="ag-theme-material" >
                                                     <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
                                                         domLayout='autoHeight'
                                                         // columnDefs={c}
-                                                        rowData={initialTableData}
+                                                        rowData={CommodityDetails}
                                                         onCellValueChanged={onCellValueChanged}
                                                         pagination={true}
                                                         paginationPageSize={12}
@@ -147,25 +148,27 @@ function AddIndexationMaterialListing() {
                                                         suppressColumnVirtualisation={true}
                                                         stopEditingWhenCellsLoseFocus={true}
                                                     >
-                                                        <AgGridColumn width={115} field="materialName" headerName="Material Name" editable={false}></AgGridColumn>
+                                                        <AgGridColumn width={115} field="CommodityStandardName" headerName="Commodity Name" editable={false}></AgGridColumn>
                                                         <AgGridColumn width={115} field="Percentage" headerName="Percentage" editable={false}></AgGridColumn>
-                                                        <AgGridColumn width={115} field="BasicRate" headerName="Basic Rate" editable={false}></AgGridColumn>
+                                                        <AgGridColumn width={115} field="BasicRate" headerName="Basic Rate" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={115} field="ProcessingCost" headerName="Premium Charges" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="ProcessingCost" headerName="Processing Cost" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="ImportFreight" headerName="Import Freight" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="OtherCost" headerName="Other Cost" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="CustomDuty" headerName="Custom Duty" cellRenderer='commonFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={115} field="ShippingLineChanges" headerName="Shipping Line Changes" cellRenderer='commonFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={115} field="ShippingLineChanges" headerName="Shipping Line Charges" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="Total" headerName="Total" editable={false} valueGetter='(Number(data.ProcessingCost?data.ProcessingCost:0)+ Number(data.ImportFreight?data.ImportFreight:0)+ Number(data.OtherCost?data.OtherCost:0)+ Number(data.CustomDuty?data.CustomDuty:0)+ Number(data.ShippingLineChanges?data.ShippingLineChanges:0))'></AgGridColumn>
                                                     </AgGridReact>
                                                 </div>
                                             </div>
-                                        </Col>
-                                    </Row>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                        </Col >
+                                    </Row >
+                                )
+                                }
+                            </div >
+                        </div >
+                    </div >
+                </div >
             </div >
         </>
     );

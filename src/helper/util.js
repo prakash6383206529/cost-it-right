@@ -1342,6 +1342,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
 
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
+    
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
@@ -1630,3 +1631,6 @@ export const changeBOPLabel = (arr, bopReplacement) => {
   })
   return tempArr
 }
+export const getFilteredDropdownOptions = (options, selectedValues) => {
+  return options.filter(option => !selectedValues.includes(option.value));
+};

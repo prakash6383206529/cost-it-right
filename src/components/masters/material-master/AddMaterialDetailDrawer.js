@@ -11,8 +11,9 @@ import { MESSAGES } from '../../../config/message';
 import AddGrade from "./AddGrade";
 import Button from '../../layout/Button';
 import {
-    getCommoditySelectListByType, getCommodityNameSelectListByType, getCommodityCustomNameSelectListByType,
-    getStandardizedCommodityListAPI, createCommodityStandardizationData, updateCommodityStandardization,
+    getIndexSelectList, getCommodityNameInIndexSelectList, getCommodityCustomNameSelectListByType,
+    getStandardizedCommodityListAPI, updateCommodityStandardization,
+    createCommodityStandardization,
 } from '../../masters/actions/Indexation'
 import { debounce, values } from 'lodash';
 import Toaster from '../../common/Toaster';
@@ -36,13 +37,13 @@ const AddMaterialDetailDrawer = (props) => {
     });
     const dispatch = useDispatch()
     const { indexCommodityData } = useSelector((state) => state.indexation);
-    const { nameCommodityData } = useSelector((state) => state.indexation);
+    const { commodityInIndex } = useSelector((state) => state.indexation);
     const { customNameCommodityData } = useSelector((state) => state.indexation);
     //const { standardizedCommodityDataList } = useSelector((state) => state.indexation);
     useEffect(() => {
         dispatch(getStandardizedCommodityListAPI(() => { }))
-        dispatch(getCommoditySelectListByType(() => { }))
-        dispatch(getCommodityNameSelectListByType(() => { }))
+        dispatch(getIndexSelectList(() => { }))
+        dispatch(getCommodityNameInIndexSelectList(() => { }))
         dispatch(getCommodityCustomNameSelectListByType((res) => { }))
 
     }, [])
@@ -68,7 +69,7 @@ const AddMaterialDetailDrawer = (props) => {
             return temp
         }
         if (label === 'CommodityName') {
-            nameCommodityData && nameCommodityData.map((item) => {
+            commodityInIndex && commodityInIndex.map((item) => {
                 if (item.Value === '--0--') return false
                 temp.push({ label: item.Text, value: item.Value })
                 return null
@@ -173,7 +174,7 @@ const AddMaterialDetailDrawer = (props) => {
                 CreatedBy: loggedInUserId(),
                 IsActive: true,
             };
-            dispatch(createCommodityStandardizationData(formDataToSubmit, res => {
+            dispatch(createCommodityStandardization(formDataToSubmit, res => {
 
                 setState(prevState => ({ ...prevState, setDisable: false }));
 
@@ -213,6 +214,7 @@ const AddMaterialDetailDrawer = (props) => {
             CustomMaterialName: formData.CustomMaterialName
         };
         const newGridData = [...gridData, obj];
+
         setGridData(newGridData);
 
         resetData();
