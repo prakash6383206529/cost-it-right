@@ -53,10 +53,10 @@ function RfqListing(props) {
     const { t } = useTranslation("Common");
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
-    const [ permissionDataPart, setPermissionDataPart ] = useState() 
-    const [  permissionDataVendor ,setPermissionDataVendor] = useState()
+    const [permissionDataPart, setPermissionDataPart] = useState()
+    const [permissionDataVendor, setPermissionDataVendor] = useState()
     const [permissionData, setPermissionData] = useState()
-    console.log('permissionData: ', permissionData);
+
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const agGridRef = useRef(null);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
@@ -120,7 +120,7 @@ function RfqListing(props) {
             const accessDataVendor = Data && Data.Pages.find(el => el.PageName === RFQVendor)
             const permmisionDataVendor = accessDataVendor && accessDataVendor.Actions && checkPermission(accessDataVendor.Actions)
 
-            if (permmisionData !== undefined && permmisionDataVendor !== undefined) {
+            if (permmisionData !== undefined || permmisionDataVendor !== undefined) {
                 setPermissionData({
                     permissionDataPart: permmisionData,
                     permissionDataVendor: permmisionDataVendor
@@ -252,8 +252,8 @@ function RfqListing(props) {
 
         return (
             <>
-                {(viewAccessibility || permissionData?.permissionDataVendor?.View ) && <button title='View' className="View mr-1 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {((status !== APPROVED && status !== CANCELLED) &&( editAccessibility || permissionData?.permissionDataVendor?.Edit)) && <button title='Edit' className="Edit mr-1 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {(viewAccessibility || permissionData?.permissionDataVendor?.View) && <button title='View' className="View mr-1 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {((status !== APPROVED && status !== CANCELLED) && (editAccessibility || permissionData?.permissionDataVendor?.Edit)) && <button title='Edit' className="Edit mr-1 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED && status !== RECEIVED) && rowData?.IsShowCancelIcon && <button title='Cancel' className="CancelIcon mr-1  Tour_List_Cancel" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
@@ -457,7 +457,7 @@ function RfqListing(props) {
 
     return (
         <>
-            {!addRfq &&      permissionData !== undefined &&
+            {!addRfq && permissionData !== undefined &&
                 <div className={`ag-grid-react report-grid p-relative  ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
@@ -572,24 +572,24 @@ function RfqListing(props) {
 
                 </div >
             }
-                            <ApplyPermission.Provider value={permissionData}>
+            <ApplyPermission.Provider value={permissionData}>
 
-            {addRfq &&
+                {addRfq &&
 
-                <AddRfq
-                    data={addRfqData}
-                    //hideForm={hideForm}
-                    AddAccessibilityRMANDGRADE={true}
-                    EditAccessibilityRMANDGRADE={true}
-                    isRMAssociated={true}
-                    isOpen={addRfq}
-                    anchor={"right"}
-                    isEditFlag={isEdit}
-                    closeDrawer={closeDrawer}
-                />
+                    <AddRfq
+                        data={addRfqData}
+                        //hideForm={hideForm}
+                        AddAccessibilityRMANDGRADE={true}
+                        EditAccessibilityRMANDGRADE={true}
+                        isRMAssociated={true}
+                        isOpen={addRfq}
+                        anchor={"right"}
+                        isEditFlag={isEdit}
+                        closeDrawer={closeDrawer}
+                    />
 
-            }
-                                        </ApplyPermission.Provider>
+                }
+            </ApplyPermission.Provider>
 
             {
                 attachment && (

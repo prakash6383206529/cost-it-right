@@ -16,6 +16,7 @@ import {
     GET_RFQ_PART_DETAILS,
 
     GET_PART_IDENTITY,
+    GET_QUOTATION_ID_FOR_RFQ,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -52,6 +53,10 @@ export function createRfqQuotation(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.createRfqQuotation, data, config());
         request.then((response) => {
+            dispatch({
+                type: GET_QUOTATION_ID_FOR_RFQ,
+                payload: response.status === 204 ? "" : response.data.Identity
+            })
             if (response.data.Result) {
                 callback(response);
             }
@@ -464,6 +469,14 @@ export function setVendorDetails(data) {
         });
     }
 };
+export function setRfqPartDetails(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_RFQ_PART_DETAILS,
+            payload: data || {},
+        });
+    }
+};
 export function getAssemblyChildpart(partId, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getAssemblyChildpart}?partId=${partId}`, config());
@@ -504,10 +517,14 @@ export function getrRqVendorDetails(vendorId, callback) {
     };
 }
 export function getRfqPartDetails(partId, callback) {
-    console.log('partId: ', partId);
+
     const quotationPartId = Number(partId)
-    console.log(Number(partId));
+
     return (dispatch) => {
+        dispatch({
+            type: GET_RFQ_PART_DETAILS,
+            payload: []
+        })
         const request = axios.get(`${API.getRfqPartDetails}?quotationPartId=${quotationPartId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -520,6 +537,7 @@ export function getRfqPartDetails(partId, callback) {
                 callback(response);
             }
         }).catch((error) => {
+
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -530,7 +548,7 @@ export function saveRfqPartDetails(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.saveRfqPartDetails, data, config());
         request.then((response) => {
-            console.log('response: ', response);
+
             if (response.data.Result) {
                 dispatch({
                     type: GET_PART_IDENTITY,
@@ -539,6 +557,7 @@ export function saveRfqPartDetails(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+
             dispatch({ type: API_FAILURE });
             apiErrors(error);
             callback(error)
@@ -546,15 +565,23 @@ export function saveRfqPartDetails(data, callback) {
     };
 }
 export function deleteQuotationPartDetail(partId, callback) {
+    const quotationPartId = Number(partId)
     return (dispatch) => {
-        const request = axios.get(`${API.deleteQuotationPartDetail}?partId=${partId}`, config());
-        request.then((response) => {
-            if (response.data.Result || response.status === 204) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
+        axios.delete(`${API.deleteQuotationPartDetail}?quotationPartId=${quotationPartId}`, config())
+            .then((response) => {
+                callback(response)
+            }).catch((error) => {
+                apiErrors(error)
+                dispatch({ type: API_FAILURE })
+            })
+
     };
 }
+export function setQuotationIdForRfq(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_QUOTATION_ID_FOR_RFQ,
+            payload: data || "",
+        });
+    }
+};

@@ -20,10 +20,8 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.8.109:8070/api/v1`
-//const BASE_URL = `http://10.10.8.109:8070/api/v1`
-// const BASE_URL = `http://10.10.8.109:8070/api/v1`
-// const BASE_URL = `http://10.10.1.100:10152/api/v1`
+//const BASE_URL = `http://10.10.11.81:8080/api/v1`
+//const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
 // const BASE_URL = `http://10.10.8.160/api/v1`;  //
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
@@ -1114,7 +1112,8 @@ export const API = {
   getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
-  getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
+  deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
+  // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -1168,7 +1167,7 @@ export const API = {
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
   getAssemblyChildpart: `${BASE_URL}/rfq-quotation/get-assembly-child-part`,
-  getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
+  getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-quotation-part-detail`,
 
   //vendor management
   getVendorClassificationList: `${BASE_URL}/vendor/get-classifications-status`,
@@ -1981,7 +1980,9 @@ export const GET_RFQ_VENDOR_DETAIL = 'GET_RFQ_VENDOR_DETAIL'
 export const GET_TARGET_PRICE = 'GET_TARGET_PRICE'
 export const GET_ASSEMBLY_CHILD_PART = "GET_ASSEMBLY_CHILD_PART"
 export const GET_RFQ_PART_DETAILS = "GET_RFQ_PART_DETAILS"
-export const GET_RFQ_RAISE_NUMBER = "GET_RFQ_RAISE_NUMBER"
+export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
+export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
+
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
@@ -2011,6 +2012,7 @@ export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
 export const EXTERNAL_REJECT = 'ExternalReject'
+export const PREDRAFT = 'Pre Draft'
 export const DRAFTID = 1
 export const REJECTEDID = 4
 export const ERRORID = 12

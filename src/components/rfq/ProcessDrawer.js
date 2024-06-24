@@ -22,7 +22,7 @@ import { REMARKMAXLENGTH } from '../../config/masterData'
 import Dropzone from 'react-dropzone-uploader'
 import LoaderCustom from '../common/LoaderCustom'
 import Toaster from '../common/Toaster'
-import { fileUploadQuotation, getAssemblyChildpart, getRfqPartDetails } from './actions/rfq'
+import { fileUploadQuotation, getAssemblyChildpart, getRfqPartDetails, setRfqPartDetails } from './actions/rfq'
 
 function ViewDrawer(props) {
     const dispatch = useDispatch()
@@ -66,44 +66,82 @@ function ViewDrawer(props) {
         setValue('AssemblyPartNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
         if (type === Component) {
             setValue('partNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
+        } else {
+            if (!isViewFlag) {
+                dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => { }))
+            }
         }
-        dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => { }))
     }, [AssemblyPartNumber])
-    // useEffect(() => {
-    //     dispatch(getRfqPartDetails((AssemblyPartNumber?.value) => { }))
-    // }, [])
 
-    // useEffect(() => {
-    //     // if ((isEditFlag || isViewFlag) && getChildParts) {
-    //     //const partList = getChildParts() || [];
-    //     const partList = rfq?.PartList || [];
+    useEffect(() => {
+        if ((isEditFlag || isViewFlag) && getRfqPartDetails) {
 
-    //     const allSpecifications = partList.flatMap(part =>
-    //         part.PartSpecificationList?.PartSpecification || []
-    //     );
+            const partList = getRfqPartDetails?.PartList || [];
+            // Assuming partList is an array of objects
+            if (partList.length > 0) {
+                partList.forEach(part => {
+                    const PartId = part.PartId || '';
+                    const PartNumber = part.PartNumber || '';
 
-    //     setSpecificationList(allSpecifications);
-    //     const allRMDetails = partList.flatMap(part =>
-    //         part.RMDetails || []
-    //     );
-    //     setTableData(allRMDetails);
-    //     const allRemarks = partList
-    //         ? partList
-    //             .filter(part => !part.IsChildPart) // Filter out parts where IsChildPart is false
-    //             .map(part => part.Remarks)         // Map to an array of remarks
-    //             .join(", ")                        // Join remarks into a single string separated by ", "
-    //         : "";
-    //     
-    //     setValue('remark', allRemarks)
+                    const allSpecifications = (part.PartSpecification || []).map(detail => ({
+                        ...detail,
+                        PartId: PartId,
+                        PartNumber: PartNumber
+                    }));
 
-    //     setRemark(allRemarks);
-    //     const allFiles = partList.flatMap(part =>
-    //         part.PartAttachments || []
-    //     );
 
-    //     setChildPartFiles(allFiles);
-    // }, [getChildParts]);
+                    setSpecificationList(specificationList => _.uniqBy([...specificationList, ...allSpecifications], 'PartId'));
 
+                    const allRMDetails = (part.RMDetails || []).map(detail => ({
+                        ...detail,
+                        PartId: PartId,
+                        PartNumber: PartNumber
+                    }));
+                    // 
+                    setTableData(tableData => _.uniqBy([...tableData, ...allRMDetails], 'PartId'));
+
+                    const remarks = part.Remarks || '';
+                    setValue('remark', remarks);
+                    setRemark(remarks);
+
+                    const allFiles = part.Attachments || [];
+                    setFiles(files => [...files, ...allFiles]);
+                    setChildPartFiles(childPartFiles => [...childPartFiles, ...allFiles]);
+                });
+            }
+
+
+            // if (partList.length > 0) {
+            //     const part = partList[0];
+            //     const allSpecifications = part.PartSpecification || [];
+
+            //     setSpecificationList(allSpecifications);
+
+            //     // Extract RMDetails
+            //     const partNumber = part.PartNumber || '';
+            //     const allRMDetails = (part.RMDetails || []).map(detail => ({
+            //         ...detail,
+            //         PartNumber: partNumber
+            //     }));
+
+            //     setTableData(allRMDetails);
+
+            //     // Set Remarks
+            //     const remarks = part.Remarks || '';  // Assuming there's a Remarks property
+
+
+            //     setValue('remark', remarks);
+            //     setRemark(remarks);
+
+            //     // Extract Attachments
+            //     const allFiles = part.Attachments || [];
+
+            //     setFiles(allFiles);
+            //     setChildPartFiles(allFiles);
+            // }
+        }
+
+    }, [getRfqPartDetails, isViewFlag, isEditFlag]);
     const removeAddedParts = (arr) => {
         const filteredArray = arr.filter((item) => {
             return !selectedparts.some((element) => {
@@ -245,13 +283,13 @@ function ViewDrawer(props) {
 
         const obj = {
             PartNumber: partNumberLabel,
-            partId: partIdRef,
-            RmName: rmNameLabel,
-            RmChildId: rmChildId,
-            RmGrade: rmGradeLabel,
-            RmGradeId: rmGradeId,
-            RmSpecificationId: rmSpecificationId,
-            RmSpecification: rmSpecificationLabel,
+            PartId: partIdRef,
+            RawMaterialName: rmNameLabel,
+            RawMaterialChildId: rmChildId,
+            RawMaterialGrade: rmGradeLabel,
+            RawMaterialGradeId: rmGradeId,
+            RawMaterialSpecificationId: rmSpecificationId,
+            RawMaterialSpecification: rmSpecificationLabel,
             childPart: true,
         };
         const specificationObj = {
@@ -316,12 +354,13 @@ function ViewDrawer(props) {
         resetFormAndDropdowns();
     }
     const handleCloseDrawer = () => {
-        const isFormValid = validateForm(); // Implement this function to check form validity
-        if (!isFormValid) {
-            Toaster.warning('Please fill in all required fields.');
-        } else {
-            props?.closeDrawer('');
-        }
+        // if (isViewFlag || isEditFlag) {
+        //     saveRfqPartsData()
+
+        // }
+        props?.closeDrawer('');
+        dispatch(setRfqPartDetails({}));
+
 
     }
     const cancelUpdate = () => {
@@ -345,7 +384,7 @@ function ViewDrawer(props) {
             if (type === Component) {
                 setValue('partNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
             }
-            const removedItemPartNumber = tempObj.partId;
+            const removedItemPartNumber = tempObj.PartId;
             const newData = [...tableData];
             newData.splice(index, 1);
             setTableData(newData);
@@ -521,7 +560,7 @@ function ViewDrawer(props) {
                                                 // handleChange={handleDestinationPlantChange}
                                                 handleChange={(newValue) => handleChildPart(newValue)}
                                                 errors={errors.partNumber}
-                                                disabled={type === Component ? true : false}
+                                                disabled={isViewFlag || type === Component ? true : false}
 
                                                 isLoading={plantLoaderObj}
                                                 options={renderListingRM('childPartName')}
@@ -544,7 +583,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmname')}
                                             mandatory={false}
                                             handleChange={(newValue) => handleRMName(newValue)}
-                                            disabled={isViewFlag || tableData.length > 0}
+                                            disabled={isViewFlag || type === Component ? tableData.length > 0 : false}
                                         // errors={`${indexInside} CostingVersion`}
                                         />
                                     </Col>
@@ -563,7 +602,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmgrade')}
                                             mandatory={rmNameSelected}
                                             handleChange={(newValue) => handleRMGrade(newValue)}
-                                            disabled={isViewFlag || tableData.length > 0}                                        // errors={`${indexInside} CostingVersion`}
+                                            disabled={isViewFlag || type === Component ? tableData.length > 0 : false}                                        // errors={`${indexInside} CostingVersion`}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -581,7 +620,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmspecification')}
                                             mandatory={rmNameSelected}
                                             handleChange={(newValue) => handleRMSpecification(newValue)}
-                                            disabled={isViewFlag || tableData.length > 0}                                        // errors={`${indexInside} CostingVersion`}
+                                            disabled={isViewFlag || type === Component ? tableData.length > 0 : false}                                        // errors={`${indexInside} CostingVersion`}
                                         />
                                     </Col>
 
@@ -628,6 +667,7 @@ function ViewDrawer(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.Specification}
+                                                    disabled={isViewFlag}
                                                 />
 
                                             </Col>
@@ -650,6 +690,7 @@ function ViewDrawer(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.Value}
+                                                    disabled={isViewFlag}
                                                 />
 
                                             </Col>
@@ -680,6 +721,7 @@ function ViewDrawer(props) {
                                             errors={errors.remark}
                                             // disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                             rowHeight={6}
+                                            disabled={isViewFlag}
                                         // isLoading={plantLoaderObj}
                                         />
                                     </Col>
@@ -723,7 +765,7 @@ function ViewDrawer(props) {
                                                     extra.reject ? { color: "red" } : {},
                                             }}
                                             classNames="draper-drop"
-                                        // disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                            disabled={isViewFlag}
                                         />
                                     </div>
                                 </Col>
@@ -785,14 +827,14 @@ function ViewDrawer(props) {
                                                 type="button"
                                                 className={'user-btn mt30 pull-left'}
                                                 onClick={() => addRow(activeTab)}
-                                                disabled={activeTab === "1" ? (isViewFlag || tableData.length > 0) : false}                                        // errors={`${indexInside} CostingVersion`}
+                                                disabled={isViewFlag || (activeTab === "1" && type === Component) ? (isViewFlag || tableData.length > 0) : false}                                        // errors={`${indexInside} CostingVersion`}
                                             >
                                                 <div className={'plus'}></div>ADD
                                             </button>
                                             <button
                                                 type="button"
                                                 className={"mr15 ml-1 mt30 reset-btn"}
-                                                disabled={activeTab === "1" ? (isViewFlag || tableData.length > 0) : false}
+                                                disabled={isViewFlag || (activeTab === "1" && type === Component) ? (isViewFlag || tableData.length > 0) : false}
                                                 onClick={rateTableReset}
                                             >
                                                 Reset
@@ -821,21 +863,23 @@ function ViewDrawer(props) {
                                             tableData?.map((item, index) => (
                                                 <tr key={index}>
                                                     <td>{item.PartNumber !== null ? item.PartNumber : '-'}</td>
-                                                    <td>{item.RmGrade !== null ? item.RmGrade : '-'}</td>
-                                                    <td>{item.RmName !== null ? item.RmName : '-'}</td>
-                                                    <td>{item.RmSpecification !== null ? item.RmSpecification : '-'}</td>
+                                                    <td>{item.RawMaterialGrade !== null ? item.RawMaterialGrade : '-'}</td>
+                                                    <td>{item.RawMaterialName !== null ? item.RawMaterialName : '-'}</td>
+                                                    <td>{item.RawMaterialSpecification !== null ? item.RawMaterialSpecification : '-'}</td>
                                                     <td>
                                                         <button
                                                             className="Edit mr-2"
                                                             type="button"
                                                             title="Edit"
                                                             onClick={() => editRow(index, activeTab)}
+                                                            disabled={isViewFlag}
                                                         />
                                                         <button
                                                             className="Delete"
                                                             type="button"
                                                             title="Delete"
                                                             onClick={() => deleteRow(index, activeTab)}
+                                                            disabled={isViewFlag}
                                                         />
                                                     </td>
                                                 </tr>
@@ -851,12 +895,14 @@ function ViewDrawer(props) {
                                                             type={'button'}
                                                             title='Edit'
                                                             onClick={() => editRow(index, activeTab)}
+                                                            disabled={isViewFlag}
                                                         />
                                                         <button
                                                             className="Delete"
                                                             title='Delete'
                                                             type={'button'}
                                                             onClick={() => deleteRow(index, activeTab)}
+                                                            disabled={isViewFlag}
                                                         />
                                                     </td>
                                                 </tr>
@@ -895,6 +941,7 @@ function ViewDrawer(props) {
                                             handleCloseDrawer();
                                         }}
                                         buttonName={isEditFlag ? "Update" : "Save"}
+                                        disabled={isViewFlag}
                                     />
                                 </div>
                             </div>
