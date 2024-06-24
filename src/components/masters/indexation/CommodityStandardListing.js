@@ -14,7 +14,7 @@ import { searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
 import { useTranslation } from "react-i18next";
-import { COMMODITYSTANDARD_DOWNLOAD_EXCEl } from "../../../config/masterData";
+// import { COMMODITYSTANDARD_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
 import ReactExport from "react-export-excel";
 import { disabledClass } from '../../../actions/Common';
@@ -54,7 +54,7 @@ const CommodityStandardListing = () => {
         render: false,
         showExtraData: false
     });
-    
+
     const [warningMessage, setWarningMessage] = useState(false)
     const [disableDownload, setDisableDownload] = useState(false)
     const [floatingFilterData, setFloatingFilterData] = useState({ IndexExchangeName: '' })
@@ -201,7 +201,7 @@ const CommodityStandardListing = () => {
         setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
     };
     const buttonFormatter = (props) => {
-        
+
         const { showExtraData } = state
         const cellValue = props?.valueFormatted
             ? props.valueFormatted
@@ -317,7 +317,7 @@ const CommodityStandardListing = () => {
                 : commodityStandardDataList
                     ? commodityStandardDataList
                     : [];
-        return returnExcelColumn(COMMODITYSTANDARD_DOWNLOAD_EXCEl, tempArr);
+        // return returnExcelColumn(COMMODITYSTANDARD_DOWNLOAD_EXCEl, tempArr);
     };
     const closeBulkUploadDrawer = () => {
         setState((prevState) => ({ ...prevState, isBulkUpload: false }));

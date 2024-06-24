@@ -2257,7 +2257,8 @@ function AddRfq(props) {
                                                 />
                                             </Col>
                                         }
-                                        {havellsKey && <>
+                                        {havellsKey &&
+
 
                                             <Col md="3">
                                                 <TextFieldHookForm
@@ -2273,11 +2274,13 @@ function AddRfq(props) {
                                                     defaultValue={''}
                                                     className=""
                                                     customClassName={'withBorder'}
-                                                    errors={errors.Description}
+                                                    errors={errors.TagetPrice}
                                                     disabled={disabledPartUid}
                                                     placeholder="-"
                                                 />
                                             </Col>
+                                        }
+                                        {
                                             <Col md="3">
                                                 <div className="inputbox date-section">
                                                     <div className="form-group">
@@ -2311,7 +2314,7 @@ function AddRfq(props) {
                                                 </div>
 
                                             </Col>
-                                        </>
+
                                         }
 
                                         {/* <Col md="3">

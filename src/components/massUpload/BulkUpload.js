@@ -37,7 +37,7 @@ import {
 import {
     AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm, RMMaterialListing,
     IndexCommodityListing, CommodityInIndexListing, StandardizedCommodityNameListing,
-    CommodityStandard,
+    // CommodityStandard,
     IndexDataListing,
     OverheadVBC,
     Overhead,
@@ -468,9 +468,9 @@ class BulkUpload extends Component {
                         case String(COMMODITYSTANDARDIZATION):
                             checkForFileHead = checkForSameFileUpload(StandardizedCommodityNameListing, fileHeads)
                             break;
-                        case String(COMMODITYSTANDARD):
-                            checkForFileHead = checkForSameFileUpload(CommodityStandard, fileHeads)
-                            break;
+                        // case String(COMMODITYSTANDARD):
+                        //     checkForFileHead = checkForSameFileUpload(CommodityStandard, fileHeads)
+                        // break;
                         default:
                             break;
                     }
@@ -697,7 +697,7 @@ class BulkUpload extends Component {
     onSubmit = (values) => {
         const { fileData, costingTypeId, IsFinalApprover, bopType } = this.state;
         const { fileName, typeOfEntryId } = this.props;
-        
+
         if (fileData.length === 0) {
             Toaster.warning('Please select a file to upload.')
             return false

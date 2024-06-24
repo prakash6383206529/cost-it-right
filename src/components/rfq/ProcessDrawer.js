@@ -23,6 +23,7 @@ import Dropzone from 'react-dropzone-uploader'
 import LoaderCustom from '../common/LoaderCustom'
 import Toaster from '../common/Toaster'
 import { fileUploadQuotation, getAssemblyChildpart, getRfqPartDetails, setRfqPartDetails } from './actions/rfq'
+import _ from 'lodash';
 
 function ViewDrawer(props) {
     const dispatch = useDispatch()
