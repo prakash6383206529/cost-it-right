@@ -2117,7 +2117,7 @@ function AddRfq(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Description}
-                                                disabled={disabledPartUid}
+                                                disabled={disabledPartUid || true}
                                                 placeholder="-"
                                             />
                                         </Col>
@@ -2272,7 +2272,7 @@ function AddRfq(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.Description}
-                                                    disabled={disabledPartUid}
+                                                    disabled={disabledPartUid || true}
                                                     placeholder="-"
                                                 />
                                             </Col>
