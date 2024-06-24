@@ -70,7 +70,7 @@ const SendForApproval = (props) => {
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value });
       }, 100);
 
-      let approverIdListTemp = [];
+
       let obj = {
         LoggedInUserId: loggedInUserId(),
         DepartmentId: userDetails().DepartmentId,
@@ -81,7 +81,7 @@ const SendForApproval = (props) => {
       };
 
       const handleApiResponse = (res, deptKey, approverKey) => {
-
+        let approverIdListTemp = [];
         const Data = res.data.DataList[1] || {};
         const isLPSApprovalType = Data.ApprovalTypeId === LPSAPPROVALTYPEID;
         if (Data.length !== 0) {
