@@ -32,7 +32,6 @@ import TourWrapper from "../common/Tour/TourWrapper";
 import { useTranslation } from "react-i18next";
 import { Steps } from "./TourMessages";
 import TooltipCustom from "../common/Tooltip";
-import { label } from "react-dom-factories";
 
 
 var CryptoJS = require('crypto-js')
@@ -180,11 +179,11 @@ function UserRegistration(props) {
 
   };
   useEffect(() => {
-    dispatch(getApprovalTypeSelectListUserModule(() => {}, '1'));
-    dispatch(getApprovalTypeSelectListUserModule(() => {}, '2'));
-    dispatch(getApprovalTypeSelectListUserModule(() => {}, '3'));
-    dispatch(getApprovalTypeSelectListUserModule(() => {}, '4'));
-    
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '1'));
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '2'));
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '3'));
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '4'));
+
   }, [dispatch]);
 
   useEffect(() => {
@@ -320,11 +319,6 @@ function UserRegistration(props) {
 
   const showHidePasswordHandler = () => {
     setIsShowHidePassword(!isShowHidePassword)
-  }
-
-  const handleAccClicked = (label) => {
-    dispatch(getApprovalTypeSelectList(() => { }), label)
-
   }
 
   const checkPasswordConfirm = value => {
@@ -484,26 +478,26 @@ function UserRegistration(props) {
           temp.push({ label: item.Text, value: item.Value });
         }
       });
-          // Add "Select All" at the 0th position if isEditIndex is false
-      if (!isEditIndex) {
+      // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isEditIndex && isAllowMultiple) {
         temp.unshift({ label: "Select All", value: '0' });
       }
-          const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
       if (isSelectAllOnly) {
         return [];
       } else {
         return temp;
       }
     }
-    
+
     if (label === 'approvalTypeSimulation') {
       approvalTypeSimulation && approvalTypeSimulation.map(item => {
         if (item.Value !== '0') {
           temp.push({ label: item.Text, value: item.Value });
         }
       });
-          // Add "Select All" at the 0th position if isEditIndex is false
-      if (!isSimulationEditIndex) {
+      // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isSimulationEditIndex && isAllowMultiple) {
         temp.unshift({ label: "Select All", value: '0' });
       }
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
@@ -519,8 +513,8 @@ function UserRegistration(props) {
           temp.push({ label: item.Text, value: item.Value });
         }
       });
-          // Add "Select All" at the 0th position if isEditIndex is false
-      if (!isMasterEditIndex) {
+      // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isMasterEditIndex && isAllowMultiple) {
         temp.unshift({ label: "Select All", value: '0' });
       }
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
@@ -536,8 +530,8 @@ function UserRegistration(props) {
           temp.push({ label: item.Text, value: item.Value });
         }
       });
-          // Add "Select All" at the 0th position if isEditIndex is false
-      if (!isOnboardingEditIndex) {
+      // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isOnboardingEditIndex && isAllowMultiple) {
         temp.unshift({ label: "Select All", value: '0' });
       }
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
@@ -569,7 +563,7 @@ function UserRegistration(props) {
    * @description Used to handle 
   */
   const departmentHandler = (newValue, actionMeta) => {
-    if(selectedPlants.length > 0){
+    if (selectedPlants.length > 0) {
       setValue('plant', [])
     }
     if (getConfigurationKey().IsMultipleDepartmentAllowed) {
@@ -2079,7 +2073,7 @@ function UserRegistration(props) {
     } if (JSON.stringify(onboardingLevelGrid) !== JSON.stringify(oldOnboardingLevelGrid)) {
       isForcefulUpdatedForOnboarding = true;
     }
-     if (isDepartmentUpdate || isPlantUpdate) {
+    if (isDepartmentUpdate || isPlantUpdate) {
       isForcefulUpdatedForMaster = true;
       isForcefulUpdatedForSimulation = true;
       isForcefulUpdatedForCosting = true;
@@ -2431,29 +2425,42 @@ function UserRegistration(props) {
   }
 
   const message = () => {
+    let messages = [];
+    const isAnyTableChanged = costingTableChanged || simulationTableChanged || masterTableChanged;
+    const isOnlyOnboardingChanged = onboardingTableChanged && !isAnyTableChanged;
+
     if (isDepartmentUpdated) {
-      return `costing, simulation, and master`;
+      messages.push(`costing, simulation${getConfigurationKey().IsMasterApprovalAppliedConfigure ? ', master' : ''}`);
     } else {
       const messages = [];
 
-      if (costingTableChanged) {
-        messages.push(`costing`);
+      if (costingTableChanged) messages.push(`costing`);
+      if (simulationTableChanged) messages.push(`simulation`);
+      if (masterTableChanged) messages.push(`master`);
+      if (isOnlyOnboardingChanged) messages.push(`onboarding & management`);
+      if (costingTableChanged && simulationTableChanged && masterTableChanged) {
+        // This condition is redundant as the individual pushes above will already cover these cases.
+        // Consider removing this block or adjusting logic if unique behavior is intended.
       }
-      if (simulationTableChanged) {
-        messages.push(`simulation`);
-      }
-      if (masterTableChanged) {
-        messages.push(`master`);
-      }
-      if(onboardingTableChanged) {
-        messages.push(`onboarding`);
-      }
-      if (costingTableChanged && simulationTableChanged && masterTableChanged && onboardingTableChanged) {
-        return `costing, simulation, onboarding and master`;
-      }
-      // Join the messages based on the state values
-      return messages.join(' and ');
     }
+    const messageOne = messages.join(' and ');
+    console.log('messageOne: ', messageOne);
+
+    const baseMessage = `All ${messageOne}'s approval will become `;
+    const messageTwo = `${baseMessage}${onboardingTableChanged ? 'rejected by system' : 'draft'} which are pending & awaited in approval status. Do you want to continue?`;
+
+    const messageThree = `${baseMessage}draft and onboarding and management's approval will become rejected by system, which are pending & awaited in approval status. 
+      Do you want to continue?`;
+
+    let finalMessage = '';
+
+    // Simplify the conditions by grouping similar outcomes
+    if (isOnlyOnboardingChanged || isAnyTableChanged || isDepartmentUpdated) {
+      finalMessage = (onboardingTableChanged && (isAnyTableChanged || isDepartmentUpdated)) ? messageThree : messageTwo;
+    }
+
+    return finalMessage;
+
   };
   const handlePlant = (newValue) => {
     if (newValue && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
@@ -3650,9 +3657,7 @@ function UserRegistration(props) {
           </div >
         </div >
       </div >
-      {
-        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`All ${message()}'s approval which are pending & awaited in approval status will become draft. Do you want to continue?`} />
-      }
+      {showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${message()}`} />}
     </div >
   );
 }

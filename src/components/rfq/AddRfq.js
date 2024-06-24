@@ -734,13 +734,15 @@ function AddRfq(props) {
             }
             let Data = res?.data?.Data;
             if (res?.data?.Result && Data && ((Data?.LPSRatingIsBlocked || Data?.ClassificationIsBlocked))) {
-                const additionalMessage = " Do you want to take deviation approval for this vendor against the required plant?";
+                const additionalMessage = " Do you want to initiate an unblocking deviation for this vendor at the specified plant? If yes, please click \"OK\"";
 
-                if (Data?.ClassificationDeviationIsInApprovalProcess && Data?.LPSRatingDeviationIsInApprovalProcess) {
-                    setShowPopup(true)
+                if (Data?.ClassificationDeviationIsInApprovalProcess || Data?.LPSRatingDeviationIsInApprovalProcess) {
+                    // setShowPopup(true)
                     setBlocked(true)
-                    setPopupMessage(res?.data?.Message);
+                    Toaster.warning(res?.data?.Message)
                     setAlreadyInDeviation(true)
+                    setValue('vendor', '')
+                    setShowPopup(false)
                     return false
                 } else {
                     setPopupMessage(res?.data?.Message + additionalMessage);

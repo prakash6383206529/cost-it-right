@@ -4,12 +4,24 @@ import classnames from 'classnames';
 import InitiateUnblocking from './InitiateUnblocking';
 import CommonApproval from '../masters/material-master/CommonApproval';
 import { ONBOARDINGID } from '../../config/constants';
+import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
 const VendorManagement = () => {
     const [activeTab, setActiveTab] = useState("1");
-
+    const location = useLocation();
+    const history = useHistory()
+    const currentState = location.state || {};
     const toggle = (tab) => {
-
-        if (activeTab !== tab) setActiveTab(tab);
+        setTimeout(() => {
+            setActiveTab(tab);
+        }, 200);
+        if (Number(tab) === 1) {
+            const updatedState = {
+                ...currentState,
+                vendorId: null,
+                plantId: null
+            }
+            history.replace({ ...location, state: updatedState });
+        }
     }
 
 
@@ -41,8 +53,7 @@ const VendorManagement = () => {
                             <NavLink
                                 to="/vendor-classification"
                                 className={classnames({ active: activeTab === "1" })}
-                                onClick={() => setActiveTab("1")
-                                }
+                                onClick={() => toggle("1")}
                             >
                                 Initiate Unblocking
                             </NavLink>
@@ -51,8 +62,7 @@ const VendorManagement = () => {
                             <NavLink
                                 to="/supplier-approval-summary"
                                 className={classnames({ active: activeTab === "2" })}
-                                onClick={() => setActiveTab("2")
-                                }
+                                onClick={() => toggle("2")}
                             >
                                 Approval Status
                             </NavLink>
@@ -92,6 +102,7 @@ const VendorManagement = () => {
                                     MasterId={0}
                                     OnboardingApprovalId={ONBOARDINGID}
                                     toggle={toggle}
+                                    hidesendBtn={true}
                                 />
                             </TabPane>
                         }

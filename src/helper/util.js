@@ -577,6 +577,142 @@ const TotalTCOCostCal = (tcoData, paymentData) => {
 }
 
 export function formViewData(costingSummary, header = '', isBestCost = false) {
+  const setDynamicKeys = (list, value) => {
+    let datalist = list && list?.filter(element => element?.Type === 'Other' && element?.SubHeader === value)
+    let arr = []
+    datalist && datalist?.map(item => {
+      let obj = {}
+      obj.DynamicHeader = item?.Description
+      obj.DynamicApplicabilityCost = item?.ApplicabilityCost
+      obj.DynamicPercentage = item?.Value
+      obj.DynamicNetCost = item?.NetCost
+      arr.push(obj)
+    })
+    return arr;
+  }
+  const dummyData = [
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 9",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 10",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 11",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: "-"
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 2",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 3",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 12",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "Fixed",
+      ApplicabilityIdRef: null,
+      Description: "Test 13",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 1",
+      Value: 1,
+      ApplicabilityCost: 14,
+      NetCost: 1,
+      CRMHead: "-"
+    },
+    {
+      SubHeader: "Process",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test Process 3",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: "-"
+    },
+    {
+      SubHeader: "Process",
+      Type: "Other",
+      ApplicabilityType: "Fixed",
+      ApplicabilityIdRef: null,
+      Description: "Test Process 2",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 15",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: "-"
+    }
+  ]
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
@@ -855,6 +991,11 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
   obj.ScrapRecoveryPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ScrapRecoveryPercentage
   obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied
+  obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
+  obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied
+  obj.OtherCostDetailsOverhead = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'OverHead')
+  obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
+  obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
   temp.push(obj)
   return temp
 }
