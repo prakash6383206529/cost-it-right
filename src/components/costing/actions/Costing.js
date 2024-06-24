@@ -1086,21 +1086,16 @@ export function getFreigtFullTruckCapacitySelectList() {
  */
 export function getRateCriteriaByCapacitySelectList(Capacity) {
   return (dispatch) => {
-    const request = axios.get(
-      `${API.getRateCriteriaByCapacitySelectList}/${Capacity}`,
-      config(),
-    )
-    request
-      .then((response) => {
-        dispatch({
-          type: GET_RATE_CRITERIA_BY_CAPACITY,
-          payload: response.data.SelectList,
-        })
+    const request = axios.get(`${API.getRateCriteriaByCapacitySelectList}/${Capacity}`, config())
+    request.then((response) => {
+      dispatch({
+        type: GET_RATE_CRITERIA_BY_CAPACITY,
+        payload: response.data.SelectList,
       })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 

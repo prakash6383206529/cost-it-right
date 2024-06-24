@@ -10,7 +10,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigura
 import { useDispatch, useSelector } from 'react-redux';
 import WarningMessage from '../../../common/WarningMessage';
 import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
-import { IdForMultiTechnology, LOGISTICS, STRINGMAXLENGTH } from '../../../../config/masterData';
+import { IdForMultiTechnology, LOGISTICS, PACK_AND_FREIGHT_PER_KG, STRINGMAXLENGTH } from '../../../../config/masterData';
 import _ from 'lodash';
 import { MESSAGES } from '../../../../config/message';
 import TooltipCustom from '../../../common/Tooltip';
@@ -33,11 +33,12 @@ function AddPackaging(props) {
   const defaultValues = {
     PackagingDetailId: rowObjData && rowObjData.PackagingDetailId !== undefined ? rowObjData.PackagingDetailId : '',
     PackagingDescription: rowObjData && rowObjData.PackagingDescription !== undefined ? rowObjData.PackagingDescription : '',
-    PackagingCostPercentage: rowObjData && rowObjData.PackagingCostPercentage !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCostPercentage, getConfigurationKey().NoOfDecimalForPrice) : 0,
+    PackagingCostPercentage: rowObjData && rowObjData.PackagingCostPercentage !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCostPercentage, getConfigurationKey().NoOfDecimalForPrice) : '',
     Applicability: rowObjData && rowObjData.Applicability !== undefined ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : [],
     PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '',
-    Cost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : 0,
+    Cost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     crmHeadPackaging: rowObjData && rowObjData.PackagingCRMHead !== undefined ? { label: rowObjData.PackagingCRMHead, value: 1 } : [],
+    Rate: rowObjData && rowObjData.Rate !== undefined ? checkForDecimalAndNull(rowObjData.Rate, getConfigurationKey().NoOfDecimalForPrice) : '',
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
@@ -66,6 +67,8 @@ function AddPackaging(props) {
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
+  const { RMCCTabData } = useSelector(state => state.costing)
+
   const freightType = [
     { label: 'Origin THC', value: 'Origin THC' },
     { label: 'Ocean/Air Freight', value: 'Ocean/Air Freight' },
@@ -73,10 +76,28 @@ function AddPackaging(props) {
   ]
 
   useEffect(() => {
-    if (applicability && applicability.value !== undefined) {
-      calculateApplicabilityCost(applicability.label)
+    if (applicability?.value === PACK_AND_FREIGHT_PER_KG) {
+      let arr = _.map(RMCCTabData, 'CostingPartDetails.CostingRawMaterialsCost')
+      let totalFinishWeight = 0
+      arr && arr?.map(item => {
+        totalFinishWeight = item && item?.reduce((accummlator, el) => {
+          return accummlator + checkForNull(el?.FinishWeight)
+        }, 0)
+      })
+      // setTotalFinishWeight(totalFinishWeight)
+      console.log('totalFinishWeight: ', totalFinishWeight);
+      setValue("Quantity", totalFinishWeight)
+
+    }
+  }, [RMCCTabData, applicability])
+
+  useEffect(() => {
+    if (applicability && applicability?.value !== undefined) {
+      console.log('applicability?.label: ', applicability?.label);
+      calculateApplicabilityCost(applicability?.label)
     }
   }, [fieldValues]);
+
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : ''
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
@@ -122,6 +143,7 @@ function AddPackaging(props) {
       } else {
         tempList = [...temp]
       }
+      tempList.push({ label: PACK_AND_FREIGHT_PER_KG, value: PACK_AND_FREIGHT_PER_KG })
       return tempList;
     }
     if (label === 'FrieghtType') {
@@ -171,6 +193,7 @@ function AddPackaging(props) {
    * @description APPLICABILITY CALCULATION
    */
   const calculateApplicabilityCost = (Text, applicablityDropDownChange = false) => {
+    console.log('Text: ', Text);
 
     const { NetRawMaterialsCost, NetBoughtOutPartCost, } = headCostData;
 
@@ -189,6 +212,7 @@ function AddPackaging(props) {
     switch (Text) {
       case 'RM':
       case 'Part Cost':
+        console.log('11111');
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -199,6 +223,7 @@ function AddPackaging(props) {
         }
         break;
       case 'BOP':
+        console.log('22222');
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -211,6 +236,7 @@ function AddPackaging(props) {
 
       case 'RM + CC':
       case 'Part Cost + CC':
+        console.log('33333');
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -221,6 +247,7 @@ function AddPackaging(props) {
         }
         break;
       case 'BOP + CC':
+        console.log('44444');
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -232,6 +259,7 @@ function AddPackaging(props) {
         break;
 
       case 'CC':
+        console.log('55555');
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -244,6 +272,7 @@ function AddPackaging(props) {
 
       case 'RM + CC + BOP':
       case 'Part Cost + CC + BOP':
+        console.log('66666');
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -255,6 +284,7 @@ function AddPackaging(props) {
 
       case 'RM + BOP':
       case 'Part Cost + BOP':
+        console.log('77777');
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -264,6 +294,7 @@ function AddPackaging(props) {
         }
         break;
       case 'Net Cost':
+        console.log('88888');
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -273,6 +304,7 @@ function AddPackaging(props) {
         }
         break;
       case 'Fixed':
+        console.log('99999');
         if (!PackageType) {
           setValue('PackagingCost', PackagingCostPercentage)
         } else {
@@ -290,10 +322,17 @@ function AddPackaging(props) {
     }
   }
 
+  const calculatePerKg = (rate, weight) => {
+    const packagingCost = checkForNull(rate) * checkForNull(weight)
+    console.log('packagingCost:ddddddddd ', packagingCost);
+    setValue('PackagingCost', checkForDecimalAndNull(packagingCost, getConfigurationKey().NoOfDecimalForPrice))
+    setPackagingCost(packagingCost)
+  }
+
   /**
-  * @method addRow
-  * @description ADD ROW IN TO RM COST GRID
-  */
+ * @method addRow
+ * @description ADD ROW IN TO RM COST GRID
+ */
   const addRow = () => {
     //toggleDrawer('')
   }
@@ -307,6 +346,7 @@ function AddPackaging(props) {
     props.closeDrawer('', {})
   }
   const packingCostHandler = (e) => {
+    console.log('e:ssssssss ', e);
     let message = ''
     if (decimalNumberLimit6(e.target.value)) {
       setShowCostError(true)
@@ -325,7 +365,7 @@ function AddPackaging(props) {
     setErrorMessage(message)
   }
   const onSubmit = data => {
-    if (showCostError || (applicability.label === 'Fixed' && (checkForNull(packagingCostDataFixed) === 0 || packagingCostDataFixed === ''))) {
+    if (showCostError || (applicability?.label === 'Fixed' && (checkForNull(packagingCostDataFixed) === 0 || packagingCostDataFixed === ''))) {
       setShowCostError(true)
       return false
     }
@@ -344,13 +384,15 @@ function AddPackaging(props) {
     } else {
       formData = {
         PackagingDetailId: isEditFlag ? rowObjData.PackagingDetailId : '',
-        IsPackagingCostFixed: applicability.label === 'Fixed' ? false : true,
+        IsPackagingCostFixed: applicability?.label === 'Fixed' ? false : true,
         PackagingDescription: data.PackagingDescription,
         PackagingCostFixed: 0,
         PackagingCostPercentage: PackageType ? data.PackagingCostPercentage : 0,
-        PackagingCost: applicability.label === 'Fixed' ? getValues('PackagingCost') : packagingCost,
-        Applicability: applicability ? data.Applicability.label : '',
-        PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : ''
+        PackagingCost: applicability?.label === 'Fixed' ? getValues('PackagingCost') : packagingCost,
+        Applicability: applicability ? data.Applicability?.label : '',
+        PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : '',
+        Rate: getValues('Rate'),
+        Quantity: getValues('Quantity'),
       }
     }
 
@@ -437,7 +479,7 @@ function AddPackaging(props) {
                       control={control}
                       rules={{ required: PackageType ? true : false }}
                       register={register}
-                      defaultValue={applicability.length !== 0 ? applicability : ''}
+                      defaultValue={applicability?.length !== 0 ? applicability : ''}
                       options={renderListing('Applicability')}
                       mandatory={PackageType ? true : false}
                       handleChange={handleApplicabilityChange}
@@ -472,6 +514,46 @@ function AddPackaging(props) {
                   </Col>:
 
                   } */}
+                  {applicability?.label === PACK_AND_FREIGHT_PER_KG && <><Col md="12">
+                    <TextFieldHookForm
+                      label={'Rate'}
+                      name={'Rate'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={applicability?.label === PACK_AND_FREIGHT_PER_KG ? true : false}
+                      rules={{
+                        required: applicability?.label === PACK_AND_FREIGHT_PER_KG ? true : false,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                      }}
+                      handleChange={(e) => calculatePerKg(e.target.value, getValues("Quantity"))}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.Rate}
+                    // disabled={(applicability?.label === PACK_AND_FREIGHT_PER_KG) ? true : false}
+                    />
+                  </Col>
+                    <Col md="12">
+                      <TextFieldHookForm
+                        label={'Quantity'}
+                        name={'Quantity'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={applicability?.label === PACK_AND_FREIGHT_PER_KG ? true : false}
+                        rules={{
+                          required: applicability?.label === PACK_AND_FREIGHT_PER_KG ? true : false,
+                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                        }}
+                        handleChange={(e) => calculatePerKg(getValues("Rate"), e.target.value)}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.Quantity}
+                      // disabled={(applicability?.label === PACK_AND_FREIGHT_PER_KG) ? true : false}
+                      />
+                    </Col></>}
 
                   {costingData.TechnologyId === LOGISTICS && <>
                     <Col md="12">
@@ -516,7 +598,7 @@ function AddPackaging(props) {
                   </>}
 
                   {costingData.TechnologyId !== LOGISTICS &&
-                    applicability.label !== 'Fixed' &&
+                    applicability?.label !== 'Fixed' && applicability?.label !== PACK_AND_FREIGHT_PER_KG &&
                     <Col md="12">
                       <TextFieldHookForm
                         id="Add_Packaging_Percentage"
@@ -553,7 +635,7 @@ function AddPackaging(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={applicability.label === 'Fixed' ? true : false}
+                      mandatory={applicability?.label === 'Fixed' ? true : false}
                       // rules={{
                       //   required: true,
                       //   validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
@@ -563,9 +645,9 @@ function AddPackaging(props) {
                       className=""
                       customClassName={'withBorder mb-0'}
                       errors={errors.PackagingCost}
-                      disabled={applicability.label === 'Fixed' ? false : true}
+                      disabled={applicability?.label === 'Fixed' ? false : true}
                     />
-                    {applicability.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={errorMessage} />}
+                    {applicability?.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={errorMessage} />}
                   </Col>
                   }
 

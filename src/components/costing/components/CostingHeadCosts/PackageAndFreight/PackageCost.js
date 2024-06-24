@@ -110,7 +110,9 @@ function PackageCost(props) {
                     <tr>
                       {costingData.TechnologyId === LOGISTICS ? <th>{`Charges`}</th> : <th>{`Packaging Description`}</th>}
                       {costingData.TechnologyId !== LOGISTICS && <th>{`Criteria/Applicability`}</th>}
-                      {costingData.TechnologyId !== LOGISTICS && <th>{`Packaging Type/Percentage`}</th>}
+                      {costingData.TechnologyId !== LOGISTICS && <th>{`Rate`}</th>}
+                      {costingData.TechnologyId !== LOGISTICS && <th>{`Quantity`}</th>}
+                      {costingData.TechnologyId !== LOGISTICS && <th>{`Percentage`}</th>}
                       <th>{`Cost`}</th>
                       {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                       <th style={{ textAlign: "right" }} className="costing-border-right"  >{`Action`}</th>
@@ -123,7 +125,9 @@ function PackageCost(props) {
                           <tr key={index}>
                             <td>{item.PackagingDescription}</td>
                             {costingData.TechnologyId !== LOGISTICS && <td>{item.Applicability ? item.Applicability : '-'}</td>}
-                            {costingData.TechnologyId !== LOGISTICS && <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>}
+                            <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                            <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                            {costingData.TechnologyId !== LOGISTICS && <td>{item.IsPackagingCostFixed === false ? '-' : (item.PackagingCostPercentage ? item.PackagingCostPercentage : '-')}</td>}
                             <td>{checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             {initialConfiguration.IsShowCRMHead && <td>{item?.PackagingCRMHead}</td>}
                             <td style={{ textAlign: "right" }}>

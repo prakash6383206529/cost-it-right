@@ -51,9 +51,10 @@ function RubberWeightCalculator(props) {
         if (WeightCalculatorRequest) {
             setTableData(WeightCalculatorRequest.CostingRubberAdditionalRawMaterial ? WeightCalculatorRequest.CostingRubberAdditionalRawMaterial : [])
             setRejectionCostType({ label: WeightCalculatorRequest.RejectionType, value: 5 })
+            console.log('WeightCalculatorRequest.GrossRMRate: ', WeightCalculatorRequest.GrossRMRate);
             setTimeout(() => {
                 setValue('grossRMRate', WeightCalculatorRequest.GrossRMRate ? checkForDecimalAndNull(WeightCalculatorRequest.GrossRMRate, getConfigurationKey().NoOfDecimalForPrice) : '')
-                setValue('applicablityAdditional', WeightCalculatorRequest.GrossRMRate ? checkForDecimalAndNull(WeightCalculatorRequest.GrossRMRate, getConfigurationKey().NoOfDecimalForPrice) : '')
+                setValue('applicablityAdditional', WeightCalculatorRequest.RawMaterialCost ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '')
                 setValue('netTotalRmRate', WeightCalculatorRequest.NetRMRate ? checkForDecimalAndNull(WeightCalculatorRequest.NetRMRate, getConfigurationKey().NoOfDecimalForPrice) : '')
                 setValue('scrapCost', WeightCalculatorRequest.ScrapCost ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) : '')
                 setValue('rmCost', WeightCalculatorRequest.RawMaterialCost ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '')
