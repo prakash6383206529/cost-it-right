@@ -963,31 +963,31 @@ export const RMMaterialListingTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const IndexCommodityListing = [
-    { label: "Index", value: "IndexExchangeName" }, 
+    { label: "Index", value: "IndexExchangeName" },
 ]
 export const IndexCommodityListingTempData = [
     {
-        "IndexExchangeName": "13CF2",      
+        "IndexExchangeName": "13CF2",
     }
 ]
 export const CommodityInIndexListing = [
-    { label: "Index", value: "CommodityName" }, 
+    { label: "Index", value: "CommodityName" },
 ]
 export const CommodityInIndexListingTempData = [
     {
-        "CommodityName": "21FD2",      
+        "CommodityName": "21FD2",
     }
 ]
 export const StandardizedCommodityNameListing = [
-    { label: "Index", value: "IndexExchangeName" }, 
-    { label: "Commodity Name (In Index)", value: "CommodityName" }, 
-    { label: "Commodity Name (In CIR)", value: "CustomMaterialName" }, 
+    { label: "Index", value: "IndexExchangeName" },
+    { label: "Commodity Name (In Index)", value: "CommodityName" },
+    { label: "Commodity Name (In CIR)", value: "CustomMaterialName" },
 ]
 export const StandardizedCommodityNameTempData = [
     {
-        "IndexExchangeName": "21FD2", 
-        "CommodityName": "al", 
-        "CustomMaterialName": "alloy",      
+        "IndexExchangeName": "21FD2",
+        "CommodityName": "al",
+        "CustomMaterialName": "alloy",
     }
 ]
 /**
@@ -5662,11 +5662,11 @@ export const RMDETAILLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
-    { label: "Index", value: "IndexExchangeName", },  
+    { label: "Index", value: "IndexExchangeName", },
 ]
 
 export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
-    { label: "Commodity (In Index)", value: "CommodityName", },  
+    { label: "Commodity (In Index)", value: "CommodityName", },
 ]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
@@ -8131,5 +8131,8 @@ export const NFR_RAW_MATERIAL_NAME = 'RawMaterial'
 
 export const REJECTION_RECOVERY_APPLICABILITY = [
     { label: "Scrap Rate * Net Weight", value: '24' },
+    // { label: "Scap Rate * Net weight", value: 1 },
     { label: "Fixed", value: '7' },
 ]
+
+export const PACK_AND_FREIGHT_PER_KG = 'Per kg'

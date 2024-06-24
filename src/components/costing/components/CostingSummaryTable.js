@@ -524,8 +524,8 @@ const CostingSummaryTable = (props) => {
     setIndex(index)
     if (index !== -1) {
       let data = viewCostingData[index]?.netConversionCostView
-      let netTransportationCostView = viewCostingData[index]?.netTransportationCostView
-      let surfaceTreatmentDetails = viewCostingData[index]?.surfaceTreatmentDetails
+      let netTransportationCostView = viewCostingData[index]?.CostingPartDetails?.netTransportationCostView
+      let surfaceTreatmentDetails = viewCostingData[index]?.CostingPartDetails?.CostingPartDetailssurfaceTreatmentDetails
       let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
       setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false })
     }
