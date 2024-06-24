@@ -494,10 +494,11 @@ const InitiateUnblocking = (props) => {
                         isOpen={showApproval}
                         closeDrawer={closeDrawer}
                         anchor={'right'}
-                        isApprovalisting={true}
+                        isApprovalisting={false}
                         deviationData={deviationData}
                         isClassification={isClassification}
                         isLpsRating={isLpsRating} // Pass LPS Rating approval status
+
                     // Add other props as needed
                     />
                 )
