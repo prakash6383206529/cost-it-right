@@ -234,11 +234,20 @@ function PaperCorrugatedBox(props) {
     const cancelHandler = () => {
         props.toggleDrawer('')
     }
-
+    const resetTable = () => {
+        state.tableData.length !== 0 && state.tableData.map((item, index) => {
+            setValueTableForm(`GSM${item.value}`, '')
+            if (index % 2 !== 0) {
+                setValueTableForm(`flutePercentage${item.value}`, '')
+                setValueTableForm(`fluteValue${item.value}`, '')
+            }
+        })
+    }
     const resetData = () => {
 
         if (getValuesCalculatorForm('RMCost') === 0 || getValuesCalculatorForm('RMCost') === undefined || getValuesCalculatorForm('RMCost') === null) {
             setState((prevState) => ({ ...prevState, tableData: [] }))
+            resetTable()
             return false
         } else {
             setState((prevState) => ({ ...prevState, showPopup: true }))
@@ -247,6 +256,7 @@ function PaperCorrugatedBox(props) {
 
     const onPopupConfirm = () => {
         setState((prevState) => ({ ...prevState, tableData: [], showPopup: false }))
+        resetTable()
     }
     const closePopUp = () => {
         setState((prevState) => ({ ...prevState, showPopup: false }))
@@ -273,7 +283,7 @@ function PaperCorrugatedBox(props) {
                                 className=""
                                 customClassName={'withBorder'}
                                 errors={errorsTableForm.NosOfPly}
-                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                disabled={props.CostingViewMode ? props.CostingViewMode : state.tableData.length !== 0 ? true : false}
                             />
                         </Col>
                         <Col md="3">
@@ -294,16 +304,19 @@ function PaperCorrugatedBox(props) {
                                 className=""
                                 customClassName={'withBorder'}
                                 errors={errorsTableForm.TypeOfBox}
-                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                disabled={props.CostingViewMode ? props.CostingViewMode : state.tableData.length !== 0 ? true : false}
                             />
                         </Col>
                         <Col md="7">
                             <Row className={"align-items-center"}>
                                 <Col md="7">
                                     <TooltipCustom id="typeOfBox" tooltipText="Please add RM in sequence to the Flute." />
+                                    {state.tableData.length !== 0 && <TooltipCustom tooltipClass="show-multi-dropdown-data" id="RawMaterial" placement="bottom" tooltipText={state.tableData.map((item, index) => <p>{index + 1}. {item.label
+                                    }</p>)} />}
                                     <SearchableSelectHookForm
                                         label={"Type of Paper (Raw Material)"}
                                         name={"RawMaterial"}
+                                        tooltipId={"RawMaterial"}
                                         placeholder={"Select"}
                                         Controller={Controller}
                                         control={controlTableForm}
@@ -314,7 +327,7 @@ function PaperCorrugatedBox(props) {
                                         mandatory={true}
                                         isMulti={true}
                                         errors={errorsTableForm.RawMaterial}
-                                        disabled={props?.CostingViewMode ? props?.CostingViewMode : false}
+                                        disabled={props?.CostingViewMode ? props?.CostingViewMode : state.tableData.length !== 0 ? true : false}
                                         handleChange={() => { }}
                                     />
                                 </Col>
@@ -332,8 +345,9 @@ function PaperCorrugatedBox(props) {
                                         <Button
                                             id="PaperCorrugatedBox_save"
                                             type="submit"
-                                            className="mr5"
+                                            className="mr5 mb-2"
                                             icon={"plus"}
+                                            disabled={props.CostingViewMode ? props.CostingViewMode : state.tableData.length !== 0 ? true : false}
                                             buttonName={"Add"}
                                         />
                                     </div></Col>
@@ -438,8 +452,8 @@ function PaperCorrugatedBox(props) {
                                     <td colSpan={tableheaders.length - 1} className='text-right'>
                                         Total GSM and Flute Value:
                                     </td>
-                                    <td colSpan={tableheaders.length - (tableheaders.length + 1)} title={'Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM'}>
-                                        {checkForDecimalAndNull(state.totalGSM, NoOfDecimalForPrice)}
+                                    <td colSpan={tableheaders.length - (tableheaders.length + 1)}>
+                                        <TooltipCustom id="totalGSM" disabledIcon={true} tooltipText={`Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM...`} /> <div className='w-fit' id="totalGSM">{checkForDecimalAndNull(state.totalGSM, NoOfDecimalForPrice)}</div>
                                     </td>
                                 </tr>
                             </>
