@@ -240,6 +240,7 @@ const CommodityInIndexListing = (props) => {
             floatingFilterData[prop] = ""
 
         }
+        dispatch(updateCurrentRowIndex(10))
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(resetStatePagination())
@@ -328,7 +329,7 @@ const CommodityInIndexListing = (props) => {
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         dispatch(updatePageNumber(1))
-        dispatch(updateCurrentRowIndex(0))
+        dispatch(updateCurrentRowIndex(10))
         gridOptions?.columnApi?.resetColumnState();
         getTableListData(0, globalTakes, true)
     }
@@ -458,10 +459,10 @@ const CommodityInIndexListing = (props) => {
                             </AgGridReact>}
                             <div className='button-wrapper'>
                                         {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="CommodityInIndex" />}
-                                      
-{                                            <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="CommodityInIndex" />
-}
-                                       
+                                        {!isLoader &&
+                                            <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="CommodityInIndex" />
+
+                                        }
 
                                     </div>
 
