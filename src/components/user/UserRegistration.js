@@ -2352,26 +2352,42 @@ function UserRegistration(props) {
   }
 
   const message = () => {
+    let messages = [];
+    const isAnyTableChanged = costingTableChanged || simulationTableChanged || masterTableChanged;
+    const isOnlyOnboardingChanged = onboardingTableChanged && !isAnyTableChanged;
+
     if (isDepartmentUpdated) {
-      return `costing, simulation, and master`;
+      messages.push(`costing, simulation${getConfigurationKey().IsMasterApprovalAppliedConfigure ? ', master' : ''}`);
     } else {
       const messages = [];
 
-      if (costingTableChanged) {
-        messages.push(`costing`);
-      }
-      if (simulationTableChanged) {
-        messages.push(`simulation`);
-      }
-      if (masterTableChanged) {
-        messages.push(`master`);
-      }
+      if (costingTableChanged) messages.push(`costing`);
+      if (simulationTableChanged) messages.push(`simulation`);
+      if (masterTableChanged) messages.push(`master`);
+      if (isOnlyOnboardingChanged) messages.push(`onboarding & management`);
       if (costingTableChanged && simulationTableChanged && masterTableChanged) {
-        return `costing, simulation, and master`;
+        // This condition is redundant as the individual pushes above will already cover these cases.
+        // Consider removing this block or adjusting logic if unique behavior is intended.
       }
-      // Join the messages based on the state values
-      return messages.join(' and ');
     }
+    const messageOne = messages.join(' and ');
+    console.log('messageOne: ', messageOne);
+
+    const baseMessage = `All ${messageOne}'s approval will become `;
+    const messageTwo = `${baseMessage}${onboardingTableChanged ? 'rejected by system' : 'draft'} which are pending & awaited in approval status. Do you want to continue?`;
+
+    const messageThree = `${baseMessage}draft and onboarding and management's approval will become rejected by system, which are pending & awaited in approval status. 
+      Do you want to continue?`;
+
+    let finalMessage = '';
+
+    // Simplify the conditions by grouping similar outcomes
+    if (isOnlyOnboardingChanged || isAnyTableChanged || isDepartmentUpdated) {
+      finalMessage = (onboardingTableChanged && (isAnyTableChanged || isDepartmentUpdated)) ? messageThree : messageTwo;
+    }
+
+    return finalMessage;
+
   };
   const handlePlant = (newValue) => {
     if (newValue && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
@@ -3568,9 +3584,7 @@ function UserRegistration(props) {
           </div >
         </div >
       </div >
-      {
-        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`All ${message()}'s approval which are pending & awaited in approval status will become draft. Do you want to continue?`} />
-      }
+      {showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${message()}`} />}
     </div >
   );
 }
