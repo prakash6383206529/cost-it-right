@@ -2702,6 +2702,7 @@ export const Fixed = 1;
 export const Percentage = 2;
 export const FullTruckLoad = 3;
 export const PartTruckLoad = 4;
+export const Per_Kg_Load = 5;
 export const INR = "INR"
 export const G = "Gram"
 export const MG = "Milligram"
