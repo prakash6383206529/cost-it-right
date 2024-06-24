@@ -26,6 +26,7 @@ const VendorMaster = () => {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration);
     const disabledClass = useSelector((state) => state.comman.disabledClass);
     const [permissionData, setPermissionData] = useState({});
+    const [isVendorManagement, setIsVendorManagement] = useState(false);
 
     useEffect(() => {
         applyPermission(topAndLeftMenuData); toggle("1");
@@ -86,14 +87,14 @@ const VendorMaster = () => {
                             </Nav>
                             <TabContent activeTab={state.activeTab}>
                                 {state.activeTab === "1" && (
-                                    <TabPane tabId="1"><VendorListing />
+                                    <TabPane tabId="1"><VendorListing isVendorManagement={isVendorManagement} />
                                     </TabPane>
                                 )}
                                 {state.activeTab === "2" && ViewClassificationAccessibility && (
                                     <TabPane tabId="2"><VendorClassificationListing />
                                     </TabPane>
                                 )}
-                                {state.activeTab === "3" && ViewLpsRatingAccessibility &&(
+                                {state.activeTab === "3" && ViewLpsRatingAccessibility && (
                                     <TabPane tabId="3"><LpsRatingListing />
                                     </TabPane>
                                 )}

@@ -995,6 +995,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied
   obj.OtherCostDetailsOverhead = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'OverHead')
   obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
+  obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
   temp.push(obj)
   return temp
 }
