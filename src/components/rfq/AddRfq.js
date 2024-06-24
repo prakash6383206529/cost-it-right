@@ -180,10 +180,8 @@ function AddRfq(props) {
 
     useEffect(() => {
         if (showSendButton === DRAFT) {
-
             setDisabledVendoUId((Vendor?.add || Vendor?.edit) ? false : true)
-        } else if (showSendButton === PREDRAFT) {
-
+        } else if (showSendButton === PREDRAFT || '') {
             setDisabledPartUId((Part?.add || Part?.edit) ? false : true)
         }
     }, [showSendButton, Vendor, Part])
@@ -705,10 +703,10 @@ function AddRfq(props) {
             }
             return item
         })
-        if (/* !(initialConfiguration?.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ) */!havellsKey && vendorList.length === 0) {
+        if (Vendor?.add || Vendor?.edit || !havellsKey && vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
-        } else if (/* !(initialConfiguration?.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ)  */!havellsKey && partList.length === 0) {
+        } else if (Part?.add || Part?.edit || !havellsKey && partList.length === 0) {
             Toaster.warning("Please enter part details")
             return false
         } else if (!havellsKey && files?.length === 0) {
