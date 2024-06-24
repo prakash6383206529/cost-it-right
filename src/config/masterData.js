@@ -5805,6 +5805,8 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "ZipCode", value: "ZipCode", },
     { label: "Address 1", value: "AddressLine1", },
     { label: "Address 2", value: "AddressLine2", },
+    { label: "Vendor Classification", value: "VendorClassification" },
+    { label: "Vendor LPS Rating", value: "VendorLPSRating" },
     { label: "Status", value: "status", }
 ]
 

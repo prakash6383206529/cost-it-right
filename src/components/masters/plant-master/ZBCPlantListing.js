@@ -7,7 +7,7 @@ import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
-import { handleDepartmentHeader, loggedInUserId } from '../../../helper/auth';
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId } from '../../../helper/auth';
 import AddZBCPlant from './AddZBCPlant';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PlantZbc } from '../../../config/constants';
@@ -425,7 +425,7 @@ const ZBCPlantListing = (props) => {
                             <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
                             {/* THIS IS COMMENTED IN //RE  */}
                             {/* <AgGridColumn field="Purchase Group" headerName="Company Name"></AgGridColumn> */}
-                            <AgGridColumn field="CompanyName" headerName={`${handleDepartmentHeader()} Name`}></AgGridColumn>
+                            {getConfigurationKey().IsCompanyConfigureOnPlant && <AgGridColumn field="CompanyName" headerName={`${handleDepartmentHeader()} Name`}></AgGridColumn>}
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
