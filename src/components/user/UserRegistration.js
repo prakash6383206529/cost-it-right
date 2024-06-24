@@ -479,7 +479,7 @@ function UserRegistration(props) {
         }
       });
       // Add "Select All" at the 0th position if isEditIndex is false
-      if (!isEditIndex) {
+      if (!isEditIndex && isAllowMultiple) {
         temp.unshift({ label: "Select All", value: '0' });
       }
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
@@ -497,7 +497,7 @@ function UserRegistration(props) {
         }
       });
       // Add "Select All" at the 0th position if isEditIndex is false
-      if (!isSimulationEditIndex) {
+      if (!isSimulationEditIndex && isAllowMultiple) {
         temp.unshift({ label: "Select All", value: '0' });
       }
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
@@ -514,7 +514,7 @@ function UserRegistration(props) {
         }
       });
       // Add "Select All" at the 0th position if isEditIndex is false
-      if (!isMasterEditIndex) {
+      if (!isMasterEditIndex && isAllowMultiple) {
         temp.unshift({ label: "Select All", value: '0' });
       }
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
@@ -531,7 +531,7 @@ function UserRegistration(props) {
         }
       });
       // Add "Select All" at the 0th position if isEditIndex is false
-      if (!isOnboardingEditIndex) {
+      if (!isOnboardingEditIndex && isAllowMultiple) {
         temp.unshift({ label: "Select All", value: '0' });
       }
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
