@@ -1,12 +1,6 @@
 import React from 'react';
-import AddRMDomestic from './AddRMDomestic';
-import RMListing from './RMListing';
-import SpecificationListing from './SpecificationListing';
 import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
-import AddRMImport from './AddRMImport';
-import RMDomesticListing from './RMDomesticListing';
-import RMImportListing from './RMImportListing';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { APPROVAL_CYCLE_STATUS_MASTER, MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE, RM_MASTER_ID } from '../../../config/constants';
@@ -14,19 +8,17 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
-import CommonApproval from './CommonApproval';
 import { MESSAGES } from '../../../config/message';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import { resetStatePagination } from '../../common/Pagination/paginationAction';
-import AddRMMaster from './AddRMMaster';
 import Switch from 'react-switch'
-import RMIndexationListing from './RMIndexationListing';
-import RMDetailListing from './RMDetailListing';
-import RMMaterialListing from './RMMaterialListing';
-import IndexCommodityListing from './IndexCommodityListing';
-import CommodityInIndexListing from './CommodityInIndexListing';
+import CommodityInIndexListing from './CommodityListing';
+import IndexListing from './IndexListing';
+import StandardizationListing from './StandardizationListing';
+import IndexDataListing from './IndexDataListing';
+import CommodityStandardListing from './CommodityStandardListing';
 export const ApplyPermission = React.createContext();
-function RowMaterialMaster(props) {
+function Indexation(props) {
 
     const [stopApiCallOnCancel, setStopApiCallOnCancel] = useState(false);
     const [activeTab, setactiveTab] = useState(reactLocalStorage.get('location') === '/raw-material-master/raw-material-approval' ? '5' : '1');
@@ -97,6 +89,7 @@ function RowMaterialMaster(props) {
             const permmisionDataRMANDGRADE = accessDataRMANDGRADE && accessDataRMANDGRADE.Actions && checkPermission(accessDataRMANDGRADE.Actions)
 
             if (permmisionData !== undefined) {
+                
                 setPermissionData(permmisionData);
                 setViewRMAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false);
                 setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false);
@@ -188,15 +181,15 @@ function RowMaterialMaster(props) {
     // const { isRMDomesticForm, isRMImportForm, data, ViewRMAccessibility, AddAccessibilityRMANDGRADE,
     //     EditAccessibilityRMANDGRADE, } = this.state;
 
-    if (isRMDomesticForm === true || isRMImportForm === true) {
-        return <AddRMMaster
-            data={data}
-            hideForm={hideForm}
-            AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
-            EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
-            isRMAssociated={isRMAssociated}
-        />
-    }
+    // if (isRMDomesticForm === true || isRMImportForm === true) {
+    //     return <AddRMMaster
+    //         data={data}
+    //         hideForm={hideForm}
+    //         AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
+    //         EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
+    //         isRMAssociated={isRMAssociated}
+    //     />
+    // }
 
     /**
      * @method onRmToggle
@@ -222,29 +215,40 @@ function RowMaterialMaster(props) {
                             {!hideTabs && <Nav tabs className="subtabs mt-0 p-relative">
                                 {disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
 
-                                {<NavItem>
+                                {/* {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                                         Manage Raw Material
                                     </NavLink>
-                                </NavItem>}
+                                </NavItem>} */}
                                 {/* {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                                         Manage Raw Material (Import)
                                     </NavLink>
                                 </NavItem>} */}
-                                {<NavItem>
+                                {/* {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
                                         Manage Specification
                                     </NavLink>
-                                </NavItem>}
-                                {<NavItem>
+                                </NavItem>} */}
+                                {/* {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
                                         Manage Material
                                     </NavLink>
+                                </NavItem>} */}
+                                {<NavItem>
+                                    <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
+                                        Index Data
+                                    </NavLink>
                                 </NavItem>}
-                                {/* {<NavItem>
-                                    <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
-                                        Index
+
+                                {<NavItem>
+                                    <NavLink className={classnames({ active: activeTab === '7' })} onClick={() => { toggle('7'); }}>
+                                        Standardized Commodity Name
+                                    </NavLink>
+                                </NavItem>}
+                                {<NavItem>
+                                    <NavLink className={classnames({ active: activeTab === '8' })} onClick={() => { toggle('8'); }}>
+                                        Commodity (Standard)
                                     </NavLink>
                                 </NavItem>}
                                 {<NavItem>
@@ -253,15 +257,11 @@ function RowMaterialMaster(props) {
                                     </NavLink>
                                 </NavItem>}
                                 {<NavItem>
-                                    <NavLink className={classnames({ active: activeTab === '7' })} onClick={() => { toggle('7'); }}>
-                                        Standardized Commodity Name
+                                    <NavLink className={classnames({ active: activeTab === '9' })} onClick={() => { toggle('9'); }}>
+                                        Manage Indexes
                                     </NavLink>
                                 </NavItem>}
-                                {<NavItem>
-                                    <NavLink className={classnames({ active: activeTab === '8' })} onClick={() => { toggle('8'); }}>
-                                        Index Data
-                                    </NavLink>
-                                </NavItem>} */}
+
                                 {/* {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '7' })} onClick={() => { toggle('7'); }}>
                                         Material Indexation
@@ -269,44 +269,24 @@ function RowMaterialMaster(props) {
                                 </NavItem>} */}
                                 {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
-                                {(CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
-                                    {/* {ViewRMAccessibility && <NavItem> */}
-                                    <NavLink className={classnames({ active: activeTab === '9' })} onClick={() => {
+                                {(CheckApprovalApplicableMaster(RM_MASTER_ID)) &&
+                                    <NavItem>
+                                        {/* {ViewRMAccessibility && <NavItem> */}
+                                        {/* <NavLink className={classnames({ active: activeTab === '9' })} onClick={() => {
                                         toggle('9');
                                         // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                     }}>
                                         Approval Status
-                                    </NavLink>
-                                </NavItem>}
+                                    </NavLink> */}
+                                    </NavItem>
+                                }
                             </Nav>}
-                            {activeTab === '1' && <Row>
-                                <Col md="4" className="switch mt-3">
-                                    <label className="switch-level">
-                                        <div className={"left-title"}>Domestic</div>
-                                        <Switch
-                                            onChange={onRmToggle}
-                                            checked={isImport}
-                                            id="normal-switch"
-                                            disabled={false}
-                                            background="#4DC771"
-                                            onColor="#4DC771"
-                                            onHandleColor="#ffffff"
-                                            offColor="#4DC771"
-                                            uncheckedIcon={false}
-                                            checkedIcon={false}
-                                            height={20}
-                                            width={46}
-                                        />
-                                        <div className={"right-title"}>Import</div>
-                                    </label>
-                                </Col>
-                            </Row>}
                             <ApplyPermission.Provider value={permissionData}>
                                 <TabContent activeTab={activeTab}>
 
 
 
-                                    {Number(activeTab) === 1 &&
+                                    {/* {Number(activeTab) === 1 &&
                                         <TabPane tabId="1">
                                             {!isImport ?
                                                 <RMDomesticListing
@@ -339,9 +319,9 @@ function RowMaterialMaster(props) {
                                                 />
                                             }
                                         </TabPane>
-                                    }
+                                    } */}
 
-                                    {Number(activeTab) === 2 &&
+                                    {/* {Number(activeTab) === 2 &&
                                         <TabPane tabId="2">
 
                                         </TabPane>}
@@ -363,10 +343,10 @@ function RowMaterialMaster(props) {
                                                 stopApiCallOnCancel={stopApiCallOnCancel}
 
                                             />
-                                        </TabPane>}
-                                    {Number(activeTab) === 5 &&
-                                        <TabPane tabId="5">
-                                            <IndexCommodityListing />
+                                        </TabPane>} */}
+                                    {Number(activeTab) === 9 &&
+                                        <TabPane tabId="9">
+                                            <IndexListing />
                                         </TabPane>}
                                     {Number(activeTab) === 6 &&
                                         <TabPane tabId="6">
@@ -374,11 +354,15 @@ function RowMaterialMaster(props) {
                                         </TabPane>}
                                     {Number(activeTab) === 7 &&
                                         <TabPane tabId="7">
-                                            <RMDetailListing />
+                                            <StandardizationListing />
                                         </TabPane>}
                                     {Number(activeTab) === 8 &&
                                         <TabPane tabId="8">
-                                            <RMMaterialListing />
+                                            <CommodityStandardListing />
+                                        </TabPane>}
+                                    {Number(activeTab) === 1 &&
+                                        <TabPane tabId="1">
+                                            <IndexDataListing />
                                         </TabPane>}
                                     {/* {Number(activeTab) === 7 &&
                                         <TabPane tabId="7">
@@ -393,13 +377,13 @@ function RowMaterialMaster(props) {
                                             {/* <Link to="/raw-material-approval"></Link> */}
                                             {/* <Route path="/raw-material-approval">
                                         </Route> */}
-                                            <CommonApproval
+                                            {/* <CommonApproval
                                                 AddAccessibility={AddAccessibility}
                                                 EditAccessibility={EditAccessibility}
                                                 DeleteAccessibility={DeleteAccessibility}
                                                 DownloadAccessibility={DownloadAccessibility}
                                                 MasterId={RM_MASTER_ID}
-                                            />
+                                            /> */}
                                         </TabPane>}
 
                                 </TabContent>
@@ -417,5 +401,5 @@ function RowMaterialMaster(props) {
 
 
 
-export default RowMaterialMaster;
+export default Indexation;
 

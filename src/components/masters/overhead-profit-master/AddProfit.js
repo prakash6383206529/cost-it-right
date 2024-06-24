@@ -121,7 +121,7 @@ class AddProfit extends Component {
       'ProfitApplicabilityId',
       'ProfitPercentage',
       'ProfitRMPercentage',
-      'ProfitMachiningCCPercentage',
+      'ProfitCCPercentage',
       'ProfitBOPPercentage',
       'RawMaterialGradeId',
       'RawMaterialId',
@@ -351,11 +351,11 @@ class AddProfit extends Component {
       const { filedObj } = this.props;
       const ProfitPercentage = filedObj && filedObj.ProfitPercentage !== undefined && filedObj.ProfitPercentage !== '' && filedObj.ProfitPercentage !== null ? true : false;
       const ProfitRMPercentage = filedObj && filedObj.ProfitRMPercentage !== undefined && filedObj.ProfitRMPercentage !== '' && filedObj.ProfitRMPercentage !== null ? true : false;
-      const ProfitMachiningCCPercentage = filedObj && filedObj.ProfitMachiningCCPercentage !== undefined && filedObj.ProfitMachiningCCPercentage !== '' && filedObj.ProfitMachiningCCPercentage !== null ? true : false;
+      const ProfitCCPercentage = filedObj && filedObj.ProfitCCPercentage !== undefined && filedObj.ProfitCCPercentage !== '' && filedObj.ProfitCCPercentage !== null ? true : false;
       const ProfitBOPPercentage = filedObj && filedObj.ProfitBOPPercentage !== undefined && filedObj.ProfitBOPPercentage !== '' && filedObj.ProfitBOPPercentage !== null ? true : false;
       if (ProfitPercentage) {
         this.setState({ isRM: true, isCC: true, isBOP: true, })
-      } else if (ProfitRMPercentage || ProfitMachiningCCPercentage || ProfitBOPPercentage) {
+      } else if (ProfitRMPercentage || ProfitCCPercentage || ProfitBOPPercentage) {
         this.setState({ isProfitPercent: true })
       } else {
         this.checkProfitFields()
@@ -453,7 +453,7 @@ class AddProfit extends Component {
   */
   handleChangeProfitPercentageCC = (newValue) => {
     if (this.state.isEditFlag) {
-      if (String(newValue) === String(this.state.DataToChange.ProfitMachiningCCPercentage) &&
+      if (String(newValue) === String(this.state.DataToChange.ProfitCCPercentage) &&
         String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
         this.setState({ IsFinancialDataChanged: false })
@@ -524,7 +524,7 @@ class AddProfit extends Component {
 
   resetFields = () => {
     this.props.change('ProfitPercentage', '')
-    this.props.change('ProfitMachiningCCPercentage', '')
+    this.props.change('ProfitCCPercentage', '')
     this.props.change('ProfitBOPPercentage', '')
     this.props.change('ProfitRMPercentage', '')
   }
@@ -802,8 +802,8 @@ class AddProfit extends Component {
       if (values.ProfitBOPPercentage === '') {
         values.ProfitBOPPercentage = null
       }
-      if (values.ProfitMachiningCCPercentage === '') {
-        values.ProfitMachiningCCPercentage = null
+      if (values.ProfitCCPercentage === '') {
+        values.ProfitCCPercentage = null
       }
       if (values.ProfitPercentage === '') {
         values.ProfitPercentage = null
@@ -813,7 +813,7 @@ class AddProfit extends Component {
       }
 
       if (
-        (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitMachiningCCPercentage) === Number(values.ProfitMachiningCCPercentage)
+        (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitCCPercentage) === Number(values.ProfitCCPercentage)
         && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
@@ -834,7 +834,7 @@ class AddProfit extends Component {
         CostingTypeId: costingTypeId,
         IsCombinedEntry: !isProfitPercent ? true : false,
         ProfitPercentage: values.ProfitPercentage,
-        ProfitMachiningCCPercentage: values.ProfitMachiningCCPercentage,
+        ProfitCCPercentage: values.ProfitCCPercentage,
         ProfitBOPPercentage: values.ProfitBOPPercentage,
         ProfitRMPercentage: values.ProfitRMPercentage,
         Remark: remarks,
@@ -877,7 +877,7 @@ class AddProfit extends Component {
         CostingTypeId: costingTypeId,
         IsCombinedEntry: !isProfitPercent ? true : false,
         ProfitPercentage: !isProfitPercent ? values.ProfitPercentage : '',
-        ProfitMachiningCCPercentage: !isCC ? values.ProfitMachiningCCPercentage : '',
+        ProfitCCPercentage: !isCC ? values.ProfitCCPercentage : '',
         ProfitBOPPercentage: !isBOP ? values.ProfitBOPPercentage : '',
         ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : '',
         Remark: remarks,
@@ -1276,7 +1276,7 @@ class AddProfit extends Component {
                           <Col md="3">
                             <Field
                               label={`Profit on CC (%)`}
-                              name={"ProfitMachiningCCPercentage"}
+                              name={"ProfitCCPercentage"}
                               type="text"
                               placeholder={isCC || isViewMode ? "-" : "Enter"}
                               validate={!isCC ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
@@ -1481,7 +1481,7 @@ class AddProfit extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, overheadProfit, client, material } = state;
-  const filedObj = selector(state, 'ProfitPercentage', 'ProfitRMPercentage', 'ProfitMachiningCCPercentage',
+  const filedObj = selector(state, 'ProfitPercentage', 'ProfitRMPercentage', 'ProfitCCPercentage',
     'ProfitBOPPercentage')
 
   const { modelTypes, costingHead, plantSelectList } = comman;
@@ -1495,7 +1495,7 @@ function mapStateToProps(state) {
     initialValues = {
       ProfitPercentage: overheadProfitData.ProfitPercentage !== null ? overheadProfitData.ProfitPercentage : '',
       ProfitRMPercentage: overheadProfitData.ProfitRMPercentage !== null ? overheadProfitData.ProfitRMPercentage : '',
-      ProfitMachiningCCPercentage: overheadProfitData.ProfitMachiningCCPercentage !== null ? overheadProfitData.ProfitMachiningCCPercentage : '',
+      ProfitCCPercentage: overheadProfitData.ProfitCCPercentage !== null ? overheadProfitData.ProfitCCPercentage : '',
       ProfitBOPPercentage: overheadProfitData.ProfitBOPPercentage !== null ? overheadProfitData.ProfitBOPPercentage : '',
       Remark: overheadProfitData.Remark,
     }

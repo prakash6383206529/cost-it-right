@@ -1341,6 +1341,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
 
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
+    
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');

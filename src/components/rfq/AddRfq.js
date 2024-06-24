@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI, getUOMSelectList } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
-import { IsSendQuotationToPointOfContact, addDays, getConfigurationKey, getTimeZone, loggedInUserId } from '../.././helper';
+import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { Assembly, Component, DRAFT, BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, EMPTY_DATA, FILE_URL, PRODUCT_ID, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, EMPTY_DATA, FILE_URL, PRODUCT_ID, RFQ, RFQVendor, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -38,11 +38,16 @@ import TourWrapper from '../common/Tour/TourWrapper';
 import { getSelectListPartType } from '../masters/actions/Part';
 import ProcessDrawer from './ProcessDrawer';
 import Button from '../layout/Button';
+import { ApplyPermission } from './RfqListing';
 
 const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
 function AddRfq(props) {
+    const permissions = useContext(ApplyPermission);
+    console.log('permissions: ', permissions);
+    const Vendor = permissions.permissionDataVendor
+    const Part = permissions.permissionDataPart
     const dispatch = useDispatch()
     const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
@@ -111,7 +116,6 @@ function AddRfq(props) {
     const [rmspecification, setRMSpecification] = useState([])
     const [deleteToggle, setDeleteToggle] = useState(false)
     const [plant, setPlant] = useState({})
-
     const [isNFRFlow, setIsNFRFlow] = useState(false)
     const [rmAPIList, setRMAPIList] = useState([])
     const [rmNameSelected, setRmNameSelected] = useState(false)
@@ -125,6 +129,7 @@ function AddRfq(props) {
     const [requirementDate, setRequirementDate] = useState('')
     // below key is for managing the fields required for havells
     const [havellsKey, setHavellsKey] = useState(true)
+    const [isPartVisible, setIsPartVisible] = useState(true)
     const [popupMessage, setPopupMessage] = useState('')
     const [blocked, setBlocked] = useState(false)
     const [vendorId, setVendorId] = useState('')
@@ -133,7 +138,6 @@ function AddRfq(props) {
     const [tableData, setTableData] = useState([])
     const [specificationList, setSpecificationList] = useState([])
     const [remark, setRemark] = useState("");
-    const [requirementTimeline, setRequirementTimeline] = useState('')
     const [childPartFiles, setChildPartFiles] = useState([])
     const [havellsDesignPart, setHavellsDesignPart] = useState([])
     const [targetPrice, setTargetPrice] = useState("")
@@ -150,9 +154,8 @@ function AddRfq(props) {
     const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
     const showSendButton = dataProps?.rowData?.DisplayStatus || ''
-    const isDropdownDisabled = initialConfiguration.IsCriticalVendorConfigured && isViewFlag || (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === ''));
+    const isDropdownDisabled = (initialConfiguration.IsCriticalVendorConfigured && isViewFlag) || (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === ''));
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
-
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
     const { getRfqVendorDetail, getTargetprice, getPartIndentity } = useSelector((state) => state.rfq)
     console.log('getPartIndentity: ', getPartIndentity);
@@ -169,13 +172,11 @@ function AddRfq(props) {
 
     useEffect(() => {
         const partTypeString = initialConfiguration?.HavellsPartTypeList;
-
         if (partTypeString) {
             const formattedPartTypeList = partTypeString.split(',').map((part) => {
                 const [label, value] = part.split('=');
                 return { label: label.trim(), value: value.trim() };
             });
-
             setHavellsPartTypeList(formattedPartTypeList);
         }
     }, [initialConfiguration]);
@@ -198,7 +199,6 @@ function AddRfq(props) {
             tempArr.push(el.VendorId)
             return null;
         })
-
         initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr)
         return () => {
             reactLocalStorage?.setObject('Data', [])
@@ -370,7 +370,6 @@ function AddRfq(props) {
             )
         }
     }, [])
-
 
 
     const deleteFile = (FileId, OriginalFileName) => {
@@ -1850,7 +1849,7 @@ function AddRfq(props) {
                                                 mandatory={true}
                                                 handleChange={handlePartTypeChange}
                                                 errors={errors.Part}
-                                                disabled={(technology.length === 0) ? true : false}
+                                                disabled={(technology.length === 0) ? true : false || !Part?.Add}
                                             />
                                         </Col>}
                                         <Col md="3" className='d-flex align-items-center' >
@@ -1867,13 +1866,13 @@ function AddRfq(props) {
                                                 mandatory={true}
                                                 handleChange={(newValue) => handlePartNoChange(newValue)}
                                                 errors={errors.partNumber}
-                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll) || !Part?.Add}
                                                 isLoading={plantLoaderObj}
                                                 asyncOptions={(inputValue) => partFilterList(inputValue, partTypeforRM)}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                             {partType.length !== 0 && partTypeforRM !== BoughtOutPart && (
-                                                <Button id="addRMSpecificatione" className={"right"} variant="plus-icon-square" onClick={DrawerToggle} title="Add" disabled={partName?.length === 0} ></Button>
+                                                <Button id="addRMSpecificatione" className={"right"} variant="plus-icon-square" onClick={DrawerToggle} title="Add" disabled={partName?.length === 0 || !Part?.Add} ></Button>
                                             )}
                                         </Col>
 
@@ -1892,7 +1891,7 @@ function AddRfq(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Description}
-                                                // disabled={true}
+                                                disabled={!Part?.Add}
                                                 placeholder="-"
                                             />
                                         </Col>
@@ -1912,7 +1911,7 @@ function AddRfq(props) {
                                                 handleChange={(value) => handleHavellsDesignPart(value)}
                                                 //handleChange={handlePartTypeChange}
                                                 errors={errors.Part}
-                                            // disabled={(technology.length === 0) ? true : false}
+                                                disabled={!Part?.Add}
                                             />
                                         </Col>}
                                         <Col md="3">
@@ -1939,7 +1938,7 @@ function AddRfq(props) {
                                                             errors={errors.SOPDate}
                                                             disabledKeyboardNavigation
                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                            disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll) || !Part?.Add}
                                                         />
                                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                                     </div>
@@ -1966,7 +1965,7 @@ function AddRfq(props) {
                                                             options={renderListingRM('rmname')}
                                                             mandatory={false}
                                                             handleChange={(newValue) => handleRMName(newValue)}
-                                                            disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
+                                                            disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow || !Part?.Add}
                                                         // errors={`${indexInside} CostingVersion`}
                                                         />
                                                     </Col>
@@ -1985,7 +1984,7 @@ function AddRfq(props) {
                                                             options={renderListingRM('rmgrade')}
                                                             mandatory={rmNameSelected}
                                                             handleChange={(newValue) => handleRMGrade(newValue)}
-                                                            disabled={(dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
+                                                            disabled={!Part?.Add || (dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
                                                         // errors={`${indexInside} CostingVersion`}
                                                         />
                                                     </Col>
@@ -2004,7 +2003,7 @@ function AddRfq(props) {
                                                             options={renderListingRM('rmspecification')}
                                                             mandatory={rmNameSelected}
                                                             handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                            disabled={(dataProps?.isAddFlag ? partNoDisable || isNFRFlow : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow}
+                                                            disabled={(dataProps?.isAddFlag ? partNoDisable || isNFRFlow : (dataProps?.isViewFlag || !isEditAll)) || isNFRFlow || !Part?.Add}
                                                         // errors={`${indexInside} CostingVersion`}
                                                         />
                                                     </Col>
@@ -2025,6 +2024,7 @@ function AddRfq(props) {
                                                     mandatory={false}
                                                     handleChange={(newValue) => handleChangeUOM(newValue)}
                                                     errors={errors?.UOM}
+                                                    disabled={!Part?.Add}
                                                 />
                                             </Col>
                                         }
@@ -2045,7 +2045,7 @@ function AddRfq(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.Description}
-                                                    disabled={true}
+                                                    disabled={!Part?.Add}
                                                     placeholder="-"
                                                 />
                                             </Col>
@@ -2070,6 +2070,7 @@ function AddRfq(props) {
                                                                 className="withBorder"
                                                                 autoComplete={"off"}
                                                                 mandatory={true}
+                                                                disabled={!Part?.Add}
                                                                 errors={errors.RequirementDate}
                                                                 disabledKeyboardNavigation
                                                                 onChangeRaw={(e) => e.preventDefault()}
@@ -2110,7 +2111,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 className={'user-btn pull-left'}
                                                 onClick={() => addRowPartNoTable()}
-                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll) || !Part?.Add}
                                             >
                                                 <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
                                             </button>
@@ -2120,7 +2121,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 value="CANCEL"
                                                 className="reset ml-2 mr5"
-                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll) || !Part?.Add}
                                             >
                                                 <div className={''}></div>
                                                 RESET
@@ -2130,7 +2131,7 @@ function AddRfq(props) {
                                                 className={"user-btn "}
                                                 onClick={bulkToggle}
                                                 title="Bulk Upload"
-                                                disabled={partNoDisable}
+                                                disabled={partNoDisable || !Part?.Add}
                                             >
                                                 <div className={"upload mr-0"}></div>
                                             </button>}
@@ -2205,7 +2206,7 @@ function AddRfq(props) {
                                                 errors={errors.vendor}
                                                 isLoading={VendorLoaderObj}
                                                 asyncOptions={vendorFilterList}
-                                                disabled={isDropdownDisabled}
+                                                disabled={isDropdownDisabled || !Vendor?.Add}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </Col>
@@ -2226,7 +2227,7 @@ function AddRfq(props) {
                                                     // handleChange={handleDestinationPlantChange}
                                                     handleChange={() => { }}
                                                     errors={errors.contactPerson}
-                                                    disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                    disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll) || !Vendor?.Add}
                                                     isLoading={plantLoaderObj}
                                                 />
                                             )}
@@ -2247,7 +2248,7 @@ function AddRfq(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.IncoTerms}
-                                                    disabled={true}
+                                                    disabled={!Vendor?.Add}
                                                     placeholder="-"
                                                 />
                                             </Col>
@@ -2266,7 +2267,7 @@ function AddRfq(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.PaymentTerms}
-                                                    disabled={true}
+                                                    disabled={!Vendor?.Add}
                                                     placeholder="-"
                                                 />
                                             </Col>
@@ -2286,6 +2287,7 @@ function AddRfq(props) {
                                                     customClassName={'withBorder'}
                                                     errors={errors.WarrantyTerms}
                                                     placeholder="-"
+                                                    disabled={!Vendor?.Add}
                                                 />
                                             </Col>
                                             <Col md="3">
@@ -2303,7 +2305,7 @@ function AddRfq(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.LDClause}
-                                                    // disabled={true}
+                                                    disabled={!Vendor?.Add}
                                                     placeholder="-"
                                                 />
                                             </Col>
@@ -2314,7 +2316,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 className={'user-btn pull-left'}
                                                 onClick={() => addRowVendorTable()}
-                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll) || !Vendor?.Add}
                                             >
                                                 <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
                                             </button>
@@ -2325,13 +2327,14 @@ function AddRfq(props) {
                                                 type="button"
                                                 value="CANCEL"
                                                 className="reset ml-2"
-                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll) || !Vendor?.Add}
                                             >
                                                 <div className={''}></div>
                                                 RESET
                                             </button>
                                         </Col>
                                     </Row>
+
 
                                     <div>
                                         {!loader ? <div className={`ag-grid-react`}>

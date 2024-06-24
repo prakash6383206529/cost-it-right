@@ -133,6 +133,7 @@ class AddBOPImport extends Component {
       toolTipTextNetCost: {},
       toolTipTextBasicPrice: {},
       IsBreakupBoughtOutPart: false,
+      SAPCode: []
     }
   }
 
@@ -299,6 +300,7 @@ class AddBOPImport extends Component {
       'BoughtOutPartName',
       'BOPCategory',
       'Specification',
+      "SAPCode",
       'Plant',
       "UOM",
       "cutOffPrice",
@@ -1141,6 +1143,7 @@ class AddBOPImport extends Component {
     formData.BoughtOutPartName = values?.BoughtOutPartName
     formData.CategoryId = BOPCategory.value
     formData.Specification = values?.Specification
+    formData.SAPCode = values.SAPCode
     formData.Vendor = vendorName.value
     formData.Source = values?.Source
     formData.SourceLocation = sourceLocation.value
@@ -1636,6 +1639,19 @@ class AddBOPImport extends Component {
                             )
                           }
 
+                          <Col md="3">
+                            <Field
+                              label={`SAP Code`}
+                              name={"SAPCode"}
+                              type="text"
+                              placeholder={isViewMode ? "-" : "Enter"}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, hashValidation]}
+                              component={renderText}
+                              disabled={isEditFlag ? true : false}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
                         </Row >
 
                         <Row>

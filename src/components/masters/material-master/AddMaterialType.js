@@ -17,8 +17,9 @@ import { MESSAGES } from '../../../config/message';
 import { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, decimalLengthFour, hashValidation, positiveAndDecimalNumber, required } from '../../../helper';
 import AddMaterialTypeDetail from './AddMaterialTypeDetail';
 import { RMIndex } from '../../../config/constants';
+import { getAssociatedMaterial } from '../actions/Indexation';
 
-const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
+const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFlag }) => {
   const { t } = useTranslation("RawMaterialMaster");
   const dispatch = useDispatch();
 
@@ -28,6 +29,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
     DataToChange: [],
     setDisable: false,
     showPopup: false,
+    tableData: []
   });
 
   const materialTypeData = useSelector(state => state.material);
@@ -47,15 +49,14 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
   useEffect(() => {
     const fetchData = () => {
       const materialId = isEditFlag ? ID : ''; // Use a default value for ID
-      dispatch(getMaterialTypeDataAPI(materialId, res => {
+      dispatch(getMaterialTypeDataAPI(materialId, '', res => {
         const data = res?.data?.Data;
-
         if (data) {
           const defaultValues = {
             MaterialType: data.MaterialType,
             CalculatedDensityValue: data.Density,
           };
-
+          setState((prevState) => ({ ...prevState, tableData: data.MaterialCommodityStandardDetails }));
           Object.entries(defaultValues).forEach(([key, value]) => {
             setValue(key, value);
           });
@@ -68,7 +69,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
 
   const cancel = (type) => {
     reset();
-    dispatch(getMaterialTypeDataAPI('', res => { }));
+    dispatch(getMaterialTypeDataAPI('', '', res => { }));
     toggleDrawer('', '', type);
   };
 
@@ -112,13 +113,14 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
         MaterialType: values.MaterialType,
         CalculatedDensityValue: values.CalculatedDensityValue,
         IsActive: true,
+        MaterialCommodityStandardDetails: state.tableData
       };
 
       dispatch(updateMaterialtypeAPI(updateData, res => {
         setState(prevState => ({ ...prevState, setDisable: false }));
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
-          dispatch(getMaterialTypeDataAPI('', res => { }));
+          dispatch(getMaterialTypeDataAPI('', '', res => { }));
           reset();
           toggleDrawer('', updateData, 'submit');
         }
@@ -131,13 +133,14 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
         CalculatedDensityValue: values.CalculatedDensityValue,
         CreatedBy: loggedInUserId(),
         IsActive: true,
+        MaterialCommodityStandardDetails: state.tableData
       };
 
       dispatch(createMaterialTypeAPI(formData, res => {
         setState(prevState => ({ ...prevState, setDisable: false }));
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-          dispatch(getMaterialTypeDataAPI('', res => { }));
+          dispatch(getMaterialTypeDataAPI('', '', res => { }));
           reset();
           toggleDrawer('', formData, 'submit');
         }
@@ -150,7 +153,9 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
       e.preventDefault();
     }
   };
-
+  const tableData = (data) => {
+    setState(prevState => ({ ...prevState, tableData: data }));
+  }
   const { setDisable } = state;
   return (
     <div>
@@ -222,7 +227,8 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                   />
                 </Col>
               </Row>
-              {RMIndex && <AddMaterialTypeDetail/>}
+              {}
+              {RMIndex && <AddMaterialTypeDetail tableData={tableData} tableDataState={state.tableData} isViewFlag={isViewFlag} isEditFlag={isEditFlag} />}
               <Row className=" no-gutters justify-content-between">
                 <div className="col-md-12">
                   <div className="text-right ">
