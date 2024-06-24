@@ -47,10 +47,15 @@ function AddRfq(props) {
     const permissions = useContext(ApplyPermission);
 
     const Vendor = permissions.permissionDataVendor
+
+
     const Part = permissions.permissionDataPart
+
+
     const dispatch = useDispatch()
     const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
+
 
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
@@ -152,6 +157,7 @@ function AddRfq(props) {
     const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
     const showSendButton = dataProps?.rowData?.DisplayStatus || ''
+
     const isDropdownDisabled = (initialConfiguration.IsCriticalVendorConfigured && isViewFlag) || (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === ''));
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
@@ -164,12 +170,19 @@ function AddRfq(props) {
     const [storePartsDetail, setStorePartsDetail] = useState([])
     const [partEffectiveDate, setPartEffectiveDate] = useState('')
 
-    const [disabledPartUid, setDisabledPartUId] = useState(false)
+    const [disabledPartUid, setDisabledPartUId] = useState(true)
 
-    const [disabledVendoUi, setDisabledVendoUId] = useState(false)
+
+
+
+    const [disabledVendoUi, setDisabledVendoUId] = useState(true)
+
+
+
 
     const isPartEffectiveDateValid = partEffectiveDate && new Date(partEffectiveDate).getTime() > new Date().getTime();
     const effectiveMinDate = isPartEffectiveDateValid ? new Date(partEffectiveDate) : new Date();
+
     useEffect(() => {
         if (dataProps?.isAddFlag) {
             const obj = createQuotationObject(null);
@@ -179,11 +192,13 @@ function AddRfq(props) {
         }
     }, [])
 
+
     useEffect(() => {
         if (showSendButton === DRAFT) {
-            setDisabledVendoUId((Vendor?.add || Vendor?.edit) ? false : true)
-        } else if (showSendButton === PREDRAFT || '') {
-            setDisabledPartUId((Part?.add || Part?.edit) ? false : true)
+            setDisabledVendoUId((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
+        } else if (dataProps?.isAddFlag || showSendButton === PREDRAFT) {
+
+            setDisabledPartUId((Part && (Part?.Add || Part?.Edit)) ? false : true)
         }
     }, [showSendButton, Vendor, Part])
     useEffect(() => {
@@ -2459,7 +2474,7 @@ function AddRfq(props) {
                                                     // handleChange={handleDestinationPlantChange}
                                                     handleChange={() => { }}
                                                     errors={errors.contactPerson}
-                                                    disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll) || disabledVendoUi}
+                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                     isLoading={plantLoaderObj}
                                                 />
                                             )}
@@ -2530,7 +2545,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 className={'user-btn pull-left'}
                                                 onClick={() => addRowVendorTable()}
-                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll) || disabledVendoUi}
+                                                disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                             >
                                                 <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
                                             </button>
@@ -2541,7 +2556,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 value="CANCEL"
                                                 className="reset ml-2"
-                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll) || disabledVendoUi}
+                                                disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                             >
                                                 <div className={''}></div>
                                                 RESET
@@ -2836,7 +2851,7 @@ function AddRfq(props) {
                                             {!isDropdownDisabled && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}
-                                                disabled={isViewFlag || partList.length === 0}>
+                                                disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
                                             </button>}
