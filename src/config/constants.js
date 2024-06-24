@@ -19,8 +19,8 @@ export const config = () => {
 
 
 // DEVELOPMENT
-//const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-const BASE_URL = `http://10.10.8.109:8070/api/v1`
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.8.109:8070/api/v1`
 //const BASE_URL = `http://10.10.8.109:8070/api/v1`
 // const BASE_URL = `http://10.10.8.109:8070/api/v1`
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
@@ -2055,6 +2055,8 @@ export const RFQ = 'RFQ'
 export const ONBOARDING = 'Onboarding & Management'
 export const VENDOR_MANAGEMENT = 'Vendor Classification Status'
 export const LPS = 'LPS Rating Status'
+export const RFQVendor = 'RFQ-Vendor'
+
 
 export const APPROVAL_LISTING = 'Approval Listing'
 export const VENDOR_MANAGEMENT_ROLE = 'Vendor Management'

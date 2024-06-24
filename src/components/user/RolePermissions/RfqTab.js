@@ -9,7 +9,7 @@ import { EMPTY_DATA, RFQ } from "../../../config/constants";
 import { AUDIT, } from "../../../config/constants";
 import { renderActionCommon } from "../userUtil"
 
-class AuditTab extends Component {
+class RFQTab extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,6 +20,8 @@ class AuditTab extends Component {
             Modules: [],
             actionData: [],
             actionSelectList: [],
+            initialConfiguration: props.initialConfiguration || {},
+            
         }
     }
 
@@ -28,16 +30,22 @@ class AuditTab extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
+        this.getRolePermission();
 
     }
-
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.Modules !== this.state.Modules) {
+            this.updateModules();
+        }
+    }
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.data !== this.state.data) {
-            const { data, actionData, actionSelectList } = nextProps;
+            const { data, actionData, actionSelectList, initialConfiguration } = nextProps;
             this.setState({
                 actionData: actionData,
                 Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
                 actionSelectList: actionSelectList,
+                initialConfiguration: initialConfiguration
             })
         }
     }
@@ -46,7 +54,6 @@ class AuditTab extends Component {
         this.setState({ isLoader: true });
         this.props.getModuleActionInit((res) => {
             if (res && res.data && res.data.Data) {
-
                 let Data = res.data.Data;
                 let Modules = res.data.Data;
 
@@ -67,13 +74,13 @@ class AuditTab extends Component {
     */
     renderActionHeads = (actionHeads) => {
         const { actionData } = this.state;
-        let actionNames = actionData && actionData.find(el => el.ModuleName === RFQ)
+                let actionNames = actionData && actionData.find(el => el.ModuleName === RFQ)
         if (actionNames !== undefined) {
             return actionHeads && actionHeads.map((item, index) => {
                 if (item.Value === 0) return false;
                 if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
                     return (
-                        <th className="crud-label">
+                        <th className="crud-label" key={index}>
                             <div className={item.Text}></div>
                             {item.Text}
                         </th>
@@ -141,6 +148,7 @@ class AuditTab extends Component {
             return tempArray.length === Modules[parentIndex].Actions.length ? true : false;
         }
     }
+    
 
     selectAllHandler = (parentIndex, actionRows) => {
         const { Modules, } = this.state;
@@ -185,12 +193,36 @@ class AuditTab extends Component {
         const { Modules } = this.state;
 
         let actionRow = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
+        
         let actionArray = actionRow && actionRow.map((el, index) => {
+            
             if (childIndex === index) {
                 el.IsChecked = !el.IsChecked
+            // Automatically check "View" if "Add", "Edit", or "Bulk Upload" is checked for the 0th module
+            if (parentIndex === 0 && ["Add", "Edit", "Bulk Upload"].includes(el.ActionName) && el.IsChecked) {
+                let viewAction = actionRow.find(action => action.ActionName === 'View');
+                if (viewAction) {
+                    viewAction.IsChecked = true;
+                }
             }
-            return el;
-        })
+
+            // If "Add" or "Edit" is checked for the 1st module
+            if (parentIndex === 1 && ["Add", "Edit"].includes(el.ActionName) && el.IsChecked) {
+                let firstModuleActions = Modules[0].Actions;
+                
+                // Ensure "View" is checked for both the 0th and 1st modules
+                let firstModuleViewAction = firstModuleActions.find(action => action.ActionName === 'View');
+                let secondModuleViewAction = actionRow.find(action => action.ActionName === 'View');
+                if (firstModuleViewAction) {
+                    firstModuleViewAction.IsChecked = true;
+                }
+                if (secondModuleViewAction) {
+                    secondModuleViewAction.IsChecked = true;
+                }
+            }
+        }
+        return el;
+    });
         let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
         this.setState({ Modules: tempArray }, () => {
             const { Modules } = this.state;
@@ -202,35 +234,19 @@ class AuditTab extends Component {
         })
     }
 
-    componentDidUpdate(prevState) {
-        if (prevState.Modules !== this.state.Modules) {
-            this.updateModules()
-        }
-    }
-
+  
     updateModules = () => {
         const { Modules } = this.state;
         this.props.permissions(Modules, RFQ)
     }
 
-    /**
-    * @method cancel
-    * @description used to cancel role edit
-    */
-    cancel = () => {
-
-    }
-
-    clearForm = () => {
-
-    }
 
     render() {
-        const { actionSelectList } = this.state;
+        const { actionSelectList, initialConfiguration } = this.state;
+        const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
+    
         return (
-
             <div>
-                { }
                 <div className="row form-group grant-user-grid">
                     <div className="col-md-12">
                         <Table className="table table-bordered" size="sm">
@@ -244,14 +260,11 @@ class AuditTab extends Component {
                             <tbody>
                                 {this.state.Modules &&
                                     this.state.Modules.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td>
-                                                    {
-                                                        <label
-                                                            className="custom-checkbox"
-                                                            onChange={() => this.moduleHandler(index)}
-                                                        >
+                                        if (index === 0 || !showOnlyFirstModule) {
+                                            return (
+                                                <tr key={index}>
+                                                    <td>
+                                                        <label className="custom-checkbox" onChange={() => this.moduleHandler(index)}>
                                                             {item.PageName}
                                                             <input
                                                                 type="checkbox"
@@ -264,12 +277,10 @@ class AuditTab extends Component {
                                                                 onChange={() => this.moduleHandler(index)}
                                                             />
                                                         </label>
-                                                    }
-                                                </td>
-                                                <td className="select-all-block">
-                                                    <label id='RFQ_Specific_SelectAll_Check' className="custom-checkbox">
-                                                        {" "}
-                                                        {
+                                                    </td>
+                                                    <td className="select-all-block">
+                                                        <label id='RFQ_Specific_SelectAll_Check' className="custom-checkbox">
+                                                            {" "}
                                                             <input
                                                                 type="checkbox"
                                                                 value={"All"}
@@ -278,22 +289,17 @@ class AuditTab extends Component {
                                                                         ? "selected-box"
                                                                         : "not-selected-box"
                                                                 }
-                                                                checked={this.isCheckAll(
-                                                                    index,
-                                                                    item.Actions
-                                                                )}
-                                                                onClick={() =>
-                                                                    this.selectAllHandler(index, item.Actions)
-                                                                }
+                                                                checked={this.isCheckAll(index, item.Actions)}
+                                                                onClick={() => this.selectAllHandler(index, item.Actions)}
                                                             />
-                                                        }
-                                                        <span className=" before-box">Select All</span>
-                                                    </label>
-                                                </td>
-
-                                                {this.renderAction(item.Actions, index)}
-                                            </tr>
-                                        );
+                                                            <span className=" before-box">Select All</span>
+                                                        </label>
+                                                    </td>
+                                                    {this.renderAction(item.Actions, index)}
+                                                </tr>
+                                            );
+                                        }
+                                        return null; // Render nothing for other modules if showOnlyFirstModule is true
                                     })}
                             </tbody>
                         </Table>
@@ -305,6 +311,7 @@ class AuditTab extends Component {
             </div>
         );
     }
+    
 }
 
 /**
@@ -314,10 +321,11 @@ class AuditTab extends Component {
 */
 const mapStateToProps = (state, ownProps) => {
     const { auth } = state;
-    const { roleList, moduleSelectList, actionSelectList, loading } = auth;
+    const { roleList, moduleSelectList, actionSelectList, loading ,initialConfiguration} = auth;
     let initialValues = {};
 
-    return { loading, roleList, initialValues, moduleSelectList, actionSelectList };
+    
+    return { loading, roleList, initialValues, moduleSelectList, actionSelectList, initialConfiguration };
 };
 
 /**
@@ -330,4 +338,4 @@ export default connect(mapStateToProps, {
     getModuleSelectList,
     getActionHeadsSelectList,
     getModuleActionInit,
-})(AuditTab);
+})(RFQTab);
