@@ -2133,7 +2133,7 @@ function AddRfq(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Description}
-                                                disabled={disabledPartUid || true}
+                                                disabled={true}
                                                 placeholder="-"
                                             />
                                         </Col>
@@ -2288,7 +2288,7 @@ function AddRfq(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.Description}
-                                                    disabled={disabledPartUid || true}
+                                                    disabled={true}
                                                     placeholder="-"
                                                 />
                                             </Col>
@@ -2495,7 +2495,7 @@ function AddRfq(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.IncoTerms}
-                                                    disabled={disabledVendoUi}
+                                                    disabled={true}
                                                     placeholder="-"
                                                 />
                                             </Col>
@@ -2514,7 +2514,7 @@ function AddRfq(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.PaymentTerms}
-                                                    disabled={disabledVendoUi}
+                                                    disabled={true}
                                                     placeholder="-"
                                                 />
                                             </Col>
