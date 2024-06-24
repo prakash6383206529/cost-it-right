@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI, getUOMSelectList } from '../.././actions/Common';
-import { getCostingSpecificTechnology, getExistingCosting, } from '../costing/actions/Costing'
+import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
 import { BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, PREDRAFT, PRODUCT_ID, RFQ, RFQVendor, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
@@ -163,6 +163,7 @@ function AddRfq(props) {
     const [havellsKey, setHavellsKey] = useState(true)
     const [storePartsDetail, setStorePartsDetail] = useState([])
     const [partEffectiveDate, setPartEffectiveDate] = useState('')
+
     const [disabledPartUid, setDisabledPartUId] = useState(false)
 
     const [disabledVendoUi, setDisabledVendoUId] = useState(false)
@@ -1919,7 +1920,7 @@ function AddRfq(props) {
     const handlePartNoChange = (value) => {
 
         setAssemblyPartNumber(value)
-        dispatch(getExistingCosting(value.value, (res) => {
+        dispatch(getPartInfo(value?.value, (res) => {
 
             setValue("Description", res.data?.Data?.Description);
             setPartEffectiveDate(res.data.Data?.EffectiveDate);
