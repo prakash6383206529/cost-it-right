@@ -524,9 +524,9 @@ function AddRfq(props) {
     const deleteItemPartTable = (rowData, final) => {
 
 
-        dispatch(deleteQuotationPartDetail(rowData?.QuotationPartId), (res) => {
-
-        })
+        dispatch(deleteQuotationPartDetail(rowData?.QuotationPartId, (res) => {
+            Toaster.success('Part has been deleted successfully')
+        }))
         let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
         setPartList(arr)
         setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData })
@@ -1390,6 +1390,7 @@ function AddRfq(props) {
                     dispatch(saveRfqPartDetails(obj, (res) => {
 
                         if (res?.data?.Result) {
+                            Toaster.success('Part Details has been added successfully.');
                             setPartIdentity(res?.data?.Identity);
                             // onResetPartNoTable();
                             // setTableData([]);
