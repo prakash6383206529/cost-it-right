@@ -22,6 +22,16 @@ function PaperCorrugatedBox(props) {
         totalGSM: 0,
         showPopup: false
     })
+    const [calculationState, setCalculationState] = useState({
+        SheetDeclePerInch: 0,
+        SheetCutPerInch: 0,
+        Area: 0,
+        Wastage: 0,
+        TotalArea: 0,
+        Weight: 0,
+        BoardCost: 0,
+        RMCost: 0
+    })
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const { NoOfDecimalForPrice } = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch()
@@ -104,7 +114,9 @@ function PaperCorrugatedBox(props) {
     }, [areaCalclulationFieldValues])
 
     const calculateWeightAndBoardCost = () => {
-        setValueCalculatorForm('Weight', checkForDecimalAndNull(state.totalGSM * checkForNull(getValuesCalculatorForm('TotalArea')) / 1000, NoOfDecimalForPrice))
+        let calculation = state.totalGSM * calculationState.TotalArea / 1000
+        setValueCalculatorForm('Weight', checkForDecimalAndNull(calculation, NoOfDecimalForPrice))
+        setCalculationState((prevState) => ({ ...prevState, Weight: calculation }))
     }
     const renderListing = (label) => {
         let temp = []
@@ -148,17 +160,21 @@ function PaperCorrugatedBox(props) {
         setValueCalculatorForm('BoardCost', checkForDecimalAndNull(BoardCost, NoOfDecimalForPrice))
         setValueCalculatorForm('RMCost', checkForDecimalAndNull(BoardCost * checkForNull(getValuesCalculatorForm('TotalArea')), NoOfDecimalForPrice))
         setState((prevState) => ({ ...prevState, totalGSM }))
+        setCalculationState((prevState) => ({ ...prevState, BoardCost: BoardCost, RMCost: BoardCost * calculationState.TotalArea }))
     }
     const sheetDecleHandle = (inputName, value) => {
         setValueCalculatorForm(inputName, checkForDecimalAndNull(value / 25.4, NoOfDecimalForPrice))
+        setCalculationState((prevState) => ({ ...prevState, [inputName]: value / 25.4 }))
     }
     const calculateWatagePercent = (value) => {
-        let Wastage = value * checkForNull(getValuesCalculatorForm('Area')) / 100
+        let Wastage = value * checkForNull(calculationState.Area) / 100
         setValueCalculatorForm('Wastage', checkForDecimalAndNull(Wastage, NoOfDecimalForPrice))
-        const TotalArea = Wastage + checkForNull(getValuesCalculatorForm('Area'))
+        const TotalArea = Wastage + checkForNull(calculationState.Area)
         setValueCalculatorForm('TotalArea', checkForDecimalAndNull(TotalArea, NoOfDecimalForPrice))
         setValueCalculatorForm('RMCost', checkForDecimalAndNull(checkForNull(getValuesCalculatorForm('BoardCost')) * TotalArea, NoOfDecimalForPrice))
+        setCalculationState((prevState) => ({ ...prevState, Wastage: Wastage, TotalArea: TotalArea, RMCost: calculationState.BoardCost * TotalArea }))
     }
+
     const boxDetailsInputFields = [
         { label: 'Length (Box)(mm)', name: 'BoxLength', mandatory: true, searchable: true, disabled: props?.CostingViewMode ? props?.CostingViewMode : false },
         { label: 'Width (Box)(mm)', name: 'BoxWidth', mandatory: true, disabled: props?.CostingViewMode ? props?.CostingViewMode : false },
@@ -178,6 +194,7 @@ function PaperCorrugatedBox(props) {
     const calculateCalulatorValue = () => {
         const calculation = (checkForNull(getValuesCalculatorForm('SheetDecle')) * checkForNull(getValuesCalculatorForm('SheetCut'))) / 1000000
         setValueCalculatorForm('Area', checkForDecimalAndNull(calculation, NoOfDecimalForPrice))
+        setCalculationState((prevState) => ({ ...prevState, Area: calculation }))
     }
     const onSubmit = (value) => {
         if (getValuesCalculatorForm('RMCost') === 0 || getValuesCalculatorForm('RMCost') === undefined || getValuesCalculatorForm('RMCost') === null) {
@@ -209,15 +226,15 @@ function PaperCorrugatedBox(props) {
             "BoxHeight": value.BoxHeight,
             "SheetDecle": value.SheetDecle,
             "SheetCut": value.SheetCut,
-            "SheetDeclePerInch": value.SheetDeclePerInch,
-            "SheetCutPerInch": value.SheetCutPerInch,
-            "Area": value.Area,
+            "SheetDeclePerInch": calculationState.SheetDeclePerInch,
+            "SheetCutPerInch": calculationState.SheetCutPerInch,
+            "Area": calculationState.Area,
             "WastagePercentage": value.WastagePercentage,
-            "Wastage": value.Wastage,
-            "TotalArea": value.TotalArea,
-            "Weight": value.Weight,
-            "BoardCost": value.BoardCost,
-            "RMCost": value.RMCost,
+            "Wastage": calculationState.Wastage,
+            "TotalArea": calculationState.TotalArea,
+            "Weight": calculationState.Weight,
+            "BoardCost": calculationState.BoardCost,
+            "RMCost": calculationState.RMCost,
             "TotalGsmAndFluteValue": state.totalGSM,
             "CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial": RMgsmAndFluteValue
         }
@@ -225,7 +242,7 @@ function PaperCorrugatedBox(props) {
             if (res?.data?.Result) {
                 formData.WeightCalculationId = res.data.Identity
                 formData.CalculatorType = 'CorrugatedAndMonoCartonBox'
-                formData.RawMaterialCost = value.RMCost
+                formData.RawMaterialCost = calculationState.RMCost
                 Toaster.success("Calculation saved successfully")
                 props.toggleDrawer('', formData)
             }
@@ -261,6 +278,7 @@ function PaperCorrugatedBox(props) {
     const closePopUp = () => {
         setState((prevState) => ({ ...prevState, showPopup: false }))
     }
+    console.log(calculationState, "calculation state");
     return (
         <Fragment>
             <Row className={'mt-3'}>
@@ -297,7 +315,7 @@ function PaperCorrugatedBox(props) {
                                 mandatory={true}
                                 rules={{
                                     required: true,
-                                    validate: { checkWhiteSpaces },
+                                    validate: { checkWhiteSpaces, },
                                 }}
                                 handleChange={() => { }}
                                 defaultValue={''}
