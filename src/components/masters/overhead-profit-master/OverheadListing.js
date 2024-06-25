@@ -32,6 +32,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { useTranslation } from 'react-i18next';
 import { Steps } from '../../common/Tour/TourMessages';
 import { ApplyPermission } from '.';
+import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -67,6 +68,7 @@ function OverheadListing(props) {
     // const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
+    const [state, setState] = useState({ isBulkUpload: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "" })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
     let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
@@ -82,6 +84,7 @@ function OverheadListing(props) {
         component: 'overhead'
     }
 
+    const { isBulkUpload } = state;
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -358,6 +361,26 @@ function OverheadListing(props) {
         setShowPopup(false)
     }
 
+    /**
+ * @method bulkToggle
+ * @description This method toggles the bulk upload state.it sets the `isBulkUpload` state to true.
+ */
+    const bulkToggle = () => {
+        if (checkMasterCreateByCostingPermission(true)) {
+            setState((prevState) => ({ ...prevState, isBulkUpload: true }))
+        }
+    }
+
+    /**
+* @method closeBulkUploadDrawer
+* @description This method toggles the bulk upload state.it sets the `isBulkUpload` state to false.
+*/
+    const closeBulkUploadDrawer = (event, type) => {
+        setState((prevState) => ({ ...prevState, isBulkUpload: false }))
+        if (type !== 'cancel') {
+            resetState()
+        }
+    }
 
     /**
     * @method buttonFormatter
@@ -635,6 +658,15 @@ function OverheadListing(props) {
                                                 {/* ADD */}
                                             </button>
                                         )}
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5 Tour_List_Add"}
+                                            onClick={bulkToggle}
+                                            title="Bulk Upload"
+                                        >
+                                            <div className={"upload mr-0"}></div>
+
+                                        </button>
                                         {
                                             DownloadAccessibility &&
                                             <>
@@ -718,6 +750,7 @@ function OverheadListing(props) {
 
                             </Col>
                         </Row>
+                        {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`Overhead`} isZBCVBCTemplate={true} messageLabel={`Overhead`} anchor={'right'} />}
                         {
                             showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.OVERHEAD_DELETE_ALERT}`} />
                         }

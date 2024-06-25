@@ -33,6 +33,7 @@ import { updatePageNumber, updateCurrentRowIndex, resetStatePagination } from '.
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
+import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -66,6 +67,7 @@ function ProfitListing(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     // const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [dataCount, setDataCount] = useState(0)
+    const [state, setState] = useState({ isBulkUpload: false })
     // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "" })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
@@ -74,6 +76,7 @@ function ProfitListing(props) {
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     const globalTakes = useSelector((state) => state.pagination.globalTakes);
 
+    const { isBulkUpload } = state;
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -355,6 +358,26 @@ function ProfitListing(props) {
         setShowPopup(false)
     }
 
+    /**
+ * @method bulkToggle
+ * @description This method toggles the bulk upload state.it sets the `isBulkUpload` state to true.
+ */
+    const bulkToggle = () => {
+        if (checkMasterCreateByCostingPermission(true)) {
+            setState((prevState) => ({ ...prevState, isBulkUpload: true }))
+        }
+    }
+
+    /**
+* @method closeBulkUploadDrawer
+* @description This method toggles the bulk upload state.it sets the `isBulkUpload` state to false.
+*/
+    const closeBulkUploadDrawer = (event, type) => {
+        setState((prevState) => ({ ...prevState, isBulkUpload: false }))
+        if (type !== 'cancel') {
+            resetState()
+        }
+    }
 
     /**
     * @method buttonFormatter
@@ -644,6 +667,15 @@ function ProfitListing(props) {
                                                 {/* ADD */}
                                             </button>
                                         )}
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5 Tour_List_Add"}
+                                            onClick={bulkToggle}
+                                            title="Bulk Upload"
+                                        >
+                                            <div className={"upload mr-0"}></div>
+
+                                        </button>
                                         {
                                             DownloadAccessibility &&
                                             <>
@@ -727,6 +759,7 @@ function ProfitListing(props) {
 
                             </Col>
                         </Row>
+                        {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`Profit`} isZBCVBCTemplate={true} messageLabel={`Profit`} anchor={'right'} />}
                         {
                             showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.PROFIT_DELETE_ALERT}`} />
                         }

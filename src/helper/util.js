@@ -732,7 +732,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.pCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProcessCost ? dataFromAPI?.CostingPartDetails?.NetProcessCost : 0
   obj.oCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
   obj.sTreatment = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost ? dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost : 0
-  obj.nsTreamnt = dataFromAPI && dataFromAPI.NetSurfaceTreatmentCost !== undefined ? dataFromAPI.NetSurfaceTreatmentCost : 0
+  obj.nsTreamnt = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost !== undefined ? dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost : 0
   obj.tCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetTransportationCost ? dataFromAPI?.CostingPartDetails?.NetTransportationCost : 0
   obj.nConvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetConversionCost ? dataFromAPI?.CostingPartDetails?.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
@@ -1342,6 +1342,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
 
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
+    
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
@@ -1630,3 +1631,6 @@ export const changeBOPLabel = (arr, bopReplacement) => {
   })
   return tempArr
 }
+export const getFilteredDropdownOptions = (options, selectedValues) => {
+  return options.filter(option => !selectedValues.includes(option.value));
+};
