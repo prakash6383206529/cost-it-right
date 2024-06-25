@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { Row, Col, Table, } from 'reactstrap'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { number, checkWhiteSpaces, maxLength7, noDecimal, checkForNull, checkForDecimalAndNull, loggedInUserId } from '../../../../../helper'
+import { number, checkWhiteSpaces, maxLength7, noDecimal, checkForNull, checkForDecimalAndNull, loggedInUserId, percentageLimitValidation, maxLength200, nonZero } from '../../../../../helper'
 import Button from '../../../../layout/Button'
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
@@ -96,13 +96,25 @@ function PaperCorrugatedBox(props) {
                 setValueTableForm(`fluteValue${item.RawMaterialIdRef}`, checkForDecimalAndNull(item.FluteValue, NoOfDecimalForPrice))
                 tableDataTemp.push({ label: item.RawMaterialNameAndGrade, value: item.RawMaterialIdRef, RawMaterialRate: item.RawMaterialRate })
             })
-            setValueTableForm('NosOfPly', WeightCalculatorRequest.NosOfPly)
-            setValueTableForm('TypeOfBox', WeightCalculatorRequest.TypeOfBox)
+            setValueCalculatorForm('NosOfPly', WeightCalculatorRequest.NosOfPly)
+            setValueCalculatorForm('TypeOfBox', WeightCalculatorRequest.TypeOfBox)
             setValueTableForm('RawMaterial', tableDataTemp)
             setState((prevState) => ({
                 ...prevState, totalGSM: WeightCalculatorRequest.TotalGsmAndFluteValue, tableData: tableDataTemp
             }))
+            setCalculationState(prevState => ({
+                ...prevState,
+                SheetDeclePerInch: WeightCalculatorRequest.SheetDeclePerInch,
+                SheetCutPerInch: WeightCalculatorRequest.SheetCutPerInch,
+                Area: WeightCalculatorRequest.Area,
+                Wastage: WeightCalculatorRequest.Wastage,
+                TotalArea: WeightCalculatorRequest.TotalArea,
+                Weight: WeightCalculatorRequest.Weight,
+                BoardCost: WeightCalculatorRequest.BoardCost,
+                RMCost: WeightCalculatorRequest.RMCost
+            }));
         }
+        setValueCalculatorForm('NosOfPly', props.rmData.length)
     }, [])
     useEffect(() => {
         calculateGSM()
@@ -115,6 +127,8 @@ function PaperCorrugatedBox(props) {
 
     const calculateWeightAndBoardCost = () => {
         let calculation = state.totalGSM * calculationState.TotalArea / 1000
+        console.log('calculationState.TotalArea: ', calculationState.TotalArea);
+        console.log('state.totalGSM: ', state.totalGSM);
         setValueCalculatorForm('Weight', checkForDecimalAndNull(calculation, NoOfDecimalForPrice))
         setCalculationState((prevState) => ({ ...prevState, Weight: calculation }))
     }
@@ -134,9 +148,9 @@ function PaperCorrugatedBox(props) {
     }
 
     const addDataOnTable = (data) => {
-        const getNoofPly = checkForNull(getValuesTableForm('NosOfPly'))
+        const getNoofPly = checkForNull(getValuesCalculatorForm('NosOfPly'))
         if (getNoofPly !== data.RawMaterial.length) {
-            Toaster.warning('Number of RM should be equal to ' + getNoofPly + " ply")
+            Toaster.warning('Number of RM should be equal to nos of ply')
             return false;
         }
         setState((prevState) => ({ ...prevState, tableData: data.RawMaterial }))
@@ -184,7 +198,7 @@ function PaperCorrugatedBox(props) {
         { label: 'Sheet Decle (inch)', name: 'SheetDeclePerInch', disabled: true, tooltip: { text: 'Sheet Decle (mm) / 25.4' } },
         { label: 'Sheet Cut (inch)', name: 'SheetCutPerInch', disabled: true, tooltip: { text: 'Sheet Cut (mm) / 25.4' } },
         { label: 'Area (Sq. Mt)', name: 'Area', disabled: true, tooltip: { text: 'Sheet Decle (mm) * Sheet Cut (mm) / 1000000', width: '250px' } },
-        { label: 'Wastage %', name: 'WastagePercentage', mandatory: true, handleChange: (e) => { calculateWatagePercent(e.target.value) }, disabled: props?.CostingViewMode ? props?.CostingViewMode : false },
+        { label: 'Wastage %', name: 'WastagePercentage', mandatory: true, percentageLimit: true, handleChange: (e) => { calculateWatagePercent(e.target.value) }, disabled: props?.CostingViewMode ? props?.CostingViewMode : false },
         { label: 'Wastage (Sq. Mt)', name: 'Wastage', disabled: true, tooltip: { text: 'Area (Sq. Mt) * Wastage / 100', width: '250px' } },
         { label: 'Total Area (Sq. Mt)', name: 'TotalArea', disabled: true, tooltip: { text: 'Area (Sq. Mt) + Wastage (Sq. Mt)', width: '250px' } },
         { label: 'Weight (Kg)', name: 'Weight', disabled: true, tooltip: { text: 'Total Area (Sq. Mt) * Board (GSM) / 1000', width: '280px' } },
@@ -219,8 +233,8 @@ function PaperCorrugatedBox(props) {
             "BaseCostingIdRef": item.CostingId,
             "CostingRawMaterialDetailsIdRef": rmRowData.RawMaterialDetailId,
             "LoggedInUserId": loggedInUserId(),
-            "NosOfPly": getValuesTableForm('NosOfPly'),
-            "TypeOfBox": getValuesTableForm('TypeOfBox'),
+            "NosOfPly": value.NosOfPly,
+            "TypeOfBox": value.TypeOfBox,
             "BoxLength": value.BoxLength,
             "BoxWidth": value.BoxWidth,
             "BoxHeight": value.BoxHeight,
@@ -249,7 +263,7 @@ function PaperCorrugatedBox(props) {
         }))
     }
     const cancelHandler = () => {
-        props.toggleDrawer('')
+        props.toggleDrawer((rmRowData && rmRowData?.WeightCalculatorRequest && rmRowData?.WeightCalculatorRequest?.CorrugatedAndMonoCartonBoxWeightCalculatorId) ? 'CorrugatedAndMonoCartonBox' : '')
     }
     const resetTable = () => {
         state.tableData.length !== 0 && state.tableData.map((item, index) => {
@@ -278,7 +292,6 @@ function PaperCorrugatedBox(props) {
     const closePopUp = () => {
         setState((prevState) => ({ ...prevState, showPopup: false }))
     }
-    console.log(calculationState, "calculation state");
     return (
         <Fragment>
             <Row className={'mt-3'}>
@@ -289,18 +302,18 @@ function PaperCorrugatedBox(props) {
                                 label={`Nos of Ply`}
                                 name={'NosOfPly'}
                                 Controller={Controller}
-                                control={controlTableForm}
-                                register={registerTableForm}
+                                control={controlCalculatorForm}
+                                register={registerCalculatorForm}
                                 mandatory={true}
                                 rules={{
                                     required: true,
-                                    validate: { number, checkWhiteSpaces, noDecimal, maxLength7 },
+                                    validate: { number, checkWhiteSpaces, noDecimal, maxLength7, nonZero },
                                 }}
                                 handleChange={() => { }}
                                 defaultValue={''}
                                 className=""
                                 customClassName={'withBorder'}
-                                errors={errorsTableForm.NosOfPly}
+                                errors={errorsCalculatorForm.NosOfPly}
                                 disabled={props.CostingViewMode ? props.CostingViewMode : state.tableData.length !== 0 ? true : false}
                             />
                         </Col>
@@ -310,18 +323,18 @@ function PaperCorrugatedBox(props) {
                                 label={`Type of Box`}
                                 name={'TypeOfBox'}
                                 Controller={Controller}
-                                control={controlTableForm}
-                                register={registerTableForm}
+                                control={controlCalculatorForm}
+                                register={registerCalculatorForm}
                                 mandatory={true}
                                 rules={{
                                     required: true,
-                                    validate: { checkWhiteSpaces, },
+                                    validate: { checkWhiteSpaces, maxLength200 },
                                 }}
                                 handleChange={() => { }}
                                 defaultValue={''}
                                 className=""
                                 customClassName={'withBorder'}
-                                errors={errorsTableForm.TypeOfBox}
+                                errors={errorsCalculatorForm.TypeOfBox}
                                 disabled={props.CostingViewMode ? props.CostingViewMode : state.tableData.length !== 0 ? true : false}
                             />
                         </Col>
@@ -416,7 +429,7 @@ function PaperCorrugatedBox(props) {
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder mb-0'}
-                                        // errors={errorsTableForm.GSM}
+                                        errors={errorsTableForm[`GSM${item.value}`]}
                                         disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     /></td>
                                     <td>{index % 2 !== 0 ? <TextFieldHookForm
@@ -429,32 +442,39 @@ function PaperCorrugatedBox(props) {
                                         rules={{
                                             required: false,
                                             validate: { number, checkWhiteSpaces, noDecimal, maxLength7 },
+                                            max: {
+                                                value: 100,
+                                                message: 'Percentage should be less than 100'
+                                            },
                                         }}
                                         handleChange={(e) => { calculateFluteValue(item.value, checkForNull(getValuesTableForm(`GSM${item.value}`)), e.target.value) }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder mb-0'}
-                                        errors={errorsTableForm.flutePercentage}
-                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                        errors={errorsTableForm[`flutePercentage${item.value}`]}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : !getValuesTableForm(`GSM${item.value}`)}
                                     /> : '-'}</td>
-                                    <td>{index % 2 !== 0 ? <TextFieldHookForm
-                                        label={false}
-                                        name={`fluteValue${item.value}`}
-                                        Controller={Controller}
-                                        control={controlTableForm}
-                                        register={registerTableForm}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, checkWhiteSpaces, noDecimal, maxLength7 },
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder mb-0'}
-                                        errors={errorsTableForm.fluteValue}
-                                        disabled={true}
-                                    /> : '-'}</td>
+                                    <td>{index % 2 !== 0 ? <>
+                                        <TooltipCustom id={`fluteValue${item.value}`} disabledIcon={true} tooltipText={`Flute Value = GSM * Flute Percentage / 100`} />
+                                        <TextFieldHookForm
+                                            label={false}
+                                            name={`fluteValue${item.value}`}
+                                            id={`fluteValue${item.value}`}
+                                            Controller={Controller}
+                                            control={controlTableForm}
+                                            register={registerTableForm}
+                                            mandatory={false}
+                                            rules={{
+                                                required: false,
+                                                validate: { number, checkWhiteSpaces, noDecimal, maxLength7 },
+                                            }}
+                                            handleChange={() => { }}
+                                            defaultValue={0}
+                                            className=""
+                                            customClassName={'withBorder mb-0'}
+                                            errors={errorsTableForm.fluteValue}
+                                            disabled={true}
+                                        /></> : '-'}</td>
                                     {/* <td>
                                         <button
                                             className="Edit mr-2"
@@ -466,18 +486,19 @@ function PaperCorrugatedBox(props) {
                                     </td> */}
                                 </tr>
                                 )}
-                                <tr className='table-footer'>
-                                    <td colSpan={tableheaders.length - 1} className='text-right'>
-                                        Total GSM and Flute Value:
-                                    </td>
-                                    <td colSpan={tableheaders.length - (tableheaders.length + 1)}>
-                                        <TooltipCustom id="totalGSM" disabledIcon={true} tooltipText={`Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM...`} /> <div className='w-fit' id="totalGSM">{checkForDecimalAndNull(state.totalGSM, NoOfDecimalForPrice)}</div>
-                                    </td>
-                                </tr>
+
                             </>
                                 : <tr>
                                     <td colSpan={tableheaders.length}><NoContentFound title={EMPTY_DATA} /></td>
                                 </tr>}
+                            <tr className='table-footer'>
+                                <td colSpan={tableheaders.length - 1} className='text-right'>
+                                    Total GSM of Board (Including Flute):
+                                </td>
+                                <td colSpan={tableheaders.length - (tableheaders.length + 1)}>
+                                    <TooltipCustom id="totalGSM" disabledIcon={true} tooltipText={`Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM...`} /> <div className='w-fit' id="totalGSM">{checkForDecimalAndNull(state.totalGSM, NoOfDecimalForPrice)}</div>
+                                </td>
+                            </tr>
                         </tbody>
                     </Table>
                 </Col>
@@ -503,10 +524,14 @@ function PaperCorrugatedBox(props) {
                                     mandatory={item.mandatory}
                                     rules={{
                                         required: item.mandatory,
-                                        validate: { number, checkWhiteSpaces, maxLength7 },
+                                        validate: { number, checkWhiteSpaces, maxLength7, ...(item.disabled ? {} : { nonZero }) },
+                                        max: item.percentageLimit ? {
+                                            value: 100,
+                                            message: 'Percentage should be less than 100'
+                                        } : {},
                                     }}
                                     handleChange={item.handleChange ? item.handleChange : () => { }}
-                                    defaultValue={''}
+                                    defaultValue={item.disabled ? 0 : ''}
                                     className=""
                                     customClassName={'withBorder'}
                                     errors={errorsCalculatorForm[name]}
@@ -514,7 +539,7 @@ function PaperCorrugatedBox(props) {
                             </Col>
                         })}
                     </Row>
-                    <Row className={"sticky-footer"}>
+                    {!props.CostingViewMode && <Row className={"sticky-footer"}>
                         <Col md="12" className={"text-right bluefooter-butn d-flex align-items-center justify-content-end"}>
                             <Button
                                 id="paperCorrugatedBox_cancel"
@@ -527,11 +552,11 @@ function PaperCorrugatedBox(props) {
                             <Button
                                 id="paperCorrugatedBox_submit"
                                 type="submit"
-                                disabled={false}
+                                disabled={props.CostingViewMode}
                                 icon={"save-icon"}
                                 buttonName={"Save"} />
                         </Col>
-                    </Row>
+                    </Row>}
                 </form>
             </Row>
             {
