@@ -443,7 +443,7 @@ function RawMaterialCost(props) {
    */
   const closeWeightDrawer = (e = '', weightData = {}, originalWeight = {}) => {
 
-
+    setCalculatorTypeStore(e)
     dispatch(setFerrousCalculatorReset(false))
 
     if (String(e) === String('rubber') || String(e) === String('ferrous')) {
@@ -807,7 +807,6 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
-    setCalculatorTypeStore(weightData?.CalculatorType ?? '')
     let tempArr = []
     let tempData = gridData[editIndex]
     let grossWeight
@@ -1162,12 +1161,13 @@ function RawMaterialCost(props) {
         "MasterBatchPercentage": 0,
         "MasterBatchTotal": 0,
       }
-
+      setCalculatorTypeStore('')
       if (!CostingViewMode && !IsLocked) {
         dispatch(setMasterBatchObj(MasterBatchObj))
 
       }
     }
+
   }, [gridData])
 
   /**
@@ -1363,7 +1363,7 @@ function RawMaterialCost(props) {
                 className="secondary-btn"
                 type={'button'}
                 onClick={() => toggleWeightCalculator(0, 'CorrugatedAndMonoCartonBox')}
-                disabled={(CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false) || (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore === 'CorrugatedBox')}><div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
+                disabled={(CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false) || (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore === 'CorrugatedBox')}><div className={`CalculatorIcon cr-cl-icon ${((CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false) || (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore === 'CorrugatedBox')) ? 'disabled' : ''}`}></div>Weight Calculator</button>}
 
 
             </Col>
@@ -1449,7 +1449,7 @@ function RawMaterialCost(props) {
                                   className={`CalculatorIcon cr-cl-icon RM_calculator${index}`}
                                   type={'button'}
                                   onClick={() => toggleWeightCalculator(index)}
-                                  disabled={(CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false || disabledForMonoCartonCorrugated)}
+                                  disabled={(CostingViewMode ? (item?.RawMaterialCalculatorId === null ? true : disabledForMonoCartonCorrugated) : (disabledForMonoCartonCorrugated))}
                                 /> : '-'}
                               </td>
                             }

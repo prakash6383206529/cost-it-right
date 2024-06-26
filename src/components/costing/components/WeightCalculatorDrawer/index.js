@@ -63,7 +63,15 @@ function OpenWeightCalculator(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return
     }
-    props.closeDrawer(event, weightData, originalWeight)
+    let calculatorType = ''
+    if (!CostingViewMode) {
+      if (weightData.CalculatorType) {
+        calculatorType = weightData.CalculatorType
+      } else {
+        calculatorType = (props.rmData[0] && props.rmData[0].CalculatorType && props.rmData[0].WeightCalculationId) ? props.rmData[0].CalculatorType : ''
+      }
+    }
+    props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX) && !CostingViewMode) ? calculatorType : event, weightData, originalWeight)
   }
 
   /**
