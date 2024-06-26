@@ -258,79 +258,7 @@ function Ferrous(props) {
         setInputFinishWeight(e)
     }
     // New Change for Row Material
-    const {
-        register: registerCalculatorForm,
-        handleSubmit: handleSubmitCalculatorForm,
-        control: controlCalculatorForm,
-        setValue: setValueCalculatorForm,
-        getValues: getValuesCalculatorForm,
-        formState: { errors: errorsCalculatorForm },
-    } = useForm({
-        mode: 'onChange',
-        reValidateMode: 'onChange',
-    });
 
-    useEffect(() => {
-        // calculateGSM()
-        // calculateWeightAndBoardCost()
-    }, [tableInputsValues, areaCalculateWatch, state.tableData, state.totalGSM])
-    const [state, setState] = useState({
-        tableData: [],
-        totalGSM: 0,
-        showPopup: false
-    })
-    const {
-        register: registerTableForm,
-        handleSubmit: handleSubmitTableForm,
-        control: controlTableForm,
-        setValue: setValueTableForm,
-        getValues: getValuesTableForm,
-        formState: { errors: errorsTableForm },
-    } = useForm({
-        mode: 'onChange',
-        reValidateMode: 'onChange',
-    });
-    const areaCalclulationFieldValues = useWatch({
-        control: controlCalculatorForm, // Pass controlCalculatorForm here
-        name: ['SheetDecle', 'SheetCut'],
-    });
-    const areaCalculateWatch = useWatch({
-        control: controlCalculatorForm,
-        name: ['TotalArea'],
-    })
-
-
-    const watchFields = (data) => {
-        let tempGSM = [];
-        let tempFlute = [];
-        for (let i = 0; i < data.length; i++) {
-            tempGSM.push(`GSM${data[i].value}`)
-            if (i % 2 !== 0) {
-                tempFlute.push(`fluteValue${data[i].value}`)
-            }
-        }
-        return [...tempGSM, ...tempFlute]
-    }
-    const tableInputsValues = useWatch({
-        control: controlTableForm,
-        name: watchFields(state.tableData),
-    });
-
-
-    const renderListing = (label) => {
-        let temp = []
-        switch (label) {
-            case 'RawMaterial':
-                rmData && rmData.map((item) => {
-                    temp.push({ label: item.RMName, value: item.RawMaterialId, RawMaterialRate: item.RMRate })
-                    return null
-                })
-                return temp;
-
-            default:
-                return temp;
-        }
-    }
     return (
         <Fragment>
             <Row>
@@ -344,21 +272,24 @@ function Ferrous(props) {
                         <Row className={"mx-0 align-items-center"}>
                             <Col md="3">
                                 <SearchableSelectHookForm
-                                    label={"Type of Paper (Raw Material)"}
-                                    name={"RawMaterial"}
-                                    tooltipId={"RawMaterial"}
-                                    placeholder={"Select"}
+                                    name={`castingWeight`}
+                                    type="text"
+                                    label="Raw Material"
+                                    //   errors={`${errors.crmHeadRm}${index}`}
                                     Controller={Controller}
-                                    control={controlTableForm}
-                                    rules={{ required: true }}
-                                    register={registerTableForm}
-                                    defaultValue={""}
-                                    options={renderListing('RawMaterial')}
-                                    mandatory={true}
-                                    isMulti={true}
-                                    errors={errorsTableForm.RawMaterial}
-                                    disabled={props?.CostingViewMode ? props?.CostingViewMode : state.tableData.length !== 0 ? true : false}
-                                    handleChange={() => { }}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                        required: false,
+                                    }}
+                                    //   defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
+                                    placeholder={'Select'}
+                                    // options={CRMHeads}
+                                    // customClassName="costing-selectable-dropdown"
+                                    required={false}
+                                    //   handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                    disabled={CostingViewMode}
                                 />
                             </Col>
                             <Col md="3">
@@ -490,21 +421,24 @@ function Ferrous(props) {
                         <Row className={"mx-0 align-items-center"}>
                             <Col md="3">
                                 <SearchableSelectHookForm
-                                    label={"Type of Paper (Raw Material)"}
-                                    name={"RawMaterial"}
-                                    tooltipId={"RawMaterial"}
-                                    placeholder={"Select"}
+                                    name={`castingWeight`}
+                                    type="text"
+                                    label="Raw Material"
+                                    //   errors={`${errors.crmHeadRm}${index}`}
                                     Controller={Controller}
-                                    control={controlTableForm}
-                                    rules={{ required: true }}
-                                    register={registerTableForm}
-                                    defaultValue={""}
-                                    options={renderListing('RawMaterial')}
-                                    mandatory={true}
-                                    isMulti={true}
-                                    errors={errorsTableForm.RawMaterial}
-                                    disabled={props?.CostingViewMode ? props?.CostingViewMode : state.tableData.length !== 0 ? true : false}
-                                    handleChange={() => { }}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                        required: false,
+                                    }}
+                                    //   defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
+                                    placeholder={'Select'}
+                                    // options={CRMHeads}
+                                    // customClassName="costing-selectable-dropdown"
+                                    required={false}
+                                    //   handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                    disabled={CostingViewMode}
                                 />
                             </Col>
                             <Col md="3">
