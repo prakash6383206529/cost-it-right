@@ -22,9 +22,10 @@ import {
 import DayTime from "../../common/DayTimeWrapper"
 import { AcceptableRMUOM } from "../../../config/masterData"
 import AddConditionCosting from "../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting"
-import { addDays, setSeconds } from "date-fns"
 import HeaderTitle from "../../common/HeaderTitle"
 import AddOtherCostDrawer from "./AddOtherCostDrawer"
+import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears } from 'date-fns';
+import { TestHeadless } from "ag-grid-community"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, DataToChange } = props
     const { isEditFlag, isViewFlag } = data
@@ -79,7 +80,9 @@ function AddRMFinancialDetails(props) {
         toDate: '',
         minDate: '',
         maxDate: '',
-        dateRange: 0
+        dateRange: 0,
+        frequencyOfSettlement: [],
+        disableToDate: true
     });
     const [showScrapKeys, setShowScrapKeys] = useState({
         showForging: false,
@@ -212,7 +215,9 @@ function AddRMFinancialDetails(props) {
             checkTechnology()
         }
     }, [props?.DataToChange])
-
+    useEffect(() => {
+        setValue('totalBasicRate', checkForDecimalAndNull(props?.totalBasicRate, getConfigurationKey().NoOfDecimalForPrice))
+    }, [props?.totalBasicRate])
     const netCostTitle = () => {
         if (getConfigurationKey().IsBasicRateAndCostingConditionVisible && Number(states.costingTypeId) === Number(ZBCTypeId)) {
             let obj = {
@@ -238,10 +243,10 @@ function AddRMFinancialDetails(props) {
             return obj
         }
     }
-    const setInStateToolTip = () => {
-        const obj = { ...state.toolTipTextObject, netCostCurrency: netCostTitle(), basicPriceCurrency: basicPriceTitle() }
-        setState({ toolTipTextObject: obj })
-    }
+    // const setInStateToolTip = () => {
+    //     const obj = { ...state.toolTipTextObject, netCostCurrency: netCostTitle(), basicPriceCurrency: basicPriceTitle() }
+    //     setState({ toolTipTextObject: obj })
+    // }
 
 
 
@@ -341,7 +346,9 @@ function AddRMFinancialDetails(props) {
         }
         if (setData) {
             setTimeout(() => {
-                setState({ toolTipTextObject: { ...state.toolTipTextObject, ...obj } })
+                setState(prevState => ({
+                    ...prevState, toolTipTextObject: { ...state.toolTipTextObject, ...obj }
+                }))
             }, 100);
         }
         return obj
@@ -575,81 +582,69 @@ function AddRMFinancialDetails(props) {
 
     };
     const handleFrequencyChange = (selectedOption) => {
-        let range;
-        switch (selectedOption.label) {
+        if (selectedOption && selectedOption !== '') {
+            setState(prevState => ({
+                ...prevState,
+                frequencyOfSettlement: selectedOption.label,
+                toDate: '',
+                fromDate: '',
+            }));
+            if (selectedOption?.label === 'As and When') {
+                setState(prevState => ({ ...prevState, disableToDate: false }));
+            } else {
+                setState(prevState => ({ ...prevState, disableToDate: true }));
+            }
+            setValue('toDate', '');
+            setValue('fromDate', '');
+        } else {
+            setState(prevState => ({ ...prevState, frequencyOfSettlement: [] }));
+        }
+    };
+
+    const handleFromEffectiveDateChange = (date) => {
+        const { frequencyOfSettlement } = state;
+        let validToDate;
+
+        switch (frequencyOfSettlement) {
             case 'Weekly':
-                range = 7;
+                validToDate = addWeeks(date, 1);
                 break;
             case 'Fortnightly':
-                range = 14;
+                validToDate = addWeeks(date, 2);
                 break;
             case 'Monthly':
-                range = 30; // Assuming 30 days for a month
+                validToDate = endOfMonth(date);
                 break;
             case 'Quarterly':
-                range = 90; // Assuming 90 days for a quarter
+                validToDate = addQuarters(date, 1);
                 break;
             case 'Half Yearly':
-                range = 182; // Assuming 182 days for half year
+                validToDate = addMonths(date, 6);
                 break;
             case 'Yearly':
-                range = 365; // Assuming 365 days for a year
+                validToDate = addYears(date, 1);
                 break;
             case 'As and When':
-                range = 0; // No range limit
+                validToDate = null; // Allow user to select any date
                 break;
             default:
-                range = 0; // Default no range limit
+                validToDate = date;
                 break;
         }
 
         setState(prevState => ({
             ...prevState,
-            dateRange: range,
+            fromDate: date,
+            toDate: validToDate,
+            minDate: date,
+            maxDate: validToDate,
         }));
-    };
-    // const handleFrequencyChange = (value) => {
-    //     console.log('value: ', value);
-    //     switch (value) {
-    //         case 'Weekly':
-    //             setState(prevState => ({ ...prevState, dateRange: 6 }));
-    //             break;
-    //         case 'Fortnightly':
-    //             setState(prevState => ({ ...prevState, dateRange: 14 }));
-    //             break;
-    //         //   case 'Monthly':
-    //         //   
-    //         //     break;
-    //         //   case 'Quarterly':
-    //         //     setMaxFromDate(DayTime(state.fromEffectiveDate).add(3, 'onths').format('YYYY-MM-DD'));
-    //         //     setMinToDate(DayTime(state.fromEffectiveDate).format('YYYY-MM-DD'));
-    //         //     break;
-    //         //   case 'Half Yearly':
-    //         //     setMaxFromDate(DayTime(state.fromEffectiveDate).add(6, 'onths').format('YYYY-MM-DD'));
-    //         //     setMinToDate(DayTime(state.fromEffectiveDate).format('YYYY-MM-DD'));
-    //         //     break;
-    //         //   case 'Yearly':
-    //         //     setMaxFromDate(DayTime(state.fromEffectiveDate).add(1, 'years').format('YYYY-MM-DD'));
-    //         //     setMinToDate(DayTime(state.fromEffectiveDate).format('YYYY-MM-DD'));
-    //         //     break;
-    //         case 'As and When':
-    //             // no restrictions
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // };
-    const handleFromEffectiveDateChange = (date) => {
-        // setState(prevState => ({ ...prevState, fromEffectiveDate: date }));
-        // const frequency = state.frequencyOfSettlement;
-        // const validToDate = getValidToDate(date, frequency);
-        // setValue('toDate', validToDate);
-        setState(prevState => ({ ...prevState, toEffectiveDate: date, minDate: date }));
+
+        setValue('toDate', validToDate);
     };
     const handleToEffectiveDateChange = (date) => {
-        console.log('DayTimeto ', DayTime(date).format('YYYY-MM-DD'));
-        setState(prevState => ({ ...prevState, toEffectiveDate: date, maxDate: date }));
-    }
+        setState(prevState => ({ ...prevState, toDate: date }));
+    };
     const handleVendor = () => {
         if (rawMaterailDetails && rawMaterailDetails?.Vendor?.length !== 0 && state.currency && state.currency.length !== 0 && state.effectiveDate) {
             dispatch(getExchangeRateByCurrency(state.currency?.label, (states.costingTypeId === VBCTypeId || states.costingTypeId === ZBCTypeId) ? VBCTypeId : states.costingTypeId, DayTime(state.effectiveDate).format('YYYY-MM-DD'), (states.costingTypeId === VBCTypeId || states.costingTypeId === ZBCTypeId) ? rawMaterailDetails?.Vendor?.value : EMPTY_GUID, rawMaterailDetails?.customer?.value, false, res => {
@@ -692,7 +687,7 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: true }))
     }
 
-    const closeOtherCostToggle = () => {
+    const closeOtherCostToggle = (type, data) => {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
     }
 
@@ -961,7 +956,7 @@ function AddRMFinancialDetails(props) {
                                             handleChange={(date) => {
                                                 handleToEffectiveDateChange(date);
                                             }}
-                                            rules={{ required: true }}
+                                            rules={{ required: false }}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -969,15 +964,15 @@ function AddRMFinancialDetails(props) {
                                             showYearDropdown
                                             dateFormat="DD/MM/YYYY"
                                             minDate={state.minDate}
-                                            maxDate={addDays(state.minDate, state.dateRange)}
-                                            placeholder="Select date"
+                                            maxDate={state.maxDate}
+                                            placeholder={!state.disableToDate ? "Select date" : ''}
                                             customClassName="withBorder"
                                             className="withBorder"
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
-                                            disabled={false}
-                                            mandatory={true}
+                                            disabled={state.disableToDate}
+                                            mandatory={false}
                                             errors={errors && errors.toDate}
                                         />
                                     </div>
@@ -1511,6 +1506,23 @@ function AddRMFinancialDetails(props) {
                                         />}
                                     </div>
                                 </Col>}
+                                <Col className="col-md-15">
+                                    <TextFieldHookForm
+                                        label={`Basic Rate`}
+                                        name={"totalBasicRate"}
+                                        placeholder={"-"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        defaultValue={props.totalBasicRate}
+                                        className=" "
+                                        handleChange={() => { }}
+                                        customClassName=" withBorder"
+                                        disabled={true}
+                                        mandatory={false}
+                                        errors={errors.LocalLogisticBaseCurrency}
+                                    />
+                                </Col>
                                 <Col className="col-md-15">
                                     <div className='d-flex align-items-center'>
                                         <div className='w-100'>

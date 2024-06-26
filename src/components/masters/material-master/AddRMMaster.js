@@ -56,7 +56,7 @@ function AddRMMaster(props) {
         isCommodityOpen: false,
         commodityDetails: [],
         avgBasicRate: [],
-
+        totalBasicRate: 0
     })
     const isViewFlag = data?.isViewFlag ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
@@ -81,13 +81,14 @@ function AddRMMaster(props) {
                 DayTime(getValues('fromDate')).format('YYYY-MM-DD'),
                 DayTime(getValues('toDate')).format('YYYY-MM-DD'),
                 (res) => {
-                    console.log(res);
                     setValue('UnitOfMeasurement', { label: res?.data?.Data, value: res?.data?.Identity })
                     const updatedCommodityDetails = state.commodityDetails.map(detail => {
                         const avgRate = res?.data?.DataList.find(rate => rate.MaterialCommodityStandardDetailsId === detail.MaterialCommodityStandardDetailsId);
                         return {
                             ...detail,
-                            BasicRate: avgRate ? avgRate.RateConversionPerConvertedUOM : null
+                            BasicRateBaseCurrency: avgRate ? avgRate.RateConversionPerConvertedUOM : null,
+                            BasicRateIndexCurrency: avgRate ? avgRate.RatePerConvertedUOM : null,
+                            ExchangeRate: avgRate ? avgRate.ExchangeRate : null
                         };
                     });
                     setState(prevState => ({ ...prevState, commodityDetails: updatedCommodityDetails }));
@@ -121,7 +122,9 @@ function AddRMMaster(props) {
     const commodityToggle = () => {
         setState(prevState => ({ ...prevState, isCommodityOpen: !state.isCommodityOpen }))
     }
-
+    const setTotalBasicRate = (totalBasicRate) => {
+        setState(prevState => ({ ...prevState, totalBasicRate: totalBasicRate }))
+    }
     useEffect(() => {
         getDetails(data)
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
@@ -529,7 +532,9 @@ function AddRMMaster(props) {
                         errors={errors}
                         useWatch={useWatch}
                         DataToChange={state.DataToChange}
-                        data={data} />
+                        data={data}
+                        totalBasicRate={state.totalBasicRate}
+                    />
 
                     <Row className="mb-3 accordian-container">
                         <Col md="6" className='d-flex align-items-center'>
@@ -547,6 +552,8 @@ function AddRMMaster(props) {
                             states={state}
                             isOpen={state.isCommodityOpen}
                             commodityDetails={state.commodityDetails}
+                            isViewFlag={isViewFlag}
+                            setTotalBasicRate={setTotalBasicRate}
                         />
                     </Row>
                     <RemarksAndAttachments Controller={Controller}

@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Row, Col } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
 import { getConfigurationKey } from '../../../helper/auth'
@@ -11,6 +11,10 @@ import { EMPTY_DATA } from '../../../config/constants'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import NoContentFound from '../../common/NoContentFound'
+import { reactLocalStorage } from 'reactjs-localstorage'
+import Button from '../../layout/Button'
+import AddOtherCostDrawer from './AddOtherCostDrawer'
+import { setSeconds } from 'date-fns'
 
 const gridOptions = {};
 function AddIndexationMaterialListing(props) {
@@ -23,56 +27,37 @@ function AddIndexationMaterialListing(props) {
         reValidateMode: 'onChange',
     });
 
-    const [tableData, setTableData] = useState([]);
-    const initialTableData = [
-        {
-            materialName: "Steel",
-            Percentage: 50,
-            BasicRate: 50
-        },
-        {
-            materialName: "Aluminum",
-            Percentage: 20,
-            BasicRate: 20
-        },
-        {
-            materialName: "Copper",
-            Percentage: 20,
-            BasicRate: 20
-        },
-        {
-            materialName: "Plastic",
-            Percentage: 10,
-            BasicRate: 20
-        }
-    ];
 
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [isLoader, setIsLoader] = useState(false);
     const [currentPrice, setCurrentPrice] = useState(0);
     const [totalSum, setTotalSum] = useState(0);
     const [currencyExchangeRate, setCurrencyExchangeRate] = useState(1);
+    const [state, setState] = useState({
+        isOpenOtherCost: false,
+        rowData: {},
+        tableData: [],
+        rowIndex: 0,
+        reRender: false,
+        totalBasicRate: 0,
+        commodityDetailsState: []
+    })
 
-    const onCellValueChanged = (value) => {
+    useEffect(() => {
+        // Calculate totalBasicRate whenever commodityDetailsState changes
+        const totalRate = state.commodityDetailsState.reduce((sum, row) => {
+            const baseCurrency = row.BasicRateBaseCurrency || 0;
+            const additionalCost = row.totalCostBase || 0;
+            return sum + baseCurrency + additionalCost;
+        }, 0);
+        console.log('totalRate: ', totalRate);
+        setState(prevState => ({ ...prevState, totalBasicRate: totalRate }))
+        props.setTotalBasicRate(totalRate)
+    }, [state.commodityDetailsState]);
 
-        let temp = []
-        tableData && tableData.map((item) => {
-            if (item.Text == value.data.Text) {
-                item.Sum = Number(checkForNull(value?.data?.January)) + Number(checkForNull(value?.data?.February)) + Number(checkForNull(value?.data?.March)) + Number(checkForNull(value?.data?.April)) + Number(checkForNull(value?.data?.May)) + Number(checkForNull(value?.data?.June)) + Number(checkForNull(value?.data?.July)) + Number(checkForNull(value?.data?.August)) + Number(checkForNull(value?.data?.September)) + Number(checkForNull(value?.data?.October)) + Number(checkForNull(value?.data?.November)) + Number(checkForNull(value?.data?.December))
-            }
-            temp.push(item)
-        })
-        let total = 0
-        temp.map((item, ind) => {
-            total = Number(total) + Number(checkForNull(item.Sum))
-        })
-        setTotalSum((total + currentPrice))
-        setValue('totalSum', checkForDecimalAndNull(total + currentPrice, getConfigurationKey().NoOfDecimalForPrice))
-        if (currencyExchangeRate > 1) {
-            setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice) / currencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice))
-        }
-    }
+    useEffect(() => {
+        setState(prevState => ({ ...prevState, commodityDetailsState: props.commodityDetails }))
+    }, [props.commodityDetails])
 
     const onGridReady = (params) => {
         setGridApi(params.api)
@@ -93,7 +78,6 @@ function AddIndexationMaterialListing(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (
             <>
-
                 {cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''}
             </>
         )
@@ -108,12 +92,71 @@ function AddIndexationMaterialListing(props) {
             </>
         )
     }
+    const AddTotalCost = (cellValue, rowData, rowIndex) => {
+        setState(prevState => ({ ...prevState, isOpenOtherCost: true, rowData: rowData, rowIndex: rowIndex }));
+    }
+
+    const closeOtherCostToggle = (type, data, totalCostCurrency, totalCostBase, rowIndex) => {
+        if (data.length >= 1) {
+            let tempArray = state.commodityDetailsState;
+            let tempData = tempArray[rowIndex];
+
+            tempData = {
+                ...tempData,
+                data,
+                totalCostBase, // Add totalCostBase to the object
+                totalCostCurrency // Add totalCostCurrency to the object
+            };
+            tempArray[rowIndex] = tempData;
+
+            setState(prevState => ({ ...prevState, commodityDetailsState: tempArray }));
+        }
+
+        setState(prevState => ({ ...prevState, isOpenOtherCost: false, reRender: !prevState.reRender }));
+    }
+    /**
+* @method buttonFormatter
+* @description Renders buttons
+*/
+    const buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = rowData?.totalCostBase ? rowData?.totalCostBase + rowData?.BasicRateBaseCurrency : rowData?.BasicRateBaseCurrency
+
+        return (
+            <>
+
+                {/* <Button id="nfr_add" className={"mr5"} onClick={() => AddTotalCost(cellValue, rowData)} title={"Add"} icon={"plus"} /> */}
+                <div className="d-flex justify-content-between">{checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}{<button
+                    type="button"
+                    className={"mr5 mt-2 add-out-sourcing "}
+                    onClick={() => AddTotalCost(cellValue, rowData, props.rowIndex)}
+                    // disabled={!item?.isRowActionEditable}
+                    title="Add"
+                >
+                </button>}
+                </div>
+            </>
+        )
+    };
+
+    const totalCostCurrencyFormatter = (props) => {
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = rowData?.costCurrency ? rowData?.costCurrency + rowData?.BasicRateIndexCurrency : rowData?.BasicRateIndexCurrency
+        return (
+            <>
+                {value != null ? checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice) : ''}
+            </>
+        )
+    }
 
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
         commonFormatter: commonFormatter,
         customNoRowsOverlay: NoContentFound,
-        priceFormatter: priceFormatter
+        priceFormatter: priceFormatter,
+        buttonFormatter: buttonFormatter,
+        totalCostCurrencyFormatter: totalCostCurrencyFormatter
     };
 
     return (
@@ -122,19 +165,19 @@ function AddIndexationMaterialListing(props) {
                 <div className="container-fluid">
                     <div className="login-container signup-form">
                         <div className="row">
-                            <div className="col-md-12">
+                            {<div className="col-md-12">
                                 {props.isOpen && (
                                     <Row>
                                         <Col md="12">
-                                            <div className={`ag-grid-wrapper budgeting-table  ${CommodityDetails && CommodityDetails?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
+                                            <div className={`ag-grid-wrapper budgeting-table  ${state.commodityDetailsState && state.commodityDetailsState?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                                                 <div className="ag-theme-material" >
                                                     <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
                                                         domLayout='autoHeight'
                                                         // columnDefs={c}
-                                                        rowData={CommodityDetails}
-                                                        onCellValueChanged={onCellValueChanged}
+                                                        rowData={state.commodityDetailsState}
+                                                        // onCellValueChanged={onCellValueChanged}
                                                         pagination={true}
                                                         paginationPageSize={12}
                                                         onGridReady={onGridReady}
@@ -150,14 +193,18 @@ function AddIndexationMaterialListing(props) {
                                                     >
                                                         <AgGridColumn width={115} field="CommodityStandardName" headerName="Commodity Name" editable={false}></AgGridColumn>
                                                         <AgGridColumn width={115} field="Percentage" headerName="Percentage" editable={false}></AgGridColumn>
-                                                        <AgGridColumn width={115} field="BasicRate" headerName="Basic Rate" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={115} field="ProcessingCost" headerName="Premium Charges" cellRenderer='commonFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={115} field="ExchangeRate" headerName="Exchange Rate" editable={false}></AgGridColumn>
+                                                        <AgGridColumn width={115} field="BasicRateIndexCurrency" headerName="Basic Rate (Index Currency)" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={115} field="BasicRateBaseCurrency" headerName={`Basic Rate (${reactLocalStorage.getObject('baseCurrency')})`} editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                        {/* <AgGridColumn width={115} field="ProcessingCost" headerName="Premium Charges" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="ProcessingCost" headerName="Processing Cost" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="ImportFreight" headerName="Import Freight" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="OtherCost" headerName="Other Cost" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="CustomDuty" headerName="Custom Duty" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="ShippingLineChanges" headerName="Shipping Line Charges" cellRenderer='commonFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={115} field="Total" headerName="Total" editable={false} valueGetter='(Number(data.ProcessingCost?data.ProcessingCost:0)+ Number(data.ImportFreight?data.ImportFreight:0)+ Number(data.OtherCost?data.OtherCost:0)+ Number(data.CustomDuty?data.CustomDuty:0)+ Number(data.ShippingLineChanges?data.ShippingLineChanges:0))'></AgGridColumn>
+                                                      */}
+                                                        <AgGridColumn width={115} field="BasicRateIndexCurrency" headerName="Total Cost (Currency)" cellRenderer='totalCostCurrencyFormatter' editable={false} ></AgGridColumn>
+                                                        <AgGridColumn width={115} field="BasicRateBaseCurrency" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')})`} cellRenderer='buttonFormatter' editable={false} ></AgGridColumn>
                                                     </AgGridReact>
                                                 </div>
                                             </div>
@@ -165,7 +212,21 @@ function AddIndexationMaterialListing(props) {
                                     </Row >
                                 )
                                 }
-                            </div >
+                                {
+                                    state.isOpenOtherCost &&
+                                    <AddOtherCostDrawer
+                                        isOpen={state.isOpenOtherCost}
+                                        //tableData={state.conditionTableData}
+                                        closeDrawer={closeOtherCostToggle}
+                                        anchor={'right'}
+                                        ViewMode={props.isViewFlag}
+                                        isFromMaster={true}
+                                        RowData={state.commodityDetailsState[state?.rowIndex]}
+                                        tableData={state.commodityDetailsState[state?.rowIndex]?.data ? state.commodityDetailsState[state?.rowIndex]?.data : []} //commodityDetailsState[state?.rowIndex]?.data}
+                                        RowIndex={state?.rowIndex}
+                                    />
+                                }
+                            </div >}
                         </div >
                     </div >
                 </div >

@@ -14,7 +14,8 @@ import {
     GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD,
     GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS, GET_STANDARDIZEDCOMMODITY_FOR_DOWNLOAD,
     GET_INDEXDATA_LIST_SUCCESS, GET_INDEXDATA_FOR_DOWNLOAD, CREATE_MATERIAL_SUCCESS,
-    GET_COMMODITY_STANDARD_FOR_DOWNLOAD, GET_COMMODITY_STANDARD_DATALIST_SUCCESS
+    GET_COMMODITY_STANDARD_FOR_DOWNLOAD, GET_COMMODITY_STANDARD_DATALIST_SUCCESS,
+    GET_OTHER_COST_SELECTLIST, GET_OTHER_COST_APPLICABILITY_SELECTLIST
 }
     from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
@@ -639,5 +640,51 @@ export function deleteIndexDetailData(commodityIndexRateDetailId, callback) {
                 callback(error.response);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+/**
+ * @method getOtherCostApplicabilitySelectList
+ * @description get Other Cost Applicability
+ */
+export function getOtherCostApplicabilitySelectList(callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getOtherCostApplicabilitySelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_OTHER_COST_APPLICABILITY_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+/**
+ * @method getOtherCostSelectList
+ * @description get other cost Select
+ */
+export function getOtherCostSelectList(callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getOtherCostSelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_OTHER_COST_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
     };
 }
