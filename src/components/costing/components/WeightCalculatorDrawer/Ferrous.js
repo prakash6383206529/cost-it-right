@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Col, Row, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForFerrous } from '../../actions/CostWorking'
@@ -257,6 +257,80 @@ function Ferrous(props) {
     const handleFinishedWeight = (e) => {
         setInputFinishWeight(e)
     }
+    // New Change for Row Material
+    const {
+        register: registerCalculatorForm,
+        handleSubmit: handleSubmitCalculatorForm,
+        control: controlCalculatorForm,
+        setValue: setValueCalculatorForm,
+        getValues: getValuesCalculatorForm,
+        formState: { errors: errorsCalculatorForm },
+    } = useForm({
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+    });
+
+    useEffect(() => {
+        // calculateGSM()
+        // calculateWeightAndBoardCost()
+    }, [tableInputsValues, areaCalculateWatch, state.tableData, state.totalGSM])
+    const [state, setState] = useState({
+        tableData: [],
+        totalGSM: 0,
+        showPopup: false
+    })
+    const {
+        register: registerTableForm,
+        handleSubmit: handleSubmitTableForm,
+        control: controlTableForm,
+        setValue: setValueTableForm,
+        getValues: getValuesTableForm,
+        formState: { errors: errorsTableForm },
+    } = useForm({
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+    });
+    const areaCalclulationFieldValues = useWatch({
+        control: controlCalculatorForm, // Pass controlCalculatorForm here
+        name: ['SheetDecle', 'SheetCut'],
+    });
+    const areaCalculateWatch = useWatch({
+        control: controlCalculatorForm,
+        name: ['TotalArea'],
+    })
+
+
+    const watchFields = (data) => {
+        let tempGSM = [];
+        let tempFlute = [];
+        for (let i = 0; i < data.length; i++) {
+            tempGSM.push(`GSM${data[i].value}`)
+            if (i % 2 !== 0) {
+                tempFlute.push(`fluteValue${data[i].value}`)
+            }
+        }
+        return [...tempGSM, ...tempFlute]
+    }
+    const tableInputsValues = useWatch({
+        control: controlTableForm,
+        name: watchFields(state.tableData),
+    });
+
+
+    const renderListing = (label) => {
+        let temp = []
+        switch (label) {
+            case 'RawMaterial':
+                rmData && rmData.map((item) => {
+                    temp.push({ label: item.RMName, value: item.RawMaterialId, RawMaterialRate: item.RMRate })
+                    return null
+                })
+                return temp;
+
+            default:
+                return temp;
+        }
+    }
     return (
         <Fragment>
             <Row>
@@ -265,12 +339,45 @@ function Ferrous(props) {
 
                     <Col md="12" className='mt-3'>
                         <div className="header-title mt12">
-                            <h5>{'Raw Material:'}</h5>
+                            <h5>{'Raw Material'}</h5>
                         </div>
+                        <Row className={"mx-0 align-items-center"}>
+                            <Col md="3">
+                                <SearchableSelectHookForm
+                                    label={"Type of Paper (Raw Material)"}
+                                    name={"RawMaterial"}
+                                    tooltipId={"RawMaterial"}
+                                    placeholder={"Select"}
+                                    Controller={Controller}
+                                    control={controlTableForm}
+                                    rules={{ required: true }}
+                                    register={registerTableForm}
+                                    defaultValue={""}
+                                    options={renderListing('RawMaterial')}
+                                    mandatory={true}
+                                    isMulti={true}
+                                    errors={errorsTableForm.RawMaterial}
+                                    disabled={props?.CostingViewMode ? props?.CostingViewMode : state.tableData.length !== 0 ? true : false}
+                                    handleChange={() => { }}
+                                />
+                            </Col>
+                            <Col md="3">
+                                <div class="d-flex">
+                                    <button class="user-btn mr5 mb-2" type="submit" title="" disabled=""><div class="plus "></div>Add</button>
+                                </div>
+                            </Col>
+                        </Row>
+                    </Col>
+                </form>
+            </Row>
+            <Row>
+                <form noValidate className="form"
+                    onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
+                    <Col md="12">
                         <Col md="12">
                             <tbody className='rm-table-body'></tbody>
                         </Col>
-                        <div className="costing-border ferrous-calculator">
+                        <div className="costing-border ferrous-calculator border-top-0 border-bottom-0">
                             <Table className="table cr-brdr-main ferrous-table" size="sm">
                                 <thead>
                                     <tr>
@@ -311,223 +418,286 @@ function Ferrous(props) {
                                                             errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].Percentage : ''}
                                                             disabled={props.isEditFlag ? false : true}
                                                         />
-                                                    </td >
-                                                </tr >
+                                                    </td>
+                                                </tr>
                                             )
                                         })
                                     }
 
-                                </tbody >
-                            </Table >
-                            <Row className={"mx-0"}>
-                                <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'rm-rate-ferrous'} tooltipText={'Net RM Rate = (RM1 Rate * Percentage / 100) + (RM2 Rate * Percentage / 100) + ....'} />
-                                    <TextFieldHookForm
-                                        label={`Net RM Rate`}
-                                        name={'NetRMRate'}
-                                        Controller={Controller}
-                                        control={control}
-                                        id={'rm-rate-ferrous'}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NetRMRate}
-                                        disabled={true}
-                                    />
-                                </Col >
-                                <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'srape-rate-ferrous'} tooltipText={'Net Scrap Rate = (RM1 Scrap Rate * Percentage / 100) + (RM2 Scrap Rate * Percentage / 100) + ....'} />
-                                    <TextFieldHookForm
-                                        label={`Net Scrap Rate`}
-                                        name={'NetScrapRate'}
-                                        id={'srape-rate-ferrous'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NetScrapRate}
-                                        disabled={true}
-                                    />
-                                </Col >
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Casting Weight(kg)`}
-                                        name={'castingWeight'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                </tbody>
+                            </Table>
+                        </div>
+                        <Row className={"mx-0"}>
+                            <Col md="3">
+                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'rm-rate-ferrous'} tooltipText={'Net RM Rate = (RM1 Rate * Percentage / 100) + (RM2 Rate * Percentage / 100) + ....'} />
+                                <TextFieldHookForm
+                                    label={`Net RM Rate`}
+                                    name={'NetRMRate'}
+                                    Controller={Controller}
+                                    control={control}
+                                    id={'rm-rate-ferrous'}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.NetRMRate}
+                                    disabled={true}
+                                />
+                            </Col>
+                            <Col md="3">
+                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'srape-rate-ferrous'} tooltipText={'Net Scrap Rate = (RM1 Scrap Rate * Percentage / 100) + (RM2 Scrap Rate * Percentage / 100) + ....'} />
+                                <TextFieldHookForm
+                                    label={`Net Scrap Rate`}
+                                    name={'NetScrapRate'}
+                                    id={'srape-rate-ferrous'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.NetScrapRate}
+                                    disabled={true}
+                                />
+                            </Col>
+                            <Col md="3">
+                                <TextFieldHookForm
+                                    label={`Casting Weight(kg)`}
+                                    name={'castingWeight'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    rules={{
+                                        required: true,
+                                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
 
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder text-nowrap'}
-                                        errors={errors.castingWeight}
-                                        disabled={props.isEditFlag ? false : true}
-                                    />
-                                </Col >
-                            </Row >
+                                    }}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder text-nowrap'}
+                                    errors={errors.castingWeight}
+                                    disabled={props.isEditFlag ? false : true}
+                                />
+                            </Col>
+                        </Row>
+                        <div class="header-title mt12"><h5>Binders/Additives Detail</h5></div>
+                        <Row className={"mx-0 align-items-center"}>
+                            <Col md="3">
+                                <SearchableSelectHookForm
+                                    label={"Type of Paper (Raw Material)"}
+                                    name={"RawMaterial"}
+                                    tooltipId={"RawMaterial"}
+                                    placeholder={"Select"}
+                                    Controller={Controller}
+                                    control={controlTableForm}
+                                    rules={{ required: true }}
+                                    register={registerTableForm}
+                                    defaultValue={""}
+                                    options={renderListing('RawMaterial')}
+                                    mandatory={true}
+                                    isMulti={true}
+                                    errors={errorsTableForm.RawMaterial}
+                                    disabled={props?.CostingViewMode ? props?.CostingViewMode : state.tableData.length !== 0 ? true : false}
+                                    handleChange={() => { }}
+                                />
+                            </Col>
+                            <Col md="3">
+                                <div class="d-flex">
+                                    <button class="user-btn mr5 mb-2" type="submit" title="" disabled=""><div class="plus "></div>Add</button>
+                                </div>
+                            </Col>
+                        </Row>
+                        <div className="costing-border ferrous-calculator border-top-0 border-bottom-0">
 
-                            <LossStandardTable
-                                dropDownMenu={dropDown}
-                                CostingViewMode={props.CostingViewMode}
-                                calculation={calculateRemainingCalculation}
-                                weightValue={Number(getValues('castingWeight'))}
-                                netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
-                                sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
-                                tableValue={tableData}
-                                isLossStandard={false}
-                                isPlastic={false}
-                                isNonFerrous={false}
-                                ferrousErrors={errors}
-                                isFerrous={true}
-                            />
-                            <Row className={'mt25 mx-0'}>
-                                <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} id={'gross-weight-ferrous'} tooltipText={'Gross Weight = (Casting Weight + Net Loss Weight)'} />
-                                    <TextFieldHookForm
-                                        label={`Gross Weight(Kg)`}
-                                        id={'gross-weight-ferrous'}
-                                        name={'grossWeight'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.grossWeight}
-                                        disabled={true}
-                                    />
-                                </Col >
-                                <Col md="3" >
-                                    <TextFieldHookForm
-                                        label={`Finished Weight(Kg)`}
-                                        name={'finishedWeight'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
-                                            max: {
-                                                value: getValues("castingWeight"),
-                                                message: 'Finish weight should not be greater than casting weight.'
-                                            },
-                                        }}
-                                        handleChange={(e) => { handleFinishedWeight(e?.target?.value) }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.finishedWeight}
-                                        disabled={props.isEditFlag ? false : true}
-                                    />
-                                </Col >
+                            <Table className="table cr-brdr-main ferrous-table" size="sm">
+                                <thead>
+                                    <tr>
+                                        <th className='rm-name-head'>{`RM Name`}</th>
+                                        <th>{`Quantity (in Kg)`}</th>
+                                        <th>{`Basic Rate`}</th>
+                                        <th style={{ width: "190px" }}>{`Cost`}</th>
+                                    </tr>
+                                </thead>
+                                <tbody className='rm-table-body'>
+                                    {rmData &&
+                                        rmData.map((item, index) => {
 
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-ferrous'} tooltipText={'Scrap Weight = (Casting Weight - Finished Weight)'} />
-                                    <TextFieldHookForm
-                                        label={`Scrap Weight(Kg)`}
-                                        name={'scrapWeight'}
-                                        id={'scrap-weight-ferrous'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={WeightCalculatorRequest &&
-                                            WeightCalculatorRequest.ScrapWeight !== undefined
-                                            ? WeightCalculatorRequest.ScrapWeight
-                                            : ''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.scrapWeight}
-                                        disabled={true}
-                                    />
-                                </Col >
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Recovery (%)`}
-                                        name={'recovery'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                            max: {
-                                                value: 100,
-                                                message: 'Percentage cannot be greater than 100'
-                                            },
-                                        }}
-                                        handleChange={() => { }}
+                                            return (
+                                                <tr key={index} className=''>
+                                                    <td className='rm-part-name'><span title={item.RMName}>{item.RMName}</span></td>
+                                                    <td>{item.RMRate}</td>
+                                                    <td>{item.ScrapRate}</td>
+                                                    <td>
+                                                        1
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
+                                    <tr>
+                                        <td colSpan={2}></td>
+                                        <td><strong>Total Cost</strong></td>
+                                        <td><strong>1107.2</strong></td>
+                                    </tr>
+                                </tbody>
+                            </Table>
+                        </div>
+                        <LossStandardTable
+                            dropDownMenu={dropDown}
+                            CostingViewMode={props.CostingViewMode}
+                            calculation={calculateRemainingCalculation}
+                            weightValue={Number(getValues('castingWeight'))}
+                            netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
+                            sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
+                            tableValue={tableData}
+                            isLossStandard={false}
+                            isPlastic={false}
+                            isNonFerrous={false}
+                            ferrousErrors={errors}
+                            isFerrous={true}
+                        />
 
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.recovery}
-                                        disabled={props.isEditFlag ? false : true}
-                                    />
-                                </Col>
+                        <Row className={'mt25 mx-0'}>
+                            <Col md="3" >
+                                <TooltipCustom disabledIcon={true} id={'gross-weight-ferrous'} tooltipText={'Gross Weight = (Casting Weight + Net Loss Weight)'} />
+                                <TextFieldHookForm
+                                    label={`Gross Weight(Kg)`}
+                                    id={'gross-weight-ferrous'}
+                                    name={'grossWeight'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.grossWeight}
+                                    disabled={true}
+                                />
+                            </Col>
+                            <Col md="3" >
+                                <TextFieldHookForm
+                                    label={`Finished Weight(Kg)`}
+                                    name={'finishedWeight'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    rules={{
+                                        required: true,
+                                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                        max: {
+                                            value: getValues("castingWeight"),
+                                            message: 'Finish weight should not be greater than casting weight.'
+                                        },
+                                    }}
+                                    handleChange={(e) => { handleFinishedWeight(e?.target?.value) }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.finishedWeight}
+                                    disabled={props.isEditFlag ? false : true}
+                                />
+                            </Col>
+
+                            <Col md="3">
+                                <TooltipCustom disabledIcon={true} id={'scrap-weight-ferrous'} tooltipText={'Scrap Weight = (Casting Weight - Finished Weight)'} />
+                                <TextFieldHookForm
+                                    label={`Scrap Weight(Kg)`}
+                                    name={'scrapWeight'}
+                                    id={'scrap-weight-ferrous'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={WeightCalculatorRequest &&
+                                        WeightCalculatorRequest.ScrapWeight !== undefined
+                                        ? WeightCalculatorRequest.ScrapWeight
+                                        : ''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.scrapWeight}
+                                    disabled={true}
+                                />
+                            </Col>
+                            <Col md="3">
+                                <TextFieldHookForm
+                                    label={`Recovery (%)`}
+                                    name={'recovery'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                        required: false,
+                                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                        max: {
+                                            value: 100,
+                                            message: 'Percentage cannot be greater than 100'
+                                        },
+                                    }}
+                                    handleChange={() => { }}
+
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.recovery}
+                                    disabled={props.isEditFlag ? false : true}
+                                />
+                            </Col>
 
 
-                                <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-ferrous'} tooltipText={'Scrap Cost = (Scrap Weight * Scrap Recovery Percentage * Scrap Rate / 100)'} />
-                                    <TextFieldHookForm
-                                        label={`Scrap Cost`}
-                                        name={'scrapCost'}
-                                        id={'scrap-cost-ferrous'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={
-                                            WeightCalculatorRequest.ScrapCost ?? WeightCalculatorRequest.ScrapCost}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.scrapCost}
-                                        disabled={true}
-                                    />
-                                </Col >
+                            <Col md="3">
+                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-ferrous'} tooltipText={'Scrap Cost = (Scrap Weight * Scrap Recovery Percentage * Scrap Rate / 100)'} />
+                                <TextFieldHookForm
+                                    label={`Scrap Cost`}
+                                    name={'scrapCost'}
+                                    id={'scrap-cost-ferrous'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={
+                                        WeightCalculatorRequest.ScrapCost ?? WeightCalculatorRequest.ScrapCost}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.scrapCost}
+                                    disabled={true}
+                                />
+                            </Col>
 
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = (Gross Weight * RM Rate - Scrap Cost)'} />
-                                    <TextFieldHookForm
-                                        // Confirm this name from tanmay sir
-                                        label={`Net RM Cost`}
-                                        name={'NetRMCost'}
-                                        id={'net-rm-ferrous'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={
-                                            WeightCalculatorRequest.NetRMCost ?? WeightCalculatorRequest.NetRMCost}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NetRMCost}
-                                        disabled={true}
-                                    />
-                                </Col >
-                            </Row >
+                            <Col md="3">
+                                <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = (Gross Weight * RM Rate - Scrap Cost)'} />
+                                <TextFieldHookForm
+                                    // Confirm this name from tanmay sir
+                                    label={`Net RM Cost`}
+                                    name={'NetRMCost'}
+                                    id={'net-rm-ferrous'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={
+                                        WeightCalculatorRequest.NetRMCost ?? WeightCalculatorRequest.NetRMCost}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.NetRMCost}
+                                    disabled={true}
+                                />
+                            </Col>
+                        </Row>
 
-                        </div >
-                    </Col >
+
+                    </Col>
                     <div className=" col-md-12 text-right">
                         <button
                             onClick={onCancel} // Need to change this cancel functionality
@@ -551,7 +721,7 @@ function Ferrous(props) {
                     </div>
                 </form >
 
-            </Row >
+            </Row>
         </Fragment >
     );
 }
