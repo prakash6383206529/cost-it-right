@@ -14,7 +14,7 @@ import NoContentFound from '../../common/NoContentFound'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Button from '../../layout/Button'
 import AddOtherCostDrawer from './AddOtherCostDrawer'
-import { setSeconds } from 'date-fns'
+import { isLastDayOfMonth, setSeconds } from 'date-fns'
 
 const gridOptions = {};
 function AddIndexationMaterialListing(props) {
@@ -40,7 +40,8 @@ function AddIndexationMaterialListing(props) {
         rowIndex: 0,
         reRender: false,
         totalBasicRate: 0,
-        commodityDetailsState: []
+        commodityDetailsState: [],
+        isLoader: false
     })
 
     useEffect(() => {
@@ -53,7 +54,7 @@ function AddIndexationMaterialListing(props) {
         console.log('totalRate: ', totalRate);
         setState(prevState => ({ ...prevState, totalBasicRate: totalRate }))
         props.setTotalBasicRate(totalRate)
-    }, [state.commodityDetailsState]);
+    }, [state.isLoader, state.commodityDetailsState]);
 
     useEffect(() => {
         setState(prevState => ({ ...prevState, commodityDetailsState: props.commodityDetails }))
@@ -97,6 +98,7 @@ function AddIndexationMaterialListing(props) {
     }
 
     const closeOtherCostToggle = (type, data, totalCostCurrency, totalCostBase, rowIndex) => {
+        // setState(prevState => ({ ...prevState, isLoader: true }));
         if (data.length >= 1) {
             let tempArray = state.commodityDetailsState;
             let tempData = tempArray[rowIndex];
@@ -109,7 +111,11 @@ function AddIndexationMaterialListing(props) {
             };
             tempArray[rowIndex] = tempData;
 
-            setState(prevState => ({ ...prevState, commodityDetailsState: tempArray }));
+            setState(prevState => ({ ...prevState, commodityDetailsState: tempArray, isLoader: true }));
+
+            setTimeout(() => {
+                setState(prevState => ({ ...prevState, isLoader: false }));
+            }, 500);
         }
 
         setState(prevState => ({ ...prevState, isOpenOtherCost: false, reRender: !prevState.reRender }));
@@ -165,47 +171,51 @@ function AddIndexationMaterialListing(props) {
                 <div className="container-fluid">
                     <div className="login-container signup-form">
                         <div className="row">
+                            {console.log('state.isLoader: ', state.isLoader)}
                             {<div className="col-md-12">
                                 {props.isOpen && (
                                     <Row>
                                         <Col md="12">
                                             <div className={`ag-grid-wrapper budgeting-table  ${state.commodityDetailsState && state.commodityDetailsState?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                                                 <div className="ag-theme-material" >
-                                                    <AgGridReact
-                                                        style={{ height: '100%', width: '100%' }}
-                                                        defaultColDef={defaultColDef}
-                                                        domLayout='autoHeight'
-                                                        // columnDefs={c}
-                                                        rowData={state.commodityDetailsState}
-                                                        // onCellValueChanged={onCellValueChanged}
-                                                        pagination={true}
-                                                        paginationPageSize={12}
-                                                        onGridReady={onGridReady}
-                                                        gridOptions={gridOptions}
-                                                        loadingOverlayComponent={'customLoadingOverlay'}
-                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                        noRowsOverlayComponentParams={{
-                                                            title: EMPTY_DATA,
-                                                        }}
-                                                        frameworkComponents={frameworkComponents}
-                                                        suppressColumnVirtualisation={true}
-                                                        stopEditingWhenCellsLoseFocus={true}
-                                                    >
-                                                        <AgGridColumn width={115} field="CommodityStandardName" headerName="Commodity Name" editable={false}></AgGridColumn>
-                                                        <AgGridColumn width={115} field="Percentage" headerName="Percentage" editable={false}></AgGridColumn>
-                                                        <AgGridColumn width={115} field="ExchangeRate" headerName="Exchange Rate" editable={false}></AgGridColumn>
-                                                        <AgGridColumn width={115} field="BasicRateIndexCurrency" headerName="Basic Rate (Index Currency)" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={115} field="BasicRateBaseCurrency" headerName={`Basic Rate (${reactLocalStorage.getObject('baseCurrency')})`} editable={false} cellRenderer='priceFormatter'></AgGridColumn>
-                                                        {/* <AgGridColumn width={115} field="ProcessingCost" headerName="Premium Charges" cellRenderer='commonFormatter'></AgGridColumn>
+                                                    {state.isLoader ? (<LoaderCustom customClass="simulation-Loader" />) : (
+                                                        <>
+                                                            <AgGridReact
+                                                                style={{ height: '100%', width: '100%' }}
+                                                                defaultColDef={defaultColDef}
+                                                                domLayout='autoHeight'
+                                                                // columnDefs={c}
+                                                                rowData={state.commodityDetailsState}
+                                                                // onCellValueChanged={onCellValueChanged}
+                                                                pagination={true}
+                                                                paginationPageSize={12}
+                                                                onGridReady={onGridReady}
+                                                                gridOptions={gridOptions}
+                                                                loadingOverlayComponent={'customLoadingOverlay'}
+                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                noRowsOverlayComponentParams={{
+                                                                    title: EMPTY_DATA,
+                                                                }}
+                                                                frameworkComponents={frameworkComponents}
+                                                                suppressColumnVirtualisation={true}
+                                                                stopEditingWhenCellsLoseFocus={true}
+                                                            >
+                                                                <AgGridColumn width={115} field="CommodityStandardName" headerName="Commodity Name" editable={false}></AgGridColumn>
+                                                                <AgGridColumn width={115} field="Percentage" headerName="Percentage" editable={false}></AgGridColumn>
+                                                                <AgGridColumn width={115} field="ExchangeRate" headerName="Exchange Rate" editable={false}></AgGridColumn>
+                                                                <AgGridColumn width={115} field="BasicRateIndexCurrency" headerName="Basic Rate (Index Currency)" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={115} field="BasicRateBaseCurrency" headerName={`Basic Rate (${reactLocalStorage.getObject('baseCurrency')})`} editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                                {/* <AgGridColumn width={115} field="ProcessingCost" headerName="Premium Charges" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="ProcessingCost" headerName="Processing Cost" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="ImportFreight" headerName="Import Freight" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="OtherCost" headerName="Other Cost" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="CustomDuty" headerName="Custom Duty" cellRenderer='commonFormatter'></AgGridColumn>
                                                         <AgGridColumn width={115} field="ShippingLineChanges" headerName="Shipping Line Charges" cellRenderer='commonFormatter'></AgGridColumn>
                                                       */}
-                                                        <AgGridColumn width={115} field="BasicRateIndexCurrency" headerName="Total Cost (Currency)" cellRenderer='totalCostCurrencyFormatter' editable={false} ></AgGridColumn>
-                                                        <AgGridColumn width={115} field="BasicRateBaseCurrency" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')})`} cellRenderer='buttonFormatter' editable={false} ></AgGridColumn>
-                                                    </AgGridReact>
+                                                                <AgGridColumn width={115} field="BasicRateIndexCurrency" headerName="Total Cost (Currency)" cellRenderer='totalCostCurrencyFormatter' editable={false} ></AgGridColumn>
+                                                                <AgGridColumn width={115} field="BasicRateBaseCurrency" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')})`} cellRenderer='buttonFormatter' editable={false} ></AgGridColumn>
+                                                            </AgGridReact>
+                                                        </>)}
                                                 </div>
                                             </div>
                                         </Col >
