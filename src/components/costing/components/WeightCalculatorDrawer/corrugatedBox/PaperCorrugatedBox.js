@@ -114,7 +114,7 @@ function PaperCorrugatedBox(props) {
                 RMCost: WeightCalculatorRequest.RMCost
             }));
         }
-        setValueCalculatorForm('NosOfPly', props.rmData.length)
+        setValueCalculatorForm('NosOfPly', props?.rmData?.length)
     }, [])
     useEffect(() => {
         calculateGSM()
