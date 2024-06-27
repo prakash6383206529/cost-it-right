@@ -516,7 +516,6 @@ function Ferrous(props) {
                             </Col>
                         </Row>
                         <div className="costing-border ferrous-calculator border-top-0 border-bottom-0">
-
                             <Table className="table cr-brdr-main ferrous-table" size="sm">
                                 <thead>
                                     <tr>
@@ -533,7 +532,29 @@ function Ferrous(props) {
                                             return (
                                                 <tr key={index} className=''>
                                                     <td className='rm-part-name'><span title={item.RMName}>{item.RMName}</span></td>
-                                                    <td>{item.RMRate}</td>
+                                                    <td>
+                                                        <TextFieldHookForm
+                                                            label=""
+                                                            name={`${rmGridFields}.${index}.Percentage`}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{
+                                                                required: true,
+                                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                                                max: {
+                                                                    value: 100,
+                                                                    message: 'Percentage should be less than 100'
+                                                                },
+                                                            }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder'}
+                                                            handleChange={(e) => { percentageChange(e) }}
+                                                            errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].Percentage : ''}
+                                                            disabled={props.isEditFlag ? false : true}
+                                                        />
+                                                    </td>
                                                     <td>{item.ScrapRate}</td>
                                                     <td>1</td>
                                                 </tr>
