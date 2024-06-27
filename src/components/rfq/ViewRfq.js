@@ -866,7 +866,7 @@ function RfqListing(props) {
         setSelectedCostingList([])
         dispatch(getMultipleCostingDetails(costingIdList, (res) => {
             if (res) {
-                res.map((item) => {
+                res?.map((item) => {
                     tempObj = formViewData(item?.data?.Data)
                     temp.push(tempObj[0])
                     return null

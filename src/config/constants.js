@@ -28,8 +28,8 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;  //
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-// const BASE_URL = `http://10.10.8.120:81/api/v1`;
-// const BASE_URL = `http://10.10.8.109:8070/api/v1`;
+// const BASE_URL = `http://10.10.8.120:81/api/v1`; 
+// const BASE_URL = `http://10.10.8.109:8070/api/v1`; rrr
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`;
 //FILE URL
 //http://10.10.8.120:1005/
@@ -1115,6 +1115,7 @@ export const API = {
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
   getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
+  getSpecificationDetailTco : `${BASE_URL}/rfq-quotation/get-costing-part-specification`,
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -1982,6 +1983,7 @@ export const GET_TARGET_PRICE = 'GET_TARGET_PRICE'
 export const GET_ASSEMBLY_CHILD_PART = "GET_ASSEMBLY_CHILD_PART"
 export const GET_RFQ_PART_DETAILS = "GET_RFQ_PART_DETAILS"
 export const GET_RFQ_RAISE_NUMBER = "GET_RFQ_RAISE_NUMBER"
+export const PARTSPECIFICATIONRFQDATA = 'PARTSPECIFICATIONRFQDATA'
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
@@ -2896,6 +2898,7 @@ export const BUDGETBULKUPLOAD = 'Budget'
 export const OVERHEADBULKUPLOAD = 'Overhead'
 export const PROFITBULKUPLOAD = 'Profit'
 
+
 //STATUS FILTER DROPDOWN OPTIONS
 export const statusOptionsMasters = _.sortBy([
   { label: "Rejected", value: "4" },
@@ -3117,7 +3120,7 @@ export const PartTypeIDFromAPI = 2
 export const RMIndex = true
 export const showLogoFromDataBase = false
 
-export const showDynamicKeys = true
+export const showDynamicKeys = false
 
 //VERSION 
 export const VERSION = "V2.2.22.5";

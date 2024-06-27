@@ -45,7 +45,7 @@ const gridOptionsVendor = {}
 
 function AddRfq(props) {
     const permissions = useContext(ApplyPermission);
-    console.log('permissions: ', permissions);
+    
     const Vendor = permissions.permissionDataVendor
     const Part = permissions.permissionDataPart
     const dispatch = useDispatch()

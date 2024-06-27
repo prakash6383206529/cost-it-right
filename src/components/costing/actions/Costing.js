@@ -68,12 +68,13 @@ import {
   SET_PAYMENT_TERM_COST,
   CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
+  PARTSPECIFICATIONRFQDATA,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
 import { reactLocalStorage } from 'reactjs-localstorage'
-
+import specification from '../components/CostingHeadCosts/AdditionalOtherCost/specification.json'
 // let config() = config
 
 /**
@@ -2975,3 +2976,33 @@ export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
     payload: temp,
   })
 }
+
+export const getSpecificationDetailTco = () => {
+  return (dispatch) => {
+    dispatch({
+      type: PARTSPECIFICATIONRFQDATA,
+      payload:specification.Data.PartList // Dispatch mock or predefined data
+    });
+  };
+};
+
+// export function getSpecificationDetailTco(quotationId,baseCostingId, callback) {
+//   return (dispatch) => {
+//       const request = axios.get(`${API.getSpecificationDetailTco}?baseCostingId=${baseCostingId}&quotationPartId=${quotationId}`, config());
+//       request.then((response) => {
+//           if (response.data.Result || response.status === 204) {
+
+//               dispatch({
+//                   type: PARTSPECIFICATIONRFQDATA,
+//                   payload: response.status === 204 ? [] : response?.data?.Data
+//               })
+
+//               callback(response);
+//           }
+//       }).catch((error) => {
+
+//           dispatch({ type: API_FAILURE });
+//           apiErrors(error);
+//       });
+//   };
+// }
