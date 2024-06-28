@@ -761,7 +761,7 @@ function AddRfq(props) {
             return false
         }
         const IsPartDetailsSent = isPartDetailSent && partList && partList.length > 0
-        const isSent = partList && vendorList && partList.length > 0 && vendorList.length > 0 ? true : false
+        const isSent = isPartDetailSent && (partList && vendorList && partList.length > 0 && vendorList.length > 0) ? true : false
 
 
 
@@ -1360,9 +1360,9 @@ function AddRfq(props) {
                         temppartObj.TargetPrice = getTargetprice?.TargetPrice || 0
                         temppartObj.TimeLine = requirementDate || "";
                         temppartObj.Remarks = remark || null
-                        temppartObj.PartAttachments = childPartFiles || []
+                        temppartObj.Attachments = childPartFiles || []
                         temppartObj.HavellsDesignPart = getValues('HavellsDesignPart')?.label || ''
-                        temppartObj.UnitOfUnitOfMeasurementIdRef = getValues('UOM')?.value || ''
+                        temppartObj.UnitOfMeasurementId = getValues('UOM')?.value || ''
                         temppartObj.ExistingVendor = vendorList.join(',') || '';
                         temppartObj.Description = getValues('Description') || null
                         temppartObj.SopDate = sopdate || null
@@ -1427,11 +1427,11 @@ function AddRfq(props) {
                                         childPartObj.HavellsDesignPart = null
                                         childPartObj.TargetPrice = null
                                         childPartObj.TimeLine = null
-                                        childPartObj.UnitOfUnitOfMeasurementIdRef = null
+                                        childPartObj.UnitOfMeasurementId = null
                                         childPartObj.SopDate = null
                                         childPartObj.Remarks = null
                                         childPartObj.Description = null
-                                        childPartObj.PartAttachments = []
+                                        childPartObj.Attachments = []
                                         temppartArr.push(childPartObj);
                                     }
                                     return null;
@@ -1454,7 +1454,7 @@ function AddRfq(props) {
                             updatedPartList = [...storePartsDetail];
                             updatedPartList[0] = {
                                 ...updatedPartList[0], // Preserve existing properties
-                                UnitOfUnitOfMeasurementIdRef: getValues('UOM')?.value || '',
+                                UnitOfMeasurementId: getValues('UOM')?.value || '',
                                 HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
                                 TimeLine: requirementDate || ''
                             };
@@ -1735,14 +1735,14 @@ function AddRfq(props) {
                     if (item.PartId === getValues('partNumber')?.value) {
                         return {
                             ...item,
-                            UnitOfUnitOfMeasurementIdRef: getValues('UnitOfMeasurementIdRef')?.value || null,
+                            UnitOfMeasurementId: getValues('UOM')?.value || null,
                             HavellsDesignPart: newValue?.label || "",
                             TimeLine: requirementDate || ""
                         };
                     } else {
                         return {
                             ...item,
-                            UnitOfUnitOfMeasurementIdRef: null,
+                            UnitOfMeasurementId: null,
                             HavellsDesignPart: null,
                             TimeLine: null
                         };
@@ -1899,14 +1899,14 @@ function AddRfq(props) {
                     if (item.PartId === getValues('partNumber')?.value) {
                         return {
                             ...item,
-                            UnitOfUnitOfMeasurementIdRef: getValues('UnitOfMeasurementIdRef')?.value || null,
+                            UnitOfMeasurementId: getValues('UOM')?.value || null,
                             HavellsDesignPart: getValues('HavellsDesignPart')?.value || null,
                             TimeLine: DayTime(value).format('YYYY-MM-DD HH:mm:ss') || null
                         };
                     } else {
                         return {
                             ...item,
-                            UnitOfUnitOfMeasurementIdRef: null,
+                            UnitOfMeasurementId: null,
                             HavellsDesignPart: null,
                             TimeLine: null
                         };
@@ -1982,14 +1982,14 @@ function AddRfq(props) {
                     if (item.PartId === getValues('partNumber')?.value) {
                         return {
                             ...item,
-                            UnitOfUnitOfMeasurementIdRef: newValue?.value || null,
+                            UnitOfMeasurementId: newValue?.value || null,
                             HavellsDesignPart: getValues('HavellsDesignPart')?.value || null,
                             TimeLine: requirementDate || ""
                         };
                     } else {
                         return {
                             ...item,
-                            UnitOfUnitOfMeasurementIdRef: null,
+                            UnitOfMeasurementId: null,
                             HavellsDesignPart: null,
                             TimeLine: null
                         };
