@@ -143,7 +143,7 @@ function ViewDrawer(props) {
                     setRemark(remarks);
 
                     const allFiles = part.Attachments || [];
-                    setFiles(files => [...files, ...allFiles]);
+                    setFiles(files => [...allFiles]);
                     setChildPartFiles(childPartFiles => [...childPartFiles, ...allFiles]);
                 });
                 setSpecificationList(specificationList => _.uniqBy([...arr], 'QuotationPartSpecificationIdRef'));
@@ -512,9 +512,9 @@ function ViewDrawer(props) {
     }
 
     const deleteFile = (FileId, OriginalFileName) => {
-        if (dataProps?.isAddFlag ? false : dataProps?.isViewFlag || !isEditAll) {
-            return false
-        }
+        // if (dataProps?.isAddFlag ? false : dataProps?.isViewFlag || !isEditAll) {
+        //     return false
+        // }
         if (FileId != null) {
             let tempArr = files.filter((item) => item.FileId !== FileId)
             setFiles(tempArr);
@@ -581,7 +581,7 @@ function ViewDrawer(props) {
         }
 
         if (status === 'rejected_file_type') {
-            Toaster.warning('Allowed only xls, doc, jpeg, pdf files.');
+            Toaster.warning('Allowed only xls, doc, jpeg, pdf, zip files.');
         } else if (status === 'error_file_size') {
             setAttachmentLoader(false);
             dropzone.current.files.pop();
@@ -941,11 +941,10 @@ function ViewDrawer(props) {
                                             ref={dropzone}
                                             onChangeStatus={handleChangeStatus}
                                             PreviewComponent={Preview}
-                                            //onSubmit={this.handleSubmit}
-                                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx,.zip"
                                             initialFiles={[]}
                                             maxFiles={4}
-                                            maxSizeBytes={2000000}
+                                            maxSizeBytes={20000000}  // 20 MB in bytes
                                             inputContent={(files, extra) =>
                                                 extra.reject ? (
                                                     "Image, audio and video files only"
@@ -974,7 +973,7 @@ function ViewDrawer(props) {
                                         />
                                     </div>
                                 </Col>
-                                <Col md="6" className=' p-relative'>
+                                <Col md="6" className='p-relative'>
                                     <div className={"attachment-wrapper"}>
                                         {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                                         {files &&
@@ -991,7 +990,7 @@ function ViewDrawer(props) {
                                                             <img
                                                                 alt={""}
                                                                 className="float-right"
-                                                                onClick={() => deleteFile(f, f.FileName)}
+                                                                onClick={() => deleteFile(f.FileId, f.FileName)}
                                                                 src={redcrossImg}
                                                             ></img>
                                                         }
@@ -1000,7 +999,6 @@ function ViewDrawer(props) {
                                             })}
                                     </div>
                                 </Col>
-
                             </TabPane>)}
                         </TabContent>
                         {Number(activeTab) !== 3 && (
