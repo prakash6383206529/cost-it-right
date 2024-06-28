@@ -9132,3 +9132,17 @@ iframe {
     border: 1px solid $borderColor !important;
   }
 }
+
+.show-multi-dropdown-data {
+  text-align: left !important;
+
+  .tooltip-inner {
+    text-align: left !important;
+  }
+}
+
+#RawMaterial {
+  &.tooltip_custom_right {
+    display: none;
+  }
+}

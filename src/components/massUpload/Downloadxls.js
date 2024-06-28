@@ -20,7 +20,7 @@ import {
     IndexCommodityListing, IndexCommodityListingTempData, CommodityInIndexListing, CommodityInIndexListingTempData,
     StandardizedCommodityNameTempData, StandardizedCommodityNameListing,
     CommodityStandardTempData,
-    CommodityStandard,
+    // CommodityStandard,
     IndexDataListingTempData,
     IndexDataListing
 } from '../../config/masterData';
@@ -176,8 +176,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(CommodityInIndexListing, CommodityInIndexListingTempData);
             case 'Commodity Standardization':
                 return this.returnExcelColumn(StandardizedCommodityNameListing, StandardizedCommodityNameTempData);
-            case 'Commodity Standard':
-                return this.returnExcelColumn(CommodityStandard, CommodityStandardTempData);
+            // case 'Commodity Standard':
+            //     return this.returnExcelColumn(CommodityStandard, CommodityStandardTempData);
             case 'Fuel':
                 return this.returnExcelColumn(Fuel, FuelTempData);
             case 'Profit':

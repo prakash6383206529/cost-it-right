@@ -94,8 +94,8 @@ function ViewPackagingAndFreight(props) {
             <tbody>
               <tr className='thead'>
                 <th>{`Freight Type`}</th>
-                <th>{`Criteria`}</th>
-                <th>{`Rate`}</th>
+                <th>{`Criteria/Applicability`}</th>
+                <th>{`Rate/Percentage`}</th>
                 <th>{`Quantity`}</th>
                 <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
                 {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}

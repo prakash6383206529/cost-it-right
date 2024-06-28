@@ -20,11 +20,9 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.8.109:8070/api/v1`
   // const BASE_URL = `http://10.10.11.81:8080/api/v1`;
-//const BASE_URL = `http://10.10.8.109:8070/api/v1`
 // const BASE_URL = `http://10.10.8.109:8070/api/v1`
-// const BASE_URL = `http://10.10.1.100:10152/api/v1`
+//const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
 // const BASE_URL = `http://10.10.8.160/api/v1`;  //
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
@@ -616,6 +614,8 @@ export const API = {
   saveRawMaterialCalculationForPlastic: `${BASE_URL}/costing/save-raw-material-plastic-calculation-details`,
   getRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/get-raw-material-corrugated-box-calculation-details`,
   saveRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/save-raw-material-corrugated-box-calculation-details`,
+  saveRawMaterialCalculationForMonoCartonCorrugatedBox: `${BASE_URL}/costing/save-raw-material-corrugated-and-mono-carton-box-calculation-details`,
+  getRawMaterialCalculationForMonoCartonCorrugatedBox: `${BASE_URL}/costing/get-raw-material-corrugated-and-mono-carton-box-calculation-details`,
   getRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/get-raw-material-die-casting-calculation-details`,
   saveRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/save-raw-material-die-casting-calculation-details`,
   getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
@@ -1117,6 +1117,9 @@ export const API = {
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
   getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
   getSpecificationDetailTco : `${BASE_URL}/rfq-quotation/get-costing-specification`,
+  deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
+  // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
+
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -1170,7 +1173,7 @@ export const API = {
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
   getAssemblyChildpart: `${BASE_URL}/rfq-quotation/get-assembly-child-part`,
-  getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
+  getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-quotation-part-detail`,
 
   //vendor management
   getVendorClassificationList: `${BASE_URL}/vendor/get-classifications-status`,
@@ -1771,7 +1774,6 @@ export const AUTH_API_REQUEST = 'AUTH_API_REQUEST'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS'
 export const LOGIN_PAGE_INIT_CONFIGURATION = 'LOGIN_PAGE_INIT_CONFIGURATION'
-export const GET_QUOTATION_ID_FOR_RFQ  = 'GET_QUOTATION_ID_FOR_RFQ'
 //USER
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS'
 export const GET_USER_DATA_SUCCESS = 'GET_USER_DATA_SUCCESS'
@@ -1986,6 +1988,8 @@ export const GET_ASSEMBLY_CHILD_PART = "GET_ASSEMBLY_CHILD_PART"
 export const GET_RFQ_PART_DETAILS = "GET_RFQ_PART_DETAILS"
 export const GET_RFQ_RAISE_NUMBER = "GET_RFQ_RAISE_NUMBER"
 export const PARTSPECIFICATIONRFQDATA = 'PARTSPECIFICATIONRFQDATA'
+export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
+export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
@@ -2016,7 +2020,7 @@ export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
 export const EXTERNAL_REJECT = 'ExternalReject'
 export const PREDRAFT = 'PreDraft'
- export const DRAFTID = 1
+export const DRAFTID = 1
 export const REJECTEDID = 4
 export const ERRORID = 12
 export const PENDING_FOR_APPROVAL_ID = 2
@@ -2703,6 +2707,7 @@ export const Fixed = 1;
 export const Percentage = 2;
 export const FullTruckLoad = 3;
 export const PartTruckLoad = 4;
+export const Per_Kg_Load = 5;
 export const INR = "INR"
 export const G = "Gram"
 export const MG = "Milligram"
@@ -3122,11 +3127,13 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const PartTypeIDFromAPI = 2
 export const RMIndex = true
 export const showLogoFromDataBase = false
+export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
+export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V2.2.22.5";
+export const VERSION = "V2.2.24";
 
 
 

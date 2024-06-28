@@ -4070,7 +4070,7 @@ class AddMoreDetails extends Component {
                         {
                           isLabourOpen && <div className="accordian-content row mx-0 w-100">
 
-                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                            {getConfigurationKey().IsShowCRMHead && <Col md={'2'}>
                               <Field
                                 name="LabourCRMHead"
                                 type="text"
@@ -4085,7 +4085,7 @@ class AddMoreDetails extends Component {
                               />
                             </Col>}
 
-                            <Col md="3" className='p-relative'>
+                            <Col md={getConfigurationKey().IsShowCRMHead ? '2' : '3'} className='p-relative'>
                               <Field
                                 name="LabourTypeIds"
                                 type="text"
@@ -4150,7 +4150,7 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
-                            <Col md="3" className='pt-2'>
+                            <Col md={getConfigurationKey().IsShowCRMHead ? '2' : '3'} className='pt-2'>
                               {this.state.isEditLabourIndex ?
                                 <>
                                   <button
@@ -4216,7 +4216,7 @@ class AddMoreDetails extends Component {
                                     })
                                   }
                                   {this.state.labourGrid?.length === 0 && <tr>
-                                    <td colSpan={"5"}>
+                                    <td colSpan={getConfigurationKey().IsShowCRMHead ? '6' : '5'}>
                                       <NoContentFound title={EMPTY_DATA} />
                                     </td>
                                   </tr>}
@@ -4224,7 +4224,7 @@ class AddMoreDetails extends Component {
                                 {this.state.labourGrid?.length > 0 &&
                                   <tfoot>
                                     <tr className="bluefooter-butn">
-                                      <td colSpan={"3"} className="text-right">{`Total Labour Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}):`}</td>
+                                      <td colSpan={getConfigurationKey().IsShowCRMHead ? '4' : '3'} className="text-right">{`Total Labour Cost/Annum (${reactLocalStorage.getObject("baseCurrency")}):`}</td>
                                       <td colSpan={"2"}>{this.calculateTotalLabourCost()}</td>
                                     </tr>
                                   </tfoot>}

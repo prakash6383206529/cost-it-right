@@ -83,3 +83,17 @@ export function IsSendMailToPrimaryContact() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
   return configurationKey?.IsSendMailToPrimaryContact
 }
+export function corrugatedBoxPermission() {
+  const boxTypeStr = getConfigurationKey().PackagingCalculatorList
+  let boxTypeObject = {};
+  if (boxTypeStr) {
+    let boxTypes = boxTypeStr.split(',').map(item => item.trim());
+    boxTypes.forEach(type => {
+
+      let key = type.split(' ').join('');
+      boxTypeObject[key] = true;
+    });
+    return boxTypeObject;
+  }
+  return boxTypeObject
+}

@@ -732,7 +732,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.pCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProcessCost ? dataFromAPI?.CostingPartDetails?.NetProcessCost : 0
   obj.oCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
   obj.sTreatment = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost ? dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost : 0
-  obj.nsTreamnt = dataFromAPI && dataFromAPI.NetSurfaceTreatmentCost !== undefined ? dataFromAPI.NetSurfaceTreatmentCost : 0
+  obj.nsTreamnt = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost !== undefined ? dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost : 0
   obj.tCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetTransportationCost ? dataFromAPI?.CostingPartDetails?.NetTransportationCost : 0
   obj.nConvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetConversionCost ? dataFromAPI?.CostingPartDetails?.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
@@ -995,6 +995,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied
   obj.OtherCostDetailsOverhead = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'OverHead')
   obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
+  obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
   temp.push(obj)
   return temp
 }

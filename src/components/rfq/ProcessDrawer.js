@@ -42,7 +42,7 @@ function ViewDrawer(props) {
     ]
 
     const { type, isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, setPartListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate } = props
-    console.log('effectiveMinDate: ', effectiveMinDate);
+
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -104,27 +104,27 @@ function ViewDrawer(props) {
             if (partList.length > 0) {
                 let arr = []
                 partList.forEach((part, index) => {
-                    console.log('part: ', part);
+
 
 
                     const PartId = part.PartId || '';
                     const PartNumber = part.PartNumber || '';
                     if (index === 0) {
                         const allSopQuantityDetails = part?.SOPQuantityDetails || []
-                        console.log('allSopQuantityDetails: ', allSopQuantityDetails);
+
 
                         const uniqueSopQuantityDetails = _.uniqBy(allSopQuantityDetails, item => `${item.PartId}-${item.PartNumber}`);
 
                         setSopQuantityList(sopQuantityList => allSopQuantityDetails)
                     }
-                    console.log('part.PartSpecification: ', part.PartSpecification);
+
                     const allSpecifications = (part.PartSpecification || []).map(detail => ({
                         ...detail,
                         PartId: PartId,
                         PartNumber: PartNumber,
                         uniqueKey: `${PartId}-${detail.Specification}` //QuotationPartSpecificationIdRef
                     }));
-                    console.log('allSpecifications: ', allSpecifications);
+
 
 
                     arr.push(...allSpecifications)
@@ -150,7 +150,7 @@ function ViewDrawer(props) {
             }
         }
     }, [getRfqPartDetails, isViewFlag, isEditFlag]);
-    console.log("specificationList", specificationList);
+
     useEffect(() => {
         // if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
         //     Toaster.warning("Please select part number and SOP date");
@@ -686,7 +686,6 @@ function ViewDrawer(props) {
         return years;
     }
     const handleSOPDateChange = (value) => {
-        console.log('value: ', value);
         let year = new Date(value).getFullYear()
         const yearList = getNextFiveYears(year)
         setIsNewDate(true)
@@ -843,7 +842,6 @@ function ViewDrawer(props) {
                                     <div className="tab-pane fade active show" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                                         <Row>
                                             <Col md="3">
-
                                                 <AsyncSearchableSelectHookForm
                                                     label={"Assembly Part No"}
                                                     name={"AssemblyPartNumber"}
@@ -857,7 +855,6 @@ function ViewDrawer(props) {
                                                     errors={errors.AssemblyPartNumber}
                                                     disabled={true}
                                                 />
-
                                             </Col>
                                             <Col md="3">
                                                 <TextFieldHookForm
@@ -880,7 +877,6 @@ function ViewDrawer(props) {
                                                     errors={errors.Specification}
                                                     disabled={isViewFlag}
                                                 />
-
                                             </Col>
                                             <Col md="3">
                                                 <TextFieldHookForm
@@ -903,7 +899,6 @@ function ViewDrawer(props) {
                                                     errors={errors.Value}
                                                     disabled={isViewFlag}
                                                 />
-
                                             </Col>
                                         </Row>
                                     </div>
@@ -926,7 +921,6 @@ function ViewDrawer(props) {
                                             register={register}
                                             //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
                                             // options={renderListing("DestinationPlant")}
-
                                             customClassName={"withBorder"}
                                             handleChange={(e) => { handleRemarkChange(e.target.value) }}
                                             errors={errors.remark}

@@ -164,7 +164,7 @@ function PartCompoment(props) {
         "PartId": item.PartId,                              //ROOT ID
         "CostingNumber": costData.CostingNumber,            //ROOT    
         "PartNumber": item.PartNumber,                      //ROOT
-
+        "CalculatorType": item.CalculatorType ?? '',
         // "AssemblyCostingId": item.BOMLevel === LEVEL1 ? costData.CostingId : item.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
         "AssemblyCostingNumber": item.BOMLevel === LEVEL1 ? costData.CostingNumber : item.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
         "AssemblyPartId": item.BOMLevel === LEVEL1 ? item.PartId : item.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID

@@ -16,6 +16,7 @@ import {
     GET_RFQ_PART_DETAILS,
     GET_RFQ_RAISE_NUMBER,
     GET_QUOTATION_DETAILS_LIST,
+    GET_PART_IDENTITY,
     GET_QUOTATION_ID_FOR_RFQ,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
@@ -27,7 +28,7 @@ import Toaster from '../../common/Toaster';
 export function getQuotationList(DepartmentCode, Timezone, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${DepartmentCode}&LoggedInUserId=${loggedInUserId()}&Timezone=${Timezone}`, config());
+        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${""}&LoggedInUserId=${loggedInUserId()}&Timezone=${Timezone}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -54,6 +55,10 @@ export function createRfqQuotation(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.createRfqQuotation, data, config());
         request.then((response) => {
+            dispatch({
+                type: GET_QUOTATION_ID_FOR_RFQ,
+                payload: response.status === 204 ? "" : response.data.Identity
+            })
             if (response.data.Result) {
                 callback(response);
             }
@@ -479,6 +484,14 @@ export function setVendorDetails(data) {
         });
     }
 };
+export function setRfqPartDetails(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_RFQ_PART_DETAILS,
+            payload: data || {},
+        });
+    }
+};
 export function getAssemblyChildpart(partId, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getAssemblyChildpart}?partId=${partId}`, config());
@@ -526,9 +539,14 @@ export function saveRfqPartDetails(data, callback) {
         request.then((response) => {
 
             if (response.data.Result) {
+                dispatch({
+                    type: GET_PART_IDENTITY,
+                    payload: response.status === 204 ? [] : response?.data?.Identity
+                })
                 callback(response);
             }
         }).catch((error) => {
+
             dispatch({ type: API_FAILURE });
             apiErrors(error);
             callback(error)
@@ -568,14 +586,6 @@ export function setQuotationIdForRfq(data) {
         dispatch({
             type: GET_QUOTATION_ID_FOR_RFQ,
             payload: data || "",
-        });
-    }
-};
-export function setRfqPartDetails(data) {
-    return (dispatch) => {
-        dispatch({
-            type: GET_RFQ_PART_DETAILS,
-            payload: data || {},
         });
     }
 };

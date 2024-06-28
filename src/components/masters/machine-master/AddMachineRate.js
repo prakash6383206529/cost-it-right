@@ -140,9 +140,11 @@ class AddMachineRate extends Component {
       })
 
       setTimeout(() => {
-        this.setState({
-          processGrid: data?.MachineProcessRates
-        })
+        if (data?.MachineProcessRates) {
+          this.setState({
+            processGrid: data?.MachineProcessRates
+          })
+        }
 
       }, 600);
 
@@ -414,7 +416,7 @@ class AddMachineRate extends Component {
               selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               machineType: Data.MachineType !== undefined ? { label: Data.MachineType, value: Data.MachineTypeId } : [],
-              processGrid: MachineProcessArray,
+              processGrid: MachineProcessArray ?? [],
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
@@ -1343,7 +1345,7 @@ class AddMachineRate extends Component {
         selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
         vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
         machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
-        processGrid: MachineProcessArray,
+        processGrid: MachineProcessArray ?? [],
         remarks: data.Remark,
         files: data.Attachements,
         effectiveDate: data.EffectiveDate
