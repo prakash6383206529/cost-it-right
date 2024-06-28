@@ -1355,7 +1355,7 @@ function AddRfq(props) {
                         temppartObj.TargetPrice = getTargetprice?.TargetPrice || 0
                         temppartObj.TimeLine = requirementDate || "";
                         temppartObj.Remarks = remark || null
-                        temppartObj.PartAttachments = childPartFiles || []
+                        temppartObj.Attachments = childPartFiles || []
                         temppartObj.HavellsDesignPart = getValues('HavellsDesignPart')?.label || ''
                         temppartObj.UnitOfMeasurementId = getValues('UOM')?.value || ''
                         temppartObj.ExistingVendor = vendorList.join(',') || '';
@@ -1426,7 +1426,7 @@ function AddRfq(props) {
                                         childPartObj.SopDate = null
                                         childPartObj.Remarks = null
                                         childPartObj.Description = null
-                                        childPartObj.PartAttachments = []
+                                        childPartObj.Attachments = []
                                         temppartArr.push(childPartObj);
                                     }
                                     return null;
