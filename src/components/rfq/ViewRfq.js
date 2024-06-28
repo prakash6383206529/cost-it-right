@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
@@ -35,6 +35,7 @@ import { useTranslation } from 'react-i18next';
 import { agGridStatus, getGridHeight, isResetClick } from '../../actions/Common';
 import SingleDropdownFloationFilter from '../masters/material-master/SingleDropdownFloationFilter';
 import WarningMessage from '../common/WarningMessage';
+export const QuotationId = React.createContext();
 
 const gridOptions = {};
 
@@ -866,7 +867,7 @@ function RfqListing(props) {
         setSelectedCostingList([])
         dispatch(getMultipleCostingDetails(costingIdList, (res) => {
             if (res) {
-                res.map((item) => {
+                res?.map((item) => {
                     tempObj = formViewData(item?.data?.Data)
                     temp.push(tempObj[0])
                     return null
@@ -1217,10 +1218,10 @@ function RfqListing(props) {
                         closeDrawer={closeDrawer}
                     />
                 }
-
                 {
                     <div id='rfq-compare-drawer'>
                         {addComparisonToggle && (
+                        <QuotationId.Provider value={data?.QuotationId}>
 
                             <CostingSummaryTable
                                 viewMode={true}
@@ -1242,11 +1243,10 @@ function RfqListing(props) {
                                 selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
                                 costingsDifferentStatus={costingsDifferentStatus}
                             />
+                        </QuotationId.Provider>
                         )}
                     </div>
                 }
-
-
                 {remarkHistoryDrawer &&
                     <RemarkHistoryDrawer
                         data={remarkRowData}

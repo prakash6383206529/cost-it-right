@@ -87,6 +87,7 @@ class PermissionsTabIndex extends Component {
         if (isEditFlag === false && isNewRole) {
             this.setState({ isLoader: true });
             this.props.getModuleActionInitNew((res) => {
+                
 
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.DataList;

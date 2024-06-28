@@ -20,14 +20,15 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-//const BASE_URL = `http://10.10.11.81:8080/api/v1`
+  // const BASE_URL = `http://10.10.11.81:8080/api/v1`;
+// const BASE_URL = `http://10.10.8.109:8070/api/v1`
 //const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
 // const BASE_URL = `http://10.10.8.160/api/v1`;  //
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-// const BASE_URL = `http://10.10.8.120:81/api/v1`;
-// const BASE_URL = `http://10.10.8.109:8070/api/v1`;
+// const BASE_URL = `http://10.10.8.120:81/api/v1`; 
+// const BASE_URL = `http://10.10.8.109:8070/api/v1`; rrr
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`;
 //FILE URL
 //http://10.10.8.120:1005/
@@ -1114,8 +1115,11 @@ export const API = {
   getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
+  getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
+  getSpecificationDetailTco : `${BASE_URL}/rfq-quotation/get-costing-specification`,
   deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
   // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
+
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -1770,7 +1774,6 @@ export const AUTH_API_REQUEST = 'AUTH_API_REQUEST'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS'
 export const LOGIN_PAGE_INIT_CONFIGURATION = 'LOGIN_PAGE_INIT_CONFIGURATION'
-
 //USER
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS'
 export const GET_USER_DATA_SUCCESS = 'GET_USER_DATA_SUCCESS'
@@ -1973,6 +1976,7 @@ export const GET_NFR_INSIGHT_STATUS_DETAILS = 'GET_NFR_INSIGHT_STATUS_DETAILS'
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
 export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
+export const GET_QUOTATION_DETAILS_LIST = 'GET_QUOTATION_DETAILS_LIST'
 export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
 export const SELECTED_ROW_ARRAY = 'SELECTED_ROW_ARRAY'
 export const GET_NFR_SELECT_LIST = 'GET_NFR_SELECT_LIST'
@@ -1982,9 +1986,10 @@ export const GET_RFQ_VENDOR_DETAIL = 'GET_RFQ_VENDOR_DETAIL'
 export const GET_TARGET_PRICE = 'GET_TARGET_PRICE'
 export const GET_ASSEMBLY_CHILD_PART = "GET_ASSEMBLY_CHILD_PART"
 export const GET_RFQ_PART_DETAILS = "GET_RFQ_PART_DETAILS"
+export const GET_RFQ_RAISE_NUMBER = "GET_RFQ_RAISE_NUMBER"
+export const PARTSPECIFICATIONRFQDATA = 'PARTSPECIFICATIONRFQDATA'
 export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
 export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
-
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
@@ -2014,7 +2019,7 @@ export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
 export const EXTERNAL_REJECT = 'ExternalReject'
-export const PREDRAFT = 'Pre Draft'
+export const PREDRAFT = 'PreDraft'
 export const DRAFTID = 1
 export const REJECTEDID = 4
 export const ERRORID = 12
@@ -2901,6 +2906,7 @@ export const BUDGETBULKUPLOAD = 'Budget'
 export const OVERHEADBULKUPLOAD = 'Overhead'
 export const PROFITBULKUPLOAD = 'Profit'
 
+
 //STATUS FILTER DROPDOWN OPTIONS
 export const statusOptionsMasters = _.sortBy([
   { label: "Rejected", value: "4" },
@@ -3123,7 +3129,7 @@ export const RMIndex = true
 export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
 
-export const showDynamicKeys = true
+export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 

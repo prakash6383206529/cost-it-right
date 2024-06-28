@@ -5,8 +5,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA, RFQ } from "../../../config/constants";
-import { AUDIT, } from "../../../config/constants";
+import { EMPTY_DATA, RFQ, RFQVendor } from "../../../config/constants";
 import { renderActionCommon } from "../userUtil"
 
 class RFQTab extends Component {
@@ -104,14 +103,14 @@ class RFQTab extends Component {
         let tempArray = [];
 
         let actionRow = (Modules && Modules !== undefined) ? Modules[index].Actions : [];
-        if (isModuleChecked) {
+                if (isModuleChecked) {
             actionArray = actionRow && actionRow.map((item, index) => {
                 item.IsChecked = false;
                 return item;
             })
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
-
+            
             this.setState({ Modules: tempArray })
         } else {
             actionArray = actionRow && actionRow.map((item, index) => {
@@ -120,9 +119,11 @@ class RFQTab extends Component {
             })
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
-
+            
             this.setState({ Modules: tempArray })
         }
+        this.checkIsVendorSelected(index, tempArray)
+
     }
 
     /**
@@ -151,11 +152,11 @@ class RFQTab extends Component {
     
 
     selectAllHandler = (parentIndex, actionRows) => {
-        const { Modules, } = this.state;
+                const { Modules, } = this.state;
         //const { actionSelectList } = this.props;
 
         let checkedActions = actionRows.filter(item => item.IsChecked === true)
-
+        
         let tempArray = [];
         let isCheckedSelectAll = (checkedActions.length === Modules[parentIndex].Actions.length) ? true : false;
 
@@ -174,7 +175,39 @@ class RFQTab extends Component {
             tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
             this.setState({ Modules: tempArray, })
         }
+        this.checkIsVendorSelected(parentIndex, tempArray)
     }
+
+    checkIsVendorSelected = (parentIndex, Module) => {
+        let tempModule = [...Module];
+        let tempArray = [...Module]; // Manipulated array to set in state
+    
+        // Common function to handle action checking based on ModuleName
+        const commonLogic = (ModuleName, value) => {
+            let index = tempModule.findIndex((x) => x.PageName === ModuleName);
+            if (index !== -1) {
+                let actionList = tempModule[index].Actions;
+                let actions = actionList.map((item) => {
+                    // Check only specific actions in RFQ when RFQVendor is checked
+                    if (ModuleName === RFQ && ["View"].includes(item.ActionName)) {
+                        item.IsChecked = value;
+                    } else if (ModuleName !== RFQ) {
+                        item.IsChecked = value;
+                    }
+                    return item;
+                });
+                tempArray = Object.assign([...tempModule], { [index]: Object.assign({}, tempModule[index], { IsChecked: value, Actions: actions }) });
+            }
+        };
+    
+        // Logic for checking/unchecking RFQ actions based on RFQVendor state
+        if (tempModule[parentIndex]?.PageName === RFQVendor && tempModule[parentIndex]?.IsChecked === true) {
+            commonLogic(RFQ, true); // Check specific actions in RFQ
+        }
+    
+        this.setState({ Modules: tempArray });
+    };
+    
 
     /**
     * @method renderAction
@@ -190,7 +223,7 @@ class RFQTab extends Component {
     * @description Used to check/uncheck action's checkbox
     */
     actionCheckHandler = (parentIndex, childIndex) => {
-        const { Modules } = this.state;
+                const { Modules } = this.state;
 
         let actionRow = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
         
@@ -220,7 +253,7 @@ class RFQTab extends Component {
                     secondModuleViewAction.IsChecked = true;
                 }
             }
-        }
+                  }
         return el;
     });
         let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
@@ -231,7 +264,7 @@ class RFQTab extends Component {
             let abcd = checkedActions && checkedActions.length !== 0 ? true : false;
             let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: abcd, Actions: actionArray }) })
             this.setState({ Modules: tempArray1 })
-        })
+                    })
     }
 
   

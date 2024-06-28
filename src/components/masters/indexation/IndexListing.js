@@ -184,7 +184,7 @@ const IndexListing = () => {
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         dispatch(updatePageNumber(1))
-        dispatch(updateCurrentRowIndex(0))
+        dispatch(updateCurrentRowIndex(10))
         gridOptions?.columnApi?.resetColumnState();
         getTableListData(0, globalTakes, true)
     }
@@ -306,6 +306,8 @@ const IndexListing = () => {
             floatingFilterData[prop] = ""
 
         }
+        dispatch(updateCurrentRowIndex(10));
+
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(resetStatePagination())
