@@ -37,7 +37,7 @@ import {
 import {
     AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm, RMMaterialListing,
     IndexCommodityListing, CommodityInIndexListing, StandardizedCommodityNameListing,
-    CommodityStandard,
+    // CommodityStandard,
     IndexDataListing,
     OverheadVBC,
     Overhead,
@@ -299,21 +299,21 @@ class BulkUpload extends Component {
                             // case String(INSERTDOMESTICBULKUPLOAD):
 
                             if (this.state.costingTypeId === VBCTypeId) {
-                                const { updatedLabels } = updateBOPValues(BOP_VBC_DOMESTIC, [], bopMasterName)
+                                const { updatedLabels } = updateBOPValues(BOP_VBC_DOMESTIC, [], bopMasterName, 'label')
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
-                                const { updatedLabels } = updateBOPValues(BOP_ZBC_DOMESTIC, [], bopMasterName)
+                                const { updatedLabels } = updateBOPValues(BOP_ZBC_DOMESTIC, [], bopMasterName, 'label')
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
 
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
-                                const { updatedLabels } = updateBOPValues(BOP_CBC_DOMESTIC, [], bopMasterName)
+                                const { updatedLabels } = updateBOPValues(BOP_CBC_DOMESTIC, [], bopMasterName, 'label')
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
 
                             } else if (this.state.bopType === DETAILED_BOP) {
-                                const { updatedLabels } = updateBOPValues(BOP_DETAILED_DOMESTIC, [], bopMasterName)
+                                const { updatedLabels } = updateBOPValues(BOP_DETAILED_DOMESTIC, [], bopMasterName, 'label')
 
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
@@ -321,20 +321,20 @@ class BulkUpload extends Component {
                             break;
                         case String(BOPIMPORTBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
-                                const { updatedLabels } = updateBOPValues(BOP_ZBC_IMPORT, [], bopMasterName)
+                                const { updatedLabels } = updateBOPValues(BOP_ZBC_IMPORT, [], bopMasterName, 'label')
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
-                                const { updatedLabels } = updateBOPValues(BOP_VBC_IMPORT, [], bopMasterName)
+                                const { updatedLabels } = updateBOPValues(BOP_VBC_IMPORT, [], bopMasterName, 'label')
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
                             } else if (this.state.bopType === DETAILED_BOP) {
-                                const { updatedLabels } = updateBOPValues(BOP_DETAILED_IMPORT, [], bopMasterName)
+                                const { updatedLabels } = updateBOPValues(BOP_DETAILED_IMPORT, [], bopMasterName, 'label')
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
                             } else {
-                                const { updatedLabels } = updateBOPValues(BOP_CBC_IMPORT, [], bopMasterName)
+                                const { updatedLabels } = updateBOPValues(BOP_CBC_IMPORT, [], bopMasterName, 'label')
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, CBCTypeId), fileHeads, true)
                             }
@@ -360,7 +360,7 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
-                            const { updatedLabels } = updateBOPValues(Vendor, [], bopMasterName)
+                            const { updatedLabels } = updateBOPValues(Vendor, [], bopMasterName, 'label')
 
                             checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, '', '', true), fileHeads)
                             break;
@@ -468,9 +468,9 @@ class BulkUpload extends Component {
                         case String(COMMODITYSTANDARDIZATION):
                             checkForFileHead = checkForSameFileUpload(StandardizedCommodityNameListing, fileHeads)
                             break;
-                        case String(COMMODITYSTANDARD):
-                            checkForFileHead = checkForSameFileUpload(CommodityStandard, fileHeads)
-                            break;
+                        // case String(COMMODITYSTANDARD):
+                        //     checkForFileHead = checkForSameFileUpload(CommodityStandard, fileHeads)
+                        // break;
                         default:
                             break;
                     }
@@ -631,7 +631,6 @@ class BulkUpload extends Component {
                             if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && this.state.costingTypeId === VBCTypeId && this.state.bopType !== DETAILED_BOP) {
                                 obj.IsBreakupBoughtOutPart = "No"
                             }
-                            console.log('obj: ', obj);
                             fileData.push(obj)
                             obj = {}
                         }
@@ -698,7 +697,7 @@ class BulkUpload extends Component {
     onSubmit = (values) => {
         const { fileData, costingTypeId, IsFinalApprover, bopType } = this.state;
         const { fileName, typeOfEntryId } = this.props;
-        console.log('fileName: ', fileName);
+
         if (fileData.length === 0) {
             Toaster.warning('Please select a file to upload.')
             return false

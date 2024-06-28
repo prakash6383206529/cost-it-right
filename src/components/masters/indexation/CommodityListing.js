@@ -11,7 +11,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
-import { searchNocontentFilter, setLoremIpsum } from "../../../helper";
+import { searchNocontentFilter } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
 import { useRef } from "react";
@@ -27,12 +27,13 @@ import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGl
 import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import PaginationControls from "../../common/Pagination/PaginationControls";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-const CommodityInIndexListing = () => {
+const CommodityInIndexListing = (props) => {
     const dispatch = useDispatch();
     const searchRef = useRef(null);
     const { commodityInIndexDataList } = useSelector((state) => state.indexation);
@@ -43,15 +44,11 @@ const CommodityInIndexListing = () => {
         isOpen: false,
         isEditFlag: false,
         ID: "",
-        gridApi: null,
         gridColumnApi: null,
         rowData: null,
         showPopup: false,
         deletedId: "",
-        isLoader: false,
         selectedRowData: false,
-        noData: false,
-        dataCount: 0,
         render: false,
         showExtraData: false,
         isBulkUpload: false,
@@ -69,6 +66,15 @@ const CommodityInIndexListing = () => {
     const [gridApi, setGridApi] = useState(null);
     const [dataCount, setDataCount] = useState(0)
 
+    useEffect(() => {
+        if (commodityInIndexDataList?.length > 0) {
+            setTotalRecordCount(commodityInIndexDataList[0].TotalRecordCount)
+        }
+        else {
+            setNoData(false)
+        }
+
+    }, [commodityInIndexDataList])
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (commodityInIndexDataList?.length !== 0) {
@@ -195,22 +201,24 @@ const CommodityInIndexListing = () => {
     };
 
     const onGridReady = (params) => {
+        setGridApi(params.api);
+
         params.api.sizeColumnsToFit();
         setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
         params.api.paginationGoToPage(0);
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        state.gridApi.paginationSetPageSize(Number(newPageSize));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onRowSelect = () => {
-        const selectedRows = state.gridApi?.getSelectedRows();
+        const selectedRows = gridApi?.getSelectedRows();
         setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
     };
 
     const onFilterTextBoxChanged = (e) => {
-        state.gridApi.setQuickFilter(e.target.value);
+        gridApi.setQuickFilter(e.target.value);
     };
     useEffect(() => {
         getTableListData(0, defaultPageSize, true)
@@ -220,14 +228,7 @@ const CommodityInIndexListing = () => {
 
         }
     }, [])
-    useEffect(() => {
-        if (commodityInIndexDataList?.length > 0) {
-            setTotalRecordCount(commodityInIndexDataList[0].TotalRecordCount)
-        }
-        else {
-            setNoData(false)
-        }
-    }, [commodityInIndexDataList])
+ 
 
     const resetState = () => {
         setNoData(false)
@@ -260,7 +261,7 @@ const CommodityInIndexListing = () => {
         if (isPagination === true || isPagination === null) setIsLoader(true)
         let dataObj = { ...floatingFilterData }
         dispatch(getCommodityInIndexDataListAPI(dataObj, isPagination, skip, take, (res) => {
-            if (isPagination === true || isPagination === null) setIsLoader(false)
+            if (isPagination === true || isPagination === null){ setIsLoader(false)}
             if ((res && res.status === 204) || res.length === 0) {
                 setTotalRecordCount(0)
                 dispatch(updatePageNumber(0))
@@ -313,7 +314,7 @@ const CommodityInIndexListing = () => {
 
     const onBtExport = () => {
         let tempArr = [];
-        tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+        tempArr = gridApi && gridApi?.getSelectedRows();
         tempArr =
             tempArr && tempArr.length > 0
                 ? tempArr
@@ -368,11 +369,11 @@ const CommodityInIndexListing = () => {
     };
 
     return (
-        <div
-            className={`ag-grid-react min-height100vh ${permissions.Download ? "show-table-btn" : ""
-                }`}
-        >
-            {state.isLoader && <LoaderCustom />}
+       
+                    <div className={`ag-grid-react {permissions.Download ? "show-table-btn" : ""
+                } ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} `}>
+
+            {isLoader && <LoaderCustom />}
             <Row className="pt-4">
                 <Col md={9} className="search-user-block mb-3 pl-0">
                     <div className="d-flex justify-content-end bd-highlight w100">
@@ -389,7 +390,7 @@ const CommodityInIndexListing = () => {
                                         filename={"Index Commodity"}
                                         fileExtension={".xls"}
                                         element={
-                                            <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                            <Button id={"Excel-Downloads-Rm Material"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
                                         }
                                     >
                                         {onBtExport()}
@@ -420,7 +421,7 @@ const CommodityInIndexListing = () => {
                             />
                         </div>
                         <div
-                            className={`ag-theme-material ${state.isLoader && "max-loader-height"
+                            className={`ag-theme-material ${isLoader && "max-loader-height"
                                 }`}
                         >
                             {noData && (
@@ -435,8 +436,8 @@ const CommodityInIndexListing = () => {
                                 floatingFilter={true}
                                 domLayout="autoHeight"
                                 rowData={commodityInIndexDataList}
-                                pagination={true}
-                                paginationPageSize={globalTakes}
+                                // pagination={true}
+                                // paginationPageSize={globalTakes}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
                                 // loadingOverlayComponent={'customLoadingOverlay'}
@@ -455,8 +456,14 @@ const CommodityInIndexListing = () => {
                                 <AgGridColumn field="CommodityName" headerName="Commodity name"></AgGridColumn>
                                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                             </AgGridReact>}
+                            <div className='button-wrapper'>
+                                        {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="CommodityInIndex" />}
+                                      
+{                                            <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="CommodityInIndex" />
+}
+                                       
 
-                            {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="CommodityInIndex" />}
+                                    </div>
 
                         </div>
                     </div>

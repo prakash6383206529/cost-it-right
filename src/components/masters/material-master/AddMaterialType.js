@@ -227,7 +227,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
                   />
                 </Col>
               </Row>
-              {console.log('state.tableData: ', state.tableData)}
+              {}
               {RMIndex && <AddMaterialTypeDetail tableData={tableData} tableDataState={state.tableData} isViewFlag={isViewFlag} isEditFlag={isEditFlag} />}
               <Row className=" no-gutters justify-content-between">
                 <div className="col-md-12">

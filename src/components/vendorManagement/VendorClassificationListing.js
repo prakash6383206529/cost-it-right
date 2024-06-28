@@ -15,6 +15,7 @@ import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import DayTime from '../common/DayTimeWrapper';
 import { filterParams } from '../common/DateFilter';
+import Button from '../layout/Button';
 const gridOptions = {};
 
 const VendorClassificationListing = () => {
@@ -31,6 +32,7 @@ const VendorClassificationListing = () => {
     const [render, setRender] = useState(false)
     const [showExtraData, setShowExtraData] = useState(false)
     const [gridApi, setGridApi] = useState(null);
+    const [gridLoad, setGridLoad] = useState(false)
 
 
 
@@ -38,14 +40,18 @@ const VendorClassificationListing = () => {
     const dispatch = useDispatch();
     const supplierManagement = useSelector(state => state?.supplierManagement?.vendorData) || [];
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData);
-
+    useEffect(() => {
+        getTableListData()
+    }, [])
     useEffect(() => {
         applyPermission(topAndLeftMenuData)
-        getTableListData()
+        // getTableListData()
 
     }, [topAndLeftMenuData]);
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
+            setGridLoad(true)
+
             setIsLoader(true)
             const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
             const accessData = Data && Data.Pages.find((el) => el.PageName === VENDOR_MANAGEMENT)
@@ -182,49 +188,67 @@ const VendorClassificationListing = () => {
         statusButtonFormatter: statusButtonFormatter,
         effectiveDateFormatter: effectiveDateFormatter
     };
+
+    const resetState = () => {
+        gridApi.setQuickFilter(null)
+        gridApi.deselectAll();
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+        if (searchRef.current) {
+            searchRef.current.value = '';
+        }
+    }
     return (
-        <>
+        <>                            {isLoader && <LoaderCustom customClass="loader-center" />}
+
             <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
-                <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
 
                 <>
-                    <Row className="no-filter-row">
-                        <Col md={6} className="text-right filter-block"></Col>
+                    <Row className="pb-4 mb-3 no-filter-row zindex-2">
+                        <Col md={3}>
+                            <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+                        </Col>
+                        <Col md={9}>
+                            <div className="d-flex justify-content-end bd-highlight w100 ">
+                                <div className="d-flex">
+                                    <Button id={"vendorClassification_Listing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                                </div>
+                            </div>
+                        </Col>
                     </Row>
-                    {<div className={`ag-grid-wrapper height-width-wrapper`}>
+                    {gridLoad && <div className={`ag-grid-wrapper height-width-wrapper`}>
                         <div className={`ag-theme-material`}>
-                            {isLoader && <LoaderCustom customClass="loader-center" />}
-                            <AgGridReact
-
-                                style={{ height: '100%', width: '100%' }}
-
-                                defaultColDef={defaultColDef}
-                                floatingFilter={true}
-                                domLayout='autoHeight'
-                                rowData={supplierManagement}
-                                onGridReady={onGridReady}
-                                gridOptions={gridOptions}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                    imagClass: 'imagClass pt-3'
-                                }}
-                                suppressRowClickSelection={true}
-                                frameworkComponents={frameworkComponents}
-                            >
-                                <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
-                                <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-
-                                <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
-                                <AgGridColumn field="Status" headerName="Type" ></AgGridColumn>
-
-                                <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-
-                            </AgGridReact>
-                            {!isLoader && (!supplierManagement || supplierManagement?.length === 0) &&
+                            {!isLoader &&
                                 <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
-                            }
+                                && <AgGridReact
+
+                                    style={{ height: '100%', width: '100%' }}
+
+                                    defaultColDef={defaultColDef}
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
+                                    rowData={supplierManagement}
+                                    onGridReady={onGridReady}
+                                    gridOptions={gridOptions}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    noRowsOverlayComponentParams={{
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass pt-3'
+                                    }}
+                                    suppressRowClickSelection={true}
+                                    frameworkComponents={frameworkComponents}
+                                >
+                                    <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
+                                    <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+
+                                    <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
+                                    <AgGridColumn field="Status" headerName="Type" ></AgGridColumn>
+
+                                    <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+
+                                </AgGridReact>}
                         </div>
+
                     </div>}
                 </>
                 {

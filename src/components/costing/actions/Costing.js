@@ -67,6 +67,7 @@ import {
   SET_COMPONENT_PAYMENT_TERMS_DATA,
   SET_PAYMENT_TERM_COST,
   CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
+  SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1085,21 +1086,16 @@ export function getFreigtFullTruckCapacitySelectList() {
  */
 export function getRateCriteriaByCapacitySelectList(Capacity) {
   return (dispatch) => {
-    const request = axios.get(
-      `${API.getRateCriteriaByCapacitySelectList}/${Capacity}`,
-      config(),
-    )
-    request
-      .then((response) => {
-        dispatch({
-          type: GET_RATE_CRITERIA_BY_CAPACITY,
-          payload: response.data.SelectList,
-        })
+    const request = axios.get(`${API.getRateCriteriaByCapacitySelectList}/${Capacity}`, config())
+    request.then((response) => {
+      dispatch({
+        type: GET_RATE_CRITERIA_BY_CAPACITY,
+        payload: response.data.SelectList,
       })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -1109,18 +1105,13 @@ export function getRateCriteriaByCapacitySelectList(Capacity) {
  */
 export function getRateByCapacityCriteria(data, callback) {
   return (dispatch) => {
-    const request = axios.get(
-      `${API.getRateByCapacityCriteria}/${data.Capacity}/${data.Criteria}`,
-      config(),
-    )
-    request
-      .then((response) => {
-        callback(response)
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getRateByCapacityCriteria}?Capacity=${data.Capacity}&Criteria=${data.Criteria}`, config(),)
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -1717,7 +1708,7 @@ export function getSingleCostingDetails(costingId, callback) {
 export const setCostingViewData = (data) => (dispatch) => {
   let temp = []
   // temp.push(VIEW_COSTING_DATA)
-  data?.map((val) => (
+  data && data?.map((val) => (
     temp.push(val)
   ))
   dispatch({
@@ -2962,4 +2953,15 @@ export function saveCostingPaymentTermDetail(data, callback) {
       apiErrors(error)
     })
   }
+}
+
+export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
+  let temp = []
+  data && data?.map((val) => (
+    temp.push(val)
+  ))
+  dispatch({
+    type: SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
+    payload: temp,
+  })
 }

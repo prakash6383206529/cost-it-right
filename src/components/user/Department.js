@@ -37,30 +37,56 @@ class Department extends Component {
 	*/
 	componentDidMount() {
 		const { DepartmentId, isEditFlag } = this.props;
-		this.props.getPlantSelectListByType(ZBC, "MASTER", '', (res) => {
-			let list = res?.data?.DataList?.filter(element => element?.Value !== '0')
-			let temp = []
-			list?.forEach((item) => {
-				if (item?.PlantId === '0') return false
-				temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
-				return temp
-			})
-			this.setState({ plantSelectAll: temp })
+		this.setState({ isLoader: true });
+
+		this.props.getPlantSelectListByType(ZBC, "", '', (res) => {
+			if (res?.status === 204) {
+				this.setState({ plantSelectAll: [] });
+			} else if (res?.status === 200 && res?.data?.Result) {           
+				let list = res?.data?.DataList?.filter(element => element?.Value !== '0')
+				let temp = []
+				list?.forEach((item) => {
+					if (item?.PlantId === '0') return false
+					temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+					return temp
+				})
+				this.setState({ plantSelectAll: temp })
+			} else {
+				Toaster.errors(res?.data?.Message);
+			}
 		})
 		if (isEditFlag) {
+
+
 			this.props.getDepartmentAPI(DepartmentId, (res) => {
-				let plantArray = []
-				res?.data?.Data?.PlantList && res?.data?.Data?.PlantList?.map((item) => {
-					plantArray.push({ Text: `${item.PlantName} (${item.PlantCode})`, Value: (item?.PlantId)?.toString() })
-					return null;
-				})
-				this.setState({ DataToChange: res?.data?.Data })
-				this.setState({ selectedPlants: plantArray })
-				this.props.change("plant", plantArray)
+				if (res?.status === 204) {
+					this.setState({ DataToChange: null, selectedPlants: [] });
+				}
+				else if (res && res?.status === 200 && res?.data?.Result) {
+					let plantArray = []
+					res?.data?.Data?.PlantList && res?.data?.Data?.PlantList?.map((item) => {
+						plantArray.push({ Text: `${item.PlantName ?? ''} (${item.PlantCode ?? ''})`, Value: (item?.PlantId ?? '')?.toString() })
+						return null;
+					})
+
+
+					this.setState({ DataToChange: res?.data?.Data, selectedPlants: plantArray })
+					this.props.change("plant", plantArray)
+				}
+
+				this.setState({ isLoader: false })
 
 			})
 		} else {
-			this.props.setEmptyDepartmentAPI('', () => { })
+
+
+			this.props.setEmptyDepartmentAPI('', (res) => {
+				if (res?.status === 204) {
+					this.setState({ DataToChange: null, selectedPlants: [] });
+					return false
+				}
+				this.setState({ isLoader: false })
+			})
 		}
 
 	}
@@ -200,11 +226,11 @@ class Department extends Component {
 		const { isSubmitted } = this.state;
 		return (
 			<div>
-				{this.props.loading && <Loader />}
 				<Drawer className="add-department-drawer" anchor={this.props.anchor} open={this.props.isOpen}
 				//  onClose={(e) => this.toggleDrawer(e)}
 				>
 					<Container>
+						{this.state.isLoader && <Loader />}
 						<div className={'drawer-wrapper'}>
 							<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 

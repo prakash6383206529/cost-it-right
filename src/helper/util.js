@@ -194,7 +194,7 @@ export function convertISOToUtcForTime(date) {
  * @param res
  */
 export function stripHtml(text) {
-  return text.replace(/<[^>]+>/g, '')
+  return text?.replace(/<[^>]+>/g, '')
 }
 
 /**
@@ -319,7 +319,7 @@ export const stringToArray = (str) => {
  * @descriptin DISPLAY TITLE
  **/
 export const displayTitle = (text) => {
-  return text.replace(/\r?\n|\r/g, '')
+  return text?.replace(/\r?\n|\r/g, '')
 }
 
 export function displayPublishOnDate(date) {
@@ -577,6 +577,142 @@ const TotalTCOCostCal = (tcoData, paymentData) => {
 }
 
 export function formViewData(costingSummary, header = '', isBestCost = false) {
+  const setDynamicKeys = (list, value) => {
+    let datalist = list && list?.filter(element => element?.Type === 'Other' && element?.SubHeader === value)
+    let arr = []
+    datalist && datalist?.map(item => {
+      let obj = {}
+      obj.DynamicHeader = item?.Description
+      obj.DynamicApplicabilityCost = item?.ApplicabilityCost
+      obj.DynamicPercentage = item?.Value
+      obj.DynamicNetCost = item?.NetCost
+      arr.push(obj)
+    })
+    return arr;
+  }
+  const dummyData = [
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 9",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 10",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 11",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: "-"
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 2",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 3",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 12",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "Fixed",
+      ApplicabilityIdRef: null,
+      Description: "Test 13",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 1",
+      Value: 1,
+      ApplicabilityCost: 14,
+      NetCost: 1,
+      CRMHead: "-"
+    },
+    {
+      SubHeader: "Process",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test Process 3",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: "-"
+    },
+    {
+      SubHeader: "Process",
+      Type: "Other",
+      ApplicabilityType: "Fixed",
+      ApplicabilityIdRef: null,
+      Description: "Test Process 2",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 15",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: "-"
+    }
+  ]
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
@@ -596,7 +732,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.pCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProcessCost ? dataFromAPI?.CostingPartDetails?.NetProcessCost : 0
   obj.oCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
   obj.sTreatment = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost ? dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost : 0
-  obj.nsTreamnt = dataFromAPI && dataFromAPI.NetSurfaceTreatmentCost !== undefined ? dataFromAPI.NetSurfaceTreatmentCost : 0
+  obj.nsTreamnt = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost !== undefined ? dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost : 0
   obj.tCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetTransportationCost ? dataFromAPI?.CostingPartDetails?.NetTransportationCost : 0
   obj.nConvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetConversionCost ? dataFromAPI?.CostingPartDetails?.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
@@ -855,6 +991,11 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
   obj.ScrapRecoveryPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ScrapRecoveryPercentage
   obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied
+  obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
+  obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied
+  obj.OtherCostDetailsOverhead = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'OverHead')
+  obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
+  obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
   temp.push(obj)
   return temp
 }
@@ -887,7 +1028,7 @@ export const applySuperScripts = (cell) => {
     const capIndex = cell && cell.indexOf('^');
     const superNumber = cell.substring(capIndex + 1, capIndex + 2);
     const capWithNumber = cell.substring(capIndex, capIndex + 2);
-    return cell.replace(capWithNumber, superNumber.sup());
+    return cell?.replace(capWithNumber, superNumber.sup());
   } else {
     return '';
   }
@@ -1188,10 +1329,10 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
   bulkUploadArray = [...array]
   if (isBOP) {
     bulkUploadArray = bulkUploadArray.map(item =>
-      item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
+      item?.replace('BOP', bopMasterName)?.replace('BoughtOutPart', bopMasterName)
     );
     fileHeads = fileHeads.map(item =>
-      item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
+      item?.replace('BOP', bopMasterName)?.replace('BoughtOutPart', bopMasterName)
 
     );
 
@@ -1201,7 +1342,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
 
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
-    console.log('hasNote: ', hasNote);
+    
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
@@ -1382,13 +1523,13 @@ export function getValueFromLabel(currency, currencySelectList) {
   return data[0]
 }
 // get updated  dynamic bop labels 
-export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '') {
+export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '', labelName) {
 
   const bopRegex = /BOP|BoughtOutPart/gi;
   const updatedLabels = bopLabels.map(label => ({
     ...label,
-    label: label.label.replace(bopRegex, bopReplacement),
-    value: label.value.replace(bopRegex, bopReplacement),
+    [labelName]: label[labelName]?.replace(bopRegex, bopReplacement),
+    value: label.value?.replace(bopRegex, bopReplacement),
 
   }));
 
@@ -1396,7 +1537,7 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
     const newDataItem = {};
     for (let key in dataItem) {
       if (dataItem.hasOwnProperty(key)) {
-        const newKey = key.replace(bopRegex, bopReplacement);
+        const newKey = key?.replace(bopRegex, bopReplacement);
         newDataItem[newKey] = dataItem[key];
       }
     }
@@ -1481,3 +1622,15 @@ export function displayNavigationLength() {
       return 7;
   }
 }
+
+export const changeBOPLabel = (arr, bopReplacement) => {
+  const bopRegex = /BOP|BoughtOutPart/gi;
+  let tempArr = []
+  arr && arr?.map(element => {
+    tempArr.push(element?.replace(bopRegex, bopReplacement))
+  })
+  return tempArr
+}
+export const getFilteredDropdownOptions = (options, selectedValues) => {
+  return options.filter(option => !selectedValues.includes(option.value));
+};

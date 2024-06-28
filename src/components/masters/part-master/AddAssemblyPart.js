@@ -18,13 +18,12 @@ import { BOUGHTOUTPARTSPACING, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME,
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
-import { getRandomSixDigit, showDataOnHover } from '../../../helper/util';
+import { getRandomSixDigit, onFocus, showDataOnHover } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import _, { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage'
 import Switch from "react-switch";
-import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getPartSelectList } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -35,6 +34,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { LOGISTICS } from '../../../config/masterData';
+import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
@@ -971,8 +971,9 @@ class AddAssemblyPart extends Component {
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
                                 loadOptions={filterList}
+                                onFocus={() => onFocus(this)}
                                 onChange={(e) => this.handlePartNo(e)}
-                                value={this.state.vendorName}
+                                value={this.state.partAssembly}
                                 noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? 'Enter 3 characters to show data' : "No results found"}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();

@@ -364,25 +364,55 @@ const SendForApproval = (props) => {
       }
       let Data = []
       let approverIdListTemp = []
-      dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
-        Data = res.data.DataList[1] ? res.data.DataList[1] : []
-        setSelectedApprover(Data?.Value)
-        setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-        res.data.DataList && res.data.DataList.map((item) => {
-          if (item.Value === '0') return false;
-          if (item.Value === EMPTY_GUID) return false;
-          tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
-          approverIdListTemp.push(item.Value)
-          return null
-        })
-        if (tempDropdownList?.length === 0) {
-          setShowValidation(true)
-        } else {
-          setApprover(Data.Text ? Data.Text : '')
-          setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+      let obj = {
+        DepartmentId: newValue?.value,
+        UserId: loggedInUserId(),
+        TechnologyId: props.technologyId,
+        Mode: 'costing',
+        approvalTypeId: approvalType,
+        plantId: viewApprovalData[0]?.plantId ?? EMPTY_GUID
+      }
+      dispatch(checkFinalUser(obj, (res) => {
+        const data = res?.data?.Data
+        if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
+          dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+            Data = res.data.DataList[1] ? res.data.DataList[1] : []
+            setSelectedApprover(Data?.Value)
+            setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+            res.data.DataList && res.data.DataList.map((item) => {
+              if (item.Value === '0') return false;
+              if (item.Value === EMPTY_GUID) return false;
+              tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+              approverIdListTemp.push(item.Value)
+              return null
+            })
+            if (tempDropdownList?.length === 0) {
+              setShowValidation(true)
+            } else {
+              setApprover(Data.Text ? Data.Text : '')
+              setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+            }
+            setApprovalDropDown(tempDropdownList)
+            setApproverIdList(approverIdListTemp)
+          }))
+        } else if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === true) {
+          setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+          setApprover('')
+          setSelectedApprover('')
+          setApprovalDropDown([])
+          setApproverIdList([])
+          Toaster.warning('Final level user cannot send costing for approval.')
+          return false
+        } else if (data?.IsUserInApprovalFlow === false) {
+          setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+          setApprover('')
+          setSelectedApprover('')
+          setApprovalDropDown([])
+          setApproverIdList([])
+          Toaster.warning('This user is not in approval flow.')
+          return false
         }
-        setApprovalDropDown(tempDropdownList)
-        setApproverIdList(approverIdListTemp)
+
       }))
       setSelectedDepartment(newValue)
     } else {

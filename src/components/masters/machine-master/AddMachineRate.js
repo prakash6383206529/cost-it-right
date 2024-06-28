@@ -14,7 +14,7 @@ import {
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_COSTING, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -140,9 +140,11 @@ class AddMachineRate extends Component {
       })
 
       setTimeout(() => {
-        this.setState({
-          processGrid: data?.MachineProcessRates
-        })
+        if (data?.MachineProcessRates) {
+          this.setState({
+            processGrid: data?.MachineProcessRates
+          })
+        }
 
       }, 600);
 
@@ -158,6 +160,7 @@ class AddMachineRate extends Component {
       this.setState({ isFinalApprovar: data?.isFinalApprovar, finalApprovalLoader: false })
       return true
     }
+
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
       this.props.getProcessesSelectList(() => { })
@@ -265,7 +268,9 @@ class AddMachineRate extends Component {
       selectedVedor: vendorName,
       costingTypeId: costingTypeId,
       vendorName: vendorName,
-      client: client
+      client: client,
+      machineNo: fieldsObj?.MachineNumber,
+      effectiveDate: effectiveDate
 
     }
     setTimeout(() => {
@@ -411,7 +416,7 @@ class AddMachineRate extends Component {
               selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               machineType: Data.MachineType !== undefined ? { label: Data.MachineType, value: Data.MachineTypeId } : [],
-              processGrid: MachineProcessArray,
+              processGrid: MachineProcessArray ?? [],
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
@@ -658,17 +663,26 @@ class AddMachineRate extends Component {
   * @description called
   */
   moreDetailsToggler = (Id, editFlag) => {
-    const { selectedTechnology } = this.state;
+    const { selectedTechnology, vendorName, costingTypeId } = this.state;
     if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
       Toaster.warning('Technology should not be empty.')
       return false;
     }
-
+    if (costingTypeId === VBCTypeId && vendorName.length === 0) {
+      Toaster.warning('Vendor and Technology should not be empty.')
+      return false;
+    }
     let data = {
       isEditFlag: editFlag,
       Id: Id,
       isIncompleteMachine: (this.state.isEditFlag && !this.state.IsDetailedEntry) ? true : false,
-      isViewMode: this.state.isViewMode || this.state.isViewFlag
+      isViewMode: this.state.isViewMode || this.state.isViewFlag,
+      costingTypeId: costingTypeId,
+      selectedTechnology: selectedTechnology,
+      vendorName: vendorName ?? [],
+      selectedPlants: this.state.selectedPlants,
+      selectedEffectiveDate: this.props.fieldsObj.EffectiveDate
+
     }
     this.props.displayMoreDetailsForm(data)
   }
@@ -1331,7 +1345,7 @@ class AddMachineRate extends Component {
         selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
         vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
         machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
-        processGrid: MachineProcessArray,
+        processGrid: MachineProcessArray ?? [],
         remarks: data.Remark,
         files: data.Attachements,
         effectiveDate: data.EffectiveDate

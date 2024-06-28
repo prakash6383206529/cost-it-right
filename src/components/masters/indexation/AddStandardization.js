@@ -46,7 +46,7 @@ const AddStandardization = (props) => {
         if (isEditFlag) {
             dispatch(getStandardizedCommodityListAPI(props?.ID, '', '', '', true, (res) => {
                 const data = res.data.DataList[0]
-                console.log('data: ', data);
+                
                 setValue('IndexExchangeName', { label: data.IndexExchangeName, value: data.IndexExchangeId })
                 setValue('CommodityName', { label: data.CommodityName, value: data.IndexExchangeCommodityLinkingId })
                 setValue('CommodityStandardName', { label: data.CommodityStandardName, value: data.CommodityStandardId })

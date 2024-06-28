@@ -11,11 +11,11 @@ import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser, getAllLevelAPI, checkHighestApprovalLevelForHeadsAndApprovalType, getOnboardingLevelById, getPlantSelectListForDepartment, getUsersOnboardingLevelAPI
 } from "../../actions/auth/AuthActions";
-import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
+import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList, getApprovalTypeSelectListUserModule } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { IsSendMailToPrimaryContact, getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
-import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, LPSAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, ONBOARDINGID, ONBOARDINGNAME, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, VENDORNEEDFORMID, WACAPPROVALTYPEID, ZBC, searchCount } from "../../config/constants";
+import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, ONBOARDINGID, ONBOARDINGNAME, VBC_VENDOR_TYPE, VENDORNEEDFOR, ZBC, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -23,7 +23,7 @@ import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown, transformApprovalItem } from "../common/CommonFunctions";
+import { autoCompleteDropdown } from "../common/CommonFunctions";
 import _, { debounce } from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
@@ -48,10 +48,8 @@ const gridOptions = {
 };
 function UserRegistration(props) {
 
-  let child = React.createRef();
   const { t } = useTranslation("UserRegistration")
   const [token, setToken] = useState("");
-  const [countryCode, setCountryCode] = useState(false);
   const [lowerCaseCheck, setLowerCaseCheck] = useState(false);
   const [upperCaseCheck, setUpperCaseCheck] = useState(false);
   const [numberCheck, setNumberCheck] = useState(false);
@@ -123,8 +121,8 @@ function UserRegistration(props) {
   const [isUpdateResponded, setIsUpdateResponded] = useState(false)
   const [costingTableChanged, setCostingTableChanged] = useState(false)
   const [simulationTableChanged, setSimulationTableChanged] = useState(false)
-  const [masterTableChanged, setMasterTableChanged] = useState(false)
   const [onboardingTableChanged, setOnboardingTableChanged] = useState(false)
+  const [masterTableChanged, setMasterTableChanged] = useState(false)
   const [isDepartmentUpdated, setIsDepartmentUpdated] = useState(false)
   const [selectedPlants, setSelectedPlants] = useState([])
   const dispatch = useDispatch()
@@ -141,12 +139,15 @@ function UserRegistration(props) {
   const masterLevelSelectList = useSelector(state => state.auth.masterLevelSelectList)
   const registerUserData = useSelector(state => state.auth.registerUserData)
   const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
-  const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
   const levelList = useSelector(state => state.auth.levelList)
   const OnboardingLevelSelectList = useSelector(state => state.auth.OnboardingLevelSelectList)
   const plantSelectListForDepartment = useSelector(state => state.auth.plantSelectListForDepartment);
+  const approvalTypeCosting = useSelector(state => state.comman.approvalTypeCosting)
 
-  const [maxLength, setMaxLength] = useState(maxLength11);
+  const approvalTypeSimulation = useSelector(state => state.comman?.approvalTypeSimulation)
+  const approvalTypeMaster = useSelector(state => state.comman?.approvalTypeMaster)
+  const approvalTypeOnboarding = useSelector(state => state.comman?.approvalTypeOnboarding)
+
   const defaultValues = {
     FirstName: props?.data?.isEditFlag && registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',
     MiddleName: props?.data?.isEditFlag && registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '',
@@ -177,6 +178,14 @@ function UserRegistration(props) {
     sortable: false,
 
   };
+  useEffect(() => {
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '1'));
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '2'));
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '3'));
+    dispatch(getApprovalTypeSelectListUserModule(() => { }, '4'));
+
+  }, [dispatch]);
+
   useEffect(() => {
     if (registerUserData && props?.data?.isEditFlag) {
       setValue('FirstName', registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',)
@@ -462,23 +471,75 @@ function UserRegistration(props) {
       })
       return temp;
     }
-    if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster' || label === 'approvalTypeOnboarding') {
-      // if (label === 'approvalType') {                 //RE
-      if (isEditIndex === false && isSimulationEditIndex === false && isMasterEditIndex === false && isOnboardingEditIndex === false && isAllowMultiple) {
-        temp.push({ label: 'Select All', value: '0' });
+
+    if (label === 'approvalTypeCosting') {
+      approvalTypeCosting && approvalTypeCosting.forEach(item => {
+        if (item.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value });
+        }
+      });
+      // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isEditIndex && isAllowMultiple) {
+        temp.unshift({ label: "Select All", value: '0' });
       }
-      approvalTypeSelectList && approvalTypeSelectList.map(item => {
-        if (item.Value === '0') return false
-        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId) || Number(item.Value) === Number(NFRAPPROVALTYPEID)) && label === 'approvalTypeSimulation') return false
-        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && label === 'approvalTypeMaster') return false
-        if ((Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || (!initialConfiguration.IsNFRConfigured && Number(item.Value) === Number(NFRAPPROVALTYPEID))) && label === 'approvalTypeCosting') return false
-        if (label === 'approvalTypeOnboarding' && Number(item.Value) !== VENDORNEEDFORMID && Number(item.Value) !== LPSAPPROVALTYPEID && Number(item.Value) !== CLASSIFICATIONAPPROVALTYPEID) return false;
-        if ((label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster') && Number(item.Value) === VENDORNEEDFORMID) return false;
-        const transformedText = transformApprovalItem(item);
-        temp.push({ label: transformedText, value: item.Value })
-        return null
-      })
-      return temp;
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
+      }
+    }
+
+    if (label === 'approvalTypeSimulation') {
+      approvalTypeSimulation && approvalTypeSimulation.map(item => {
+        if (item.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value });
+        }
+      });
+      // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isSimulationEditIndex && isAllowMultiple) {
+        temp.unshift({ label: "Select All", value: '0' });
+      }
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
+      }
+    }
+    if (label === 'approvalTypeMaster') {
+      approvalTypeMaster && approvalTypeMaster.map(item => {
+        if (item.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value });
+        }
+      });
+      // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isMasterEditIndex && isAllowMultiple) {
+        temp.unshift({ label: "Select All", value: '0' });
+      }
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
+      }
+    }
+    if (label === 'approvalTypeOnboarding') {
+      approvalTypeOnboarding && approvalTypeOnboarding.map(item => {
+        if (item.Value !== '0') {
+          temp.push({ label: item.Text, value: item.Value });
+        }
+      });
+      // Add "Select All" at the 0th position if isEditIndex is false
+      if (!isOnboardingEditIndex && isAllowMultiple) {
+        temp.unshift({ label: "Select All", value: '0' });
+      }
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
+      }
     }
     if (label === 'plant') {
       plantSelectListForDepartment?.forEach((item) => {
@@ -502,9 +563,13 @@ function UserRegistration(props) {
    * @description Used to handle 
   */
   const departmentHandler = (newValue, actionMeta) => {
+    if (selectedPlants.length > 0) {
+      setValue('plant', [])
+    }
     if (getConfigurationKey().IsMultipleDepartmentAllowed) {
       setDepartment(newValue)
     } else {
+
       setDepartment([newValue])
       dispatch(getPlantSelectListForDepartment(newValue.value, res => { }))
     }
@@ -828,8 +893,7 @@ function UserRegistration(props) {
    */
   const costingApprovalTypeHandler = (newValue, actionMeta) => {
     if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
-      const selectedOptions = approvalTypeSelectList
-        .filter((option) => option?.Value !== '0')
+      const selectedOptions = approvalTypeCosting.filter((option) => option?.Value !== '0')
         .map(({ Text, Value }) => ({ label: Text, value: Value }));
       setCostingApprovalType(selectedOptions);
       setTimeout(() => {
@@ -856,7 +920,7 @@ function UserRegistration(props) {
    */
   const simulationApprovalTypeHandler = (newValue, actionMeta) => {
     if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
-      const selectedOptions = approvalTypeSelectList
+      const selectedOptions = approvalTypeSimulation
         .filter((option) => option?.Value !== '0')
         .map(({ Text, Value }) => ({ label: Text, value: Value }));
       setSimulationApprovalType(selectedOptions);
@@ -886,7 +950,7 @@ function UserRegistration(props) {
    */
   const masterApprovalTypeHandler = (newValue, actionMeta) => {
     if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
-      const selectedOptions = approvalTypeSelectList
+      const selectedOptions = approvalTypeMaster
         .filter((option) => option?.Value !== '0')
         .map(({ Text, Value }) => ({ label: Text, value: Value }));
       setMasterApprovalType(selectedOptions);
@@ -917,7 +981,7 @@ function UserRegistration(props) {
   const onboardingApprovalTypeHandler = (newValue, actionMeta) => {
 
     if (Array.isArray(newValue) && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
-      const selectedOptions = approvalTypeSelectList
+      const selectedOptions = approvalTypeOnboarding
         .filter((option) => option?.Value !== '0')
         .map(({ Text, Value }) => ({ label: Text, value: Value }));
       setOnboardingApprovalType(selectedOptions);
@@ -1998,6 +2062,7 @@ function UserRegistration(props) {
     let isForcefulUpdatedForMaster = false;
     let isForcefulUpdatedForCosting = false;
     let isForcefulUpdatedForSimulation = false;
+    let isForcefulUpdatedForOnboarding = false;
 
     if (JSON.stringify(masterLevelGrid) !== JSON.stringify(oldMasterLevelGrid)) {
       isForcefulUpdatedForMaster = true;
@@ -2005,15 +2070,20 @@ function UserRegistration(props) {
       isForcefulUpdatedForSimulation = true;
     } if (JSON.stringify(TechnologyLevelGrid) !== JSON.stringify(oldTechnologyLevelGrid)) {
       isForcefulUpdatedForCosting = true;
-    } if (isDepartmentUpdate || isPlantUpdate) {
+    } if (JSON.stringify(onboardingLevelGrid) !== JSON.stringify(oldOnboardingLevelGrid)) {
+      isForcefulUpdatedForOnboarding = true;
+    }
+    if (isDepartmentUpdate || isPlantUpdate) {
       isForcefulUpdatedForMaster = true;
       isForcefulUpdatedForSimulation = true;
       isForcefulUpdatedForCosting = true;
+      isForcefulUpdatedForOnboarding = true;
     }
     setIsDepartmentUpdated(isDepartmentUpdate || isPlantUpdate);
     setCostingTableChanged(isForcefulUpdatedForCosting);
     setMasterTableChanged(isForcefulUpdatedForMaster);
     setSimulationTableChanged(isForcefulUpdatedForSimulation);
+    setOnboardingTableChanged(isForcefulUpdatedForOnboarding);
     let plantArray = []
     selectedPlants && selectedPlants.map(item => {
       let obj = {
@@ -2086,8 +2156,9 @@ function UserRegistration(props) {
         updatedData.IsForcefulUpdatedForMaster = isForcefulUpdatedForMaster
         updatedData.IsForcefulUpdatedForSimulation = isForcefulUpdatedForSimulation
         updatedData.IsUpdateOnboarding = onboaringUpdate
+        updatedData.IsForcefulUpdatedForOnboarding = isForcefulUpdatedForOnboarding
       }
-      if (isDepartmentUpdate || isForcefulUpdatedForCosting || isForcefulUpdatedForMaster || isForcefulUpdatedForSimulation || isPlantUpdate) {
+      if (isDepartmentUpdate || isForcefulUpdatedForCosting || isForcefulUpdatedForMaster || isForcefulUpdatedForSimulation || isPlantUpdate || isForcefulUpdatedForOnboarding) {
         setShowPopup(true)
         setUpdatedObj(updatedData)
 
@@ -2354,26 +2425,42 @@ function UserRegistration(props) {
   }
 
   const message = () => {
+    let messages = [];
+    const isAnyTableChanged = costingTableChanged || simulationTableChanged || masterTableChanged;
+    const isOnlyOnboardingChanged = onboardingTableChanged && !isAnyTableChanged;
+
     if (isDepartmentUpdated) {
-      return `costing, simulation, and master`;
+      messages.push(`costing, simulation${getConfigurationKey().IsMasterApprovalAppliedConfigure ? ', master' : ''}`);
     } else {
       const messages = [];
 
-      if (costingTableChanged) {
-        messages.push(`costing`);
-      }
-      if (simulationTableChanged) {
-        messages.push(`simulation`);
-      }
-      if (masterTableChanged) {
-        messages.push(`master`);
-      }
+      if (costingTableChanged) messages.push(`costing`);
+      if (simulationTableChanged) messages.push(`simulation`);
+      if (masterTableChanged) messages.push(`master`);
+      if (isOnlyOnboardingChanged) messages.push(`onboarding & management`);
       if (costingTableChanged && simulationTableChanged && masterTableChanged) {
-        return `costing, simulation, and master`;
+        // This condition is redundant as the individual pushes above will already cover these cases.
+        // Consider removing this block or adjusting logic if unique behavior is intended.
       }
-      // Join the messages based on the state values
-      return messages.join(' and ');
     }
+    const messageOne = messages.join(' and ');
+    console.log('messageOne: ', messageOne);
+
+    const baseMessage = `All ${messageOne}'s approval will become `;
+    const messageTwo = `${baseMessage}${onboardingTableChanged ? 'rejected by system' : 'draft'} which are pending & awaited in approval status. Do you want to continue?`;
+
+    const messageThree = `${baseMessage}draft and onboarding and management's approval will become rejected by system, which are pending & awaited in approval status. 
+      Do you want to continue?`;
+
+    let finalMessage = '';
+
+    // Simplify the conditions by grouping similar outcomes
+    if (isOnlyOnboardingChanged || isAnyTableChanged || isDepartmentUpdated) {
+      finalMessage = (onboardingTableChanged && (isAnyTableChanged || isDepartmentUpdated)) ? messageThree : messageTwo;
+    }
+
+    return finalMessage;
+
   };
   const handlePlant = (newValue) => {
     if (newValue && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
@@ -3570,9 +3657,7 @@ function UserRegistration(props) {
           </div >
         </div >
       </div >
-      {
-        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`All ${message()}'s approval which are pending & awaited in approval status will become draft. Do you want to continue?`} />
-      }
+      {showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${message()}`} />}
     </div >
   );
 }

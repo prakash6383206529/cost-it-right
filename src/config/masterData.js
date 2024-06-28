@@ -968,36 +968,24 @@ export const IndexCommodityListingTempData = [
         "IndexExchangeName": "13CF2",
     }
 ]
-export const CommodityStandard = [
-    { label: "Commodity (Standard)", value: "CommodityStandardName" },
-]
-export const CommodityStandardTempData = [
-    {
-        "CommodityStandardName": "Alluminum",
-    }, {
-        "CommodityStandardName": "Zinc",
-    }
-]
 export const CommodityInIndexListing = [
-    { label: "Index", value: "IndexExchangeName" },
-    { label: "Commodity (In Index)", value: "CommodityName" },
+    { label: "Index", value: "CommodityName" },
 ]
 export const CommodityInIndexListingTempData = [
     {
-        "IndexExchangeName": "LME",
-        "CommodityName": "Al",
+        "CommodityName": "21FD2",
     }
 ]
 export const StandardizedCommodityNameListing = [
     { label: "Index", value: "IndexExchangeName" },
     { label: "Commodity Name (In Index)", value: "CommodityName" },
-    { label: "Commodity Name (In CIR)", value: "CommodityStandardName" },
+    { label: "Commodity Name (In CIR)", value: "CustomMaterialName" },
 ]
 export const StandardizedCommodityNameTempData = [
     {
         "IndexExchangeName": "21FD2",
         "CommodityName": "al",
-        "CommodityStandardName": "alloy",
+        "CustomMaterialName": "alloy",
     }
 ]
 /**
@@ -5821,9 +5809,6 @@ export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
 export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
     { label: "Commodity (In Index)", value: "CommodityName", },
 ]
-export const COMMODITYSTANDARD_DOWNLOAD_EXCEl = [
-    { label: "Commodity Name (Standard)", value: "CommodityStandardName", },
-]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
     { label: "Index", value: "IndexExchangeName", },
@@ -5963,6 +5948,8 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "ZipCode", value: "ZipCode", },
     { label: "Address 1", value: "AddressLine1", },
     { label: "Address 2", value: "AddressLine2", },
+    { label: "Vendor Classification", value: "VendorClassification" },
+    { label: "Vendor LPS Rating", value: "VendorLPSRating" },
     { label: "Status", value: "status", }
 ]
 
@@ -8287,5 +8274,8 @@ export const NFR_RAW_MATERIAL_NAME = 'RawMaterial'
 
 export const REJECTION_RECOVERY_APPLICABILITY = [
     { label: "Scrap Rate * Net Weight", value: '24' },
+    // { label: "Scap Rate * Net weight", value: 1 },
     { label: "Fixed", value: '7' },
 ]
+
+export const PACK_AND_FREIGHT_PER_KG = 'Per kg'

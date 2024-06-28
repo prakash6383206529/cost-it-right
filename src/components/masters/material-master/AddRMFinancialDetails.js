@@ -639,12 +639,50 @@ function AddRMFinancialDetails(props) {
             minDate: date,
             maxDate: validToDate,
         }));
+    };
+    // const handleFrequencyChange = (value) => {
+    //     
+    //     switch (value) {
+    //         case 'Weekly':
+    //             setState(prevState => ({ ...prevState, dateRange: 6 }));
+    //             break;
+    //         case 'Fortnightly':
+    //             setState(prevState => ({ ...prevState, dateRange: 14 }));
+    //             break;
+    //         //   case 'Monthly':
+    //         //   
+    //         //     break;
+    //         //   case 'Quarterly':
+    //         //     setMaxFromDate(DayTime(state.fromEffectiveDate).add(3, 'onths').format('YYYY-MM-DD'));
+    //         //     setMinToDate(DayTime(state.fromEffectiveDate).format('YYYY-MM-DD'));
+    //         //     break;
+    //         //   case 'Half Yearly':
+    //         //     setMaxFromDate(DayTime(state.fromEffectiveDate).add(6, 'onths').format('YYYY-MM-DD'));
+    //         //     setMinToDate(DayTime(state.fromEffectiveDate).format('YYYY-MM-DD'));
+    //         //     break;
+    //         //   case 'Yearly':
+    //         //     setMaxFromDate(DayTime(state.fromEffectiveDate).add(1, 'years').format('YYYY-MM-DD'));
+    //         //     setMinToDate(DayTime(state.fromEffectiveDate).format('YYYY-MM-DD'));
+    //         //     break;
+    //         case 'As and When':
+    //             // no restrictions
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // };
+    // const handleFromEffectiveDateChange = (date) => {
+    //     // setState(prevState => ({ ...prevState, fromEffectiveDate: date }));
+    //     // const frequency = state.frequencyOfSettlement;
+    //     // const validToDate = getValidToDate(date, frequency);
+    //     // setValue('toDate', validToDate);
+    // setState(prevState => ({ ...prevState, toEffectiveDate: date, minDate: date }));
 
-        setValue('toDate', validToDate);
-    };
+    // };
     const handleToEffectiveDateChange = (date) => {
-        setState(prevState => ({ ...prevState, toDate: date }));
-    };
+        
+        setState(prevState => ({ ...prevState, toEffectiveDate: date, maxDate: date }));
+    }
     const handleVendor = () => {
         if (rawMaterailDetails && rawMaterailDetails?.Vendor?.length !== 0 && state.currency && state.currency.length !== 0 && state.effectiveDate) {
             dispatch(getExchangeRateByCurrency(state.currency?.label, (states.costingTypeId === VBCTypeId || states.costingTypeId === ZBCTypeId) ? VBCTypeId : states.costingTypeId, DayTime(state.effectiveDate).format('YYYY-MM-DD'), (states.costingTypeId === VBCTypeId || states.costingTypeId === ZBCTypeId) ? rawMaterailDetails?.Vendor?.value : EMPTY_GUID, rawMaterailDetails?.customer?.value, false, res => {

@@ -16,9 +16,12 @@ import Machining from './MachiningCalculator'
 import Pipe from './sheetMetal/Pipe'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Stamping from './Stamping'
+import { showPaperCorrugatedBox } from '../../../../config/constants'
+import PaperCorrugatedBox from './corrugatedBox/PaperCorrugatedBox'
 
 function OpenWeightCalculator(props) {
-  const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox } = props
+  const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox, calculatorType } = props
+
   let appyMasterBatch;
   let totalRM;
   if (!isSummary) {
@@ -60,7 +63,15 @@ function OpenWeightCalculator(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return
     }
-    props.closeDrawer(event, weightData, originalWeight)
+    let calculatorType = ''
+    if (!CostingViewMode) {
+      if (weightData.CalculatorType) {
+        calculatorType = weightData.CalculatorType
+      } else {
+        calculatorType = (props.rmData[0] && props.rmData[0].CalculatorType && props.rmData[0].WeightCalculationId) ? props.rmData[0].CalculatorType : ''
+      }
+    }
+    props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX) && !CostingViewMode) ? calculatorType : event, weightData, originalWeight)
   }
 
   /**
@@ -140,15 +151,28 @@ function OpenWeightCalculator(props) {
         )
 
       case CORRUGATEDBOX:
-        return (
-          <CorrugatedBoxCalculator
-            rmRowData={props.rmRowData}
-            isEditFlag={props.isEditFlag}
-            toggleDrawer={toggleDrawer}
-            item={item}
-            CostingViewMode={CostingViewMode ? CostingViewMode : false}
-          />
-        )
+        if (calculatorType === 'CorrugatedAndMonoCartonBox') {
+          return (
+            <PaperCorrugatedBox
+              rmRowData={props.rmRowData}
+              isEditFlag={props.isEditFlag}
+              toggleDrawer={toggleDrawer}
+              item={item}
+              rmData={rmData}
+              CostingViewMode={CostingViewMode ? CostingViewMode : false}
+            />
+          )
+        } else {
+          return (
+            <CorrugatedBoxCalculator
+              rmRowData={props.rmRowData}
+              isEditFlag={props.isEditFlag}
+              toggleDrawer={toggleDrawer}
+              item={item}
+              CostingViewMode={CostingViewMode ? CostingViewMode : false}
+            />
+          )
+        }
       case Ferrous_Casting:
         return (
           <Ferrous
@@ -222,7 +246,7 @@ function OpenWeightCalculator(props) {
                 ></div>
               </Col>
             </Row>
-            {Number(technology) !== Number(RUBBER) && Number(technology) !== Number(Ferrous_Casting) &&
+            {Number(technology) !== Number(RUBBER) && Number(technology) !== Number(Ferrous_Casting) && (showPaperCorrugatedBox && Number(technology) !== Number(CORRUGATEDBOX)) &&
               <Row className="mt-4 mb-4 pb-2">
                 <Col md="12 d-flex weight-calculator-headings">
                   <div className="d-inline-block overflow"><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowData.RMName}>{`${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</span></div>

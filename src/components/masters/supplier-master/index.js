@@ -3,13 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import classnames from "classnames";
 import ScrollToTop from "../../common/ScrollToTop";
-import { LPS, MASTERS, PART, VENDOR_MANAGEMENT } from "../../../config/constants";
+import { LPS, MASTERS, VENDOR, VENDOR_MANAGEMENT } from "../../../config/constants";
 import { checkPermission } from "../../../helper/util";
 import { MESSAGES } from "../../../config/message";
 import { resetStatePagination } from "../../common/Pagination/paginationAction";
-import SupplierClassificationListing from "../../vendorManagement/VendorClassificationListing";
 import LpsRatingListing from "../../vendorManagement/LpsRatingLisitng";
 import VendorListing from "./VendorListing";
+import VendorClassificationListing from "../../vendorManagement/VendorClassificationListing";
 export const ApplyPermission = React.createContext();
 
 const VendorMaster = () => {
@@ -26,6 +26,7 @@ const VendorMaster = () => {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration);
     const disabledClass = useSelector((state) => state.comman.disabledClass);
     const [permissionData, setPermissionData] = useState({});
+    const [isVendorManagement, setIsVendorManagement] = useState(false);
 
     useEffect(() => {
         applyPermission(topAndLeftMenuData); toggle("1");
@@ -35,7 +36,7 @@ const VendorMaster = () => {
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
             const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
-            const accessData = Data && Data.Pages.find((el) => el.PageName === PART);
+            const accessData = Data && Data.Pages.find((el) => el.PageName === VENDOR);
             const classification = Data && Data.Pages.find((el) => el.PageName === VENDOR_MANAGEMENT)
 
             const lps = Data && Data.Pages.find((el) => el.PageName === LPS)
@@ -86,14 +87,14 @@ const VendorMaster = () => {
                             </Nav>
                             <TabContent activeTab={state.activeTab}>
                                 {state.activeTab === "1" && (
-                                    <TabPane tabId="1"><VendorListing />
+                                    <TabPane tabId="1"><VendorListing isVendorManagement={isVendorManagement} />
                                     </TabPane>
                                 )}
                                 {state.activeTab === "2" && ViewClassificationAccessibility && (
-                                    <TabPane tabId="2"><SupplierClassificationListing />
+                                    <TabPane tabId="2"><VendorClassificationListing />
                                     </TabPane>
                                 )}
-                                {state.activeTab === "3" && ViewLpsRatingAccessibility(
+                                {state.activeTab === "3" && ViewLpsRatingAccessibility && (
                                     <TabPane tabId="3"><LpsRatingListing />
                                     </TabPane>
                                 )}

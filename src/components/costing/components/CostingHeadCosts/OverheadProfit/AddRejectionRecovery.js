@@ -254,7 +254,7 @@ function AddRejectionRecovery(props) {
                                     <Col md="12">
                                         {state.rejectionApplicabilityType !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass={""} id={'NetRejectionRecovery'} width="280px" tooltipText={"Net Rejection Recovery = Cost Applicability * Effective Recovery Percentage / 100"} />}
                                         <TextFieldHookForm
-                                            label="Net Rejection Recovery"
+                                            label="Net Rejection Recovery Cost"
                                             name={'NetRejectionRecovery'}
                                             id="NetRejectionRecovery"
                                             Controller={Controller}

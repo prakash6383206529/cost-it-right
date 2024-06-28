@@ -744,7 +744,7 @@ class AddFreight extends Component {
                           <Col md="12">
                             <div className="left-border">{"Freight:"}</div>
                           </Col>
-                          <Col md="3">
+                          {/* <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -770,7 +770,7 @@ class AddFreight extends Component {
                                 />
                               </div>
                             </div>
-                          </Col>
+                          </Col> */}
                           {costingTypeId === VBCTypeId && (
                             <Col md="3">
                               <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
