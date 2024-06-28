@@ -581,7 +581,7 @@ function ViewDrawer(props) {
         }
 
         if (status === 'rejected_file_type') {
-            Toaster.warning('Allowed only xls, doc, jpeg, pdf, and zip files.');
+            Toaster.warning('Allowed only xls, doc, jpeg, pdf, zip files.');
         } else if (status === 'error_file_size') {
             setAttachmentLoader(false);
             dropzone.current.files.pop();
