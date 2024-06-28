@@ -21,6 +21,7 @@ export const config = () => {
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.109:8070/api/v1`
+  // const BASE_URL = `http://10.10.11.81:8080/api/v1`;
 //const BASE_URL = `http://10.10.8.109:8070/api/v1`
 // const BASE_URL = `http://10.10.8.109:8070/api/v1`
 // const BASE_URL = `http://10.10.1.100:10152/api/v1`
@@ -1115,7 +1116,7 @@ export const API = {
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
   getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
-  getSpecificationDetailTco : `${BASE_URL}/rfq-quotation/get-costing-part-specification`,
+  getSpecificationDetailTco : `${BASE_URL}/rfq-quotation/get-costing-specification`,
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -1770,7 +1771,7 @@ export const AUTH_API_REQUEST = 'AUTH_API_REQUEST'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS'
 export const LOGIN_PAGE_INIT_CONFIGURATION = 'LOGIN_PAGE_INIT_CONFIGURATION'
-
+export const GET_QUOTATION_ID_FOR_RFQ  = 'GET_QUOTATION_ID_FOR_RFQ'
 //USER
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS'
 export const GET_USER_DATA_SUCCESS = 'GET_USER_DATA_SUCCESS'
@@ -1973,6 +1974,7 @@ export const GET_NFR_INSIGHT_STATUS_DETAILS = 'GET_NFR_INSIGHT_STATUS_DETAILS'
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
 export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
+export const GET_QUOTATION_DETAILS_LIST = 'GET_QUOTATION_DETAILS_LIST'
 export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
 export const SELECTED_ROW_ARRAY = 'SELECTED_ROW_ARRAY'
 export const GET_NFR_SELECT_LIST = 'GET_NFR_SELECT_LIST'
@@ -2013,7 +2015,8 @@ export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
 export const EXTERNAL_REJECT = 'ExternalReject'
-export const DRAFTID = 1
+export const PREDRAFT = 'PreDraft'
+ export const DRAFTID = 1
 export const REJECTEDID = 4
 export const ERRORID = 12
 export const PENDING_FOR_APPROVAL_ID = 2

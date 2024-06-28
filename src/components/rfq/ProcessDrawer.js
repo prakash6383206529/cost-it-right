@@ -22,14 +22,27 @@ import { REMARKMAXLENGTH } from '../../config/masterData'
 import Dropzone from 'react-dropzone-uploader'
 import LoaderCustom from '../common/LoaderCustom'
 import Toaster from '../common/Toaster'
-import { fileUploadQuotation, getAssemblyChildpart, getRfqPartDetails } from './actions/rfq'
+import { fileUploadQuotation, getAssemblyChildpart, getRfqPartDetails, setRfqPartDetails } from './actions/rfq'
+import _ from 'lodash';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import DatePicker from 'react-datepicker'
+import DayTime from '../common/DayTimeWrapper';
 
+const gridOptionsPart = {}
 function ViewDrawer(props) {
     const dispatch = useDispatch()
     const dropzone = useRef(null);
 
-    const { type, isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark } = props
+    const sopObjectTemp = [
+        { sop: 'SOP1' },
+        { sop: 'SOP2' },
+        { sop: 'SOP3' },
+        { sop: 'SOP4' },
+        { sop: 'SOP5' },
+    ]
 
+    const { type, isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, setPartListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate } = props
+    console.log('effectiveMinDate: ', effectiveMinDate);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -37,7 +50,10 @@ function ViewDrawer(props) {
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
     const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
-    const { getChildParts } = useSelector(state => state?.rfq);
+    const { getChildParts, getRfqPartDetails } = useSelector(state => state?.rfq);
+
+    // const [sopQuantityList, setSopQuantityList] = useState([]);
+
 
     const [rmspecification, setRMSpecification] = useState([])
     const [rmName, setRMName] = useState([])
@@ -61,47 +77,131 @@ function ViewDrawer(props) {
     const [valueState, setValueState] = useState('')
     const [selectedValues, setSelectedValues] = useState([]);
     const [childPart, setChildPart] = useState([])
+    const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [gridApi, setGridApi] = useState(null);
+    const [sopQuantity, setSopQuantity] = useState([])
+    const [state, setState] = useState(false)
+
+    const [fiveyearList, setFiveyearList] = useState([])
+    const [isNewDate, setIsNewDate] = useState(false)
     useEffect(() => {
         setValue('AssemblyPartNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
         if (type === Component) {
             setValue('partNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
+        } else {
+            if (!isViewFlag) {
+                dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => { }))
+            }
         }
-        dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => { }))
     }, [AssemblyPartNumber])
-    // useEffect(() => {
-    //     dispatch(getRfqPartDetails((res) => { }))
-    // }, [])
+    useEffect(() => {
+        if ((isEditFlag || isViewFlag) && getRfqPartDetails) {
+            const partList = getRfqPartDetails?.PartList || [];
 
-    // useEffect(() => {
-    //     // if ((isEditFlag || isViewFlag) && getChildParts) {
-    //     //const partList = getChildParts() || [];
-    //     const partList = rfq?.PartList || [];
+            const sopDate = partList[0]?.SOPDate
 
-    //     const allSpecifications = partList.flatMap(part =>
-    //         part.PartSpecificationList?.PartSpecification || []
-    //     );
+            setSOPDate(sopDate || '')
+            if (partList.length > 0) {
+                let arr = []
+                partList.forEach((part, index) => {
+                    console.log('part: ', part);
 
-    //     setSpecificationList(allSpecifications);
-    //     const allRMDetails = partList.flatMap(part =>
-    //         part.RMDetails || []
-    //     );
-    //     setTableData(allRMDetails);
-    //     const allRemarks = partList
-    //         ? partList
-    //             .filter(part => !part.IsChildPart) // Filter out parts where IsChildPart is false
-    //             .map(part => part.Remarks)         // Map to an array of remarks
-    //             .join(", ")                        // Join remarks into a single string separated by ", "
-    //         : "";
-    //     
-    //     setValue('remark', allRemarks)
 
-    //     setRemark(allRemarks);
-    //     const allFiles = partList.flatMap(part =>
-    //         part.PartAttachments || []
-    //     );
+                    const PartId = part.PartId || '';
+                    const PartNumber = part.PartNumber || '';
+                    if (index === 0) {
+                        const allSopQuantityDetails = part?.SOPQuantityDetails || []
+                        console.log('allSopQuantityDetails: ', allSopQuantityDetails);
 
-    //     setChildPartFiles(allFiles);
-    // }, [getChildParts]);
+                        const uniqueSopQuantityDetails = _.uniqBy(allSopQuantityDetails, item => `${item.PartId}-${item.PartNumber}`);
+
+                        setSopQuantityList(sopQuantityList => allSopQuantityDetails)
+                    }
+                    console.log('part.PartSpecification: ', part.PartSpecification);
+                    const allSpecifications = (part.PartSpecification || []).map(detail => ({
+                        ...detail,
+                        PartId: PartId,
+                        PartNumber: PartNumber,
+                        uniqueKey: `${PartId}-${detail.Specification}` //QuotationPartSpecificationIdRef
+                    }));
+                    console.log('allSpecifications: ', allSpecifications);
+
+
+                    arr.push(...allSpecifications)
+
+
+                    const allRMDetails = (part.RMDetails || []).map(detail => ({
+                        ...detail,
+                        PartId: PartId,
+                        PartNumber: PartNumber,
+                        uniqueKey: `${PartId}-${detail.RawMaterialSpecificationId}`
+                    }));
+
+                    setTableData(tableData => _.uniqBy([...allRMDetails], 'RawMaterialChildId'));
+                    const remarks = part.Remarks || '';
+                    setValue('remark', remarks);
+                    setRemark(remarks);
+
+                    const allFiles = part.Attachments || [];
+                    setFiles(files => [...files, ...allFiles]);
+                    setChildPartFiles(childPartFiles => [...childPartFiles, ...allFiles]);
+                });
+                setSpecificationList(specificationList => _.uniqBy([...arr], 'QuotationPartSpecificationIdRef'));
+            }
+        }
+    }, [getRfqPartDetails, isViewFlag, isEditFlag]);
+    console.log("specificationList", specificationList);
+    useEffect(() => {
+        // if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
+        //     Toaster.warning("Please select part number and SOP date");
+        //     return false;
+        // } 
+        if (sopdate && !(isViewFlag)) {
+            if ((isEditFlag && sopQuantityList?.length === 0) || isNewDate) {
+
+                let objTemp = {};
+                let arrTemp = [];
+                sopObjectTemp && sopObjectTemp.map((item, index) => {
+                    let newObjTemp = { ...objTemp }; // Create a new object in each iteration
+                    newObjTemp.PartNumber = AssemblyPartNumber?.label;
+                    newObjTemp.SOPDate = sopdate
+
+                    // newObjTemp.PartId = AssemblyPartNumber?.value;
+
+                    // if (index === 2) {
+                    //     newObjTemp.PartNumber = AssemblyPartNumber?.label;
+                    // }
+                    // if (nfrId && nfrId.value !== null) {
+                    //     if (index === 0) {
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //         newObjTemp.YearName = Data.FirstYear
+                    //     } else if (index === 1) {
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //         newObjTemp.YearName = Data.SecondYear
+                    //     } else if (index === 2) {
+                    //         newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //         newObjTemp.YearName = Data.ThirdYear
+                    //     } else if (index === 3) {
+                    //         newObjTemp.Quantity = 0;
+                    //         newObjTemp.YearName = parseInt(Data.ThirdYear) + 1
+                    //         newObjTemp.isEdit = true
+                    //     } else if (index === 4) {
+                    //         newObjTemp.Quantity = 0;
+                    //         newObjTemp.YearName = parseInt(Data.ThirdYear) + 2
+                    //         newObjTemp.isEdit = true
+                    //     }
+                    // } else {
+                    newObjTemp.Quantity = 0
+                    newObjTemp.YearName = fiveyearList[index]
+                    newObjTemp.isEdit = true
+                    // }
+                    arrTemp.push(newObjTemp);
+                    return null;
+                });
+                setSopQuantityList(arrTemp)
+            }
+        }
+    }, [sopdate])
 
     const removeAddedParts = (arr) => {
         const filteredArray = arr.filter((item) => {
@@ -128,7 +228,8 @@ function ViewDrawer(props) {
         ) {
             return
         }
-        props.closeDrawer('')
+        props?.setViewQuotationPart(false)
+        props.closeDrawer('', false)
     }
     const renderListingRM = (label) => {
 
@@ -189,6 +290,35 @@ function ViewDrawer(props) {
         setChildPart({ label: newValue?.label, value: newValue?.value })
 
     }
+    // const handleSOPDateChange = (value) => {
+    //     let year = new Date(value).getFullYear()
+    //     const yearList = getNextFiveYears(year)
+    //     setFiveyearList(yearList)
+    //     setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+    //     if (updateButtonPartNoTable) {
+    //         setStorePartsDetail((prevDetails) => {
+    //             return prevDetails.map((item) => {
+    //                 if (item.PartId === getValues('partNumber')?.value) {
+    //                     return {
+    //                         ...item,
+    //                         UnitOfMeasurementIdRef: getValues('UnitOfMeasurementIdRef')?.value || null,
+    //                         SOPDate: DayTime(value).format('YYYY-MM-DD HH:mm:ss') || "",
+    //                         HavellsDesignPart: getValues('HavellsDesignPart')?.value || "",
+    //                         TimeLine: requirementDate || ""
+    //                     };
+    //                 } else {
+    //                     return {
+    //                         ...item,
+    //                         UnitOfMeasurementIdRef: null,
+    //                         SOPDate: null,
+    //                         HavellsDesignPart: null,
+    //                         TimeLine: null
+    //                     };
+    //                 }
+    //             });
+    //         });
+    //     }
+    // }
     const handleRMName = (newValue) => {
         setRMName({ label: newValue?.label, value: newValue?.value })
         setRmNameSelected(true)
@@ -244,13 +374,13 @@ function ViewDrawer(props) {
 
         const obj = {
             PartNumber: partNumberLabel,
-            partId: partIdRef,
-            RmName: rmNameLabel,
-            RmChildId: rmChildId,
-            RmGrade: rmGradeLabel,
-            RmGradeId: rmGradeId,
-            RmSpecificationId: rmSpecificationId,
-            RmSpecification: rmSpecificationLabel,
+            PartId: partIdRef,
+            RawMaterialName: rmNameLabel,
+            RawMaterialChildId: rmChildId,
+            RawMaterialGrade: rmGradeLabel,
+            RawMaterialGradeId: rmGradeId,
+            RawMaterialSpecificationId: rmSpecificationId,
+            RawMaterialSpecification: rmSpecificationLabel,
             childPart: true,
         };
         const specificationObj = {
@@ -276,11 +406,13 @@ function ViewDrawer(props) {
                 Toaster.warning("Please enter value");
             }
 
-            else if (specificationList.length >= 3) {
-                Toaster.warning("You can only add up to 3 specifications.");
-            } else {
+            // else if (specificationList.length >= 3) {
+            //     Toaster.warning("You can only add up to 3 specifications.");
+            // } 
+            else {
 
                 setSpecificationList(prevData => [...prevData, specificationObj]);
+
                 resetFormAndDropdowns();
             }
 
@@ -309,17 +441,18 @@ function ViewDrawer(props) {
 
 
     const rateTableReset = () => {
-        setTableData([]);
-        setSpecificationList([]);
+
         resetFormAndDropdowns();
     }
     const handleCloseDrawer = () => {
-        const isFormValid = validateForm(); // Implement this function to check form validity
-        if (!isFormValid) {
-            Toaster.warning('Please fill in all required fields.');
-        } else {
-            props?.closeDrawer('');
-        }
+        // if (isViewFlag || isEditFlag) {
+        //     saveRfqPartsData()
+
+        // }
+        props?.closeDrawer('', true);
+        props?.setViewQuotationPart(false)
+        dispatch(setRfqPartDetails({}));
+
 
     }
     const cancelUpdate = () => {
@@ -343,7 +476,7 @@ function ViewDrawer(props) {
             if (type === Component) {
                 setValue('partNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
             }
-            const removedItemPartNumber = tempObj.partId;
+            const removedItemPartNumber = tempObj.PartId;
             const newData = [...tableData];
             newData.splice(index, 1);
             setTableData(newData);
@@ -362,10 +495,10 @@ function ViewDrawer(props) {
             setValue('Value', editSpecification.Value);
         } else {
             const tempObj = tableData[index];
-            setValue('partNumber', { label: tempObj.PartNumber, value: tempObj.PartNumber });
-            setValue('RMName', { label: tempObj.RmName, value: tempObj.RmName });
-            setValue('RMGrade', { label: tempObj.RmGrade, value: tempObj.RmGrade });
-            setValue('RMSpecification', { label: tempObj.RmSpecification, value: tempObj.RmSpecification });
+            setValue('partNumber', { label: tempObj.PartNumber, value: tempObj.PartId });
+            setValue('RMName', { label: tempObj.RawMaterialName, value: tempObj.RawMaterialChildId });
+            setValue('RMGrade', { label: tempObj.RawMaterialGrade, value: tempObj.RawMaterialGradeId });
+            setValue('RMSpecification', { label: tempObj.RawMaterialSpecification, value: tempObj.RawMaterialSpecificationId });
         }
 
         setEditIndex(index);
@@ -398,6 +531,14 @@ function ViewDrawer(props) {
         if (dropzone?.current !== null) {
             dropzone.current.files.pop()
         }
+    }
+    const partNumberFormatter = (props) => {
+
+        const row = props?.data;
+
+        const value = row?.RevisionNumber ? (row?.PartNumber + ' (' + row?.RevisionNumber + ')') : (row?.PartNumber ? row?.PartNumber : '')
+
+        return <div className={`${value ? 'font-ellipsis' : 'row-merge'}`}>{value}</div>
     }
     const handleChangeStatus = ({ meta, file }, status) => {
 
@@ -450,6 +591,116 @@ function ViewDrawer(props) {
             dropzone.current.files.pop();
             Toaster.warning("Something went wrong");
         }
+    };
+    const buttonFormatterFirst = (props) => {
+        let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
+        let show = (props?.data?.PartNumber === undefined) ? false : true
+        const row = props?.data;
+        return (
+            <>
+                {/* {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions?.rowData, props, true)} />}
+                {show && <button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} type={'button'} onClick={() => deleteItemPartTable(row, final)} />} */}
+            </>
+        )
+    };
+    const onGridReady = (params) => {
+        params.api.sizeColumnsToFit();
+        setGridColumnApi(params.columnApi)
+        setGridApi(params.api)
+        params.api.paginationGoToPage(0);
+        // setTimeout(() => {
+        //     setShowTooltip(true)
+        // }, 100);
+    };
+    const EditableCallback = (props) => {
+
+        let value
+        value = isViewFlag ? false : true
+
+
+        return value
+    }
+    const quantityHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text d-flex'>Annual Forecast Quantity<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"quantity-tooltip"}></i> </span>
+            </div>
+        );
+    };
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: false,
+
+    };
+    // const buttonFormatterVendorTable = (props) => {
+    //     return (
+    //         <>
+    //             {<button title='Delete' className="Delete align-middle" type={'button'} disabled={isEditFlag ? true : isViewFlag ? false : true} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+    //         </>
+    //     )
+    // }
+    const beforeSaveCell = (props) => {
+        let cellValue = props
+        if (cellValue === undefined) {
+            return true
+        }
+        if (cellValue && !/^[0-9]+(\.[0-9]+)?$/.test(cellValue)) {
+            Toaster.warning('Please enter a valid positive number.');
+            return false;
+        }
+        return true
+    }
+    const sopFormatter = (props) => {
+
+        const cellValue = props?.value;
+        return cellValue ? cellValue : '-'
+    }
+    const afcFormatter = (props) => {
+
+        let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
+
+        const cell = props?.value;
+
+        const value = beforeSaveCell(cell)
+
+        setSopQuantityList(final)
+        // setPartList(final)
+
+        let isEnable
+        isEnable = isEditFlag ? true : isViewFlag ? false : true
+
+
+
+        return (
+            <>
+                {<span className={`form-control custom-max-width-110px  ${isEnable ? '' : 'disabled'}`} >{value ? Number(cell) : 0}</span>}
+            </>
+        )
+    }
+    function getNextFiveYears(currentYear) {
+        const years = [];
+        for (let i = 0; i < 5; i++) {
+            years.push(currentYear + i);
+        }
+        return years;
+    }
+    const handleSOPDateChange = (value) => {
+        console.log('value: ', value);
+        let year = new Date(value).getFullYear()
+        const yearList = getNextFiveYears(year)
+        setIsNewDate(true)
+        setFiveyearList(yearList)
+        setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+    }
+
+    const frameworkComponents = {
+        buttonFormatterFirst: buttonFormatterFirst,
+        customNoRowsOverlay: NoContentFound,
+        sopFormatter: sopFormatter,
+        EditableCallback: EditableCallback,
+        afcFormatter: afcFormatter,
+        quantityHeader: quantityHeader
     };
 
     return (
@@ -519,7 +770,8 @@ function ViewDrawer(props) {
                                                 // handleChange={handleDestinationPlantChange}
                                                 handleChange={(newValue) => handleChildPart(newValue)}
                                                 errors={errors.partNumber}
-                                                disabled={type === Component ? true : false}
+                                                disabled={(isViewFlag || type === Component) ? true : false}
+                                                //disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : isEdit ? false : !isEditFlag ? false : true}
 
                                                 isLoading={plantLoaderObj}
                                                 options={renderListingRM('childPartName')}
@@ -542,7 +794,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmname')}
                                             mandatory={false}
                                             handleChange={(newValue) => handleRMName(newValue)}
-                                            disabled={isViewFlag || tableData.length > 0}
+                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : isEdit ? false : !isEditFlag ? false : true}
                                         // errors={`${indexInside} CostingVersion`}
                                         />
                                     </Col>
@@ -561,7 +813,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmgrade')}
                                             mandatory={rmNameSelected}
                                             handleChange={(newValue) => handleRMGrade(newValue)}
-                                            disabled={isViewFlag || tableData.length > 0}                                        // errors={`${indexInside} CostingVersion`}
+                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : isEdit ? false : !isEditFlag ? false : true}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -579,7 +831,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmspecification')}
                                             mandatory={rmNameSelected}
                                             handleChange={(newValue) => handleRMSpecification(newValue)}
-                                            disabled={isViewFlag || tableData.length > 0}                                        // errors={`${indexInside} CostingVersion`}
+                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : isEdit ? false : !isEditFlag ? false : true}
                                         />
                                     </Col>
 
@@ -626,6 +878,7 @@ function ViewDrawer(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.Specification}
+                                                    disabled={isViewFlag}
                                                 />
 
                                             </Col>
@@ -648,6 +901,7 @@ function ViewDrawer(props) {
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     errors={errors.Value}
+                                                    disabled={isViewFlag}
                                                 />
 
                                             </Col>
@@ -672,18 +926,19 @@ function ViewDrawer(props) {
                                             register={register}
                                             //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
                                             // options={renderListing("DestinationPlant")}
-                                            mandatory={true}
+
                                             customClassName={"withBorder"}
                                             handleChange={(e) => { handleRemarkChange(e.target.value) }}
                                             errors={errors.remark}
                                             // disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                             rowHeight={6}
+                                            disabled={isViewFlag}
                                         // isLoading={plantLoaderObj}
                                         />
                                     </Col>
                                 </Row>
                                 <Col md="6" className="height152-label">
-                                    <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
+                                    <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required"></span></label>
                                     <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit has been reached.
                                     </div>
@@ -721,7 +976,7 @@ function ViewDrawer(props) {
                                                     extra.reject ? { color: "red" } : {},
                                             }}
                                             classNames="draper-drop"
-                                        // disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                            disabled={isViewFlag}
                                         />
                                     </div>
                                 </Col>
@@ -783,14 +1038,14 @@ function ViewDrawer(props) {
                                                 type="button"
                                                 className={'user-btn mt30 pull-left'}
                                                 onClick={() => addRow(activeTab)}
-                                                disabled={activeTab === "1" ? (isViewFlag || tableData.length > 0) : false}                                        // errors={`${indexInside} CostingVersion`}
+                                                disabled={isViewFlag || !isEditFlag ? (type === Component && activeTab === "1" ? tableData.length > 0 : false) : false}                                        // errors={`${indexInside} CostingVersion`}
                                             >
                                                 <div className={'plus'}></div>ADD
                                             </button>
                                             <button
                                                 type="button"
                                                 className={"mr15 ml-1 mt30 reset-btn"}
-                                                disabled={activeTab === "1" ? (isViewFlag || tableData.length > 0) : false}
+                                                disabled={isViewFlag || !isEditFlag ? (type === Component && activeTab === "1" ? tableData.length > 0 : false) : false}
                                                 onClick={rateTableReset}
                                             >
                                                 Reset
@@ -819,21 +1074,23 @@ function ViewDrawer(props) {
                                             tableData?.map((item, index) => (
                                                 <tr key={index}>
                                                     <td>{item.PartNumber !== null ? item.PartNumber : '-'}</td>
-                                                    <td>{item.RmGrade !== null ? item.RmGrade : '-'}</td>
-                                                    <td>{item.RmName !== null ? item.RmName : '-'}</td>
-                                                    <td>{item.RmSpecification !== null ? item.RmSpecification : '-'}</td>
+                                                    <td>{item.RawMaterialGrade !== null ? item.RawMaterialGrade : '-'}</td>
+                                                    <td>{item.RawMaterialName !== null ? item.RawMaterialName : '-'}</td>
+                                                    <td>{item.RawMaterialSpecification !== null ? item.RawMaterialSpecification : '-'}</td>
                                                     <td>
                                                         <button
                                                             className="Edit mr-2"
                                                             type="button"
                                                             title="Edit"
                                                             onClick={() => editRow(index, activeTab)}
+                                                            disabled={isViewFlag}
                                                         />
                                                         <button
                                                             className="Delete"
                                                             type="button"
                                                             title="Delete"
                                                             onClick={() => deleteRow(index, activeTab)}
+                                                            disabled={isViewFlag}
                                                         />
                                                     </td>
                                                 </tr>
@@ -849,12 +1106,14 @@ function ViewDrawer(props) {
                                                             type={'button'}
                                                             title='Edit'
                                                             onClick={() => editRow(index, activeTab)}
+                                                            disabled={isViewFlag}
                                                         />
                                                         <button
                                                             className="Delete"
                                                             title='Delete'
                                                             type={'button'}
                                                             onClick={() => deleteRow(index, activeTab)}
+                                                            disabled={isViewFlag}
                                                         />
                                                     </td>
                                                 </tr>
@@ -866,8 +1125,82 @@ function ViewDrawer(props) {
                                                 </td>
                                             </tr>
                                         )}
+
                                     </tbody>
                                 </Table>
+
+                                {activeTab === "2" && (
+                                    <>
+                                        <HeaderTitle title={'Add Volume'} customClass="mt-5" />
+                                        <Row className='mt-3 mb-1'>
+                                            <Col md="3">
+                                                <div className="form-group">
+                                                    <label>SOP Date<span className="asterisk-required">*</span></label>
+                                                    <div id="addRFQDate_container" className="inputbox date-section">
+                                                        <DatePicker
+                                                            name={'SOPDate'}
+                                                            placeholder={'Select'}
+                                                            //selected={submissionDate}
+                                                            selected={DayTime(sopdate).isValid() ? new Date(sopdate) : ''}
+                                                            onChange={handleSOPDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            dropdownMode='select'
+                                                            // minDate={new Date()}
+                                                            minDate={effectiveMinDate || new Date()}
+                                                            dateFormat="dd/MM/yyyy"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={"off"}
+                                                            mandatory={true}
+                                                            errors={errors.SOPDate}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={false}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                        <div className="tab-pane fade active show" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                            <Row>
+                                                <Col md="12" className='ag-grid-react'>
+                                                    <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${partListData && partListData.length === 0 ? "overlay-contain border" : ""} `} >
+
+                                                        <div className={`ag-theme-material`}>
+                                                            <AgGridReact
+                                                                defaultColDef={defaultColDef}
+                                                                floatingFilter={false}
+                                                                domLayout='autoHeight'
+                                                                // columnDefs={c}
+                                                                rowData={sopQuantityList}
+                                                                //pagination={true}
+                                                                onGridReady={onGridReady}
+                                                                gridOptions={gridOptionsPart}
+                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                noRowsOverlayComponentParams={{
+                                                                    title: EMPTY_DATA,
+                                                                    imagClass: 'imagClass'
+                                                                }}
+                                                                frameworkComponents={frameworkComponents}
+                                                            // stopEditingWhenCellsLoseFocus={true}
+                                                            // suppressColumnVirtualisation={true}
+
+                                                            >
+                                                                <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
+                                                                {/* <AgGridColumn width={"180px"} field="PartNumber" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn> */}
+
+
+                                                            </AgGridReact>
+
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            </Row >
+                                        </div>
+                                    </>)}
                             </Col>)}
 
 
@@ -893,6 +1226,7 @@ function ViewDrawer(props) {
                                             handleCloseDrawer();
                                         }}
                                         buttonName={isEditFlag ? "Update" : "Save"}
+                                        disabled={isViewFlag}
                                     />
                                 </div>
                             </div>

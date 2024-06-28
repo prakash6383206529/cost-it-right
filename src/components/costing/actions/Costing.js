@@ -70,11 +70,10 @@ import {
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
   PARTSPECIFICATIONRFQDATA,
 } from '../../../config/constants'
-import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
+import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import specification from '../components/CostingHeadCosts/AdditionalOtherCost/specification.json'
 // let config() = config
 
 /**
@@ -2977,32 +2976,37 @@ export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
   })
 }
 
-export const getSpecificationDetailTco = () => {
-  return (dispatch) => {
-    dispatch({
-      type: PARTSPECIFICATIONRFQDATA,
-      payload:specification.Data.PartList // Dispatch mock or predefined data
-    });
-  };
-};
-
-// export function getSpecificationDetailTco(quotationId,baseCostingId, callback) {
+// export const getSpecificationDetailTco = () => {
 //   return (dispatch) => {
-//       const request = axios.get(`${API.getSpecificationDetailTco}?baseCostingId=${baseCostingId}&quotationPartId=${quotationId}`, config());
-//       request.then((response) => {
-//           if (response.data.Result || response.status === 204) {
-
-//               dispatch({
-//                   type: PARTSPECIFICATIONRFQDATA,
-//                   payload: response.status === 204 ? [] : response?.data?.Data
-//               })
-
-//               callback(response);
-//           }
-//       }).catch((error) => {
-
-//           dispatch({ type: API_FAILURE });
-//           apiErrors(error);
-//       });
+//     dispatch({
+//       type: PARTSPECIFICATIONRFQDATA,
+//       payload:specification.Data // Dispatch mock or predefined data
+//     });
 //   };
-// }
+// };
+
+export function getSpecificationDetailTco(quotationId, baseCostingIds, callback) {
+  return (dispatch) => {
+    const url = `${API.getSpecificationDetailTco}`;
+    const requestData = {
+      QuotationId: quotationId,
+      BaseCostingIdList: baseCostingIds
+    };
+
+    axios.post(url, requestData, config())
+      .then((response) => {
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: PARTSPECIFICATIONRFQDATA,
+            payload: response.status === 204 ? [] : response.data.Data
+          });
+          callback(response);
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE });
+        // Handle errors
+        console.error(error);
+      });
+  };
+}

@@ -1,8 +1,9 @@
-import { CHECK_RFQ_BULK_UPLOAD, GET_ASSEMBLY_CHILD_PART, GET_NFR_SELECT_LIST, GET_RFQ_PART_DETAILS, GET_RFQ_RAISE_NUMBER, GET_RFQ_VENDOR_DETAIL, GET_TARGET_PRICE, SELECTED_ROW_ARRAY, SET_QUOTATION_ID_FOR_RFQ } from "../../../config/constants";
+import { CHECK_RFQ_BULK_UPLOAD, GET_ASSEMBLY_CHILD_PART, GET_NFR_SELECT_LIST, GET_QUOTATION_DETAILS_LIST, GET_RFQ_PART_DETAILS, GET_RFQ_RAISE_NUMBER, GET_RFQ_VENDOR_DETAIL, GET_TARGET_PRICE, SELECTED_ROW_ARRAY, SET_QUOTATION_ID_FOR_RFQ } from "../../../config/constants";
 
 const initialState = {
     checkRFQPartBulkUpload: [],
-    selectedRowRFQ: []
+    selectedRowRFQ: [],
+    quotationDetailsList   : []
 };
 
 export default function RFQReducer(state = initialState, action) {
@@ -61,6 +62,12 @@ export default function RFQReducer(state = initialState, action) {
                 loading: false,
                 getRfqRaiseNumber: action.payload,
             }
+            case GET_QUOTATION_DETAILS_LIST :
+                return {
+                    ...state,
+                    loading: false,
+                    quotationDetailsList: action.payload,
+                }
         default:
             return state;
     }

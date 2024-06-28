@@ -23,7 +23,6 @@ import {
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
   PARTSPECIFICATIONRFQDATA
 } from '../../../config/constants';
-import specification from '../components/CostingHeadCosts/AdditionalOtherCost/specification.json'
 const initialState = {
   ComponentItemData: {},
   ComponentItemOverheadData: {},
@@ -862,6 +861,7 @@ export default function costingReducer(state = initialState, action) {
       }
       case PARTSPECIFICATIONRFQDATA  :
       
+        
       return {
         ...state,
         loading: false,
