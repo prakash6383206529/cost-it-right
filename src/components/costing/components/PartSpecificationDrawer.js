@@ -1,36 +1,35 @@
 import { Drawer } from '@material-ui/core';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Col, Container, Row, Nav, NavItem, NavLink, TabContent, TabPane, Table } from 'reactstrap';
+import React, { useContext, useEffect, useState } from 'react';
+import { Col, Container, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import HeaderTitle from '../../common/HeaderTitle';
 import { getSpecificationDetailTco } from '../actions/Costing';
 import { QuotationId } from '../../rfq/ViewRfq';
 import LoaderCustom from '../../common/LoaderCustom';
-import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { REMARKMAXLENGTH } from '../../../config/masterData';
+import { TextFieldHookForm } from '../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../config/constants';
+import { AgGridReact } from 'ag-grid-react';
+import SOPListing from './SOPListing';
+
 const PartSpecificationDrawer = (props) => {
-    const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
+    const gridOptions = {};
+    const { register, control, formState: { errors } } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-    const [isLoader, setIsLoader] = useState(false)
-    const quotationId = useContext(QuotationId)
-    
-const {quotationDetailsList} = useSelector((state) => state?.rfq)
-    const [tableData, setTableData] = useState([]);
+    const [isLoader, setIsLoader] = useState(false);
+    const quotationId = useContext(QuotationId);
+    const [columnDefs, setColumnDefs] = useState([]);
+    console.log('columnDefs: ', columnDefs);
+    const [rowData, setRowData] = useState([]);
     const dispatch = useDispatch();
-        const { partSpecificationRFQData } = useSelector((state) => state?.costing)
-        
-    
+    const { quotationDetailsList } = useSelector((state) => state?.rfq);
+    const { partSpecificationRFQData } = useSelector((state) => state?.costing);
+    const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setGridColumnApi] = useState(null);
 
-    // 
-    /**
-     * @method toggleDrawer
-     * @description control the drawer
-    */
     const toggleDrawer = (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
@@ -42,15 +41,19 @@ const {quotationDetailsList} = useSelector((state) => state?.rfq)
         if (quotationDetailsList && quotationDetailsList.length > 0) {
             setIsLoader(true);
 
-            // Extract all CostingIds and filter out null values
             const baseCostingIds = quotationDetailsList
-            .map(item => item.CostingId)
-            .filter(id => id !== null);
-            
+                .map(item => item.CostingId)
+                .filter(id => id !== null);
 
             if (baseCostingIds.length > 0) {
                 dispatch(getSpecificationDetailTco(quotationId, baseCostingIds, (res) => {
-                    setTableData(res);
+                    console.log('res: ', res);
+                    let Data = res?.data?.Data
+                    if (Data?.SpecsHead && Data?.SpecsColumn) {
+                        console.log('res: ', res);
+                        setColumnDefs(generateColumnDefs(Data?.SpecsHead));
+                        setRowData(Data?.SpecsColumn);
+                    }
                     setIsLoader(false);
                 }));
             } else {
@@ -58,177 +61,175 @@ const {quotationDetailsList} = useSelector((state) => state?.rfq)
             }
         }
     }, [quotationDetailsList, quotationId, dispatch]);
-    
-   
+
+    const generateColumnDefs = (specsHead) => {
+        console.log('specsHead: ', specsHead);
+        return specsHead.map((head, index) => ({
+            headerName: head,
+            field: `field${index}`,
+            sortable: true,
+            filter: true,
+        }));
+    };
+
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: false,
+        floatingFilter: true,
+    };
+
+    const onGridReady = (params) => {
+        setGridApi(params.api);
+        setGridColumnApi(params.columnApi);
+        params.api.paginationGoToPage(0);
+        params.api.sizeColumnsToFit();
+    };
+
+    const frameworkComponents = {
+        customLoadingOverlay: LoaderCustom,
+        customNoRowsOverlay: NoContentFound,
+    };
 
     return (
-        
         <>
-
-            <Drawer className="top-drawer" anchor={"right"} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
-            <Container>
-               
-
-                    <div className={`ag-grid-react`}>
-                        <div className={'drawer-wrapper drawer-full-width'}>
+            <Drawer className="top-drawer" anchor={"right"} open={props?.isOpen} onClose={toggleDrawer}>
+                <Container>
+                    <div className="ag-grid-react">
+                        <div className="drawer-wrapper drawer-full-width">
                             <Row className="drawer-heading">
                                 <Col>
-                                    <div className={'header-wrapper left'}>
-                                        <h3>{`Part Specification Detail`}</h3>
+                                    <div className="header-wrapper left">
+                                        <h3>Part Specification Detail</h3>
                                     </div>
-                                    <div onClick={(e) => toggleDrawer(e)} className={'close-button right'}></div>
+                                    <div onClick={toggleDrawer} className="close-button right"></div>
                                 </Col>
                             </Row>
-                            {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
-                            <Col md="12">
-                                        <HeaderTitle title={'Specifications'} customClass="mt-3" />
-                                       <Row className="mt-1 part-detail-wrapper"> 
-
-                                        <Col md="3">
+                            {isLoader ? (
+                                <LoaderCustom customClass="loader-center" />
+                            ) : (
+                                <Col md="12">
+                                    <HeaderTitle title="Specifications" customClass="mt-3" />
+                                    {rowData?.length > 0 && (
+                                        <Row className="mt-1 part-detail-wrapper">
+                                            <Col md="3">
                                                 <TextFieldHookForm
                                                     label="Havells Design Part"
-                                                    name={"HavellsDesignPart"}
+                                                    name="HavellsDesignPart"
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
                                                     disabled={true}
-
-                                                    defaultValue={''}
+                                                    defaultValue={partSpecificationRFQData?.HavellsDesignPart || ""}
                                                     className=""
-                                                    customClassName={'withBorder'}
+                                                    customClassName="withBorder"
                                                     errors={errors.Specification}
                                                 />
                                             </Col>
-
- <Col md="3">
+                                            <Col md="3">
                                                 <TextFieldHookForm
                                                     label="Target Price"
-                                                    name={'TagetPrice'}
+                                                    name="TargetPrice"
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
                                                     rules={{ required: false }}
                                                     mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
+                                                    defaultValue={partSpecificationRFQData?.TargetPrice || ""}
                                                     className=""
-                                                    customClassName={'withBorder'}
+                                                    customClassName="withBorder"
                                                     errors={errors.Description}
                                                     disabled={true}
                                                     placeholder="-"
                                                 />
-                                         
-                                         
-
-
-</Col> 
-
-<Col md="3">
+                                            </Col>
+                                            <Col md="3">
                                                 <TextFieldHookForm
                                                     label="UOM"
-                                                    name={'UOMSymbol'}
+                                                    name="UOMSymbol"
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
                                                     rules={{ required: false }}
                                                     mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
+                                                    defaultValue={partSpecificationRFQData?.UOMSymbol || ""}
                                                     className=""
-                                                    customClassName={'withBorder'}
+                                                    customClassName="withBorder"
                                                     errors={errors.Description}
                                                     disabled={true}
                                                     placeholder="-"
                                                 />
-                                         
-                                         
-
-
-</Col> 
-<Col md="3">
+                                            </Col>
+                                            <Col md="3">
                                                 <TextFieldHookForm
                                                     label="Date"
-                                                    name={'TimeLine'}
+                                                    name="TimeLine"
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
                                                     rules={{ required: false }}
                                                     mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
+                                                    defaultValue={partSpecificationRFQData?.TimeLine ? new Date(partSpecificationRFQData.TimeLine).toLocaleDateString() : ""}
                                                     className=""
-                                                    customClassName={'withBorder'}
+                                                    customClassName="withBorder"
                                                     errors={errors.Description}
                                                     disabled={true}
                                                     placeholder="-"
                                                 />
-                                         
-                                         
+                                            </Col>
+                                            <Col md="3">
+                                                <TextFieldHookForm
+                                                    label="Part Number"
+                                                    name="PartNumber"
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    rules={{ required: false }}
+                                                    mandatory={false}
+                                                    defaultValue={partSpecificationRFQData?.SOPQuantityDetails?.PartNumber || ""}
+                                                    className=""
+                                                    customClassName="withBorder"
+                                                    errors={errors.Description}
+                                                    disabled={true}
+                                                    placeholder="-"
+                                                />
+                                            </Col>
+                                        </Row>
+                                    )}
+                                    <div className="ag-grid-react">
+                                        <div className={`ag-grid-wrapper height-width-wrapper ${rowData.length <= 0 ? "overlay-contain" : ""}`}>
+                                            <div className="ag-theme-material">
+                                                <AgGridReact
+                                                    defaultColDef={defaultColDef}
+                                                    floatingFilter={true}
+                                                    domLayout="autoHeight"
+                                                    gridOptions={gridOptions}
+                                                    columnDefs={columnDefs}
+                                                    rowData={rowData}
+                                                    onGridReady={onGridReady}
+                                                    loadingOverlayComponent="customLoadingOverlay"
+                                                    noRowsOverlayComponent="customNoRowsOverlay"
+                                                    noRowsOverlayComponentParams={{
+                                                        title: EMPTY_DATA,
+                                                        imagClass: 'imagClass'
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                    suppressRowClickSelection={true}
+                                                    rowSelection="multiple"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Col>
 
-
-</Col> 
-
-</Row> 
-
-
-                                        <Table striped>
-                                        <thead>
-    <tr>
-      {partSpecificationRFQData?.SpecsHead?.map((specHead, index) => (
-        <th key={index}>{specHead}</th>
-      ))}
-    </tr>
-  </thead>
-                    <tbody>
-                    {partSpecificationRFQData?.SpecsColumn?.length === 0 ? (
-                                          
-<NoContentFound title={EMPTY_DATA} customClassName="no-content-found align right" />                                          
-                                        ) : (
-                                            partSpecificationRFQData?.SpecsColumn?.map((row, index) => (
-                                                <tr key={index}>
-                                                    <td>{row.PartSpecs}</td>
-                                                    <td>{row.PartSpecsValue}</td>
-                                                    <td>{row.SHM-2216}</td>
-                                                    <td>{row.SHM-2309.}</td>
-                                                    <td>{row.SHM-2339}</td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                </Table>
-                <HeaderTitle title={'SOP Details'} customClass="mt-3" />
-
-<Table striped>
-                                    <thead>
-                                        <tr>
-                                            <th>Part No</th>
-                                            <th>Production Year</th>
-                                            <th>Annual Forecast Quantity</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {partSpecificationRFQData?.SOPQuantityDetails?.length === 0 ? (
-                                            <tr>
-                                                <td colSpan="3" className="text-center">
-                                                    <NoContentFound title={EMPTY_DATA} customClassName="no-content-found align right" />
-                                                </td>
-                                            </tr>
-                                        ) : (
-                                            partSpecificationRFQData?.SOPQuantityDetails?.map((row, index) => (
-                                                <tr key={index}>
-                                                    <td>{row.PartNumber}</td>
-                                                    <td>{row.YearName}</td>
-                                                    <td>{row.Quantity}</td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </Table>
-                                    </Col>
-                            
-
+                                
+                            )}
                         </div>
+                        
                     </div>
+                    {/* <SOPListing
+                    rowData={partSpecificationRFQData?.SOPQuantityDetails}
+                    /> */}
                 </Container>
             </Drawer>
         </>
@@ -236,8 +237,3 @@ const {quotationDetailsList} = useSelector((state) => state?.rfq)
 };
 
 export default PartSpecificationDrawer;
-
-
-
-
-

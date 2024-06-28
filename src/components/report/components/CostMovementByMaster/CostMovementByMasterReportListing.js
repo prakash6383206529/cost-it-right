@@ -20,6 +20,7 @@ function CostMovementByMasterReportListing(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);;
     const [rowData, setRowData] = useState([]);
     const [columnDefs, setColumnDefs] = useState([])
+    console.log('columnDefs: ', columnDefs);
     const [isData, setIsData] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
     const [headersState, setHeadersState] = useState([]);
