@@ -156,7 +156,7 @@ function AddRfq(props) {
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
     const { getRfqVendorDetail, getTargetprice, getPartIndentity, getQuotationIdForRFQ } = useSelector((state) => state.rfq)
-    console.log('getQuotationIdForRFQ: ', getQuotationIdForRFQ);
+
     const [viewQuotationPart, setViewQuotationPart] = useState(false)
     const [havellsPartTypeList, setHavellsPartTypeList] = useState([]);
     const [editQuotationPart, setEditQuotationPart] = useState(false)
@@ -729,7 +729,7 @@ function AddRfq(props) {
         dispatch(setQuotationIdForRfq(""))
     }
 
-    const onSubmit = (data, e, isPartDetailSent) => {
+    const onSubmit = (data, e, isPartDetailsSent) => {
 
         //dispatch(getTargetPrice(plant, technology, assemblyPartNumber, (res) => { }))
         // dispatch(getRfqPartDetails( (res) => {
@@ -760,8 +760,24 @@ function AddRfq(props) {
         } else if (Object.keys(errors).length > 0) {
             return false
         }
-        const IsPartDetailsSent = isPartDetailSent && partList && partList.length > 0
-        const isSent = isPartDetailSent && (partList && vendorList && partList.length > 0 && vendorList.length > 0) ? true : false
+        let IsPartDetailsSent;
+        let isSent;
+        const isShowRfqPartDetail = /* initialConfiguration?.IsShowRFQPartDetailBreakup */ false
+        const hasParts = partList && partList.length > 0;
+        const hasVendors = vendorList && vendorList.length > 0;
+        if (!isShowRfqPartDetail) {
+            IsPartDetailsSent = isPartDetailsSent;
+            isSent = isPartDetailsSent;
+        } else {
+            IsPartDetailsSent = isPartDetailsSent ? hasParts : (hasParts && hasVendors);
+            isSent = hasParts && hasVendors && isPartDetailsSent;
+        }
+        // const IsPartDetailsSent = isShowRfqPartDetail ? ((isPartDetailSent && partList && partList.length > 0) ? true : (partList && partList.length > 0 && vendorList && vendorList.length > 0) ? true : false) : false
+        // const isSent = isShowRfqPartDetail ? ((partList && vendorList && partList.length > 0 && vendorList.length > 0) ? IsPartDetailsSent : false) : false
+
+        //const isSent = partList && vendorList && partList.length > 0 && vendorList.length > 0 ? true : false
+
+
 
 
 
@@ -1445,12 +1461,12 @@ function AddRfq(props) {
 
                     let updatedPartList = [];
                     if (updateButtonPartNoTable) {
-                        console.log("if");
+
                         if (isPartDetailUpdate) {
-                            console.log("inner if");
+
                             updatedPartList = temppartArr;
                         } else if (!isPartDetailUpdate) {
-                            console.log("else if");
+
                             updatedPartList = [...storePartsDetail];
                             updatedPartList[0] = {
                                 ...updatedPartList[0], // Preserve existing properties
@@ -1460,12 +1476,12 @@ function AddRfq(props) {
                             };
                         }
                     } else {
-                        console.log("else");
+
                         updatedPartList = temppartArr;
                     }
 
                     obj.PartList = updatedPartList; // Move this line inside the block
-                    console.log('updatedPartList: ', updatedPartList);
+
 
 
 
@@ -2586,7 +2602,10 @@ function AddRfq(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    rules={{ required: false }}
+                                                    rules={{
+                                                        required: true,
+                                                        maxLength: 80
+                                                    }}
                                                     mandatory={false}
                                                     handleChange={() => { }}
                                                     defaultValue={''}
@@ -2654,7 +2673,6 @@ function AddRfq(props) {
                                                                     <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
                                                                 {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                 {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms' cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
-                                                                {vendorList && havellsKey && <AgGridColumn field='WarrantyTerms' header='Warranty Terms' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                 {vendorList && havellsKey && <AgGridColumn field='LDClause' header='LD Clause' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                 <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
                                                                 <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
