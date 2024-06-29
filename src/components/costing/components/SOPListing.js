@@ -6,7 +6,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import NoContentFound from '../../common/NoContentFound';
 
 const SOPListing = ({  rowData}) => {
-    console.log('defaultColDef, rowData, onGridReady, frameworkComponents: ', defaultColDef, rowData, onGridReady, frameworkComponents);
+    
     
     const defaultColDef = {
         resizable: true,

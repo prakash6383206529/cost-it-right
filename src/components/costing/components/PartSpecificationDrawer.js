@@ -38,7 +38,7 @@ const PartSpecificationDrawer = (props) => {
         }
         props.closeDrawer('');
     };
-    const { baseCostingId, ids } = props
+    const { id, ids } = props
 
 
     useEffect(() => {
@@ -51,7 +51,7 @@ const PartSpecificationDrawer = (props) => {
                     .map(item => item.CostingId) // Assuming you meant to use 'QuotationPartId' or replace it with the correct identifier
                     .filter(id => id !== null)
 
-
+const baseCostingId = [id]
             if (baseCostingIds?.length > 0) {
                 dispatch(getSpecificationDetailTco(quotationId, ids ? baseCostingIds : baseCostingId, (res) => {
 
@@ -236,7 +236,7 @@ const PartSpecificationDrawer = (props) => {
                             <div className="ag-theme-material mt-3" >
                                 <div className={`ag-grid-wrapper height-width-wrapper ${partSpecificationRFQData?.SOPQuantityDetails?.length <= 0 ? "overlay-contain" : ""}`}>
 
-                                    {partSpecificationRFQData?.SOPQuantityDetails ? (
+                                    {partSpecificationRFQData?.SOPQuantityDetails && partSpecificationRFQData?.SOPQuantityDetails?.length > 0 ? (
                                         <AgGridReact
                                             defaultColDef={defaultColDef}
                                             domLayout="autoHeight"

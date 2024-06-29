@@ -47,7 +47,7 @@ function AddFreight(props) {
   const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const [capacity, setCapacity] = useState([]);
-  console.log('capacity: ', capacity);
+  
   const [criteria, setCriteria] = useState([]);
   const [IsPartTruckLoad, setIsPartTruckLoad] = useState(isEditFlag ? rowObjData.IsPartTruckLoad : false);
 
@@ -81,7 +81,7 @@ function AddFreight(props) {
         }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
-      console.log('totalFinishWeight: ', totalFinishWeight);
+      
       setValue("Quantity", totalFinishWeight)
 
     }
@@ -125,7 +125,7 @@ function AddFreight(props) {
   const freightRateCriteriaSelectList = useSelector(state => state.freight.freightRateCriteriaSelectList)
 
   const showFieldsFunction = (freightFlag) => {
-    console.log('freightFlag: ', freightFlag);
+    
     let obj = {
       Capacity: false,
       Applicability: false,

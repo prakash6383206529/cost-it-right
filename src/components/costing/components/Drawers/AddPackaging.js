@@ -85,7 +85,7 @@ function AddPackaging(props) {
         }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
-      console.log('totalFinishWeight: ', totalFinishWeight);
+      
       setValue("Quantity", totalFinishWeight)
 
     }
@@ -93,7 +93,7 @@ function AddPackaging(props) {
 
   useEffect(() => {
     if (applicability && applicability?.value !== undefined) {
-      console.log('applicability?.label: ', applicability?.label);
+      
       calculateApplicabilityCost(applicability?.label)
     }
   }, [fieldValues]);
@@ -193,7 +193,7 @@ function AddPackaging(props) {
    * @description APPLICABILITY CALCULATION
    */
   const calculateApplicabilityCost = (Text, applicablityDropDownChange = false) => {
-    console.log('Text: ', Text);
+    
 
     const { NetRawMaterialsCost, NetBoughtOutPartCost, } = headCostData;
 
@@ -212,7 +212,7 @@ function AddPackaging(props) {
     switch (Text) {
       case 'RM':
       case 'Part Cost':
-        console.log('11111');
+        
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -223,7 +223,7 @@ function AddPackaging(props) {
         }
         break;
       case 'BOP':
-        console.log('22222');
+        
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -236,7 +236,7 @@ function AddPackaging(props) {
 
       case 'RM + CC':
       case 'Part Cost + CC':
-        console.log('33333');
+        
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -247,7 +247,7 @@ function AddPackaging(props) {
         }
         break;
       case 'BOP + CC':
-        console.log('44444');
+        
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -259,7 +259,7 @@ function AddPackaging(props) {
         break;
 
       case 'CC':
-        console.log('55555');
+        
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -272,7 +272,7 @@ function AddPackaging(props) {
 
       case 'RM + CC + BOP':
       case 'Part Cost + CC + BOP':
-        console.log('66666');
+        
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -284,7 +284,7 @@ function AddPackaging(props) {
 
       case 'RM + BOP':
       case 'Part Cost + BOP':
-        console.log('77777');
+        
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -294,7 +294,7 @@ function AddPackaging(props) {
         }
         break;
       case 'Net Cost':
-        console.log('88888');
+        
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -304,7 +304,7 @@ function AddPackaging(props) {
         }
         break;
       case 'Fixed':
-        console.log('99999');
+        
         if (!PackageType) {
           setValue('PackagingCost', PackagingCostPercentage)
         } else {
@@ -324,7 +324,7 @@ function AddPackaging(props) {
 
   const calculatePerKg = (rate, weight) => {
     const packagingCost = checkForNull(rate) * checkForNull(weight)
-    console.log('packagingCost:ddddddddd ', packagingCost);
+    
     setValue('PackagingCost', checkForDecimalAndNull(packagingCost, getConfigurationKey().NoOfDecimalForPrice))
     setPackagingCost(packagingCost)
   }
@@ -346,7 +346,7 @@ function AddPackaging(props) {
     props.closeDrawer('', {})
   }
   const packingCostHandler = (e) => {
-    console.log('e:ssssssss ', e);
+    
     let message = ''
     if (decimalNumberLimit6(e.target.value)) {
       setShowCostError(true)
