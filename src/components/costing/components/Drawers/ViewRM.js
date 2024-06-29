@@ -247,7 +247,7 @@ function ViewRM(props) {
             </tr>
           </thead>
           <tbody>
-            {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
+            {viewRM && viewRM.length > 0 && viewRM?.map((item, index) => {
               return (
                 <tr key={index}>
                   {isAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}> <span title={item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}>{item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}</span></td>}
@@ -271,7 +271,7 @@ function ViewRM(props) {
                   {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && <td>{item?.BurningLossWeight ? checkForDecimalAndNull(item?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
                   {viewCostingData[0]?.technologyId === DIE_CASTING && <td>{item?.CastingWeight ? checkForDecimalAndNull(item?.CastingWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
                   {viewCostingData[0]?.technologyId === DIE_CASTING && <td>{item?.MeltingLoss ? `${checkForDecimalAndNull(item?.MeltingLoss, initialConfiguration.NoOfDecimalForInputOutput)} (${item?.LossPercentage}%)` : '-'}</td>}
-                  <td> <div className='w-fit d-flex'><div id={`net-rm-cost${index}`}>{checkForDecimalAndNull(item?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}{<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(viewCostingData[props.index]?.technologyId === MACHINING && item?.IsCalculatorAvailable === true) ? 'Net RM Cost = RM/Pc - ScrapCost' : `Net RM Cost =((RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate${isScrapRecoveryApplied ? ' * Scrap Recovery/100' : ''})${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''})`} />}</div>{item?.RawMaterialCalculatorId === null && item?.GrossWeight !== null && viewCostingData[props.index].technologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}</div></td>
+                  <td> <div className='w-fit d-flex'><div id={`net-rm-cost${index}`}>{checkForDecimalAndNull(item?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}{<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(viewCostingData[props.index]?.technologyId === MACHINING && item?.IsCalculatorAvailable === true) ? 'Net RM Cost = RM/Pc - ScrapCost' : `Net RM Cost =((RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate${isScrapRecoveryApplied ? ' * Scrap Recovery/100' : ''})${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''})`} />}</div>{item?.RawMaterialCalculatorId === null && item?.GrossWeight !== null && viewCostingData[props.index]?.technologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}</div></td>
                   {initialConfiguration.IsShowCRMHead && <td>{item?.RawMaterialCRMHead}</td>}
                   <td>
                     <div className={`${isPDFShow ? '' : 'remark-overflow'}`} title={item?.Remark}>
