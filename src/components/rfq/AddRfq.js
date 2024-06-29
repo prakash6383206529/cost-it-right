@@ -762,7 +762,7 @@ function AddRfq(props) {
         }
         let IsPartDetailsSent;
         let isSent;
-        const isShowRfqPartDetail = /* initialConfiguration?.IsShowRFQPartDetailBreakup */ false
+        const isShowRfqPartDetail = initialConfiguration?.IsShowRFQPartDetailBreakup
         const hasParts = partList && partList.length > 0;
         const hasVendors = vendorList && vendorList.length > 0;
         if (!isShowRfqPartDetail) {
