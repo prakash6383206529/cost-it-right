@@ -6,10 +6,10 @@ import PartSpecificationDrawer from '../../PartSpecificationDrawer';
 
 const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter, displayValueWithSign, tableDataClass, pdfHead }) => {
     const { initialConfiguration } = useSelector(state => state.auth)
-    const [ openSpecificationDrawer, setOpenSpecificationDrawer ] = useState(false);
-    const [baseCostingId ,setBaseCostingId] = useState([])
-    const [baseCostingIds ,setBaseCostingIds] = useState(false)
-    
+    const [openSpecificationDrawer, setOpenSpecificationDrawer] = useState(false);
+    const [baseCostingId, setBaseCostingId] = useState([])
+    const [baseCostingIds, setBaseCostingIds] = useState(false)
+
     const renderSpan = (text) => (
         <span title={text} className={`w-50 text-wrapped small-grey-text ${isApproval && viewCostingData?.length > 1 ? '' : ''}`}>
             {text}
@@ -22,7 +22,7 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
         </div>
     );
     const handleOpenSpecificationDrawer = (id) => {
-        if(id === null) {
+        if (id === null) {
             setBaseCostingIds(true)
         }
         setBaseCostingId(id)
@@ -36,16 +36,15 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
         <>
             <tr>
                 <td>
-                <span className="d-block small-grey-text">
+                    <span className="d-block small-grey-text p-relative">
                         Part Specification
-                        <button className="Balance mb-0" type="button" onClick={handleOpenSpecificationDrawer}>
-                            
+                        <button className="Balance mb-0 button-stick" type="button" onClick={handleOpenSpecificationDrawer}>
                         </button>
                     </span>
                     <span className="d-block small-grey-text"></span>
                     <span className="d-block small-grey-text"></span>
                     <>
-                   
+
                         <span className="d-block small-grey-text">Inco Terms</span>
                         <span className="d-block small-grey-text">Payment Term</span>
                         <span className="d-block small-grey-text">Warranty Year</span>
@@ -63,13 +62,13 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                     const { CostingTCOResponse, CostingPaymentTermDetails } = data?.CostingPartDetails || {};
 
                     const { PaymentTermDetail } = CostingPaymentTermDetails || {}
-                    
+
 
                     return (
                         <td className={tableDataClass(data)} key={index}>
-                             {renderDiv([
-                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE 
-                                    ? <div onClick={() => handleOpenSpecificationDrawer(data.AssemblyCostingId)} className={'link'}>View Specifications</div> 
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE
+                                    ? <div onClick={() => handleOpenSpecificationDrawer(data.AssemblyCostingId)} className={'link'}>View Specifications</div>
                                     : '-'))
                             ])}
                             <div className="d-flex">
@@ -77,7 +76,7 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                                 {renderSpan((data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.percentage : '-')))}
                                 {renderSpan((data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.value : '-')))}
                             </div>
-                              
+
                             {renderDiv([
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.IncoTerms) ?? '-' : '')),
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.IncoTermsValue) ?? '-' : '')),
@@ -134,15 +133,15 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                 })}
             </tr>
             {openSpecificationDrawer && <PartSpecificationDrawer
-        isOpen={openSpecificationDrawer}
-        closeDrawer={closeSpecificationDrawer}
-        anchor={'right'}
-        baseCostingId = {baseCostingId}
-        ids = {baseCostingIds}
-          />
-      }
+                isOpen={openSpecificationDrawer}
+                closeDrawer={closeSpecificationDrawer}
+                anchor={'right'}
+                baseCostingId={baseCostingId}
+                ids={baseCostingIds}
+            />
+            }
         </>
-      
+
     );
 };
 
