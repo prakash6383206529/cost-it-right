@@ -762,7 +762,7 @@ function AddRfq(props) {
         }
         let IsPartDetailsSent;
         let isSent;
-        const isShowRfqPartDetail =  initialConfiguration?.IsShowRFQPartDetailBreakup 
+        const isShowRfqPartDetail = initialConfiguration?.IsShowRFQPartDetailBreakup
         const hasParts = partList && partList.length > 0;
         const hasVendors = vendorList && vendorList.length > 0;
         if (!isShowRfqPartDetail) {
@@ -822,7 +822,7 @@ function AddRfq(props) {
             setQuotationIdentity(res?.data?.Identity)
             if (res?.data?.Result) {
                 dispatch(setQuotationIdForRfq(""))
-                if (!(dataProps?.rowData?.Status === DRAFT) || !(dataProps?.rowData?.Status === PREDRAFT)) {
+                if ((!showSendButton === "") && (!(showSendButton === DRAFT) || !(showSendButton === PREDRAFT))) {
                     Toaster.success(MESSAGES.RFQ_UPDATE_SUCCESS)
                 } else if (isSent) {
                     Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
@@ -2510,257 +2510,257 @@ function AddRfq(props) {
                                         </div>
                                         }
                                     </div >
-
-                                    <HeaderTitle title={'Vendor:'} customClass="mt-4" />
-                                    <Row className="mt-1 part-detail-wrapper">
-                                        <Col md="3">
-                                            <AsyncSearchableSelectHookForm
-                                                label={"Vendor (Code)"}
-                                                name={"vendor"}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                defaultValue={vendor.length !== 0 ? vendor : ""}
-                                                options={renderListing("vendor")}
-                                                mandatory={true}
-                                                handleChange={handleVendorChange}
-                                                // handleChange={() => { }}
-                                                errors={errors.vendor}
-                                                isLoading={VendorLoaderObj}
-                                                asyncOptions={vendorFilterList}
-                                                disabled={(dataProps?.isViewFlag) ? true : false || isDropdownDisabled || disabledVendoUi}
-                                                NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
-                                            />
-                                        </Col>
-                                        {IsSendQuotationToPointOfContact() && (
+                                    {!disabledVendoUi && (<>
+                                        <HeaderTitle title={'Vendor:'} customClass="mt-4" />
+                                        <Row className="mt-1 part-detail-wrapper">
                                             <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    label={"Vendor's Point of Contact"}
-                                                    name={"contactPerson"}
+                                                <AsyncSearchableSelectHookForm
+                                                    label={"Vendor (Code)"}
+                                                    name={"vendor"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
                                                     control={control}
                                                     rules={{ required: false }}
                                                     register={register}
-                                                    //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                                    options={renderListing("reporter")}
+                                                    defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                    options={renderListing("vendor")}
                                                     mandatory={true}
-                                                    // handleChange={handleDestinationPlantChange}
-                                                    handleChange={() => { }}
-                                                    errors={errors.contactPerson}
-                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
-                                                    isLoading={plantLoaderObj}
+                                                    handleChange={handleVendorChange}
+                                                    // handleChange={() => { }}
+                                                    errors={errors.vendor}
+                                                    isLoading={VendorLoaderObj}
+                                                    asyncOptions={vendorFilterList}
+                                                    disabled={(dataProps?.isViewFlag) ? true : false || isDropdownDisabled || disabledVendoUi}
+                                                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                                 />
                                             </Col>
-                                        )}
-                                        {havellsKey && (<>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    // title={titleObj.descriptionTitle}
-                                                    label="Inco Terms"
-                                                    name={'IncoTerms'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.IncoTerms}
-                                                    disabled={true}
-                                                    placeholder="-"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    // title={titleObj.descriptionTitle}
-                                                    label="Payment Terms"
-                                                    name={'PaymentTerms'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.PaymentTerms}
-                                                    disabled={true}
-                                                    placeholder="-"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    // title={titleObj.descriptionTitle}
-                                                    label="LD Clause"
-                                                    name={'LDClause'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{
-                                                        required: true,
-                                                        maxLength: 80
-                                                    }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.LDClause}
-                                                    disabled={(dataProps?.isViewFlag) ? true : false || disabledVendoUi}
-                                                    placeholder="-"
-                                                />
-                                            </Col>
-                                        </>)
-                                        }
-                                        <Col md="3" className='d-flex align-items-center pb-1'>
-                                            <button
-                                                id="add_vendor"
-                                                type="button"
-                                                className={'user-btn pull-left'}
-                                                onClick={() => addRowVendorTable()}
-                                                disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
-                                            >
-                                                <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
-                                            </button>
-
-                                            <button
-                                                id="reset_vendor"
-                                                onClick={onResetVendorTable} // Need to change this cancel functionality
-                                                type="button"
-                                                value="CANCEL"
-                                                className="reset ml-2"
-                                                disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
-                                            >
-                                                <div className={''}></div>
-                                                RESET
-                                            </button>
-                                        </Col>
-                                    </Row >
-
-
-                                    <div>
-                                        {!loader ? <div className={`ag-grid-react`}>
-                                            <Row>
-                                                <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain non-filter border" : ""} `}>
-
-                                                        <div className={`ag-theme-material  max-loader-height`}>
-                                                            <AgGridReact
-                                                                defaultColDef={defaultColDef}
-                                                                //floatingFilter={true}
-                                                                domLayout='autoHeight'
-                                                                // columnDefs={c}
-                                                                rowData={vendorList}
-                                                                //pagination={true}
-                                                                paginationPageSize={10}
-                                                                onGridReady={onGridReady}
-                                                                gridOptions={gridOptionsVendor}
-                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                                noRowsOverlayComponentParams={{
-                                                                    title: EMPTY_DATA,
-                                                                    imagClass: 'imagClass mt-0'
-                                                                }}
-                                                                frameworkComponents={frameworkComponents}
-                                                            >
-                                                                <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
-                                                                {IsSendQuotationToPointOfContact() && (
-                                                                    <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
-                                                                {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                                                {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms' cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
-                                                                {vendorList && havellsKey && <AgGridColumn field='LDClause' header='LD Clause' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                                                <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
-                                                                <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
-                                                            </AgGridReact>
-                                                        </div>
-                                                    </div>
+                                            {IsSendQuotationToPointOfContact() && (
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        label={"Vendor's Point of Contact"}
+                                                        name={"contactPerson"}
+                                                        placeholder={"Select"}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                                                        options={renderListing("reporter")}
+                                                        mandatory={true}
+                                                        // handleChange={handleDestinationPlantChange}
+                                                        handleChange={() => { }}
+                                                        errors={errors.contactPerson}
+                                                        disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                        isLoading={plantLoaderObj}
+                                                    />
                                                 </Col>
-                                            </Row>
-                                        </div> : <div>
-                                            <LoaderCustom />
-                                        </div>
-                                        }
-                                    </div>
-
-                                    <Row className="mt-3 conditional-date">
-                                        <Col md="2">
-                                            < div id="checkbox_container" className="custom-check1">
-                                                <label
-                                                    className="custom-checkbox mb-0"
-                                                    onChange={() => checkBoxHandler()}
+                                            )}
+                                            {havellsKey && (<>
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        // title={titleObj.descriptionTitle}
+                                                        label="Inco Terms"
+                                                        name={'IncoTerms'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.IncoTerms}
+                                                        disabled={true}
+                                                        placeholder="-"
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        // title={titleObj.descriptionTitle}
+                                                        label="Payment Terms"
+                                                        name={'PaymentTerms'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.PaymentTerms}
+                                                        disabled={true}
+                                                        placeholder="-"
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        // title={titleObj.descriptionTitle}
+                                                        label="LD Clause"
+                                                        name={'LDClause'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{
+                                                            required: true,
+                                                            maxLength: 80
+                                                        }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.LDClause}
+                                                        disabled={(dataProps?.isViewFlag) ? true : false || disabledVendoUi}
+                                                        placeholder="-"
+                                                    />
+                                                </Col>
+                                            </>)
+                                            }
+                                            <Col md="3" className='d-flex align-items-center pb-1'>
+                                                <button
+                                                    id="add_vendor"
+                                                    type="button"
+                                                    className={'user-btn pull-left'}
+                                                    onClick={() => addRowVendorTable()}
+                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                 >
-                                                    {'Visibility of Price'}
-                                                    <input
-                                                        type="checkbox"
-                                                        value={"All"}
-                                                        checked={isConditionalVisible}
+                                                    <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
+                                                </button>
+
+                                                <button
+                                                    id="reset_vendor"
+                                                    onClick={onResetVendorTable} // Need to change this cancel functionality
+                                                    type="button"
+                                                    value="CANCEL"
+                                                    className="reset ml-2"
+                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                >
+                                                    <div className={''}></div>
+                                                    RESET
+                                                </button>
+                                            </Col>
+                                        </Row >
+
+
+                                        <div>
+                                            {!loader ? <div className={`ag-grid-react`}>
+                                                <Row>
+                                                    <Col>
+                                                        <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain non-filter border" : ""} `}>
+
+                                                            <div className={`ag-theme-material  max-loader-height`}>
+                                                                <AgGridReact
+                                                                    defaultColDef={defaultColDef}
+                                                                    //floatingFilter={true}
+                                                                    domLayout='autoHeight'
+                                                                    // columnDefs={c}
+                                                                    rowData={vendorList}
+                                                                    //pagination={true}
+                                                                    paginationPageSize={10}
+                                                                    onGridReady={onGridReady}
+                                                                    gridOptions={gridOptionsVendor}
+                                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                    noRowsOverlayComponentParams={{
+                                                                        title: EMPTY_DATA,
+                                                                        imagClass: 'imagClass mt-0'
+                                                                    }}
+                                                                    frameworkComponents={frameworkComponents}
+                                                                >
+                                                                    <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
+                                                                    {IsSendQuotationToPointOfContact() && (
+                                                                        <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
+                                                                    {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms' cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
+                                                                    {vendorList && havellsKey && <AgGridColumn field='LDClause' header='LD Clause' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
+                                                                    <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
+                                                                </AgGridReact>
+                                                            </div>
+                                                        </div>
+                                                    </Col>
+                                                </Row>
+                                            </div> : <div>
+                                                <LoaderCustom />
+                                            </div>
+                                            }
+                                        </div>
+
+                                        <Row className="mt-3 conditional-date">
+                                            <Col md="2">
+                                                < div id="checkbox_container" className="custom-check1">
+                                                    <label
+                                                        className="custom-checkbox mb-0"
+                                                        onChange={() => checkBoxHandler()}
+                                                    >
+                                                        {'Visibility of Price'}
+                                                        <input
+                                                            type="checkbox"
+                                                            value={"All"}
+                                                            checked={isConditionalVisible}
+                                                            disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                        />
+                                                        <span className=" before-box"
+                                                            checked={isConditionalVisible}
+                                                        />
+                                                    </label>
+                                                </div>
+                                            </Col>
+                                            {isConditionalVisible && <>
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        label={"Visibility Mode"}
+                                                        name={"VisibilityMode"}
+                                                        placeholder={"Select"}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: true }}
+                                                        register={register}
+                                                        // defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                        options={visibilityModeDropdownArray}
+                                                        mandatory={true}
+                                                        handleChange={handleVisibilityMode}
+                                                        errors={errors.VisibilityMode}
+                                                        isLoading={VendorLoaderObj}
                                                         disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                                     />
-                                                    <span className=" before-box"
-                                                        checked={isConditionalVisible}
-                                                    />
-                                                </label>
-                                            </div>
-                                        </Col>
-                                        {isConditionalVisible && <>
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    label={"Visibility Mode"}
-                                                    name={"VisibilityMode"}
-                                                    placeholder={"Select"}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: true }}
-                                                    register={register}
-                                                    // defaultValue={vendor.length !== 0 ? vendor : ""}
-                                                    options={visibilityModeDropdownArray}
-                                                    mandatory={true}
-                                                    handleChange={handleVisibilityMode}
-                                                    errors={errors.VisibilityMode}
-                                                    isLoading={VendorLoaderObj}
-                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                {visibilityMode?.value === DATE_STRING && <div className="inputbox date-section">
-                                                    <div className="form-group">
-                                                        <label>Date & Time</label>
-                                                        <div className="inputbox date-section rfq-calendar">
-                                                            <DatePicker
-                                                                name="startPlanDate"
-                                                                selected={DayTime(dateAndTime).isValid() ? new Date(dateAndTime) : null}
-                                                                onChange={handleChangeDateAndTime}
-                                                                showMonthDropdown
-                                                                showYearDropdown
-                                                                dropdownMode='select'
-                                                                minDate={new Date()}
-                                                                timeFormat='HH:mm'
-                                                                dateFormat="dd/MM/yyyy HH:mm"
-                                                                minTime={setHours(setMinutes(new Date(), minMinutes), minHours)}
-                                                                maxTime={setHours(setMinutes(new Date(), 59), 23)}
-                                                                placeholderText="Select"
-                                                                className="withBorder "
-                                                                autoComplete={'off'}
-                                                                showTimeSelect={true}
-                                                                timeIntervals={1}
-                                                                errors={errors.startPlanDate}
-                                                                disabledKeyboardNavigation
-                                                                onChangeRaw={(e) => e.preventDefault()}
-                                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
-                                                            />
+                                                </Col>
+                                                <Col md="3">
+                                                    {visibilityMode?.value === DATE_STRING && <div className="inputbox date-section">
+                                                        <div className="form-group">
+                                                            <label>Date & Time</label>
+                                                            <div className="inputbox date-section rfq-calendar">
+                                                                <DatePicker
+                                                                    name="startPlanDate"
+                                                                    selected={DayTime(dateAndTime).isValid() ? new Date(dateAndTime) : null}
+                                                                    onChange={handleChangeDateAndTime}
+                                                                    showMonthDropdown
+                                                                    showYearDropdown
+                                                                    dropdownMode='select'
+                                                                    minDate={new Date()}
+                                                                    timeFormat='HH:mm'
+                                                                    dateFormat="dd/MM/yyyy HH:mm"
+                                                                    minTime={setHours(setMinutes(new Date(), minMinutes), minHours)}
+                                                                    maxTime={setHours(setMinutes(new Date(), 59), 23)}
+                                                                    placeholderText="Select"
+                                                                    className="withBorder "
+                                                                    autoComplete={'off'}
+                                                                    showTimeSelect={true}
+                                                                    timeIntervals={1}
+                                                                    errors={errors.startPlanDate}
+                                                                    disabledKeyboardNavigation
+                                                                    onChangeRaw={(e) => e.preventDefault()}
+                                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>}
-                                                {visibilityMode?.value === DURATION_STRING && <div className="inputbox date-section">
-                                                    <div className="form-group">
-                                                        <label>Time</label>
-                                                        <div className="inputbox date-section">
-                                                            {/* <DatePicker
+                                                    </div>}
+                                                    {visibilityMode?.value === DURATION_STRING && <div className="inputbox date-section">
+                                                        <div className="form-group">
+                                                            <label>Time</label>
+                                                            <div className="inputbox date-section">
+                                                                {/* <DatePicker
                                                                 name="startPlanDate"
                                                                 selected={time}
                                                                 showTimeInput
@@ -2773,65 +2773,65 @@ function AddRfq(props) {
                                                                 autoComplete={'off'}
                                                                 dateFormat="HH:mm"
                                                             /> */}
-                                                            <TextFieldHookForm
-                                                                label=""
-                                                                name={'Time'}
-                                                                selected={'00:00'}
-                                                                Controller={Controller}
-                                                                control={control}
-                                                                register={register}
-                                                                rules={{
-                                                                    required: false,
-                                                                    pattern: {
-                                                                        value: /^([0-9]*):([0-5]?[0-9])$/i,
-                                                                        message: 'Hours should be in hh:mm format.',
-                                                                    },
-                                                                }}
-                                                                mandatory={false}
-                                                                handleChange={() => { }}
-                                                                defaultValue={''}
-                                                                className=""
-                                                                customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                                errors={errors.Time}
-                                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
-                                                            />
+                                                                <TextFieldHookForm
+                                                                    label=""
+                                                                    name={'Time'}
+                                                                    selected={'00:00'}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    rules={{
+                                                                        required: false,
+                                                                        pattern: {
+                                                                            value: /^([0-9]*):([0-5]?[0-9])$/i,
+                                                                            message: 'Hours should be in hh:mm format.',
+                                                                        },
+                                                                    }}
+                                                                    mandatory={false}
+                                                                    handleChange={() => { }}
+                                                                    defaultValue={''}
+                                                                    className=""
+                                                                    customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                    errors={errors.Time}
+                                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>}
+                                                    </div>}
+                                                </Col>
+                                            </>}
+
+                                        </Row>
+
+
+                                        <HeaderTitle title={'Notes:'} customClass="mt-3" />
+                                        <Row className='part-detail-wrapper'>
+                                            <Col md="4">
+                                                <TextAreaHookForm
+                                                    label={"Notes"}
+                                                    name={"remark"}
+                                                    // placeholder={"Select"}
+                                                    placeholder={isViewFlag ? '-' : "Type here..."}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{
+                                                        required: true,
+                                                        maxLength: REMARKMAXLENGTH,
+                                                    }}
+                                                    register={register}
+                                                    //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                                                    // options={renderListing("DestinationPlant")}
+                                                    mandatory={true}
+                                                    customClassName={"withBorder"}
+                                                    handleChange={() => { }}
+                                                    errors={errors.remark}
+                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                    rowHeight={6}
+                                                // isLoading={plantLoaderObj}
+                                                />
                                             </Col>
-                                        </>}
 
-                                    </Row>
-
-
-                                    <HeaderTitle title={'Notes:'} customClass="mt-3" />
-                                    <Row className='part-detail-wrapper'>
-                                        <Col md="4">
-                                            <TextAreaHookForm
-                                                label={"Notes"}
-                                                name={"remark"}
-                                                // placeholder={"Select"}
-                                                placeholder={isViewFlag ? '-' : "Type here..."}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{
-                                                    required: true,
-                                                    maxLength: REMARKMAXLENGTH,
-                                                }}
-                                                register={register}
-                                                //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                                // options={renderListing("DestinationPlant")}
-                                                mandatory={true}
-                                                customClassName={"withBorder"}
-                                                handleChange={() => { }}
-                                                errors={errors.remark}
-                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
-                                                rowHeight={6}
-                                            // isLoading={plantLoaderObj}
-                                            />
-                                        </Col>
-
-                                        {/* <Col md="4" className="height152-label">
+                                            {/* <Col md="4" className="height152-label">
                                             <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
                                             <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                                 Maximum file upload limit has been reached.
@@ -2900,8 +2900,8 @@ function AddRfq(props) {
                                                     })}
                                             </div>
                                         </Col> */}
-                                    </Row>
-
+                                        </Row>
+                                    </>)}
                                     <Row className="justify-content-between sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
 
                                         <div className="col-sm-12 text-right bluefooter-butn">
