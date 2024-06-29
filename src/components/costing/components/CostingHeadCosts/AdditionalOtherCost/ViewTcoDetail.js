@@ -8,7 +8,7 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
     const { initialConfiguration } = useSelector(state => state.auth)
     const [openSpecificationDrawer, setOpenSpecificationDrawer] = useState(false);
     const [baseCostingId, setBaseCostingId] = useState([])
-    const [baseCostingIds, setBaseCostingIds] = useState(false)
+    const [id, setId] = useState(false)
 
     const renderSpan = (text) => (
         <span title={text} className={`w-50 text-wrapped small-grey-text ${isApproval && viewCostingData?.length > 1 ? '' : ''}`}>
@@ -22,8 +22,9 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
         </div>
     );
     const handleOpenSpecificationDrawer = (id) => {
-        if (id === null) {
-            setBaseCostingIds(true)
+        
+        if (id === null || id === undefined) {
+            setId(true)
         }
         setBaseCostingId(id)
         setOpenSpecificationDrawer(true);
@@ -38,7 +39,7 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                 <td>
                     <span className="d-block small-grey-text p-relative">
                         Part Specification
-                        <button className="Balance mb-0 button-stick" type="button" onClick={handleOpenSpecificationDrawer}>
+                        <button className="Balance mb-0 button-stick" type="button" onClick={() => handleOpenSpecificationDrawer()} >
                         </button>
                     </span>
                     <span className="d-block small-grey-text"></span>
@@ -137,7 +138,7 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                 closeDrawer={closeSpecificationDrawer}
                 anchor={'right'}
                 baseCostingId={baseCostingId}
-                ids={baseCostingIds}
+                ids={id}
             />
             }
         </>

@@ -38,23 +38,20 @@ const PartSpecificationDrawer = (props) => {
     };
 const {baseCostingId ,ids} = props
 
+
     useEffect(() => {
         setIsLoader(true);
-        if ((quotationDetailsList && quotationDetailsList.length > 0) || ids) {
-
-            const baseCostingIds = ids 
-    ? [
-        ...quotationDetailsList
-            .map(item => item.CostingId)
-            .filter(id => id !== null),
-        baseCostingId
-      ]
-    : [baseCostingId];
-
+        if ((quotationDetailsList && quotationDetailsList?.length > 0) || ids) {
             
+
+            const baseCostingIds = 
+            quotationDetailsList
+            .map(item => item.CostingId) // Assuming you meant to use 'QuotationPartId' or replace it with the correct identifier
+            .filter(id => id !== null)
+                   
            
-            if (baseCostingIds.length > 0) {
-                dispatch(getSpecificationDetailTco(quotationId, baseCostingIds, (res) => {
+            if (baseCostingIds?.length > 0) {
+                dispatch(getSpecificationDetailTco(quotationId, ids ? baseCostingIds :baseCostingId, (res) => {
                     
                     let Data = res?.data?.Data
                     if (Data?.SpecsHead && Data?.SpecsColumn) {
@@ -208,7 +205,7 @@ const {baseCostingId ,ids} = props
                                         </Row>
                                     )}
                                     <div className="ag-grid-react">
-                                        <div className={`ag-grid-wrapper height-width-wrapper ${rowData.length <= 0 ? "overlay-contain" : ""}`}>
+                                        <div className={`ag-grid-wrapper height-width-wrapper ${rowData?.length <= 0 ? "overlay-contain" : ""}`}>
                                             <div className="ag-theme-material">
                                                 <AgGridReact
                                                     defaultColDef={defaultColDef}
@@ -234,9 +231,9 @@ const {baseCostingId ,ids} = props
                                     </Col>
                                     
                                     <div className="ag-theme-material" >
-                                    <div className={`ag-grid-wrapper height-width-wrapper ${partSpecificationRFQData?.SOPQuantityDetails.length <= 0 ? "overlay-contain" : ""}`}>
+                                    <div className={`ag-grid-wrapper height-width-wrapper ${partSpecificationRFQData?.SOPQuantityDetails?.length <= 0 ? "overlay-contain" : ""}`}>
 
-                                {partSpecificationRFQData?.SOPQuantityDetails && partSpecificationRFQData?.SOPQuantityDetails.length > 0 ? (
+                                {partSpecificationRFQData?.SOPQuantityDetails ? (
                                     <AgGridReact
                                         defaultColDef={defaultColDef}
                                         domLayout="autoHeight"
