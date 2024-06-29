@@ -27,8 +27,10 @@ const PartSpecificationDrawer = (props) => {
     const dispatch = useDispatch();
     const { quotationDetailsList } = useSelector((state) => state?.rfq);
     const { partSpecificationRFQData } = useSelector((state) => state?.costing);
-    const [gridApi, setGridApi] = useState(null);
-    const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [gridsApi, setGridsApi] = useState({
+        firstGrid: { api: null, columnApi: null },
+        secondGrid: { api: null, columnApi: null },
+    });
 
     const toggleDrawer = (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -85,9 +87,12 @@ const PartSpecificationDrawer = (props) => {
         floatingFilter: true,
     };
 
-    const onGridReady = (params) => {
-        setGridApi(params.api);
-        setGridColumnApi(params.columnApi);
+    const onGridReady = (params, gridIdentifier) => {
+        setGridsApi(prev => ({
+            ...prev,
+            [gridIdentifier]: { api: params.api, columnApi: params.columnApi },
+        }));
+    
         params.api.paginationGoToPage(0);
         params.api.sizeColumnsToFit();
     };
@@ -212,7 +217,7 @@ const PartSpecificationDrawer = (props) => {
                                                 gridOptions={gridOptions}
                                                 columnDefs={columnDefs}
                                                 rowData={rowData}
-                                                onGridReady={onGridReady}
+                                                onGridReady={(e) => onGridReady(e, "firstGrid")}
                                                 loadingOverlayComponent="customLoadingOverlay"
                                                 noRowsOverlayComponent="customNoRowsOverlay"
                                                 noRowsOverlayComponentParams={{
@@ -239,6 +244,7 @@ const PartSpecificationDrawer = (props) => {
                                             suppressRowClickSelection={true}
                                             rowSelection="multiple"
                                             rowData={partSpecificationRFQData?.SOPQuantityDetails}
+                                            onGridReady={(e) => onGridReady(e, "secondGrid")}
                                             noRowsOverlayComponentParams={{
                                                 title: EMPTY_DATA,
                                                 imagClass: 'imagClass'

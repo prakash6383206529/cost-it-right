@@ -19,8 +19,8 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-  // const BASE_URL = `http://10.10.11.81:8080/api/v1`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+  const BASE_URL = `http://10.10.11.81:8080/api/v1`;
 // const BASE_URL = `http://10.10.8.109:8070/api/v1`
 //const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
