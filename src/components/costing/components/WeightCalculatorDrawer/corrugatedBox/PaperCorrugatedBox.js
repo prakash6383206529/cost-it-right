@@ -127,8 +127,8 @@ function PaperCorrugatedBox(props) {
 
     const calculateWeightAndBoardCost = () => {
         let calculation = state.totalGSM * calculationState.TotalArea / 1000
-        console.log('calculationState.TotalArea: ', calculationState.TotalArea);
-        console.log('state.totalGSM: ', state.totalGSM);
+        
+        
         setValueCalculatorForm('Weight', checkForDecimalAndNull(calculation, NoOfDecimalForPrice))
         setCalculationState((prevState) => ({ ...prevState, Weight: calculation }))
     }

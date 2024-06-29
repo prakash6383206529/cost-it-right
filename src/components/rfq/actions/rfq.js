@@ -50,7 +50,7 @@ export function getQuotationList(DepartmentCode, Timezone, callback) {
 
 
 export function createRfqQuotation(data, callback) {
-    console.log('data: ', data);
+    
 
     return (dispatch) => {
         const request = axios.post(API.createRfqQuotation, data, config());
