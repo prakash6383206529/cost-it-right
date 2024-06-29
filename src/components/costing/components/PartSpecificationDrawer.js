@@ -36,26 +36,26 @@ const PartSpecificationDrawer = (props) => {
         }
         props.closeDrawer('');
     };
-const {baseCostingId ,ids} = props
+    const { baseCostingId, ids } = props
 
 
     useEffect(() => {
         setIsLoader(true);
         if ((quotationDetailsList && quotationDetailsList?.length > 0) || ids) {
-            
 
-            const baseCostingIds = 
-            quotationDetailsList
-            .map(item => item.CostingId) // Assuming you meant to use 'QuotationPartId' or replace it with the correct identifier
-            .filter(id => id !== null)
-                   
-           
+
+            const baseCostingIds =
+                quotationDetailsList
+                    .map(item => item.CostingId) // Assuming you meant to use 'QuotationPartId' or replace it with the correct identifier
+                    .filter(id => id !== null)
+
+
             if (baseCostingIds?.length > 0) {
-                dispatch(getSpecificationDetailTco(quotationId, ids ? baseCostingIds :baseCostingId, (res) => {
-                    
+                dispatch(getSpecificationDetailTco(quotationId, ids ? baseCostingIds : baseCostingId, (res) => {
+
                     let Data = res?.data?.Data
                     if (Data?.SpecsHead && Data?.SpecsColumn) {
-                        
+
                         setColumnDefs(generateColumnDefs(Data?.SpecsHead));
                         setRowData(Data?.SpecsColumn); // Directly use SpecsColumn as row data
                     }
@@ -65,7 +65,7 @@ const {baseCostingId ,ids} = props
                 setIsLoader(false);
             }
         }
-    }, [ quotationId, dispatch]);
+    }, [quotationId, dispatch]);
 
     const generateColumnDefs = (specsHead) => {
         return specsHead.map(head => ({
@@ -76,8 +76,8 @@ const {baseCostingId ,ids} = props
         }));
     };
 
-  
-    
+
+
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -98,167 +98,166 @@ const {baseCostingId ,ids} = props
     };
 
     return (
-    
-            <Drawer className="top-drawer" anchor={"right"} open={props?.isOpen} onClose={toggleDrawer}>
-                <Container>
-                    
-                                          <div className="drawer-wrapper drawer-full-width">
-                        {isLoader ? (
-                                <LoaderCustom customClass="loader-center" />
-                            ) : (
-                                <>
-                            <Row className="drawer-heading">
-                                <Col>
-                                    <div className="header-wrapper left">
-                                        <h3>Part Specification Detail</h3>
-                                    </div>
-                                    <div onClick={toggleDrawer} className="close-button right"></div>
-                                </Col>
-                            </Row>
-                           
-                                <Col md="12">
-                                    <HeaderTitle title="Specifications" customClass="mt-3" />
-                                    {rowData?.length > 0 && (
-                                        <Row className="mt-1 part-detail-wrapper">
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    label="Havells Design Part"
-                                                    name="HavellsDesignPart"
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    disabled={true}
-                                                    defaultValue={partSpecificationRFQData?.HavellsDesignPart || ""}
-                                                    className=""
-                                                    customClassName="withBorder"
-                                                    errors={errors.Specification}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    label="Target Price"
-                                                    name="TargetPrice"
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    defaultValue={partSpecificationRFQData?.TargetPrice || ""}
-                                                    className=""
-                                                    customClassName="withBorder"
-                                                    errors={errors.Description}
-                                                    disabled={true}
-                                                    placeholder="-"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    label="UOM"
-                                                    name="UOMSymbol"
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    defaultValue={partSpecificationRFQData?.UOMSymbol || ""}
-                                                    className=""
-                                                    customClassName="withBorder"
-                                                    errors={errors.Description}
-                                                    disabled={true}
-                                                    placeholder="-"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    label="Date"
-                                                    name="TimeLine"
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    defaultValue={partSpecificationRFQData?.TimeLine ? new Date(partSpecificationRFQData.TimeLine).toLocaleDateString() : ""}
-                                                    className=""
-                                                    customClassName="withBorder"
-                                                    errors={errors.Description}
-                                                    disabled={true}
-                                                    placeholder="-"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    label="Part Number"
-                                                    name="PartNumber"
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    defaultValue={partSpecificationRFQData?.SOPQuantityDetails?.PartNumber || ""}
-                                                    className=""
-                                                    customClassName="withBorder"
-                                                    errors={errors.Description}
-                                                    disabled={true}
-                                                    placeholder="-"
-                                                />
-                                            </Col>
-                                        </Row>
-                                    )}
-                                    <div className="ag-grid-react">
-                                        <div className={`ag-grid-wrapper height-width-wrapper ${rowData?.length <= 0 ? "overlay-contain" : ""}`}>
-                                            <div className="ag-theme-material">
-                                                <AgGridReact
-                                                    defaultColDef={defaultColDef}
-                                                    floatingFilter={true}
-                                                    domLayout="autoHeight"
-                                                    gridOptions={gridOptions}
-                                                    columnDefs={columnDefs}
-                                                    rowData={rowData}
-                                                    onGridReady={onGridReady}
-                                                    loadingOverlayComponent="customLoadingOverlay"
-                                                    noRowsOverlayComponent="customNoRowsOverlay"
-                                                    noRowsOverlayComponentParams={{
-                                                        title: EMPTY_DATA,
-                                                        imagClass: 'imagClass'
-                                                    }}
-                                                    frameworkComponents={frameworkComponents}
-                                                    suppressRowClickSelection={true}
-                                                    rowSelection="multiple"
-                                                />
-                                            </div>
+
+        <Drawer className="top-drawer" anchor={"right"} open={props?.isOpen} onClose={toggleDrawer}>
+            <Container>
+
+                <div className="drawer-wrapper layout-min-width-720px">
+                    <Row className="drawer-heading">
+                        <Col>
+                            <div className="header-wrapper left">
+                                <h3>Part Specification Detail</h3>
+                            </div>
+                            <div onClick={toggleDrawer} className="close-button right"></div>
+                        </Col>
+                    </Row>
+                    {isLoader ?
+                        <LoaderCustom customClass="loader-center" /> :
+                        <>
+                            <Col md="12">
+                                <HeaderTitle title="Specifications" customClass="mt-3" />
+                                {rowData?.length > 0 && (
+                                    <Row className="mt-1 part-detail-wrapper">
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                label="Havells Design Part"
+                                                name="HavellsDesignPart"
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                disabled={true}
+                                                defaultValue={partSpecificationRFQData?.HavellsDesignPart || ""}
+                                                className=""
+                                                customClassName="withBorder"
+                                                errors={errors.Specification}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                label="Target Price"
+                                                name="TargetPrice"
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                defaultValue={partSpecificationRFQData?.TargetPrice || ""}
+                                                className=""
+                                                customClassName="withBorder"
+                                                errors={errors.Description}
+                                                disabled={true}
+                                                placeholder="-"
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                label="UOM"
+                                                name="UOMSymbol"
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                defaultValue={partSpecificationRFQData?.UOMSymbol || ""}
+                                                className=""
+                                                customClassName="withBorder"
+                                                errors={errors.Description}
+                                                disabled={true}
+                                                placeholder="-"
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                label="Date"
+                                                name="TimeLine"
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                defaultValue={partSpecificationRFQData?.TimeLine ? new Date(partSpecificationRFQData.TimeLine).toLocaleDateString() : ""}
+                                                className=""
+                                                customClassName="withBorder"
+                                                errors={errors.Description}
+                                                disabled={true}
+                                                placeholder="-"
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                label="Part Number"
+                                                name="PartNumber"
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                defaultValue={partSpecificationRFQData?.SOPQuantityDetails?.PartNumber || ""}
+                                                className=""
+                                                customClassName="withBorder"
+                                                errors={errors.Description}
+                                                disabled={true}
+                                                placeholder="-"
+                                            />
+                                        </Col>
+                                    </Row>
+                                )}
+                                <div className="ag-grid-react">
+                                    <div className={`ag-grid-wrapper height-width-wrapper ${rowData?.length <= 0 ? "overlay-contain" : ""}`}>
+                                        <div className="ag-theme-material">
+                                            <AgGridReact
+                                                defaultColDef={defaultColDef}
+                                                floatingFilter={true}
+                                                domLayout="autoHeight"
+                                                gridOptions={gridOptions}
+                                                columnDefs={columnDefs}
+                                                rowData={rowData}
+                                                onGridReady={onGridReady}
+                                                loadingOverlayComponent="customLoadingOverlay"
+                                                noRowsOverlayComponent="customNoRowsOverlay"
+                                                noRowsOverlayComponentParams={{
+                                                    title: EMPTY_DATA,
+                                                    imagClass: 'imagClass'
+                                                }}
+                                                frameworkComponents={frameworkComponents}
+                                                suppressRowClickSelection={true}
+                                                rowSelection="multiple"
+                                            />
                                         </div>
                                     </div>
-                                    </Col>
-                                    
-                                    <div className="ag-theme-material" >
-                                    <div className={`ag-grid-wrapper height-width-wrapper ${partSpecificationRFQData?.SOPQuantityDetails?.length <= 0 ? "overlay-contain" : ""}`}>
+                                </div>
+                            </Col>
 
-                                {partSpecificationRFQData?.SOPQuantityDetails ? (
-                                    <AgGridReact
-                                        defaultColDef={defaultColDef}
-                                        domLayout="autoHeight"
-                                        frameworkComponents={frameworkComponents}
-                                        suppressRowClickSelection={true}
-                                        rowSelection="multiple"
-                                        rowData={partSpecificationRFQData?.SOPQuantityDetails}
-                                    >
-                                        <AgGridColumn width={"230px"} field="YearName" headerName="Production Year"></AgGridColumn>
-                                        <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" colId="Quantity"></AgGridColumn>
-                                        {/* Additional columns can be added here */}
-                                    </AgGridReact>
-                                ) : null}
-                                                        </div>
+                            <div className="ag-theme-material mt-3" >
+                                <div className={`ag-grid-wrapper height-width-wrapper ${partSpecificationRFQData?.SOPQuantityDetails?.length <= 0 ? "overlay-contain" : ""}`}>
 
+                                    {partSpecificationRFQData?.SOPQuantityDetails ? (
+                                        <AgGridReact
+                                            defaultColDef={defaultColDef}
+                                            domLayout="autoHeight"
+                                            frameworkComponents={frameworkComponents}
+                                            suppressRowClickSelection={true}
+                                            rowSelection="multiple"
+                                            rowData={partSpecificationRFQData?.SOPQuantityDetails}
+                                            noRowsOverlayComponentParams={{
+                                                title: EMPTY_DATA,
+                                                imagClass: 'imagClass'
+                                            }}
+                                        >
+                                            <AgGridColumn width={"230px"} field="YearName" headerName="Production Year"></AgGridColumn>
+                                            <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" colId="Quantity"></AgGridColumn>
+                                            {/* Additional columns can be added here */}
+                                        </AgGridReact>
+                                    ) : null}
+                                </div>
                             </div>
-                            </>
+                        </>
+                    }
 
-                            )}
-                            </div>
-                               
-             
-                </Container>
-            </Drawer>
-        
+                </div>
+            </Container>
+        </Drawer>
+
     );
 };
 
