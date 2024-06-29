@@ -56,6 +56,7 @@ function RfqListing(props) {
     const [permissionDataPart, setPermissionDataPart] = useState()
     const [permissionDataVendor, setPermissionDataVendor] = useState()
     const [permissionData, setPermissionData] = useState()
+    
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const agGridRef = useRef(null);

@@ -2444,7 +2444,7 @@ function UserRegistration(props) {
       }
     }
     const messageOne = messages.join(' and ');
-    console.log('messageOne: ', messageOne);
+    
 
     const baseMessage = `All ${messageOne}'s approval will become `;
     const messageTwo = `${baseMessage}${onboardingTableChanged ? 'rejected by system' : 'draft'} which are pending & awaited in approval status. Do you want to continue?`;

@@ -47,7 +47,7 @@ function AddFreight(props) {
   const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const [capacity, setCapacity] = useState([]);
-  console.log('capacity: ', capacity);
+  
   const [criteria, setCriteria] = useState([]);
   const [IsPartTruckLoad, setIsPartTruckLoad] = useState(isEditFlag ? rowObjData.IsPartTruckLoad : false);
 
@@ -81,7 +81,7 @@ function AddFreight(props) {
         }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
-      console.log('totalFinishWeight: ', totalFinishWeight);
+      
       setValue("Quantity", totalFinishWeight)
 
     }
@@ -125,7 +125,7 @@ function AddFreight(props) {
   const freightRateCriteriaSelectList = useSelector(state => state.freight.freightRateCriteriaSelectList)
 
   const showFieldsFunction = (freightFlag) => {
-    console.log('freightFlag: ', freightFlag);
+    
     let obj = {
       Capacity: false,
       Applicability: false,
@@ -240,7 +240,7 @@ function AddFreight(props) {
     if (newValue && newValue !== '') {
       setCriteria(newValue)
       calculateApplicabilityCost(newValue.value)
-      const data = { Capacity: null, Criteria: null }
+      const data = { Capacity: capacity.value, Criteria: newValue.value }
       dispatch(getRateByCapacityCriteria(data, res => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DynamicData;
@@ -491,7 +491,7 @@ function AddFreight(props) {
                     </label>
                   </Col> */}
                   <Col md="12">
-                    {/* <Label id="Add_FreightType_Full_Truck" className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
+                    <Label id="Add_FreightType_Full_Truck" className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"
                         name="freightType"
@@ -512,7 +512,7 @@ function AddFreight(props) {
                         disabled={isEditFlag ? true : false}
                       />{' '}
                       <span>Part Truck Load</span>
-                    </Label> */}
+                    </Label>
                     <Label id="Add_FreightType_Fixed_Truck" className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"

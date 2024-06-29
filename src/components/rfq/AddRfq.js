@@ -63,13 +63,6 @@ function AddRfq(props) {
         reValidateMode: 'onChange',
     });
 
-    const sopObjectTemp = [
-        { sop: 'SOP1' },
-        { sop: 'SOP2' },
-        { sop: 'SOP3' },
-        { sop: 'SOP4' },
-        { sop: 'SOP5' },
-    ]
     const currentDate = new Date()
     const currentHours = currentDate.getHours();
     const currentMinutes = currentDate.getMinutes();
@@ -84,6 +77,7 @@ function AddRfq(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [partList, setPartList] = useState([])
+
     const [vendorList, setVendorList] = useState([])
     const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
     const [updateButtonVendorTable, setUpdateButtonVendorTable] = useState(false)
@@ -110,7 +104,6 @@ function AddRfq(props) {
     const [isBulkUpload, setisBulkUpload] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
-    const [sopdate, setSOPDate] = useState('')
     const [fiveyearList, setFiveyearList] = useState([])
     const [selectedparts, setSelectedParts] = useState([])
     const [nfrId, setNfrId] = useState('')
@@ -147,7 +140,7 @@ function AddRfq(props) {
     const [targetPrice, setTargetPrice] = useState("")
     const [quotationIdentity, setQuotationIdentity] = useState('')
     const [partIdentity, setPartIdentity] = useState(0)
-
+    const [isPartDetailUpdate, setIsPartDeailUpdate] = useState(false)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
@@ -156,12 +149,14 @@ function AddRfq(props) {
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
     const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
-    const showSendButton = dataProps?.rowData?.DisplayStatus || ''
+    const showSendButton = dataProps?.rowData?.Status || ''
+    const isDropdownDisabled = (initialConfiguration.IsCriticalVendorConfigured && isViewFlag) || (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === 'PreDraft' || showSendButton === ''));
 
-    const isDropdownDisabled = (initialConfiguration.IsCriticalVendorConfigured && isViewFlag) || (!dataProps?.isAddFlag && !(showSendButton === 'Draft' || showSendButton === ''));
+
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
     const { getRfqVendorDetail, getTargetprice, getPartIndentity, getQuotationIdForRFQ } = useSelector((state) => state.rfq)
+
     const [viewQuotationPart, setViewQuotationPart] = useState(false)
     const [havellsPartTypeList, setHavellsPartTypeList] = useState([]);
     const [editQuotationPart, setEditQuotationPart] = useState(false)
@@ -169,9 +164,9 @@ function AddRfq(props) {
     const [havellsKey, setHavellsKey] = useState(true)
     const [storePartsDetail, setStorePartsDetail] = useState([])
     const [partEffectiveDate, setPartEffectiveDate] = useState('')
-
+    const [sopQuantityList, setSopQuantityList] = useState([]);
     const [disabledPartUid, setDisabledPartUId] = useState(true)
-
+    const [sopdate, setSOPDate] = useState('')
 
 
 
@@ -180,15 +175,20 @@ function AddRfq(props) {
 
 
 
+
     const isPartEffectiveDateValid = partEffectiveDate && new Date(partEffectiveDate).getTime() > new Date().getTime();
     const effectiveMinDate = isPartEffectiveDateValid ? new Date(partEffectiveDate) : new Date();
-
+    let partIndex = ""
     useEffect(() => {
         if (dataProps?.isAddFlag) {
-            const obj = createQuotationObject(null);
-            dispatch(createRfqQuotation(obj, (res) => {
-                setQuotationIdentity(res?.data?.Identity)
-            }))
+            dispatch(setQuotationIdForRfq(""))
+            setTimeout(() => {
+                const obj = createQuotationObject(null);
+                dispatch(createRfqQuotation(obj, (res) => {
+                    setQuotationIdentity(res?.data?.Identity)
+                }))
+            }, 200)
+
         }
     }, [])
 
@@ -201,6 +201,12 @@ function AddRfq(props) {
             setDisabledPartUId((Part && (Part?.Add || Part?.Edit)) ? false : true)
         }
     }, [showSendButton, Vendor, Part])
+
+    useEffect(() => {
+        if (getTargetprice && getTargetprice?.TargetPrice) {
+            setValue('TargetPrice', getTargetprice?.TargetPrice)
+        }
+    }, [getTargetprice])
     useEffect(() => {
         const partTypeString = initialConfiguration?.HavellsPartTypeList;
         if (partTypeString) {
@@ -252,6 +258,7 @@ function AddRfq(props) {
     }, [checkRFQPartBulkUpload])
 
     const convertToPartList = (partListTemp, isnfr) => {
+
         let tempArr = []
         if (isnfr) {
             let listFinal = []
@@ -270,7 +277,7 @@ function AddRfq(props) {
                     if (ind === 2) {
                         obj.PartNumber = item.PartNumber
                         obj.VendorListExisting = item.VendorList
-                        obj.TagetPrice = item.TargetPrice
+                        obj.TargetPrice = item.TargetPrice
                         obj.UOM = item.UOMSymbol
                         obj.RequirementDate = item.TimeLine
 
@@ -333,34 +340,36 @@ function AddRfq(props) {
             setRMAPIList(ListTemp)
         } else {
             partListTemp && partListTemp?.map((item) => {
-                item.SOPQuantity.map((ele, ind) => {
-                    if (ind !== 2) {
-                        ele.PartNo = ele.PartNumber
-                        ele.PartId = item?.PartId
-                        delete ele.PartNumber
-                    } else {
-                        ele.PartNo = ele?.PartNumber
-                        ele.PartId = item?.PartId
-                        ele.TargetPrice = item?.TargetPrice
-                        ele.UOM = item?.UOMSymbol
-                        ele.RequirementTimeline = item?.TimeLine
-                        ele.PartType = item?.PartType
-                        ele.HavellsDesignPart = item?.HavellsDesignPart
-                        ele.QuotationPartId = item?.QuotationPartId
-                        ele.HavellsDesignPartId = item?.HavellsDesignPartId
-                        ele.SOPDate = item?.SOPDate
-                        ele.UOMId = item?.UOMId
-                        ele.PartTypeId = item?.PartTypeId
-                        // ele.RMGrade = item?.RMDetailsResponses[0]?.RawMaterialGrade
-                        // ele.RawMaterialGradeId = item?.RMDetailsResponses[0]?.RawMaterialGradeId
-                        // ele.RMSpecification = item?.RMDetailsResponses[0]?.RawMaterialSpecification
-                        // ele.RawMaterialSpecificationId = item?.RMDetailsResponses[0]?.RawMaterialSpecificationId
-                    }
-                    return null
-                })
-                tempArr = [...tempArr, ...item?.SOPQuantity]
+
+                // item.SOPQuantity.map((ele, ind) => {
+                //     if (ind !== 2) {
+                //         ele.PartNo = ele.PartNumber
+                //         ele.PartId = item?.PartId
+                //         delete ele.PartNumber
+                //     } else {
+                //         ele.PartNo = ele?.PartNumber
+                //         ele.PartId = item?.PartId
+                //         ele.TargetPrice = item?.TargetPrice
+                //         ele.UOM = item?.UOMSymbol
+                //         ele.TimeLine = item?.TimeLine
+                //         ele.PartType = item?.PartType
+                //         ele.HavellsDesignPart = item?.HavellsDesignPart
+                //         ele.QuotationPartId = item?.QuotationPartId
+                //         ele.HavellsDesignPartId = item?.HavellsDesignPartId
+                //         ele.UOMId = item?.UOMId
+                //         ele.PartTypeId = item?.PartTypeId
+
+                //     }
+                //     return null
+                // })
+
+
+
+                tempArr.push(item)
+
                 return null
             })
+
         }
 
         return tempArr
@@ -436,7 +445,15 @@ function AddRfq(props) {
             dropzone.current.files.pop()
         }
     }
-
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue !== " " &&
+            cellValue !== null &&
+            cellValue !== "" &&
+            cellValue !== undefined
+            ? cellValue
+            : "-";
+    };
     const Preview = ({ meta }) => {
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
@@ -524,10 +541,12 @@ function AddRfq(props) {
     const deleteItemPartTable = (rowData, final) => {
 
 
+
         dispatch(deleteQuotationPartDetail(rowData?.QuotationPartId, (res) => {
             Toaster.success('Part has been deleted successfully')
         }))
-        let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
+        let arr = final && final.filter(item => item.PartId !== rowData?.PartId)
+
         setPartList(arr)
         setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData })
 
@@ -536,22 +555,27 @@ function AddRfq(props) {
     }
     const editItemPartTable = (rowData, final, viewMode) => {
 
+        partIndex = final?.rowIndex
+
 
         setUpdateButtonPartNoTable(true)
         setTimeout(() => {
-            setValue('partNumber', { label: rowData[2]?.PartNo, value: rowData[2]?.PartId })
-            setValue('PartType', { label: rowData[2]?.PartType, value: rowData[2]?.PartTypeId })
-            setValue('HavellsDesignPart', { label: rowData[2]?.HavellsDesignPart, value: rowData[2]?.HavellsDesignPartId })
-            setSOPDate(rowData[2]?.SOPDate || '')
-            setValue('UOM', { label: rowData[2]?.UOM, value: rowData[2]?.UOMId })
-            setPartType({ label: rowData[2]?.PartType, value: rowData[2]?.PartTypeId })
 
-            setRequirementDate(rowData[2]?.RequirementTimeline || '')
+
+            setValue('partNumber', { label: rowData?.PartNumber, value: rowData?.PartId })
+            setValue('PartType', { label: rowData?.PartType, value: rowData?.PartTypeId })
+            setValue('HavellsDesignPart', { label: rowData?.HavellsDesignPart, value: rowData?.HavellsDesignPartId })
+            setValue('UOM', { label: rowData?.UOM, value: rowData?.UOMId })
+            setValue('Description', rowData?.Description)
+            setPartType({ label: rowData?.PartType, value: rowData?.PartTypeId })
+            setPartName({ label: rowData?.PartNumber, value: rowData?.PartId })
+            setRequirementDate(rowData?.TimeLine || '')
+            setAssemblyPartNumber({ label: rowData?.PartNumber, value: rowData?.PartId })
         }, 200);
 
 
         // setValue('uom', { label: rowData[0]?.Uom, value: rowData[0]?.UomId })
-        dispatch(getRfqPartDetails(rowData[2]?.QuotationPartId, res => {
+        dispatch(getRfqPartDetails(rowData?.QuotationPartId, res => {
             const PartList = res?.data?.Data?.PartList
             setStorePartsDetail(PartList)
 
@@ -564,7 +588,7 @@ function AddRfq(props) {
     const ViewItemPartTable = (rowData, final, viewMode) => {
 
         setViewQuotationPart(true)
-        dispatch(getRfqPartDetails(rowData[0]?.QuotationPartId, res => { }))
+        dispatch(getRfqPartDetails(rowData?.QuotationPartId, res => { }))
         setDrawerOpen(true)
 
     }
@@ -593,6 +617,7 @@ function AddRfq(props) {
             , value: props?.node?.data?.ContactPersonId
 
         })
+        setValue('LDClause', props?.node?.data?.LDClause)
 
     }
     function createQuotationObject(isSent, quotationId, IsPartDetailsSent) {
@@ -701,9 +726,10 @@ function AddRfq(props) {
     */
     const cancel = () => {
         props.closeDrawer('', {})
+        dispatch(setQuotationIdForRfq(""))
     }
 
-    const onSubmit = (data, e, isPartDetailSent) => {
+    const onSubmit = (data, e, isPartDetailsSent) => {
 
         //dispatch(getTargetPrice(plant, technology, assemblyPartNumber, (res) => { }))
         // dispatch(getRfqPartDetails( (res) => {
@@ -734,8 +760,24 @@ function AddRfq(props) {
         } else if (Object.keys(errors).length > 0) {
             return false
         }
-        const IsPartDetailsSent = isPartDetailSent && partList && partList.length > 0
-        const isSent = partList && vendorList && partList.length > 0 && vendorList.length > 0 ? true : false
+        let IsPartDetailsSent;
+        let isSent;
+        const isShowRfqPartDetail = initialConfiguration?.IsShowRFQPartDetailBreakup
+        const hasParts = partList && partList.length > 0;
+        const hasVendors = vendorList && vendorList.length > 0;
+        if (!isShowRfqPartDetail) {
+            IsPartDetailsSent = isPartDetailsSent;
+            isSent = isPartDetailsSent;
+        } else {
+            IsPartDetailsSent = isPartDetailsSent ? hasParts : (hasParts && hasVendors);
+            isSent = hasParts && hasVendors && isPartDetailsSent;
+        }
+        // const IsPartDetailsSent = isShowRfqPartDetail ? ((isPartDetailSent && partList && partList.length > 0) ? true : (partList && partList.length > 0 && vendorList && vendorList.length > 0) ? true : false) : false
+        // const isSent = isShowRfqPartDetail ? ((partList && vendorList && partList.length > 0 && vendorList.length > 0) ? IsPartDetailsSent : false) : false
+
+        //const isSent = partList && vendorList && partList.length > 0 && vendorList.length > 0 ? true : false
+
+
 
 
 
@@ -761,38 +803,38 @@ function AddRfq(props) {
         // obj.Attachments = files
         // obj.IsSent = isSent
         // obj.NfrId = nfrId?.value
-        if (dataProps?.isEditFlag) {
-            dispatch(updateRfqQuotation(obj, (res) => {
+        // if (dataProps?.isEditFlag) {
+        //     dispatch(updateRfqQuotation(obj, (res) => {
 
-                if (res?.data?.Result) {
-                    setQuotationIdentity(res?.data?.Identity)
-                    if (isSent) {
-                        Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
-                    } else {
-                        Toaster.success(MESSAGES.RFQ_UPDATE_SUCCESS)
-                    }
-                    cancel()
+        //         if (res?.data?.Result) {
+        //             setQuotationIdentity(res?.data?.Identity)
+        //             if (isSent) {
+        //                 Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
+        //             } else {
+        //                 Toaster.success(MESSAGES.RFQ_UPDATE_SUCCESS)
+        //             }
+        //             cancel()
+        //         }
+        //     }))
+
+        dispatch(createRfqQuotation(obj, (res) => {
+
+            setQuotationIdentity(res?.data?.Identity)
+            if (res?.data?.Result) {
+                dispatch(setQuotationIdForRfq(""))
+                if ((!showSendButton === "") && (!(showSendButton === DRAFT) || !(showSendButton === PREDRAFT))) {
+                    Toaster.success(MESSAGES.RFQ_UPDATE_SUCCESS)
+                } else if (isSent) {
+                    Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
+                } else {
+                    Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
                 }
-            }))
+                cancel()
+            }
+        }))
 
-        } else {
 
-            dispatch(createRfqQuotation(obj, (res) => {
 
-                setQuotationIdentity(res?.data?.Identity)
-
-                if (res?.data?.Result) {
-                    if (isSent) {
-                        Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
-                    } else {
-                        Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
-                    }
-                    cancel()
-                }
-            }))
-
-        }
-        dispatch(setQuotationIdForRfq(""))
         dispatch(setVendorDetails({}))
     }
 
@@ -815,11 +857,7 @@ function AddRfq(props) {
     };
 
 
-    const hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        const rowData = props?.data;
-        return cellValue ? cellValue : (rowData?.PartNumber ? '-' : '')
-    }
+
 
     const sopFormatter = (props) => {
         const cellValue = props?.value;
@@ -828,16 +866,22 @@ function AddRfq(props) {
 
 
     const buttonFormatterFirst = (props) => {
+
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
-        let show = (props?.data?.PartNumber === undefined) ? false : true
+        let show = (rowData?.PartNumber === undefined) ? false : true
         const row = props?.data;
+
+
         return (
             <>
-                {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions?.rowData, props, true)} />}
-                {show && < button title='View' className="View mr-2 align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => ViewItemPartTable(props?.agGridReact?.gridOptions?.rowData, props, false)} />}
+                {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={showSendButton === DRAFT ? true : dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} type={'button'} onClick={() => editItemPartTable(rowData, props, true)} />}
+                {show && < button title='View' className="View mr-2 align-middle" disabled={false} type={'button'} onClick={() => ViewItemPartTable(rowData, props, false)} />}
 
                 {/*  {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
-                {show && <button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
+                {show && <button title='Delete' className="Delete align-middle" disabled={showSendButton === DRAFT ? true : dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
             </>
         )
     };
@@ -996,166 +1040,8 @@ function AddRfq(props) {
                 let objTemp = {};
                 let arrTemp = [];
                 let Data = {}
-                if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
-                    Toaster.warning("Please select part number and SOP date");
-                    return false;
-                }
-                else {
-                    if (nfrId && nfrId.value !== null) {
-                        dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
-                            Data = res.data.Data
-                        }));
-                    }
-                    let dataObj = {
-                        "PartIdList": [
-                            getValues('partNumber')?.value
-                        ],
-                        "PlantId": getValues('plant')?.value,
-                        "VendorId": null
-                    };
-
-                    let vendorList = [];
-                    let vendorListFinal = [];
-
-                    dispatch(checkExistCosting(dataObj, (res) => {
-                        if (res?.data?.Result) {
-                            vendorList = [...res?.data?.DataList];
-                            vendorList && vendorList?.map((item) => {
-                                vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`);
-                            });
-                        }
-
-                        let tempArrayparts = [...selectedparts, getValues('partNumber')];
-                        setSelectedParts(tempArrayparts);
-
-                        let partNumber = getValues('partNumber');
-
-                        sopObjectTemp && sopObjectTemp.map((item, index) => {
-                            let newObjTemp = { ...objTemp }; // Create a new object in each iteration
-                            newObjTemp.PartNo = partNumber?.label;
-                            newObjTemp.PartId = getValues('partNumber')?.value;
-                            newObjTemp.UOM = getValues('UOM')?.label
-                            newObjTemp.UOMId = getValues('UOM')?.value
-                            newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0
-                            newObjTemp.RequirementTimeLine = requirementDate
-                            newObjTemp.SOPDate = sopdate
-                            newObjTemp.PartType = getValues('PartType')?.label
-                            newObjTemp.PartTypeId = getValues('PartType')?.value
-
-                            newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label
-                            newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value
-                            newObjTemp.Description = getValues('Description')
-
-                            if (index === 2) {
-                                newObjTemp.PartNumber = partNumber?.label;
-                                newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
-
-                            }
-                            if (nfrId && nfrId.value !== null) {
-                                if (index === 0) {
-                                    newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
-                                    newObjTemp.YearName = Data.FirstYear
-                                } else if (index === 1) {
-                                    newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
-                                    newObjTemp.YearName = Data.SecondYear
-                                } else if (index === 2) {
-                                    newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
-                                    newObjTemp.YearName = Data.ThirdYear
-                                } else if (index === 3) {
-                                    newObjTemp.Quantity = 0;
-                                    newObjTemp.YearName = parseInt(Data.ThirdYear) + 1
-                                    newObjTemp.isEdit = true
-                                } else if (index === 4) {
-                                    newObjTemp.Quantity = 0;
-                                    newObjTemp.YearName = parseInt(Data.ThirdYear) + 2
-                                    newObjTemp.isEdit = true
-                                }
-                            } else {
-                                newObjTemp.Quantity = 0
-                                newObjTemp.YearName = fiveyearList[index]
-                                newObjTemp.isEdit = true
-                            }
-                            arrTemp.push(newObjTemp);
-                            return null;
-                        });
-                        let dataList = [...arrTemp]
-                        list[list.length - 1].RmList && list[list.length - 1].RmList?.map((item, index) => {
-
-                            let obj = arrTemp[index] ?? {}
-                            obj.RMGrade = item.RawMaterialGrade
-                            obj.RawMaterialGradeId = item.RawMaterialGradeId
-                            obj.RMName = item.RawMaterialName
-                            obj.RawMaterialChildId = item.RawMaterialChildId
-                            obj.RMSpecification = item.RawMaterialSpecification
-                            obj.RawMaterialSpecificationId = item.RawMaterialSpecificationId
-
-                            if (index > arrTemp?.length - 1) {
-                                obj.PartId = arrTemp[0].PartId
-                                obj.PartNo = arrTemp[0].PartNo
-                                obj.Quantity = 0
-                                obj.isEdit = true
-                                dataList.push(obj)
-
-                            } else {
-                                Object.assign([...dataList], { index: obj })
-                            }
-                        })
-
-                        let arr = [...partList, ...dataList];
-                        setPartList(arr);
-                        setValue('partNumber', "");
-                        setSOPDate('');
-                        setRequirementDate("")
-                        setValue('SOPDate', "");
-                        setValue('RMName', "");
-                        setValue('RMGrade', "");
-                        setValue('RMSpecification', "");
-                        setUpdateButtonPartNoTable(false);
-                        setRMName('');
-                        setRMGrade('');
-                        setRMSpecification('');
-                        dispatch(clearGradeSelectList([]));
-                        dispatch(clearSpecificationSelectList([]));
-                    }));
-                }
-
-
-            }));
-
-
-        } else {
-            let objTemp = {};
-            let arrTemp = [];
-            let Data = {}
-            const { label } = getValues('RMName') || {};
-            const isRMGradeMissing = !getValues('RMGrade');
-            const isRMSpecificationMissing = !getValues('RMSpecification');
-            if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
-                Toaster.warning("Please select part number and SOP date");
-                return false;
-            } if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
-                const missingRequirements = [];
-                if (isRMGradeMissing) {
-                    missingRequirements.push('RM Grade');
-                }
-                if (isRMSpecificationMissing) {
-                    missingRequirements.push('RM Specification');
-                }
-                const message = `Please select ${missingRequirements.join(' and ')}`;
-                Toaster.warning(message);
-            } else if (getValues('PartType') === "") {
-                Toaster.warning("Please select Havells Design part");
-                return false;
-            } else if (requirementDate === "") {
-                Toaster.warning("Please select Requirement Date");
-                return false;
-            } else if (/* getTargetprice && Object.keys(getTargetprice).length === 0 */targetPrice === "" && havellsDesignPart === "Havells Design part") {
-                Toaster.warning("ZBC costing approval is required for this plant to raise a quote.")
-                return false
-            } else {
-
                 if (nfrId && nfrId.value !== null) {
-                    dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
+                    dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {  //CHECK_NFR
                         Data = res.data.Data
                     }));
                 }
@@ -1183,67 +1069,255 @@ function AddRfq(props) {
 
                     let partNumber = getValues('partNumber');
 
-                    sopObjectTemp && sopObjectTemp.map((item, index) => {
-                        let newObjTemp = { ...objTemp }; // Create a new object in each iteration
+                    // sopObjectTemp && sopObjectTemp.map((item, index) => {
+                    //     let newObjTemp = { ...objTemp }; // Create a new object in each iteration
+                    //     newObjTemp.PartNo = partNumber?.label;
+                    //     newObjTemp.PartId = getValues('partNumber')?.value;
+                    //     newObjTemp.UOM = getValues('UOM')?.label
+                    //     newObjTemp.UOMId = getValues('UOM')?.value
+                    //     newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0
+                    //     newObjTemp.TimeLine = requirementDate
+                    //     newObjTemp.PartType = getValues('PartType')?.label
+                    //     newObjTemp.PartTypeId = getValues('PartType')?.value
 
-                        newObjTemp.PartNo = partNumber?.label;
-                        newObjTemp.PartId = getValues('partNumber')?.value;
-                        newObjTemp.UOM = getValues('UOM')?.label
-                        newObjTemp.UOMId = getValues('UOM')?.value
-                        newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0
-                        newObjTemp.RequirementTimeLine = requirementDate
-                        newObjTemp.SOPDate = sopdate
-                        newObjTemp.PartType = getValues('PartType')?.label
-                        newObjTemp.PartTypeId = getValues('PartType')?.value
+                    //     newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label
+                    //     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value
+                    //     newObjTemp.Description = getValues('Description')
 
-                        newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label
-                        newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value
-                        newObjTemp.Description = getValues('Description')
+                    //     if (index === 2) {
+                    //         newObjTemp.PartNumber = partNumber?.label;
+                    //         newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
+
+                    //     }
+                    //     if (nfrId && nfrId.value !== null) {
+                    //         if (index === 0) {
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.YearName = Data.FirstYear
+                    //         } else if (index === 1) {
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.YearName = Data.SecondYear
+                    //         } else if (index === 2) {
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.YearName = Data.ThirdYear
+                    //         } else if (index === 3) {
+                    //             newObjTemp.Quantity = 0;
+                    //             newObjTemp.YearName = parseInt(Data.ThirdYear) + 1
+                    //             newObjTemp.isEdit = true
+                    //         } else if (index === 4) {
+                    //             newObjTemp.Quantity = 0;
+                    //             newObjTemp.YearName = parseInt(Data.ThirdYear) + 2
+                    //             newObjTemp.isEdit = true
+                    //         }
+                    //     } else {
+                    //         newObjTemp.Quantity = 0
+                    //         newObjTemp.YearName = fiveyearList[index]
+                    //         newObjTemp.isEdit = true
+                    //     }
+                    //     arrTemp.push(newObjTemp);
+                    //     return null;
+                    // });
+                    let arrTemp = [];
 
 
+                    let newObjTemp = {};  // Initialize the new object
 
-                        if (index === 2) {
-                            newObjTemp.PartNumber = partNumber?.label;
-                            newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
-                            newObjTemp.RMName = rmName?.label ?? '-';
-                            newObjTemp.RawMaterialChildId = rmName?.value ?? '-';
-                            newObjTemp.RMGrade = rmgrade?.label ?? '-';
-                            newObjTemp.RawMaterialGradeId = rmgrade?.value ?? '-';
-                            newObjTemp.RMSpecification = rmspecification?.label ?? '-';
-                            newObjTemp.RawMaterialSpecificationId = rmspecification?.value ?? '-';
-                        }
-                        if (nfrId) {
-                            if (index === 0) {
-                                newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
-                                newObjTemp.YearName = Data.FirstYear
-                            } else if (index === 1) {
-                                newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
-                                newObjTemp.YearName = Data.SecondYear
-                            } else if (index === 2) {
-                                newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
-                                newObjTemp.YearName = Data.ThirdYear
-                            } else if (index === 3) {
-                                newObjTemp.Quantity = 0;
-                                newObjTemp.YearName = parseInt(Data.ThirdYear) + 1
-                                newObjTemp.isEdit = true
-                            } else if (index === 4) {
-                                newObjTemp.Quantity = 0;
-                                newObjTemp.YearName = parseInt(Data.ThirdYear) + 2
-                                newObjTemp.isEdit = true
-                            }
+                    newObjTemp.PartNo = partNumber?.label;
+                    newObjTemp.PartId = getValues('partNumber')?.value;
+                    newObjTemp.UOM = getValues('UOM')?.label;
+                    newObjTemp.UOMId = getValues('UOM')?.value;
+                    newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0;
+                    newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
+                    newObjTemp.PartType = getValues('PartType')?.label;
+                    newObjTemp.PartTypeId = getValues('PartType')?.value;
+                    newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label;
+                    newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
+                    newObjTemp.Description = getValues('Description');
+
+                    arrTemp.push(newObjTemp);  // Push the new object to the array
+
+                    let dataList = [...arrTemp]
+                    list[list.length - 1].RmList && list[list.length - 1].RmList?.map((item, index) => {
+
+                        let obj = arrTemp[index] ?? {}
+                        obj.RMGrade = item.RawMaterialGrade
+                        obj.RawMaterialGradeId = item.RawMaterialGradeId
+                        obj.RMName = item.RawMaterialName
+                        obj.RawMaterialChildId = item.RawMaterialChildId
+                        obj.RMSpecification = item.RawMaterialSpecification
+                        obj.RawMaterialSpecificationId = item.RawMaterialSpecificationId
+
+                        if (index > arrTemp?.length - 1) {
+                            obj.PartId = arrTemp[0].PartId
+                            obj.PartNo = arrTemp[0].PartNo
+                            obj.Quantity = 0
+                            obj.isEdit = true
+                            dataList.push(obj)
+
                         } else {
-                            newObjTemp.Quantity = 0
-                            newObjTemp.YearName = fiveyearList[index]
+                            Object.assign([...dataList], { index: obj })
                         }
-                        arrTemp.push(newObjTemp);
-                        return null;
-                    });
+                    })
 
-                    //let arr = [...partList, ...arrTemp];
+                    let arr = [...partList, ...dataList];
+                    setPartList(arr);
+                    setValue('partNumber', "");
+
+                    setRequirementDate("")
+
+                    setValue('RMName', "");
+                    setValue('RMGrade', "");
+                    setValue('RMSpecification', "");
+                    setUpdateButtonPartNoTable(false);
+                    setRMName('');
+                    setRMGrade('');
+                    setRMSpecification('');
+                    dispatch(clearGradeSelectList([]));
+                    dispatch(clearSpecificationSelectList([]));
+                }));
+
+
+
+            }));
+
+
+        } else {
+            let objTemp = {};
+            let arrTemp = [];
+            let Data = {}
+            const { label } = getValues('RMName') || {};
+            const isRMGradeMissing = !getValues('RMGrade');
+            const isRMSpecificationMissing = !getValues('RMSpecification');
+            if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
+                const missingRequirements = [];
+                if (isRMGradeMissing) {
+                    missingRequirements.push('RM Grade');
+                }
+                if (isRMSpecificationMissing) {
+                    missingRequirements.push('RM Specification');
+                }
+                const message = `Please select ${missingRequirements.join(' and ')}`;
+                Toaster.warning(message);
+            } else if (getValues('HavellsDesignPart') === "") {
+                Toaster.warning("Please select Havells Design part");
+                return false;
+            } else if (requirementDate === "") {
+                Toaster.warning("Please select Requirement Date");
+                return false;
+            } else if (/* getTargetprice && Object.keys(getTargetprice).length === 0 */targetPrice === "" && havellsDesignPart === "Havells Design part") {
+                Toaster.warning("ZBC costing approval is required for this plant to raise a quote.")
+                return false
+            } else {
+
+                if (nfrId && nfrId.value !== null) {//CHECK_NFR
+                    dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {
+                        Data = res.data.Data
+                    }));
+                }
+                let dataObj = {                 // Part Handle change
+                    "PartIdList": [
+                        getValues('partNumber')?.value
+                    ],
+                    "PlantId": getValues('plant')?.value,
+                    "VendorId": null
+                };
+
+                let vendorList = [];
+                let vendorListFinal = [];
+
+                dispatch(checkExistCosting(dataObj, (res) => {                 // Part Handle change
+                    if (res?.data?.Result) {
+                        vendorList = [...res?.data?.DataList];
+                        vendorList && vendorList?.map((item) => {
+                            vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`);
+                        });
+                    }
+
+                    let tempArrayparts = [...selectedparts, getValues('partNumber')];
+                    setSelectedParts(tempArrayparts);
+
+                    let partNumber = getValues('partNumber');
+
+                    // sopObjectTemp && sopObjectTemp.map((item, index) => {
+                    //     let newObjTemp = { ...objTemp }; // Create a new object in each iteration
+
+                    //     newObjTemp.PartNo = partNumber?.label;
+                    //     newObjTemp.PartId = getValues('partNumber')?.value;
+                    //     newObjTemp.UOM = getValues('UOM')?.label
+                    //     newObjTemp.UOMId = getValues('UOM')?.value
+                    //     newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0
+                    //     newObjTemp.TimeLine = requirementDate || ''
+                    //     newObjTemp.PartType = getValues('PartType')?.label
+                    //     newObjTemp.PartTypeId = getValues('PartType')?.value
+
+                    //     newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label
+                    //     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value
+                    //     newObjTemp.Description = getValues('Description')
+
+
+
+                    //     if (index === 2) {
+                    //         newObjTemp.PartNumber = partNumber?.label;
+                    //         newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
+                    //         newObjTemp.RMName = rmName?.label ?? '-';
+                    //         newObjTemp.RawMaterialChildId = rmName?.value ?? '-';
+                    //         newObjTemp.RMGrade = rmgrade?.label ?? '-';
+                    //         newObjTemp.RawMaterialGradeId = rmgrade?.value ?? '-';
+                    //         newObjTemp.RMSpecification = rmspecification?.label ?? '-';
+                    //         newObjTemp.RawMaterialSpecificationId = rmspecification?.value ?? '-';
+                    //     }
+                    //     if (nfrId) {
+                    //         if (index === 0) {
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.YearName = Data.FirstYear
+                    //         } else if (index === 1) {
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.YearName = Data.SecondYear
+                    //         } else if (index === 2) {
+                    //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                    //             newObjTemp.YearName = Data.ThirdYear
+                    //         } else if (index === 3) {
+                    //             newObjTemp.Quantity = 0;
+                    //             newObjTemp.YearName = parseInt(Data.ThirdYear) + 1
+                    //             newObjTemp.isEdit = true
+                    //         } else if (index === 4) {
+                    //             newObjTemp.Quantity = 0;
+                    //             newObjTemp.YearName = parseInt(Data.ThirdYear) + 2
+                    //             newObjTemp.isEdit = true
+                    //         }
+                    //     } else {
+                    //         newObjTemp.Quantity = 0
+                    //         newObjTemp.YearName = fiveyearList[index]
+                    //     }
+                    //     return null;
+                    // });
+                    let arrTemp = [];
+
+                    let newObjTemp = {};  // Initialize the new object
+
+                    newObjTemp.PartNumber = partNumber?.label;
+                    newObjTemp.PartId = getValues('partNumber')?.value;
+                    newObjTemp.UOM = getValues('UOM')?.label;
+                    newObjTemp.UOMId = getValues('UOM')?.value;
+                    newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0;
+                    newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
+                    newObjTemp.PartType = getValues('PartType')?.label;
+                    newObjTemp.PartTypeId = getValues('PartType')?.value;
+                    newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label;
+                    newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
+                    newObjTemp.Description = getValues('Description');
+                    newObjTemp.SOPQuantityDetails = sopQuantityList
+
+                    arrTemp.push(newObjTemp);  // Push the new object to the array
+
+
+
+                    //let dataList = [...arrTemp]
 
                     let arr = updateButtonPartNoTable
                         ? partList.map(item => item.PartId === getValues('partNumber')?.value ? { ...item, ...arrTemp[0] } : item)
                         : [...partList, ...arrTemp];
+
+
 
 
 
@@ -1264,26 +1338,17 @@ function AddRfq(props) {
                     obj.PlantId = getValues('plant')?.value
                     obj.LoggedInUserId = loggedInUserId()
                     let partIdList = _.uniq(_.map(list, 'PartId'))
+
+
+
                     let childPartIdList = _.uniq(_.map(tableData, 'PartId'));
                     partIdList && partIdList?.map((item) => {
+                        if (item !== getValues('partNumber')?.value) return false
                         let temppartObj = {}
                         let partListArr = []
                         let partObject = []
                         temppartObj.PartId = item
-                        list && list.map((item1, index) => {
-
-                            let partListObj = {}
-                            if (item1?.PartId === item) {
-                                partListObj.PartNumber = item1?.PartNo
-                                partListObj.YearName = item1?.YearName
-                                partListObj.Quantity = item1?.Quantity
-                                partListArr.push(partListObj)
-                                if (index === 2) {
-                                    partObject = item1
-                                }
-                            }
-                            return null
-                        })
+                        let obj = arr && arr?.filter(ele => ele?.PartId === item)
 
                         let rmList = []
                         if (isNFRFlow) {
@@ -1301,19 +1366,24 @@ function AddRfq(props) {
                                 }
                             })
                         }
+
+
                         temppartObj.RMDetails = rmList
-                        temppartObj.SOPQuantityDetails = partListArr
+                        temppartObj.SOPQuantityDetails = sopQuantityList
                         temppartObj.IsChildPart = false
                         // temppartObj.QuotationPartId = ""
                         temppartObj.PartType = partType?.label || ''
                         temppartObj.TargetPrice = getTargetprice?.TargetPrice || 0
                         temppartObj.TimeLine = requirementDate || "";
-                        temppartObj.Remarks = remark
-                        temppartObj.PartAttachments = childPartFiles
+                        temppartObj.Remarks = remark || null
+                        temppartObj.Attachments = childPartFiles || []
                         temppartObj.HavellsDesignPart = getValues('HavellsDesignPart')?.label || ''
-                        temppartObj.UnitOfUnitOfMeasurementIdRef = getValues('UOM')?.value || ''
+                        temppartObj.UnitOfMeasurementId = getValues('UOM')?.value || ''
                         temppartObj.ExistingVendor = vendorList.join(',') || '';
-                        temppartObj.SopDate = sopdate || ''
+                        temppartObj.Description = getValues('Description') || null
+                        temppartObj.SopDate = sopdate || null
+                        //temppartObj.SOPQuantityDetails = obj[0]?.SOPQuantityDetails
+
                         //ExistingVendor
                         let PartSpecificationList = {};
                         let PartSpecification = [];
@@ -1339,6 +1409,15 @@ function AddRfq(props) {
                         temppartObj.PartSpecificationList = PartSpecificationList;
 
                         temppartArr.push(temppartObj);
+                        // if (updateButtonPartNoTable) {
+                        //     let updatedarr = temppartArr[partIndex];
+                        //     const updatedSopQuantityList = sopQuantityList; // Store sopQuantityList in a constant
+                        //     if (updatedarr) {
+                        //         updatedarr.SOPQuantityDetails = updatedSopQuantityList;
+                        //         temppartArr[partIndex] = updatedarr;
+                        //     }
+                        // }
+
 
                         // Child Part Details
                         if (partType?.label === "Assembly") {
@@ -1364,10 +1443,11 @@ function AddRfq(props) {
                                         childPartObj.HavellsDesignPart = null
                                         childPartObj.TargetPrice = null
                                         childPartObj.TimeLine = null
-                                        childPartObj.UnitOfUnitOfMeasurementIdRef = null
+                                        childPartObj.UnitOfMeasurementId = null
                                         childPartObj.SopDate = null
                                         childPartObj.Remarks = null
-                                        childPartObj.PartAttachments = []
+                                        childPartObj.Description = null
+                                        childPartObj.Attachments = []
                                         temppartArr.push(childPartObj);
                                     }
                                     return null;
@@ -1378,8 +1458,38 @@ function AddRfq(props) {
                         return null
                     })
 
-                    //obj.PartList = temppartArr
-                    obj.PartList = updateButtonPartNoTable ? (drawerOpen ? temppartArr : storePartsDetail) : temppartArr
+
+                    let updatedPartList = [];
+                    if (updateButtonPartNoTable) {
+
+                        if (isPartDetailUpdate) {
+
+                            updatedPartList = temppartArr;
+                        } else if (!isPartDetailUpdate) {
+
+                            updatedPartList = [...storePartsDetail];
+                            updatedPartList[0] = {
+                                ...updatedPartList[0], // Preserve existing properties
+                                UnitOfMeasurementId: getValues('UOM')?.value || '',
+                                HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
+                                TimeLine: requirementDate || ''
+                            };
+                        }
+                    } else {
+
+                        updatedPartList = temppartArr;
+                    }
+
+                    obj.PartList = updatedPartList; // Move this line inside the block
+
+
+
+
+                    //obj.PartList = updateButtonPartNoTable ? (isPartDetailUpdate ? temppartArr : storePartsDetail) : temppartArr
+
+
+
+
 
 
 
@@ -1387,10 +1497,16 @@ function AddRfq(props) {
                     // 
 
 
+
                     dispatch(saveRfqPartDetails(obj, (res) => {
 
                         if (res?.data?.Result) {
-                            Toaster.success('Part Details has been added successfully.');
+                            if (!updateButtonPartNoTable) {
+                                Toaster.success('Part Details has been added successfully.');
+                            } else {
+                                Toaster.success('Part Details has been updated successfully.');
+                            }
+
                             setPartIdentity(res?.data?.Identity);
                             // onResetPartNoTable();
                             // setTableData([]);
@@ -1405,6 +1521,7 @@ function AddRfq(props) {
                                 return obj;
                             });
                             // 
+
                             setPartList(updatedArr);
                         }
                         const newIdentityArray = _.uniq(_.map(updatedArr, 'QuotationPartId')); // Convert to number
@@ -1415,24 +1532,26 @@ function AddRfq(props) {
 
                     setTimeout(() => {
                         setValue('partNumber', "");
-                        setSOPDate('');
                         setRequirementDate("")
-                        setValue('SOPDate', "");
                         setValue('RMName', "");
                         setValue('RMGrade', "");
                         setValue('RMSpecification', "");
                         setValue("PartType", "");
                         setValue('HavellsDesignPart', "");
-
+                        setValue("UOM", "")
+                        setValue("Description", "")
                         setUpdateButtonPartNoTable(false);
                         setEditQuotationPart(false);
-
+                        setIsPartDeailUpdate(false)
                         setRMName('');
                         setRMGrade('');
                         setRMSpecification('');
                         // setAssemblyPartNumber("")
                         setTableData([]);
                         setSpecificationList([]);
+                        setSopQuantityList([])
+                        setSOPDate('')
+                        setAssemblyPartNumber('')
                         // setQuotationIdentity('');
                         setStorePartsDetail([]);
                         dispatch(clearGradeSelectList([]));
@@ -1453,8 +1572,20 @@ function AddRfq(props) {
         setValue('RMName', "")
         setValue('RMGrade', "")
         setValue('RMSpecification', "")
-        setSOPDate('')
+        setValue("PartType", "")
+        setValue('HavellsDesignPart', "")
+        setValue("UOM", "")
+        setValue("Description", "")
+        setValue("SOPDate", "")
         setRequirementDate("")
+        setUpdateButtonPartNoTable(false);
+        setEditQuotationPart(false)
+        setTableData([]);
+        setSpecificationList([]);
+        setSopQuantityList([])
+        setSOPDate('')
+        setStorePartsDetail([]);
+
         // setValue('technology', "")
     }
 
@@ -1612,6 +1743,7 @@ function AddRfq(props) {
         return filteredArray
     }
     const handleHavellsDesignPart = (newValue) => {
+
         setHavellsDesignPart(newValue)
         if (updateButtonPartNoTable) {
             setStorePartsDetail((prevDetails) => {
@@ -1619,16 +1751,14 @@ function AddRfq(props) {
                     if (item.PartId === getValues('partNumber')?.value) {
                         return {
                             ...item,
-                            UnitOfMeasurementIdRef: getValues('UnitOfMeasurementIdRef')?.value || null,
-                            SOPDate: sopdate || "",
+                            UnitOfMeasurementId: getValues('UOM')?.value || null,
                             HavellsDesignPart: newValue?.label || "",
                             TimeLine: requirementDate || ""
                         };
                     } else {
                         return {
                             ...item,
-                            UnitOfMeasurementIdRef: null,
-                            SOPDate: null,
+                            UnitOfMeasurementId: null,
                             HavellsDesignPart: null,
                             TimeLine: null
                         };
@@ -1776,54 +1906,23 @@ function AddRfq(props) {
         return years;
     }
 
-    const handleSOPDateChange = (value) => {
-        let year = new Date(value).getFullYear()
-        const yearList = getNextFiveYears(year)
-        setFiveyearList(yearList)
-        setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
-        if (updateButtonPartNoTable) {
-            setStorePartsDetail((prevDetails) => {
-                return prevDetails.map((item) => {
-                    if (item.PartId === getValues('partNumber')?.value) {
-                        return {
-                            ...item,
-                            UnitOfMeasurementIdRef: getValues('UnitOfMeasurementIdRef')?.value || null,
-                            SOPDate: DayTime(value).format('YYYY-MM-DD HH:mm:ss') || "",
-                            HavellsDesignPart: getValues('HavellsDesignPart')?.value || "",
-                            TimeLine: requirementDate || ""
-                        };
-                    } else {
-                        return {
-                            ...item,
-                            UnitOfMeasurementIdRef: null,
-                            SOPDate: null,
-                            HavellsDesignPart: null,
-                            TimeLine: null
-                        };
-                    }
-                });
-            });
-        }
-    }
-    const handleRequirementDateChange = (value) => {
 
+    const handleRequirementDateChange = (value) => {
         setRequirementDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
-        if (updateButtonPartNoTable) {
+        if (updateButtonPartNoTable && !isPartDetailUpdate) {
             setStorePartsDetail((prevDetails) => {
-                return prevDetails.map((item) => {
+                return prevDetails?.map((item) => {
                     if (item.PartId === getValues('partNumber')?.value) {
                         return {
                             ...item,
-                            UnitOfMeasurementIdRef: getValues('UnitOfMeasurementIdRef')?.value || null,
-                            SOPDate: sopdate || null,
+                            UnitOfMeasurementId: getValues('UOM')?.value || null,
                             HavellsDesignPart: getValues('HavellsDesignPart')?.value || null,
                             TimeLine: DayTime(value).format('YYYY-MM-DD HH:mm:ss') || null
                         };
                     } else {
                         return {
                             ...item,
-                            UnitOfMeasurementIdRef: null,
-                            SOPDate: null,
+                            UnitOfMeasurementId: null,
                             HavellsDesignPart: null,
                             TimeLine: null
                         };
@@ -1899,16 +1998,14 @@ function AddRfq(props) {
                     if (item.PartId === getValues('partNumber')?.value) {
                         return {
                             ...item,
-                            UnitOfMeasurementIdRef: newValue?.value || null,
-                            SOPDate: sopdate || null,
+                            UnitOfMeasurementId: newValue?.value || null,
                             HavellsDesignPart: getValues('HavellsDesignPart')?.value || null,
                             TimeLine: requirementDate || ""
                         };
                     } else {
                         return {
                             ...item,
-                            UnitOfMeasurementIdRef: null,
-                            SOPDate: null,
+                            UnitOfMeasurementId: null,
                             HavellsDesignPart: null,
                             TimeLine: null
                         };
@@ -1924,13 +2021,15 @@ function AddRfq(props) {
         } else {
             value = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
         }
+
         return value
     }
     const DrawerToggle = () => {
         // if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
         setDrawerOpen(true)
     }
-    const closeDrawer = () => {
+    const closeDrawer = (e, isUpdate) => {
+        setIsPartDeailUpdate(isUpdate)
         setDrawerOpen(false)
     }
     const handlePartNoChange = (value) => {
@@ -1948,6 +2047,12 @@ function AddRfq(props) {
 
     }
 
+
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
+
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
         buttonFormatterFirst: buttonFormatterFirst,
@@ -1957,7 +2062,8 @@ function AddRfq(props) {
         sopFormatter: sopFormatter,
         EditableCallback: EditableCallback,
         afcFormatter: afcFormatter,
-        quantityHeader: quantityHeader
+        quantityHeader: quantityHeader,
+        effectiveDateFormatter: effectiveDateFormatter,
     };
 
     const VendorLoaderObj = { isLoader: VendorInputLoader }
@@ -2090,7 +2196,7 @@ function AddRfq(props) {
                                                 mandatory={true}
                                                 handleChange={handlePartTypeChange}
                                                 errors={errors.Part}
-                                                disabled={(technology.length === 0) ? true : false || updateButtonPartNoTable || disabledPartUid}
+                                                disabled={(dataProps?.isViewFlag) ? true : false || (technology.length === 0) ? true : false || updateButtonPartNoTable || disabledPartUid}
                                             />
                                         </Col>}
                                         <Col md="3" className='d-flex align-items-center' >
@@ -2107,14 +2213,15 @@ function AddRfq(props) {
                                                 mandatory={true}
                                                 handleChange={(newValue) => handlePartNoChange(newValue)}
                                                 errors={errors.partNumber}
-                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll) || updateButtonPartNoTable || disabledPartUid}
+                                                disabled={disabledPartUid || (dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || updateButtonPartNoTable}
                                                 isLoading={plantLoaderObj}
                                                 asyncOptions={(inputValue) => partFilterList(inputValue, partTypeforRM)}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                             {partType.length !== 0 && partTypeforRM !== BoughtOutPart && (
-                                                <Button id="addRMSpecificatione" className={"mr-2 mb-2"}
-                                                    icon={updateButtonPartNoTable ? 'edit_pencil_icon' : 'plus-icon-square'}
+                                                <Button id="addRMSpecificatione" className={"ml-2 mb-2"}
+                                                    // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
+                                                    variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
                                                     title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={partName?.length === 0 || disabledPartUid}></Button>
                                             )}
                                         </Col>
@@ -2154,43 +2261,9 @@ function AddRfq(props) {
                                                 handleChange={(value) => handleHavellsDesignPart(value)}
                                                 //handleChange={handlePartTypeChange}
                                                 errors={errors.Part}
-                                                disabled={updateButtonPartNoTable || disabledPartUid}
+                                                disabled={(dataProps?.isViewFlag) ? true : false || updateButtonPartNoTable || disabledPartUid}
                                             />
                                         </Col>}
-                                        <Col md="3">
-                                            <div className="inputbox date-section">
-                                                <div className="form-group">
-                                                    <label>SOP Date<span className="asterisk-required">*</span></label>
-                                                    <div id="addRFQDate_container" className="inputbox date-section">
-                                                        <DatePicker
-
-                                                            name={'SOPDate'}
-                                                            placeholder={'Select'}
-                                                            //selected={submissionDate}
-                                                            selected={DayTime(sopdate).isValid() ? new Date(sopdate) : ''}
-                                                            onChange={handleSOPDateChange}
-                                                            showMonthDropdown
-                                                            showYearDropdown
-                                                            dropdownMode='select'
-                                                            // minDate={new Date()}
-                                                            minDate={effectiveMinDate}
-                                                            dateFormat="dd/MM/yyyy"
-                                                            placeholderText="Select date"
-                                                            className="withBorder"
-                                                            autoComplete={"off"}
-                                                            mandatory={true}
-                                                            errors={errors.SOPDate}
-                                                            disabledKeyboardNavigation
-                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll) || updateButtonPartNoTable || disabledPartUid}
-                                                        />
-                                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </Col>
-
                                         {!havellsKey && (
                                             checkForNull(technology?.value) !== LOGISTICS && (
                                                 <>
@@ -2257,7 +2330,7 @@ function AddRfq(props) {
                                             <Col md="3">
                                                 <SearchableSelectHookForm
                                                     label={"UOM"}
-                                                    name={`UOM`}
+                                                    name={'UOM'}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
                                                     control={control}
@@ -2268,7 +2341,7 @@ function AddRfq(props) {
                                                     mandatory={false}
                                                     handleChange={(newValue) => handleChangeUOM(newValue)}
                                                     errors={errors?.UOM}
-                                                    disabled={disabledPartUid}
+                                                    disabled={(dataProps?.isViewFlag) ? true : false || disabledPartUid}
                                                 />
                                             </Col>
                                         }
@@ -2279,7 +2352,7 @@ function AddRfq(props) {
                                                 <TextFieldHookForm
                                                     // title={titleObj.descriptionTitle}
                                                     label="Target Price"
-                                                    name={'TagetPrice'}
+                                                    name={'TargetPrice'}
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
@@ -2289,7 +2362,7 @@ function AddRfq(props) {
                                                     defaultValue={''}
                                                     className=""
                                                     customClassName={'withBorder'}
-                                                    errors={errors.TagetPrice}
+                                                    errors={errors.TargetPrice}
                                                     disabled={true}
                                                     placeholder="-"
                                                 />
@@ -2317,7 +2390,7 @@ function AddRfq(props) {
                                                                 className="withBorder"
                                                                 autoComplete={"off"}
                                                                 mandatory={true}
-                                                                disabled={disabledPartUid}
+                                                                disabled={(dataProps?.isViewFlag) ? true : false || disabledPartUid}
                                                                 errors={errors.RequirementDate}
                                                                 disabledKeyboardNavigation
                                                                 onChangeRaw={(e) => e.preventDefault()}
@@ -2385,7 +2458,7 @@ function AddRfq(props) {
                                         </Col>
                                     </Row >
                                     <div className='rfq-part-list'>
-                                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To edit the quantity please double click on the field."}</Tooltip>}
+                                        {/* {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To edit the quantity please double click on the field."}</Tooltip>} */}
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
@@ -2413,19 +2486,19 @@ function AddRfq(props) {
                                                                     suppressColumnVirtualisation={true}
                                                                     enableBrowserTooltips={true}
                                                                 >
-                                                                    <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
-                                                                    <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellClass={"colorWhite"} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                                     {/* {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>} */}
-                                                                    <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
-                                                                    <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
+                                                                    {/* <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn> */}
                                                                     <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} ></AgGridColumn>
                                                                     <AgGridColumn width={"230px"} field="UOM" headerName="UOM" ></AgGridColumn>
                                                                     <AgGridColumn width={"230px"} field="TargetPrice" headerName="Target Price" ></AgGridColumn>
-                                                                    <AgGridColumn width={"230px"} field="RequirementTimeline" headerName="Requirement Timeline" ></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="TimeLine" headerName="Requirement Timeline" cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
 
-                                                                    <AgGridColumn width={"190px"} field="PartId" cellClass="ag-grid-action-container colorWhite text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
+                                                                    <AgGridColumn width={"190px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
                                                                 </AgGridReact>
                                                             }
                                                         </div>
@@ -2437,256 +2510,257 @@ function AddRfq(props) {
                                         </div>
                                         }
                                     </div >
-
-                                    <HeaderTitle title={'Vendor:'} customClass="mt-4" />
-                                    <Row className="mt-1 part-detail-wrapper">
-                                        <Col md="3">
-                                            <AsyncSearchableSelectHookForm
-                                                label={"Vendor (Code)"}
-                                                name={"vendor"}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                defaultValue={vendor.length !== 0 ? vendor : ""}
-                                                options={renderListing("vendor")}
-                                                mandatory={true}
-                                                handleChange={handleVendorChange}
-                                                // handleChange={() => { }}
-                                                errors={errors.vendor}
-                                                isLoading={VendorLoaderObj}
-                                                asyncOptions={vendorFilterList}
-                                                disabled={isDropdownDisabled || disabledVendoUi}
-                                                NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
-                                            />
-                                        </Col>
-
-                                        <Col md="3">
-                                            {IsSendQuotationToPointOfContact() && (
-                                                <SearchableSelectHookForm
-                                                    label={"Vendor's Point of Contact"}
-                                                    name={"contactPerson"}
+                                    {!disabledVendoUi && (<>
+                                        <HeaderTitle title={'Vendor:'} customClass="mt-4" />
+                                        <Row className="mt-1 part-detail-wrapper">
+                                            <Col md="3">
+                                                <AsyncSearchableSelectHookForm
+                                                    label={"Vendor (Code)"}
+                                                    name={"vendor"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
                                                     control={control}
                                                     rules={{ required: false }}
                                                     register={register}
-                                                    //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                                    options={renderListing("reporter")}
+                                                    defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                    options={renderListing("vendor")}
                                                     mandatory={true}
-                                                    // handleChange={handleDestinationPlantChange}
-                                                    handleChange={() => { }}
-                                                    errors={errors.contactPerson}
-                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
-                                                    isLoading={plantLoaderObj}
-                                                />
-                                            )}
-                                        </Col>
-                                        {havellsKey && (<>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    // title={titleObj.descriptionTitle}
-                                                    label="Inco Terms"
-                                                    name={'IncoTerms'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.IncoTerms}
-                                                    disabled={true}
-                                                    placeholder="-"
+                                                    handleChange={handleVendorChange}
+                                                    // handleChange={() => { }}
+                                                    errors={errors.vendor}
+                                                    isLoading={VendorLoaderObj}
+                                                    asyncOptions={vendorFilterList}
+                                                    disabled={(dataProps?.isViewFlag) ? true : false || isDropdownDisabled || disabledVendoUi}
+                                                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                                 />
                                             </Col>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    // title={titleObj.descriptionTitle}
-                                                    label="Payment Terms"
-                                                    name={'PaymentTerms'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.PaymentTerms}
-                                                    disabled={true}
-                                                    placeholder="-"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    // title={titleObj.descriptionTitle}
-                                                    label="LD Clause"
-                                                    name={'LDClause'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.LDClause}
-                                                    disabled={disabledVendoUi}
-                                                    placeholder="-"
-                                                />
-                                            </Col>
-                                        </>)
-                                        }
-                                        <Col md="3" className='d-flex align-items-center pb-1'>
-                                            <button
-                                                id="add_vendor"
-                                                type="button"
-                                                className={'user-btn pull-left'}
-                                                onClick={() => addRowVendorTable()}
-                                                disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
-                                            >
-                                                <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
-                                            </button>
-
-                                            <button
-                                                id="reset_vendor"
-                                                onClick={onResetVendorTable} // Need to change this cancel functionality
-                                                type="button"
-                                                value="CANCEL"
-                                                className="reset ml-2"
-                                                disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
-                                            >
-                                                <div className={''}></div>
-                                                RESET
-                                            </button>
-                                        </Col>
-                                    </Row >
-
-
-                                    <div>
-                                        {!loader ? <div className={`ag-grid-react`}>
-                                            <Row>
-                                                <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain non-filter border" : ""} `}>
-
-                                                        <div className={`ag-theme-material  max-loader-height`}>
-                                                            <AgGridReact
-                                                                defaultColDef={defaultColDef}
-                                                                //floatingFilter={true}
-                                                                domLayout='autoHeight'
-                                                                // columnDefs={c}
-                                                                rowData={vendorList}
-                                                                //pagination={true}
-                                                                paginationPageSize={10}
-                                                                onGridReady={onGridReady}
-                                                                gridOptions={gridOptionsVendor}
-                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                                noRowsOverlayComponentParams={{
-                                                                    title: EMPTY_DATA,
-                                                                    imagClass: 'imagClass mt-0'
-                                                                }}
-                                                                frameworkComponents={frameworkComponents}
-                                                            >
-                                                                <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
-                                                                {IsSendQuotationToPointOfContact() && (
-                                                                    <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
-                                                                {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms'></AgGridColumn>}
-                                                                {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms'></AgGridColumn>}
-                                                                {vendorList && havellsKey && <AgGridColumn field='WarrantyTerms' header='Warranty Terms'></AgGridColumn>}
-                                                                {vendorList && havellsKey && <AgGridColumn field='LDClause' header='LD Clause'></AgGridColumn>}
-                                                                <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
-                                                                <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
-                                                            </AgGridReact>
-                                                        </div>
-                                                    </div>
+                                            {IsSendQuotationToPointOfContact() && (
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        label={"Vendor's Point of Contact"}
+                                                        name={"contactPerson"}
+                                                        placeholder={"Select"}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                                                        options={renderListing("reporter")}
+                                                        mandatory={true}
+                                                        // handleChange={handleDestinationPlantChange}
+                                                        handleChange={() => { }}
+                                                        errors={errors.contactPerson}
+                                                        disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                        isLoading={plantLoaderObj}
+                                                    />
                                                 </Col>
-                                            </Row>
-                                        </div> : <div>
-                                            <LoaderCustom />
-                                        </div>
-                                        }
-                                    </div>
-
-                                    <Row className="mt-3 conditional-date">
-                                        <Col md="2">
-                                            < div id="checkbox_container" className="custom-check1">
-                                                <label
-                                                    className="custom-checkbox mb-0"
-                                                    onChange={() => checkBoxHandler()}
+                                            )}
+                                            {havellsKey && (<>
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        // title={titleObj.descriptionTitle}
+                                                        label="Inco Terms"
+                                                        name={'IncoTerms'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.IncoTerms}
+                                                        disabled={true}
+                                                        placeholder="-"
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        // title={titleObj.descriptionTitle}
+                                                        label="Payment Terms"
+                                                        name={'PaymentTerms'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.PaymentTerms}
+                                                        disabled={true}
+                                                        placeholder="-"
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <TextFieldHookForm
+                                                        // title={titleObj.descriptionTitle}
+                                                        label="LD Clause"
+                                                        name={'LDClause'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{
+                                                            required: true,
+                                                            maxLength: 80
+                                                        }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.LDClause}
+                                                        disabled={(dataProps?.isViewFlag) ? true : false || disabledVendoUi}
+                                                        placeholder="-"
+                                                    />
+                                                </Col>
+                                            </>)
+                                            }
+                                            <Col md="3" className='d-flex align-items-center pb-1'>
+                                                <button
+                                                    id="add_vendor"
+                                                    type="button"
+                                                    className={'user-btn pull-left'}
+                                                    onClick={() => addRowVendorTable()}
+                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                 >
-                                                    {'Visibility of Price'}
-                                                    <input
-                                                        type="checkbox"
-                                                        value={"All"}
-                                                        checked={isConditionalVisible}
+                                                    <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
+                                                </button>
+
+                                                <button
+                                                    id="reset_vendor"
+                                                    onClick={onResetVendorTable} // Need to change this cancel functionality
+                                                    type="button"
+                                                    value="CANCEL"
+                                                    className="reset ml-2"
+                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                >
+                                                    <div className={''}></div>
+                                                    RESET
+                                                </button>
+                                            </Col>
+                                        </Row >
+
+
+                                        <div>
+                                            {!loader ? <div className={`ag-grid-react`}>
+                                                <Row>
+                                                    <Col>
+                                                        <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain non-filter border" : ""} `}>
+
+                                                            <div className={`ag-theme-material  max-loader-height`}>
+                                                                <AgGridReact
+                                                                    defaultColDef={defaultColDef}
+                                                                    //floatingFilter={true}
+                                                                    domLayout='autoHeight'
+                                                                    // columnDefs={c}
+                                                                    rowData={vendorList}
+                                                                    //pagination={true}
+                                                                    paginationPageSize={10}
+                                                                    onGridReady={onGridReady}
+                                                                    gridOptions={gridOptionsVendor}
+                                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                    noRowsOverlayComponentParams={{
+                                                                        title: EMPTY_DATA,
+                                                                        imagClass: 'imagClass mt-0'
+                                                                    }}
+                                                                    frameworkComponents={frameworkComponents}
+                                                                >
+                                                                    <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
+                                                                    {IsSendQuotationToPointOfContact() && (
+                                                                        <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
+                                                                    {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms' cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
+                                                                    {vendorList && havellsKey && <AgGridColumn field='LDClause' header='LD Clause' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
+                                                                    <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
+                                                                </AgGridReact>
+                                                            </div>
+                                                        </div>
+                                                    </Col>
+                                                </Row>
+                                            </div> : <div>
+                                                <LoaderCustom />
+                                            </div>
+                                            }
+                                        </div>
+
+                                        <Row className="mt-3 conditional-date">
+                                            <Col md="2">
+                                                < div id="checkbox_container" className="custom-check1">
+                                                    <label
+                                                        className="custom-checkbox mb-0"
+                                                        onChange={() => checkBoxHandler()}
+                                                    >
+                                                        {'Visibility of Price'}
+                                                        <input
+                                                            type="checkbox"
+                                                            value={"All"}
+                                                            checked={isConditionalVisible}
+                                                            disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                        />
+                                                        <span className=" before-box"
+                                                            checked={isConditionalVisible}
+                                                        />
+                                                    </label>
+                                                </div>
+                                            </Col>
+                                            {isConditionalVisible && <>
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        label={"Visibility Mode"}
+                                                        name={"VisibilityMode"}
+                                                        placeholder={"Select"}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: true }}
+                                                        register={register}
+                                                        // defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                        options={visibilityModeDropdownArray}
+                                                        mandatory={true}
+                                                        handleChange={handleVisibilityMode}
+                                                        errors={errors.VisibilityMode}
+                                                        isLoading={VendorLoaderObj}
                                                         disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                                     />
-                                                    <span className=" before-box"
-                                                        checked={isConditionalVisible}
-                                                    />
-                                                </label>
-                                            </div>
-                                        </Col>
-                                        {isConditionalVisible && <>
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    label={"Visibility Mode"}
-                                                    name={"VisibilityMode"}
-                                                    placeholder={"Select"}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: true }}
-                                                    register={register}
-                                                    // defaultValue={vendor.length !== 0 ? vendor : ""}
-                                                    options={visibilityModeDropdownArray}
-                                                    mandatory={true}
-                                                    handleChange={handleVisibilityMode}
-                                                    errors={errors.VisibilityMode}
-                                                    isLoading={VendorLoaderObj}
-                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                {visibilityMode?.value === DATE_STRING && <div className="inputbox date-section">
-                                                    <div className="form-group">
-                                                        <label>Date & Time</label>
-                                                        <div className="inputbox date-section rfq-calendar">
-                                                            <DatePicker
-                                                                name="startPlanDate"
-                                                                selected={DayTime(dateAndTime).isValid() ? new Date(dateAndTime) : null}
-                                                                onChange={handleChangeDateAndTime}
-                                                                showMonthDropdown
-                                                                showYearDropdown
-                                                                dropdownMode='select'
-                                                                minDate={new Date()}
-                                                                timeFormat='HH:mm'
-                                                                dateFormat="dd/MM/yyyy HH:mm"
-                                                                minTime={setHours(setMinutes(new Date(), minMinutes), minHours)}
-                                                                maxTime={setHours(setMinutes(new Date(), 59), 23)}
-                                                                placeholderText="Select"
-                                                                className="withBorder "
-                                                                autoComplete={'off'}
-                                                                showTimeSelect={true}
-                                                                timeIntervals={1}
-                                                                errors={errors.startPlanDate}
-                                                                disabledKeyboardNavigation
-                                                                onChangeRaw={(e) => e.preventDefault()}
-                                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
-                                                            />
+                                                </Col>
+                                                <Col md="3">
+                                                    {visibilityMode?.value === DATE_STRING && <div className="inputbox date-section">
+                                                        <div className="form-group">
+                                                            <label>Date & Time</label>
+                                                            <div className="inputbox date-section rfq-calendar">
+                                                                <DatePicker
+                                                                    name="startPlanDate"
+                                                                    selected={DayTime(dateAndTime).isValid() ? new Date(dateAndTime) : null}
+                                                                    onChange={handleChangeDateAndTime}
+                                                                    showMonthDropdown
+                                                                    showYearDropdown
+                                                                    dropdownMode='select'
+                                                                    minDate={new Date()}
+                                                                    timeFormat='HH:mm'
+                                                                    dateFormat="dd/MM/yyyy HH:mm"
+                                                                    minTime={setHours(setMinutes(new Date(), minMinutes), minHours)}
+                                                                    maxTime={setHours(setMinutes(new Date(), 59), 23)}
+                                                                    placeholderText="Select"
+                                                                    className="withBorder "
+                                                                    autoComplete={'off'}
+                                                                    showTimeSelect={true}
+                                                                    timeIntervals={1}
+                                                                    errors={errors.startPlanDate}
+                                                                    disabledKeyboardNavigation
+                                                                    onChangeRaw={(e) => e.preventDefault()}
+                                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>}
-                                                {visibilityMode?.value === DURATION_STRING && <div className="inputbox date-section">
-                                                    <div className="form-group">
-                                                        <label>Time</label>
-                                                        <div className="inputbox date-section">
-                                                            {/* <DatePicker
+                                                    </div>}
+                                                    {visibilityMode?.value === DURATION_STRING && <div className="inputbox date-section">
+                                                        <div className="form-group">
+                                                            <label>Time</label>
+                                                            <div className="inputbox date-section">
+                                                                {/* <DatePicker
                                                                 name="startPlanDate"
                                                                 selected={time}
                                                                 showTimeInput
@@ -2699,65 +2773,65 @@ function AddRfq(props) {
                                                                 autoComplete={'off'}
                                                                 dateFormat="HH:mm"
                                                             /> */}
-                                                            <TextFieldHookForm
-                                                                label=""
-                                                                name={'Time'}
-                                                                selected={'00:00'}
-                                                                Controller={Controller}
-                                                                control={control}
-                                                                register={register}
-                                                                rules={{
-                                                                    required: false,
-                                                                    pattern: {
-                                                                        value: /^([0-9]*):([0-5]?[0-9])$/i,
-                                                                        message: 'Hours should be in hh:mm format.',
-                                                                    },
-                                                                }}
-                                                                mandatory={false}
-                                                                handleChange={() => { }}
-                                                                defaultValue={''}
-                                                                className=""
-                                                                customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                                errors={errors.Time}
-                                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
-                                                            />
+                                                                <TextFieldHookForm
+                                                                    label=""
+                                                                    name={'Time'}
+                                                                    selected={'00:00'}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    rules={{
+                                                                        required: false,
+                                                                        pattern: {
+                                                                            value: /^([0-9]*):([0-5]?[0-9])$/i,
+                                                                            message: 'Hours should be in hh:mm format.',
+                                                                        },
+                                                                    }}
+                                                                    mandatory={false}
+                                                                    handleChange={() => { }}
+                                                                    defaultValue={''}
+                                                                    className=""
+                                                                    customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                    errors={errors.Time}
+                                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>}
+                                                    </div>}
+                                                </Col>
+                                            </>}
+
+                                        </Row>
+
+
+                                        <HeaderTitle title={'Notes:'} customClass="mt-3" />
+                                        <Row className='part-detail-wrapper'>
+                                            <Col md="4">
+                                                <TextAreaHookForm
+                                                    label={"Notes"}
+                                                    name={"remark"}
+                                                    // placeholder={"Select"}
+                                                    placeholder={isViewFlag ? '-' : "Type here..."}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{
+                                                        required: true,
+                                                        maxLength: REMARKMAXLENGTH,
+                                                    }}
+                                                    register={register}
+                                                    //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                                                    // options={renderListing("DestinationPlant")}
+                                                    mandatory={true}
+                                                    customClassName={"withBorder"}
+                                                    handleChange={() => { }}
+                                                    errors={errors.remark}
+                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                    rowHeight={6}
+                                                // isLoading={plantLoaderObj}
+                                                />
                                             </Col>
-                                        </>}
 
-                                    </Row>
-
-
-                                    <HeaderTitle title={'Notes and Attachments:'} customClass="mt-3" />
-                                    <Row className='part-detail-wrapper'>
-                                        <Col md="4">
-                                            <TextAreaHookForm
-                                                label={"Notes"}
-                                                name={"remark"}
-                                                // placeholder={"Select"}
-                                                placeholder={isViewFlag ? '-' : "Type here..."}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{
-                                                    required: true,
-                                                    maxLength: REMARKMAXLENGTH,
-                                                }}
-                                                register={register}
-                                                //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                                // options={renderListing("DestinationPlant")}
-                                                mandatory={true}
-                                                customClassName={"withBorder"}
-                                                handleChange={() => { }}
-                                                errors={errors.remark}
-                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
-                                                rowHeight={6}
-                                            // isLoading={plantLoaderObj}
-                                            />
-                                        </Col>
-
-                                        <Col md="4" className="height152-label">
+                                            {/* <Col md="4" className="height152-label">
                                             <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
                                             <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                                 Maximum file upload limit has been reached.
@@ -2825,9 +2899,9 @@ function AddRfq(props) {
                                                         );
                                                     })}
                                             </div>
-                                        </Col>
-                                    </Row>
-
+                                        </Col> */}
+                                        </Row>
+                                    </>)}
                                     <Row className="justify-content-between sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
 
                                         <div className="col-sm-12 text-right bluefooter-butn">
@@ -2846,7 +2920,7 @@ function AddRfq(props) {
                                                     // {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"     //RE
                                                     id="addRFQ_save"
                                                     onClick={(data, e) => handleSubmitClick(data, e, false)}
-                                                    disabled={isViewFlag}>
+                                                    disabled={isViewFlag || showSendButton === PREDRAFT && disabledPartUid}>
                                                     <div className={"save-icon"}></div>
                                                     {"Save"}
                                                 </button>
@@ -2855,7 +2929,7 @@ function AddRfq(props) {
                                             {!isDropdownDisabled && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}
-                                                disabled={isViewFlag}>
+                                                disabled={isViewFlag || (showSendButton === PREDRAFT && disabledPartUid)}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
                                             </button>}
@@ -2901,8 +2975,15 @@ function AddRfq(props) {
                                             setRemark={setRemark}
                                             remark={remark}
                                             isViewFlag={viewQuotationPart}
-                                        // saveRfqPartsData={addRowPartNoTable}
-
+                                            partListData={partList}
+                                            setPartListData={setPartList}
+                                            setViewQuotationPart={setViewQuotationPart}
+                                            addRowPartNoTable={addRowPartNoTable}
+                                            setSopQuantityList={setSopQuantityList}
+                                            sopQuantityList={sopQuantityList}
+                                            sopdate={sopdate}
+                                            setSOPDate={setSOPDate}
+                                            effectiveMinDate={effectiveMinDate}
 
 
 

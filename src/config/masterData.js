@@ -8205,10 +8205,11 @@ export const statusDropdownforRfq = [
     { label: "Cancelled", value: "6" },
     { label: "Rejected", value: "7" },
     { label: "Returned", value: "8" },
-    { label: 'Pending For Approval', value: "9" },
-    { label: 'History', value: "10" },
-    { label: 'Not Selected', value: "11" },
-]
+    { label: "Pending For Approval", value: "9" },
+    { label: "History", value: "10" },
+    { label: "Not Selected", value: "11" },
+    { label: "PreDraft", value: "12" },
+  ];
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },
     { label: 'PendingForApproval', value: 2 },
