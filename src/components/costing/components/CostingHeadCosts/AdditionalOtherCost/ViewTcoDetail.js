@@ -7,6 +7,9 @@ import PartSpecificationDrawer from '../../PartSpecificationDrawer';
 const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter, displayValueWithSign, tableDataClass, pdfHead }) => {
     const { initialConfiguration } = useSelector(state => state.auth)
     const [ openSpecificationDrawer, setOpenSpecificationDrawer ] = useState(false);
+    const [baseCostingId ,setBaseCostingId] = useState([])
+    const [baseCostingIds ,setBaseCostingIds] = useState(false)
+    
     const renderSpan = (text) => (
         <span title={text} className={`w-50 text-wrapped small-grey-text ${isApproval && viewCostingData?.length > 1 ? '' : ''}`}>
             {text}
@@ -18,8 +21,11 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
             {content}
         </div>
     );
-    const handleOpenSpecificationDrawer = () => {
-        
+    const handleOpenSpecificationDrawer = (id) => {
+        if(id === null) {
+            setBaseCostingIds(true)
+        }
+        setBaseCostingId(id)
         setOpenSpecificationDrawer(true);
     };
     const closeSpecificationDrawer = () => {
@@ -57,12 +63,13 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                     const { CostingTCOResponse, CostingPaymentTermDetails } = data?.CostingPartDetails || {};
 
                     const { PaymentTermDetail } = CostingPaymentTermDetails || {}
+                    
 
                     return (
                         <td className={tableDataClass(data)} key={index}>
                              {renderDiv([
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE 
-                                    ? <div onClick={() => handleOpenSpecificationDrawer(data.PartId)} className={'link'}>View Specifications</div> 
+                                    ? <div onClick={() => handleOpenSpecificationDrawer(data.AssemblyCostingId)} className={'link'}>View Specifications</div> 
                                     : '-'))
                             ])}
                             <div className="d-flex">
@@ -130,13 +137,9 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
         isOpen={openSpecificationDrawer}
         closeDrawer={closeSpecificationDrawer}
         anchor={'right'}
-        // partNo={costData.PartNumber}
-        // partId={costData.PartId}
-        // viewSpecification={true}
-        // quotationId = {quotationDetailPage?.data?.rowData?.QuotationId}
-     
-
-      />
+        baseCostingId = {baseCostingId}
+        ids = {baseCostingIds}
+          />
       }
         </>
       

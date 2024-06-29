@@ -55,6 +55,7 @@ const SOPListing = ({  rowData}) => {
                         </div>
                     </div>
                 </div>
+                
             </Col>
             )}
         </Row>
