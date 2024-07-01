@@ -346,7 +346,7 @@ function Ferrous(props) {
                         <Row className={"mx-0 align-items-center"}>
                             <Col md="6">
                                 <SearchableSelectHookForm
-                                    label={"Type of Paper (Raw Material)"}
+                                    label={"Raw Material"}
                                     name={"RawMaterial"}
                                     tooltipId={"RawMaterial"}
                                     placeholder={"Select"}
@@ -497,7 +497,7 @@ function Ferrous(props) {
                         <Row className={"mx-0 align-items-center"}>
                             <Col md="6">
                                 <SearchableSelectHookForm
-                                    label={"Type of Paper (Raw Material)"}
+                                    label={"Raw Material"}
                                     name={"RawMaterial"}
                                     tooltipId={"RawMaterial"}
                                     placeholder={"Select"}
