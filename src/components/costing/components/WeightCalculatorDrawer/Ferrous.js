@@ -384,9 +384,12 @@ function Ferrous(props) {
                                 <thead>
                                     <tr>
                                         <th className='rm-name-head'>{`RM Name`}</th>
-                                        <th>{`RM Rate`}</th>
-                                        <th>{`Scrap Rate`}</th>
                                         <th style={{ width: "190px" }}>{`Percentage`}</th>
+                                        <th>{`Basic Rate`}</th>
+                                        <th>{`Value`}</th>
+                                        <th>{`Scrap Rate`}</th>
+                                        <th>{`Value`}</th>
+
                                     </tr>
                                 </thead>
                                 <tbody className='rm-table-body'>
@@ -396,8 +399,6 @@ function Ferrous(props) {
                                             return (
                                                 <tr key={index} className=''>
                                                     <td className='rm-part-name'><span title={item.RMName}>{item.RMName}</span></td>
-                                                    <td>{item.RMRate}</td>
-                                                    <td>{item.ScrapRate}</td>
                                                     <td>
                                                         <TextFieldHookForm
                                                             label=""
@@ -421,6 +422,10 @@ function Ferrous(props) {
                                                             disabled={props.isEditFlag ? false : true}
                                                         />
                                                     </td>
+                                                    <td>{item.RMRate}</td>
+                                                    <td>{item.ScrapRate}</td>
+                                                    <td>{item.RMRate}</td>
+                                                    <td>{item.ScrapRate}</td>
                                                 </tr>
                                             )
                                         })
@@ -583,7 +588,9 @@ function Ferrous(props) {
                             ferrousErrors={errors}
                             isFerrous={true}
                         />
-
+                        <Row className={'my-3 px-3 pt-3'}>
+                            <Col md="12"><strong className='pr-4'>Other Cost:</strong><strong>2570.4</strong></Col>
+                        </Row>
                         <Row className={'mt25 mx-0'}>
                             <Col md="3" >
                                 <TooltipCustom disabledIcon={true} id={'gross-weight-ferrous'} tooltipText={'Gross Weight = (Casting Weight + Net Loss Weight)'} />
