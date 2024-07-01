@@ -64,14 +64,14 @@ function OpenWeightCalculator(props) {
       return
     }
     let calculatorType = ''
-    if (!CostingViewMode) {
+    if (!isSummary) {
       if (weightData.CalculatorType) {
         calculatorType = weightData.CalculatorType
       } else {
         calculatorType = (props.rmData[0] && props.rmData[0].CalculatorType && props.rmData[0].WeightCalculationId) ? props.rmData[0].CalculatorType : ''
       }
     }
-    props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX) && !CostingViewMode) ? calculatorType : event, weightData, originalWeight)
+    props.closeDrawer((Number(technology) === Number(CORRUGATEDBOX) && !isSummary) ? calculatorType : event, weightData, originalWeight)
   }
 
   /**
