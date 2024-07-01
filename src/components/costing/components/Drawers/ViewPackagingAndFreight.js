@@ -97,6 +97,7 @@ function ViewPackagingAndFreight(props) {
               <tr className='thead'>
                 <th>{`Freight Type`}</th>
                 <th>{`Criteria/Applicability`}</th>
+                <th>{`Capacity`}</th>
                 <th>{`Rate/Percentage`}</th>
                 <th>{`Quantity`}</th>
                 <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
@@ -108,6 +109,7 @@ function ViewPackagingAndFreight(props) {
                     <tr key={index}>
                       <td>{item.FreightType ? item.FreightType : '-'}</td>
                       <td>{item.Criteria ? item.Criteria : '-'}</td>
+                      <td>{item.Capacity ? item.Capacity : '-'}</td>
                       <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
                       <td>
