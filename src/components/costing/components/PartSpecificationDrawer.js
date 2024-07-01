@@ -38,22 +38,11 @@ const PartSpecificationDrawer = (props) => {
         }
         props.closeDrawer('');
     };
-    const { id, ids } = props
-
-
-    useEffect(() => {
+    const { baseCostingId } = props
+        useEffect(() => {
         setIsLoader(true);
-        if ((quotationDetailsList && quotationDetailsList?.length > 0) || ids) {
-
-
-            const baseCostingIds =
-                quotationDetailsList
-                    .map(item => item.CostingId) // Assuming you meant to use 'QuotationPartId' or replace it with the correct identifier
-                    .filter(id => id !== null)
-
-const baseCostingId = [id]
-            if (baseCostingIds?.length > 0) {
-                dispatch(getSpecificationDetailTco(quotationId, ids ? baseCostingIds : baseCostingId, (res) => {
+            if (baseCostingId?.length > 0) {
+                dispatch(getSpecificationDetailTco(quotationId, baseCostingId, (res) => {
 
                     let Data = res?.data?.Data
                     if (Data?.SpecsHead && Data?.SpecsColumn) {
@@ -66,8 +55,8 @@ const baseCostingId = [id]
             } else {
                 setIsLoader(false);
             }
-        }
-    }, [quotationId, dispatch]);
+        
+    }, [quotationId,baseCostingId, dispatch]);
 
     const generateColumnDefs = (specsHead) => {
         return specsHead.map(head => ({
