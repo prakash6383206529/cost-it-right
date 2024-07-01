@@ -447,7 +447,7 @@ function AddOtherDiscount(props) {
                                     {
                                         <Col md="4">
                                             <SearchableSelectHookForm
-                                                label={'Disount Applicability'}
+                                                label={'Discount Applicability'}
                                                 name={'OtherCostApplicability'}
                                                 placeholder={'Select'}
                                                 Controller={Controller}
