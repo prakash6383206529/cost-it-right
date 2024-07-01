@@ -243,6 +243,7 @@ function AddFreight(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DynamicData;
           setValue('Rate', Data.Rate)
+          errors.Rate = {}
         }
       }))
     } else {
@@ -276,7 +277,8 @@ function AddFreight(props) {
     })
     // setTotalFinishWeight(perKgFinishWeight)
     let totalFreightCost = checkForNull(perKgFinishWeight) * checkForNull(RateAsPercentage)
-    setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+    setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+    errors.FreightCost = {}
     setFreightCost(totalFreightCost)
   }
 
@@ -302,56 +304,57 @@ function AddFreight(props) {
       case 'RM':
       case 'Part Cost':
         totalFreightCost = checkForNull(NetRawMaterialsCost) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'BOP':
         totalFreightCost = checkForNull(NetBoughtOutPartCost) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'RM + CC':
       case 'Part Cost + CC':
         totalFreightCost = checkForNull(RMCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'BOP + CC':
         totalFreightCost = checkForNull(BOPCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
       case 'CC':
         totalFreightCost = checkForNull(ConversionCostForCalculation) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull((totalFreightCost), getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'RM + CC + BOP':
       case 'Part Cost + CC + BOP':
         totalFreightCost = checkForNull(RMBOPCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'RM + BOP':
       case 'Part Cost + BOP':
         totalFreightCost = checkForNull(RMBOP) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
       case 'Net Cost':
         totalFreightCost = checkForNull(totalTabCost) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       default:
         break;
     }
+    errors.FreightCost = {}
   }
 
   // MAY BE USED LATER 
@@ -360,9 +363,9 @@ function AddFreight(props) {
       const Rate = getValues('Rate')
       if (Rate !== '') {
         const cost = checkForNull(Rate) * checkForNull(event.target.value);
-        setValue('FreightCost', checkForDecimalAndNull(cost, 2));
+        setValue('FreightCost', cost ? checkForDecimalAndNull(cost, getConfigurationKey().NoOfDecimalForPrice) : '');
       } else {
-        setValue('FreightCost', 0);
+        setValue('FreightCost', '');
       }
     } else {
       Toaster.warning('Please enter valid number.')
@@ -606,7 +609,7 @@ function AddFreight(props) {
                       mandatory={freightType !== Fixed ? true : false}
                       rules={{
                         required: freightType !== Fixed ? true : false,
-                        validate: freightType !== Fixed ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                        validate: freightType !== Fixed ? { number, checkWhiteSpaces, percentageLimitValidation } : {},
                         max: {
                           value: 100,
                           message: 'Percentage should be less than 100'
@@ -654,8 +657,8 @@ function AddFreight(props) {
                       control={control}
                       register={register}
                       rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                        required: true,
+                        validate: freightType === Fixed ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
