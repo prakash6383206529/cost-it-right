@@ -441,7 +441,7 @@ export const decimalAndNumberValidationBoolean = (value) => {
 
 export const nonZero = value =>
     value && (Number(value) === 0)
-        ? 'Invalid Number.' : undefined;
+        ? 'Please enter a value greater than 0' : undefined;
 
 export const decimalNumberLimit6 = value => {
     let tempValue = value && Number('0' + String(value)?.replace(/^0+/, ''))

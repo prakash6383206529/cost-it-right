@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { Row, Col, Table, } from 'reactstrap'
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { number, checkWhiteSpaces, maxLength7, noDecimal, checkForNull, checkForDecimalAndNull, loggedInUserId, percentageLimitValidation, maxLength200, nonZero } from '../../../../../helper'
+import { number, checkWhiteSpaces, maxLength7, checkForNull, checkForDecimalAndNull, loggedInUserId, percentageLimitValidation, maxLength200, nonZero, maxPercentageValue } from '../../../../../helper'
 import Button from '../../../../layout/Button'
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
@@ -92,7 +92,7 @@ function PaperCorrugatedBox(props) {
             let tableDataTemp = []
             WeightCalculatorRequest?.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial?.length !== 0 && WeightCalculatorRequest?.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial?.map(item => {
                 setValueTableForm(`GSM${item.RawMaterialIdRef}`, checkForDecimalAndNull(item.GSM, NoOfDecimalForPrice))
-                setValueTableForm(`flutePercentage${item.RawMaterialIdRef}`, checkForDecimalAndNull(item.FlutePercentage, NoOfDecimalForPrice))
+                setValueCalculatorForm(`flutePercentage${item.RawMaterialIdRef}`, checkForDecimalAndNull(item.FlutePercentage, NoOfDecimalForPrice))
                 setValueTableForm(`fluteValue${item.RawMaterialIdRef}`, checkForDecimalAndNull(item.FluteValue, NoOfDecimalForPrice))
                 tableDataTemp.push({ label: item.RawMaterialNameAndGrade, value: item.RawMaterialIdRef, RawMaterialRate: item.RawMaterialRate })
             })
@@ -114,7 +114,9 @@ function PaperCorrugatedBox(props) {
                 RMCost: WeightCalculatorRequest.RMCost
             }));
         }
-        setValueCalculatorForm('NosOfPly', props?.rmData?.length)
+        if (!props.CostingViewMode) {
+            setValueCalculatorForm('NosOfPly', props?.rmData?.length)
+        }
     }, [])
     useEffect(() => {
         calculateGSM()
@@ -127,8 +129,8 @@ function PaperCorrugatedBox(props) {
 
     const calculateWeightAndBoardCost = () => {
         let calculation = state.totalGSM * calculationState.TotalArea / 1000
-        
-        
+
+
         setValueCalculatorForm('Weight', checkForDecimalAndNull(calculation, NoOfDecimalForPrice))
         setCalculationState((prevState) => ({ ...prevState, Weight: calculation }))
     }
@@ -201,7 +203,7 @@ function PaperCorrugatedBox(props) {
         { label: 'Wastage %', name: 'WastagePercentage', mandatory: true, percentageLimit: true, handleChange: (e) => { calculateWatagePercent(e.target.value) }, disabled: props?.CostingViewMode ? props?.CostingViewMode : false },
         { label: 'Wastage (Sq. Mt)', name: 'Wastage', disabled: true, tooltip: { text: 'Area (Sq. Mt) * Wastage / 100', width: '250px' } },
         { label: 'Total Area (Sq. Mt)', name: 'TotalArea', disabled: true, tooltip: { text: 'Area (Sq. Mt) + Wastage (Sq. Mt)', width: '250px' } },
-        { label: 'Weight (Kg)', name: 'Weight', disabled: true, tooltip: { text: 'Total Area (Sq. Mt) * Board (GSM) / 1000', width: '280px' } },
+        { label: 'Weight (Kg)', name: 'Weight', disabled: true, tooltip: { text: 'Total Area (Sq. Mt) * Total GSM of Board (Including Flute) / 1000', width: '320px' } },
         { label: 'Board Cost', name: 'BoardCost', disabled: true, tooltip: { text: '(Layer 1 GSM * RM Rate) / 1000 + ((Layer 2 GSM +Flute) * RM Rate) / 1000 ...', width: '350px' } },
         { label: 'RM Cost', name: 'RMCost', disabled: true, tooltip: { text: 'Board Cost * Total Area (Sq. Mt)' } },
     ]
@@ -223,7 +225,7 @@ function PaperCorrugatedBox(props) {
                 "RawMaterialIdRef": item.value,
                 "LayerNo": index + 1,
                 "GSM": getValuesTableForm(`GSM${item.value}`) ?? 0,
-                "FlutePercentage": getValuesTableForm(`flutePercentage${item.value}`) ?? 0,
+                "FlutePercentage": getValuesCalculatorForm(`flutePercentage${item.value}`) ?? 0,
                 "FluteValue": getValuesTableForm(`fluteValue${item.value}`) ?? 0
             })
             return null;
@@ -269,7 +271,7 @@ function PaperCorrugatedBox(props) {
         state.tableData.length !== 0 && state.tableData.map((item, index) => {
             setValueTableForm(`GSM${item.value}`, '')
             if (index % 2 !== 0) {
-                setValueTableForm(`flutePercentage${item.value}`, '')
+                setValueCalculatorForm(`flutePercentage${item.value}`, '')
                 setValueTableForm(`fluteValue${item.value}`, '')
             }
         })
@@ -307,7 +309,7 @@ function PaperCorrugatedBox(props) {
                                 mandatory={true}
                                 rules={{
                                     required: true,
-                                    validate: { number, checkWhiteSpaces, noDecimal, maxLength7, nonZero },
+                                    validate: { number, checkWhiteSpaces, maxLength7, nonZero },
                                 }}
                                 handleChange={() => { }}
                                 defaultValue={''}
@@ -423,9 +425,9 @@ function PaperCorrugatedBox(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            validate: { number, checkWhiteSpaces, noDecimal, maxLength7 },
+                                            validate: { number, checkWhiteSpaces, maxLength7 },
                                         }}
-                                        handleChange={(e) => { calculateFluteValue(item.value, e.target.value, checkForNull(getValuesTableForm(`flutePercentage${item.value}`))) }}
+                                        handleChange={(e) => { calculateFluteValue(item.value, e.target.value, checkForNull(getValuesCalculatorForm(`flutePercentage${item.value}`))) }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder mb-0'}
@@ -436,22 +438,22 @@ function PaperCorrugatedBox(props) {
                                         label={false}
                                         name={`flutePercentage${item.value}`}
                                         Controller={Controller}
-                                        control={controlTableForm}
-                                        register={registerTableForm}
+                                        control={controlCalculatorForm}
+                                        register={registerCalculatorForm}
                                         mandatory={false}
                                         rules={{
-                                            required: false,
-                                            validate: { number, checkWhiteSpaces, noDecimal, maxLength7 },
-                                            max: {
-                                                value: 100,
-                                                message: 'Percentage should be less than 100'
-                                            },
+                                            required: !(props.CostingViewMode ? props.CostingViewMode : !getValuesTableForm(`GSM${item.value}`)),
+                                            validate: { number, checkWhiteSpaces, maxPercentageValue, maxLength7 },
+                                            // max: {
+                                            //     value: 100,
+                                            //     message: 'Percentage should be less than 100'
+                                            // },
                                         }}
                                         handleChange={(e) => { calculateFluteValue(item.value, checkForNull(getValuesTableForm(`GSM${item.value}`)), e.target.value) }}
                                         defaultValue={''}
                                         className=""
-                                        customClassName={'withBorder mb-0'}
-                                        errors={errorsTableForm[`flutePercentage${item.value}`]}
+                                        customClassName={'withBorder mb-0 paper-corrugated-box-flute'}
+                                        errors={errorsCalculatorForm[`flutePercentage${item.value}`]}
                                         disabled={props.CostingViewMode ? props.CostingViewMode : !getValuesTableForm(`GSM${item.value}`)}
                                     /> : '-'}</td>
                                     <td>{index % 2 !== 0 ? <>
@@ -466,7 +468,7 @@ function PaperCorrugatedBox(props) {
                                             mandatory={false}
                                             rules={{
                                                 required: false,
-                                                validate: { number, checkWhiteSpaces, noDecimal, maxLength7 },
+                                                validate: { number, checkWhiteSpaces, maxLength7 },
                                             }}
                                             handleChange={() => { }}
                                             defaultValue={0}
@@ -524,11 +526,11 @@ function PaperCorrugatedBox(props) {
                                     mandatory={item.mandatory}
                                     rules={{
                                         required: item.mandatory,
-                                        validate: { number, checkWhiteSpaces, maxLength7, ...(item.disabled ? {} : { nonZero }) },
-                                        max: item.percentageLimit ? {
-                                            value: 100,
-                                            message: 'Percentage should be less than 100'
-                                        } : {},
+                                        validate: { number, checkWhiteSpaces, maxLength7, ...(item.disabled ? {} : { nonZero }), ...(item.percentageLimit ? { maxPercentageValue } : {}) },
+                                        // max: item.percentageLimit ? {
+                                        //     value: 100,
+                                        //     message: 'Percentage should be less than 100'
+                                        // } : {},
                                     }}
                                     handleChange={item.handleChange ? item.handleChange : () => { }}
                                     defaultValue={item.disabled ? 0 : ''}
