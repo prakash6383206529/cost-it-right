@@ -602,7 +602,7 @@ class AddFreight extends Component {
       this.setState({ setDisable: true })
       const formData = {
         CostingTypeId: costingTypeId,
-        Mode: TransportMode.label,
+        Mode: "Road",
         VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         SourceCityId: sourceLocation.value,
         DestinationCityId: destinationLocation.value,
@@ -740,7 +740,7 @@ class AddFreight extends Component {
                             </Label>}
                           </Col>
                         </Row>
-                        <Row>
+                        {(costingTypeId === VBCTypeId || costingTypeId === CBCTypeId) && <Row>
                           <Col md="12">
                             <div className="left-border">{"Freight:"}</div>
                           </Col>
@@ -825,7 +825,7 @@ class AddFreight extends Component {
                               />
                             </Col>
                           )}
-                          <Col md="3">
+                          {/* <Col md="3">
                             <Field
                               name="SourceLocation"
                               type="text"
@@ -845,8 +845,8 @@ class AddFreight extends Component {
                               valueDescription={this.state.sourceLocation}
                               disabled={isEditFlag ? true : false}
                             />
-                          </Col>
-                          <Col md="3">
+                          </Col> */}
+                          {/* <Col md="3">
                             <Field
                               name="DestinationLocation"
                               type="text"
@@ -866,9 +866,9 @@ class AddFreight extends Component {
                               valueDescription={this.state.destinationLocation}
                               disabled={isEditFlag ? true : false}
                             />
-                          </Col>
-                        </Row>
-                        <Row className="mb27">
+                          </Col> */}
+                        </Row>}
+                        {/* <Row className="mb27">
                           <Col md="12">
                             <label
                               className={`custom-checkbox w-auto ${isViewMode ? "disabled" : ""}`}
@@ -887,7 +887,6 @@ class AddFreight extends Component {
                               />
                             </label>
                           </Col>
-                          {/* {this.state.IsLoadingUnloadingApplicable && ( */}
                           <Col md="3" className="hide-label-inside">
                             <Field
                               label={``}
@@ -901,8 +900,7 @@ class AddFreight extends Component {
                               customClassName=" withBorder mn-height-auto"
                             />
                           </Col>
-                          {/* )} */}
-                        </Row>
+                        </Row> */}
                         <Row>
                           <Col md="12">
                             <div className="left-border">
