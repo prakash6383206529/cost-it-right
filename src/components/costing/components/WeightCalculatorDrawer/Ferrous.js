@@ -566,10 +566,8 @@ function Ferrous(props) {
                                             )
                                         })
                                     }
-                                    <tr>
-                                        <td colSpan={2}></td>
-                                        <td><strong>Total Cost</strong></td>
-                                        <td><strong>1107.2</strong></td>
+                                    <tr className='bluefooter-butn'>
+                                        <td colSpan={4} className='text-end'><span>Total Cost:</span> <span>1107.2</span></td>
                                     </tr>
                                 </tbody>
                             </Table>
@@ -588,10 +586,31 @@ function Ferrous(props) {
                             ferrousErrors={errors}
                             isFerrous={true}
                         />
-                        <Row className={'my-3 px-3 pt-3'}>
-                            <Col md="12"><strong className='pr-4'>Other Cost:</strong><strong>2570.4</strong></Col>
-                        </Row>
                         <Row className={'mt25 mx-0'}>
+                            <Col md="3" >
+                                <TextFieldHookForm
+                                    label={`Other Cost`}
+                                    name={'otherCost'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    // mandatory={true}
+                                    // rules={{
+                                    //     required: true,
+                                    //     validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                    //     max: {
+                                    //         value: getValues("castingWeight"),
+                                    //         message: 'Finish weight should not be greater than casting weight.'
+                                    //     },
+                                    // }}
+                                    handleChange={(e) => { handleFinishedWeight(e?.target?.value) }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.finishedWeight}
+                                    disabled={props.isEditFlag ? false : true}
+                                />
+                            </Col>
                             <Col md="3" >
                                 <TooltipCustom disabledIcon={true} id={'gross-weight-ferrous'} tooltipText={'Gross Weight = (Casting Weight + Net Loss Weight)'} />
                                 <TextFieldHookForm
