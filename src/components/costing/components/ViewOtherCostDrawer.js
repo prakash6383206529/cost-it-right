@@ -190,7 +190,7 @@ function ViewOtherCostDrawer(props) {
 
                                 <th>{`Applicability`}</th>
                                 <th>{`Repayment Period (No. of days)`}</th>
-                                <th>{`Interest Rate ${CostingPaymentTermDetails.PaymentTermDetail.PaymentTermApplicability === 'Fixed' ? '' : '(%)'}`}</th>
+                                <th>{`Interest Rate ${CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                                 <th>{`Cost`}</th>
                                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                                 <th>{`Remark`}</th>
@@ -198,19 +198,19 @@ function ViewOtherCostDrawer(props) {
                         </thead>
                         <tbody>
                             {
-                                (CostingPaymentTermDetails.PaymentTermDetail.PaymentTermApplicability === null) ?
+                                (CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability === null) ?
                                     <tr>
                                         <td colSpan={8}>
                                             <NoContentFound title={EMPTY_DATA} />
                                         </td>
                                     </tr> :
                                     <tr>
-                                        <td>{CostingPaymentTermDetails.PaymentTermDetail.PaymentTermApplicability ? CostingPaymentTermDetails.PaymentTermDetail.PaymentTermApplicability : '-'}</td>
-                                        <td>{CostingPaymentTermDetails.PaymentTermDetail.PaymentTermApplicability === 'Fixed' ? '-' : CostingPaymentTermDetails.PaymentTermDetail.RepaymentPeriod ? checkForDecimalAndNull(CostingPaymentTermDetails.PaymentTermDetail.RepaymentPeriod, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                                        <td>{CostingPaymentTermDetails.PaymentTermDetail.InterestRate ? checkForDecimalAndNull(CostingPaymentTermDetails.PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                                        <td>{CostingPaymentTermDetails.PaymentTermDetail.NetCost ? checkForDecimalAndNull(CostingPaymentTermDetails.PaymentTermDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                                        {initialConfiguration.IsShowCRMHead && <td>{CostingPaymentTermDetails.PaymentTermDetail.PaymentTermCRMHead}</td>}
-                                        <td>{CostingPaymentTermDetails.PaymentTermDetail.Remark ? CostingPaymentTermDetails.PaymentTermDetail.Remark : '-'}</td>
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability ? CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability : '-'}</td>
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability === 'Fixed' ? '-' : CostingPaymentTermDetails?.PaymentTermDetail?.RepaymentPeriod ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.RepaymentPeriod, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.InterestRate ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.NetCost ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.NetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                        {initialConfiguration.IsShowCRMHead && <td>{CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermCRMHead}</td>}
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.Remark ? CostingPaymentTermDetails?.PaymentTermDetail?.Remark : '-'}</td>
                                     </tr>
                             }
 

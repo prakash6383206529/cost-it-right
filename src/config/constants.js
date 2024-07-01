@@ -20,7 +20,7 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-  // const BASE_URL = `http://10.10.11.81:8080/api/v1`;
+// const BASE_URL = `http://10.10.11.81:8080/api/v1`;
 // const BASE_URL = `http://10.10.8.109:8070/api/v1`
 //const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
@@ -626,6 +626,7 @@ export const API = {
   saveRawMaterialCalculationForMachining: `${BASE_URL}/costing/save-raw-material-machining-calculation-details`,
   getRawMaterialCalculationForMachining: `${BASE_URL}/costing/get-raw-material-machining-calculation-details`,
   getSimulationRmMachiningCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-machining-calculation-details`,
+  getSimulationCorrugatedAndMonoCartonCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-and-mono-carton-box-calculation-details`,
 
   // YOY
   getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
@@ -1116,7 +1117,7 @@ export const API = {
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
   getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
-  getSpecificationDetailTco : `${BASE_URL}/rfq-quotation/get-costing-specification`,
+  getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
   deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
   // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
 
@@ -3133,7 +3134,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V2.2.24";
+export const VERSION = "V2.2.25";
 
 
 
