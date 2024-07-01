@@ -213,7 +213,7 @@ function ViewRM(props) {
       {
         !isPDFShow &&
         <Col md="6" className='btn-container mt-1' >
-          {viewCostingData && (viewCostingData[props.index]?.technologyId === Ferrous_Casting || viewCostingData[props.index]?.technologyId === RUBBER || (viewCostingData[props.index]?.technologyId === CORRUGATEDBOX && disabledForMonoCartonCorrugated)) && <button
+          {viewCostingData && (viewCostingData[props.index]?.technologyId === Ferrous_Casting || viewCostingData[props.index]?.technologyId === RUBBER || disabledForMonoCartonCorrugated) && <button
             className="secondary-btn"
             type={'button'}
             disabled={viewCostingData && viewCostingData[props?.index]?.CostingPartDetails?.CostingRawMaterialsCost?.length === 0 ? true : false}

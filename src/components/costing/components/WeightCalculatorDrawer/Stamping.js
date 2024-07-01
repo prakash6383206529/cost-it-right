@@ -120,9 +120,9 @@ function Stamping(props) {
     setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     const scrapCost = scrapWeight * Number(rmRowData.ScrapRate)
 
-    setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForInputOutput))
+    setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice))
     const netRMCost = (Number(rmRowData.RMRate) * inputWeight) - (scrapWeight * scrapCost)
-    setValue('materialCost', checkForDecimalAndNull(netRMCost, getConfigurationKey().NoOfDecimalForInputOutput))
+    setValue('materialCost', checkForDecimalAndNull(netRMCost, getConfigurationKey().NoOfDecimalForPrice))
     const updatedValue = dataToSend
     updatedValue.ScrapCost = scrapCost
     updatedValue.ScrapWeight = scrapWeight
@@ -356,7 +356,7 @@ function Stamping(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Input Weight - Finish Weight)'} />
+                  <TooltipCustom disabledIcon={true} width="320px" id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Input Weight - Finish Weight) * Scrap Recovery % / 100'} />
                   <TextFieldHookForm
                     label={`Scrap Weight(Kg)`}
                     name={'scrapWeight'}
@@ -396,7 +396,7 @@ function Stamping(props) {
                 </Col>
 
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} id={'net-rm-cost-plastic'} tooltipText={'Net RM Cost = (RM Cost - Scrap Cost)'} />
+                  <TooltipCustom disabledIcon={true} width="340px" id={'net-rm-cost-plastic'} tooltipText={'Net RM Cost = (RM Rate * Input Weight(Kg)) - (Scrap Weight(Kg) * Scrap Rate)'} />
                   <TextFieldHookForm
                     // Confirm this name from tanmay sir
                     label={`Net RM Cost`}

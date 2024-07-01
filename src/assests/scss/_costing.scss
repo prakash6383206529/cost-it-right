@@ -751,10 +751,17 @@
   text-overflow: ellipsis;
   padding-right: 10px;
 }
+
 .button-stick {
   position: absolute;
   right: 1px;
-  bottom:8px;
+  bottom: 8px;
   width: 20px !important;
   height: 20px !important;
+}
+
+.paper-corrugated-box-flute {
+  .text-help {
+    position: absolute;
+  }
 }
