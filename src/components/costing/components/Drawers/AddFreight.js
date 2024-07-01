@@ -26,7 +26,7 @@ function AddFreight(props) {
     Capacity: rowObjData && rowObjData.Capacity !== undefined ? { label: rowObjData.Capacity, value: rowObjData.Capacity } : [],
     Criteria: rowObjData && rowObjData.Criteria !== undefined ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : '',
     Rate: rowObjData && rowObjData.Rate !== undefined ? rowObjData.Rate : '',
-    Quantity: rowObjData && rowObjData.Quantity !== undefined ? rowObjData.Quantity : '',
+    Quantity: rowObjData && rowObjData.Quantity !== undefined ? checkForNull(rowObjData.Quantity) : '',
     FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
     crmHeadFreight: rowObjData && rowObjData.FreightCRMHead !== undefined ? { label: rowObjData.FreightCRMHead, value: 1 } : '',
   }
@@ -47,11 +47,10 @@ function AddFreight(props) {
   const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const [capacity, setCapacity] = useState([]);
-  
   const [criteria, setCriteria] = useState([]);
   const [IsPartTruckLoad, setIsPartTruckLoad] = useState(isEditFlag ? rowObjData.IsPartTruckLoad : false);
 
-  const [freightType, setfreightType] = useState(isEditFlag ? rowObjData.EFreightLoadType : '');
+  const [freightType, setfreightType] = useState(isEditFlag ? rowObjData.EFreightLoadType : FullTruckLoad);
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
   const [showFields, setShowFields] = useState({});
 
@@ -62,7 +61,7 @@ function AddFreight(props) {
 
   useEffect(() => {
     setTimeout(() => {
-      setfreightType(isEditFlag ? rowObjData.EFreightLoadType : '')
+      setfreightType(isEditFlag ? rowObjData.EFreightLoadType : FullTruckLoad)
     }, 200)
   }, [rowObjData]);
 
@@ -72,7 +71,7 @@ function AddFreight(props) {
   }, []);
 
   useEffect(() => {
-    if (freightType === FullTruckLoad || freightType === PartTruckLoad) {
+    if (!isEditFlag && (freightType === FullTruckLoad || freightType === PartTruckLoad)) {
       let arr = _.map(RMCCTabData, 'CostingPartDetails.CostingRawMaterialsCost')
       let totalFinishWeight = 0
       arr && arr?.map(item => {
@@ -81,7 +80,6 @@ function AddFreight(props) {
         }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
-      
       setValue("Quantity", totalFinishWeight)
 
     }
@@ -92,7 +90,8 @@ function AddFreight(props) {
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
     if (isEditFlag) {
       showFieldsFunction(rowObjData.EFreightLoadType)
-    } else {
+    }
+    if (!isEditFlag) {
       showFieldsFunction(FullTruckLoad)
     }
   }, [])
@@ -125,7 +124,6 @@ function AddFreight(props) {
   const freightRateCriteriaSelectList = useSelector(state => state.freight.freightRateCriteriaSelectList)
 
   const showFieldsFunction = (freightFlag) => {
-    
     let obj = {
       Capacity: false,
       Applicability: false,
@@ -245,6 +243,7 @@ function AddFreight(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DynamicData;
           setValue('Rate', Data.Rate)
+          errors.Rate = {}
         }
       }))
     } else {
@@ -278,7 +277,8 @@ function AddFreight(props) {
     })
     // setTotalFinishWeight(perKgFinishWeight)
     let totalFreightCost = checkForNull(perKgFinishWeight) * checkForNull(RateAsPercentage)
-    setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+    setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+    errors.FreightCost = {}
     setFreightCost(totalFreightCost)
   }
 
@@ -304,56 +304,57 @@ function AddFreight(props) {
       case 'RM':
       case 'Part Cost':
         totalFreightCost = checkForNull(NetRawMaterialsCost) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'BOP':
         totalFreightCost = checkForNull(NetBoughtOutPartCost) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'RM + CC':
       case 'Part Cost + CC':
         totalFreightCost = checkForNull(RMCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'BOP + CC':
         totalFreightCost = checkForNull(BOPCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
       case 'CC':
         totalFreightCost = checkForNull(ConversionCostForCalculation) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull((totalFreightCost), getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'RM + CC + BOP':
       case 'Part Cost + CC + BOP':
         totalFreightCost = checkForNull(RMBOPCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'RM + BOP':
       case 'Part Cost + BOP':
         totalFreightCost = checkForNull(RMBOP) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
       case 'Net Cost':
         totalFreightCost = checkForNull(totalTabCost) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       default:
         break;
     }
+    errors.FreightCost = {}
   }
 
   // MAY BE USED LATER 
@@ -361,10 +362,10 @@ function AddFreight(props) {
     if (!isNaN(event.target.value)) {
       const Rate = getValues('Rate')
       if (Rate !== '') {
-        const cost = Rate * event.target.value;
-        setValue('FreightCost', checkForDecimalAndNull(cost, 2));
+        const cost = checkForNull(Rate) * checkForNull(event.target.value);
+        setValue('FreightCost', cost ? checkForDecimalAndNull(cost, getConfigurationKey().NoOfDecimalForPrice) : '');
       } else {
-        setValue('FreightCost', 0);
+        setValue('FreightCost', '');
       }
     } else {
       Toaster.warning('Please enter valid number.')
@@ -393,6 +394,8 @@ function AddFreight(props) {
   * @description FREIGHT FLAG
   */
   const onPressHeads = (FreightFlag) => {
+    setfreightType(FreightFlag)
+    showFieldsFunction(FreightFlag)
     setValue('Applicability', '')
     setValue('Criteria', '')
     setValue('Rate', '')
@@ -401,10 +404,8 @@ function AddFreight(props) {
     setValue('Capacity', '')
     setApplicability([])
     setCapacity('')
-    setfreightType(FreightFlag)
     errors.FreightCost = {}
     errors.Rate = {}
-    showFieldsFunction(FreightFlag)
   }
 
   /**
@@ -425,18 +426,18 @@ function AddFreight(props) {
     if (freightType === PartTruckLoad) freightTypeText = 'PTL';
 
     let formData = {
-      FreightDetailId: isEditFlag ? rowObjData.FreightDetailId : '',
+      FreightDetailId: isEditFlag ? rowObjData?.FreightDetailId : '',
       FreightId: isEditFlag ? rowObjData.FreightId : '',
       IsPartTruckLoad: freightTypeText,
-      Capacity: data.Capacity.value,
-      Criteria: data.Criteria.value,
-      Rate: data.Rate,
-      Quantity: data.Quantity,
-      FreightCost: freightType === Percentage ? freightCost : data.FreightCost,
+      Capacity: data?.Capacity?.value,
+      Criteria: data?.Criteria?.value,
+      Rate: data?.Rate,
+      Quantity: checkForNull(data?.Quantity),
+      FreightCost: freightType === Percentage ? freightCost : data?.FreightCost,
       Freight: '',
       EFreightLoadType: freightType,
       FreightType: freightTypeText,
-      FreightCRMHead: data.crmHeadFreight ? data.crmHeadFreight.label : ''
+      FreightCRMHead: data?.crmHeadFreight ? data?.crmHeadFreight?.label : '',
     }
     toggleDrawer('', formData)
   }
@@ -496,7 +497,7 @@ function AddFreight(props) {
                         type="radio"
                         name="freightType"
                         register={register}
-                        checked={(freightType === FullTruckLoad || !isEditFlag) ? true : false}
+                        checked={(freightType === FullTruckLoad) ? true : false}
                         onClick={() => onPressHeads(FullTruckLoad)}
                         disabled={isEditFlag ? true : false}
                       />{' '}
@@ -608,7 +609,7 @@ function AddFreight(props) {
                       mandatory={freightType !== Fixed ? true : false}
                       rules={{
                         required: freightType !== Fixed ? true : false,
-                        validate: freightType !== Fixed ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                        validate: freightType !== Fixed ? { number, checkWhiteSpaces, percentageLimitValidation } : {},
                         max: {
                           value: 100,
                           message: 'Percentage should be less than 100'
@@ -656,8 +657,8 @@ function AddFreight(props) {
                       control={control}
                       register={register}
                       rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                        required: true,
+                        validate: freightType === Fixed ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
