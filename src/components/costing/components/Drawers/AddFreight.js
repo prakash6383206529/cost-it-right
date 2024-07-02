@@ -54,7 +54,7 @@ function AddFreight(props) {
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
   const [showFields, setShowFields] = useState({});
 
-  const { RMCCTabData } = useSelector(state => state.costing)
+  const { RMCCTabData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   const [freightCost, setFreightCost] = useState('')
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
@@ -140,7 +140,6 @@ function AddFreight(props) {
 
         break;
       case PartTruckLoad:
-        obj.Capacity = true
         obj.Criteria = true
         obj.Rate = true
         obj.Quantity = true
@@ -238,11 +237,20 @@ function AddFreight(props) {
     if (newValue && newValue !== '') {
       setCriteria(newValue)
       calculateApplicabilityCost(newValue.value)
-      const data = { Capacity: capacity.value, Criteria: newValue.value }
+      const data = {
+        Capacity: capacity?.value ? capacity?.value : null,
+        Criteria: newValue?.value ? newValue?.value : null,
+        PlantId: costData?.PlantId ? costData?.PlantId : null,
+        VendorId: costData?.VendorId ? costData?.VendorId : null,
+        CustomerId: costData?.CustomerId ? costData?.CustomerId : null,
+        EffectiveDate: CostingEffectiveDate ? CostingEffectiveDate : null,
+        EFreightLoadType: freightType ? freightType : null,
+        CostingTypeId: costData?.CostingTypeId ? costData?.CostingTypeId : null,
+      }
       dispatch(getRateByCapacityCriteria(data, res => {
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.DynamicData;
-          setValue('Rate', Data.Rate)
+        if (res && res?.data && res?.data?.Result) {
+          let Data = res?.data?.DynamicData;
+          setValue('Rate', Data?.Rate)
           errors.Rate = {}
         }
       }))
@@ -620,7 +628,7 @@ function AddFreight(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Rate}
-                      disabled={(freightType !== Percentage && freightType !== FullTruckLoad && freightType !== PartTruckLoad) ? true : false}
+                      disabled={(freightType !== Percentage) ? true : false}
                     // disabled={(freightType !== Percentage  ) ? true : false} OPEN WHEN API INTEGRATED
                     />
                   </Col>}
