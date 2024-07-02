@@ -53,6 +53,10 @@ export const API = {
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
   getPartSelectLists: `${BASE_URL}/masters-part/select-list-component-part-for-convert-to-assembly`,
 
+
+  //Part Active InActive
+  ActiveInActivePartUser: `${BASE_URL}/masters-part/part-active`,
+
   //Combo apis
 
   getOtherOperationComboAPI: `${BASE_URL}/configuration-master/get-other-operation-combo-select-list`,

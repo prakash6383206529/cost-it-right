@@ -14,7 +14,8 @@ import {
     config,
     GET_PRODUCT_DATA_LIST,
     GET_PRODUCT_UNIT_DATA,
-    PRODUCT_GROUPCODE_SELECTLIST
+    PRODUCT_GROUPCODE_SELECTLIST,
+    API_SUCCESS
 } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
@@ -385,7 +386,7 @@ export function getSelectListPartType(callback) {
 * @description GET ASSEMBLY PART SELECTLIST
 */
 export function getAssemblyPartSelectList(data, callback) {
-    return axios.get(`${API.getAssemblyPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}`, config()).catch(error => {
+    return axios.get(`${API.getAssemblyPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}&isActive=${data.isActive}`, config()).catch(error => {
         apiErrors(error);
         callback(error);
         return Promise.reject(error)
@@ -397,7 +398,7 @@ export function getAssemblyPartSelectList(data, callback) {
 * @description GET COMPONENT PART SELECTLIST
 */
 export function getComponentPartSelectList(data, callback) {
-    return axios.get(`${API.getComponentPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}`, config()).catch(error => {
+    return axios.get(`${API.getComponentPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}&isActive=${data.isActive}`, config()).catch(error => {
         apiErrors(error);
         callback(error);
         return Promise.reject(error)
@@ -796,6 +797,25 @@ export function updateMultipleComponentTechnology(requestData, callback) {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
                 callback(error);
+            });
+    };
+}
+
+
+/**
+ * @method activeInactivePartUser
+ * @description active Inactive Part
+ */
+export function activeInactivePartUser(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.ActiveInActivePartUser}`, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
             });
     };
 }

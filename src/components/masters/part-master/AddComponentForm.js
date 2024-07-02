@@ -215,7 +215,8 @@ class AddComponentForm extends Component {
         let obj = {
           technologyId: this.props?.TechnologySelected.value,
           date: this.context,
-          partNumber: resultInput
+          partNumber: resultInput,
+          isActive: true
         }
         this.setState({ isLoader: true })
         const res = await getComponentPartSelectList(obj)
