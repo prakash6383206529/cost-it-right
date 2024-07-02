@@ -8209,7 +8209,7 @@ export const statusDropdownforRfq = [
     { label: "History", value: "10" },
     { label: "Not Selected", value: "11" },
     { label: "PreDraft", value: "12" },
-  ];
+];
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },
     { label: 'PendingForApproval', value: 2 },
@@ -8280,3 +8280,8 @@ export const REJECTION_RECOVERY_APPLICABILITY = [
 ]
 
 export const PACK_AND_FREIGHT_PER_KG = 'Per kg'
+
+export const FREIGHT_LOAD_OPTIONS = [
+    { label: "Full Truck Load", value: 3 },
+    { label: "Part Truck Load", value: 4 },
+]

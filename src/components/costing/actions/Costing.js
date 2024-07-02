@@ -1105,9 +1105,13 @@ export function getRateCriteriaByCapacitySelectList(Capacity) {
  */
 export function getRateByCapacityCriteria(data, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getRateByCapacityCriteria}?Capacity=${data.Capacity}&Criteria=${data.Criteria}`, config(),)
+    const request = axios.get(`${API.getRateByCapacityCriteria}?Capacity=${data?.Capacity}&Criteria=${data?.Criteria}&plantId=${data?.PlantId}&vendorId=${data?.VendorId}&customerId=${data?.CustomerId}&effectiveDate=${data?.EffectiveDate}&costingTypeId=${data?.CostingTypeId}&EFreightLoadType=${data?.EFreightLoadType}`, config(),)
     request.then((response) => {
-      callback(response)
+      if (response?.data?.Result) {
+        callback(response)
+      } else if (response?.status === 204) {
+        Toaster.warning("There is no data for Freight.")
+      }
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
@@ -2996,7 +3000,6 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
       .catch((error) => {
         dispatch({ type: API_FAILURE });
         // Handle errors
-        console.error(error);
       });
   };
 }

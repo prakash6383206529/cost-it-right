@@ -64,9 +64,7 @@ function ViewRM(props) {
     setIndex(index)
 
     const tempData = viewCostingData[props.index]
-    console.log(props.simulationMode, "props.simulationMode", tempData.CostingHeading, "ch", tempData.SimulationStatusId);
     if (props.simulationMode && String(tempData.CostingHeading) === String("New Costing") && (Number(tempData.SimulationStatusId) === Number(REJECTEDID) || Number(tempData.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData.SimulationStatusId) === Number(AWAITING_APPROVAL_ID)) && viewRM[index]?.RawMaterialCalculatorId === null && viewRM[index]?.IsCalculatorAvailable === true) {
-      console.log("COMING INSIM");
       switch ((Number(tempData?.technologyId))) {
         case Ferrous_Casting:
           dispatch(getSimulationRmFerrousCastingCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
@@ -100,7 +98,6 @@ function ViewRM(props) {
           }))
           break;
         case CORRUGATEDBOX:
-          console.log("COMING IN SIM");
           if (viewCostingData[props.index]?.CalculatorType === 'CorrugatedAndMonoCartonBox') {
             dispatch(getSimulationCorrugatedAndMonoCartonCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, res => {
 

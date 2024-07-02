@@ -291,8 +291,8 @@ const FreightListing = (props) => {
                 <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
-                <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
+                {/* <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
+                <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn> */}
                 <AgGridColumn width='200px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
               </AgGridReact>
               {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
