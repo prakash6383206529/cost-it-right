@@ -53,6 +53,7 @@ function AddFreight(props) {
   const [freightType, setfreightType] = useState(isEditFlag ? rowObjData.EFreightLoadType : FullTruckLoad);
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
   const [showFields, setShowFields] = useState({});
+  const [fullTruckLoadId, setFullTruckLoadId] = useState('');
 
   const { RMCCTabData, CostingEffectiveDate } = useSelector(state => state.costing)
 
@@ -249,8 +250,9 @@ function AddFreight(props) {
       }
       dispatch(getRateByCapacityCriteria(data, res => {
         if (res && res?.data && res?.data?.Result) {
-          let Data = res?.data?.DynamicData;
+          let Data = res?.data?.Data;
           setValue('Rate', Data?.Rate)
+          setFullTruckLoadId(Data?.FullTruckLoadId)
           errors.Rate = {}
         }
       }))
@@ -446,6 +448,7 @@ function AddFreight(props) {
       EFreightLoadType: freightType,
       FreightType: freightTypeText,
       FreightCRMHead: data?.crmHeadFreight ? data?.crmHeadFreight?.label : '',
+      FullTruckLoadId: isEditFlag ? rowObjData?.FullTruckLoadId : fullTruckLoadId,
     }
     toggleDrawer('', formData)
   }
