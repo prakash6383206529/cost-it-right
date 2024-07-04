@@ -575,7 +575,7 @@ function UserRegistration(props) {
       setDepartment(newValue)
     } else {
       setDepartment([newValue])
-      dispatch(getPlantSelectListForDepartment([newValue], res => { }))
+      dispatch(getPlantSelectListForDepartment([newValue.value], res => { }))
     }
     if (JSON.stringify(newValue) !== JSON.stringify(oldDepartment)) {
       setIsForcefulUpdate(true)
