@@ -415,45 +415,50 @@ class AddFreight extends Component {
     const { fieldsObj } = this.props;
 
     let count = 0;
-    setTimeout(() => {
+    let errorObj = { ...this.state.errorObj };
 
-      if (Load?.value === FullTruckLoad) {
-        if (FullTruckCapacity.length === 0) {
-          this.setState({ errorObj: { ...this.state.errorObj, capacity: true } })
-          count++
-        }
-      }
-      if (RateCriteria.length === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, criteria: true } })
-        count++
-      }
-      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
-        count++
-      }
-      if (Load.length === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, load: true } })
-        count++
-      }
-      if (count > 0) {
-        return false
-      }
-      //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-      const isExist = gridTable.findIndex(
-        (el) =>
-          el.Capacity === FullTruckCapacity.value &&
-          el.RateCriteria === RateCriteria.value &&
-          el.EFreightLoadType === Load?.value
-      );
+    if (Load?.value === FullTruckLoad && FullTruckCapacity.length === 0) {
+      errorObj.capacity = true;
+      count++;
+    }
 
-      if (isExist !== -1) {
-        Toaster.warning("Already added, Please check the values.");
-        return false;
-      }
-      const Rate =
-        fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
-      const tempArray = [];
-      tempArray.push(...gridTable, {
+    if (RateCriteria.length === 0) {
+      errorObj.criteria = true;
+      count++;
+    }
+
+    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      errorObj.rate = true;
+      count++;
+    }
+
+    if (Load.length === 0) {
+      errorObj.load = true;
+      count++;
+    }
+
+    if (count > 0) {
+      this.setState({ errorObj });
+      return false;
+    }
+
+    // CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+    const isExist = gridTable.findIndex(
+      (el) =>
+        el.Capacity === FullTruckCapacity.value &&
+        el.RateCriteria === RateCriteria.value &&
+        el.EFreightLoadType === Load?.value
+    );
+
+    if (isExist !== -1) {
+      Toaster.warning("Already added, Please check the values.");
+      return false;
+    }
+
+    const Rate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
+    const tempArray = [
+      ...gridTable,
+      {
         FullTruckLoadId: "",
         Capacity: FullTruckCapacity.label,
         RateCriteria: RateCriteria.label,
@@ -461,19 +466,22 @@ class AddFreight extends Component {
         Load: Load,
         EFreightLoadType: Load?.value,
         IsFreightAssociated: false
-      });
-      this.setState(
-        {
-          gridTable: tempArray,
-          FullTruckCapacity: [],
-          RateCriteria: [],
-          Load: []
-        },
-        () => this.props.change("Rate", '')
-      );
-      this.setState({ AddUpdate: false, errorObj: { capacity: false, criteria: false, rate: false, load: false } })
-    }, 200);
+      }
+    ];
+
+    this.setState(
+      {
+        gridTable: tempArray,
+        FullTruckCapacity: [],
+        RateCriteria: [],
+        Load: [],
+        AddUpdate: false,
+        errorObj: { capacity: false, criteria: false, rate: false, load: false }
+      },
+      () => this.props.change("Rate", '')
+    );
   };
+
   /**
    * @method updateGrid
    * @description Used to handle update grid
