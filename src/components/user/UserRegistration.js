@@ -125,6 +125,9 @@ function UserRegistration(props) {
   const [masterTableChanged, setMasterTableChanged] = useState(false)
   const [isDepartmentUpdated, setIsDepartmentUpdated] = useState(false)
   const [selectedPlants, setSelectedPlants] = useState([])
+  const [inputLoader, setInputLoader] = useState({
+    plant: false
+  })
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -178,6 +181,7 @@ function UserRegistration(props) {
     sortable: false,
 
   };
+
   useEffect(() => {
     dispatch(getApprovalTypeSelectListUserModule(() => { }, '1'));
     dispatch(getApprovalTypeSelectListUserModule(() => { }, '2'));
@@ -185,22 +189,14 @@ function UserRegistration(props) {
     dispatch(getApprovalTypeSelectListUserModule(() => { }, '4'));
 
   }, [dispatch]);
-
   useEffect(() => {
     if (registerUserData && props?.data?.isEditFlag) {
-      setValue('FirstName', registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',)
-      setValue('MiddleName', registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '')
-      setValue('LastName', registerUserData && registerUserData.LastName !== undefined ? registerUserData.LastName : '',)
-      setValue('EmailAddress', registerUserData && registerUserData.EmailAddress !== undefined ? registerUserData.EmailAddress : '',)
-      setValue('UserName', registerUserData && registerUserData.UserName !== undefined ? registerUserData.UserName : '',)
-      setValue('Mobile', registerUserData && registerUserData.Mobile !== undefined ? registerUserData.Mobile : '',)
+      const CommonField = ['FirstName', 'MiddleName', 'LastName', 'EmailAddress', 'UserName', 'Mobile', 'AddressLine1', 'AddressLine2', 'ZipCode', 'PhoneNumber', 'Extension']
+      CommonField.forEach(element => {
+        setValue(element, registerUserData && registerUserData[element] !== undefined ? registerUserData[element] : '',)
+      })
       setValue('Password', registerUserData && registerUserData.Password !== undefined ? '' : '',)
       setValue('passwordConfirm', registerUserData && registerUserData.Password !== undefined ? '' : '',)
-      setValue('AddressLine1', registerUserData && registerUserData.AddressLine1 !== undefined ? registerUserData.AddressLine1 : '',)
-      setValue('AddressLine2', registerUserData && registerUserData.AddressLine2 !== undefined ? registerUserData.AddressLine2 : '',)
-      setValue('ZipCode', registerUserData && registerUserData.ZipCode !== undefined ? registerUserData.ZipCode : '',)
-      setValue('PhoneNumber', registerUserData && registerUserData.PhoneNumber !== undefined ? registerUserData.PhoneNumber : '',)
-      setValue('Extension', registerUserData && registerUserData.Extension !== undefined ? registerUserData.Extension : '',)
       setValue('CityId', registerUserData && registerUserData.CityName !== undefined ? {
         label: registerUserData.CityName, value: registerUserData.CityId
       } : '')
@@ -563,15 +559,23 @@ function UserRegistration(props) {
    * @description Used to handle 
   */
   const departmentHandler = (newValue, actionMeta) => {
+
     if (selectedPlants.length > 0) {
       setValue('plant', [])
     }
     if (getConfigurationKey().IsMultipleDepartmentAllowed) {
+      let idArr = [];
+      newValue && newValue.map(item => {
+        idArr.push(item.value)
+      })
+      setInputLoader(prevState => ({ ...prevState, plant: true }))
+      dispatch(getPlantSelectListForDepartment(idArr, res => {
+        setInputLoader(prevState => ({ ...prevState, plant: false }))
+      }))
       setDepartment(newValue)
     } else {
-
       setDepartment([newValue])
-      dispatch(getPlantSelectListForDepartment(newValue.value, res => { }))
+      dispatch(getPlantSelectListForDepartment([newValue.value], res => { }))
     }
     if (JSON.stringify(newValue) !== JSON.stringify(oldDepartment)) {
       setIsForcefulUpdate(true)
@@ -2444,7 +2448,7 @@ function UserRegistration(props) {
       }
     }
     const messageOne = messages.join(' and ');
-    
+
 
     const baseMessage = `All ${messageOne}'s approval will become `;
     const messageTwo = `${baseMessage}${onboardingTableChanged ? 'rejected by system' : 'draft'} which are pending & awaited in approval status. Do you want to continue?`;
@@ -2481,6 +2485,7 @@ function UserRegistration(props) {
       setValue('plant', '');  // Assuming you want to clear the form value when nothing is selected
     }
   }
+  const plantLabel = initialConfiguration.IsMultipleDepartmentAllowed ? 'Plant (Code) - (Department (code) list)' : "Plant (Code)"
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -2972,6 +2977,7 @@ function UserRegistration(props) {
                                 type="text"
                                 label={`${handleDepartmentHeader()}`}
                                 errors={errors.DepartmentId}
+                                isMulti={initialConfiguration.IsMultipleDepartmentAllowed}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
@@ -2993,10 +2999,11 @@ function UserRegistration(props) {
                         }
                         {getConfigurationKey().IsPlantsAllowedForDepartment && <div className="col-md-3">
                           <SearchableSelectHookForm
-                            label="Plant (Code)"
+                            label={plantLabel}
                             name="plant"
                             placeholder={"Select"}
                             type="text"
+                            isLoading={{ isLoader: inputLoader.plant }}
                             Controller={Controller}
                             control={control}
                             register={register}
