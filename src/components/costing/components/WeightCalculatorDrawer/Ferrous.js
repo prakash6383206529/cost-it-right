@@ -10,9 +10,12 @@ import Toaster from '../../../common/Toaster'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../common/Tooltip'
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalAndNumberValidation } from "../../../../helper/validation";
+import NoContentFound from '../../../common/NoContentFound'
+import { EMPTY_DATA } from '../../../../config/constants'
 
 function Ferrous(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
+    
     const dispatch = useDispatch()
     const { ferrousCalculatorReset } = useSelector(state => state.costing)
 
@@ -30,10 +33,18 @@ function Ferrous(props) {
     const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
-    const [reRender, setRerender] = useState(false)
     const [percentage, setPercentage] = useState(0)
     const [inputFinishWeight, setInputFinishWeight] = useState(0)
     const { rmRowData, rmData, CostingViewMode, item } = props
+    const [ selectedRm, setSelectedRm ] = useState([])
+    const[unSelectedRm, setUnSelectedRm] = useState([])
+    const [tableRawMaterials, setTableRawMaterials] = useState([]);
+    const [binderRawMaterials, setBinderRawMaterials] = useState([]);
+    const [binderRm, setBinderRm] = useState([]);
+
+const [calculatedValues, setCalculatedValues] = useState([]);
+const [calculatedCost , setCalculatedCost] = useState([])
+const [totalCostCalculated, setTotalCostCalculated] = useState(0);
 
     const rmGridFields = 'rmGridFields';
 
@@ -42,6 +53,10 @@ function Ferrous(props) {
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
     })
+      
+  const [netRMCost, setNetRMCost] = useState(0);
+  
+
     useEffect(() => {
         const castingWeight = checkForNull(getValues("castingWeight"))
         if (inputFinishWeight > castingWeight) {
@@ -76,11 +91,9 @@ function Ferrous(props) {
     })
 
     const tableData = (value = []) => {
-
         setTableVal(value)
     }
     const dropDown = [
-
         {
             label: 'Melting Loss',
             value: 5,
@@ -107,11 +120,11 @@ function Ferrous(props) {
         }
     }, [WeightCalculatorRequest])
 
-    useEffect(() => {
-        if (!CostingViewMode) {
-            calculateRemainingCalculation(lostWeight)
-        }
-    }, [fieldValues])
+    // useEffect(() => {
+    //     if (!CostingViewMode) {
+    //         calculateRemainingCalculation(lostWeight)
+    //     }
+    // }, [fieldValues])
 
     const totalPercentageValue = () => {
         let sum = 0
@@ -123,77 +136,185 @@ function Ferrous(props) {
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 
-    const percentageChange = (e) => {
+    const percentageChange = (percentage, index) => {
+        setValue(`rmGridFields.${index}.Percentage`, percentage);
+        
         setTimeout(() => {
-            if (totalPercentageValue() > 100) {
-                Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
-                return false
+            const totalPercentage = totalPercentageValue();
+            if (totalPercentage > 100) {
+                Toaster.warning(`Total percentage is ${totalPercentage}%, must be 100% to save the values`);
+                return false;
             }
-            calculateNetSCrapRate()
-            calculateNetRmRate()
+    
+            const updatedItems = tableRawMaterials.map((item, idx) => {
+                const currentPercentage = parseFloat(getValues(`rmGridFields.${idx}.Percentage`) || 0);
+                return {
+                    ...item,
+                    Percentage: currentPercentage,
+                    calculatedBasicValue: (currentPercentage / 100) * item.RawMaterialRate,
+                    calculatedScrapValue: (currentPercentage / 100) * item.ScrapRate,
+                };
+            });
+    
+            setCalculatedValues(updatedItems);
+            calculateNetRmRate();
+            calculateNetScrapRate();
         }, 300);
+    };
+  const calculateNetRmRate = () => {
+    let NetRMRate = tableRawMaterials.reduce((acc, item, index) => {
+        const Percentage = parseFloat(getValues(`rmGridFields.${index}.Percentage`) || 0);
+        const BasicRate = parseFloat(item.RawMaterialRate || 0);
+        return acc + (Percentage * BasicRate) / 100;
+    }, 0);
+    setValue('NetRMRate', checkForDecimalAndNull(NetRMRate, getConfigurationKey().NoOfDecimalForInputOutput));
+};
+useEffect(() => {
+    const totalCost = calculateTotalCost();
+    setTotalCostCalculated(totalCost);
+    calculateRemainingCalculation();
+}, [calculatedCost]);
+
+const calculateNetScrapRate = () => {
+    let NetScrapRate = tableRawMaterials.reduce((acc, item, index) => {
+        const Percentage = parseFloat(getValues(`rmGridFields.${index}.Percentage`) || 0);
+        const ScrapRate = parseFloat(item.ScrapRate || 0);
+        return acc + (Percentage * ScrapRate) / 100;
+    }, 0);
+    setValue('NetScrapRate', checkForDecimalAndNull(NetScrapRate, getConfigurationKey().NoOfDecimalForInputOutput));
+};
+const calculateLossWeight = (castingWeight, lossPercentage) => {
+    return (castingWeight * lossPercentage) / 100;
+};
+
+const calculateGrossWeight = (castingWeight, totalLossWeight) => {
+    return castingWeight + totalLossWeight;
+};
+
+const calculateScrapWeight = (castingWeight, finishWeight) => {
+    return castingWeight - finishWeight;
+};
+
+const calculateScrapCost = (scrapWeight, recovery, netScrapRate) => {
+    return (scrapWeight * recovery * netScrapRate) / 100;
+};
+const handleAddBinderMaterialsToTable = () => {
+    // Preserve current values
+    const currentNetRMRate = getValues('NetRMRate');
+    const currentNetScrapRate = getValues('NetScrapRate');
+    const currentCastingWeight = getValues('castingWeight');
+
+    setBinderRm(prev => [...prev, ...binderRawMaterials]);
+    setUnSelectedRm([]);
+    setValue('RawMaterialBinders', []);
+
+    // Only reset the RawMaterialBinders field, not the entire form
+    setValue('RawMaterialBinders', []);
+
+    // Restore the preserved values
+    setValue('NetRMRate', currentNetRMRate);
+    setValue('NetScrapRate', currentNetScrapRate);
+    setValue('castingWeight', currentCastingWeight);
+
+    // Recalculate total cost
+    const newCalculatedCost = [...calculatedCost, ...binderRawMaterials.map(item => ({
+        ...item,
+        calculatedBindersBasicValue: 0 // Initialize with 0, will be updated when quantity is entered
+    }))];
+    setCalculatedCost(newCalculatedCost);
+
+    // Trigger recalculation
+    calculateRemainingCalculation();
+};const calculateNetRMCost = (grossWeight, netRMRate, scrapCost, totalCostCalculated, otherCost, castingWeight) => {
+    return ((grossWeight * netRMRate) - scrapCost + totalCostCalculated + otherCost) / castingWeight;
+};
+
+const calculateRemainingCalculation = React.useCallback(() => {
+    const castingWeight = checkForNull(getValues("castingWeight"));
+    const finishedWeight = checkForNull(getValues('finishedWeight'));
+    const recovery = checkForNull(getValues('recovery'));
+    const NetRMRate = checkForNull(getValues('NetRMRate'));
+    const NetScrapRate = checkForNull(getValues('NetScrapRate'));
+    const otherCost = checkForNull(getValues('otherCost'));
+
+    if (castingWeight) {
+        // Calculate loss weight for each type of loss
+        const lossWeights = tableVal?.map(loss => ({
+            ...loss,
+            LossWeight: calculateLossWeight(castingWeight, loss.LossPercentage)
+        }));
+
+        // Calculate total loss weight
+        const totalLossWeight = lossWeights?.reduce((sum, loss) => sum + loss.LossWeight, 0) || 0;
+
+        // Calculate gross weight
+        const grossWeight = calculateGrossWeight(castingWeight, totalLossWeight);
+
+        // Calculate scrap weight
+        const scrapWeight = calculateScrapWeight(castingWeight, finishedWeight);
+
+        // Calculate scrap cost
+        const scrapCost = calculateScrapCost(scrapWeight, recovery, NetScrapRate);
+
+        // Calculate Net RM Cost
+        const NetRMCost = calculateNetRMCost(grossWeight, NetRMRate, scrapCost, totalCostCalculated, otherCost, castingWeight);
+
+        // Update state and form values
+        setDataToSend(prev => ({
+            ...prev,
+            totalGrossWeight: grossWeight,
+            scrapWeight: scrapWeight,
+            scrapCost: scrapCost,
+            NetRMCost: NetRMCost
+        }));
+
+        setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+        setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+        setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice));
+        setValue('NetRMCost', checkForDecimalAndNull(NetRMCost, getConfigurationKey().NoOfDecimalForPrice));
+
+        setLostWeight(totalLossWeight);
+
+        // Update loss weights in tableVal
+        setTableVal(lossWeights);
     }
-    const calculateNetRmRate = () => {
 
-        let NetRMRate = 0;
-        NetRMRate = rmData && rmData.reduce((acc, val, index) => {
-            const Percentage = getValues(`${rmGridFields}.${index}.Percentage`)
-            return acc + checkForNull(Percentage * val.RMRate / 100)
+    // Always preserve these values
+    setValue('NetRMRate', NetRMRate);
+    setValue('NetScrapRate', NetScrapRate);
+    setValue('castingWeight', castingWeight);
+}, [getValues, setValue, tableVal, totalCostCalculated]);
 
-        }, 0)
-        let obj = dataToSend
-        obj.NetRMRate = NetRMRate
-        setDataToSend(obj)
-        setValue('NetRMRate', checkForDecimalAndNull(NetRMRate, getConfigurationKey().NoOfDecimalForInputOutput))
+
+
+
+
+
+const watchedValues = useWatch({
+    control,
+    name: ['castingWeight', 'finishedWeight', 'recovery', 'NetRMRate', 'NetScrapRate', 'otherCost'],
+});
+useEffect(() => {
+    if (!CostingViewMode) {
+        const debouncedCalculation = debounce(() => {
+            calculateRemainingCalculation();
+        }, 300);
+
+        debouncedCalculation();
+
+        return () => {
+            debouncedCalculation.cancel();
+        };
     }
-
-    const calculateNetSCrapRate = () => {
-        let NetScrapRate = 0;
-        NetScrapRate = rmData && rmData.reduce((acc, val, index) => {
-            const Percentage = getValues(`${rmGridFields}.${index}.Percentage`)
-            return acc + checkForNull(Percentage * val.ScrapRate / 100)
-
-        }, 0)
-        let obj = dataToSend
-        obj.NetScrapRate = NetScrapRate
-        setDataToSend(obj)
-        setValue('NetScrapRate', checkForDecimalAndNull(NetScrapRate, getConfigurationKey().NoOfDecimalForInputOutput))
-    }
-
-    const calculateRemainingCalculation = (lostSum = 0) => {
-        let scrapWeight = 0
-        const castingWeight = checkForNull(getValues("castingWeight"))
-        const grossWeight = checkForNull(castingWeight) + lostSum
-        const finishedWeight = checkForNull(getValues('finishedWeight'))
-        const NetRMRate = checkForNull(dataToSend.NetRMRate)
-        const NetScrapRate = checkForNull(dataToSend.NetScrapRate)
-        if (finishedWeight !== 0) {
-            scrapWeight = checkForNull(castingWeight) - checkForNull(finishedWeight) //FINAL Casting Weight - FINISHED WEIGHT
-        }
-        const recovery = checkForNull(getValues('recovery'))
-        const scrapCost = checkForNull(scrapWeight * NetScrapRate * recovery / 100)
-        const NetRMCost = (checkForNull(grossWeight) * checkForNull(NetRMRate)) - checkForNull(scrapCost)
-        const updatedValue = dataToSend
-        updatedValue.totalGrossWeight = grossWeight
-        updatedValue.scrapWeight = scrapWeight
-        updatedValue.scrapCost = scrapCost
-        updatedValue.NetRMCost = NetRMCost
-
-        setDataToSend(updatedValue)
-
-        setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue('scrapCost', checkForDecimalAndNull(scrapCost ?? scrapCost, getConfigurationKey().NoOfDecimalForPrice))
-        setValue('NetRMCost', checkForDecimalAndNull(NetRMCost ?? NetRMCost, getConfigurationKey().NoOfDecimalForPrice))
-        setLostWeight(lostSum)
-    }
-
+}, [watchedValues, CostingViewMode]);
     const calcForOutside = () => {
+        
         let temp = [...rmData]
         temp && temp.map((item, index) => {
             item.GrossWeight = calculatePercentageValue(dataToSend?.totalGrossWeight, getValues(`rmGridFields.${index}.Percentage`))
             item.ScrapWeight = calculatePercentageValue(dataToSend?.scrapCost, getValues(`rmGridFields.${index}.Percentage`))
             item.FinishWeight = calculatePercentageValue(getValues('finishedWeight'), getValues(`rmGridFields.${index}.Percentage`))
+            
             return item
         })
         return temp
@@ -270,10 +391,6 @@ function Ferrous(props) {
         reValidateMode: 'onChange',
     });
 
-    // useEffect(() => {
-    //     // calculateGSM()
-    //     // calculateWeightAndBoardCost()
-    // }, [tableInputsValues, areaCalculateWatch, state.tableData, state.totalGSM])
     const [state, setState] = useState({
         tableData: [],
         totalGSM: 0,
@@ -290,15 +407,7 @@ function Ferrous(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-    const areaCalclulationFieldValues = useWatch({
-        control: controlCalculatorForm, // Pass controlCalculatorForm here
-        name: ['SheetDecle', 'SheetCut'],
-    });
-    const areaCalculateWatch = useWatch({
-        control: controlCalculatorForm,
-        name: ['TotalArea'],
-    })
-
+  
 
     const watchFields = (data) => {
         let tempGSM = [];
@@ -311,33 +420,151 @@ function Ferrous(props) {
         }
         return [...tempGSM, ...tempFlute]
     }
-    const tableInputsValues = useWatch({
-        control: controlTableForm,
-        name: watchFields(state.tableData),
-    });
-
-
-    const renderListing = (label) => {
-        let temp = []
-        switch (label) {
-            case 'RawMaterial':
-                rmData && rmData.map((item) => {
-                    console.log('rmData>>>>>>>>>>>: ', rmData);
-                    temp.push({ label: item.RMName, value: item.RawMaterialId, RawMaterialRate: item.RMRate, ScrapRate: item.ScrapRate })
-                    return null
-                })
-                return temp;
-
-            default:
-                return temp;
+  
+   
+   
+    const rawMaterialHandler= (newValue) => {
+        if (Array.isArray(newValue) && newValue.some(item => item?.value === 'select_all')) {
+            // If "Select All" is chosen
+            const allOptions = rmData.map(({ RMName, RawMaterialId, RMRate, ScrapRate }) => ({
+                label: RMName,
+                value: RawMaterialId,
+                RawMaterialRate: RMRate,
+                ScrapRate: ScrapRate
+            }));
+            setSelectedRm(allOptions);
+            setUnSelectedRm([]);
+            setValue('RawMaterial', allOptions);
+        } else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+            // If specific items are chosen
+            setSelectedRm(newValue);
+            const newUnselectedRm = rmData.filter(rm => !newValue.some(selected => selected.value === rm.RawMaterialId));
+            setUnSelectedRm(newUnselectedRm);
+            setValue('RawMaterial', newValue);
+        } else {
+            // If nothing is selected
+            setSelectedRm([]);
+            setUnSelectedRm(rmData);
+            setValue('RawMaterial', []);
         }
-    }
-    console.log('rmData>>>>>>>>>>>: ', rmData);
-    return (
+    };
+    
+    const renderListing = React.useMemo(() => {
+        return (label) => {
+            switch (label) {
+                case 'RawMaterial':
+                    if (rmData) {
+                        const temp = [
+                            { label: "Select All", value: 'select_all' },
+                            ...rmData.map((item) => ({
+                                label: item.RMName,
+                                value: item.RawMaterialId,
+                                RawMaterialRate: item.RMRate,
+                                ScrapRate: item.ScrapRate
+                            }))
+                        ];
+                        
+                        // If in edit mode, remove the "Select All" option
+                        if (props.isEditFlag) {
+                            return temp.filter(item => item.value !== 'select_all');
+                        }
+                        
+                        return temp;
+                    }
+                    return [];
+                case 'RawMaterialBinders': 
+                    return unSelectedRm.map((item) => ({
+                        label: item.RMName,
+                        value: item.RawMaterialId,
+                        RawMaterialRate: item.RMRate,
+                        ScrapRate: item.ScrapRate
+                    }));
+                default:
+                    return [];
+            }
+        };
+    }, [rmData, unSelectedRm, props.isEditFlag]);
+        const rawMaterialBinderHandler = (newValue , action) => {
+        
+
+            const selectedOptions = unSelectedRm?.map(({ RMName, RawMaterialId, RMRate, ScrapRate }) => ({
+                label: RMName,
+                value: RawMaterialId,
+                RawMaterialRate: RMRate,
+                ScrapRate: ScrapRate,
+            }));
+        
+            if (Array.isArray(newValue) && (newValue[0]?.value === 'select_all' || newValue?.some(item => item?.value === 'select_all'))) {
+                setBinderRawMaterials(selectedOptions);
+                setTimeout(() => {
+                    setValue('RawMaterialBinders', selectedOptions);
+                }, 100);
+            } else if (newValue && (newValue.length > 0 || Object.keys(newValue).length)) {
+                setBinderRawMaterials(newValue);
+            } else {
+                setBinderRawMaterials([]);
+            }
+            };
+    
+            const handleAddToTable = () => {
+                const newItems = selectedRm.map(item => ({
+                    ...item,
+                    Percentage: 0,
+                    calculatedBasicValue: 0,
+                    calculatedScrapValue: 0,
+                }));
+            
+                setTableRawMaterials(prev => [...prev, ...newItems]);
+                
+                // Initialize form fields for new items
+                newItems.forEach((_, index) => {
+                    const newIndex = tableRawMaterials.length + index;
+                    setValue(`rmGridFields.${newIndex}.Percentage`, 0);
+                });
+            
+                setSelectedRm([]);
+                setValue('RawMaterial', []);
+            
+                // Recalculate all values
+                setTimeout(() => {
+                    const updatedItems = [...tableRawMaterials, ...newItems].map((item, idx) => {
+                        const currentPercentage = parseFloat(getValues(`rmGridFields.${idx}.Percentage`) || 0);
+                        return {
+                            ...item,
+                            Percentage: currentPercentage,
+                            calculatedBasicValue: (currentPercentage / 100) * item.RawMaterialRate,
+                            calculatedScrapValue: (currentPercentage / 100) * item.ScrapRate,
+                        };
+                    });
+            
+                    setCalculatedValues(updatedItems);
+                    calculateNetRmRate();
+                    calculateNetScrapRate();
+                    calculateRemainingCalculation();  // Add this line
+
+                }, 300);
+            };
+    
+    const quantityChange = (quantity, index) => {
+        const newValues = binderRm.map((item, idx) => {
+            if (idx === index) {
+                const basicValue = quantity * item.RawMaterialRate;
+                return { ...item, calculatedBindersBasicValue: basicValue };
+            }
+            return item;
+        });
+            setCalculatedCost(newValues);
+            calculateRemainingCalculation();  // Add this line
+
+    };
+    const calculateTotalCost = () => {
+        return calculatedCost?.reduce((acc, item) => acc + (item?.calculatedBindersBasicValue || 0), 0);
+    };
+        return (
         <Fragment>
             <Row>
                 <form noValidate className="form"
-                    onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
+                    onKeyDown={(e) => { handleKeyDown(e, onSubmit?.bind(this)); }}>
 
                     <Col md="12" className='mt-3'>
                         <div className="header-title mt12">
@@ -345,7 +572,7 @@ function Ferrous(props) {
                         </div>
                         <Row className={"mx-0 align-items-center"}>
                             <Col md="6">
-                                <SearchableSelectHookForm
+                            <SearchableSelectHookForm
                                     label={"Raw Material"}
                                     name={"RawMaterial"}
                                     tooltipId={"RawMaterial"}
@@ -353,6 +580,7 @@ function Ferrous(props) {
                                     Controller={Controller}
                                     control={controlTableForm}
                                     rules={{ required: true }}
+                                    value={selectedRm}
                                     register={registerTableForm}
                                     defaultValue={""}
                                     options={renderListing('RawMaterial')}
@@ -360,13 +588,20 @@ function Ferrous(props) {
                                     isMulti={true}
                                     errors={errorsTableForm.RawMaterial}
                                     disabled={props?.CostingViewMode ? props?.CostingViewMode : state.tableData.length !== 0 ? true : false}
-                                    handleChange={() => { }}
+                                    handleChange={rawMaterialHandler}
                                 />
+
                             </Col>
                             <Col md="3">
                                 <div class="d-flex">
-                                    <button class="user-btn mr5 mb-2" type="submit" title="" disabled=""><div class="plus "></div>Add</button>
-                                </div>
+                                <button
+                  type="button"
+                  className={'user-btn mt30 pull-left'}
+                  onClick={handleAddToTable}
+                //   disabled={props.CostingViewMode || disableAll}
+                >
+                  <div className={'plus'}></div>ADD
+                </button>                                        </div>
                             </Col>
                         </Row>
                     </Col>
@@ -380,7 +615,7 @@ function Ferrous(props) {
                             <tbody className='rm-table-body'></tbody>
                         </Col>
                         <div className="costing-border ferrous-calculator border-top-0 border-bottom-0">
-                            <Table className="table cr-brdr-main ferrous-table" size="sm">
+                      <Table className="table cr-brdr-main ferrous-table" size="sm">
                                 <thead>
                                     <tr>
                                         <th className='rm-name-head'>{`RM Name`}</th>
@@ -392,46 +627,51 @@ function Ferrous(props) {
 
                                     </tr>
                                 </thead>
-                                <tbody className='rm-table-body'>
-                                    {rmData &&
-                                        rmData.map((item, index) => {
+                                {tableRawMaterials.length > 0 ? (
+    <tbody className='rm-table-body'>
+       {tableRawMaterials.map((item, index) => {
+    const calculatedItem = calculatedValues?.find(calcItem => calcItem.value === item.value) || item;
+    return (
+        <tr key={index} className=''>
+            <td className='rm-part-name'><span title={item.label}>{item.label}</span></td>
+            <td>
+                <TextFieldHookForm
+                    label=""
+                    name={`rmGridFields.${index}.Percentage`}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    rules={{
+                        validate: {
+                            number,
+                            checkWhiteSpaces,
+                            percentageLimitValidation
+                        },
+                        max: {
+                            value: 100,
+                            message: 'Percentage should be less than 100'
+                        },
+                    }}
+                    defaultValue={calculatedItem.Percentage || ''}
+                    className=""
+                    customClassName={'withBorder'}
+                    handleChange={(e) => { percentageChange(e.target.value, index) }}
+                    errors={errors?.rmGridFields?.[index]?.Percentage || ''}
+                    disabled={props.isEditFlag ? false : true}
+                />
+            </td>
+            <td>{item.RawMaterialRate}</td>
+            <td>{checkForDecimalAndNull(calculatedItem.calculatedBasicValue, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+            <td>{item.ScrapRate}</td>
+            <td>{checkForDecimalAndNull(calculatedItem.calculatedScrapValue, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+        </tr>
+    );
+})}
+    </tbody>
+) : (
+    <NoContentFound title={EMPTY_DATA} />
+)}
 
-                                            return (
-                                                <tr key={index} className=''>
-                                                    <td className='rm-part-name'><span title={item.RMName}>{item.RMName}</span></td>
-                                                    <td>
-                                                        <TextFieldHookForm
-                                                            label=""
-                                                            name={`${rmGridFields}.${index}.Percentage`}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            rules={{
-                                                                required: true,
-                                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                                                max: {
-                                                                    value: 100,
-                                                                    message: 'Percentage should be less than 100'
-                                                                },
-                                                            }}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder'}
-                                                            handleChange={(e) => { percentageChange(e) }}
-                                                            errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].Percentage : ''}
-                                                            disabled={props.isEditFlag ? false : true}
-                                                        />
-                                                    </td>
-                                                    <td>{item.RMRate}</td>
-                                                    <td>{item.ScrapRate}</td>
-                                                    <td>{item.RMRate}</td>
-                                                    <td>{item.ScrapRate}</td>
-                                                </tr>
-                                            )
-                                        })
-                                    }
-
-                                </tbody>
                             </Table>
                         </div>
                         <Row className={"mx-0"}>
@@ -498,7 +738,7 @@ function Ferrous(props) {
                             <Col md="6">
                                 <SearchableSelectHookForm
                                     label={"Raw Material"}
-                                    name={"RawMaterial"}
+                                    name={"RawMaterialBinders"}
                                     tooltipId={"RawMaterial"}
                                     placeholder={"Select"}
                                     Controller={Controller}
@@ -506,18 +746,24 @@ function Ferrous(props) {
                                     rules={{ required: true }}
                                     register={registerTableForm}
                                     defaultValue={""}
-                                    options={renderListing('RawMaterial')}
+                                    options={renderListing('RawMaterialBinders')}
                                     mandatory={true}
                                     isMulti={true}
-                                    errors={errorsTableForm.RawMaterial}
+                                    errors={errorsTableForm.RawMaterialBinders}
                                     disabled={props?.CostingViewMode ? props?.CostingViewMode : state.tableData.length !== 0 ? true : false}
-                                    handleChange={() => { }}
+                                    handleChange={(selected , action) => rawMaterialBinderHandler(selected , 'binders')}
                                 />
                             </Col>
                             <Col md="3">
                                 <div class="d-flex">
-                                    <button class="user-btn mr5 mb-2" type="submit" title="" disabled=""><div class="plus "></div>Add</button>
-                                </div>
+                                <button
+                  type="button"
+                  className={'user-btn mt30 pull-left'}
+                  onClick={handleAddBinderMaterialsToTable}
+                //   disabled={props.CostingViewMode || disableAll}
+                >
+                  <div className={'plus'}></div>ADD
+                </button>                                                           </div>
                             </Col>
                         </Row>
                         <div className="costing-border ferrous-calculator border-top-0 border-bottom-0">
@@ -530,23 +776,24 @@ function Ferrous(props) {
                                         <th style={{ width: "190px" }}>{`Cost`}</th>
                                     </tr>
                                 </thead>
-                                <tbody className='rm-table-body'>
-                                    {rmData &&
-                                        rmData.map((item, index) => {
-
+                             {binderRm.length > 0 ?(   <tbody className='rm-table-body'>
+                                    {
+                                        binderRm.map((item, index) => {
+                                            const calculatedItem = calculatedCost?.find(calcItem => calcItem.value === item.value);
+                                            
                                             return (
                                                 <tr key={index} className=''>
-                                                    <td className='rm-part-name'><span title={item.RMName}>{item.RMName}</span></td>
+                                                    <td className='rm-part-name'><span title={item.label}>{item.label}</span></td>
                                                     <td>
                                                         <TextFieldHookForm
                                                             label=""
-                                                            name={`${rmGridFields}.${index}.Percentage`}
+                                                            name={`Quantity`}
                                                             Controller={Controller}
                                                             control={control}
                                                             register={register}
                                                             rules={{
-                                                                required: true,
-                                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                                                // required: true,
+                                                                validate: { number, checkWhiteSpaces },
                                                                 max: {
                                                                     value: 100,
                                                                     message: 'Percentage should be less than 100'
@@ -555,21 +802,24 @@ function Ferrous(props) {
                                                             defaultValue={''}
                                                             className=""
                                                             customClassName={'withBorder'}
-                                                            handleChange={(e) => { percentageChange(e) }}
+                                                            handleChange={(e) => { quantityChange(e.target.value,index) }}
                                                             errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].Percentage : ''}
                                                             disabled={props.isEditFlag ? false : true}
                                                         />
                                                     </td>
-                                                    <td>{item.ScrapRate}</td>
-                                                    <td>1</td>
+                                                    <td>{item?.RawMaterialRate}</td>
+                                                    <td>{calculatedItem ? calculatedItem?.calculatedBindersBasicValue : '0'}</td>
                                                 </tr>
                                             )
                                         })
                                     }
                                     <tr className='bluefooter-butn'>
-                                        <td colSpan={4} className='text-end'><span>Total Cost:</span> <span>1107.2</span></td>
+                                        <td colSpan={4} className='text-end'><span>Total Cost:</span>                <span>{checkForDecimalAndNull(totalCostCalculated, getConfigurationKey().NoOfDecimalForPrice)}</span>
+</td>
                                     </tr>
-                                </tbody>
+                                </tbody>) : 
+                                                                        <NoContentFound title={EMPTY_DATA} />
+                                                                    }
                             </Table>
                         </div>
                         <LossStandardTable
@@ -586,6 +836,7 @@ function Ferrous(props) {
                             ferrousErrors={errors}
                             isFerrous={true}
                         />
+
                         <Row className={'mt25 mx-0'}>
                             <Col md="3" >
                                 <TextFieldHookForm
