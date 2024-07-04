@@ -559,23 +559,23 @@ function UserRegistration(props) {
    * @description Used to handle 
   */
   const departmentHandler = (newValue, actionMeta) => {
-    let idArr = [];
-    newValue && newValue.map(item => {
-      idArr.push(item.value)
-    })
+
     if (selectedPlants.length > 0) {
       setValue('plant', [])
     }
     if (getConfigurationKey().IsMultipleDepartmentAllowed) {
+      let idArr = [];
+      newValue && newValue.map(item => {
+        idArr.push(item.value)
+      })
       setInputLoader(prevState => ({ ...prevState, plant: true }))
       dispatch(getPlantSelectListForDepartment(idArr, res => {
         setInputLoader(prevState => ({ ...prevState, plant: false }))
       }))
       setDepartment(newValue)
     } else {
-
       setDepartment([newValue])
-      dispatch(getPlantSelectListForDepartment(idArr, res => { }))
+      dispatch(getPlantSelectListForDepartment([newValue], res => { }))
     }
     if (JSON.stringify(newValue) !== JSON.stringify(oldDepartment)) {
       setIsForcefulUpdate(true)
