@@ -246,7 +246,7 @@ function RawMaterialCost(props) {
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
 
-    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER)))) {
+    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || Number(costData?.TechnologyId) === Number(CORRUGATEDBOX)))) {
       setShowPopup(true)
       setDrawerOpen(false)
     }
@@ -945,15 +945,27 @@ function RawMaterialCost(props) {
       if (Number(costData?.TechnologyId) === Number(CORRUGATEDBOX) && calculatorTypeStore === 'CorrugatedAndMonoCartonBox') {
         if (weightData.WeightCalculationId) {
           gridData && gridData.map((item, index) => {
-            setValue(`${rmGridFields}.${index}.GrossWeight`, 0)
-            setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
-            setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
             if (index !== 0) {
+              item.FinishWeight = 0
+              item.GrossWeight = 0
               item.NetLandedCost = 0
+              item.ScrapWeight = 0
             }
-            setValue(`${rmGridFields}.${index}.ScrapWeight`, 0)
-            return null
+            return item
           })
+          setTimeout(() => {
+            gridData && gridData.map((item, index) => {
+              setValue(`${rmGridFields}.${index}.GrossWeight`, 0)
+              setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
+              setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
+              if (index !== 0) {
+                item.NetLandedCost = 0
+              }
+              setValue(`${rmGridFields}.${index}.ScrapWeight`, 0)
+              return null
+            })
+          }, 200);
+
         }
       }
       if (Number(costData?.TechnologyId) === Number(MACHINING)) {
@@ -1279,16 +1291,17 @@ function RawMaterialCost(props) {
       item.GrossWeight = 0
       item.ScrapWeight = 0
       item.WeightCalculatorRequest = {}
-      setValue(`${rmGridFields}.${index}.GrossWeight`, '')     //COMMENT
-      setValue(`${rmGridFields}.${index}.FinishWeight`, '')
+      setValue(`${rmGridFields}.${index}.GrossWeight`, 0)     //COMMENT
+      setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
       return item
     })
+    setCalculatorTypeStore('')
     setShowPopup(false)
     setGridData(tempList)
     setTimeout(() => {
       setConfirmPopup(true)
       setDrawerOpen(true)
-    }, 200);
+    }, 700);
   }
 
   const closePopUp = () => {
@@ -1549,7 +1562,7 @@ function RawMaterialCost(props) {
                                       validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                       max: {
                                         value: 100,
-                                        message: 'Percentage should be less than 100'
+                                        message: 'Percentage should be less than 100.'
                                       },
                                     }}
                                     defaultValue={checkForDecimalAndNull(item.ScrapRecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput)}
@@ -1757,7 +1770,7 @@ function RawMaterialCost(props) {
                         validate: { number, checkWhiteSpaces, percentageLimitValidation },
                         max: {
                           value: 100,
-                          message: 'Percentage cannot be greater than 100'
+                          message: 'Percentage cannot be greater than 100.'
                         },
                       }}
                       defaultValue={""}
