@@ -459,7 +459,8 @@ class AddFreight extends Component {
         RateCriteria: RateCriteria.label,
         Rate: Rate,
         Load: Load,
-        EFreightLoadType: Load?.value
+        EFreightLoadType: Load?.value,
+        IsFreightAssociated: false
       });
       this.setState(
         {
