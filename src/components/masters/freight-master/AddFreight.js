@@ -38,6 +38,7 @@ class AddFreight extends Component {
       FreightID: "",
       isEditFlag: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
+      isEditMode: this.props?.data?.isEditMode ? true : false,
       IsVendor: false,
       TransportMode: [],
       FullTruckCapacity: [],
@@ -205,6 +206,7 @@ class AddFreight extends Component {
                   Rate: item?.Rate,
                   Load: { label: item?.FreightLoadType, value: item?.EFreightLoadType },
                   EFreightLoadType: item?.EFreightLoadType,
+                  IsFreightAssociated: item?.IsFreightAssociated,
                 };
               });
             this.setState({
@@ -504,11 +506,12 @@ class AddFreight extends Component {
     let tempData = gridTable[gridEditIndex];
 
     tempData = {
+      ...tempData,
       Capacity: FullTruckCapacity.label,
       RateCriteria: RateCriteria.label,
       Rate: Rate,
       Load: Load,
-      EFreightLoadType: Load?.value
+      EFreightLoadType: Load?.value,
     };
     tempArray = Object.assign([...gridTable], { [gridEditIndex]: tempData });
     this.setState(
@@ -709,7 +712,7 @@ class AddFreight extends Component {
    */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isOpenVendor, isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
+    const { isOpenVendor, isEditFlag, isViewMode, setDisable, costingTypeId, isEditMode } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -936,7 +939,7 @@ class AddFreight extends Component {
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isViewMode}
+                                  disabled={isViewMode || isEditMode}
                                 />
                                 {this.state.showEffectiveDateError && <div className='text-help'>This field is required.</div>}
                               </div>
@@ -1200,8 +1203,8 @@ class AddFreight extends Component {
                                         <td>{item?.RateCriteria ? item?.RateCriteria : '-'}</td>
                                         <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                                         <td>
-                                          <button className="Edit mr-2" type={"button"} disabled={isViewMode} onClick={() => this.editGridItemDetails(index)} />
-                                          <button className="Delete" type={"button"} disabled={isViewMode} onClick={() => this.deleteGridItem(index)} />
+                                          <button className="Edit mr-2" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => this.editGridItemDetails(index)} />
+                                          <button className="Delete" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => this.deleteGridItem(index)} />
                                         </td>
                                       </tr>
                                     );
