@@ -1188,19 +1188,25 @@ const CostingSummaryTable = (props) => {
               obj.Mode = 'costing'
               obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
               obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
-              dispatch(checkFinalUser(obj, res => {
-                if (res?.data?.Result) {
-                  setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
-                  if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
-                    sendForApprovalData(multipleCostings)
-                    setShowApproval(true)
-                  } else if (res?.data?.Data?.IsFinalApprover === true) {
-                    Toaster.warning("Final level user cannot send costing for approval.")
-                  } else {
-                    Toaster.warning("User does not have permission to send costing for approval.")
+              const { Department } = userDetails()
+              if (Department.length === 1) {
+                dispatch(checkFinalUser(obj, res => {
+                  if (res?.data?.Result) {
+                    setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                    if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                      sendForApprovalData(multipleCostings)
+                      setShowApproval(true)
+                    } else if (res?.data?.Data?.IsFinalApprover === true) {
+                      Toaster.warning("Final level user cannot send costing for approval.")
+                    } else {
+                      Toaster.warning("User does not have permission to send costing for approval.")
+                    }
                   }
-                }
-              }))
+                }))
+              } else {
+                sendForApprovalData(multipleCostings)
+                setShowApproval(true)
+              }
             }
           }
         }))
