@@ -76,7 +76,7 @@ const BOPMaster = () => {
       const Data =
         topAndLeftMenuData &&
         topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
-      const accessData = Data && Data.Pages.find((el) => el.PageName === BOP);
+      const accessData = Data && Data.Pages.find((el) => el.PageName === showBopLabel());
       const permmisionData =
         accessData && accessData.Actions && checkPermission(accessData.Actions);
 

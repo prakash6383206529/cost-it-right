@@ -118,6 +118,7 @@ const BodySeperate = (props) => {
             // setIsDisable(false)
             if (res.data.Result) {
                 data.WeightCalculationId = res.data.Identity
+                data.CalculatorType = 'CorrugatedBox'
                 Toaster.success("Calculation saved successfully")
                 props.toggleDrawer('', data)
             }

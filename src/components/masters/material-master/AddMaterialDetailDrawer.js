@@ -126,7 +126,6 @@ const AddMaterialDetailDrawer = (props) => {
     // };
 
     const onSubmit = debounce(values => {
-        console.log('onssavebutton: ', values);
         if (isEdit) {
             setState(prevState => ({ ...prevState, setDisable: true }));
 
@@ -214,7 +213,6 @@ const AddMaterialDetailDrawer = (props) => {
             CommodityName: formData.CommodityName,
             CustomMaterialName: formData.CustomMaterialName
         };
-        //console.log('formData: ', formData);
         const newGridData = [...gridData, obj];
 
         setGridData(newGridData);
@@ -282,11 +280,9 @@ const AddMaterialDetailDrawer = (props) => {
         setState(prevState => ({ ...prevState, isOpenIndex: false }));
     }
     // const closeFuelDrawer = (e = '', reqData = {}) => {
-    //     console.log('reqData: ', reqData);
     //     setState(prevState => ({ ...prevState, isOpenIndex: false }));
     //     setTimeout(() => {
     //         dispatch(getCommodityCustomNameSelectListByType((res) => {
-    //             console.log('res: ', res);
 
     //             //let obj = customNameCommodityData.find(item => item.CommodityStandardName === reqData.MaterialName)
     //                 /*TO SHOW FUEL NAME VALUE PRE FILLED FROM DRAWER*/
@@ -306,14 +302,11 @@ const AddMaterialDetailDrawer = (props) => {
     // }
 
     const closeFuelDrawer = (e = '', reqData = {}) => {
-        console.log('reqData: ', reqData);
         setState(prevState => ({ ...prevState, isOpenIndex: false }));
 
         // dispatch(getCommodityCustomNameSelectListByType((res) => {
-        //     console.log('res: ', res);
 
         //     const customNameCommodityData = res.data; // Assuming res.data contains your data
-        //     console.log('customNameCommodityData: ', customNameCommodityData);
 
         //     // if (Object.keys(reqData).length > 0) {
         //     //     let obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
@@ -323,14 +316,12 @@ const AddMaterialDetailDrawer = (props) => {
         //     // }
         //     // if (Object.keys(reqData).length > 0) {
         //     //     let obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
-        //     //     console.log('obj: ', obj);
 
         //     //     if (obj) {
         //     //         setValue('CustomMaterialName', { label: obj.CustomMaterialName, value: obj.CustomMaterialName });
         //     //     }
         //     // }
         //     let obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
-        //     console.log('obj: ', obj);
 
         //     if (obj) {
         //         setValue('CustomMaterialName', { label: obj.CustomMaterialName, value: obj.CustomMaterialName });
@@ -338,20 +329,16 @@ const AddMaterialDetailDrawer = (props) => {
         // }));
         dispatch(getCommodityCustomNameSelectListByType())
             .then((res) => {
-                console.log('res: ', res);
 
                 const customNameCommodityData = res.data; // Assuming res.data contains your data
-                console.log('customNameCommodityData: ', customNameCommodityData);
 
                 const obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
-                console.log('obj: ', obj);
 
                 if (obj) {
                     setValue('CustomMaterialName', { label: obj.CustomMaterialName, value: obj.CustomMaterialName });
                 }
             })
             .catch((error) => {
-                console.error('Error fetching custom name commodity data:', error);
                 // Handle the error accordingly
             });
     }

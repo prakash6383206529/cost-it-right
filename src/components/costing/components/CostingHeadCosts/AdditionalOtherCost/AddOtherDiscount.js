@@ -69,7 +69,7 @@ function AddOtherDiscount(props) {
         let tempList = [];
         if (label === 'Applicability') {
             costingHead && costingHead.map(item => {
-                if (item.Value === '0') return false;
+                if (item.Value === '0' || item.Value === '24') return false;                  // 24 IS FOR ScrapRate * NetWeight
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
@@ -122,7 +122,7 @@ function AddOtherDiscount(props) {
 
         gridData.push(obj)
         const sumOfNetCost = gridData.reduce((acc, obj) => acc + Number(obj.NetCost), 0);
-        if (costData.TotalCost < sumOfNetCost) {
+        if (CostingDataList[0].TotalCost < sumOfNetCost) {
             Toaster.warning("Discount should not be greater than Total Cost.")
             return false
         }
@@ -447,7 +447,7 @@ function AddOtherDiscount(props) {
                                     {
                                         <Col md="4">
                                             <SearchableSelectHookForm
-                                                label={'Disount Applicability'}
+                                                label={'Discount Applicability'}
                                                 name={'OtherCostApplicability'}
                                                 placeholder={'Select'}
                                                 Controller={Controller}

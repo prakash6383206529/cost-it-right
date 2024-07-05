@@ -61,6 +61,10 @@ import {
   GET_DATA_FROM_REPORT,
   TOUR_START_DATA,
   GET_APPROVAL_MODULE_SELECT_LIST,
+  GET_APPROVAL_TYPE_SELECT_LIST_COSTING,
+  GET_APPROVAL_TYPE_SELECT_LIST_SIMULATION,
+  GET_APPROVAL_TYPE_SELECT_LIST_MASTER,
+  GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING,
   GET_RM_EXCHANGE_RATE_SOURCE,
   GET_COST_FREQUENCY_SETTLEMENT,
   GET_COMMODITY_INDEX_RATE_AVERAGE
@@ -1619,6 +1623,52 @@ export function getApprovalTypeSelectList(callback, id = '') {
           type: GET_APPROVAL_TYPE_SELECT_LIST,
           payload: response.data.SelectList,
         });
+        callback(response);
+      }
+    }).catch((error) => {
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+export function getApprovalTypeSelectListUserModule(callback, id = '') {
+  return (dispatch) => {
+    let querryParam = encodeQueryParamsAndLog({ id: id });
+    const request = axios.get(`${API.getApprovalTypeSelectList}?${querryParam}`, config());
+
+    request.then((response) => {
+      if (response.data.Result) {
+        const selectList = response.data.SelectList;
+        // Dispatch actions based on id
+        switch (id) {
+          case '1':
+            dispatch({
+              type: GET_APPROVAL_TYPE_SELECT_LIST_COSTING,
+              payload: selectList,
+            });
+            break;
+          case '2':
+            dispatch({
+              type: GET_APPROVAL_TYPE_SELECT_LIST_SIMULATION,
+              payload: selectList,
+            });
+            break;
+          case '3':
+            dispatch({
+              type: GET_APPROVAL_TYPE_SELECT_LIST_MASTER,
+              payload: selectList,
+            });
+            break;
+          case '4':
+            dispatch({
+              type: GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING,
+              payload: selectList,
+            });
+            break;
+          default:
+            break;
+        }
         callback(response);
       }
     }).catch((error) => {

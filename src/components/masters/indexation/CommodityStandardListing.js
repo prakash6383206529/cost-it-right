@@ -10,11 +10,11 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
-import { searchNocontentFilter, setLoremIpsum } from "../../../helper";
+import { searchNocontentFilter } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
 import { useTranslation } from "react-i18next";
-import { COMMODITYSTANDARD_DOWNLOAD_EXCEl } from "../../../config/masterData";
+// import { COMMODITYSTANDARD_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
 import ReactExport from "react-export-excel";
 import { disabledClass } from '../../../actions/Common';
@@ -22,9 +22,8 @@ import WarningMessage from '../../common/WarningMessage';
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
+import PaginationControls from "../../common/Pagination/PaginationControls";
 import BulkUpload from "../../massUpload/BulkUpload";
-import AddMaterialDetailDrawer from "../material-master/AddMaterialDetailDrawer";
-import AddStandardization from "./AddStandardization";
 import Toaster from "../../common/Toaster";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 const ExcelFile = ReactExport.ExcelFile;
@@ -32,9 +31,9 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-const CommodityStandardListing = () => {
+const CommodityStandardListing = (props) => {
     const dispatch = useDispatch();
-    const { commodityStandardDataList } = useSelector((state) => state.indexation);
+    const { commodityStandardDataList } = useSelector((state) => state?.indexation);
     const permissions = useContext(ApplyPermission);
     const { t } = useTranslation("common")
 
@@ -47,21 +46,18 @@ const CommodityStandardListing = () => {
         rowData: null,
         showPopup: false,
         deletedId: "",
-        isLoader: false,
         selectedRowData: false,
-        noData: false,
-        dataCount: 0,
         render: false,
         showExtraData: false
     });
-    console.log('here');
+
     const [warningMessage, setWarningMessage] = useState(false)
     const [disableDownload, setDisableDownload] = useState(false)
     const [floatingFilterData, setFloatingFilterData] = useState({ IndexExchangeName: '' })
     const [isLoader, setIsLoader] = useState(false);
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [filterModel, setFilterModel] = useState({});
-    const { globalTakes } = useSelector((state) => state.pagination)
+    const { globalTakes } = useSelector((state) => state?.pagination)
     const [gridApi, setGridApi] = useState(null);
     const [dataCount, setDataCount] = useState(0)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
@@ -171,7 +167,7 @@ const CommodityStandardListing = () => {
         }, 100);
     }
     const onPopupConfirm = () => {
-        confirmDelete(state.deletedId);
+        confirmDelete(state?.deletedId);
     };
     const confirmDelete = (ID) => {
         dispatch(
@@ -201,7 +197,7 @@ const CommodityStandardListing = () => {
         setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
     };
     const buttonFormatter = (props) => {
-        console.log('props: ', props);
+
         const { showExtraData } = state
         const cellValue = props?.valueFormatted
             ? props.valueFormatted
@@ -241,23 +237,21 @@ const CommodityStandardListing = () => {
     };
 
     const onGridReady = (params) => {
+        setGridApi(params.api);
         params.api.sizeColumnsToFit();
         setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
         params.api.paginationGoToPage(0);
     };
 
-    const onPageSizeChanged = (newPageSize) => {
-        state.gridApi.paginationSetPageSize(Number(newPageSize));
-    };
 
     const onRowSelect = () => {
-        const selectedRows = state.gridApi?.getSelectedRows();
+        const selectedRows = gridApi?.getSelectedRows();
         setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
 
     };
 
     const onFilterTextBoxChanged = (e) => {
-        state.gridApi.setQuickFilter(e.target.value);
+        gridApi.setQuickFilter(e.target.value);
     };
 
     const resetState = () => {
@@ -271,9 +265,11 @@ const CommodityStandardListing = () => {
 
         }
         setFloatingFilterData(floatingFilterData)
+        dispatch(updateCurrentRowIndex(0))
+
         setWarningMessage(false)
         dispatch(resetStatePagination())
-        getTableListData(0, 10, true)
+        getTableListData(0, globalTakes, true)
         dispatch(updateGlobalTake(10))
         setDataCount(0)
         dispatch(setSelectedRowForPagination([]))
@@ -284,7 +280,7 @@ const CommodityStandardListing = () => {
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         dispatch(updatePageNumber(1))
-        dispatch(updateCurrentRowIndex(0))
+        dispatch(updateCurrentRowIndex(10))
         gridOptions?.columnApi?.resetColumnState();
         getTableListData(0, globalTakes, true)
     }
@@ -310,14 +306,14 @@ const CommodityStandardListing = () => {
 
     const onBtExport = () => {
         let tempArr = [];
-        tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+        tempArr = gridApi && gridApi?.getSelectedRows();
         tempArr =
             tempArr && tempArr.length > 0
                 ? tempArr
                 : commodityStandardDataList
                     ? commodityStandardDataList
                     : [];
-        return returnExcelColumn(COMMODITYSTANDARD_DOWNLOAD_EXCEl, tempArr);
+        // return returnExcelColumn(COMMODITYSTANDARD_DOWNLOAD_EXCEl, tempArr);
     };
     const closeBulkUploadDrawer = () => {
         setState((prevState) => ({ ...prevState, isBulkUpload: false }));
@@ -351,11 +347,10 @@ const CommodityStandardListing = () => {
         );
     };
     return (
-        <div
-            className={`ag-grid-react min-height100vh ${permissions.Download ? "show-table-btn" : ""
-                }`}
-        >
-            {state.isLoader && <LoaderCustom />}
+       
+        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} `}>
+
+            {isLoader && <LoaderCustom />}
             <Row className="pt-4">
                 <Col md={9} className="search-user-block mb-3 pl-0">
                     <div className="d-flex justify-content-end bd-highlight w100">
@@ -375,7 +370,7 @@ const CommodityStandardListing = () => {
                                         filename={"Commodity Name (Standard)"}
                                         fileExtension={".xls"}
                                         element={
-                                            <Button id={"Excel-Downloads-RmDetailList"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                            <Button id={"Excel-Downloads-RmDetailList"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
                                         }
                                     >
                                         {onBtExport()}
@@ -400,7 +395,7 @@ const CommodityStandardListing = () => {
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
                         </div>
                         <div
-                            className={`ag-theme-material ${state.isLoader && "max-loader-height"
+                            className={`ag-theme-material ${isLoader && "max-loader-height"
                                 }`}
                         >
                             {noData && (
@@ -435,8 +430,10 @@ const CommodityStandardListing = () => {
                                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                             </AgGridReact>}
 
-                            {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="StandardizedCommodity" />}
-
+                            <div className={`button-wrapper`}>
+    {!isLoader && <PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="StandardizedCommodity" />}
+    <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="StandardizedCommodity" />
+</div>
                         </div>
                     </div>
                 </Col>
@@ -444,9 +441,9 @@ const CommodityStandardListing = () => {
 
             {/* {isOpen && (<AddStandardization isEditFlag={isEditFlag} isOpen={isOpen} closeDrawer={closeDrawer} anchor={"right"} />)} */}
 
-            {state.showPopup && (
+            {state?.showPopup && (
                 <PopupMsgWrapper
-                    isOpen={state.showPopup}
+                    isOpen={state?.showPopup}
                     closePopUp={closePopUp}
                     confirmPopup={onPopupConfirm}
                     message={`${MESSAGES.DELETE}`}

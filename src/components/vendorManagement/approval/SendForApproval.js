@@ -17,6 +17,7 @@ import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
 import { getUsersOnboardingLevelAPI } from '../../../actions/auth/AuthActions';
 import LoaderCustom from '../../common/LoaderCustom';
+import { REMARKMAXLENGTH } from '../../../config/masterData';
 
 
 const SendForApproval = (props) => {
@@ -70,7 +71,7 @@ const SendForApproval = (props) => {
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value });
       }, 100);
 
-      let approverIdListTemp = [];
+
       let obj = {
         LoggedInUserId: loggedInUserId(),
         DepartmentId: userDetails().DepartmentId,
@@ -81,7 +82,7 @@ const SendForApproval = (props) => {
       };
 
       const handleApiResponse = (res, deptKey, approverKey) => {
-
+        let approverIdListTemp = [];
         const Data = res.data.DataList[1] || {};
         const isLPSApprovalType = Data.ApprovalTypeId === LPSAPPROVALTYPEID;
         if (Data.length !== 0) {
@@ -277,12 +278,12 @@ const SendForApproval = (props) => {
       };
 
       if (isClassification && isLpsRating) {
-        dispatchApproval(classificationSenderObj, 'Data has been sent for classification approval.');
-        dispatchApproval(lpsSenderObj, 'Data has been sent for LPS rating approval.');
+        dispatchApproval(classificationSenderObj, 'Token has been sent for classification approval.');
+        dispatchApproval(lpsSenderObj, 'Token has been sent for LPS rating approval.');
       } else if (isClassification) {
-        dispatchApproval(classificationSenderObj, 'Data has been sent for classification approval.');
+        dispatchApproval(classificationSenderObj, 'Token has been sent for classification approval.');
       } else if (isLpsRating) {
-        dispatchApproval(lpsSenderObj, 'Data has been sent for LPS rating approval.');
+        dispatchApproval(lpsSenderObj, 'Token has been sent for LPS rating approval.');
       }
     }),
     500
@@ -483,7 +484,7 @@ const SendForApproval = (props) => {
                       options={searchableSelectType('reason')} // Call mapApprovalOptions with the label
                       mandatory={true}
                       handleChange={handleReasonChange}
-                      errors={errors.Masters}
+                      errors={errors.reason}
                     />
 
                   </Col>
@@ -500,7 +501,7 @@ const SendForApproval = (props) => {
                       options={searchableSelectType('month')}
                       mandatory={true}
                       handleChange={handleMonthChange}
-                      errors={errors.Masters}
+                      errors={errors.month}
                     />
 
                   </Col>
@@ -511,7 +512,10 @@ const SendForApproval = (props) => {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      rules={{ required: true }}
+                      rules={{
+                        required: true,
+                        maxLength: REMARKMAXLENGTH
+                      }}
                       mandatory={true}
                       // mandatory={mandatoryRemark ? true : false}
                       // rules={{ required: mandatoryRemark ? true : false }}
@@ -557,7 +561,7 @@ const SendForApproval = (props) => {
                         disabled={disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
                         mandatory={true}
                         // handleChange={handleDepartmentChange}
-                        errors={errors.dept}
+                        errors={errors.dept1}
                       />
                     </div>
                   </Col >
@@ -583,7 +587,7 @@ const SendForApproval = (props) => {
                         disabled={disableRS || !(userData.Department.length > 1)}
                         customClassName={"mb-0 approver-wrapper"}
                         handleChange={handleApproverChange}
-                        errors={errors.approver}
+                        errors={errors.approver1}
                       />}
                     {
                       showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
@@ -604,7 +608,7 @@ const SendForApproval = (props) => {
                       options={searchableSelectType('reason')} // Call mapApprovalOptions with the label
                       mandatory={true}
                       handleChange={handleReasonChange}
-                      errors={errors.Masters}
+                      errors={errors.reason1}
                     />
 
                   </Col>
@@ -621,7 +625,7 @@ const SendForApproval = (props) => {
                       options={searchableSelectType('month')}
                       mandatory={true}
                       handleChange={handleMonthChange}
-                      errors={errors.Masters}
+                      errors={errors.month1}
                       disabled={true}
                     />
 
@@ -637,7 +641,11 @@ const SendForApproval = (props) => {
                         register={register}
                         mandatory={true}
                         // mandatory={mandatoryRemark ? true : false}
-                        rules={{ required: true }}
+                        rules={{
+                          required: true,
+                          maxLength: REMARKMAXLENGTH
+                        }}
+
                         // rules={{ required: mandatoryRemark ? true : false }}
                         handleChange={() => { }}
                         defaultValue={""}

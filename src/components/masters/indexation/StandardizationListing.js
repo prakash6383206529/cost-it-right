@@ -23,17 +23,17 @@ import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGl
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
 import BulkUpload from "../../massUpload/BulkUpload";
-import AddMaterialDetailDrawer from "../material-master/AddMaterialDetailDrawer";
 import AddStandardization from "./AddStandardization";
 import Toaster from "../../common/Toaster";
+import PaginationControls from "../../common/Pagination/PaginationControls";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-const StandardizationListing = () => {
+const StandardizationListing = (props) => {
     const dispatch = useDispatch();
-    const { standardizedCommodityDataList } = useSelector((state) => state.indexation);
+    const { standardizedCommodityDataList } = useSelector((state) => state?.indexation);
     const permissions = useContext(ApplyPermission);
     const { t } = useTranslation("common")
 
@@ -41,15 +41,11 @@ const StandardizationListing = () => {
         isOpen: false,
         isEditFlag: false,
         ID: "",
-        gridApi: null,
         gridColumnApi: null,
         rowData: null,
         showPopup: false,
         deletedId: "",
-        isLoader: false,
         selectedRowData: false,
-        noData: false,
-        dataCount: 0,
         render: false,
         showExtraData: false
     });
@@ -59,7 +55,7 @@ const StandardizationListing = () => {
     const [isLoader, setIsLoader] = useState(false);
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [filterModel, setFilterModel] = useState({});
-    const { globalTakes } = useSelector((state) => state.pagination)
+    const { globalTakes } = useSelector((state) => state?.pagination)
     const [gridApi, setGridApi] = useState(null);
     const [dataCount, setDataCount] = useState(0)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
@@ -183,7 +179,7 @@ const StandardizationListing = () => {
         setState((prevState) => ({ ...prevState, showPopup: false }));
     };
     const onPopupConfirm = () => {
-        confirmDelete(state.deletedId);
+        confirmDelete(state?.deletedId);
     };
 
     const closePopUp = () => {
@@ -205,7 +201,7 @@ const StandardizationListing = () => {
         }));
     }, []);
     const buttonFormatter = (props) => {
-        console.log('props: ', props);
+        
         const { showExtraData } = state
         const cellValue = props?.data?.CommodityStandardizationId
         let isEditbale = false
@@ -250,22 +246,20 @@ const StandardizationListing = () => {
     };
 
     const onGridReady = (params) => {
+        setGridApi(params.api);
+
         params.api.sizeColumnsToFit();
         setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
         params.api.paginationGoToPage(0);
     };
-
-    const onPageSizeChanged = (newPageSize) => {
-        state.gridApi.paginationSetPageSize(Number(newPageSize));
-    };
-
+  
     const onRowSelect = () => {
-        const selectedRows = state.gridApi?.getSelectedRows();
+        const selectedRows = gridApi?.getSelectedRows();
         setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
     };
 
     const onFilterTextBoxChanged = (e) => {
-        state.gridApi.setQuickFilter(e.target.value);
+        gridApi.setQuickFilter(e.target.value);
     };
 
     const resetState = () => {
@@ -278,6 +272,8 @@ const StandardizationListing = () => {
             floatingFilterData[prop] = ""
 
         }
+        dispatch(updateCurrentRowIndex(10));
+
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(resetStatePagination())
@@ -291,7 +287,7 @@ const StandardizationListing = () => {
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         dispatch(updatePageNumber(1))
-        dispatch(updateCurrentRowIndex(0))
+        dispatch(updateCurrentRowIndex(10))
         gridOptions?.columnApi?.resetColumnState();
         getTableListData(0, globalTakes, true)
     }
@@ -317,7 +313,7 @@ const StandardizationListing = () => {
 
     const onBtExport = () => {
         let tempArr = [];
-        tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+        tempArr = gridApi && gridApi?.getSelectedRows();
         tempArr =
             tempArr && tempArr.length > 0
                 ? tempArr
@@ -358,11 +354,11 @@ const StandardizationListing = () => {
         );
     };
     return (
-        <div
-            className={`ag-grid-react min-height100vh ${permissions.Download ? "show-table-btn" : ""
-                }`}
-        >
-            {state.isLoader && <LoaderCustom />}
+          
+                    <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""
+                } ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} `}>
+
+            {isLoader && <LoaderCustom />}
             <Row className="pt-4">
                 <Col md={9} className="search-user-block mb-3 pl-0">
                     <div className="d-flex justify-content-end bd-highlight w100">
@@ -382,7 +378,7 @@ const StandardizationListing = () => {
                                         filename={"Commodity Standardization"}
                                         fileExtension={".xls"}
                                         element={
-                                            <Button id={"Excel-Downloads-RmDetailList"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                            <Button id={"Excel-Downloads-RmDetailList"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
                                         }
                                     >
                                         {onBtExport()}
@@ -407,7 +403,7 @@ const StandardizationListing = () => {
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
                         </div>
                         <div
-                            className={`ag-theme-material ${state.isLoader && "max-loader-height"
+                            className={`ag-theme-material ${isLoader && "max-loader-height"
                                 }`}
                         >
                             {noData && (
@@ -444,18 +440,20 @@ const StandardizationListing = () => {
                                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                             </AgGridReact>}
 
-                            {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="StandardizedCommodity" />}
-
+                            <div className={`button-wrapper`}>
+    {!isLoader && <PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData" />}
+    <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData" />
+</div>
                         </div>
                     </div>
                 </Col>
             </Row>
 
-            {isOpen && (<AddStandardization ID={state.ID} isEditFlag={isEditFlag} isOpen={isOpen} closeDrawer={closeDrawer} anchor={"right"} />)}
+            {isOpen && (<AddStandardization ID={state?.ID} isEditFlag={isEditFlag} isOpen={isOpen} closeDrawer={closeDrawer} anchor={"right"} />)}
 
-            {state.showPopup && (
+            {state?.showPopup && (
                 <PopupMsgWrapper
-                    isOpen={state.showPopup}
+                    isOpen={state?.showPopup}
                     closePopUp={closePopUp}
                     confirmPopup={onPopupConfirm}
                     message={`${MESSAGES.COMMODITYNAME_DELETE_ALERT}`}

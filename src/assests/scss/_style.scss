@@ -437,7 +437,7 @@ button.add-btn {
 
 .withBorder .form-control,
 .form-control {
-  border: 1px solid $borderColor !important;
+  border: 1px solid $borderColor;
 
   &::placeholder {
     color: #A4ABC5;
@@ -6233,6 +6233,7 @@ body {
       .RejectedBySystem,
       .History,
       .ApprovedByAssembly,
+      .PreDraft,
       .Sent {
         min-width: calc(90px * 80 / 100);
         height: calc(30px * 80 / 100);
@@ -9123,5 +9124,25 @@ iframe {
 .process-defination {
   .tooltip-inner {
     margin-right: 24px;
+  }
+}
+
+.editable-grid {
+  .form-control {
+    border: 1px solid $borderColor !important;
+  }
+}
+
+.show-multi-dropdown-data {
+  text-align: left !important;
+
+  .tooltip-inner {
+    text-align: left !important;
+  }
+}
+
+#RawMaterial {
+  &.tooltip_custom_right {
+    display: none;
   }
 }

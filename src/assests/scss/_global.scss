@@ -2757,6 +2757,7 @@ td,
   .POUpdated,
   .PO.Updated,
   .Draft,
+  .PreDraft,
   .Linked,
   .Under.Approval,
   .UnderApproval,
@@ -2824,6 +2825,7 @@ td,
   .Rejected,
   .RejectedBySystem,
   .Cancelled,
+  .PreDraft,
   .Returned {
     background-color: #fc5774;
   }
@@ -3695,4 +3697,34 @@ input:focus,
 
 .arrow.tooltip-arrow {
   margin-left: 6px;
+}
+
+.ag-header-row {
+  height: 38px !important;
+  background-color: #d4dfff47;
+
+  .ag-grid-multi {
+    height: 26px !important;
+
+    .form-group-searchable-select {
+      margin-bottom: 0 !important;
+
+      .multi-select-container__control {
+        height: 26px !important;
+
+        .multi-select-container__value-container {
+          height: 28px !important;
+          overflow: hidden !important;
+        }
+      }
+
+      .multi-select-container__indicators {
+        height: 26px !important;
+      }
+    }
+  }
+
+  input {
+    height: 26px !important;
+  }
 }

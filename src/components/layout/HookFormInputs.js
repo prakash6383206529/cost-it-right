@@ -279,7 +279,7 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus, isClearable, id } = field;
+    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus, isClearable, id, tooltipId } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
@@ -341,7 +341,7 @@ export const SearchableSelectHookForm = (field) => {
             updatedValue = ''
           }
           return (
-            <div className={className} title={title ? title : isDisable ? value?.label : ''}>
+            <div id={tooltipId ?? ''} className={className} title={title ? title : isDisable ? value?.label : ''}>
               <Select
                 {...field}
                 id={containerId}

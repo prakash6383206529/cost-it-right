@@ -19,9 +19,10 @@ import {
   GET_COSTING_PAYMENT_TERM_DETAIL,
   SET_DISCOUNT_AND_OTHER_TAB_DATA,
   SET_COMPONENT_PAYMENT_TERMS_DATA,
-  CHECK_IS_PAYMENT_TERMS_DATA_CHANGE
+  CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
+  SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
+  PARTSPECIFICATIONRFQDATA
 } from '../../../config/constants';
-
 const initialState = {
   ComponentItemData: {},
   ComponentItemOverheadData: {},
@@ -70,10 +71,12 @@ const initialState = {
     EffectiveRecoveryPercentage: '',
     ApplicabilityCost: '',
     RejectionRecoveryNetCost: ''
-  }
+  },
+  partSpecificationRFQData :[]
 }
 
 export default function costingReducer(state = initialState, action) {
+  
   switch (action.type) {
     case API_REQUEST:
       return {
@@ -849,6 +852,20 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         UpdatePaymentTermCost: action.payload
+      }
+    case SET_COSTING_VIEW_DATA_FOR_ASSEMBLY:
+      return {
+        ...state,
+        loading: false,
+        viewCostingDetailDataForAssembly: action.payload,
+      }
+      case PARTSPECIFICATIONRFQDATA  :
+      
+        
+      return {
+        ...state,
+        loading: false,
+        partSpecificationRFQData: action.payload,
       }
     default:
       return state
