@@ -85,6 +85,7 @@ const SendForApproval = (props) => {
   const [isDisableSubmit, setIsDisableSubmit] = useState(false)
   const [count, setCount] = useState(0)
   const [approverIdList, setApproverIdList] = useState([])
+  const [noApprovalExistMessage, setNoApprovalExistMessage] = useState('')
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList) => {
 
@@ -396,6 +397,7 @@ const SendForApproval = (props) => {
           }
           setApprovalDropDown(tempDropdownList)
           setApproverIdList(approverIdListTemp)
+          setNoApprovalExistMessage('')
         }))
       } else if (data?.IsUserInApprovalFlow === false) {
         setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
@@ -404,6 +406,7 @@ const SendForApproval = (props) => {
         setApprovalDropDown([])
         setApproverIdList([])
         Toaster.warning('This user is not in approval flow.')
+        setNoApprovalExistMessage('')
         return false
       } else if (data?.IsNextLevelUserExist === false && data?.IsUserInApprovalFlow === true) {
         setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
@@ -411,7 +414,7 @@ const SendForApproval = (props) => {
         setSelectedApprover('')
         setApprovalDropDown([])
         setApproverIdList([])
-        Toaster.warning('No higher-level user has been defined for this user and department.')
+        setNoApprovalExistMessage('There is no higher approver available for this user in this department.')
         return false
       } else if (data?.IsUserInApprovalFlow === false) {
         setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
@@ -420,6 +423,7 @@ const SendForApproval = (props) => {
         setApprovalDropDown([])
         setApproverIdList([])
         Toaster.warning('This user is not in approval flow.')
+        setNoApprovalExistMessage('')
         return false
       }
 
@@ -1234,8 +1238,9 @@ const SendForApproval = (props) => {
                             errors={errors.approver}
                           />}
                         {
-                          showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
+                          !noApprovalExistMessage && showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
                         }
+                        {noApprovalExistMessage && <span className="warning-top"><WarningMessage title={noApprovalExistMessage} message={noApprovalExistMessage} /></span>}
                       </Col >
 
                       {!props?.isRfq && viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
