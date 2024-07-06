@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, RECEIVED, REJECTED, RETURNED, RFQ, RFQVendor, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
+import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, PREDRAFT, RECEIVED, REJECTED, RETURNED, RFQ, RFQVendor, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -56,7 +56,7 @@ function RfqListing(props) {
     const [permissionDataPart, setPermissionDataPart] = useState()
     const [permissionDataVendor, setPermissionDataVendor] = useState()
     const [permissionData, setPermissionData] = useState()
-    
+
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const agGridRef = useRef(null);
@@ -172,6 +172,9 @@ function RfqListing(props) {
                         break;
                     case RETURNED:
                         item.tooltipText = 'Quotation has been returned.'
+                        break;
+                    case PREDRAFT:
+                        item.tooltipText = 'Quotation pre-drafted, parts details saved.'
                         break;
                     default:
                         break;

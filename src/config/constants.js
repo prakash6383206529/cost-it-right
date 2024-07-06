@@ -20,7 +20,6 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.11.81:8080/api/v1`;
 // const BASE_URL = `http://10.10.8.109:8070/api/v1`
 //const BASE_URL = `http://10.10.1.100:10152/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
@@ -28,7 +27,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.120:81/api/v1`; 
-// const BASE_URL = `http://10.10.8.109:8070/api/v1`; rrr
+// const BASE_URL = `http://10.10.8.109:8070/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`;
 //FILE URL
 //http://10.10.8.120:1005/
@@ -1123,6 +1122,7 @@ export const API = {
   getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
   getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
   deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
+  checkRegisteredVendor: `${BASE_URL}/rfq-quotation/check-registered-vendor`,
   // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
 
 
@@ -1995,6 +1995,7 @@ export const GET_RFQ_RAISE_NUMBER = "GET_RFQ_RAISE_NUMBER"
 export const PARTSPECIFICATIONRFQDATA = 'PARTSPECIFICATIONRFQDATA'
 export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
 export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
+export const HAVELLS_DESIGN_PARTS = "Havells Design part"
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
@@ -3130,7 +3131,7 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 export const PartTypeIDFromAPI = 2
-export const RMIndex = true
+export const RMIndex = false
 export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
 
@@ -3138,7 +3139,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V2.2.29";
+export const VERSION = "V2.2.30";
 
 
 
