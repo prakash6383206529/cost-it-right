@@ -1155,7 +1155,6 @@ export const API = {
   updateMultiTechnologyTopAndWorkingRowCalculation: `${BASE_URL}/costing/update-multi-technology-top-and-working-row-calculation`,
 
   //RFQ
-  getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
   getQuotationDetailsByVendor: `${BASE_URL}/rfq-quotation/get-quotation-details-by-vendor`,
   createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   updateRfqQuotation: `${BASE_URL}/rfq-quotation/update`,

@@ -13,7 +13,7 @@ import TooltipCustom from '../../../common/Tooltip'
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
 import { FORGING } from '../../../../config/masterData'
 function LossStandardTable(props) {
-  const { rmRowData, isLossStandard, isNonFerrous, disableAll, isFerrous } = props
+  const { rmRowData, isLossStandard, isNonFerrous, disableAll, isFerrous, fieldsEnabled, resetTrigger } = props;
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [lossWeight, setLossWeight] = useState('')
@@ -26,7 +26,44 @@ function LossStandardTable(props) {
     reValidateMode: 'onChange',
   })
   const { ComponentItemData, costingData, CostingDataList } = useSelector(state => state.costing)
-
+  useEffect(() => {
+    if (resetTrigger) {
+      resetTable();
+    }
+  }, [resetTrigger]);
+  const resetTable = () => {
+    setTableData([]);
+    setNetWeight(0);
+    setBurningWeight('');
+    setLossWeight('');
+    setDisableLossType(false);
+    setDisableFlashType(false);
+    setUseformula(false);
+    setFlashLossType(false);
+    setBarCuttingAllowanceLossType(false);
+    setPercentage(true);
+    setIsDisable(false);
+    setIsBarBlade(false);
+    setIsFlashParametersDisable(false);
+    
+    reset({
+      LossPercentage: '',
+      FlashLength: '',
+      FlashThickness: '',
+      FlashWidth: '',
+      BarDiameter: '',
+      BladeThickness: '',
+      LossOfType: '',
+      LossWeight: '',
+      FlashLoss: '',
+    });
+  
+    props.tableValue([]);
+    props.calculation(0);
+    if (props.burningLoss) {
+      props.burningLoss(0);
+    }
+  };
   const fieldValues = useWatch({
     control,
     name: ['LossPercentage', 'FlashLength', 'FlashThickness', 'FlashWidth', 'BarDiameter', 'BladeThickness',],
@@ -58,7 +95,12 @@ function LossStandardTable(props) {
   const [isBarBlade, setIsBarBlade] = useState(false)
 
   const [isFlashParametersDisable, setIsFlashParametersDisable] = useState(false)
-
+  useEffect(() => {
+    if (props.castingWeightChanged) {
+        resetTable();
+        props.calculation(0);
+    }
+}, [props.castingWeightChanged]);
   useEffect(() => {
     setTableData(props.sendTable ? props.sendTable : [])
 
@@ -518,7 +560,7 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossOfType}
-            disabled={props.CostingViewMode || disableLossType || disableAll}
+            disabled={props.CostingViewMode || disableLossType || disableAll || !fieldsEnabled}
           />
         </Col>
 
@@ -693,7 +735,7 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossWeight}
-            disabled={props.CostingViewMode || isDisable || disableAll}
+            disabled={props.CostingViewMode || isDisable || disableAll || !fieldsEnabled  }
           />
         </Col>
         <Col md="3" className="pr-0">
@@ -723,14 +765,14 @@ function LossStandardTable(props) {
                   type="button"
                   className={'user-btn mt30 pull-left'}
                   onClick={addRow}
-                  disabled={props.CostingViewMode || disableAll}
+                  disabled={props.CostingViewMode || disableAll || !fieldsEnabled}
                 >
                   <div className={'plus'}></div>ADD
                 </button>
                 <button
                   type="button"
                   className={"mr15 ml-1 mt30 reset-btn"}
-                  disabled={props.CostingViewMode || disableAll}
+                  disabled={props.CostingViewMode || disableAll || !fieldsEnabled}  
                   onClick={rateTableReset}
                 >
                   Reset
