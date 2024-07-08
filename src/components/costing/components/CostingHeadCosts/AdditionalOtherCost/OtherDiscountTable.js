@@ -61,7 +61,7 @@ export default function OtherDiscountTable(props) {
                         );
                     })}
 
-                    {tableData.gridData.length === 0 ? (
+                    {tableData.gridData && tableData.gridData.length === 0 ? (
                         <tr>
                             <td colSpan={initialConfiguration.IsShowCRMHead ? 7 : 6}> <NoContentFound title={EMPTY_DATA} /></td>
                         </tr>
