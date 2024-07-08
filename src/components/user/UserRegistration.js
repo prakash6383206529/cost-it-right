@@ -658,7 +658,7 @@ function UserRegistration(props) {
           setTimeout(() => {
             let plantArray = []
             Data && Data?.DepartmentsPlantsIdLists?.map((item) => {
-              plantArray.push({ label: `${item.PlantName} (${item.PlantCode})`, value: (item?.PlantId)?.toString() })
+              plantArray.push({ label: `${item.PlantName}`, value: (item?.PlantId)?.toString() })
               return null;
             })
             setSelectedPlants(plantArray)
