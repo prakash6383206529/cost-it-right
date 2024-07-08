@@ -1,10 +1,10 @@
 import React, { Fragment, useEffect, useState } from "react"
-import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList } from "../../../actions/Common"
-import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, RMIndex, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
+import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement } from "../../../actions/Common"
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import { IsShowFreightAndShearingCostFields, getConfigurationKey, labelWithUOMAndCurrency, labelWithUOMAndUOM, loggedInUserId, showRMScrapKeys } from "../../../helper"
-import { SetRawMaterialDetails, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRawMaterialNameChild } from "../actions/Material"
+import { SetRawMaterialDetails, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRawMaterialNameChild, SetCommodityIndexAverage } from "../actions/Material"
 import { useForm, Controller, useWatch } from "react-hook-form"
 import { Row, Col } from 'reactstrap'
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, DatePickerHookForm, } from '../../layout/HookFormInputs';
@@ -26,6 +26,8 @@ import HeaderTitle from "../../common/HeaderTitle"
 import AddOtherCostDrawer from "./AddOtherCostDrawer"
 import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears } from 'date-fns';
 import { TestHeadless } from "ag-grid-community"
+import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
+import { setOtherCostDetails } from "../actions/Indexation"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, DataToChange } = props
     const { isEditFlag, isViewFlag } = data
@@ -82,7 +84,13 @@ function AddRMFinancialDetails(props) {
         maxDate: '',
         dateRange: 0,
         frequencyOfSettlement: [],
-        disableToDate: true
+        disableToDate: true,
+        isIndexationOpen: false,
+        isCommodityOpen: false,
+        totalBasicRate: 0,
+        otherCostTableData: [],
+        totalOtherCost: 0,
+        isShowIndexCheckBox: false,
     });
     const [showScrapKeys, setShowScrapKeys] = useState({
         showForging: false,
@@ -93,6 +101,8 @@ function AddRMFinancialDetails(props) {
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
+    const frequncySettlementList = useSelector((state) => state.comman.frequencyOfSettlement)
+    const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
     const fieldValuesImport = useWatch({
         control,
         name: ['cutOffPriceSelectedCurrency', 'ConversionRatio', 'BasicRateSelectedCurrency', 'CircleScrapCostSelectedCurrency', 'MachiningScrapSelectedCurrency', 'ShearingCostSelectedCurrency', 'FreightChargeSelectedCurrency']
@@ -110,7 +120,8 @@ function AddRMFinancialDetails(props) {
         control,
         name: ['JaliScrapCostSelectedCurrency', 'ForgingScrapSelectedCurrency', 'ScrapRateSelectedCurrency', 'cutOffPriceSelectedCurrency', 'CircleScrapCostSelectedCurrency', 'MachiningScrapSelectedCurrency']
     })
-
+    useEffect(() => {
+    }, [state.otherCostTableData])
     useEffect(() => {
         if (isEditFlag) {
             handleFinancialDataChange()
@@ -128,15 +139,16 @@ function AddRMFinancialDetails(props) {
 
     }, [])
     useEffect(() => {
+        dispatch(getFrequencySettlement(() => { }))
+        allFieldsInfoIcon(true)
+        dispatch(getCurrencySelectList(() => { }))
+    }, [])
+    useEffect(() => {
         if (rawMaterailDetails && rawMaterailDetails?.Technology && Object.keys(rawMaterailDetails?.Technology).length > 0) {
             checkTechnology()
         }
     }, [rawMaterailDetails?.Technology])
-    useEffect(() => {
-        if (states.isImport) {
-            dispatch(getCurrencySelectList(() => { }))
-        }
-    }, [states.isImport])
+
     useEffect(() => {
         handleVendor()
     }, [rawMaterailDetails?.Vendor])
@@ -157,7 +169,7 @@ function AddRMFinancialDetails(props) {
         if (!states.isImport) {
             calculateNetCostDomestic()
         }
-    }, [fieldValuesDomestic])
+    }, [fieldValuesDomestic, state.totalOtherCost])
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
             let Data = props?.DataToChange
@@ -193,7 +205,10 @@ function AddRMFinancialDetails(props) {
             setValue('MachiningScrapBaseCurrency', states.isImport ? Data?.MachiningScrapRateInINR : Data?.MachiningScrapRate)
             setValue('JaliScrapCostBaseCurrency', Data?.ScrapRate)
             setValue('ForgingScrapBaseCurrency', Data?.ScrapRate)
-
+            setValue('frequencyOfSettlement', { label: Data.FrequencyOfSettlement, value: Data.FrequencyOfSettlementId })
+            setValue('fromDate', DayTime(Data?.FromDate).$d)
+            setValue('toDate', DayTime(Data?.ToDate).$d)
+            setValue('OtherCostBaseCurrency', Data?.OtherNetCostConversion)
             setState(prevState => ({
                 ...prevState,
                 effectiveDate: DayTime(Data?.EffectiveDate).$d,
@@ -207,15 +222,17 @@ function AddRMFinancialDetails(props) {
                 currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
                 showCurrency: true,
                 currencyValue: Data.CurrencyExchangeRate,
-                calculatedFactor: Data.CalculatedFactor
+                calculatedFactor: Data.CalculatedFactor,
+                otherCostTableData: Data?.RawMaterialOtherCostDetails
             }))
-            handleScrapRateDomestic()
             checkTechnology()
         }
     }, [props?.DataToChange])
     useEffect(() => {
-        setValue('totalBasicRate', checkForDecimalAndNull(props?.totalBasicRate, getConfigurationKey().NoOfDecimalForPrice))
-    }, [props?.totalBasicRate])
+        if (RMIndex) {
+            setValue('BasicRateBaseCurrency', checkForDecimalAndNull(state?.totalBasicRate, getConfigurationKey().NoOfDecimalForPrice))
+        }
+    }, [state?.totalBasicRate])
     const netCostTitle = () => {
         if (getConfigurationKey().IsBasicRateAndCostingConditionVisible && Number(states.costingTypeId) === Number(ZBCTypeId)) {
             let obj = {
@@ -273,6 +290,16 @@ function AddRMFinancialDetails(props) {
             });
             return temp;
         }
+
+        if (label === 'Frequency') {
+            frequncySettlementList && frequncySettlementList.map(item => {
+                if (item.Value === '--Frequency of Settlement Name--') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            });
+            return temp;
+        }
+
 
     }
 
@@ -377,7 +404,7 @@ function AddRMFinancialDetails(props) {
         let conditionList = recalculateConditions('', basicPriceBaseCurrency)
 
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-        let netLandedCostBaseCurrency = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
+        let netLandedCostBaseCurrency = RMIndex ? checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp) + state.totalOtherCost : checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
 
         setValue('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
         setValue('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
@@ -505,10 +532,13 @@ function AddRMFinancialDetails(props) {
     const handleUOM = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, UOM: newValue, isDropDownChanged: true, ScrapRateUOM: [] }))
+            dispatch(SetCommodityIndexAverage('', 0, newValue?.label, 0, '', '', ''))
+
         } else {
             setState(prevState => ({ ...prevState, UOM: [] }))
         }
     }
+
     const onPressHasDifferentUOM = () => {
         setState(prevState => ({ ...prevState, IsApplyHasDifferentUOM: !state.IsApplyHasDifferentUOM }));
         dispatch(SetRawMaterialDetails({ states: state }, () => { }))
@@ -672,8 +702,10 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: true }))
     }
 
-    const closeOtherCostToggle = (type, data) => {
-        setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
+    const closeOtherCostToggle = (type, data, total) => {
+        setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: total }))
+        setValue('OtherCostBaseCurrency', total)
+        dispatch(setOtherCostDetails(data))
     }
 
     const conditionToggle = () => {
@@ -695,6 +727,7 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({
             ...prevState,
             isOpenConditionDrawer: false,
+
             conditionTableData: data,
             FinalConditionCostBaseCurrency: sumBaseCurrency,
             FinalConditionCostSelectedCurrency: sumSelectedCurrency,
@@ -709,10 +742,17 @@ function AddRMFinancialDetails(props) {
     * @description called
     */
     const handleCurrency = (newValue) => {
+
+
         const { effectiveDate } = state
         if (newValue && newValue !== '') {
             if (newValue.label === getConfigurationKey().BaseCurrency) {
                 setState(prevState => ({ ...prevState, currencyValue: 1, showCurrency: false, }))
+                // Convert newValue.value to an integer before passing to dispatch
+                const currencyId = parseInt(newValue.value, 10);
+
+                dispatch(SetCommodityIndexAverage('', 0, '', currencyId, '', '', ''));
+
             } else {
                 const { costingTypeId } = states;
                 if (newValue && newValue.length !== 0 && effectiveDate && ((rawMaterailDetails?.Vendor && rawMaterailDetails?.Vendor?.label) || (rawMaterailDetails?.customer && rawMaterailDetails?.customer?.length !== 0))) {
@@ -727,8 +767,13 @@ function AddRMFinancialDetails(props) {
                 }
 
                 setState(prevState => ({ ...prevState, showCurrency: true }))
+
             }
             setState(prevState => ({ ...prevState, currency: newValue }))
+            // Convert newValue.value to an integer before passing to dispatch
+            const currencyId = parseInt(newValue.value, 10);
+
+            dispatch(SetCommodityIndexAverage('', 0, '', currencyId, '', '', ''));
         } else {
             setState(prevState => ({ ...prevState, currency: [] }))
         }
@@ -812,1094 +857,869 @@ function AddRMFinancialDetails(props) {
         setValue('CalculatedFactor', checkForDecimalAndNull(calculatedFactor, getConfigurationKey().NoOfDecimalForPrice))
         setState(prevState => ({ ...prevState, CalculatedFactor: calculatedFactor }))
     }
+    const costToggle = () => {
+        setState(prevState => ({ ...prevState, isCostOpen: !state.isCostOpen }));
+    }
+    const indexationToggle = () => {
+        setState(prevState => ({ ...prevState, isIndexationOpen: !state.isIndexationOpen }));
+    }
+    const commodityToggle = () => {
+        setState(prevState => ({ ...prevState, isCommodityOpen: !state.isCommodityOpen }))
+    }
+    const setTotalBasicRate = (totalBasicRate) => {
+        setState(prevState => ({ ...prevState, totalBasicRate: totalBasicRate }))
+    }
+    const isShowIndexCheckBox = () => {
+        setState(prevState => ({ ...prevState, isShowIndexCheckBox: !state.isShowIndexCheckBox }))
+    }
     return (
         <Fragment>
-            <Row className='UOM-label-container'>
-                <Col md="12" className="filter-block ">
-                    <div className=" flex-fills mb-2 pl-0">
-                        <h5>{"Cost:"}</h5>
-                    </div>
-                </Col>
-                <Col className="col-md-15">
-                    <SearchableSelectHookForm
-                        name="UnitOfMeasurement"
-                        label="UOM"
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        options={renderListing("uom")}
-                        rules={{ required: true }}
-                        defaultValue={state.UOM}
-                        mandatory={true}
-                        handleChange={handleUOM}
-                        customClassName="withBorder"
-                        disabled={isEditFlag || isViewFlag}
-                        errors={errors.UnitOfMeasurement}
-                    />
-                </Col>
-                {states.isImport && <Col className="col-md-15">
-                    <SearchableSelectHookForm
-                        name="currency"
-                        label="Currency"
-                        errors={errors.currency}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={true}
-                        rules={{
-                            required: true,
-                        }}
-                        placeholder={'Select'}
-                        options={renderListing("currency")}
-                        handleChange={handleCurrency}
-                        disabled={isEditFlag || isViewFlag}
-                    />
-                </Col>}
-                {RMIndex && <><Col className="col-md-15">
-                    <TextFieldHookForm
-                        label={`Frequency of settlement`}
-                        name={"frequencyOfSettlement"}
-                        placeholder={"Enter"}
-                        defaultValue={''}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        rules={{
-                            required: false,
-                            validate: { number, integerOnly },
-                        }}
-                        mandatory={false}
-                        className=" "
-                        customClassName=" withBorder"
-                        disabled={false}
-                        handleChange={() => { }}
-                        errors={errors.frequencyOfSettlement}
-                    />
-                </Col>
-                    <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={`Index Premium(Currency)`}
-                            name={"indexPremium"}
-                            placeholder={"Enter"}
-                            defaultValue={''}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: false,
-                                validate: { number, integerOnly },
-                            }}
-                            mandatory={false}
-                            className=" "
-                            customClassName=" withBorder"
-                            disabled={false}
-                            handleChange={() => { }}
-                            errors={errors.indexPremium}
-                        />
-                    </Col>
-                    <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={`Exchange Rate Source Premium(Currency)`}
-                            name={"ExRateSrcPremium"}
-                            placeholder={"Enter"}
-                            defaultValue={''}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: false,
-                                validate: { number, integerOnly },
-                            }}
-                            mandatory={false}
-                            className=" "
-                            customClassName=" withBorder"
-                            disabled={false}
-                            handleChange={() => { }}
-                            errors={errors.ExRateSrcPremium}
-                        />
-                    </Col>
-                    <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={`Index Rate(Currency)`}
-                            name={"indexRateCurrency"}
-                            placeholder={"Enter"}
-                            defaultValue={''}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: false,
-                                validate: { number, integerOnly },
-                            }}
-                            mandatory={false}
-                            className=" "
-                            customClassName=" withBorder"
-                            disabled={false}
-                            handleChange={() => { }}
-                            errors={errors.indexRateCurrency}
-                        />
-                    </Col></>}
-                <>
-                    {states.isImport &&
-                        <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Cut Off Price ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                name={"cutOffPriceSelectedCurrency"}
-                                placeholder={(props.isViewFlag || !state.IsFinancialDataChanged) ? '-' : "Enter"}
-                                defaultValue={''}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: false,
-                                    validate: { number, decimalNumberLimit3 },
-                                }}
-                                mandatory={false}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                className=" "
-                                customClassName=" withBorder"
-                                handleChange={() => { }}
-                                errors={errors.cutOffPriceSelectedCurrency}
+            <Row >
+                <Col md="6" className='d-flex align-items-center mb-3'>
+                    {getConfigurationKey().IsShowMaterialIndexation && (
+                        <label id="AddRMDomestic_HasDifferentSource"
+                            className={`custom-checkbox w-auto mb-0 ${(states.costingTypeId === VBCTypeId) ? "disabled" : ""
+                                }`}
+                            onChange={isShowIndexCheckBox}
+                        >
+                            RM Indexation
+                            <input
+                                type="checkbox"
+                                checked={state.isShowIndexCheckBox}
+                            // disabled={(states.costingTypeId === VBCTypeId) ? true : false}
                             />
-                        </Col>}
-                    <Col className="col-md-15">
-                        {states.isImport && <TooltipCustom disabledIcon={true} id="rm-cut-off-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextCutOffBaseCurrency} />}
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Cut Off Price ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                            name={"cutOffPriceBaseCurrency"}
-                            placeholder={(props.isViewFlag || !state.IsFinancialDataChanged) ? '-' : "Enter"}
-                            id="rm-cut-off-base-currency"
-                            defaultValue={state.cutOffPrice}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: false,
-                                validate: states.isImport ? {} : { number, decimalNumberLimit3 },
-                            }}
-                            mandatory={false}
-                            className=" "
-                            customClassName=" withBorder"
-                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                            handleChange={() => { }}
-                            errors={errors.cutOffPriceBaseCurrency}
+                            <span
+                                className=" before-box p-0"
+                                checked={state.isShowIndexCheckBox}
+                                onChange={isShowIndexCheckBox}
+                            />
+                        </label>
+                    )}
+                </Col>
+            </Row>
+            {state.isShowIndexCheckBox && <>
+
+                {RMIndex && <Row className="mb-3 accordian-container">
+                    <Col md="6" className='d-flex align-items-center'>
+                        <HeaderTitle
+                            title={'Indexation:'}
+                            customClass={'Personal-Details'}
                         />
                     </Col>
-                    {states.isImport && <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Basic Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                            name={"BasicRateSelectedCurrency"}
-                            type="text"
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: true,
-                                validate: { positiveAndDecimalNumber, maxLength10, decimalLengthsix, number },
-                            }}
-                            mandatory={true}
-                            handleChange={() => { }}
-                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                            className=" "
-                            customClassName=" withBorder"
-                        />
-                    </Col>}
-
-                    <Col className="col-md-15">
-                        {states.isImport && <TooltipCustom disabledIcon={true} id="rm-basic-rate-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextBasicRateBaseCurrency} />}
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Basic Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                            name={"BasicRateBaseCurrency"}
-                            placeholder={props.isEditFlag || (props.isEditFlag && props.isRMAssociated) ? '-' : "Enter"}
-                            defaultValue={state.cutOffPrice}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            id="rm-basic-rate-base-currency"
-                            rules={{
-                                required: true,
-                                validate: { positiveAndDecimalNumber, maxLength10, decimalLengthsix, number },
-                            }}
-                            mandatory={true}
-                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                            className=" "
-                            customClassName=" withBorder"
-                            handleChange={() => { }}
-                            errors={errors.BasicRateBaseCurrency}
-                        />
-                    </Col>
-
-
-                    <Col className="col-md-15">
-                        <div className="mt-3">
-                            <span className="d-inline-block mt15">
-                                <label
-                                    className={`custom-checkbox mb-0`}
-                                    onChange={onPressHasDifferentUOM}
-                                >
-                                    Has Different Scrap UOM ?
-                                    <input
-                                        type="checkbox"
-                                        checked={state.IsApplyHasDifferentUOM}
-                                        disabled={(isViewFlag || (isEditFlag && isRMAssociated)) ? true : false}
-                                    />
-                                    <span
-                                        className=" before-box"
-                                        checked={state.IsApplyHasDifferentUOM}
-                                        onChange={onPressHasDifferentUOM}
-                                    />
-                                </label>
-                            </span>
+                    <Col md="6">
+                        <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={indexationToggle} type="button">{state.isIndexationOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                         </div>
                     </Col>
-                    {state.IsApplyHasDifferentUOM && !isRMAssociated &&
-                        <Col className="col-md-15">
-                            <SearchableSelectHookForm
-                                label="Scrap Rate UOM"
-                                name="ScrapRateUOM"
-                                // defaultValue={state.ScrapRateUOM.length !== 0 ? state.ScrapRateUOM : ""}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                placeholder={"Select"}
-                                options={renderListing("uom", true)}
-                                rules={{ required: true }}
-                                mandatory={true}
-                                handleChange={handleSelectConversion}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                errors={errors.ScrapRateUOM}
-                            />
-                        </Col>}
-                    {state.IsApplyHasDifferentUOM && state.ScrapRateUOM?.value && <>
-                        <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndUOM("Conversion Ratio", state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM', state.UOM?.label ? state.UOM?.label : 'UOM')}
-                                name={"ConversionRatio"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: true,
-                                    validate: { positiveAndDecimalNumber, decimalLengthsix, number },
-                                }}
-                                mandatory={true}
-                                placeholder={props.isViewFlag ? '-' : "Enter"}
-                                className=""
-                                maxLength="15"
-                                customClassName=" withBorder"
-                                handleChange={(e) => { handleConversionRatio(e.target.value) }}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                errors={errors.ConversionRatio}
-                            />
-                        </Col>
-                        <Col className="col-md-15">
-                            <TooltipCustom disabledIcon={true} id="conversion-factor-base-currency" width={'380px'} tooltipText={allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndUOM("Calculated Factor", state.UOM?.label ? state.UOM?.label : 'UOM', state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM')}
-                                name={"CalculatedFactor"}
-                                id="conversion-factor-base-currency"
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                placeholder={props.isViewFlag ? '-' : "Enter"}
-                                className=""
-                                maxLength="15"
-                                customClassName=" withBorder"
-                                handleChange={() => { }}
-                                disabled={true}
-                            />
-                        </Col>
-                        {states.isImport && < Col md="3">
-                            <TextFieldHookForm
-                                label={labelForScrapRate()?.labelSelectedCurrency}
-                                name={"ScrapRatePerScrapUOM"}
-                                placeholder={props.isViewFlag ? '-' : "Enter"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: true,
-                                    validate: { positiveAndDecimalNumber, decimalLengthsix, number },
-                                }}
-                                defaultValue={''}
-                                mandatory={true}
-                                className=""
-                                customClassName=" withBorder"
-                                handleChange={(e) => { handleScrapRateImport(e.target.value) }}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                errors={errors.ScrapRatePerScrapUOM}
-                            />
-                        </Col>}
-                        <Col className="col-md-15">
-                            <TooltipCustom disabledIcon={true} id="scrap-rate-per-scrap-uom-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextScrapRatePerScrapUOMBaseCurrency} />
-                            <TextFieldHookForm
-                                label={labelForScrapRate()?.labelBaseCurrency}
-                                name={'ScrapRatePerScrapUOMBaseCurrency'}
-                                id="scrap-rate-per-scrap-uom-base-currency"
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: true,
-                                    validate: { positiveAndDecimalNumber, decimalLengthsix, number },
-                                }}
-                                mandatory={true}
-                                className=""
-                                customClassName=" withBorder"
-                                handleChange={(e) => { handleScrapRateDomestic(e.target.value) }}
-                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                            />
-                        </Col></>}
+                    {
+                        state.isIndexationOpen &&
+                        <div className="accordian-content row mx-0 w-100">
 
-                    {showScrapKeys?.showScrap &&
-                        <>
-                            {states.isImport && <Col className="col-md-15">
-                                {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="rm-scrap-selected-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextScrapCostSelectedCurrency} />}
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"ScrapRateSelectedCurrency"}
-                                    id="rm-scrap-selected-currency"
-                                    type="text"
-                                    placeholder={props.isViewFlag ? '-' : "Enter"}
+                            {RMIndex && <><Col className="col-md-15">
+                                <SearchableSelectHookForm
+                                    label={`Frequency of settlement`}
+                                    name={"frequencyOfSettlement"}
+                                    errors={errors.currency}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
+                                    mandatory={true}
                                     rules={{
                                         required: true,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
                                     }}
-                                    mandatory={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    handleChange={() => { }}
-                                    disabled={true}
-                                    errors={errors.ScrapRateSelectedCurrency}
+                                    placeholder={'Select'}
+                                    options={renderListing("Frequency")}
+                                    handleChange={handleFrequencyChange}
+                                    disabled={isEditFlag || isViewFlag}
                                 />
-                            </Col >}
-                            <Col className="col-md-15">
-                                {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrencyPerOldUOM} />}
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"ScrapRateBaseCurrency"}
-                                    id="scrap-rate-base-currency"
-                                    placeholder={props.isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: true,
-                                        validate: { positiveAndDecimalNumber, decimalLengthsix, number },
-                                    }}
-                                    mandatory={true}
-                                    className=""
-                                    maxLength="15"
-                                    customClassName=" withBorder"
-                                    handleChange={() => { }}
-                                    disabled={states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
-                                    errors={errors.ScrapRateBaseCurrency}
-                                />
-                            </Col></>}
-                    {showScrapKeys?.showForging &&
-                        <>{states.isImport && <Col className="col-md-15">
-                            {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="rm-forging-selected-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextForgingScrapCostSelectedCurrency} />}
-                            <TextFieldHookForm
-                                id="rm-forging-selected-currency"
-                                label={labelWithUOMAndCurrency("Forging Scrap Rate", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                name={"ForgingScrapSelectedCurrency"}
-                                placeholder={props.isViewFlag ? '-' : "Enter"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: true,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                mandatory={true}
-                                className=""
-                                customClassName=" withBorder"
-                                handleChange={() => { }}
-                                disabled={isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
-                                errors={errors.ForgingScrapSelectedCurrency}
-                            />
 
-                        </Col>}
-                            <Col className="col-md-15">
-                                {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="forging-scrap-cost-base-currency" width={'450px'} tooltipText={allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrency} />}
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Forging Scrap Rate", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"ForgingScrapBaseCurrency"}
-                                    id="forging-scrap-cost-base-currency"
-                                    placeholder={props.isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: true,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    mandatory={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    maxLength="15"
-                                    handleChange={() => { }}
-                                    disabled={states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
-                                    errors={errors.ForgingScrapBaseCurrency}
-                                />
                             </Col>
-                            {states.isImport && <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Machining Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"MachiningScrapSelectedCurrency"}
-                                    placeholder={props.isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: true,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    mandatory={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    handleChange={() => { }}
-                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                />
-                            </Col>
+
+                                {RMIndex && <><Col className="col-md-15">
+                                    <div className="inputbox date-section">
+                                        <DatePickerHookForm
+                                            name={`fromDate`}
+                                            label={'From Date'}
+                                            handleChange={(date) => {
+                                                handleFromEffectiveDateChange(date);
+                                            }}
+                                            rules={{ required: true }}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            // maxDate={state.maxDate}
+
+                                            dateFormat="DD/MM/YYYY"
+                                            placeholder="Select date"
+                                            customClassName="withBorder"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                            disabled={false}
+                                            mandatory={true}
+                                            errors={errors && errors.fromDate}
+                                        />
+                                    </div>
+                                </Col>
+                                    <Col className="col-md-15">
+                                        <div className="inputbox date-section">
+                                            <DatePickerHookForm
+                                                name={`toDate`}
+                                                label={'To Date'}
+                                                handleChange={(date) => {
+                                                    handleToEffectiveDateChange(date);
+                                                }}
+                                                rules={{ required: false }}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                showMonthDropdown
+                                                showYearDropdown
+                                                dateFormat="DD/MM/YYYY"
+                                                minDate={state.minDate}
+                                                maxDate={state.maxDate}
+                                                placeholder={!state.disableToDate ? "Select date" : ''}
+                                                customClassName="withBorder"
+                                                className="withBorder"
+                                                autoComplete={"off"}
+                                                disabledKeyboardNavigation
+                                                onChangeRaw={(e) => e.preventDefault()}
+                                                disabled={state.disableToDate}
+                                                mandatory={false}
+                                                errors={errors && errors.toDate}
+                                            />
+                                        </div>
+                                    </Col></>}
+                                <Col className="col-md-15">
+                                    <SearchableSelectHookForm
+                                        name="UnitOfMeasurement"
+                                        label="UOM"
+                                        placeholder={"Select"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        options={renderListing("uom")}
+                                        rules={{ required: true }}
+                                        defaultValue={state.UOM}
+                                        mandatory={true}
+                                        handleChange={handleUOM}
+                                        customClassName="withBorder"
+                                        disabled={isEditFlag || isViewFlag || RMIndex}
+                                        errors={errors.UnitOfMeasurement}
+                                    />
+                                </Col>
+                            </>
                             }
+                        </div>
+                    }
+                </Row >}
+                {RMIndex && <Row className="mb-3 accordian-container">
+                    <Col md="6" className='d-flex align-items-center'>
+                        <HeaderTitle
+                            title={'Commodity Details:'}
+                            customClass={'Personal-Details'}
+                        />
+                    </Col>
+                    <Col md="6">
+                        <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={commodityToggle} type="button">{state.isCommodityOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
+                        </div>
+                    </Col>
+                    <AddIndexationMaterialListing
+                        states={state}
+                        isOpen={state.isCommodityOpen}
+                        commodityDetails={props.commodityDetails}
+                        isViewFlag={isViewFlag}
+                        setTotalBasicRate={setTotalBasicRate}
+                    />
+                </Row>}
+            </>
+            }
+            <Row className="mb-3 accordian-container">
+                <Col md="6" className='d-flex align-items-center'>
+                    <HeaderTitle
+                        title={'Cost:'}
+                        customClass={'Personal-Details'}
+                    />
+                </Col>
+                <Col md="6">
+                    <div className={'right-details text-right'}>
+                        <button className="btn btn-small-primary-circle ml-1" onClick={costToggle} type="button">{state.isCostOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
+                    </div>
+                </Col>
+                {
+                    state.isCostOpen &&
+                    <div className="accordian-content row mx-0 w-100">
+
+                        {states.isImport && <Col className="col-md-15">
+                            <SearchableSelectHookForm
+                                name="currency"
+                                label="Currency"
+                                errors={errors.currency}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={true}
+                                rules={{
+                                    required: true,
+                                }}
+                                placeholder={'Select'}
+                                options={renderListing("currency")}
+                                handleChange={handleCurrency}
+                                disabled={isEditFlag || isViewFlag}
+                            />
+                        </Col>}
+
+
+                        <>
+                            {states.isImport &&
+                                <Col className="col-md-15">
+                                    <TextFieldHookForm
+                                        label={labelWithUOMAndCurrency("Cut Off Price ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                        name={"cutOffPriceSelectedCurrency"}
+                                        placeholder={(props.isViewFlag || !state.IsFinancialDataChanged) ? '-' : "Enter"}
+                                        defaultValue={''}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        rules={{
+                                            required: false,
+                                            validate: { number, decimalNumberLimit3 },
+                                        }}
+                                        mandatory={false}
+                                        disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                        className=" "
+                                        customClassName=" withBorder"
+                                        handleChange={() => { }}
+                                        errors={errors.cutOffPriceSelectedCurrency}
+                                    />
+                                </Col>}
                             <Col className="col-md-15">
-                                {states.isImport && <TooltipCustom disabledIcon={true} id="rm-machining-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextMachiningScrapCostBaseCurrency} />}
+                                {states.isImport && <TooltipCustom disabledIcon={true} id="rm-cut-off-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextCutOffBaseCurrency} />}
                                 <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Machining Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"MachiningScrapBaseCurrency"}
-                                    placeholder={props.isViewFlag ? '-' : "Enter"}
-                                    id="rm-machining-base-currency"
+                                    label={labelWithUOMAndCurrency("Cut Off Price ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                    name={"cutOffPriceBaseCurrency"}
+                                    placeholder={(props.isViewFlag || !state.IsFinancialDataChanged) ? '-' : "Enter"}
+                                    id="rm-cut-off-base-currency"
+                                    defaultValue={state.cutOffPrice}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
                                     rules={{
                                         required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                        validate: states.isImport ? {} : { number, decimalNumberLimit3 },
                                     }}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    maxLength="15"
-                                    handleChange={() => { }}
-                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                    errors={errors.MachiningScrapBaseCurrency}
-                                />
-                            </Col>
-                        </>
-                    }
-                    {showScrapKeys?.showCircleJali &&
-                        <>
-                            {states.isImport && <Col className="col-md-15">
-                                {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-selected-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextJaliScrapCostSelectedCurrency} />}
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Jali Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"JaliScrapCostSelectedCurrency"}
-                                    type="text"
-                                    id="jali-scrap-cost-selected-currency"
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    disabled={state.IsApplyHasDifferentUOM ? true : false}
-                                    handleChange={() => { }}
+                                    mandatory={false}
                                     className=" "
                                     customClassName=" withBorder"
+                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                    handleChange={() => { }}
+                                    errors={errors.cutOffPriceBaseCurrency}
                                 />
-                            </Col >}
-                            <Col className="col-md-15">
-                                {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />}
+                            </Col>
+
+                            <>  {states.isImport && <Col className="col-md-15">
                                 <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Jali Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"JaliScrapCostBaseCurrency"}
-                                    id="jali-scrap-cost-base-currency"
-                                    placeholder={isViewFlag ? '-' : "Enter"}
+                                    label={labelWithUOMAndCurrency("Basic Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                    name={"BasicRateSelectedCurrency"}
+                                    type="text"
                                     Controller={Controller}
                                     control={control}
                                     register={register}
                                     rules={{
                                         required: true,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                        validate: { positiveAndDecimalNumber, maxLength10, decimalLengthsix, number },
                                     }}
-                                    disabled={states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
-                                    className=" "
+                                    mandatory={true}
                                     handleChange={() => { }}
-                                    customClassName=" withBorder"
-                                    errors={errors.JaliScrapCostBaseCurrency}
-
-                                />
-                            </Col>
-                            {states.isImport && <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Circle Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"CircleScrapCostSelectedCurrency"}
-                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
                                     disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                    handleChange={() => { }}
                                     className=" "
                                     customClassName=" withBorder"
-                                    errors={errors.CircleScrapCostSelectedCurrency}
                                 />
                             </Col>}
+
+                                <Col className="col-md-15">
+                                    {states.isImport && <TooltipCustom disabledIcon={true} id="rm-basic-rate-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextBasicRateBaseCurrency} />}
+                                    <TextFieldHookForm
+                                        label={labelWithUOMAndCurrency("Basic Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                        name={"BasicRateBaseCurrency"}
+                                        placeholder={props.isEditFlag || (props.isEditFlag && props.isRMAssociated) ? '-' : "Enter"}
+                                        defaultValue={state.cutOffPrice}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        id="rm-basic-rate-base-currency"
+                                        rules={{
+                                            required: true,
+                                            validate: { positiveAndDecimalNumber, maxLength10, decimalLengthsix, number },
+                                        }}
+                                        mandatory={true}
+                                        disabled={states.isImport || RMIndex ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                        className=" "
+                                        customClassName=" withBorder"
+                                        handleChange={() => { }}
+                                        errors={errors.BasicRateBaseCurrency}
+                                    />
+                                </Col></>
+
+
                             <Col className="col-md-15">
-                                {states.isImport && <TooltipCustom disabledIcon={true} id="rm-circle-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextCircleScrapCostBaseCurrency} />}
+                                <div className="mt-3">
+                                    <span className="d-inline-block mt15">
+                                        <label
+                                            className={`custom-checkbox mb-0`}
+                                            onChange={onPressHasDifferentUOM}
+                                        >
+                                            Has Different Scrap UOM ?
+                                            <input
+                                                type="checkbox"
+                                                checked={state.IsApplyHasDifferentUOM}
+                                                disabled={(isViewFlag || (isEditFlag && isRMAssociated)) ? true : false}
+                                            />
+                                            <span
+                                                className=" before-box"
+                                                checked={state.IsApplyHasDifferentUOM}
+                                                onChange={onPressHasDifferentUOM}
+                                            />
+                                        </label>
+                                    </span>
+                                </div>
+                            </Col>
+                            {state.IsApplyHasDifferentUOM && !isRMAssociated &&
+                                <Col className="col-md-15">
+                                    <SearchableSelectHookForm
+                                        label="Scrap Rate UOM"
+                                        name="ScrapRateUOM"
+                                        // defaultValue={state.ScrapRateUOM.length !== 0 ? state.ScrapRateUOM : ""}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        placeholder={"Select"}
+                                        options={renderListing("uom", true)}
+                                        rules={{ required: true }}
+                                        mandatory={true}
+                                        handleChange={handleSelectConversion}
+                                        disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                        errors={errors.ScrapRateUOM}
+                                    />
+                                </Col>}
+                            {state.IsApplyHasDifferentUOM && state.ScrapRateUOM?.value && <>
+                                <Col className="col-md-15">
+                                    <TextFieldHookForm
+                                        label={labelWithUOMAndUOM("Conversion Ratio", state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM', state.UOM?.label ? state.UOM?.label : 'UOM')}
+                                        name={"ConversionRatio"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        rules={{
+                                            required: true,
+                                            validate: { positiveAndDecimalNumber, decimalLengthsix, number },
+                                        }}
+                                        mandatory={true}
+                                        placeholder={props.isViewFlag ? '-' : "Enter"}
+                                        className=""
+                                        maxLength="15"
+                                        customClassName=" withBorder"
+                                        handleChange={(e) => { handleConversionRatio(e.target.value) }}
+                                        disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                        errors={errors.ConversionRatio}
+                                    />
+                                </Col>
+                                <Col className="col-md-15">
+                                    <TooltipCustom disabledIcon={true} id="conversion-factor-base-currency" width={'380px'} tooltipText={allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
+                                    <TextFieldHookForm
+                                        label={labelWithUOMAndUOM("Calculated Factor", state.UOM?.label ? state.UOM?.label : 'UOM', state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM')}
+                                        name={"CalculatedFactor"}
+                                        id="conversion-factor-base-currency"
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        placeholder={props.isViewFlag ? '-' : "Enter"}
+                                        className=""
+                                        maxLength="15"
+                                        customClassName=" withBorder"
+                                        handleChange={() => { }}
+                                        disabled={true}
+                                    />
+                                </Col>
+                                {states.isImport && < Col md="3">
+                                    <TextFieldHookForm
+                                        label={labelForScrapRate()?.labelSelectedCurrency}
+                                        name={"ScrapRatePerScrapUOM"}
+                                        placeholder={props.isViewFlag ? '-' : "Enter"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        rules={{
+                                            required: true,
+                                            validate: { positiveAndDecimalNumber, decimalLengthsix, number },
+                                        }}
+                                        defaultValue={''}
+                                        mandatory={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        handleChange={(e) => { handleScrapRateImport(e.target.value) }}
+                                        disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                        errors={errors.ScrapRatePerScrapUOM}
+                                    />
+                                </Col>}
+                                <Col className="col-md-15">
+                                    <TooltipCustom disabledIcon={true} id="scrap-rate-per-scrap-uom-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextScrapRatePerScrapUOMBaseCurrency} />
+                                    <TextFieldHookForm
+                                        label={labelForScrapRate()?.labelBaseCurrency}
+                                        name={'ScrapRatePerScrapUOMBaseCurrency'}
+                                        id="scrap-rate-per-scrap-uom-base-currency"
+                                        placeholder={isViewFlag ? '-' : "Enter"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        rules={{
+                                            required: true,
+                                            validate: { positiveAndDecimalNumber, decimalLengthsix, number },
+                                        }}
+                                        mandatory={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        handleChange={(e) => { handleScrapRateDomestic(e.target.value) }}
+                                        disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                    />
+                                </Col></>}
+
+                            {showScrapKeys?.showScrap &&
+                                <>
+                                    {states.isImport && <Col className="col-md-15">
+                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="rm-scrap-selected-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextScrapCostSelectedCurrency} />}
+                                        <TextFieldHookForm
+                                            label={labelWithUOMAndCurrency("Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                            name={"ScrapRateSelectedCurrency"}
+                                            id="rm-scrap-selected-currency"
+                                            type="text"
+                                            placeholder={props.isViewFlag ? '-' : "Enter"}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{
+                                                required: true,
+                                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                            }}
+                                            mandatory={true}
+                                            className=""
+                                            customClassName=" withBorder"
+                                            handleChange={() => { }}
+                                            disabled={true}
+                                            errors={errors.ScrapRateSelectedCurrency}
+                                        />
+                                    </Col >}
+                                    <Col className="col-md-15">
+                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrencyPerOldUOM} />}
+                                        <TextFieldHookForm
+                                            label={labelWithUOMAndCurrency("Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                            name={"ScrapRateBaseCurrency"}
+                                            id="scrap-rate-base-currency"
+                                            placeholder={props.isViewFlag ? '-' : "Enter"}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{
+                                                required: true,
+                                                validate: { positiveAndDecimalNumber, decimalLengthsix, number },
+                                            }}
+                                            mandatory={true}
+                                            className=""
+                                            maxLength="15"
+                                            customClassName=" withBorder"
+                                            handleChange={() => { }}
+                                            disabled={states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
+                                            errors={errors.ScrapRateBaseCurrency}
+                                        />
+                                    </Col></>}
+                            {showScrapKeys?.showForging &&
+                                <>{states.isImport && <Col className="col-md-15">
+                                    {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="rm-forging-selected-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextForgingScrapCostSelectedCurrency} />}
+                                    <TextFieldHookForm
+                                        id="rm-forging-selected-currency"
+                                        label={labelWithUOMAndCurrency("Forging Scrap Rate", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                        name={"ForgingScrapSelectedCurrency"}
+                                        placeholder={props.isViewFlag ? '-' : "Enter"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        rules={{
+                                            required: true,
+                                            validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                        }}
+                                        mandatory={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        handleChange={() => { }}
+                                        disabled={isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
+                                        errors={errors.ForgingScrapSelectedCurrency}
+                                    />
+
+                                </Col>}
+                                    <Col className="col-md-15">
+                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="forging-scrap-cost-base-currency" width={'450px'} tooltipText={allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrency} />}
+                                        <TextFieldHookForm
+                                            label={labelWithUOMAndCurrency("Forging Scrap Rate", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                            name={"ForgingScrapBaseCurrency"}
+                                            id="forging-scrap-cost-base-currency"
+                                            placeholder={props.isViewFlag ? '-' : "Enter"}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{
+                                                required: true,
+                                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                            }}
+                                            mandatory={true}
+                                            className=""
+                                            customClassName=" withBorder"
+                                            maxLength="15"
+                                            handleChange={() => { }}
+                                            disabled={states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
+                                            errors={errors.ForgingScrapBaseCurrency}
+                                        />
+                                    </Col>
+                                    {states.isImport && <Col className="col-md-15">
+                                        <TextFieldHookForm
+                                            label={labelWithUOMAndCurrency("Machining Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                            name={"MachiningScrapSelectedCurrency"}
+                                            placeholder={props.isViewFlag ? '-' : "Enter"}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{
+                                                required: true,
+                                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                            }}
+                                            mandatory={true}
+                                            className=""
+                                            customClassName=" withBorder"
+                                            handleChange={() => { }}
+                                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                        />
+                                    </Col>
+                                    }
+                                    <Col className="col-md-15">
+                                        {states.isImport && <TooltipCustom disabledIcon={true} id="rm-machining-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextMachiningScrapCostBaseCurrency} />}
+                                        <TextFieldHookForm
+                                            label={labelWithUOMAndCurrency("Machining Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                            name={"MachiningScrapBaseCurrency"}
+                                            placeholder={props.isViewFlag ? '-' : "Enter"}
+                                            id="rm-machining-base-currency"
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{
+                                                required: false,
+                                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                            }}
+                                            className=""
+                                            customClassName=" withBorder"
+                                            maxLength="15"
+                                            handleChange={() => { }}
+                                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                            errors={errors.MachiningScrapBaseCurrency}
+                                        />
+                                    </Col>
+                                </>
+                            }
+                            {showScrapKeys?.showCircleJali &&
+                                <>
+                                    {states.isImport && <Col className="col-md-15">
+                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-selected-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextJaliScrapCostSelectedCurrency} />}
+                                        <TextFieldHookForm
+                                            label={labelWithUOMAndCurrency("Jali Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                            name={"JaliScrapCostSelectedCurrency"}
+                                            type="text"
+                                            id="jali-scrap-cost-selected-currency"
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            disabled={state.IsApplyHasDifferentUOM ? true : false}
+                                            handleChange={() => { }}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                        />
+                                    </Col >}
+                                    <Col className="col-md-15">
+                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />}
+                                        <TextFieldHookForm
+                                            label={labelWithUOMAndCurrency("Jali Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                            name={"JaliScrapCostBaseCurrency"}
+                                            id="jali-scrap-cost-base-currency"
+                                            placeholder={isViewFlag ? '-' : "Enter"}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{
+                                                required: true,
+                                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                            }}
+                                            disabled={states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
+                                            className=" "
+                                            handleChange={() => { }}
+                                            customClassName=" withBorder"
+                                            errors={errors.JaliScrapCostBaseCurrency}
+
+                                        />
+                                    </Col>
+                                    {states.isImport && <Col className="col-md-15">
+                                        <TextFieldHookForm
+                                            label={labelWithUOMAndCurrency("Circle Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                            name={"CircleScrapCostSelectedCurrency"}
+                                            placeholder={isViewFlag ? '-' : "Enter"}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{
+                                                required: false,
+                                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                            }}
+                                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                            handleChange={() => { }}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                            errors={errors.CircleScrapCostSelectedCurrency}
+                                        />
+                                    </Col>}
+                                    <Col className="col-md-15">
+                                        {states.isImport && <TooltipCustom disabledIcon={true} id="rm-circle-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextCircleScrapCostBaseCurrency} />}
+                                        <TextFieldHookForm
+                                            label={labelWithUOMAndCurrency("Circle Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                            name={"CircleScrapCostBaseCurrency"}
+                                            placeholder={props.isViewFlag ? '-' : "Enter"}
+                                            id="rm-circle-base-currency"
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{
+                                                required: false,
+                                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                            }}
+                                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                            handleChange={() => { }}
+                                            errors={errors.CircleScrapCostBaseCurrency}
+                                        />
+                                    </Col>
+                                </>
+                            }
+                            {/* add new other cost */}
+                            {true && <>
+                                {states.isImport && <Col className="col-md-15">
+                                    <div className='d-flex align-items-center'>
+                                        <div className='w-100'>
+                                            <TextFieldHookForm
+                                                label={`Other Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`}
+                                                name={"Othet"}
+                                                placeholder={"-"}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                disabled={true}
+                                                isViewFlag={true}
+                                                className=" "
+                                                handleChange={() => { }}
+                                                customClassName=" withBorder"
+                                            />
+                                        </div>
+                                        {states.isImport && <Button
+                                            id="addRMDomestic_conditionToggle"
+                                            onClick={otherCostToggle}
+                                            className={"right mt-3 mb-2"}
+                                            variant={isViewFlag ? "view-icon-primary" : true ? "plus-icon-square" : "blurPlus-icon-square"}
+                                            title={isViewFlag ? "View" : "Add"}
+                                            disabled={false}
+                                        />}
+                                    </div>
+                                </Col>}
+                                <Col className="col-md-15">
+                                    <div className='d-flex align-items-center'>
+                                        <div className='w-100'>
+                                            <TextFieldHookForm
+                                                label={labelWithUOMAndCurrency("Other Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                                name={"OtherCostBaseCurrency"}
+                                                placeholder={"-"}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                disabled={true}
+                                                isViewFlag={true}
+                                                className=" "
+                                                handleChange={() => { }}
+                                                customClassName=" withBorder"
+                                            />
+                                        </div>
+                                        {!states.isImport && <Button
+                                            id="addRMDomestic_conditionToggle"
+                                            onClick={otherCostToggle}
+                                            className={"right mt-3 mb-2"}
+                                            variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
+                                            title={isViewFlag ? "View" : "Add"}
+                                        />}
+                                    </div>
+                                </Col>
+                            </>}
+
+                            {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && states.costingTypeId === ZBCTypeId && <>
+                                {states.isImport && <Col className="col-md-15">
+                                    <TooltipCustom disabledIcon={true} id="rm-basic-price-currency" width={'350px'} tooltipText={basicPriceTitle()?.toolTipTextBasicPriceSelectedCurrency} />
+                                    <TextFieldHookForm
+                                        label={`Basic Price (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`}
+                                        name={"BasicPriceSelectedCurrency"}
+                                        id="rm-basic-price-currency"
+                                        type="text"
+                                        placeholder={isViewFlag ? '-' : "Enter"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        disabled={true}
+                                        handleChange={() => { }}
+                                        className=" "
+                                        customClassName=" withBorder"
+                                    />
+                                </Col>}
+                                <Col className="col-md-15">
+                                    <TooltipCustom disabledIcon={true} width={"350px"} id="rm-basic-price" tooltipText={basicPriceTitle()?.toolTipTextBasicPriceBaseCurrency} />
+                                    <TextFieldHookForm
+                                        label={labelWithUOMAndCurrency("Basic Price ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                        name={"BasicPriceBaseCurrency"}
+                                        id="rm-basic-price"
+                                        placeholder={isViewFlag ? '-' : "Enter"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        disabled={true}
+                                        className=" "
+                                        handleChange={() => { }}
+                                        customClassName=" withBorder"
+                                    />
+                                </Col>
+
+                                {states.isImport && <Col className="col-md-15">
+                                    <div className='d-flex align-items-center'>
+                                        <div className='w-100'>
+                                            <TextFieldHookForm
+                                                label={`Condition Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`}
+                                                name={"FinalConditionCostSelectedCurrency"}
+                                                placeholder={"-"}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                disabled={true}
+                                                isViewFlag={true}
+                                                className=" "
+                                                handleChange={() => { }}
+                                                customClassName=" withBorder"
+                                            />
+                                        </div>
+                                        {states.isImport && <Button
+                                            id="addRMDomestic_conditionToggle"
+                                            onClick={conditionToggle}
+                                            className={"right mt-0 mb-2"}
+                                            variant={isViewFlag ? "view-icon-primary" : true ? "plus-icon-square" : "blurPlus-icon-square"}
+                                            title={isViewFlag ? "View" : "Add"}
+                                            disabled={false}
+                                        />}
+                                    </div>
+                                </Col>}
+                                <Col className="col-md-15">
+                                    <div className='d-flex align-items-center'>
+                                        <div className='w-100'>
+                                            <TextFieldHookForm
+                                                label={labelWithUOMAndCurrency("Condition Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                                name={"FinalConditionCostBaseCurrency"}
+                                                placeholder={"-"}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                disabled={true}
+                                                isViewFlag={true}
+                                                className=" "
+                                                handleChange={() => { }}
+                                                customClassName=" withBorder"
+                                            />
+                                        </div>
+                                        {!states.isImport && <Button
+                                            id="addRMDomestic_conditionToggle"
+                                            onClick={conditionToggle}
+                                            className={"right mt-0 mb-2"}
+                                            variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
+                                            title={isViewFlag ? "View" : "Add"}
+                                        />}
+                                    </div>
+                                </Col>
+
+                            </>}
+                            {states.isImport &&
+                                <Col className="col-md-15">
+                                    <TooltipCustom disabledIcon={true} id="rm-net-cost-currency" tooltipText={netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
+                                    <TextFieldHookForm
+                                        label={`Net Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`}
+                                        name={"NetLandedCostSelectedCurrency"}
+                                        id="rm-net-cost-currency"
+                                        placeholder={"-"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        disabled={true}
+                                        className=" "
+                                        handleChange={() => { }}
+                                        customClassName=" withBorder"
+                                    />
+                                </Col>}
+                            <Col className="col-md-15">
+                                <TooltipCustom disabledIcon={true} id="bop-net-cost-currency" tooltipText={netCostTitle()?.toolTipTextNetCostBaseCurrency} />
                                 <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Circle Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"CircleScrapCostBaseCurrency"}
-                                    placeholder={props.isViewFlag ? '-' : "Enter"}
-                                    id="rm-circle-base-currency"
+                                    label={labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                    name={"NetLandedCostBaseCurrency"}
+                                    id="bop-net-cost-currency"
+                                    placeholder={"-"}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                    disabled={true}
                                     className=" "
-                                    customClassName=" withBorder"
                                     handleChange={() => { }}
-                                    errors={errors.CircleScrapCostBaseCurrency}
+                                    customClassName=" withBorder"
                                 />
+                            </Col>
+                            <Col className="col-md-15">
+                                <div className="inputbox date-section mb-5">
+                                    <DatePickerHookForm
+                                        name={`effectiveDate`}
+                                        label={'Effective Date'}
+                                        rules={{ required: true }}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        selected={state.effectiveDate !== "" ? DayTime(state.effectiveDate).format('DD/MM/YYYY') : ""}
+                                        handleChange={handleEffectiveDateChange}
+                                        showMonthDropdown
+                                        showYearDropdown
+                                        dateFormat="DD/MM/YYYY"
+                                        dropdownMode="select"
+                                        placeholder="Select date"
+                                        customClassName="withBorder"
+                                        className="withBorder"
+                                        autoComplete={"off"}
+                                        disabledKeyboardNavigation
+                                        onChangeRaw={(e) => e.preventDefault()}
+                                        disabled={false}
+                                        mandatory={true}
+                                        errors={errors && errors.effectiveDate}
+                                    />
+                                </div>
                             </Col>
                         </>
-                    }{RMIndex && <>
-                        {states.isImport && <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Local Logistic ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                name={"LocalLogisticSelectedCurrency"}
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: false,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                handleChange={() => { }}
-                                className=" "
-                                customClassName=" withBorder"
-                                errors={errors.LocalLogisticSelectedCurrency}
-                            />
-                        </Col>}
 
-                        <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Local Logistic ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                name={"LocalLogisticBaseCurrency"}
-                                placeholder={"-"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: true,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                className=" "
-                                handleChange={() => { }}
-                                customClassName=" withBorder"
-                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                mandatory={true}
-                                errors={errors.LocalLogisticBaseCurrency}
-                            />
-                        </Col>
-                        {states.isImport && <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Yield Loss ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                name={"YieldLossSelectedCurrency"}
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: false,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                handleChange={() => { }}
-                                className=" "
-                                customClassName=" withBorder"
-                                errors={errors.YieldLossSelectedCurrency}
-                            />
-                        </Col>}
-                        <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Yield Loss ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                name={"YieldLossBaseCurrency"}
-                                placeholder={"-"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: true,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                className=" "
-                                handleChange={() => { }}
-                                customClassName=" withBorder"
-                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                mandatory={true}
-                                errors={errors.YieldLossBaseCurrency}
-                            />
-                        </Col>
-                        {states.isImport && <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Packaging and Freight ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                name={"PackagingAndFreightSelectedCurrency"}
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: false,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                handleChange={() => { }}
-                                className=" "
-                                customClassName=" withBorder"
-                                errors={errors.PackagingAndFreightSelectedCurrency}
-                            />
-                        </Col>}
-                        <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Packaging and Freight ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                name={"PackagingAndFreightBaseCurrency"}
-                                placeholder={"-"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: true,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                className=" "
-                                handleChange={() => { }}
-                                customClassName=" withBorder"
-                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                mandatory={true}
-                                errors={errors.PackagingAndFreightBaseCurrency}
-                            />
-                        </Col>
-                        {states.isImport && <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Overhead Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                name={"OverheadCostSelectedCurrency"}
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: false,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                handleChange={() => { }}
-                                className=" "
-                                customClassName=" withBorder"
-                                errors={errors.OverheadCostSelectedCurrency}
-                            />
-                        </Col>}
-                        <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Overhead Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                name={"OverheadCostBaseCurrency"}
-                                placeholder={"-"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: true,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                className=" "
-                                handleChange={() => { }}
-                                customClassName=" withBorder"
-                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                mandatory={true}
-                                errors={errors.OverheadCostBaseCurrency}
-                            />
-                        </Col>
-                        {states.isImport && <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Profit Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                name={"ProfitCostSelectedCurrency"}
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: false,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                handleChange={() => { }}
-                                className=" "
-                                customClassName=" withBorder"
-                                errors={errors.ProfitCostSelectedCurrency}
-                            />
-                        </Col>}
-                        <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Profit Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                name={"ProfitCostBaseCurrency"}
-                                placeholder={"-"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: true,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                className=" "
-                                handleChange={() => { }}
-                                customClassName=" withBorder"
-                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                mandatory={true}
-                                errors={errors.ProfitCostBaseCurrency}
-                            />
-                        </Col>
-                        {states.isImport && <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Discount Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                name={"DiscountCostSelectedCurrency"}
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: false,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                handleChange={() => { }}
-                                className=" "
-                                customClassName=" withBorder"
-                                errors={errors.DiscountCostSelectedCurrency}
-                            />
-                        </Col>}
-                        <Col className="col-md-15">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Discount Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                name={"DiscountCostBaseCurrency"}
-                                placeholder={"-"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                    required: true,
-                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                }}
-                                className=" "
-                                handleChange={() => { }}
-                                customClassName=" withBorder"
-                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                mandatory={true}
-                                errors={errors.DiscountCostBaseCurrency}
-                            />
-                        </Col>
-                    </>}
-                    {/* //RE */}
-                    {IsShowFreightAndShearingCostFields() && (
-                        <>
-                            {states.isImport && <Col className="col-md-15">{/* //RE */}
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Freight Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"FreightChargeSelectedCurrency"}
-                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                    className=" "
-                                    handleChange={() => { }}
-                                    maxLength="15"
-                                    customClassName=" withBorder"
-
-                                />
-                            </Col>}
-                            <Col className="col-md-15">
-                                {states.isImport && <TooltipCustom disabledIcon={true} id="rm-freight-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextFreightCostBaseCurrency} />}                               <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Freight Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"FreightChargeBaseCurrency"}
-                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                    id="rm-freight-base-currency"
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                    className=" "
-                                    handleChange={() => { }}
-                                    customClassName=" withBorder"
-                                />
-                            </Col>
-                            {/* //RE */}
-                            {states.isImport && <Col className="col-md-15">{/* //RE */}
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Shearing Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"ShearingCostSelectedCurrency"}
-                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                    className=" "
-                                    handleChange={() => { }}
-                                    customClassName=" withBorder"
-                                />
-                            </Col>}
-                            <Col className="col-md-15">
-                                {states.isImport && <TooltipCustom disabledIcon={true} id="rm-shearing-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextShearingCostBaseCurrency} />}
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Shearing Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"ShearingCostBaseCurrency"}
-                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                    id="rm-shearing-base-currency"
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                    className=" "
-                                    handleChange={() => { }}
-                                    customClassName=" withBorder"
-                                />
-                            </Col>
-                        </>)}
-                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && states.costingTypeId === ZBCTypeId && <>
-                        {states.isImport && <Col className="col-md-15">
-                            <TooltipCustom disabledIcon={true} id="rm-basic-price-currency" width={'350px'} tooltipText={basicPriceTitle()?.toolTipTextBasicPriceSelectedCurrency} />
-                            <TextFieldHookForm
-                                label={`Basic Price (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`}
-                                name={"BasicPriceSelectedCurrency"}
-                                id="rm-basic-price-currency"
-                                type="text"
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                disabled={true}
-                                handleChange={() => { }}
-                                className=" "
-                                customClassName=" withBorder"
-                            />
-                        </Col>}
-                        <Col className="col-md-15">
-                            <TooltipCustom disabledIcon={true} width={"350px"} id="rm-basic-price" tooltipText={basicPriceTitle()?.toolTipTextBasicPriceBaseCurrency} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Basic Price ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                name={"BasicPriceBaseCurrency"}
-                                id="rm-basic-price"
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                disabled={true}
-                                className=" "
-                                handleChange={() => { }}
-                                customClassName=" withBorder"
-                            />
-                        </Col>
-
-                        {states.isImport && <Col className="col-md-15">
-                            <div className='d-flex align-items-center'>
-                                <div className='w-100'>
-                                    <TextFieldHookForm
-                                        label={`Condition Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`}
-                                        name={"FinalConditionCostSelectedCurrency"}
-                                        placeholder={"-"}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        disabled={true}
-                                        isViewFlag={true}
-                                        className=" "
-                                        handleChange={() => { }}
-                                        customClassName=" withBorder"
-                                    />
-                                </div>
-                                {states.isImport && <Button
-                                    id="addRMDomestic_conditionToggle"
-                                    onClick={conditionToggle}
-                                    className={"right mt-0 mb-2"}
-                                    variant={isViewFlag ? "view-icon-primary" : true ? "plus-icon-square" : "blurPlus-icon-square"}
-                                    title={isViewFlag ? "View" : "Add"}
-                                    disabled={false}
-                                />}
-                            </div>
-                        </Col>}
-                        <Col className="col-md-15">
-                            <div className='d-flex align-items-center'>
-                                <div className='w-100'>
-                                    <TextFieldHookForm
-                                        label={labelWithUOMAndCurrency("Condition Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                        name={"FinalConditionCostBaseCurrency"}
-                                        placeholder={"-"}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        disabled={true}
-                                        isViewFlag={true}
-                                        className=" "
-                                        handleChange={() => { }}
-                                        customClassName=" withBorder"
-                                    />
-                                </div>
-                                {!states.isImport && <Button
-                                    id="addRMDomestic_conditionToggle"
-                                    onClick={conditionToggle}
-                                    className={"right mt-0 mb-2"}
-                                    variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
-                                    title={isViewFlag ? "View" : "Add"}
-                                />}
-                            </div>
-                        </Col>
-
-                    </>}
-                    {states.isImport &&
-                        <Col className="col-md-15">
-                            <TooltipCustom disabledIcon={true} id="rm-net-cost-currency" tooltipText={netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
-                            <TextFieldHookForm
-                                label={`Net Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`}
-                                name={"NetLandedCostSelectedCurrency"}
-                                id="rm-net-cost-currency"
-                                placeholder={"-"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                disabled={true}
-                                className=" "
-                                handleChange={() => { }}
-                                customClassName=" withBorder"
-                            />
-                        </Col>}
-                    <Col className="col-md-15">
-                        <TooltipCustom disabledIcon={true} id="bop-net-cost-currency" tooltipText={netCostTitle()?.toolTipTextNetCostBaseCurrency} />
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                            name={"NetLandedCostBaseCurrency"}
-                            id="bop-net-cost-currency"
-                            placeholder={"-"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            disabled={true}
-                            className=" "
-                            handleChange={() => { }}
-                            customClassName=" withBorder"
-                        />
-                    </Col>
-                </>
-                {RMIndex && <><Col className="col-md-15">
-                    <div className="inputbox date-section">
-                        <DatePickerHookForm
-                            name={`fromDate`}
-                            label={'From Date'}
-                            // handleChange={(date) => {
-                            //     handleFromEffectiveDateChange(date);
-                            // }}
-                            rules={{ required: true }}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            showMonthDropdown
-                            showYearDropdown
-                            dateFormat="DD/MM/YYYY"
-                            // maxDate={maxDate}
-                            placeholder="Select date"
-                            customClassName="withBorder"
-                            className="withBorder"
-                            autoComplete={"off"}
-                            disabledKeyboardNavigation
-                            onChangeRaw={(e) => e.preventDefault()}
-                            disabled={false}
-                            mandatory={true}
-                            errors={errors && errors.fromDate}
-                        />
                     </div>
-                </Col>
-                    <Col className="col-md-15">
-                        <div className="inputbox date-section">
-                            <DatePickerHookForm
-                                name={`toDate`}
-                                label={'To Date'}
-                                // handleChange={(date) => {
-                                //     handleToEffectiveDateChange(date);
-                                // }}
-                                rules={{ required: true }}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                showMonthDropdown
-                                showYearDropdown
-                                dateFormat="DD/MM/YYYY"
-                                // minDate={minDate}
-                                placeholder="Select date"
-                                customClassName="withBorder"
-                                className="withBorder"
-                                autoComplete={"off"}
-                                disabledKeyboardNavigation
-                                onChangeRaw={(e) => e.preventDefault()}
-                                disabled={false}
-                                mandatory={true}
-                                errors={errors && errors.toDate}
-                            />
-                        </div>
-                    </Col></>}
-                <Col className="col-md-15">
-                    <div className="inputbox date-section mb-5">
-                        <DatePickerHookForm
-                            name={`effectiveDate`}
-                            label={'Effective Date'}
-                            rules={{ required: true }}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            selected={state.effectiveDate !== "" ? DayTime(state.effectiveDate).format('DD/MM/YYYY') : ""}
-                            handleChange={handleEffectiveDateChange}
-                            showMonthDropdown
-                            showYearDropdown
-                            dateFormat="DD/MM/YYYY"
-                            dropdownMode="select"
-                            placeholder="Select date"
-                            customClassName="withBorder"
-                            className="withBorder"
-                            autoComplete={"off"}
-                            disabledKeyboardNavigation
-                            onChangeRaw={(e) => e.preventDefault()}
-                            disabled={false}
-                            mandatory={true}
-                            errors={errors && errors.effectiveDate}
-                        />
-                    </div>
-                </Col>
-
+                }
             </Row >
             {
                 getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && state.isOpenConditionDrawer &&
@@ -1918,6 +1738,19 @@ function AddRMFinancialDetails(props) {
                     currencyValue={state.currencyValue}
                 />
             }
+            {
+                true && state.isOpenOtherCostDrawer &&
+                <AddOtherCostDrawer
+                    isOpen={state.isOpenOtherCostDrawer}
+                    rmTableData={state.otherCostTableData}
+                    closeDrawer={closeOtherCostToggle}
+                    anchor={'right'}
+                    rawMaterial={true}
+                    rmBasicRate={state.totalBasicRate}
+                    ViewMode={isViewFlag}
+                />
+            }
+
         </Fragment >
     )
 }

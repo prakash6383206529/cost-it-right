@@ -128,6 +128,7 @@ export const API = {
   deleteCommodityStandardization: `${BASE_URL}/masters-material/delete-commodity-standardization`,
   deleteIndexDetailData: `${BASE_URL}/masters-material/delete-commodity-index-rate-details`,
   getAssociatedMaterial: `${BASE_URL}//masters-material/get-material-type`,
+  getLastRevisionRawMaterialDetails: `${BASE_URL}/masters-raw-material/get-last-revision-raw-material-details`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -1272,6 +1273,9 @@ export const GET_COMMODITY_STANDARD_FOR_DOWNLOAD = 'GET_COMMODITY_STANDARD_FOR_D
 export const GET_COMMODITY_STANDARD_DATALIST_SUCCESS = 'GET_COMMODITY_STANDARD_DATALIST_SUCCESS'
 export const GET_OTHER_COST_SELECTLIST = 'GET_OTHER_COST_SELECTLIST'
 export const GET_OTHER_COST_APPLICABILITY_SELECTLIST = 'GET_OTHER_COST_APPLICABILITY_SELECTLIST'
+export const SET_COMMODITY_DETAILS = 'SET_COMMODITY_DETAILS'
+export const SET_OTHER_COST_DETAILS = 'SET_OTHER_COST_DETAILS'
+export const GET_LAST_REVISION_RAW_MATERIAL_DETAILS = 'GET_LAST_REVISION_RAW_MATERIAL_DETAILS'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
@@ -3135,7 +3139,7 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 export const PartTypeIDFromAPI = 2
-export const RMIndex = false
+export const RMIndex = true
 export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
 

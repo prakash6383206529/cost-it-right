@@ -3,6 +3,7 @@ import { Row, Col, Label } from 'reactstrap';
 import AddRMDetails from "./AddRMDetails"
 import AddRMFinancialDetails from "./AddRMFinancialDetails"
 import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, RM_MASTER_ID, VBCTypeId, ZBCTypeId } from "../../../config/constants"
+import { getCommodityIndexRateAverage } from '../../../../src/actions/Common';
 import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { useForm, Controller, useWatch, } from 'react-hook-form';
@@ -17,7 +18,7 @@ import { CheckApprovalApplicableMaster, checkForDecimalAndNull, checkForNull, ge
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { fetchSpecificationDataAPI } from "../../../actions/Common";
-import { SetRawMaterialDetails, createRM, getRMDataById, updateRMAPI } from "../actions/Material";
+import { SetRawMaterialDetails, createRM, getRMDataById, updateRMAPI, getMaterialTypeDataAPI } from "../actions/Material";
 import DayTime from "../../common/DayTimeWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
 import { isFinalApprover } from "../../costing/actions/Approval";
@@ -25,9 +26,12 @@ import { checkFinalUser } from "../../costing/actions/Costing";
 import { getUsersMasterLevelAPI } from "../../../actions/auth/AuthActions";
 import MasterSendForApproval from "../MasterSendForApproval";
 import WarningMessage from "../../common/WarningMessage";
+import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
+import HeaderTitle from "../../common/HeaderTitle";
+import { setCommodityDetails, setOtherCostDetails } from "../actions/Indexation";
 
 function AddRMMaster(props) {
-    const { data } = props
+    const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -50,20 +54,82 @@ function AddRMMaster(props) {
         approvalObj: {},
         levelDetails: {},
         isDateChanged: false,
+        isCommodityOpen: false,
+        commodityDetails: [],
+        avgBasicRate: [],
+        totalBasicRate: 0,
+        materialCommodityIndexRateDetails: [],
     })
     const isViewFlag = data?.isViewFlag ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
-    const fieldValue = useWatch({
+    const { commodityDetailsArray } = useSelector((state) => state.indexation)
+    const { otherCostDetailsArray } = useSelector((state) => state.indexation)
+
+    const avgValues = useWatch({
         control,
-        name: ['Remarks']
+        name: ['Material', 'Index', 'ExchangeSource', 'fromDate', 'toDate']
     })
+    const fieldValueGrade = useWatch({
+        control,
+        name: ['RawMaterialGrade']
+    })
+
     useEffect(() => {
-    }, [fieldValue])
+        if (getValues('Material') && getValues('Index') && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate')) {
+            dispatch(getCommodityIndexRateAverage(
+                getValues('Material')?.value,
+                getValues('Index').value,
+                '',
+                '',
+                getValues('ExchangeSource')?.label,
+                DayTime(getValues('fromDate')).format('YYYY-MM-DD'),
+                DayTime(getValues('toDate')).format('YYYY-MM-DD'),
+                (res) => {
+                    setValue('UnitOfMeasurement', { label: res?.data?.Data, value: res?.data?.Identity })
+                    const updatedCommodityDetails = state.commodityDetails.map(detail => {
+                        const avgRate = res?.data?.DataList.find(rate => rate.MaterialCommodityStandardDetailsId === detail.MaterialCommodityStandardDetailsId);
+                        return {
+                            ...detail,
+                            BasicRateConversion: avgRate ? avgRate.RateConversionPerConvertedUOM : null,
+                            BasicRate: avgRate ? avgRate.RatePerConvertedUOM : null,
+                            ExchangeRate: avgRate ? avgRate.ExchangeRate : null
+                        };
+                    });
+                    setState(prevState => ({ ...prevState, commodityDetails: updatedCommodityDetails }));
+                    dispatch(setCommodityDetails(updatedCommodityDetails))
+                    if (res?.status === 200 && res?.data?.Result === false) {
+                        Toaster.warning(res?.data?.Message)
+                        return false
+                    }
+                }
+            ));
+        }
+    }, [avgValues])
+
+    useEffect(() => {
+
+        if (getValues('RawMaterialGrade')) {
+            const commodityVal = getValues('RawMaterialGrade').value;
+            dispatch(getMaterialTypeDataAPI('', commodityVal, (res) => {
+                if (res) {
+                    let Data = res.data.Data
+                    setValue('Material', { label: Data.MaterialType, value: Data.MaterialTypeId })
+                    dispatch(getMaterialTypeDataAPI(Data.MaterialTypeId, '', (res) => {
+                        let Data = res.data.Data
+                        setState(prevState => ({ ...prevState, commodityDetails: Data.MaterialCommodityStandardDetails }))
+                    }))
+                }
+            }))
+        }
+    }, [fieldValueGrade])
+
     useEffect(() => {
         getDetails(data)
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
         return () => {
             dispatch(SetRawMaterialDetails({ states: {}, Technology: {}, ShowScrapKeys: {} }, () => { }))
+            dispatch(setCommodityDetails([]))
+            dispatch(setOtherCostDetails([]))
         }
     }, [])
     useEffect(() => {
@@ -71,7 +137,6 @@ function AddRMMaster(props) {
             commonFunction()
         }
     }, [state.costingTypeId])
-
 
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     /**
@@ -134,9 +199,11 @@ function AddRMMaster(props) {
                     const Data = res?.data?.Data
                     if (Data && Object.keys(Data).length > 0) {
                         setState(prevState => ({
-                            ...prevState, DataToChange: Data, isImport: Data.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? true : false, isLoader: false, costingTypeId: Data.CostingTypeId
-
+                            ...prevState, DataToChange: Data, isImport: Data.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? true : false, isLoader: false, costingTypeId: Data.CostingTypeId, commodityDetails: Data?.MaterialCommodityIndexRateDetails
                         }))
+                        dispatch(setOtherCostDetails(Data?.RawMaterialOtherCostDetails))
+                        dispatch(setCommodityDetails(Data?.MaterialCommodityIndexRateDetails))
+                        console.log('Data?.MaterialCommodityIndexRateDetails: ', Data?.MaterialCommodityIndexRateDetails);
                         if (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
                             dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
                                 setTimeout(() => {
@@ -164,9 +231,9 @@ function AddRMMaster(props) {
         }
     }
     /**
- * @method onRmToggle
- * @description RM TOGGLE
- */
+* @method onRmToggle
+* @description RM TOGGLE
+*/
     const onRmToggle = () => {
         setState(prevState => ({ ...prevState, isImport: !prevState.isImport }))
     }
@@ -180,6 +247,7 @@ function AddRMMaster(props) {
 
 
     const onSubmit = debounce(handleSubmit((values) => {
+        // console.log('values: ', values);
 
         const { DataToChange } = state
         let scrapRate = ''
@@ -271,7 +339,6 @@ function AddRMMaster(props) {
             "CutOffPriceInINR": state?.isImport ? values?.cutOffPriceBaseCurrency : 0,
             "EffectiveDate": DayTime(values?.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
             "LoggedInUserId": loggedInUserId(),
-            // "IsFinancialDataChanged": true,
             "Plant": plantArray,
             "VendorPlant": [],
             "Attachements": rawMaterailDetails?.Files,
@@ -295,7 +362,20 @@ function AddRMMaster(props) {
             "UOMToScrapUOMRatio": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.ConversionRatio : '',
             "CalculatedFactor": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.CalculatedFactor : '',
             "ScrapRatePerScrapUOM": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? state?.isImport ? values?.ScrapRatePerScrapUOM : values.ScrapRatePerScrapUOMBaseCurrency : '',
-            "ScrapRatePerScrapUOMConversion": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true || state?.isImport ? values?.ScrapRatePerScrapUOMBaseCurrency : ''
+            "ScrapRatePerScrapUOMConversion": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true || state?.isImport ? values?.ScrapRatePerScrapUOMBaseCurrency : '',
+            "MaterialCommodityIndexRateDetails": commodityDetailsArray,
+            "FromDate": DayTime(values?.fromDate).format('YYYY-MM-DD HH:mm:ss'),
+            "ToDate": DayTime(values?.toDate).format('YYYY-MM-DD HH:mm:ss'),
+            "ExchangeRateSourceName": values?.ExchangeSource?.label,
+            "IndexExchangeId": values?.Index?.value,
+            "IndexExchangeName": values?.Index?.label,
+            "FrequencyOfSettlement": values?.frequencyOfSettlement?.label,
+            "CommodityNetCost": values.BasicPriceBaseCurrency,
+            "CommodityNetCostConversion": values.BasicPriceBaseCurrency,
+            "OtherNetCost": values.OtherCostBaseCurrency,
+            "OtherNetCostConversion": values.OtherCostBaseCurrency,
+            "RawMaterialOtherCostDetails": otherCostDetailsArray,
+
         }
 
 
@@ -310,10 +390,9 @@ function AddRMMaster(props) {
             && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (freightCost === checkForNull(DataToChange?.RMFreightCost))
             && (shearingCost === checkForNull(DataToChange?.RMShearingCost)) && (circleScrapCost === checkForNull(DataToChange?.JaliScrapCost)) && (machiningScrapCost === checkForNull(DataToChange?.MachiningScrapRate))
         let nonFinancialDataNotChanged = (JSON.stringify(rawMaterailDetails.Files) === JSON.stringify(DataToChange?.FileList) && values?.Remarks === DataToChange?.Remark)
+        console.log('CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.isFinalApprovar && !financialDataNotChanged: ', CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.isFinalApprovar && !financialDataNotChanged);
         if (state.isEditFlag) {
             if (!isRMAssociated) {
-
-
 
                 if (financialDataNotChanged && nonFinancialDataNotChanged) {
                     if (!state.isFinalApprovar) {
@@ -357,6 +436,7 @@ function AddRMMaster(props) {
             }
         }
 
+
     }), 500);
     const showSendForApproval = () => {
         if (rawMaterailDetails && (rawMaterailDetails?.financialDataChanged || rawMaterailDetails.netCostChanged)) {
@@ -367,7 +447,6 @@ function AddRMMaster(props) {
             return false
         }
     }
-    // 
 
     return (
         state.isLoader ? <LoaderCustom customClass="loader-center" /> :
@@ -457,9 +536,9 @@ function AddRMMaster(props) {
                         useWatch={useWatch}
                         DataToChange={state.DataToChange}
                         data={data}
-                        EditAccessibilityRMANDGRADE={props.EditAccessibilityRMANDGRADE}
-                        AddAccessibilityRMANDGRADE={props.AddAccessibilityRMANDGRADE}
-                        commonFunction={commonFunction} />
+                        commonFunction={commonFunction}
+                        AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
+                        EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE} />
                     <AddRMFinancialDetails states={state}
                         Controller={Controller}
                         control={control}
@@ -469,54 +548,58 @@ function AddRMMaster(props) {
                         errors={errors}
                         useWatch={useWatch}
                         DataToChange={state.DataToChange}
+                        data={data}
+                        totalBasicRate={state.totalBasicRate}
+                        commodityDetails={state.commodityDetails}
+                    />
+                    <RemarksAndAttachments Controller={Controller}
+                        control={control}
+                        register={register}
+                        setValue={setValue}
+                        getValues={getValues}
+                        errors={errors}
+                        useWatch={useWatch}
+                        DataToChange={state.DataToChange}
                         data={data} />
-                    <Row>
-                        <RemarksAndAttachments Controller={Controller}
-                            control={control}
-                            register={register}
-                            setValue={setValue}
-                            getValues={getValues}
-                            errors={errors}
-                            useWatch={useWatch}
-                            DataToChange={state.DataToChange}
-                            data={data} />
+                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                        <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                            {state.disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
+                            <Button
+                                id="addBOPIMport_cancel"
+                                className="mr15"
+                                onClick={cancel}
+                                disabled={false}
+                                variant="cancel-btn"
+                                icon="cancel-icon"
+                                buttonName="Cancel"
+                            />
+                            {!isViewFlag && <>
+                                {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.isFinalApprovar) && getConfigurationKey().IsMasterApprovalAppliedConfigure) || (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.CostingTypePermission) ?
+                                    <Button
+                                        id="addRMDomestic_sendForApproval"
+                                        type="button"
+                                        className="approval-btn mr5"
+                                        // disabled={isViewFlag || state.disableSendForApproval}
+                                        disabled={false}
+                                        onClick={onSubmit}
+                                        icon={showSendForApproval() ? "send-for-approval" : "save-icon"}
+                                        buttonName={showSendForApproval() ? "Send For Approval" : 'Update'}
+                                    />
+                                    :
+                                    <Button
+                                        id="addRMDomestic_updateSave"
+                                        type="button"
+                                        className="mr5"
+                                        // disabled={isViewFlag || state.disableSendForApproval}
+                                        disabled={false}
+                                        onClick={onSubmit}
+                                        icon={"save-icon"}
+                                        buttonName={data.isEditFlag ? "Update" : "Save"}
+                                    />
+                                }
+                            </>}
+                        </div>
                     </Row>
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer"></Row>
-                    <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
-                        {(state.disableSendForApproval && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
-                        <Button
-                            id="addBOPIMport_cancel"
-                            className="mr15"
-                            onClick={cancel}
-                            disabled={false}
-                            variant="cancel-btn"
-                            icon="cancel-icon"
-                            buttonName="Cancel"
-                        />
-                        {!isViewFlag && <>
-                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.isFinalApprovar) && getConfigurationKey().IsMasterApprovalAppliedConfigure) || (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.CostingTypePermission) ?
-                                <Button
-                                    id="addRMDomestic_sendForApproval"
-                                    type="button"
-                                    className="approval-btn mr5"
-                                    disabled={isViewFlag || state.disableSendForApproval}
-                                    onClick={onSubmit}
-                                    icon={showSendForApproval() ? "send-for-approval" : "save-icon"}
-                                    buttonName={showSendForApproval() ? "Send For Approval" : 'Update'}
-                                />
-                                :
-                                <Button
-                                    id="addRMDomestic_updateSave"
-                                    type="button"
-                                    className="mr5"
-                                    disabled={isViewFlag || (state.disableSendForApproval && getConfigurationKey().IsMasterApprovalAppliedConfigure)}
-                                    onClick={onSubmit}
-                                    icon={"save-icon"}
-                                    buttonName={data.isEditFlag ? "Update" : "Save"}
-                                />
-                            }
-                        </>}
-                    </div>
                 </form>
                 {
                     state.approveDrawer && (
