@@ -451,117 +451,119 @@ function AddRMMaster(props) {
     return (
         state.isLoader ? <LoaderCustom customClass="loader-center" /> :
             <Fragment>
-                <form className="add-min-height">
-                    <Row>
-                        <Col md="4" className="switch mb15">
-                            <label className="switch-level">
-                                <div className={"left-title"}>Domestic</div>
-                                <Switch
-                                    onChange={onRmToggle}
-                                    checked={state.isImport}
-                                    id="normal-switch"
-                                    disabled={data.isEditFlag || isViewFlag}
-                                    background="#4DC771"
-                                    onColor="#4DC771"
-                                    onHandleColor="#ffffff"
-                                    offColor="#4DC771"
-                                    uncheckedIcon={false}
-                                    checkedIcon={false}
-                                    height={20}
-                                    width={46}
-                                />
-                                <div className={"right-title"}>Import</div>
-                            </label>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col md="12">
-                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id="rm_domestic_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
-                                <input
-                                    type="radio"
-                                    name="costingHead"
-                                    className='zero-based'
-                                    id='zeroBased'
-                                    checked={
-                                        state.costingTypeId === ZBCTypeId ? true : false
-                                    }
-                                    onClick={() =>
-                                        onPressVendor(ZBCTypeId)
-                                    }
-                                    disabled={data.isEditFlag || isViewFlag}
-                                />{" "}
-                                <span>Zero Based</span>
-                            </Label>}
-                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id="rm_domestic_form_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
-                                <input
-                                    type="radio"
-                                    name="costingHead"
-                                    className='vendor-based'
-                                    id='vendorBased'
-                                    checked={
-                                        state.costingTypeId === VBCTypeId ? true : false
-                                    }
-                                    onClick={() =>
-                                        onPressVendor(VBCTypeId)
-                                    }
-                                    disabled={data.isEditFlag || isViewFlag}
-                                />{" "}
-                                <span>Vendor Based</span>
-                            </Label>}
-                            {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
-                                <input
-                                    type="radio"
-                                    name="costingHead"
-                                    className='customer-based'
-                                    id='customerBased'
-                                    checked={
-                                        state.costingTypeId === CBCTypeId ? true : false
-                                    }
-                                    onClick={() =>
-                                        onPressVendor(CBCTypeId)
-                                    }
-                                    disabled={data.isEditFlag || isViewFlag}
-                                />{" "}
-                                <span>Customer Based</span>
-                            </Label>}
-                        </Col>
-                    </Row>
-                    <AddRMDetails states={state}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                        useWatch={useWatch}
-                        DataToChange={state.DataToChange}
-                        data={data}
-                        commonFunction={commonFunction}
-                        AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
-                        EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE} />
-                    <AddRMFinancialDetails states={state}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                        useWatch={useWatch}
-                        DataToChange={state.DataToChange}
-                        data={data}
-                        totalBasicRate={state.totalBasicRate}
-                        commodityDetails={state.commodityDetails}
-                    />
-                    <RemarksAndAttachments Controller={Controller}
-                        control={control}
-                        register={register}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                        useWatch={useWatch}
-                        DataToChange={state.DataToChange}
-                        data={data} />
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                <form>
+                    <div className="rm-master-form">
+                        <Row>
+                            <Col md="4" className="switch mb15">
+                                <label className="switch-level">
+                                    <div className={"left-title"}>Domestic</div>
+                                    <Switch
+                                        onChange={onRmToggle}
+                                        checked={state.isImport}
+                                        id="normal-switch"
+                                        disabled={data.isEditFlag || isViewFlag}
+                                        background="#4DC771"
+                                        onColor="#4DC771"
+                                        onHandleColor="#ffffff"
+                                        offColor="#4DC771"
+                                        uncheckedIcon={false}
+                                        checkedIcon={false}
+                                        height={20}
+                                        width={46}
+                                    />
+                                    <div className={"right-title"}>Import</div>
+                                </label>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md="12">
+                                {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id="rm_domestic_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                    <input
+                                        type="radio"
+                                        name="costingHead"
+                                        className='zero-based'
+                                        id='zeroBased'
+                                        checked={
+                                            state.costingTypeId === ZBCTypeId ? true : false
+                                        }
+                                        onClick={() =>
+                                            onPressVendor(ZBCTypeId)
+                                        }
+                                        disabled={data.isEditFlag || isViewFlag}
+                                    />{" "}
+                                    <span>Zero Based</span>
+                                </Label>}
+                                {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id="rm_domestic_form_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                    <input
+                                        type="radio"
+                                        name="costingHead"
+                                        className='vendor-based'
+                                        id='vendorBased'
+                                        checked={
+                                            state.costingTypeId === VBCTypeId ? true : false
+                                        }
+                                        onClick={() =>
+                                            onPressVendor(VBCTypeId)
+                                        }
+                                        disabled={data.isEditFlag || isViewFlag}
+                                    />{" "}
+                                    <span>Vendor Based</span>
+                                </Label>}
+                                {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                                    <input
+                                        type="radio"
+                                        name="costingHead"
+                                        className='customer-based'
+                                        id='customerBased'
+                                        checked={
+                                            state.costingTypeId === CBCTypeId ? true : false
+                                        }
+                                        onClick={() =>
+                                            onPressVendor(CBCTypeId)
+                                        }
+                                        disabled={data.isEditFlag || isViewFlag}
+                                    />{" "}
+                                    <span>Customer Based</span>
+                                </Label>}
+                            </Col>
+                        </Row>
+                        <AddRMDetails states={state}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            setValue={setValue}
+                            getValues={getValues}
+                            errors={errors}
+                            useWatch={useWatch}
+                            DataToChange={state.DataToChange}
+                            data={data}
+                            commonFunction={commonFunction}
+                            AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
+                            EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE} />
+                        <AddRMFinancialDetails states={state}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            setValue={setValue}
+                            getValues={getValues}
+                            errors={errors}
+                            useWatch={useWatch}
+                            DataToChange={state.DataToChange}
+                            data={data}
+                            totalBasicRate={state.totalBasicRate}
+                            commodityDetails={state.commodityDetails}
+                        />
+                        <RemarksAndAttachments Controller={Controller}
+                            control={control}
+                            register={register}
+                            setValue={setValue}
+                            getValues={getValues}
+                            errors={errors}
+                            useWatch={useWatch}
+                            DataToChange={state.DataToChange}
+                            data={data} />
+                    </div>
+                    <Row className="sf-btn-footer no-gutters justify-content-between sticky-btn-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                             {state.disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                             <Button
