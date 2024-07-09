@@ -120,7 +120,7 @@ const [totalCostCalculated, setTotalCostCalculated] = useState(0);
         },
     ]
     const setWeightCalculatorData = (data) => {
-        console.log('data: ', data);
+        
         
         // Set form values
         setValue('castingWeight', checkForDecimalAndNull(data.CastingWeight, getConfigurationKey().NoOfDecimalForInputOutput));
@@ -325,8 +325,8 @@ const handleAddBinderMaterialsToTable = () => {
         const castingWeight = checkForNull(getValues("castingWeight"));
         const finishedWeight = checkForNull(getValues('finishedWeight'));
         const recovery = checkForNull(getValues('recovery'));
-        const NetRMRate = checkForNull(getValues('NetRMRate'));
-        const NetScrapRate = checkForNull(getValues('NetScrapRate'));
+        const NetRMRate = checkForNull(getValues('NetRMRate')); //change it into state for the correct calculations 
+        const NetScrapRate = checkForNull(getValues('NetScrapRate'));// keep in mind to make the same state field which we are sending in keys for calculations
         const otherCost = checkForNull(getValues('otherCost'));
     
         if (castingWeight && finishedWeight && recovery !== undefined && NetScrapRate !== undefined && NetRMRate !== undefined) {

@@ -799,7 +799,7 @@ function LossStandardTable(props) {
             </thead>
             <tbody>
               {tableData &&
-                tableData.map((item, index) => {
+                tableData?.map((item, index) => {
                   return (
                     <Fragment>
                       <tr key={index}>

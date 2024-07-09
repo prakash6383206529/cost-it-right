@@ -73,7 +73,6 @@ function RawMaterialCost(props) {
   const [calculatorTypeStore, setCalculatorTypeStore] = useState(costData.TechnologyId === CORRUGATEDBOX ? item?.CostingPartDetails?.CalculatorType : '')
   const [isMultiCalculatorData, setIsMultiCalculatorData] = useState(false);
   const [headerPinned, setHeaderPinned] = useState(true)
-
   const [tourState, setTourState] = useState({
     steps: []
   })
@@ -807,7 +806,6 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
-    console.log('weightData: ', weightData);
     let tempArr = []
     let tempData = gridData[editIndex]
     let grossWeight
@@ -885,7 +883,6 @@ function RawMaterialCost(props) {
         if (Object.keys(weightData).length > 0) {
             const updatedGridData = weightData.CostingFerrousCalculationRawMaterials.map((calculatedRM, index) => {
                 const existingRM = gridData.find(item => item.RawMaterialId === calculatedRM.RawMaterialId);
-                console.log('existingRM: ', existingRM);
     
                 if (existingRM) {
                     return {
@@ -906,7 +903,7 @@ function RawMaterialCost(props) {
                 }
                 return null;
             }).filter(Boolean); // Remove any null entries
-    
+       
             setGridData(updatedGridData);
     
             // Use Promise to ensure state is updated before setting form values
@@ -966,13 +963,19 @@ function RawMaterialCost(props) {
       }
     }
   }
-
+ 
   /**
   * @method selectedIds
   * @description SELECTED IDS
   */
   const selectedIds = (tempArr) => {
+    let selectedId = [];
     tempArr && tempArr.map(el => {
+      if(Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
+        selectedId.push(el.RawMaterialId)
+        setIds(selectedId)
+        
+      }
       if (Ids.includes(el.RawMaterialId) === false) {
         let selectedIds = Ids;
         selectedIds.push(el.RawMaterialId)
