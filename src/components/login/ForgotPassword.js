@@ -20,7 +20,6 @@ class ForgotPassword extends Component {
       isRedirect: false
     };
   }
-
   /**
   * @method componentDidMount
   * @description used to called after mounting component

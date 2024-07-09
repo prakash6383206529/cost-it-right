@@ -52,7 +52,7 @@ const errorFunc = (errors, field) => {
 }
 
 export const TextFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, disableErrorOverflow, id } = field
+  const { label, Controller, placeholder, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, disableErrorOverflow, id } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${hidden ? 'd-none' : ''}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -90,7 +90,7 @@ export const TextFieldHookForm = (field) => {
                     name={name}
                     className={InputClassName}
                     disabled={isDisabled}
-                    placeholder={isDisabled ? '-' : 'Enter'}
+                    placeholder={isDisabled ? '-' : placeholder || 'Enter'}
                     value={value}
                     onChange={(e) => {
                       handleChange(e);
