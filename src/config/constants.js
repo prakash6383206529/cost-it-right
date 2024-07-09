@@ -19,18 +19,8 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.8.109:8070/api/v1`
+const BASE_URL = `${process.env.REACT_APP_BASE_URLE_U}`;
 //const BASE_URL = `http://10.10.1.100:10152/api/v1`
-// const BASE_URL = `http://10.10.1.100:10172/api/v1`
-// const BASE_URL = `http://10.10.8.160/api/v1`;  //
-// const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
-// const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-// const BASE_URL = `http://10.10.8.120:81/api/v1`; 
-// const BASE_URL = `http://10.10.8.109:8070/api/v1`;
-// const BASE_URL = `https://upsapi.costitright.com/api/v1`;
-//FILE URL
-//http://10.10.8.120:1005/
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -126,6 +116,7 @@ export const API = {
   deleteCommodityStandardization: `${BASE_URL}/masters-material/delete-commodity-standardization`,
   deleteIndexDetailData: `${BASE_URL}/masters-material/delete-commodity-index-rate-details`,
   getAssociatedMaterial: `${BASE_URL}//masters-material/get-material-type`,
+  getLastRevisionRawMaterialDetails: `${BASE_URL}/masters-raw-material/get-last-revision-raw-material-details`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -1268,6 +1259,11 @@ export const GET_INDEXDATA_LIST_SUCCESS = 'GET_INDEXDATA_LIST_SUCCESS'
 export const GET_INDEXDATA_FOR_DOWNLOAD = 'GET_INDEXDATA_FOR_DOWNLOAD'
 export const GET_COMMODITY_STANDARD_FOR_DOWNLOAD = 'GET_COMMODITY_STANDARD_FOR_DOWNLOAD'
 export const GET_COMMODITY_STANDARD_DATALIST_SUCCESS = 'GET_COMMODITY_STANDARD_DATALIST_SUCCESS'
+export const GET_OTHER_COST_SELECTLIST = 'GET_OTHER_COST_SELECTLIST'
+export const GET_OTHER_COST_APPLICABILITY_SELECTLIST = 'GET_OTHER_COST_APPLICABILITY_SELECTLIST'
+export const SET_COMMODITY_DETAILS = 'SET_COMMODITY_DETAILS'
+export const SET_OTHER_COST_DETAILS = 'SET_OTHER_COST_DETAILS'
+export const GET_LAST_REVISION_RAW_MATERIAL_DETAILS = 'GET_LAST_REVISION_RAW_MATERIAL_DETAILS'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
@@ -3131,7 +3127,7 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 export const PartTypeIDFromAPI = 2
-export const RMIndex = false
+export const RMIndex = true
 export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
 
@@ -3139,7 +3135,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V2.2.30";
+export const VERSION = "V3.0.0";
 
 
 

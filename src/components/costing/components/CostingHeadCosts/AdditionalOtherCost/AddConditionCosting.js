@@ -79,7 +79,7 @@ function AddConditionCosting(props) {
                         ? tableData[0].CostingConditionEntryTypeId
                         : props?.costingConditionEntryType;
 
-            dispatch(getCostingCondition(entryTypeId, (res) => {
+            dispatch(getCostingCondition(entryTypeId, '', (res) => {
                 if (res?.data?.DataList) {
                     const temp = res.data.DataList.map(item => ({
                         label: `${item.Description} (${item.CostingConditionNumber})`,
@@ -157,7 +157,7 @@ function AddConditionCosting(props) {
     const onConditionEntryTypeChange = (e) => {
         if (e) {
             setCostingConditionEntryType(e.value)
-            dispatch(getCostingCondition(e.value, (res) => {
+            dispatch(getCostingCondition(e.value, '', (res) => {
                 if (res?.data?.DataList) {
                     let Data = res?.data?.DataList
                     let temp = []

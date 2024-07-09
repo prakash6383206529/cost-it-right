@@ -235,3 +235,7 @@ div[class$="MenuList"] {
 .master-summary-drawer .button-wrapper.dropdown-mt-0 {
   margin-top: 0 !important;
 }
+
+.rm-master-form {
+  min-height: calc(100vh - 232px);
+}
