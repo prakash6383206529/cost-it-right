@@ -969,11 +969,13 @@ export const IndexCommodityListingTempData = [
     }
 ]
 export const CommodityInIndexListing = [
-    { label: "Index", value: "CommodityName" },
+    { label: "Index", value: "IndexExchangeName" },
+    { label: "Commodity (In Index)", value: "CommodityName" },
 ]
 export const CommodityInIndexListingTempData = [
     {
-        "CommodityName": "21FD2",
+        "IndexExchangeName": "LME",
+        "CommodityName": "Al",
     }
 ]
 export const StandardizedCommodityNameListing = [
@@ -986,6 +988,14 @@ export const StandardizedCommodityNameTempData = [
         "IndexExchangeName": "21FD2",
         "CommodityName": "al",
         "CustomMaterialName": "alloy",
+    }
+]
+export const CommodityStandard = [
+    { label: "Commodity Name (Standard)", value: "CommodityStandardName" },
+]
+export const CommodityStandardTempData = [
+    {
+        "CommodityStandardName": "Alluminum",
     }
 ]
 /**
