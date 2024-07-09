@@ -121,7 +121,7 @@ function Stamping(props) {
     const scrapCost = scrapWeight * Number(rmRowData.ScrapRate)
 
     setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice))
-    const netRMCost = (Number(rmRowData.RMRate) * inputWeight) - (scrapWeight * scrapCost)
+    const netRMCost = (Number(rmRowData.RMRate) * inputWeight) - scrapCost
     setValue('materialCost', checkForDecimalAndNull(netRMCost, getConfigurationKey().NoOfDecimalForPrice))
     const updatedValue = dataToSend
     updatedValue.ScrapCost = scrapCost
@@ -396,7 +396,7 @@ function Stamping(props) {
                 </Col>
 
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} width="340px" id={'net-rm-cost-plastic'} tooltipText={'Net RM Cost = (RM Rate * Input Weight(Kg)) - (Scrap Weight(Kg) * Scrap Rate)'} />
+                  <TooltipCustom disabledIcon={true} width="340px" id={'net-rm-cost-plastic'} tooltipText={'Net RM Cost = (RM Rate * Input Weight(Kg)) - Scrap Cost'} />
                   <TextFieldHookForm
                     // Confirm this name from tanmay sir
                     label={`Net RM Cost`}

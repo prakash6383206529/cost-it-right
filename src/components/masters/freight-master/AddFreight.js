@@ -445,7 +445,7 @@ class AddFreight extends Component {
     // CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     const isExist = gridTable.findIndex(
       (el) =>
-        el.Capacity === FullTruckCapacity.value &&
+        (el.Capacity ? el.Capacity : undefined) === (FullTruckCapacity.value ? FullTruckCapacity.value : undefined) &&
         el.RateCriteria === RateCriteria.value &&
         el.EFreightLoadType === Load?.value
     );

@@ -652,9 +652,13 @@ function UserRegistration(props) {
         if (res && res.data && res.data.Data) {
 
           let Data = res.data.Data;
-          if (!getConfigurationKey().IsMultipleDepartmentAllowed) {
-            dispatch(getPlantSelectListForDepartment(Data.Departments[0].DepartmentId, res => { }))
-          }
+
+          let idArr = [];
+          Data.Departments && Data.Departments.map(item => {
+            idArr.push(item.DepartmentId)
+          })
+          dispatch(getPlantSelectListForDepartment(idArr, res => { }))
+
           setTimeout(() => {
             let plantArray = []
             Data && Data?.DepartmentsPlantsIdLists?.map((item) => {
