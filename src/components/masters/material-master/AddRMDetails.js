@@ -63,7 +63,7 @@ function AddRMDetails(props) {
         isCodeDisabled: false, // THIS STATE IS USED TO DISABLE CODE,
         files: [],
         remarks: '',
-        isRmOpen: false,
+        isRmOpen: true,
         isCommodityOpen: false,
         isOpenAssociation: false,
         isVendorAccOpen: false,
@@ -71,7 +71,7 @@ function AddRMDetails(props) {
     });
 
     const dispatch = useDispatch()
-    const { indexCommodityData } = useSelector((state) => state.indexation);
+
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const customerSelectList = useSelector((state) => state.client.clientSelectList)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -81,7 +81,6 @@ function AddRMDetails(props) {
     const categoryList = useSelector((state) => state.comman.categoryList)
     const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList)
     const cityList = useSelector((state) => state.comman.cityList)
-    const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList);
     const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
 
 
@@ -91,8 +90,6 @@ function AddRMDetails(props) {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
         dispatch(getRawMaterialCategory((res) => { }))
-        dispatch(getExchangeRateSource((res) => { }))
-        dispatch(getIndexSelectList((res) => { }));
         dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
         dispatch(getAllCity(cityId => {
             dispatch(getCityByCountry(cityId, 0, () => { }))
@@ -177,23 +174,7 @@ function AddRMDetails(props) {
             return temp;
         }
 
-        if (label === 'IndexExchangeName') {
-            indexCommodityData && indexCommodityData.map((item) => {
-                if (item.Value === '--0--') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-        if (label === 'ExchangeSource') {
-            exchangeRateSourceList && exchangeRateSourceList.map((item) => {
-                if (item.Value === '--Exchange Rate Source Name--') return false
 
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
 
         if (label === 'Technology') {
             technologySelectList && technologySelectList.map((item) => {
@@ -312,26 +293,6 @@ function AddRMDetails(props) {
         }
         dispatch(SetRawMaterialDetails({ customer: newValue }, () => { }))
     };
-    const handleIndex = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setState(prevState => ({ ...prevState, index: newValue }));
-        } else {
-            setState(prevState => ({ ...prevState, index: [] }));
-        }
-        // dispatch(SetRawMaterialDetails({ customer: newValue }, () => { }))
-        dispatch(SetCommodityIndexAverage('', newValue?.value, '', 0, '', '', ''))
-    };
-
-    const handleExchangeRate = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setState(prevState => ({ ...prevState, exchange: newValue }));
-        } else {
-            setState(prevState => ({ ...prevState, exchangeRate: [] }));
-        }
-        // dispatch(SetRawMaterialDetails({ customer: newValue }, () => { }))
-        dispatch(SetCommodityIndexAverage('', 0, '', 0, newValue?.value, '', ''))
-    };
-
     /**
  * @method handleVendor
  * @description called
@@ -782,71 +743,6 @@ function AddRMDetails(props) {
                                 </Col>
                             </>
                         )}
-                        {RMIndex && <>
-                            <Col className="col-md-15">
-                                <SearchableSelectHookForm
-                                    name="Index"
-                                    label="Index"
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={true}
-                                    rules={{ required: true }}
-                                    placeholder={'Select'}
-                                    options={renderListing("IndexExchangeName")}
-                                    handleChange={handleIndex}
-                                    disabled={isEditFlag || isViewFlag}
-                                    errors={errors.Index}
-                                />
-                            </Col>
-                            <Col className="col-md-15">
-                                <SearchableSelectHookForm
-                                    name="ExchangeSource"
-                                    label="Exchange Rate Source"
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={true}
-                                    rules={{ required: true }}
-                                    placeholder={'Select'}
-                                    options={renderListing("ExchangeSource")}
-                                    handleChange={handleExchangeRate}
-                                    disabled={isEditFlag || isViewFlag}
-                                    errors={errors.ExchangeSource}
-                                />
-                            </Col>
-
-                            <Col className="col-md-15">
-                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                    <div className="fullinput-icon">
-                                        <SearchableSelectHookForm
-                                            name="Material"
-                                            label="Material"
-                                            placeholder={"Select"}
-                                            Controller={Controller}
-                                            control={control}
-                                            rules={{ required: false }}
-                                            options={renderListing("material")}
-                                            mandatory={false}
-                                            handleChange={handleRM}
-                                            // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
-                                            className="fullinput-icon"
-                                            disabled={isEditFlag || isViewFlag || RMIndex}
-                                            errors={errors.Material}
-                                            isClearable={true}
-                                        />
-                                    </div>
-                                    {/* {(!props.isEditFlag) && (
-                                        <Button
-                                            id="addRMDomestic_RMToggle"
-                                            onClick={openAssociationDrawer}
-                                            className={"right"}
-                                            variant="plus-icon-square"
-                                        />
-                                    )} */}
-                                </div>
-                            </Col>
-                        </>}
 
                     </div>
                 }

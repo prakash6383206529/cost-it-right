@@ -13,6 +13,7 @@ import { getCostingCondition } from '../../../actions/Common'
 import { getRMCostIds } from '../../common/CommonFunctions'
 
 function AddOtherCostDrawer(props) {
+    console.log('props: ', props);
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
@@ -346,6 +347,7 @@ function AddOtherCostDrawer(props) {
             NetCost: getValues('CostCurrency') ? getValues('CostCurrency') : '-',
             NetCostConversion: getValues('CostBaseCurrency'),
             Description: getValues('CostDescription') ? getValues('CostDescription') : '-',
+            CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '-',
         };
 
         // Assuming 'tableData' is an array of objects and you want to add MaterialCommodityStandardDetailsId separately,

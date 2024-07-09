@@ -47,12 +47,12 @@ function AddIndexationMaterialListing(props) {
     useEffect(() => {
         // Calculate totalBasicRate whenever commodityDetailsState changes
         const totalRate = state.commodityDetailsState.reduce((sum, row) => {
-            console.log('row: ', row);
             const baseCurrency = row.TotalCostConversion ? row.TotalCostConversion + row.BasicRateConversion : row.BasicRateConversion || 0;
             const baseCurrencyBypercentage = baseCurrency * row.Percentage / 100 || 0;
             return sum + baseCurrencyBypercentage;
         }, 0);
         setState(prevState => ({ ...prevState, totalBasicRate: totalRate }))
+        console.log('totalRate: ', totalRate);
         props.setTotalBasicRate(totalRate)
     }, [state.isLoader, state.commodityDetailsState]);
 

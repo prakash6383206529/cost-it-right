@@ -12,7 +12,7 @@ import Toaster from '../common/Toaster';
 import { getReasonSelectList } from '../costing/actions/Approval';
 import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
-import { BOPTYPE, BUDGETTYPE, BUDGET_ID, EMPTY_DATA, EMPTY_GUID, MACHINETYPE, OPERATIONTYPE, RMTYPE, VBCTypeId, ZBCTypeId } from '../../config/constants';
+import { BOPTYPE, BUDGETTYPE, BUDGET_ID, CBCTypeId, EMPTY_DATA, EMPTY_GUID, MACHINETYPE, OPERATIONTYPE, RMTYPE, VBCTypeId, ZBCTypeId } from '../../config/constants';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { REMARKMAXLENGTH, SHEETMETAL } from '../../config/masterData';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
@@ -115,7 +115,23 @@ function MasterSendForApproval(props) {
     const getLastRevisionData = () => {
         if (approvalObj && Object.keys(approvalObj).length > 0) {
             setAgGridLoader(true)
-            dispatch(getLastRevisionRawMaterialDetails(approvalObj.RawMaterialEntryType, approvalObj.CostingTypeId, approvalObj.TechnologyId, 'b520f3c3-9934-4695-a6de-6cdbdb57d08a', approvalObj.RMGrade, approvalObj.RMSpec, DayTime(approvalObj.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'), approvalObj?.Plant[0]?.PlantId, approvalObj.Vendor, EMPTY_GUID, EMPTY_GUID, (res) => {
+            let data = {
+                OldMasterRecordIds: [],
+                LastRawMaterialDetails: [{
+                    "RawMaterialEntryType": approvalObj.RawMaterialEntryType,
+                    "CostingHeadId": approvalObj.CostingTypeId,
+                    "TechnologyId": approvalObj.TechnologyId,
+                    "RawMaterialChildId": 'b520f3c3-9934-4695-a6de-6cdbdb57d08a',
+                    "RawMaterialGradeId": approvalObj.RMGrade,
+                    "RawMaterialSpecificationId": approvalObj.RMSpec,
+                    "EffectiveDate": DayTime(approvalObj.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+                    "PlantId": approvalObj?.Plant[0]?.PlantId,
+                    "VendorId": approvalObj.Vendor,
+                    "CustomerId": approvalObj.CostingTypeId === CBCTypeId ? approvalObj.Customer : EMPTY_GUID,
+                    "RawMaterialId": EMPTY_GUID
+                }]
+            }
+            dispatch(getLastRevisionRawMaterialDetails(data, (res) => {
                 setAgGridLoader(false)
             }))
         }
@@ -189,7 +205,7 @@ function MasterSendForApproval(props) {
         const dept = getValues('dept')
         const approver = getValues('approver')
         setIsDisable(true)
-        if (initialConfiguration.IsMultipleUserAllowForApproval && (!getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
+        if (initialConfiguration?.IsMultipleUserAllowForApproval && (!getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
             Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.')
             setIsDisable(false)
             return false
@@ -207,7 +223,7 @@ function MasterSendForApproval(props) {
             senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
             // senderObj.ApproverId = approver && approver.value ? approver.value : ''
-            senderObj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
+            senderObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
             senderObj.SenderLevelId = levelDetails?.LevelId
             senderObj.SenderId = loggedInUserId()
             senderObj.SenderLevel = levelDetails?.Level
@@ -434,7 +450,7 @@ function MasterSendForApproval(props) {
             obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
             obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
             // obj.ApproverId = approver && approver.value ? approver.value : ''
-            obj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
+            obj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
             obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
             obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             obj.Remark = remark
@@ -579,11 +595,11 @@ function MasterSendForApproval(props) {
                                                 mandatory={false}
                                                 handleChange={handleDepartmentChange}
                                                 errors={errors.dept}
-                                                disabled={initialConfiguration.IsMultipleUserAllowForApproval}
+                                                disabled={initialConfiguration?.IsMultipleUserAllowForApproval}
                                             />
                                         </div>
                                         <div className="input-group form-group col-md-6 input-withouticon">
-                                            {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                                            {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                                                 <AllApprovalField
                                                     label="Approver"
                                                     approverList={approvalDropDown}
@@ -681,7 +697,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.NetLandedCost}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                     />
                                                 </Col>
@@ -698,7 +714,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.NetLandedCostConversion}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                     />
                                                 </Col>}
@@ -723,7 +739,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.basicRate}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.Rate, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.Rate, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                         placeholder={'-'}
                                                     />
@@ -771,7 +787,7 @@ function MasterSendForApproval(props) {
                                                                 className=""
                                                                 customClassName={'withBorder'}
                                                                 errors={errors.basicRate}
-                                                                defaultValue={checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}
+                                                                defaultValue={checkForDecimalAndNull(item.MachineRate, initialConfiguration?.NoOfDecimalForPrice)}
                                                                 disabled={true}
 
                                                             />
@@ -929,7 +945,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.totalSum}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPrice, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPrice, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                         placeholder={'-'}
                                                     />
@@ -946,7 +962,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.totalSum}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPriceInCurrency, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPriceInCurrency, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                         placeholder={'-'}
                                                     />
