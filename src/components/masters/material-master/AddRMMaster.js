@@ -3,6 +3,7 @@ import { Row, Col, Label } from 'reactstrap';
 import AddRMDetails from "./AddRMDetails"
 import AddRMFinancialDetails from "./AddRMFinancialDetails"
 import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, RM_MASTER_ID, VBCTypeId, ZBCTypeId } from "../../../config/constants"
+import { getCommodityIndexRateAverage } from '../../../../src/actions/Common';
 import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { useForm, Controller, useWatch, } from 'react-hook-form';
@@ -17,7 +18,7 @@ import { CheckApprovalApplicableMaster, checkForDecimalAndNull, checkForNull, ge
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { fetchSpecificationDataAPI } from "../../../actions/Common";
-import { SetRawMaterialDetails, createRM, getRMDataById, updateRMAPI } from "../actions/Material";
+import { SetRawMaterialDetails, createRM, getRMDataById, updateRMAPI, getMaterialTypeDataAPI } from "../actions/Material";
 import DayTime from "../../common/DayTimeWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
 import { isFinalApprover } from "../../costing/actions/Approval";
@@ -25,9 +26,12 @@ import { checkFinalUser } from "../../costing/actions/Costing";
 import { getUsersMasterLevelAPI } from "../../../actions/auth/AuthActions";
 import MasterSendForApproval from "../MasterSendForApproval";
 import WarningMessage from "../../common/WarningMessage";
+import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
+import HeaderTitle from "../../common/HeaderTitle";
+import { setCommodityDetails, setOtherCostDetails } from "../actions/Indexation";
 
 function AddRMMaster(props) {
-    const { data } = props
+    const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -50,20 +54,82 @@ function AddRMMaster(props) {
         approvalObj: {},
         levelDetails: {},
         isDateChanged: false,
+        isCommodityOpen: false,
+        commodityDetails: [],
+        avgBasicRate: [],
+        totalBasicRate: 0,
+        materialCommodityIndexRateDetails: [],
     })
     const isViewFlag = data?.isViewFlag ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
-    const fieldValue = useWatch({
+    const { commodityDetailsArray } = useSelector((state) => state.indexation)
+    const { otherCostDetailsArray } = useSelector((state) => state.indexation)
+
+    const avgValues = useWatch({
         control,
-        name: ['Remarks']
+        name: ['Material', 'Index', 'ExchangeSource', 'fromDate', 'toDate']
     })
+    const fieldValueGrade = useWatch({
+        control,
+        name: ['RawMaterialGrade']
+    })
+
     useEffect(() => {
-    }, [fieldValue])
+        if (getValues('Material')?.value !== null && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate')) {
+            dispatch(getCommodityIndexRateAverage(
+                getValues('Material')?.value,
+                getValues('Index').value,
+                '',
+                '',
+                getValues('ExchangeSource')?.label,
+                DayTime(getValues('fromDate')).format('YYYY-MM-DD'),
+                DayTime(getValues('toDate')).format('YYYY-MM-DD'),
+                (res) => {
+                    setValue('UnitOfMeasurement', { label: res?.data?.Data, value: res?.data?.Identity })
+                    const updatedCommodityDetails = state.commodityDetails.map(detail => {
+                        const avgRate = res?.data?.DataList.find(rate => rate.MaterialCommodityStandardDetailsId === detail.MaterialCommodityStandardDetailsId);
+                        return {
+                            ...detail,
+                            BasicRateConversion: avgRate ? avgRate.RateConversionPerConvertedUOM : null,
+                            BasicRate: avgRate ? avgRate.RatePerConvertedUOM : null,
+                            ExchangeRate: avgRate ? avgRate.ExchangeRate : null
+                        };
+                    });
+                    setState(prevState => ({ ...prevState, commodityDetails: updatedCommodityDetails }));
+                    dispatch(setCommodityDetails(updatedCommodityDetails))
+                    if (res?.status === 200 && res?.data?.Result === false) {
+                        Toaster.warning(res?.data?.Message)
+                        return false
+                    }
+                }
+            ));
+        }
+    }, [avgValues])
+
+    useEffect(() => {
+
+        if (getValues('RawMaterialGrade')) {
+            const commodityVal = getValues('RawMaterialGrade').value;
+            dispatch(getMaterialTypeDataAPI('', commodityVal, (res) => {
+                if (res) {
+                    let Data = res.data.Data
+                    setValue('Material', { label: Data.MaterialType, value: Data.MaterialTypeId })
+                    dispatch(getMaterialTypeDataAPI(Data.MaterialTypeId, '', (res) => {
+                        let Data = res.data.Data
+                        setState(prevState => ({ ...prevState, commodityDetails: Data.MaterialCommodityStandardDetails }))
+                    }))
+                }
+            }))
+        }
+    }, [fieldValueGrade])
+
     useEffect(() => {
         getDetails(data)
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
         return () => {
-            dispatch(SetRawMaterialDetails({ states: {}, Technology: {}, ShowScrapKeys: {} }, () => { }))
+            dispatch(SetRawMaterialDetails({ states: {}, Technology: {}, ShowScrapKeys: {}, isShowIndexCheckBox: false }, () => { }))
+            dispatch(setCommodityDetails([]))
+            dispatch(setOtherCostDetails([]))
         }
     }, [])
     useEffect(() => {
@@ -71,7 +137,6 @@ function AddRMMaster(props) {
             commonFunction()
         }
     }, [state.costingTypeId])
-
 
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     /**
@@ -106,16 +171,18 @@ function AddRMMaster(props) {
             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state.costingTypeId),
             plantId: plantId
         }
-        dispatch(checkFinalUser(obj, (res) => {
-            if (res?.data?.Result) {
-                setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false }))
-            }
-            if (res?.data?.Data?.IsUserInApprovalFlow === false) {
-                setState(prevState => ({ ...prevState, disableSendForApproval: true }))
-            } else {
-                setState(prevState => ({ ...prevState, disableSendForApproval: false }))
-            }
-        }))
+        if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+            dispatch(checkFinalUser(obj, (res) => {
+                if (res?.data?.Result) {
+                    setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false }))
+                }
+                if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: true }))
+                } else {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: false }))
+                }
+            }))
+        }
         setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
     }
     /**
@@ -134,9 +201,10 @@ function AddRMMaster(props) {
                     const Data = res?.data?.Data
                     if (Data && Object.keys(Data).length > 0) {
                         setState(prevState => ({
-                            ...prevState, DataToChange: Data, isImport: Data.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? true : false, isLoader: false, costingTypeId: Data.CostingTypeId
-
+                            ...prevState, DataToChange: Data, isImport: Data.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? true : false, isLoader: false, costingTypeId: Data.CostingTypeId, commodityDetails: Data?.MaterialCommodityIndexRateDetails
                         }))
+                        dispatch(setOtherCostDetails(Data?.RawMaterialOtherCostDetails))
+                        dispatch(setCommodityDetails(Data?.MaterialCommodityIndexRateDetails))
                         if (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
                             dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
                                 setTimeout(() => {
@@ -164,9 +232,9 @@ function AddRMMaster(props) {
         }
     }
     /**
- * @method onRmToggle
- * @description RM TOGGLE
- */
+* @method onRmToggle
+* @description RM TOGGLE
+*/
     const onRmToggle = () => {
         setState(prevState => ({ ...prevState, isImport: !prevState.isImport }))
     }
@@ -180,7 +248,6 @@ function AddRMMaster(props) {
 
 
     const onSubmit = debounce(handleSubmit((values) => {
-
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -271,7 +338,6 @@ function AddRMMaster(props) {
             "CutOffPriceInINR": state?.isImport ? values?.cutOffPriceBaseCurrency : 0,
             "EffectiveDate": DayTime(values?.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
             "LoggedInUserId": loggedInUserId(),
-            // "IsFinancialDataChanged": true,
             "Plant": plantArray,
             "VendorPlant": [],
             "Attachements": rawMaterailDetails?.Files,
@@ -295,7 +361,20 @@ function AddRMMaster(props) {
             "UOMToScrapUOMRatio": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.ConversionRatio : '',
             "CalculatedFactor": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.CalculatedFactor : '',
             "ScrapRatePerScrapUOM": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? state?.isImport ? values?.ScrapRatePerScrapUOM : values.ScrapRatePerScrapUOMBaseCurrency : '',
-            "ScrapRatePerScrapUOMConversion": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true || state?.isImport ? values?.ScrapRatePerScrapUOMBaseCurrency : ''
+            "ScrapRatePerScrapUOMConversion": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true || state?.isImport ? values?.ScrapRatePerScrapUOMBaseCurrency : '',
+            "MaterialCommodityIndexRateDetails": commodityDetailsArray,
+            "FromDate": DayTime(values?.fromDate).format('YYYY-MM-DD HH:mm:ss'),
+            "ToDate": DayTime(values?.toDate).format('YYYY-MM-DD HH:mm:ss'),
+            "ExchangeRateSourceName": values?.ExchangeSource?.label,
+            "IndexExchangeId": values?.Index?.value,
+            "IndexExchangeName": values?.Index?.label,
+            "FrequencyOfSettlement": values?.frequencyOfSettlement?.label,
+            "CommodityNetCost": values.BasicPriceBaseCurrency,
+            "CommodityNetCostConversion": values.BasicPriceBaseCurrency,
+            "OtherNetCost": values.OtherCostBaseCurrency,
+            "OtherNetCostConversion": values.OtherCostBaseCurrency,
+            "RawMaterialOtherCostDetails": otherCostDetailsArray,
+            "IsIndexationDetails": rawMaterailDetails?.isShowIndexCheckBox === true ? true : false
         }
 
 
@@ -305,18 +384,19 @@ function AddRMMaster(props) {
         let freightCost = state.isImport ? checkForNull(values?.FreightChargeSelectedCurrency) : checkForNull(values.FreightChargeBaseCurrency)
         let machiningScrapCost = state.isImport ? checkForNull(values?.MachiningScrapSelectedCurrency) : checkForNull(values.MachiningScrapBaseCurrency)
         let circleScrapCost = state.isImport ? checkForNull(values?.CircleScrapCostSelectedCurrency) : checkForNull(values.CircleScrapCostBaseCurrency)
+        let otherCost = state.isImport ? checkForNull(values?.OtherCostSelectedCurrency) : checkForNull(values.OtherCostBaseCurrency)
+        console.log('values: ', values);
 
+        console.log('DataToChange: ', DataToChange);
         let financialDataNotChanged = (cuttOffPrice === checkForNull(DataToChange?.CutOffPrice)) && (basicRate === checkForNull(DataToChange?.BasicRatePerUOM)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
-            && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (freightCost === checkForNull(DataToChange?.RMFreightCost))
+            && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (freightCost === checkForNull(DataToChange?.RMFreightCost) && otherCost === checkForNull(DataToChange?.OtherNetCost))
             && (shearingCost === checkForNull(DataToChange?.RMShearingCost)) && (circleScrapCost === checkForNull(DataToChange?.JaliScrapCost)) && (machiningScrapCost === checkForNull(DataToChange?.MachiningScrapRate))
         let nonFinancialDataNotChanged = (JSON.stringify(rawMaterailDetails.Files) === JSON.stringify(DataToChange?.FileList) && values?.Remarks === DataToChange?.Remark)
         if (state.isEditFlag) {
             if (!isRMAssociated) {
 
-
-
                 if (financialDataNotChanged && nonFinancialDataNotChanged) {
-                    if (!state.isFinalApprovar) {
+                    if (!state.isFinalApprovar && getConfigurationKey().IsMasterApprovalAppliedConfigure) {
                         Toaster.warning('Please change data to send RM for approval')
                         return false
                     }
@@ -340,7 +420,6 @@ function AddRMMaster(props) {
         } else {
             if (state.isEditFlag) {
                 formData.IsSendForApproval = false
-
                 dispatch(updateRMAPI(formData, (res) => {
                     if (res?.data?.Result) {
                         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
@@ -357,6 +436,7 @@ function AddRMMaster(props) {
             }
         }
 
+
     }), 500);
     const showSendForApproval = () => {
         if (rawMaterailDetails && (rawMaterailDetails?.financialDataChanged || rawMaterailDetails.netCostChanged)) {
@@ -367,110 +447,112 @@ function AddRMMaster(props) {
             return false
         }
     }
-    // 
 
     return (
         state.isLoader ? <LoaderCustom customClass="loader-center" /> :
             <Fragment>
-                <form className="add-min-height">
-                    <Row>
-                        <Col md="4" className="switch mb15">
-                            <label className="switch-level">
-                                <div className={"left-title"}>Domestic</div>
-                                <Switch
-                                    onChange={onRmToggle}
-                                    checked={state.isImport}
-                                    id="normal-switch"
-                                    disabled={data.isEditFlag || isViewFlag}
-                                    background="#4DC771"
-                                    onColor="#4DC771"
-                                    onHandleColor="#ffffff"
-                                    offColor="#4DC771"
-                                    uncheckedIcon={false}
-                                    checkedIcon={false}
-                                    height={20}
-                                    width={46}
-                                />
-                                <div className={"right-title"}>Import</div>
-                            </label>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col md="12">
-                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id="rm_domestic_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
-                                <input
-                                    type="radio"
-                                    name="costingHead"
-                                    className='zero-based'
-                                    id='zeroBased'
-                                    checked={
-                                        state.costingTypeId === ZBCTypeId ? true : false
-                                    }
-                                    onClick={() =>
-                                        onPressVendor(ZBCTypeId)
-                                    }
-                                    disabled={data.isEditFlag || isViewFlag}
-                                />{" "}
-                                <span>Zero Based</span>
-                            </Label>}
-                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id="rm_domestic_form_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
-                                <input
-                                    type="radio"
-                                    name="costingHead"
-                                    className='vendor-based'
-                                    id='vendorBased'
-                                    checked={
-                                        state.costingTypeId === VBCTypeId ? true : false
-                                    }
-                                    onClick={() =>
-                                        onPressVendor(VBCTypeId)
-                                    }
-                                    disabled={data.isEditFlag || isViewFlag}
-                                />{" "}
-                                <span>Vendor Based</span>
-                            </Label>}
-                            {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
-                                <input
-                                    type="radio"
-                                    name="costingHead"
-                                    className='customer-based'
-                                    id='customerBased'
-                                    checked={
-                                        state.costingTypeId === CBCTypeId ? true : false
-                                    }
-                                    onClick={() =>
-                                        onPressVendor(CBCTypeId)
-                                    }
-                                    disabled={data.isEditFlag || isViewFlag}
-                                />{" "}
-                                <span>Customer Based</span>
-                            </Label>}
-                        </Col>
-                    </Row>
-                    <AddRMDetails states={state}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                        useWatch={useWatch}
-                        DataToChange={state.DataToChange}
-                        data={data}
-                        EditAccessibilityRMANDGRADE={props.EditAccessibilityRMANDGRADE}
-                        AddAccessibilityRMANDGRADE={props.AddAccessibilityRMANDGRADE}
-                        commonFunction={commonFunction} />
-                    <AddRMFinancialDetails states={state}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                        useWatch={useWatch}
-                        DataToChange={state.DataToChange}
-                        data={data} />
-                    <Row>
+                <form>
+                    <div className="rm-master-form">
+                        <Row>
+                            <Col md="4" className="switch mb15">
+                                <label className="switch-level">
+                                    <div className={"left-title"}>Domestic</div>
+                                    <Switch
+                                        onChange={onRmToggle}
+                                        checked={state.isImport}
+                                        id="normal-switch"
+                                        disabled={data.isEditFlag || isViewFlag}
+                                        background="#4DC771"
+                                        onColor="#4DC771"
+                                        onHandleColor="#ffffff"
+                                        offColor="#4DC771"
+                                        uncheckedIcon={false}
+                                        checkedIcon={false}
+                                        height={20}
+                                        width={46}
+                                    />
+                                    <div className={"right-title"}>Import</div>
+                                </label>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md="12">
+                                {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id="rm_domestic_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                    <input
+                                        type="radio"
+                                        name="costingHead"
+                                        className='zero-based'
+                                        id='zeroBased'
+                                        checked={
+                                            state.costingTypeId === ZBCTypeId ? true : false
+                                        }
+                                        onClick={() =>
+                                            onPressVendor(ZBCTypeId)
+                                        }
+                                        disabled={data.isEditFlag || isViewFlag}
+                                    />{" "}
+                                    <span>Zero Based</span>
+                                </Label>}
+                                {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id="rm_domestic_form_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                    <input
+                                        type="radio"
+                                        name="costingHead"
+                                        className='vendor-based'
+                                        id='vendorBased'
+                                        checked={
+                                            state.costingTypeId === VBCTypeId ? true : false
+                                        }
+                                        onClick={() =>
+                                            onPressVendor(VBCTypeId)
+                                        }
+                                        disabled={data.isEditFlag || isViewFlag}
+                                    />{" "}
+                                    <span>Vendor Based</span>
+                                </Label>}
+                                {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                                    <input
+                                        type="radio"
+                                        name="costingHead"
+                                        className='customer-based'
+                                        id='customerBased'
+                                        checked={
+                                            state.costingTypeId === CBCTypeId ? true : false
+                                        }
+                                        onClick={() =>
+                                            onPressVendor(CBCTypeId)
+                                        }
+                                        disabled={data.isEditFlag || isViewFlag}
+                                    />{" "}
+                                    <span>Customer Based</span>
+                                </Label>}
+                            </Col>
+                        </Row>
+                        <AddRMDetails states={state}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            setValue={setValue}
+                            getValues={getValues}
+                            errors={errors}
+                            useWatch={useWatch}
+                            DataToChange={state.DataToChange}
+                            data={data}
+                            commonFunction={commonFunction}
+                            AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
+                            EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE} />
+                        <AddRMFinancialDetails states={state}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            setValue={setValue}
+                            getValues={getValues}
+                            errors={errors}
+                            useWatch={useWatch}
+                            DataToChange={state.DataToChange}
+                            data={data}
+                            totalBasicRate={state.totalBasicRate}
+                            commodityDetails={state.commodityDetails}
+                        />
                         <RemarksAndAttachments Controller={Controller}
                             control={control}
                             register={register}
@@ -480,43 +562,44 @@ function AddRMMaster(props) {
                             useWatch={useWatch}
                             DataToChange={state.DataToChange}
                             data={data} />
-                    </Row>
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer"></Row>
-                    <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
-                        {(state.disableSendForApproval && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
-                        <Button
-                            id="addBOPIMport_cancel"
-                            className="mr15"
-                            onClick={cancel}
-                            disabled={false}
-                            variant="cancel-btn"
-                            icon="cancel-icon"
-                            buttonName="Cancel"
-                        />
-                        {!isViewFlag && <>
-                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.isFinalApprovar) && getConfigurationKey().IsMasterApprovalAppliedConfigure) || (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.CostingTypePermission) ?
-                                <Button
-                                    id="addRMDomestic_sendForApproval"
-                                    type="button"
-                                    className="approval-btn mr5"
-                                    disabled={isViewFlag || state.disableSendForApproval}
-                                    onClick={onSubmit}
-                                    icon={showSendForApproval() ? "send-for-approval" : "save-icon"}
-                                    buttonName={showSendForApproval() ? "Send For Approval" : 'Update'}
-                                />
-                                :
-                                <Button
-                                    id="addRMDomestic_updateSave"
-                                    type="button"
-                                    className="mr5"
-                                    disabled={isViewFlag || (state.disableSendForApproval && getConfigurationKey().IsMasterApprovalAppliedConfigure)}
-                                    onClick={onSubmit}
-                                    icon={"save-icon"}
-                                    buttonName={data.isEditFlag ? "Update" : "Save"}
-                                />
-                            }
-                        </>}
                     </div>
+                    <Row className="sf-btn-footer no-gutters justify-content-between sticky-btn-footer">
+                        <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                            {state.disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
+                            <Button
+                                id="addBOPIMport_cancel"
+                                className="mr15"
+                                onClick={cancel}
+                                disabled={false}
+                                variant="cancel-btn"
+                                icon="cancel-icon"
+                                buttonName="Cancel"
+                            />
+                            {!isViewFlag && <>
+                                {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.isFinalApprovar) && getConfigurationKey().IsMasterApprovalAppliedConfigure) || (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.CostingTypePermission) ?
+                                    <Button
+                                        id="addRMDomestic_sendForApproval"
+                                        type="button"
+                                        className="approval-btn mr5"
+                                        disabled={isViewFlag || state.disableSendForApproval}
+                                        onClick={onSubmit}
+                                        icon={showSendForApproval() ? "send-for-approval" : "save-icon"}
+                                        buttonName={showSendForApproval() ? "Send For Approval" : 'Update'}
+                                    />
+                                    :
+                                    <Button
+                                        id="addRMDomestic_updateSave"
+                                        type="button"
+                                        className="mr5"
+                                        disabled={isViewFlag || state.disableSendForApproval}
+                                        onClick={onSubmit}
+                                        icon={"save-icon"}
+                                        buttonName={data.isEditFlag ? "Update" : "Save"}
+                                    />
+                                }
+                            </>}
+                        </div>
+                    </Row>
                 </form>
                 {
                     state.approveDrawer && (
