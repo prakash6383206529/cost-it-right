@@ -17,6 +17,7 @@ import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
 import { getUsersOnboardingLevelAPI } from '../../../actions/auth/AuthActions';
 import LoaderCustom from '../../common/LoaderCustom';
+import { REMARKMAXLENGTH } from '../../../config/masterData';
 
 
 const SendForApproval = (props) => {
@@ -70,7 +71,7 @@ const SendForApproval = (props) => {
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value });
       }, 100);
 
-      let approverIdListTemp = [];
+
       let obj = {
         LoggedInUserId: loggedInUserId(),
         DepartmentId: userDetails().DepartmentId,
@@ -81,7 +82,7 @@ const SendForApproval = (props) => {
       };
 
       const handleApiResponse = (res, deptKey, approverKey) => {
-
+        let approverIdListTemp = [];
         const Data = res.data.DataList[1] || {};
         const isLPSApprovalType = Data.ApprovalTypeId === LPSAPPROVALTYPEID;
         if (Data.length !== 0) {
@@ -511,7 +512,10 @@ const SendForApproval = (props) => {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      rules={{ required: true }}
+                      rules={{
+                        required: true,
+                        maxLength: REMARKMAXLENGTH
+                      }}
                       mandatory={true}
                       // mandatory={mandatoryRemark ? true : false}
                       // rules={{ required: mandatoryRemark ? true : false }}
@@ -637,7 +641,11 @@ const SendForApproval = (props) => {
                         register={register}
                         mandatory={true}
                         // mandatory={mandatoryRemark ? true : false}
-                        rules={{ required: true }}
+                        rules={{
+                          required: true,
+                          maxLength: REMARKMAXLENGTH
+                        }}
+
                         // rules={{ required: mandatoryRemark ? true : false }}
                         handleChange={() => { }}
                         defaultValue={""}

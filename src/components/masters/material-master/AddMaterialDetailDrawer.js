@@ -11,8 +11,9 @@ import { MESSAGES } from '../../../config/message';
 import AddGrade from "./AddGrade";
 import Button from '../../layout/Button';
 import {
-    getCommoditySelectListByType, getCommodityNameSelectListByType, getCommodityCustomNameSelectListByType,
-    getStandardizedCommodityListAPI, createCommodityStandardizationData, updateCommodityStandardization,
+    getIndexSelectList, getCommodityNameInIndexSelectList, getCommodityCustomNameSelectListByType,
+    getStandardizedCommodityListAPI, updateCommodityStandardization,
+    createCommodityStandardization,
 } from '../../masters/actions/Indexation'
 import { debounce, values } from 'lodash';
 import Toaster from '../../common/Toaster';
@@ -36,13 +37,13 @@ const AddMaterialDetailDrawer = (props) => {
     });
     const dispatch = useDispatch()
     const { indexCommodityData } = useSelector((state) => state.indexation);
-    const { nameCommodityData } = useSelector((state) => state.indexation);
+    const { commodityInIndex } = useSelector((state) => state.indexation);
     const { customNameCommodityData } = useSelector((state) => state.indexation);
     //const { standardizedCommodityDataList } = useSelector((state) => state.indexation);
     useEffect(() => {
         dispatch(getStandardizedCommodityListAPI(() => { }))
-        dispatch(getCommoditySelectListByType(() => { }))
-        dispatch(getCommodityNameSelectListByType(() => { }))
+        dispatch(getIndexSelectList(() => { }))
+        dispatch(getCommodityNameInIndexSelectList(() => { }))
         dispatch(getCommodityCustomNameSelectListByType((res) => { }))
 
     }, [])
@@ -68,7 +69,7 @@ const AddMaterialDetailDrawer = (props) => {
             return temp
         }
         if (label === 'CommodityName') {
-            nameCommodityData && nameCommodityData.map((item) => {
+            commodityInIndex && commodityInIndex.map((item) => {
                 if (item.Value === '--0--') return false
                 temp.push({ label: item.Text, value: item.Value })
                 return null
@@ -125,8 +126,7 @@ const AddMaterialDetailDrawer = (props) => {
     // };
 
     const onSubmit = debounce(values => {
-        console.log('onssavebutton: ', values);
-        if (isEdit) {          
+        if (isEdit) {
             setState(prevState => ({ ...prevState, setDisable: true }));
 
             //   const updateData = {
@@ -174,7 +174,7 @@ const AddMaterialDetailDrawer = (props) => {
                 CreatedBy: loggedInUserId(),
                 IsActive: true,
             };
-            dispatch(createCommodityStandardizationData(formDataToSubmit, res => {
+            dispatch(createCommodityStandardization(formDataToSubmit, res => {
 
                 setState(prevState => ({ ...prevState, setDisable: false }));
 
@@ -213,8 +213,8 @@ const AddMaterialDetailDrawer = (props) => {
             CommodityName: formData.CommodityName,
             CustomMaterialName: formData.CustomMaterialName
         };
-        //console.log('formData: ', formData);
         const newGridData = [...gridData, obj];
+
         setGridData(newGridData);
 
         resetData();
@@ -280,11 +280,9 @@ const AddMaterialDetailDrawer = (props) => {
         setState(prevState => ({ ...prevState, isOpenIndex: false }));
     }
     // const closeFuelDrawer = (e = '', reqData = {}) => {
-    //     console.log('reqData: ', reqData);
     //     setState(prevState => ({ ...prevState, isOpenIndex: false }));
     //     setTimeout(() => {
     //         dispatch(getCommodityCustomNameSelectListByType((res) => {
-    //             console.log('res: ', res);
 
     //             //let obj = customNameCommodityData.find(item => item.CommodityStandardName === reqData.MaterialName)
     //                 /*TO SHOW FUEL NAME VALUE PRE FILLED FROM DRAWER*/
@@ -304,14 +302,11 @@ const AddMaterialDetailDrawer = (props) => {
     // }
 
     const closeFuelDrawer = (e = '', reqData = {}) => {
-        console.log('reqData: ', reqData);
         setState(prevState => ({ ...prevState, isOpenIndex: false }));
 
         // dispatch(getCommodityCustomNameSelectListByType((res) => {
-        //     console.log('res: ', res);
 
         //     const customNameCommodityData = res.data; // Assuming res.data contains your data
-        //     console.log('customNameCommodityData: ', customNameCommodityData);
 
         //     // if (Object.keys(reqData).length > 0) {
         //     //     let obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
@@ -321,39 +316,33 @@ const AddMaterialDetailDrawer = (props) => {
         //     // }
         //     // if (Object.keys(reqData).length > 0) {
         //     //     let obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
-        //     //     console.log('obj: ', obj);
 
         //     //     if (obj) {
         //     //         setValue('CustomMaterialName', { label: obj.CustomMaterialName, value: obj.CustomMaterialName });
         //     //     }
         //     // }
         //     let obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
-        //     console.log('obj: ', obj);
 
         //     if (obj) {
         //         setValue('CustomMaterialName', { label: obj.CustomMaterialName, value: obj.CustomMaterialName });
         //     }
         // }));
         dispatch(getCommodityCustomNameSelectListByType())
-        .then((res) => {
-            console.log('res: ', res);
+            .then((res) => {
 
-            const customNameCommodityData = res.data; // Assuming res.data contains your data
-            console.log('customNameCommodityData: ', customNameCommodityData);
+                const customNameCommodityData = res.data; // Assuming res.data contains your data
 
-            const obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
-            console.log('obj: ', obj);
+                const obj = customNameCommodityData.find(item => item.CustomMaterialName === reqData.CommodityStandardName);
 
-            if (obj) {
-                setValue('CustomMaterialName', { label: obj.CustomMaterialName, value: obj.CustomMaterialName });
-            }
-        })
-        .catch((error) => {
-            console.error('Error fetching custom name commodity data:', error);
-            // Handle the error accordingly
-        });
+                if (obj) {
+                    setValue('CustomMaterialName', { label: obj.CustomMaterialName, value: obj.CustomMaterialName });
+                }
+            })
+            .catch((error) => {
+                // Handle the error accordingly
+            });
     }
-    
+
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>

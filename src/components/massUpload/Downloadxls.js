@@ -8,7 +8,7 @@ import {
     RMSpecification, RMSpecificationXLTempData,
     Vendor, VendorTempData,
     Labour, LabourTempData,
-    Overhead, OverheadTempData, Profit, ProfitTempData,
+    Overhead, OverheadTempData, OverheadVBC, OverheadVBC_TempData, OverheadCBC, OverheadCBC_TempData, Profit, ProfitTempData, ProfitVBC, ProfitTempDataVBC, ProfitCBC, ProfitTempDataCBC,
     ZBCOperation, ZBCOperationTempData, VBCOperation, VBCOperationTempData,
     MachineZBC, MachineZBCTempData, MachineVBC, MachineVBCTempData, MHRMoreZBC, MHRMoreZBCTempData,
     PartComponent, PartComponentTempData, ProductComponent, ProductComponentTempData, BOMUploadTempData, BOMUpload,
@@ -18,7 +18,11 @@ import {
     VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA,
     ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData, RMDomesticCBC, RMDomesticCBCTempData, RMImportCBC, RMImportCBCTempData, MachineCBC, MachineCBCTempData, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, BOP_CBC_DOMESTIC_TempData, VOLUME_BUDGETED_CBC_TEMPDATA, VOLUME_ACTUAL_CBC_TEMPDATA, CBCOperationTempData, VOLUME_ACTUAL_CBC, VOLUME_BUDGETED_CBC, CBCOperation, CBCInterestRateTempData, CBCInterestRate, AddRFQUpload, AddRFQTempData, BUDGET_ZBC, BUDGET_ZBC_TEMPDATA, BUDGET_VBC_TEMPDATA, BUDGET_VBC, BUDGET_CBC_TEMPDATA, BUDGET_CBC, ZBCOperationSmallForm, VBCOperationSmallForm, CBCOperationSmallForm, DETAILED_BOP, BOP_DETAILED_DOMESTIC, BOP_DETAILED_DOMESTIC_TempData, BOP_DETAILED_IMPORT, BOP_DETAILED_IMPORT_TempData, RMMaterialListing, RMMaterialListingTempData,
     IndexCommodityListing, IndexCommodityListingTempData, CommodityInIndexListing, CommodityInIndexListingTempData,
-    StandardizedCommodityNameTempData, StandardizedCommodityNameListing
+    StandardizedCommodityNameTempData, StandardizedCommodityNameListing,
+    CommodityStandardTempData,
+    // CommodityStandard,
+    IndexDataListingTempData,
+    IndexDataListing
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
@@ -165,13 +169,15 @@ class Downloadxls extends React.Component {
             case 'Overhead':
                 return this.returnExcelColumn(Overhead, OverheadTempData);
             case 'Index Data':
-                return this.returnExcelColumn(RMMaterialListing, RMMaterialListingTempData);
+                return this.returnExcelColumn(IndexDataListing, IndexDataListingTempData);
             case 'Index':
                 return this.returnExcelColumn(IndexCommodityListing, IndexCommodityListingTempData);
             case 'Commodity (In Index)':
                 return this.returnExcelColumn(CommodityInIndexListing, CommodityInIndexListingTempData);
-            case 'Standardized Commodity Name':
+            case 'Commodity Standardization':
                 return this.returnExcelColumn(StandardizedCommodityNameListing, StandardizedCommodityNameTempData);
+            // case 'Commodity Standard':
+            //     return this.returnExcelColumn(CommodityStandard, CommodityStandardTempData);
             case 'Fuel':
                 return this.returnExcelColumn(Fuel, FuelTempData);
             case 'Profit':
@@ -220,6 +226,13 @@ class Downloadxls extends React.Component {
                 ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, bopMasterName, 'label'));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_IMPORT, '', true), BOP_ZBC_IMPORT_TempData);
+
+            case `Overhead`:
+
+                return this.returnExcelColumn(Overhead, OverheadTempData);
+            case `Profit`:
+
+                return this.returnExcelColumn(Profit, ProfitTempData);
             case 'Actual Volume':
                 return this.returnExcelColumn(VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA);
             case 'Budgeted Volume':
@@ -274,6 +287,12 @@ class Downloadxls extends React.Component {
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
                 }
+            case `Overhead`:
+
+                return this.returnExcelColumn(OverheadVBC, OverheadVBC_TempData);
+            case `Profit`:
+
+                return this.returnExcelColumn(ProfitVBC, ProfitTempDataVBC);
             case 'Actual Volume':
                 return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_ACTUAL_VBC), VOLUME_ACTUAL_VBC_TEMPDATA);
             case 'Budgeted Volume':
@@ -315,6 +334,11 @@ class Downloadxls extends React.Component {
                 ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, bopMasterName, 'label'));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), updatedTempData);
+            case `Overhead`:
+
+                return this.returnExcelColumn(OverheadCBC, OverheadCBC_TempData);
+            case `Profit`:
+                return this.returnExcelColumn(ProfitCBC, ProfitTempDataCBC);
             case 'Actual Volume':
                 return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_ACTUAL_CBC, CBCTypeId), VOLUME_ACTUAL_CBC_TEMPDATA);
             case 'Budgeted Volume':

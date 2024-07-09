@@ -1462,6 +1462,7 @@ function TabRMCC(props) {
         "PlantCode": costData.PlantCode,
         "Version": ComponentItemData.Version,
         "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
+        "CalculatorType": ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost && ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost[0]?.CalculatorType,
         CostingPartDetails: ComponentItemData?.CostingPartDetails,
       }
       if (costData.IsAssemblyPart && !CostingViewMode) {

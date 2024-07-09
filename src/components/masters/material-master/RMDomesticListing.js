@@ -381,18 +381,13 @@ function RMDomesticListing(props) {
 
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
-        // setPageNo(1)
         dispatch(updatePageNumber(1))
-
         setPageNoNew(1)
         dispatch(updateCurrentRowIndex(10))
-        // setCurrentRowIndex(0)
         getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData, true)
         dispatch(setSelectedRowForPagination([]))
         dispatch(updateGlobalTake(10))
-        // setGlobalTake(10)
         dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
-        // setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         setDataCount(0)
         reactLocalStorage.setObject('selectedRow', {})
         if (isSimulation) {
@@ -715,6 +710,7 @@ function RMDomesticListing(props) {
     const onRowSelect = (event) => {
 
         let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+        
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination

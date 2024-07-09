@@ -292,6 +292,131 @@ function AddToComparisonDrawer(props) {
         if (res.data.Data) {
           // let temp = viewCostingData;
           let dataFromAPI = res.data.Data
+          const setDynamicKeys = (list, value) => {
+            let datalist = list && list?.filter(element => element?.Type === 'Other' && element?.SubHeader === value)
+            let arr = []
+            datalist && datalist?.map(item => {
+              let obj = {}
+              obj.DynamicHeader = item?.Description
+              obj.DynamicApplicabilityCost = item?.ApplicabilityCost
+              obj.DynamicPercentage = item?.Value
+              obj.DynamicNetCost = item?.NetCost
+              arr.push(obj)
+            })
+            return arr;
+          }
+          const dummyData = [
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test 1",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test 2",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: "-"
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 3,
+              Description: "Test 3",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test 4",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test 5",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "Fixed",
+              ApplicabilityIdRef: null,
+              Description: "Test 6",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test 7",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: "-"
+            },
+            {
+              SubHeader: "Process",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test Process 1",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: "-"
+            },
+            {
+              SubHeader: "Process",
+              Type: "Other",
+              ApplicabilityType: "Fixed",
+              ApplicabilityIdRef: null,
+              Description: "Test Process 2",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 8,
+              Description: "Test 8",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: "-"
+            }
+          ]
           let obj = {}
 
           obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
@@ -560,6 +685,9 @@ function AddToComparisonDrawer(props) {
           obj.ScrapRecoveryPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ScrapRecoveryPercentage
           obj.IsShowCheckBoxForApproval = dataFromAPI?.IsShowCheckBoxForApproval
           obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.IsScrapRecoveryPercentageApplied
+          obj.OtherCostDetailsOverhead = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'OverHead')
+          obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
+          obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 

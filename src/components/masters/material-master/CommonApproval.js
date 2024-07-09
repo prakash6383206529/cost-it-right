@@ -7,8 +7,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
-import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, getConfigurationKey, handleDepartmentHeader, loggedInUserId, searchNocontentFilter, showBopLabel, userDetails, userTechnologyDetailByMasterId } from '../../../helper'
-import { BOP_MASTER_ID, BUDGET_ID, EMPTY_DATA, MACHINE_MASTER_ID, ONBOARDINGID, OPERATIONS_ID } from '../../../config/constants';
+import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, getConfigurationKey, handleDepartmentHeader, loggedInUserId, searchNocontentFilter, showBopLabel, userDetails, userTechnologyDetailByMasterId, userTechnologyLevelDetailsWithoutCostingToApproval } from '../../../helper'
+import { BOP_MASTER_ID, BUDGET_ID, CLASSIFICATIONAPPROVALTYPEID, EMPTY_DATA, LPSAPPROVALTYPEID, MACHINE_MASTER_ID, ONBOARDINGID, OPERATIONS_ID } from '../../../config/constants';
 import { deleteRawMaterialAPI, getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
@@ -21,7 +21,7 @@ import { agGridStatus, dashboardTabLock, getGridHeight, isResetClick } from '../
 import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+import { getUsersMasterLevelAPI, getUsersOnboardingLevelAPI } from '../../../actions/auth/AuthActions';
 import Button from '../../layout/Button';
 import { MESSAGES } from '../../../config/message';
 import { deleteBOP } from '../actions/BoughtOutParts';
@@ -32,6 +32,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import PaginationControls from '../../common/Pagination/PaginationControls';
 import { resetStatePagination, updateCurrentRowIndex, updatePageNumber } from '../../common/Pagination/paginationAction';
+import SendForApproval from '../../vendorManagement/approval/SendForApproval';
 
 const gridOptions = {};
 
@@ -616,13 +617,61 @@ function CommonApproval(props) {
                 }
                 return null
             })
-            if (!checkCostingHeadSame) {
+            let checkApprovalTypeOfSupplier = true
+            if (props?.OnboardingApprovalId !== ONBOARDINGID) {
+
+                dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, (res) => {
+                    levelDetailsTemp = userTechnologyDetailByMasterId(selectedRowData[0]?.CostingTypeId, props?.MasterId, res?.data?.Data?.MasterLevels)
+                    setLevelDetails(levelDetailsTemp)
+                }))
+
+                let costingHead = selectedRowData[0]?.CostingHead;
+                let plantId = selectedRowData[0]?.MasterApprovalPlantId
+
+                selectedRowData.map((item) => {
+                    if (item.CostingHead !== costingHead) {
+                        checkCostingHeadSame = false
+                        return false
+                    }
+                    if (item.MasterApprovalPlantId !== plantId) {
+                        checkPlantIdSame = false
+                        return false
+                    }
+                    return null
+                })
+            } else {
+                dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
+
+                    levelDetailsTemp = userTechnologyLevelDetailsWithoutCostingToApproval(selectedRowData[0]?.ApprovalTypeId, res?.data?.Data?.OnboardingApprovalLevels)
+
+                }))
+                let approvalTypeId = selectedRowData[0]?.ApprovalTypeId;
+                let plantId = selectedRowData[0]?.PlantId
+
+                selectedRowData.map((item) => {
+                    if (item.ApprovalTypeId !== approvalTypeId) {
+                        checkApprovalTypeOfSupplier = false
+                        return false
+                    }
+                    if (item.PlantId !== plantId) {
+                        checkPlantIdSame = false
+                        return false
+                    }
+                    return null
+                })
+            }
+
+            if (!checkCostingHeadSame && props?.OnboardingApprovalId !== ONBOARDINGID) {
                 Toaster.warning('Please select token with same costing head.')
                 return;
             } else if (!(initialConfiguration.IsMultipleUserAllowForApproval ? checkPlantIdSame : true)) {
                 Toaster.warning('Please select token with same plant.')
                 return;
+            } else if (!checkApprovalTypeOfSupplier && props?.OnboardingApprovalId === ONBOARDINGID) {
+                Toaster.warning('Please select token with same plant.')
+                return;
             }
+
             else {
                 setApprovalDrawer(true)
             }
@@ -990,7 +1039,7 @@ function CommonApproval(props) {
                 />
             }
             {
-                approvalDrawer &&
+                props?.OnboardingApprovalId !== ONBOARDINGID && approvalDrawer &&
                 <MasterSendForApproval
                     isOpen={approvalDrawer}
                     closeDrawer={closeApprovalDrawer}
@@ -1005,6 +1054,23 @@ function CommonApproval(props) {
                     costingTypeId={selectedRowData[0]?.CostingTypeId}
                 />
             }
+            {
+                props?.OnboardingApprovalId === ONBOARDINGID && approvalDrawer &&
+                <SendForApproval
+                    isOpen={approvalDrawer}
+                    closeDrawer={closeApprovalDrawer}
+                    isEditFlag={false}
+                    masterId={0}
+                    type={'Sender'}
+                    anchor={"right"}
+                    isBulkUpload={true}
+                    isApprovalisting={false}
+                    deviationData={selectedRowData[0]}
+                    isClassification={selectedRowData[0]?.ApprovalTypeId === CLASSIFICATIONAPPROVALTYPEID ? true : false}
+                    isLpsRating={selectedRowData[0]?.ApprovalTypeId === LPSAPPROVALTYPEID ? true : false} // 
+                />
+            }
+
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={deleteAlertMessages[props?.MasterId] || deleteAlertMessages.default} />
             }

@@ -222,6 +222,7 @@ function SummaryDrawer(props) {
                                     {/* <h3>{`Master Summary (Token No.${approvalDetails.Token}):`}</h3> */}
                                     <h3>{`${approvalDetails?.ApprovalTypeId === LPSAPPROVALTYPEID ? 'LPS' : (approvalDetails?.ApprovalTypeId === CLASSIFICATIONAPPROVALTYPEID ? 'Classification' : 'Master')} Summary (Token No.${approvalDetails?.Token ?? ''}):`}</h3>
 
+
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}

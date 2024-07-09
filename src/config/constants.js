@@ -31,10 +31,12 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;  //
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-// const BASE_URL = `http://10.10.8.120:81/api/v1`;
-//const BASE_URL = `http://10.10.1.100:10152/api/v1`;
+// const BASE_URL = `http://10.10.8.120:81/api/v1`; 
+// const BASE_URL = `http://10.10.8.109:8070/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`;
 //FILE URL
+//http://10.10.8.120:1005/
+
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -54,6 +56,10 @@ export const API = {
   getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
   getPartSelectLists: `${BASE_URL}/masters-part/select-list-component-part-for-convert-to-assembly`,
+
+
+  //Part Active InActive
+  ActiveInActivePartUser: `${BASE_URL}/masters-part/part-active`,
 
   //Combo apis
 
@@ -85,14 +91,46 @@ export const API = {
   getRowMaterialSpecification: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-specification`,
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
 
+
+  //add exchnage rate
+
+  getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
+
+  //add frequency of settlement
+
+  getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
+
+  // add commodity index rate average
+
+  getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
   ///INDEXATION
-  getCommoditySelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
-  getCommodityNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
-  getCommodityCustomNameSelectList: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
-  createCommodityStandardization: `${BASE_URL}/masters-material/create-material-type`,
+  getCommoditySelectList: `${BASE_URL}/masters-material/select-list-index-exchange`,
+  getCommodityNameInIndexSelectList: `${BASE_URL}/masters-material/select-list-index-exchange-commodity-linking`,
+  getCommodityCustomNameSelectList: `${BASE_URL}/masters-material/select-list-commodity-standard-name`,
+  createCommodityStandardization: `${BASE_URL}/masters-material/create-commodity-standardization`,
   getCommodityStandardizationDataList: `${BASE_URL}/masters-material/get-all-material-type`,
-  getCommodityIndexDataList: `${BASE_URL}/masters-material/get-commodity-exchange`,
-  getCommodityInIndexDataList: `${BASE_URL}/masters-material/get-commodity`,
+  getCommodityIndexDataList: `${BASE_URL}/masters-material/get-index-exchange`,
+  getCommodityInIndexDataList: `${BASE_URL}/masters-material/get-index-exchange-commodity-linking`,
+  getStandardizedCommodityDataList: `${BASE_URL}/masters-material/get-commodity-standardization`,
+  getIndexDataList: `${BASE_URL}/masters-material/get-commodity-index-rate-details`,
+  deleteIndexData: `${BASE_URL}/masters-material/delete-index-exchange`,
+  updateIndexData: `${BASE_URL}/masters-material/update-commodity-material-details`,
+  createIndexData: `${BASE_URL}/masters-material/create-commodity-material-details`,
+  bulkUploadIndexData: `${BASE_URL}/masters-material/bulk-upload-for-commodity-index-rate-details`,
+  bulkUploadStandardizedCommodity: `${BASE_URL}/masters-material/bulk-upload-for-commodity-standardization`,
+  updateCommodityStandardization: `${BASE_URL}/masters-material/update-commodity-standardization`,
+  createCommodityCustomName: `${BASE_URL}/masters-material/create-commodity-standard-name`,
+  bulkUploadIndex: `${BASE_URL}/masters-material/bulk-upload-for-index-exchange`,
+  bulkUploadCommodityInIndex: `${BASE_URL}/masters-material/bulk-upload-for-index-exchange-commodity-linking`,
+  deleteIndexCommodityLinking: `${BASE_URL}/masters-material/delete-index-exchange-commodity-linking`,
+  createIndex: `${BASE_URL}/masters-material/create-index-exchange`,
+  updateIndex: `${BASE_URL}/masters-material/update-index-exchange`,
+  getCommodityStandardList: `${BASE_URL}/masters-material/get-commodity-standard`,
+  bulkUploadCommodityStandard: `${BASE_URL}/masters-material/bulk-upload-for-commodity-standard`,
+  deleteCommodityStandard: `${BASE_URL}/masters-material/delete-commodity-standard`,
+  deleteCommodityStandardization: `${BASE_URL}/masters-material/delete-commodity-standardization`,
+  deleteIndexDetailData: `${BASE_URL}/masters-material/delete-commodity-index-rate-details`,
+  getAssociatedMaterial: `${BASE_URL}//masters-material/get-material-type`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -584,6 +622,8 @@ export const API = {
   saveRawMaterialCalculationForPlastic: `${BASE_URL}/costing/save-raw-material-plastic-calculation-details`,
   getRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/get-raw-material-corrugated-box-calculation-details`,
   saveRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/save-raw-material-corrugated-box-calculation-details`,
+  saveRawMaterialCalculationForMonoCartonCorrugatedBox: `${BASE_URL}/costing/save-raw-material-corrugated-and-mono-carton-box-calculation-details`,
+  getRawMaterialCalculationForMonoCartonCorrugatedBox: `${BASE_URL}/costing/get-raw-material-corrugated-and-mono-carton-box-calculation-details`,
   getRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/get-raw-material-die-casting-calculation-details`,
   saveRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/save-raw-material-die-casting-calculation-details`,
   getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
@@ -594,6 +634,7 @@ export const API = {
   saveRawMaterialCalculationForMachining: `${BASE_URL}/costing/save-raw-material-machining-calculation-details`,
   getRawMaterialCalculationForMachining: `${BASE_URL}/costing/get-raw-material-machining-calculation-details`,
   getSimulationRmMachiningCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-machining-calculation-details`,
+  getSimulationCorrugatedAndMonoCartonCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-and-mono-carton-box-calculation-details`,
 
   // YOY
   getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
@@ -1079,6 +1120,16 @@ export const API = {
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   createNFRBOMDetails: `${BASE_URL}/nfr/create-nfr-bom-details`,
+  getrRqVendorDetails: `${BASE_URL}/rfq-quotation/get-rfq-vendor-detail`,
+  getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
+  saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
+  getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
+  getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
+  getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
+  deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
+  checkRegisteredVendor: `${BASE_URL}/rfq-quotation/check-registered-vendor`,
+  // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
+
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -1131,6 +1182,8 @@ export const API = {
   getCommunicationHistory: `${BASE_URL}/rfq-quotation/get-communication-history`,
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
+  getAssemblyChildpart: `${BASE_URL}/rfq-quotation/get-assembly-child-part`,
+  getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-quotation-part-detail`,
 
   //vendor management
   getVendorClassificationList: `${BASE_URL}/vendor/get-classifications-status`,
@@ -1204,8 +1257,8 @@ export const GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST = 'GET_UNASSOCIATED_VENDOR
 export const GET_USERS_MASTER_LEVEL_API = 'GET_USERS_MASTER_LEVEL_API'
 
 //INDEXATION
-export const GET_COMMODITY_SELECTLIST_BY_TYPE = 'GET_COMMODITY_SELECTLIST_BY_TYPE'
-export const GET_COMMODITYNAME_SELECTLIST_BY_TYPE = 'GET_COMMODITYNAME_SELECTLIST_BY_TYPE'
+export const GET_INDEX_SELECTLIST = 'GET_INDEX_SELECTLIST'
+export const GET_COMMODITY_IN_INDEX_SELECTLIST = 'GET_COMMODITY_IN_INDEX_SELECTLIST'
 export const GET_COMMODITYCUSTOMNAME_SELECTLIST_BY_TYPE = 'GET_COMMODITYCUSTOMNAME_SELECTLIST_BY_TYPE'
 export const CREATE_COMMODITY_SUCCESS = 'CREATE_COMMODITY_SUCCESS'
 export const CREATE_COMMODITY_FAILURE = 'CREATE_COMMODITY_FAILURE'
@@ -1214,6 +1267,12 @@ export const GET_INDEXCOMMODITY_DATALIST_SUCCESS = 'GET_INDEXCOMMODITY_DATALIST_
 export const GET_COMMODITYININDEX_DATALIST_SUCCESS = 'GET_COMMODITYININDEX_DATALIST_SUCCESS'
 export const GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD = 'GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD'
 export const GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD = 'GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD'
+export const GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS = 'GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS'
+export const GET_STANDARDIZEDCOMMODITY_FOR_DOWNLOAD = 'GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD'
+export const GET_INDEXDATA_LIST_SUCCESS = 'GET_INDEXDATA_LIST_SUCCESS'
+export const GET_INDEXDATA_FOR_DOWNLOAD = 'GET_INDEXDATA_FOR_DOWNLOAD'
+export const GET_COMMODITY_STANDARD_FOR_DOWNLOAD = 'GET_COMMODITY_STANDARD_FOR_DOWNLOAD'
+export const GET_COMMODITY_STANDARD_DATALIST_SUCCESS = 'GET_COMMODITY_STANDARD_DATALIST_SUCCESS'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
@@ -1309,7 +1368,14 @@ export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
 export const STATUS_COLUMN_DATA = 'STATUS_COLUMN_DATA'
 export const IS_RESET = 'IS_RESET'
 
+//RM EXCHANGE RATE SOURCE
+export const GET_RM_EXCHANGE_RATE_SOURCE = 'GET_RM_EXCHANGE_RATE_SOURCE'
+//COST FREQUENCY OF SETTLEMENT
+export const GET_COST_FREQUENCY_SETTLEMENT = 'GET_COST_FREQUENCY_SETTLEMENT'
 
+// COMMODITY INDEX RATE AVERAGE
+export const COMMODITY_INDEX_RATE_AVERAGE = 'COMMODITY_INDEX_RATE_AVERAGE'
+export const GET_COMMODITY_INDEX_RATE_AVERAGE = 'GET_COMMODITY_INDEX_RATE_AVERAGE'
 //RAW MATERIAL APPROVAL
 export const GET_RM_APPROVAL_LIST = 'GET_RM_APPROVAL_LIST'
 export const GET_ALL_MASTER_APPROVAL_DEPARTMENT = 'GET_ALL_MASTER_APPROVAL_DEPARTMENT'
@@ -1335,6 +1401,8 @@ export const GET_MATERIAL_LIST_TYPE_SUCCESS = 'GET_MATERIAL_LIST_TYPE_SUCCESS'
 export const RAWMATERIAL_ADDED_FOR_COSTING = 'RAWMATERIAL_ADDED_FOR_COSTING'
 export const GET_MATERIAL_TYPE_DATA_SUCCESS = 'GET_MATERIAL_TYPE_DATA_SUCCESS'
 export const RAW_MATERIAL_DETAILS = 'RAW_MATERIAL_DETAILS'
+
+
 
 //PLANT MASTER
 export const CREATE_PLANT_SUCCESS = 'CREATE_PLANT_SUCCESS'
@@ -1709,7 +1777,6 @@ export const AUTH_API_REQUEST = 'AUTH_API_REQUEST'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS'
 export const LOGIN_PAGE_INIT_CONFIGURATION = 'LOGIN_PAGE_INIT_CONFIGURATION'
-
 //USER
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS'
 export const GET_USER_DATA_SUCCESS = 'GET_USER_DATA_SUCCESS'
@@ -1912,10 +1979,21 @@ export const GET_NFR_INSIGHT_STATUS_DETAILS = 'GET_NFR_INSIGHT_STATUS_DETAILS'
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
 export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
+export const GET_QUOTATION_DETAILS_LIST = 'GET_QUOTATION_DETAILS_LIST'
 export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
 export const SELECTED_ROW_ARRAY = 'SELECTED_ROW_ARRAY'
 export const GET_NFR_SELECT_LIST = 'GET_NFR_SELECT_LIST'
 export const SET_SAP_DATA = 'SET_SAP_DATA'
+export const GET_ASSEMBLY_CHILD_SELECT_LIST = 'GET_ASSEMBLY_CHILD_SELECT_LIST'
+export const GET_RFQ_VENDOR_DETAIL = 'GET_RFQ_VENDOR_DETAIL'
+export const GET_TARGET_PRICE = 'GET_TARGET_PRICE'
+export const GET_ASSEMBLY_CHILD_PART = "GET_ASSEMBLY_CHILD_PART"
+export const GET_RFQ_PART_DETAILS = "GET_RFQ_PART_DETAILS"
+export const GET_RFQ_RAISE_NUMBER = "GET_RFQ_RAISE_NUMBER"
+export const PARTSPECIFICATIONRFQDATA = 'PARTSPECIFICATIONRFQDATA'
+export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
+export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
+export const HAVELLS_DESIGN_PARTS = "Havells Design part"
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
@@ -1945,6 +2023,7 @@ export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
 export const EXTERNAL_REJECT = 'ExternalReject'
+export const PREDRAFT = 'PreDraft'
 export const DRAFTID = 1
 export const REJECTEDID = 4
 export const ERRORID = 12
@@ -1989,6 +2068,8 @@ export const RFQ = 'RFQ'
 export const ONBOARDING = 'Onboarding & Management'
 export const VENDOR_MANAGEMENT = 'Vendor Classification Status'
 export const LPS = 'LPS Rating Status'
+export const RFQVendor = 'RFQ-Vendor'
+
 
 export const APPROVAL_LISTING = 'Approval Listing'
 export const VENDOR_MANAGEMENT_ROLE = 'Vendor Management'
@@ -2004,6 +2085,7 @@ export const MACHINE = 'Machine'
 export const VENDOR = 'Vendor'
 export const CLIENT = 'Customer'
 export const PLANT = 'Plant'
+export const INDEXATION = 'Material Indexation'
 
 export const PRODUCT = 'Product'
 export const PRODUCT_ID = '4'
@@ -2629,6 +2711,7 @@ export const Fixed = 1;
 export const Percentage = 2;
 export const FullTruckLoad = 3;
 export const PartTruckLoad = 4;
+export const Per_Kg_Load = 5;
 export const INR = "INR"
 export const G = "Gram"
 export const MG = "Milligram"
@@ -2798,8 +2881,13 @@ export const SUB_ASSEMBLY = 'Sub Assembly';
 //MASTER NAMES FOR BULK UPLOAD
 export const RMDOMESTICBULKUPLOAD = 'RM Domestic';
 export const RMIMPORTBULKUPLOAD = 'RM Import';
-export const RMSPECIFICATION = 'RM Specification'
-export const RMMATERIALBULKUPLOAD = 'RM Index Data'
+export const RMMASTER = 'RM';
+export const RMSPECIFICATION = 'RM Specification';
+export const RMMATERIALBULKUPLOAD = 'Index Data';
+export const INDEXCOMMODITYBULKUPLOAD = 'Index';
+export const COMMODITYSTANDARDIZATION = 'Commodity Standardization';
+export const COMMODITYININDEXBULKUPLOAD = 'Commodity (In Index)';
+export const COMMODITYSTANDARD = 'Commodity Standard'
 export const BOPDOMESTICBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Domestic";
 export const INSERTDOMESTICBULKUPLOAD = 'Insert Domestic';
 export const BOPIMPORTBULKUPLOAD = reactLocalStorage.getObject("BOPLabel") + " Import";
@@ -2818,6 +2906,9 @@ export const BUDGETEDVOLUMEBULKUPLOAD = 'Budgeted Volume'
 export const ADDRFQ = 'ADD RFQ'
 export const VOLUMEBULKUPLOAD = 'Volume'
 export const BUDGETBULKUPLOAD = 'Budget'
+//added for OverheadProfit
+export const OVERHEADBULKUPLOAD = 'Overhead'
+export const PROFITBULKUPLOAD = 'Profit'
 
 
 //STATUS FILTER DROPDOWN OPTIONS
@@ -2900,6 +2991,20 @@ export const CRMHeads = [
 
 ]
 
+export const CostData = [
+  { label: "Local Logistic", value: 100 },
+  { label: "Yield Loss", value: 200 },
+  { label: "Packaging and Freight", value: 150 },
+  { label: "Overhead Cost", value: 250 },
+  { label: "Profit Cost", value: 300 },
+  { label: "Discount Cost", value: 50 },
+  { label: "Freight Cost", value: 120 },
+  { label: "Shearing Cost", value: 180 }
+];
+export const typeData = [
+  { label: "Percentage", value: 'Percentage' },
+  { label: "Fixed", value: 'Fixed' }
+];
 
 export const LANGUAGES = [
   { value: 'en-US', label: 'English - EN', },
@@ -3024,9 +3129,15 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 export const PartTypeIDFromAPI = 2
-export const RMIndex = true
+export const RMIndex = false
+export const showLogoFromDataBase = false
+export const showPaperCorrugatedBox = true
+
+export const showDynamicKeys = false
+export const hideDetailOfRubbercalci = true
+
 //VERSION 
-export const VERSION = "V2.2.22.3";
+export const VERSION = "V2.2.30";
 
 
 

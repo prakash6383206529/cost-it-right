@@ -102,6 +102,7 @@ const VendorManagement = () => {
                                     MasterId={0}
                                     OnboardingApprovalId={ONBOARDINGID}
                                     toggle={toggle}
+                                    hidesendBtn={true}
                                 />
                             </TabPane>
                         }

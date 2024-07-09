@@ -251,6 +251,24 @@ export function getRawMaterialCalculationForCorrugatedBox(costingId, rawMaterial
     });
   };
 }
+export function getRawMaterialCalculationForMonoCartonCorrugatedBox(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForMonoCartonCorrugatedBox}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
 /**
  * @method saveRawMaterialCalculationForCorrugatedBox
  * @description save raw materical calculator data for Corrugated Box
@@ -258,6 +276,20 @@ export function getRawMaterialCalculationForCorrugatedBox(costingId, rawMaterial
 export function saveRawMaterialCalculationForCorrugatedBox(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.saveRawMaterialCalculationForCorrugatedBox, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
+export function saveRawMaterialCalculationForMonoCartonCorrugatedBox(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForMonoCartonCorrugatedBox, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1436,6 +1468,24 @@ export function getSimulationRmMachiningCalculation(simulationId, costingId, raw
     //dispatch({ type: API_REQUEST });
     const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&rawMaterialId=${rawMaterialId}`
     const request = axios.get(`${API.getSimulationRmMachiningCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+export function getSimulationCorrugatedAndMonoCartonCalculation(simulationId, costingId, rawMaterialId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&rawMaterialId=${rawMaterialId}`
+    const request = axios.get(`${API.getSimulationCorrugatedAndMonoCartonCalculation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);

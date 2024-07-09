@@ -294,7 +294,7 @@ function AddRMDetails(props) {
     const handleGrade = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, rmGrade: newValue, rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: true }));
-            dispatch(fetchSpecificationDataAPI(state.rmGrade.value, (res) => { }))
+            dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
         } else {
             setState(prevState => ({ ...prevState, rmGrade: [], rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: false }));
             dispatch(fetchSpecificationDataAPI(0, (res) => { }))
@@ -707,7 +707,7 @@ function AddRMDetails(props) {
                                 />
                             </Col></>}
                 </Row>
-                <AddIndexationMaterialListing />
+                {RMIndex && <AddIndexationMaterialListing />}
                 <Row>
                     <Col md="11">
                         <Row>

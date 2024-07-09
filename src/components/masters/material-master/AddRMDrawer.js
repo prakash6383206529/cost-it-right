@@ -17,7 +17,7 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
         MaterialTypeId: '',
         DataToChange: [],
         setDisable: false,
-        showPopup: false,
+        showPopup: false
     });
 
 
@@ -126,6 +126,7 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
     const closePopUp = () => {
         setState(prevState => ({ ...prevState, showPopup: false }));
     };
+
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>
@@ -148,7 +149,7 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
                             <Row className="pl-3">
                                 <Col md="6">
                                     <SearchableSelectHookForm
-                                        label={'Material Index'}
+                                        label={'Commodity (In CIR)'}
                                         name={'MaterialIndex'}
                                         placeholder={'Select'}
                                         Controller={Controller}

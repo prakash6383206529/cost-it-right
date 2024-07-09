@@ -2,13 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { EMPTY_DATA, Per_Kg_Load } from '../../../../../config/constants';
 import AddFreight from '../../Drawers/AddFreight';
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/Costing';
 import { checkForDecimalAndNull, CheckIsCostingDateSelected } from '../../../../../helper';
-import { LOGISTICS } from '../../../../../config/masterData';
+import { LOGISTICS, PACK_AND_FREIGHT_PER_KG } from '../../../../../config/masterData';
 import Button from '../../../../layout/Button';
 
 function FreightCost(props) {
@@ -137,10 +137,10 @@ function FreightCost(props) {
                         return (
                           <tr key={index}>
                             <td>{EFreightLoadTypeText}</td>
-                            <td>{item.EFreightLoadType === Fixed || item.EFreightLoadType === Percentage ? '-' : item.Capacity}</td>
-                            <td>{item.EFreightLoadType === Fixed ? '-' : (item.EFreightLoadType === Percentage ? item.Criteria : '-')}</td>
-                            <td>{item.EFreightLoadType === Fixed ? '-' : (item.EFreightLoadType === Percentage ? item.Rate : '-')}</td>
-                            <td>{item.EFreightLoadType === Fixed || item.EFreightLoadType === Percentage ? '-' : item.Quantity}</td>
+                            <td>{item.Capacity ? item.Capacity : '-'}</td>
+                            <td>{item.Criteria ? item.Criteria : '-'}</td>
+                            <td>{item.Rate ? item.Rate : '-'}</td>
+                            <td>{item.Quantity ? item.Quantity : '-'}</td>
                             <td>{checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             {initialConfiguration.IsShowCRMHead && <td>{item?.FreightCRMHead}</td>}
                             <td style={{ textAlign: "right" }}>

@@ -180,7 +180,7 @@ function AddRMMaster(props) {
 
 
     const onSubmit = debounce(handleSubmit((values) => {
-        
+
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -312,7 +312,10 @@ function AddRMMaster(props) {
         let nonFinancialDataNotChanged = (JSON.stringify(rawMaterailDetails.Files) === JSON.stringify(DataToChange?.FileList) && values?.Remarks === DataToChange?.Remark)
         if (state.isEditFlag) {
             if (!isRMAssociated) {
-                                                if (financialDataNotChanged && nonFinancialDataNotChanged) {
+
+
+
+                if (financialDataNotChanged && nonFinancialDataNotChanged) {
                     if (!state.isFinalApprovar) {
                         Toaster.warning('Please change data to send RM for approval')
                         return false
@@ -454,6 +457,8 @@ function AddRMMaster(props) {
                         useWatch={useWatch}
                         DataToChange={state.DataToChange}
                         data={data}
+                        EditAccessibilityRMANDGRADE={props.EditAccessibilityRMANDGRADE}
+                        AddAccessibilityRMANDGRADE={props.AddAccessibilityRMANDGRADE}
                         commonFunction={commonFunction} />
                     <AddRMFinancialDetails states={state}
                         Controller={Controller}
@@ -478,7 +483,7 @@ function AddRMMaster(props) {
                     </Row>
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer"></Row>
                     <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
-                        {state.disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
+                        {(state.disableSendForApproval && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                         <Button
                             id="addBOPIMport_cancel"
                             className="mr15"
@@ -504,7 +509,7 @@ function AddRMMaster(props) {
                                     id="addRMDomestic_updateSave"
                                     type="button"
                                     className="mr5"
-                                    disabled={isViewFlag || state.disableSendForApproval}
+                                    disabled={isViewFlag || (state.disableSendForApproval && getConfigurationKey().IsMasterApprovalAppliedConfigure)}
                                     onClick={onSubmit}
                                     icon={"save-icon"}
                                     buttonName={data.isEditFlag ? "Update" : "Save"}

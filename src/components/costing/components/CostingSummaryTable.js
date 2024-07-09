@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showLogoFromDataBase, } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showLogoFromDataBase, showDynamicKeys, } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -137,6 +137,8 @@ const CostingSummaryTable = (props) => {
   const [paymentTermsData, setPaymentTermsData] = useState([])
   const [npvData, setNpvData] = useState([])
   const [isScrapRecoveryPercentageApplied, setIsScrapRecoveryPercentageApplied] = useState(false)
+  const [otherCostDetailsOverhead, setOtherCostDetailsOverhead] = useState([])
+  const [otherCostDetailsProcess, setOtherCostDetailsProcess] = useState([])
 
   const { viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly } = useSelector((state) => state.costing)
 
@@ -152,8 +154,37 @@ const CostingSummaryTable = (props) => {
 
   }, [viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly])
 
+  const commonFunction = (value) => {
+    let tempObj = {}
+    viewCostingData && viewCostingData.map((item, index) => {
+      item[value] && item[value].map(element => {
+        const header = element?.DynamicHeader;
+
+        // Initialize arrayList if the DynamicHeader doesn't exist
+        if (!tempObj[header]) {
+          tempObj[header] = { arrayList: [] };
+        }
+
+        // Place the current element at the corresponding index
+        tempObj[header].arrayList[index] = { ...element, index };
+
+        // Ensure all previous indices have values or are empty
+        for (let i = 0; i < index; i++) {
+          if (tempObj[header].arrayList[i] === undefined) {
+            tempObj[header].arrayList[i] = {};
+          }
+        }
+      });
+    });
+    return tempObj
+  }
+
   useEffect(() => {
     setIsScrapRecoveryPercentageApplied((_.map(viewCostingData, 'IsScrapRecoveryPercentageApplied') || []).some(value => value === true));
+    if (showDynamicKeys) {
+      setOtherCostDetailsOverhead(commonFunction('OtherCostDetailsOverhead'))
+      setOtherCostDetailsProcess(commonFunction('OtherCostDetailsProcess'))
+    }
   }, [viewCostingData])
 
 
@@ -498,8 +529,8 @@ const CostingSummaryTable = (props) => {
     setIndex(index)
     if (index !== -1) {
       let data = viewCostingData[index]?.netConversionCostView
-      let netTransportationCostView = viewCostingData[index]?.netTransportationCostView
-      let surfaceTreatmentDetails = viewCostingData[index]?.surfaceTreatmentDetails
+      let netTransportationCostView = viewCostingData[index]?.CostingPartDetails?.netTransportationCostView
+      let surfaceTreatmentDetails = viewCostingData[index]?.CostingPartDetails?.CostingPartDetailssurfaceTreatmentDetails
       let IsAssemblyCosting = viewCostingData[index]?.IsAssemblyCosting
       setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false })
     }
@@ -1167,19 +1198,25 @@ const CostingSummaryTable = (props) => {
               obj.Mode = 'costing'
               obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
               obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
-              dispatch(checkFinalUser(obj, res => {
-                if (res?.data?.Result) {
-                  setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
-                  if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
-                    sendForApprovalData(multipleCostings)
-                    setShowApproval(true)
-                  } else if (res?.data?.Data?.IsFinalApprover === true) {
-                    Toaster.warning("Final level user cannot send costing for approval.")
-                  } else {
-                    Toaster.warning("User does not have permission to send costing for approval.")
+              const { Department } = userDetails()
+              if (Department.length === 1) {
+                dispatch(checkFinalUser(obj, res => {
+                  if (res?.data?.Result) {
+                    setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                    if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                      sendForApprovalData(multipleCostings)
+                      setShowApproval(true)
+                    } else if (res?.data?.Data?.IsFinalApprover === true) {
+                      Toaster.warning("Final level user cannot send costing for approval.")
+                    } else {
+                      Toaster.warning("User does not have permission to send costing for approval.")
+                    }
                   }
-                }
-              }))
+                }))
+              } else {
+                sendForApprovalData(multipleCostings)
+                setShowApproval(true)
+              }
             }
           }
         }))
@@ -1961,6 +1998,51 @@ const CostingSummaryTable = (props) => {
       return false;
     }
   }
+
+  const renderOtherCostDetailsOverhead = (list) => {
+    let arr = []
+    Object.keys(list).forEach(key => {
+      arr.push(<span className={highlighter([], "multiple-key")}>{key}</span>)
+    });
+    return arr
+  }
+
+  const renderDataForOtherCostDetailsOverhead = (otherCostDetailsList, columnIndex, showHeader, data) => {
+    const tempArr = otherCostDetailsList
+    let arr = []
+    if (showHeader) {
+      data && arr?.push(<>
+        <div className={`d-flex`}>
+          <span className="d-inline-block w-50">
+            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.applicability : '')}
+          </span>{' '}
+          <span className="d-inline-block w-50">
+            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.percentage : '')}
+          </span>
+          <span className="d-inline-block w-50">
+            {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.value : '')}
+          </span>
+        </div></>)
+    }
+
+    Object.keys(tempArr)?.forEach(key => {
+      const ele = <div style={pdfHead ? { marginTop: '-1px' } : {}} className={`d-flex  ${highlighter(["iccOn", "iccValue"], "multiple-key")}`}>
+        <span className="d-inline-block w-50 small-grey-text">
+          <span>
+            {(tempArr[key]?.arrayList[columnIndex]?.bestCost === true) ? ' ' : (tempArr[key]?.arrayList[columnIndex]?.DynamicApplicabilityCost ? <span title={checkForDecimalAndNull(tempArr[key]?.arrayList[columnIndex]?.DynamicApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(tempArr[key]?.arrayList[columnIndex]?.DynamicApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
+          </span></span>{' '}
+        <span className="d-inline-block w-50 small-grey-text">
+          {(tempArr[key]?.arrayList[columnIndex]?.bestCost === true) ? ' ' : (tempArr[key]?.arrayList[columnIndex]?.DynamicPercentage ? <span title={checkForDecimalAndNull(tempArr[key]?.arrayList[columnIndex]?.DynamicPercentage, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(tempArr[key]?.arrayList[columnIndex]?.DynamicPercentage, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
+        </span>{' '}
+        <span className="d-inline-block w-50 small-grey-text">
+          {(tempArr[key]?.arrayList[columnIndex]?.bestCost === true) ? ' ' : (tempArr[key]?.arrayList[columnIndex]?.DynamicNetCost ? <span title={checkForDecimalAndNull(tempArr[key]?.arrayList[columnIndex]?.DynamicNetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(tempArr[key]?.arrayList[columnIndex]?.DynamicNetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
+        </span>
+      </div>
+      arr.push(ele)
+    })
+    return arr
+  }
+
   return (
     <Fragment>
       {
@@ -2545,9 +2627,13 @@ const CostingSummaryTable = (props) => {
                                     {showLabourData && <span className={highlighter("NetLabourCost")}>Net Labour Cost</span>}
                                     {showLabourData && <span className={highlighter("IndirectLaborCost")}>Indirect Labor Cost</span>}
                                     {showLabourData && <span className={highlighter("StaffCost")}>Staff Cost</span>}
+                                    {showDynamicKeys && <>
+                                      <br />
+                                      {renderOtherCostDetailsOverhead(otherCostDetailsProcess)}
+                                    </>}
                                   </td>
                                   {viewCostingData &&
-                                    viewCostingData?.map((data) => {
+                                    viewCostingData?.map((data, indexInside) => {
                                       return (
                                         <td className={tableDataClass(data)}>
                                           <span className={highlighter("pCost")}>
@@ -2575,6 +2661,9 @@ const CostingSummaryTable = (props) => {
                                               {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.StaffCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.StaffCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
                                             </span>
                                           }
+                                          {showDynamicKeys && <>
+                                            {renderDataForOtherCostDetailsOverhead(otherCostDetailsProcess, indexInside, true, data)}
+                                          </>}
                                         </td >
                                       )
                                     })
@@ -2695,10 +2784,13 @@ const CostingSummaryTable = (props) => {
                                 <span className={highlighter(["profitOn", "profitValue"], "multiple-key")}>Rejection Recovery</span>
                                 <span className={highlighter(["rejectionOn", "rejectionValue"], "multiple-key")}>Rejection On</span>
                                 <span className={highlighter(["iccOn", "iccValue"], "multiple-key")}>ICC On</span>
+                                {showDynamicKeys && <>
+                                  {renderOtherCostDetailsOverhead(otherCostDetailsOverhead)}
+                                </>}
                               </td>
 
                               {viewCostingData &&
-                                viewCostingData?.map((data) => {
+                                viewCostingData?.map((data, indexInside) => {
                                   const { ApplicabilityType, EffectiveRecoveryPercentage, RejectionRecoveryNetCost } = data?.CostingRejectionRecoveryDetails || {}
                                   return (
 
@@ -2772,7 +2864,9 @@ const CostingSummaryTable = (props) => {
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
                                         </span>
                                       </div>
-
+                                      {showDynamicKeys && <>
+                                        {renderDataForOtherCostDetailsOverhead(otherCostDetailsOverhead, indexInside, false, data)}
+                                      </>}
                                     </td>
                                   )
                                 })}

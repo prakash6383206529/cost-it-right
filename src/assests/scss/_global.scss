@@ -2757,6 +2757,7 @@ td,
   .POUpdated,
   .PO.Updated,
   .Draft,
+  .PreDraft,
   .Linked,
   .Under.Approval,
   .UnderApproval,
@@ -2824,6 +2825,7 @@ td,
   .Rejected,
   .RejectedBySystem,
   .Cancelled,
+  .PreDraft,
   .Returned {
     background-color: #fc5774;
   }

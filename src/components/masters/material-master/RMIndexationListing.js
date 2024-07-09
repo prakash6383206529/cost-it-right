@@ -119,14 +119,14 @@ const RMIndexationListing = (props) => {
     }, []);
     /**
        * @method deleteItem
-       * @description confirm delete RM Specification
+       * @description confirm delete RM Indexation
        */
     const deleteItem = useCallback((Id) => {
         setState((prev) => ({ ...prev, showPopup: true, deletedId: Id }));
     }, []);
     /**
         * @method confirmDelete
-        * @description confirm delete RM Specification
+        * @description confirm delete RM Indexation
         */
     const confirmDelete = useCallback(
         (ID) => {

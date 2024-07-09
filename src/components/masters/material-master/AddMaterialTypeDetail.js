@@ -1,178 +1,180 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Table } from "reactstrap";
-import { checkForDecimalAndNull, checkWhiteSpaces, percentageLimitValidation, number } from "../../../helper"
-import { useSelector } from "react-redux";
+import { checkForDecimalAndNull, checkWhiteSpaces, percentageLimitValidation, number } from "../../../helper";
+import { useDispatch, useSelector } from "react-redux";
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { useForm, Controller } from "react-hook-form";
 import Toaster from '../../common/Toaster';
+import { getCommodityCustomNameSelectListByType } from "../actions/Indexation";
 
-const AddMaterialTypeDetail = () => {
-
-    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+const AddMaterialTypeDetail = (props) => {
+    const { tableData, tableDataState } = props;
+    const initialConfiguration = useSelector(state => state.auth.initialConfiguration);
     const [isEdit, setIsEdit] = useState(false);
-    const [editIndex, setEditIndex] = useState('')
-    const [percentageTotal, setPercentageTotal] = useState(0);
+    const [editIndex, setEditIndex] = useState('');
+    const [originalPercentage, setOriginalPercentage] = useState(0);
 
-    const { register, formState: { errors }, control, setValue, handleSubmit } = useForm({
+    const { register, formState: { errors }, control, setValue, getValues, handleSubmit, reset } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-
+    const dispatch = useDispatch();
     const [gridData, setGridData] = useState([]);
     const [formData, setFormData] = useState({
-        MaterialIndex: '',
+        CommodityStandardName: '',
         Percentage: ''
     });
+    const [isEditMode, setIsEditMode] = useState(false);
+    const { customNameCommodityData } = useSelector((state) => state.indexation);
 
-    const handleMaterialIndexChange = (selectedOption) => {
-        setFormData({ ...formData, MaterialIndex: selectedOption.value });
-    };
+    useEffect(() => {
+        dispatch(getCommodityCustomNameSelectListByType((res) => { }));
+    }, [dispatch]);
+
+    useEffect(() => {
+        setGridData(tableDataState);
+        setPercentageTotal(calculateTotalPercentage(tableDataState));
+    }, [tableDataState]);
+
+    const [percentageTotal, setPercentageTotal] = useState(0);
 
     const renderListing = (label) => {
-        if (label === 'Applicability') {
-            return [
-                { label: 'Option 1', value: 'Option1' },
-                { label: 'Option 2', value: 'Option2' },
-                { label: 'Option 3', value: 'Option3' },
-            ];
+        const temp = [];
+        if (label === 'CommodityStandardName') {
+            customNameCommodityData && customNameCommodityData.map((item) => {
+                if (item.Value === '--0--') return false;
+                temp.push({ label: item.Text, value: item.Value });
+                return null;
+            });
+            return temp;
         }
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const resetData = () => {
-        setValue('MaterialIndex', '');
-        setValue('Percentage', '');
-        setIsEdit(false)
-        setEditIndex('')
-    }
-
-    const deleteItem = (index) => {
-        const newGridData = [...gridData.slice(0, index), ...gridData.slice(index + 1)];
-        setGridData(newGridData);
-        setPercentageTotal(calculateTotalPercentage(newGridData));
-        setIsEdit(false);
-        resetData();
     };
 
     const calculateTotalPercentage = (data) => {
-        let totalPercentage = 0;
-        for (let i = 0; i < data.length; i++) {
-            totalPercentage += parseFloat(data[i].Percentage);
-        }
-        return totalPercentage;
-    }
-
-    const onSubmit = () => {
-        if (isEdit) {
-            updateRow()
-        } else {
-            addRow()
-        }
+        return data.reduce((total, item) => {
+            let percentage = (typeof item === 'object' && item.Percentage !== undefined) ? parseFloat(item.Percentage) : parseFloat(item);
+            return total + (isNaN(percentage) ? 0 : percentage);
+        }, 0);
     };
 
-    const updateRow = () => {
-        const obj = {
-            MaterialIndex: formData.MaterialIndex,
-            Percentage: formData.Percentage
-        }
+    const handleInputChange = (selectedOption, name) => {
+        const updatedFormData = { ...formData, [name]: selectedOption.value };
+        setFormData(updatedFormData);
+    };
 
-        const isDuplicate = gridData.some((data, index) => {
-            if (index !== editIndex) {
-                return (
-                    data.MaterialIndex === obj.MaterialIndex &&
-                    data.Percentage === obj.Percentage
-                );
-            }
+    const resetData = () => {
+        setEditIndex('');
+        setIsEditMode(false);
+        setOriginalPercentage(0);
+        reset({
+            CommodityStandardName: '',
+            Percentage: '',
+        });
+    };
+
+    const addData = () => {
+        if (!getValues('CommodityStandardName') || !getValues('Percentage')) {
+            Toaster.warning("Please enter all details to add a row.");
             return false;
+        }
+        if (errors.CommodityStandardName || errors.Percentage) return false;
+
+        const newData = {
+            CommodityStandardName: getValues('CommodityStandardName') ? getValues('CommodityStandardName').label : '',
+            Percentage: getValues('Percentage') ? Number(getValues('Percentage')) : '',
+            CommodityStandardId: getValues('CommodityStandardName') ? Number(getValues('CommodityStandardName')?.value) : '',
+        };
+
+        let isDuplicate = false;
+        gridData.map((item, index) => {
+            if (index !== editIndex) {
+                if ((item.CommodityStandardName === newData.CommodityStandardName || item.CommodityStandardId === newData.CommodityStandardId) &&
+                    item.Percentage === newData.Percentage) {
+                    isDuplicate = true;
+                }
+            }
+            return null;
         });
 
         if (isDuplicate) {
-            Toaster.warning("Duplicate entries are not allowed.");
-            return;
+            Toaster.warning('Duplicate entry is not allowed.');
+            return false;
         }
 
-        let tempArr = [...gridData];
-        tempArr[editIndex] = obj;
-        const totalPercentage = calculateTotalPercentage(tempArr);
-        if (totalPercentage <= 100) {
-            setGridData(tempArr);
-            setPercentageTotal(totalPercentage);
-            setIsEdit(false);
-            resetData();
-        }
-        else {
-            Toaster.warning("Total percentage cannot exceed 100.");
-        }
-    };
-
-    const addRow = () => {
-        const isDuplicate = gridData.some(item =>
-            item.MaterialIndex === formData.MaterialIndex &&
-            item.Percentage === formData.Percentage
-        );
-
-        if (!isDuplicate) {
-            const obj = {
-                MaterialIndex: formData.MaterialIndex,
-                Percentage: formData.Percentage,
-            };
-            const newGridData = [...gridData, obj];
-            const totalPercentage = calculateTotalPercentage(newGridData);
+        let newGridData;
+        if (isEditMode) {
+            const totalPercentage = calculateTotalPercentage(gridData) - originalPercentage + newData.Percentage;
             if (totalPercentage <= 100) {
+                newGridData = [...gridData.slice(0, editIndex), newData, ...gridData.slice(editIndex + 1)];
                 setGridData(newGridData);
-                setPercentageTotal(calculateTotalPercentage(newGridData));
+                setPercentageTotal(totalPercentage);
+                tableData(newGridData);
                 resetData();
-            }
-            else {
+            } else {
                 Toaster.warning("Total percentage cannot exceed 100.");
             }
         } else {
-            Toaster.warning("Duplicate entries are not allowed.");
+            newGridData = [...gridData, newData];
+            const totalPercentage = calculateTotalPercentage(newGridData);
+            if (totalPercentage <= 100) {
+                setGridData(newGridData);
+                setPercentageTotal(totalPercentage);
+                tableData(newGridData);
+                resetData();
+            } else {
+                Toaster.warning("Total percentage cannot exceed 100.");
+            }
         }
+        setIsEditMode(false);
+        setEditIndex('');
     };
 
-    const editItemDetails = (index) => {
-        const editObj = gridData[index]
-        setValue('MaterialIndex', { label: editObj.MaterialIndex, value: editObj.MaterialIndex })
-        setValue('Percentage', editObj.Percentage)
-        setEditIndex(index)
-        setIsEdit(true)
-    }
+    const editData = (indexValue, operation) => {
+        if (operation === 'delete') {
+            const temp = gridData.filter((item, index) => index !== indexValue);
+            setGridData(temp);
+            setPercentageTotal(calculateTotalPercentage(temp));
+            resetData();
+            tableData(temp);
+        }
+
+        if (operation === 'edit') {
+            setEditIndex(indexValue);
+            setIsEditMode(true);
+
+            const data = gridData[indexValue];
+            setOriginalPercentage(data.Percentage); // Store the original percentage
+            setValue('CommodityStandardName', { label: data.CommodityStandardName, value: data.CommodityStandardId });
+            setValue('Percentage', data.Percentage);
+        }
+    };
 
     const handleAddUpdateButtonClick = () => {
-        if (!formData.MaterialIndex || !formData.Percentage) {
+        if (!getValues('CommodityStandardName') || !getValues('Percentage')) {
             return;
         }
-        if (isEdit) {
-            updateRow();
-        } else {
-            addRow();
-        }
-        resetData();
+        addData();
     };
+
     return <>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form>
             <Row className="pl-3">
                 <Col md="4">
                     <SearchableSelectHookForm
-                        label={'Material Index'}
-                        name={'MaterialIndex'}
+                        label={'Commodity (In CIR)'}
+                        name={'CommodityStandardName'}
                         placeholder={'Select'}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
                         register={register}
                         defaultValue={''}
-                        options={renderListing('Applicability')}
+                        options={renderListing('CommodityStandardName')}
                         mandatory={true}
-                        handleChange={handleMaterialIndexChange}
-                        errors={errors.MaterialIndex}
+                        handleChange={(option) => handleInputChange(option, 'CommodityStandardName')}
+                        errors={errors.CommodityStandardName}
                     />
                 </Col>
                 <Col md="4">
@@ -191,7 +193,7 @@ const AddMaterialTypeDetail = () => {
                                 message: 'Percentage cannot be greater than 100'
                             },
                         }}
-                        handleChange={handleInputChange}
+                        handleChange={() => { }}
                         defaultValue={""}
                         className=""
                         customClassName={"withBorder"}
@@ -224,7 +226,6 @@ const AddMaterialTypeDetail = () => {
                                 onClick={handleAddUpdateButtonClick}
                             >
                                 <div className={"plus"}></div>ADD
-
                             </button>
                             <button
                                 type="button"
@@ -236,39 +237,39 @@ const AddMaterialTypeDetail = () => {
                         </>
                     )}
                 </Col>
-            </Row >
+            </Row>
         </form>
         <br />
         <Col md="12" className="mb-2 pl-2 pr-3">
             <Table className="table mb-0 forging-cal-table" size="sm">
                 <thead>
                     <tr>
-                        <th>{`Material Index`}</th>
+                        <th>{`Commodity (In CIR)`}</th>
                         <th>{`Percentage (%)`}</th>
                         <th className='text-right'>{`Action`}</th>
                     </tr>
                 </thead>
-                <tbody >
+                <tbody>
                     {gridData.length > 0 ? (
                         <>
                             {gridData.map((item, index) => (
                                 <tr key={index}>
-                                    <td>{item.MaterialIndex}</td>
+                                    <td>{item.CommodityStandardName}</td>
                                     <td>{item.Percentage}</td>
-                                        <td className='text-right'>
-                                            <button
-                                                className="Edit"
-                                                title='Edit'
-                                                type={"button"}
-                                                onClick={() => editItemDetails(index)}
-                                            />
-                                            <button
-                                                className="Delete ml-1"
-                                                title='Delete'
-                                                type={"button"}
-                                                onClick={() => deleteItem(index)}
-                                            />
-                                        </td>
+                                    <td className='text-right'>
+                                        <button
+                                            className="Edit"
+                                            title='Edit'
+                                            type={"button"}
+                                            onClick={() => editData(index, 'edit')}
+                                        />
+                                        <button
+                                            className="Delete ml-1"
+                                            title='Delete'
+                                            type={"button"}
+                                            onClick={() => editData(index, 'delete')}
+                                        />
+                                    </td>
                                 </tr>
                             ))}
                             <tr className='table-footer'>
@@ -291,5 +292,6 @@ const AddMaterialTypeDetail = () => {
             </Table>
         </Col>
     </>
-}
+};
+
 export default AddMaterialTypeDetail;

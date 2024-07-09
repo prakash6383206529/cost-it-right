@@ -76,7 +76,6 @@ function AddRMFinancialDetails(props) {
         showCircleJali: false,
         showScrap: false
     })
-    // console.log('showScrapKeys: ', showScrapKeys);
     const dispatch = useDispatch()
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
@@ -496,7 +495,6 @@ function AddRMFinancialDetails(props) {
     }
     const checkTechnology = () => {
         let obj = showRMScrapKeys(rawMaterailDetails?.Technology ? rawMaterailDetails?.Technology?.value : props?.DataToChange.TechnologyId)
-        // console.log('rawMaterailDetails: ', rawMaterailDetails);
         setShowScrapKeys(obj)
         setState(prevState => ({ ...prevState, showScrapKeys: obj }))
     }
@@ -1283,242 +1281,243 @@ function AddRMFinancialDetails(props) {
                                 />
                             </Col>
                         </>
-                    }
-                    {states.isImport && <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Local Logistic ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                            name={"LocalLogisticSelectedCurrency"}
-                            placeholder={isViewFlag ? '-' : "Enter"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: false,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                            handleChange={() => { }}
-                            className=" "
-                            customClassName=" withBorder"
-                            errors={errors.LocalLogisticSelectedCurrency}
-                        />
-                    </Col>}
+                    }{RMIndex && <>
+                        {states.isImport && <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Local Logistic ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                name={"LocalLogisticSelectedCurrency"}
+                                placeholder={isViewFlag ? '-' : "Enter"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: false,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                handleChange={() => { }}
+                                className=" "
+                                customClassName=" withBorder"
+                                errors={errors.LocalLogisticSelectedCurrency}
+                            />
+                        </Col>}
 
-                    <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Local Logistic ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                            name={"LocalLogisticBaseCurrency"}
-                            placeholder={"-"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: true,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            className=" "
-                            handleChange={() => { }}
-                            customClassName=" withBorder"
-                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                            mandatory={true}
-                            errors={errors.LocalLogisticBaseCurrency}
-                        />
-                    </Col>
-                    {states.isImport && <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Yield Loss ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                            name={"YieldLossSelectedCurrency"}
-                            placeholder={isViewFlag ? '-' : "Enter"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: false,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                            handleChange={() => { }}
-                            className=" "
-                            customClassName=" withBorder"
-                            errors={errors.YieldLossSelectedCurrency}
-                        />
-                    </Col>}
-                    <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Yield Loss ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                            name={"YieldLossBaseCurrency"}
-                            placeholder={"-"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: true,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            className=" "
-                            handleChange={() => { }}
-                            customClassName=" withBorder"
-                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                            mandatory={true}
-                            errors={errors.YieldLossBaseCurrency}
-                        />
-                    </Col>
-                    {states.isImport && <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Packaging and Freight ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                            name={"PackagingAndFreightSelectedCurrency"}
-                            placeholder={isViewFlag ? '-' : "Enter"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: false,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                            handleChange={() => { }}
-                            className=" "
-                            customClassName=" withBorder"
-                            errors={errors.PackagingAndFreightSelectedCurrency}
-                        />
-                    </Col>}
-                    <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Packaging and Freight ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                            name={"PackagingAndFreightBaseCurrency"}
-                            placeholder={"-"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: true,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            className=" "
-                            handleChange={() => { }}
-                            customClassName=" withBorder"
-                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                            mandatory={true}
-                            errors={errors.PackagingAndFreightBaseCurrency}
-                        />
-                    </Col>
-                    {states.isImport && <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Overhead Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                            name={"OverheadCostSelectedCurrency"}
-                            placeholder={isViewFlag ? '-' : "Enter"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: false,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                            handleChange={() => { }}
-                            className=" "
-                            customClassName=" withBorder"
-                            errors={errors.OverheadCostSelectedCurrency}
-                        />
-                    </Col>}
-                    <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Overhead Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                            name={"OverheadCostBaseCurrency"}
-                            placeholder={"-"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: true,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            className=" "
-                            handleChange={() => { }}
-                            customClassName=" withBorder"
-                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                            mandatory={true}
-                            errors={errors.OverheadCostBaseCurrency}
-                        />
-                    </Col>
-                    {states.isImport && <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Profit Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                            name={"ProfitCostSelectedCurrency"}
-                            placeholder={isViewFlag ? '-' : "Enter"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: false,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                            handleChange={() => { }}
-                            className=" "
-                            customClassName=" withBorder"
-                            errors={errors.ProfitCostSelectedCurrency}
-                        />
-                    </Col>}
-                    <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Profit Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                            name={"ProfitCostBaseCurrency"}
-                            placeholder={"-"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: true,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            className=" "
-                            handleChange={() => { }}
-                            customClassName=" withBorder"
-                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                            mandatory={true}
-                            errors={errors.ProfitCostBaseCurrency}
-                        />
-                    </Col>
-                    {states.isImport && <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Discount Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                            name={"DiscountCostSelectedCurrency"}
-                            placeholder={isViewFlag ? '-' : "Enter"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: false,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                            handleChange={() => { }}
-                            className=" "
-                            customClassName=" withBorder"
-                            errors={errors.DiscountCostSelectedCurrency}
-                        />
-                    </Col>}
-                    <Col className="col-md-15">
-                        <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Discount Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                            name={"DiscountCostBaseCurrency"}
-                            placeholder={"-"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                                required: true,
-                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                            }}
-                            className=" "
-                            handleChange={() => { }}
-                            customClassName=" withBorder"
-                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                            mandatory={true}
-                            errors={errors.DiscountCostBaseCurrency}
-                        />
-                    </Col>
+                        <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Local Logistic ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                name={"LocalLogisticBaseCurrency"}
+                                placeholder={"-"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: true,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                className=" "
+                                handleChange={() => { }}
+                                customClassName=" withBorder"
+                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                mandatory={true}
+                                errors={errors.LocalLogisticBaseCurrency}
+                            />
+                        </Col>
+                        {states.isImport && <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Yield Loss ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                name={"YieldLossSelectedCurrency"}
+                                placeholder={isViewFlag ? '-' : "Enter"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: false,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                handleChange={() => { }}
+                                className=" "
+                                customClassName=" withBorder"
+                                errors={errors.YieldLossSelectedCurrency}
+                            />
+                        </Col>}
+                        <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Yield Loss ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                name={"YieldLossBaseCurrency"}
+                                placeholder={"-"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: true,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                className=" "
+                                handleChange={() => { }}
+                                customClassName=" withBorder"
+                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                mandatory={true}
+                                errors={errors.YieldLossBaseCurrency}
+                            />
+                        </Col>
+                        {states.isImport && <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Packaging and Freight ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                name={"PackagingAndFreightSelectedCurrency"}
+                                placeholder={isViewFlag ? '-' : "Enter"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: false,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                handleChange={() => { }}
+                                className=" "
+                                customClassName=" withBorder"
+                                errors={errors.PackagingAndFreightSelectedCurrency}
+                            />
+                        </Col>}
+                        <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Packaging and Freight ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                name={"PackagingAndFreightBaseCurrency"}
+                                placeholder={"-"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: true,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                className=" "
+                                handleChange={() => { }}
+                                customClassName=" withBorder"
+                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                mandatory={true}
+                                errors={errors.PackagingAndFreightBaseCurrency}
+                            />
+                        </Col>
+                        {states.isImport && <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Overhead Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                name={"OverheadCostSelectedCurrency"}
+                                placeholder={isViewFlag ? '-' : "Enter"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: false,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                handleChange={() => { }}
+                                className=" "
+                                customClassName=" withBorder"
+                                errors={errors.OverheadCostSelectedCurrency}
+                            />
+                        </Col>}
+                        <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Overhead Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                name={"OverheadCostBaseCurrency"}
+                                placeholder={"-"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: true,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                className=" "
+                                handleChange={() => { }}
+                                customClassName=" withBorder"
+                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                mandatory={true}
+                                errors={errors.OverheadCostBaseCurrency}
+                            />
+                        </Col>
+                        {states.isImport && <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Profit Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                name={"ProfitCostSelectedCurrency"}
+                                placeholder={isViewFlag ? '-' : "Enter"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: false,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                handleChange={() => { }}
+                                className=" "
+                                customClassName=" withBorder"
+                                errors={errors.ProfitCostSelectedCurrency}
+                            />
+                        </Col>}
+                        <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Profit Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                name={"ProfitCostBaseCurrency"}
+                                placeholder={"-"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: true,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                className=" "
+                                handleChange={() => { }}
+                                customClassName=" withBorder"
+                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                mandatory={true}
+                                errors={errors.ProfitCostBaseCurrency}
+                            />
+                        </Col>
+                        {states.isImport && <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Discount Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                name={"DiscountCostSelectedCurrency"}
+                                placeholder={isViewFlag ? '-' : "Enter"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: false,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                handleChange={() => { }}
+                                className=" "
+                                customClassName=" withBorder"
+                                errors={errors.DiscountCostSelectedCurrency}
+                            />
+                        </Col>}
+                        <Col className="col-md-15">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Discount Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                name={"DiscountCostBaseCurrency"}
+                                placeholder={"-"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{
+                                    required: true,
+                                    validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
+                                }}
+                                className=" "
+                                handleChange={() => { }}
+                                customClassName=" withBorder"
+                                disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                mandatory={true}
+                                errors={errors.DiscountCostBaseCurrency}
+                            />
+                        </Col>
+                    </>}
                     {/* //RE */}
                     {IsShowFreightAndShearingCostFields() && (
                         <>

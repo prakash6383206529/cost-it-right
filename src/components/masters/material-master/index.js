@@ -242,7 +242,7 @@ function RowMaterialMaster(props) {
                                         Manage Material
                                     </NavLink>
                                 </NavItem>}
-                                {<NavItem>
+                                {/* {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
                                         Index
                                     </NavLink>
@@ -261,7 +261,7 @@ function RowMaterialMaster(props) {
                                     <NavLink className={classnames({ active: activeTab === '8' })} onClick={() => { toggle('8'); }}>
                                         Index Data
                                     </NavLink>
-                                </NavItem>}
+                                </NavItem>} */}
                                 {/* {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '7' })} onClick={() => { toggle('7'); }}>
                                         Material Indexation
