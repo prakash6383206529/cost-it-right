@@ -14,7 +14,8 @@ import {
     GET_TARGET_PRICE,
     GET_ASSEMBLY_CHILD_PART,
     GET_RFQ_PART_DETAILS,
-
+    GET_RFQ_RAISE_NUMBER,
+    GET_QUOTATION_DETAILS_LIST,
     GET_PART_IDENTITY,
     GET_QUOTATION_ID_FOR_RFQ,
 } from '../../../config/constants';
@@ -49,6 +50,7 @@ export function getQuotationList(DepartmentCode, Timezone, callback) {
 
 
 export function createRfqQuotation(data, callback) {
+    
 
     return (dispatch) => {
         const request = axios.post(API.createRfqQuotation, data, config());
@@ -184,7 +186,19 @@ export function getContactPerson(vendorId, callback) {
     };
 }
 
+export function deleteQuotationPartDetail(partId, callback) {
+    const quotationPartId = Number(partId)
+    return (dispatch) => {
+        axios.delete(`${API.deleteQuotationPartDetail}?quotationPartId=${quotationPartId}`, config())
+            .then((response) => {
+                callback(response)
+            }).catch((error) => {
+                apiErrors(error)
+                dispatch({ type: API_FAILURE })
+            })
 
+    };
+}
 
 export function getQuotationDetailsList(id, callback) {
 
@@ -192,6 +206,7 @@ export function getQuotationDetailsList(id, callback) {
         const request = axios.get(`${API.getQuotationDetailsList}?quotationId=${id}&loggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({ type: GET_QUOTATION_DETAILS_LIST, payload: response.data.DataList })
                 callback(response);
             } else {
                 callback(response.status)
@@ -469,6 +484,14 @@ export function setVendorDetails(data) {
         });
     }
 };
+export function setTargetPriceDetail(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_TARGET_PRICE,
+            payload: data || {},
+        });
+    }
+};
 export function setRfqPartDetails(data) {
     return (dispatch) => {
         dispatch({
@@ -516,6 +539,29 @@ export function getrRqVendorDetails(vendorId, callback) {
         });
     };
 }
+
+export function saveRfqPartDetails(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(API.saveRfqPartDetails, data, config());
+        request.then((response) => {
+
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PART_IDENTITY,
+                    payload: response.status === 204 ? [] : response?.data?.Identity
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
+
 export function getRfqPartDetails(partId, callback) {
 
     const quotationPartId = Number(partId)
@@ -543,40 +589,6 @@ export function getRfqPartDetails(partId, callback) {
         });
     };
 }
-export function saveRfqPartDetails(data, callback) {
-
-    return (dispatch) => {
-        const request = axios.post(API.saveRfqPartDetails, data, config());
-        request.then((response) => {
-
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_PART_IDENTITY,
-                    payload: response.status === 204 ? [] : response?.data?.Identity
-                })
-                callback(response);
-            }
-        }).catch((error) => {
-
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error)
-        });
-    };
-}
-export function deleteQuotationPartDetail(partId, callback) {
-    const quotationPartId = Number(partId)
-    return (dispatch) => {
-        axios.delete(`${API.deleteQuotationPartDetail}?quotationPartId=${quotationPartId}`, config())
-            .then((response) => {
-                callback(response)
-            }).catch((error) => {
-                apiErrors(error)
-                dispatch({ type: API_FAILURE })
-            })
-
-    };
-}
 export function setQuotationIdForRfq(data) {
     return (dispatch) => {
         dispatch({
@@ -585,3 +597,17 @@ export function setQuotationIdForRfq(data) {
         });
     }
 };
+export function checkRegisteredVendor(vendorId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.checkRegisteredVendor}?vendorId=${vendorId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+

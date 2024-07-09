@@ -8,7 +8,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, getTechnology, ELECTRICAL_STAMPING } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
-import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForMonoCartonCorrugatedBox, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, } from '../../actions/CostWorking'
+import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForMonoCartonCorrugatedBox, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationCorrugatedAndMonoCartonCalculation, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, } from '../../actions/CostWorking'
 import { Row, Col, Table } from 'reactstrap'
 import TooltipCustom from '../../../common/Tooltip';
 import _ from 'lodash';
@@ -98,14 +98,26 @@ function ViewRM(props) {
           }))
           break;
         case CORRUGATEDBOX:
-          dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          if (viewCostingData[props.index]?.CalculatorType === 'CorrugatedAndMonoCartonBox') {
+            dispatch(getSimulationCorrugatedAndMonoCartonCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, res => {
 
-            if (Number(res.status) === Number(204)) {
-              Toaster.warning('Data is not available for calculator')
-            } else {
-              setCalculatorData(res, index)
-            }
-          }))
+              if (Number(res.status) === Number(204)) {
+                Toaster.warning('Data is not available for calculator')
+              } else {
+                setCalculatorData(res, index)
+              }
+            }))
+          } else {
+
+            dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+
+              if (Number(res.status) === Number(204)) {
+                Toaster.warning('Data is not available for calculator')
+              } else {
+                setCalculatorData(res, index)
+              }
+            }))
+          }
           break;
         default:
           return "none";
@@ -198,7 +210,7 @@ function ViewRM(props) {
       {
         !isPDFShow &&
         <Col md="6" className='btn-container mt-1' >
-          {viewCostingData && (viewCostingData[props.index]?.technologyId === Ferrous_Casting || viewCostingData[props.index]?.technologyId === RUBBER || (viewCostingData[props.index]?.technologyId === CORRUGATEDBOX && disabledForMonoCartonCorrugated)) && <button
+          {viewCostingData && (viewCostingData[props.index]?.technologyId === Ferrous_Casting || viewCostingData[props.index]?.technologyId === RUBBER || disabledForMonoCartonCorrugated) && <button
             className="secondary-btn"
             type={'button'}
             disabled={viewCostingData && viewCostingData[props?.index]?.CostingPartDetails?.CostingRawMaterialsCost?.length === 0 ? true : false}
@@ -232,7 +244,7 @@ function ViewRM(props) {
             </tr>
           </thead>
           <tbody>
-            {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
+            {viewRM && viewRM.length > 0 && viewRM?.map((item, index) => {
               return (
                 <tr key={index}>
                   {isAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}> <span title={item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}>{item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}</span></td>}
@@ -256,7 +268,7 @@ function ViewRM(props) {
                   {viewCostingData[0]?.technologyId === (PLASTIC || ELECTRICAL_STAMPING) && <td>{item?.BurningLossWeight ? checkForDecimalAndNull(item?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
                   {viewCostingData[0]?.technologyId === DIE_CASTING && <td>{item?.CastingWeight ? checkForDecimalAndNull(item?.CastingWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
                   {viewCostingData[0]?.technologyId === DIE_CASTING && <td>{item?.MeltingLoss ? `${checkForDecimalAndNull(item?.MeltingLoss, initialConfiguration.NoOfDecimalForInputOutput)} (${item?.LossPercentage}%)` : '-'}</td>}
-                  <td> <div className='w-fit d-flex'><div id={`net-rm-cost${index}`}>{checkForDecimalAndNull(item?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}{<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(viewCostingData[props.index]?.technologyId === MACHINING && item?.IsCalculatorAvailable === true) ? 'Net RM Cost = RM/Pc - ScrapCost' : `Net RM Cost =((RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate${isScrapRecoveryApplied ? ' * Scrap Recovery/100' : ''})${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''})`} />}</div>{item?.RawMaterialCalculatorId === null && item?.GrossWeight !== null && viewCostingData[props.index].technologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}</div></td>
+                  <td> <div className='w-fit d-flex'><div id={`net-rm-cost${index}`}>{checkForDecimalAndNull(item?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}{<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(viewCostingData[props.index]?.technologyId === MACHINING && item?.IsCalculatorAvailable === true) ? 'Net RM Cost = RM/Pc - ScrapCost' : `Net RM Cost =((RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate${isScrapRecoveryApplied ? ' * Scrap Recovery/100' : ''})${isRMDivisorApplicable(viewCostingData[0]?.technology) ? '/(' + RMDivisor + ')' : ''})`} />}</div>{item?.RawMaterialCalculatorId === null && item?.GrossWeight !== null && viewCostingData[props.index]?.technologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}</div></td>
                   {initialConfiguration.IsShowCRMHead && <td>{item?.RawMaterialCRMHead}</td>}
                   <td>
                     <div className={`${isPDFShow ? '' : 'remark-overflow'}`} title={item?.Remark}>

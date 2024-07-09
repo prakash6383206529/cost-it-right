@@ -775,7 +775,7 @@ export const AllApprovalField = (props) => {
   let value = approverList.length !== 0 ? `${approverList[0].label} ${approverList.length > 1 ? '...' : ''}` : '-';
   return (
     <>
-      <div className={'form-group'}>
+      <div className={'form-group all-approval'}>
 
         <label className={label === false ? 'd-none' : ''}>
           {label}

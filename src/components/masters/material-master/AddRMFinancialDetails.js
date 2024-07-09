@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react"
-import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement } from "../../../actions/Common"
-import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, RMIndex, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
+import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement, getExchangeRateSource } from "../../../actions/Common"
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import { IsShowFreightAndShearingCostFields, getConfigurationKey, labelWithUOMAndCurrency, labelWithUOMAndUOM, loggedInUserId, showRMScrapKeys } from "../../../helper"
@@ -22,9 +22,12 @@ import {
 import DayTime from "../../common/DayTimeWrapper"
 import { AcceptableRMUOM } from "../../../config/masterData"
 import AddConditionCosting from "../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting"
-import { addDays, setSeconds } from "date-fns"
 import HeaderTitle from "../../common/HeaderTitle"
 import AddOtherCostDrawer from "./AddOtherCostDrawer"
+import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears } from 'date-fns';
+import { TestHeadless } from "ag-grid-community"
+import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
+import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, DataToChange } = props
     const { isEditFlag, isViewFlag } = data
@@ -79,7 +82,18 @@ function AddRMFinancialDetails(props) {
         toDate: '',
         minDate: '',
         maxDate: '',
-        dateRange: 0
+        dateRange: 0,
+        frequencyOfSettlement: [],
+        disableToDate: true,
+        isIndexationOpen: false,
+        isCommodityOpen: false,
+        totalBasicRate: 0,
+        otherCostTableData: [],
+        totalOtherCost: 0,
+        isShowIndexCheckBox: false,
+        exchange: [],
+        index: []
+
     });
     const [showScrapKeys, setShowScrapKeys] = useState({
         showForging: false,
@@ -91,6 +105,9 @@ function AddRMFinancialDetails(props) {
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const frequncySettlementList = useSelector((state) => state.comman.frequencyOfSettlement)
+    const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList);
+    const { indexCommodityData } = useSelector((state) => state.indexation);
+    const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
     const fieldValuesImport = useWatch({
         control,
         name: ['cutOffPriceSelectedCurrency', 'ConversionRatio', 'BasicRateSelectedCurrency', 'CircleScrapCostSelectedCurrency', 'MachiningScrapSelectedCurrency', 'ShearingCostSelectedCurrency', 'FreightChargeSelectedCurrency']
@@ -108,7 +125,8 @@ function AddRMFinancialDetails(props) {
         control,
         name: ['JaliScrapCostSelectedCurrency', 'ForgingScrapSelectedCurrency', 'ScrapRateSelectedCurrency', 'cutOffPriceSelectedCurrency', 'CircleScrapCostSelectedCurrency', 'MachiningScrapSelectedCurrency']
     })
-
+    useEffect(() => {
+    }, [state.otherCostTableData])
     useEffect(() => {
         if (isEditFlag) {
             handleFinancialDataChange()
@@ -129,6 +147,8 @@ function AddRMFinancialDetails(props) {
         dispatch(getFrequencySettlement(() => { }))
         allFieldsInfoIcon(true)
         dispatch(getCurrencySelectList(() => { }))
+        dispatch(getExchangeRateSource((res) => { }))
+        dispatch(getIndexSelectList((res) => { }));
     }, [])
     useEffect(() => {
         if (rawMaterailDetails && rawMaterailDetails?.Technology && Object.keys(rawMaterailDetails?.Technology).length > 0) {
@@ -156,11 +176,11 @@ function AddRMFinancialDetails(props) {
         if (!states.isImport) {
             calculateNetCostDomestic()
         }
-    }, [fieldValuesDomestic])
+    }, [fieldValuesDomestic, state.totalOtherCost])
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
             let Data = props?.DataToChange
-
+            console.log('here');
             setValue('UnitOfMeasurement', { label: Data.UnitOfMeasurementName, value: Data.UOM })
             setValue('cutOffPriceSelectedCurrency', Data?.CutOffPrice)
             setValue('cutOffPriceBaseCurrency', states.isImport ? Data?.CutOffPriceInINR : Data?.CutOffPrice)
@@ -192,7 +212,10 @@ function AddRMFinancialDetails(props) {
             setValue('MachiningScrapBaseCurrency', states.isImport ? Data?.MachiningScrapRateInINR : Data?.MachiningScrapRate)
             setValue('JaliScrapCostBaseCurrency', Data?.ScrapRate)
             setValue('ForgingScrapBaseCurrency', Data?.ScrapRate)
-
+            setValue('frequencyOfSettlement', { label: Data.FrequencyOfSettlement, value: Data.FrequencyOfSettlementId })
+            setValue('fromDate', DayTime(Data?.FromDate).$d)
+            setValue('toDate', DayTime(Data?.ToDate).$d)
+            setValue('OtherCostBaseCurrency', Data?.OtherNetCostConversion)
             setState(prevState => ({
                 ...prevState,
                 effectiveDate: DayTime(Data?.EffectiveDate).$d,
@@ -206,13 +229,20 @@ function AddRMFinancialDetails(props) {
                 currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
                 showCurrency: true,
                 currencyValue: Data.CurrencyExchangeRate,
-                calculatedFactor: Data.CalculatedFactor
+                calculatedFactor: Data.CalculatedFactor,
+                otherCostTableData: Data?.RawMaterialOtherCostDetails,
+                isShowIndexCheckBox: Data?.IsIndexationDetails
             }))
-            handleScrapRateDomestic()
+            dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
+            dispatch(SetRawMaterialDetails({ states: state }, () => { }))
             checkTechnology()
         }
     }, [props?.DataToChange])
-
+    useEffect(() => {
+        if (state.isIndexationOpen) {
+            setValue('BasicRateBaseCurrency', checkForDecimalAndNull(state?.totalBasicRate, getConfigurationKey().NoOfDecimalForPrice))
+        }
+    }, [state?.totalBasicRate])
     const netCostTitle = () => {
         if (getConfigurationKey().IsBasicRateAndCostingConditionVisible && Number(states.costingTypeId) === Number(ZBCTypeId)) {
             let obj = {
@@ -238,10 +268,10 @@ function AddRMFinancialDetails(props) {
             return obj
         }
     }
-    const setInStateToolTip = () => {
-        const obj = { ...state.toolTipTextObject, netCostCurrency: netCostTitle(), basicPriceCurrency: basicPriceTitle() }
-        setState({ toolTipTextObject: obj })
-    }
+    // const setInStateToolTip = () => {
+    //     const obj = { ...state.toolTipTextObject, netCostCurrency: netCostTitle(), basicPriceCurrency: basicPriceTitle() }
+    //     setState({ toolTipTextObject: obj })
+    // }
 
 
 
@@ -279,7 +309,23 @@ function AddRMFinancialDetails(props) {
             });
             return temp;
         }
+        if (label === 'IndexExchangeName') {
+            indexCommodityData && indexCommodityData.map((item) => {
+                if (item.Value === '--0--') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+        if (label === 'ExchangeSource') {
+            exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+                if (item.Value === '--Exchange Rate Source Name--') return false
 
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
 
     }
 
@@ -341,7 +387,9 @@ function AddRMFinancialDetails(props) {
         }
         if (setData) {
             setTimeout(() => {
-                setState({ toolTipTextObject: { ...state.toolTipTextObject, ...obj } })
+                setState(prevState => ({
+                    ...prevState, toolTipTextObject: { ...state.toolTipTextObject, ...obj }
+                }))
             }, 100);
         }
         return obj
@@ -382,7 +430,7 @@ function AddRMFinancialDetails(props) {
         let conditionList = recalculateConditions('', basicPriceBaseCurrency)
 
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-        let netLandedCostBaseCurrency = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
+        let netLandedCostBaseCurrency = RMIndex ? checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp) + state.totalOtherCost : checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
 
         setValue('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
         setValue('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
@@ -575,81 +623,69 @@ function AddRMFinancialDetails(props) {
 
     };
     const handleFrequencyChange = (selectedOption) => {
-        let range;
-        switch (selectedOption.label) {
+        if (selectedOption && selectedOption !== '') {
+            setState(prevState => ({
+                ...prevState,
+                frequencyOfSettlement: selectedOption.label,
+                toDate: '',
+                fromDate: '',
+            }));
+            if (selectedOption?.label === 'As and When') {
+                setState(prevState => ({ ...prevState, disableToDate: false }));
+            } else {
+                setState(prevState => ({ ...prevState, disableToDate: true }));
+            }
+            setValue('toDate', '');
+            setValue('fromDate', '');
+        } else {
+            setState(prevState => ({ ...prevState, frequencyOfSettlement: [] }));
+        }
+    };
+
+    const handleFromEffectiveDateChange = (date) => {
+        const { frequencyOfSettlement } = state;
+        let validToDate;
+
+        switch (frequencyOfSettlement) {
             case 'Weekly':
-                range = 7;
+                validToDate = addWeeks(date, 1);
                 break;
             case 'Fortnightly':
-                range = 14;
+                validToDate = addWeeks(date, 2);
                 break;
             case 'Monthly':
-                range = 30; // Assuming 30 days for a month
+                validToDate = endOfMonth(date);
                 break;
             case 'Quarterly':
-                range = 90; // Assuming 90 days for a quarter
+                validToDate = addQuarters(date, 1);
                 break;
             case 'Half Yearly':
-                range = 182; // Assuming 182 days for half year
+                validToDate = addMonths(date, 6);
                 break;
             case 'Yearly':
-                range = 365; // Assuming 365 days for a year
+                validToDate = addYears(date, 1);
                 break;
             case 'As and When':
-                range = 0; // No range limit
+                validToDate = null; // Allow user to select any date
                 break;
             default:
-                range = 0; // Default no range limit
+                validToDate = date;
                 break;
         }
 
         setState(prevState => ({
             ...prevState,
-            dateRange: range,
+            fromDate: date,
+            toDate: validToDate,
+            minDate: date,
+            maxDate: validToDate,
         }));
-    };
-    // const handleFrequencyChange = (value) => {
-    //     
-    //     switch (value) {
-    //         case 'Weekly':
-    //             setState(prevState => ({ ...prevState, dateRange: 6 }));
-    //             break;
-    //         case 'Fortnightly':
-    //             setState(prevState => ({ ...prevState, dateRange: 14 }));
-    //             break;
-    //         //   case 'Monthly':
-    //         //   
-    //         //     break;
-    //         //   case 'Quarterly':
-    //         //     setMaxFromDate(DayTime(state.fromEffectiveDate).add(3, 'onths').format('YYYY-MM-DD'));
-    //         //     setMinToDate(DayTime(state.fromEffectiveDate).format('YYYY-MM-DD'));
-    //         //     break;
-    //         //   case 'Half Yearly':
-    //         //     setMaxFromDate(DayTime(state.fromEffectiveDate).add(6, 'onths').format('YYYY-MM-DD'));
-    //         //     setMinToDate(DayTime(state.fromEffectiveDate).format('YYYY-MM-DD'));
-    //         //     break;
-    //         //   case 'Yearly':
-    //         //     setMaxFromDate(DayTime(state.fromEffectiveDate).add(1, 'years').format('YYYY-MM-DD'));
-    //         //     setMinToDate(DayTime(state.fromEffectiveDate).format('YYYY-MM-DD'));
-    //         //     break;
-    //         case 'As and When':
-    //             // no restrictions
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // };
-    const handleFromEffectiveDateChange = (date) => {
-        // setState(prevState => ({ ...prevState, fromEffectiveDate: date }));
-        // const frequency = state.frequencyOfSettlement;
-        // const validToDate = getValidToDate(date, frequency);
-        // setValue('toDate', validToDate);
-        setState(prevState => ({ ...prevState, toEffectiveDate: date, minDate: date }));
+
+        setValue('toDate', validToDate);
     };
     const handleToEffectiveDateChange = (date) => {
-        
-        setState(prevState => ({ ...prevState, toEffectiveDate: date, maxDate: date }));
-    }
+        setState(prevState => ({ ...prevState, toDate: date }));
+    };
     const handleVendor = () => {
         if (rawMaterailDetails && rawMaterailDetails?.Vendor?.length !== 0 && state.currency && state.currency.length !== 0 && state.effectiveDate) {
             dispatch(getExchangeRateByCurrency(state.currency?.label, (states.costingTypeId === VBCTypeId || states.costingTypeId === ZBCTypeId) ? VBCTypeId : states.costingTypeId, DayTime(state.effectiveDate).format('YYYY-MM-DD'), (states.costingTypeId === VBCTypeId || states.costingTypeId === ZBCTypeId) ? rawMaterailDetails?.Vendor?.value : EMPTY_GUID, rawMaterailDetails?.customer?.value, false, res => {
@@ -692,8 +728,10 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: true }))
     }
 
-    const closeOtherCostToggle = () => {
-        setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
+    const closeOtherCostToggle = (type, data, total) => {
+        setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: total }))
+        setValue('OtherCostBaseCurrency', total)
+        dispatch(setOtherCostDetails(data))
     }
 
     const conditionToggle = () => {
@@ -848,11 +886,231 @@ function AddRMFinancialDetails(props) {
     const costToggle = () => {
         setState(prevState => ({ ...prevState, isCostOpen: !state.isCostOpen }));
     }
-    const dateToggle = () => {
-        setState(prevState => ({ ...prevState, isDateOpen: !state.isDateOpen }));
+    const indexationToggle = () => {
+        setState(prevState => ({ ...prevState, isIndexationOpen: !state.isIndexationOpen }));
     }
+    const commodityToggle = () => {
+        setState(prevState => ({ ...prevState, isCommodityOpen: !state.isCommodityOpen }))
+    }
+    const setTotalBasicRate = (totalBasicRate) => {
+        console.log('totalBasicRate: ', totalBasicRate);
+        setState(prevState => ({ ...prevState, totalBasicRate: totalBasicRate }))
+    }
+    const isShowIndexCheckBox = () => {
+        setState(prevState => ({ ...prevState, isShowIndexCheckBox: !state.isShowIndexCheckBox }))
+        dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: !state.isShowIndexCheckBox }, () => { }))
+    }
+    const handleIndex = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            setState(prevState => ({ ...prevState, index: newValue }));
+        } else {
+            setState(prevState => ({ ...prevState, index: [] }));
+        }
+        dispatch(SetCommodityIndexAverage('', newValue?.value, '', 0, '', '', ''))
+    };
+
+    const handleExchangeRate = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            setState(prevState => ({ ...prevState, exchange: newValue }));
+        } else {
+            setState(prevState => ({ ...prevState, exchange: [] }));
+        }
+        dispatch(SetCommodityIndexAverage('', 0, '', 0, newValue?.value, '', ''))
+    };
+
     return (
         <Fragment>
+            <Row >
+                <Col md="6" className='d-flex align-items-center mb-3'>
+                    {getConfigurationKey().IsShowMaterialIndexation && (
+                        <label id="AddRMDomestic_HasDifferentSource"
+                            className={`custom-checkbox w-auto mb-0 `}
+                            onChange={isShowIndexCheckBox}
+                        >
+                            RM Indexation
+                            <input
+                                type="checkbox"
+                                checked={state.isShowIndexCheckBox}
+                                disabled={isViewFlag}
+                            />
+                            <span
+                                className=" before-box p-0"
+                                checked={state.isShowIndexCheckBox}
+                                onChange={isShowIndexCheckBox}
+                            />
+                        </label>
+                    )}
+                </Col>
+            </Row>
+            {state.isShowIndexCheckBox && <>
+
+                {RMIndex && <Row className="mb-3 accordian-container">
+                    <Col md="6" className='d-flex align-items-center'>
+                        <HeaderTitle
+                            title={'Indexation:'}
+                            customClass={'Personal-Details'}
+                        />
+                    </Col>
+                    <Col md="6">
+                        <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={indexationToggle} type="button">{state.isIndexationOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
+                        </div>
+                    </Col>
+                    {
+                        <div className={`accordian-content row mx-0 w-100 ${state.isIndexationOpen ? '' : 'd-none'}`} >
+                            {RMIndex && <>
+                                <Col className="col-md-15">
+                                    <SearchableSelectHookForm
+                                        name="Index"
+                                        label="Index"
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{ required: true }}
+                                        placeholder={'Select'}
+                                        options={renderListing("IndexExchangeName")}
+                                        handleChange={handleIndex}
+                                        disabled={isEditFlag || isViewFlag}
+                                        errors={errors.Index}
+                                    />
+                                </Col>
+                                <Col className="col-md-15">
+                                    <SearchableSelectHookForm
+                                        name="ExchangeSource"
+                                        label="Exchange Rate Source"
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{ required: true }}
+                                        placeholder={'Select'}
+                                        options={renderListing("ExchangeSource")}
+                                        handleChange={handleExchangeRate}
+                                        disabled={isEditFlag || isViewFlag}
+                                        errors={errors.ExchangeSource}
+                                    />
+                                </Col>
+                                <Col className="col-md-15">
+                                    <SearchableSelectHookForm
+                                        name="Material"
+                                        label="Material"
+                                        placeholder={"Select"}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: false }}
+                                        options={renderListing("material")}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
+                                        className="fullinput-icon"
+                                        disabled={isEditFlag || isViewFlag || RMIndex}
+                                        errors={errors.Material}
+                                        isClearable={true}
+                                    />
+                                </Col>
+                                <Col className="col-md-15">
+                                    <SearchableSelectHookForm
+                                        label={`Frequency of settlement`}
+                                        name={"frequencyOfSettlement"}
+                                        errors={errors.currency}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                        }}
+                                        placeholder={'Select'}
+                                        options={renderListing("Frequency")}
+                                        handleChange={handleFrequencyChange}
+                                        disabled={isEditFlag || isViewFlag}
+                                    />
+
+                                </Col>
+                                <Col className="col-md-15">
+                                    <div className="inputbox date-section">
+                                        <DatePickerHookForm
+                                            name={`fromDate`}
+                                            label={'From Date'}
+                                            handleChange={(date) => {
+                                                handleFromEffectiveDateChange(date);
+                                            }}
+                                            rules={{ required: true }}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            // maxDate={state.maxDate}
+
+                                            dateFormat="DD/MM/YYYY"
+                                            placeholder="Select date"
+                                            customClassName="withBorder"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                            disabled={false}
+                                            mandatory={true}
+                                            errors={errors && errors.fromDate}
+                                        />
+                                    </div>
+                                </Col>
+                                <Col className="col-md-15">
+                                    <div className="inputbox h-auto date-section">
+                                        <DatePickerHookForm
+                                            name={`toDate`}
+                                            label={'To Date'}
+                                            handleChange={(date) => {
+                                                handleToEffectiveDateChange(date);
+                                            }}
+                                            rules={{ required: false }}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dateFormat="DD/MM/YYYY"
+                                            minDate={state.minDate}
+                                            maxDate={state.maxDate}
+                                            placeholder={!state.disableToDate ? "Select date" : ''}
+                                            customClassName="withBorder"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                            disabled={state.disableToDate}
+                                            mandatory={false}
+                                            errors={errors && errors.toDate}
+                                        />
+                                    </div>
+                                </Col></>}
+                        </div>
+                    }
+                </Row >}
+                {RMIndex && <Row className="mb-3 accordian-container">
+                    <Col md="6" className='d-flex align-items-center'>
+                        <HeaderTitle
+                            title={'Commodity Details:'}
+                            customClass={'Personal-Details'}
+                        />
+                    </Col>
+                    <Col md="6">
+                        <div className={'right-details text-right'}>
+                            <button className="btn btn-small-primary-circle ml-1" onClick={commodityToggle} type="button">{state.isCommodityOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
+                        </div>
+                    </Col>
+                    <AddIndexationMaterialListing
+                        states={state}
+                        isOpen={state.isCommodityOpen}
+                        commodityDetails={props.commodityDetails}
+                        isViewFlag={isViewFlag}
+                        setTotalBasicRate={setTotalBasicRate}
+                    />
+                </Row>}
+            </>
+            }
             <Row className="mb-3 accordian-container">
                 <Col md="6" className='d-flex align-items-center'>
                     <HeaderTitle
@@ -866,8 +1124,7 @@ function AddRMFinancialDetails(props) {
                     </div>
                 </Col>
                 {
-                    state.isCostOpen &&
-                    <div className="accordian-content row mx-0 w-100">
+                    <div className={`accordian-content row mx-0 w-100 ${state.isCostOpen ? '' : 'd-none'}`} >
                         <Col className="col-md-15">
                             <SearchableSelectHookForm
                                 name="UnitOfMeasurement"
@@ -882,7 +1139,7 @@ function AddRMFinancialDetails(props) {
                                 mandatory={true}
                                 handleChange={handleUOM}
                                 customClassName="withBorder"
-                                disabled={isEditFlag || isViewFlag || RMIndex}
+                                disabled={state.isIndexationOpen === true ? true : isEditFlag || isViewFlag}
                                 errors={errors.UnitOfMeasurement}
                             />
                         </Col>
@@ -904,149 +1161,8 @@ function AddRMFinancialDetails(props) {
                                 disabled={isEditFlag || isViewFlag}
                             />
                         </Col>}
-                        {RMIndex && <><Col className="col-md-15">
-                            <SearchableSelectHookForm
-                                label={`Frequency of settlement`}
-                                name={"frequencyOfSettlement"}
-                                errors={errors.currency}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={true}
-                                rules={{
-                                    required: true,
-                                }}
-                                placeholder={'Select'}
-                                options={renderListing("Frequency")}
-                                handleChange={handleFrequencyChange}
-                                disabled={isEditFlag || isViewFlag}
-                            />
-
-                        </Col>
-
-                            {RMIndex && <><Col className="col-md-15">
-                                <div className="inputbox date-section">
-                                    <DatePickerHookForm
-                                        name={`fromDate`}
-                                        label={'From Date'}
-                                        handleChange={(date) => {
-                                            handleFromEffectiveDateChange(date);
-                                        }}
-                                        rules={{ required: true }}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        showMonthDropdown
-                                        showYearDropdown
-                                        // maxDate={state.maxDate}
-
-                                        dateFormat="DD/MM/YYYY"
-                                        placeholder="Select date"
-                                        customClassName="withBorder"
-                                        className="withBorder"
-                                        autoComplete={"off"}
-                                        disabledKeyboardNavigation
-                                        onChangeRaw={(e) => e.preventDefault()}
-                                        disabled={false}
-                                        mandatory={true}
-                                        errors={errors && errors.fromDate}
-                                    />
-                                </div>
-                            </Col>
-                                <Col className="col-md-15">
-                                    <div className="inputbox date-section">
-                                        <DatePickerHookForm
-                                            name={`toDate`}
-                                            label={'To Date'}
-                                            handleChange={(date) => {
-                                                handleToEffectiveDateChange(date);
-                                            }}
-                                            rules={{ required: true }}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            showMonthDropdown
-                                            showYearDropdown
-                                            dateFormat="DD/MM/YYYY"
-                                            minDate={state.minDate}
-                                            maxDate={addDays(state.minDate, state.dateRange)}
-                                            placeholder="Select date"
-                                            customClassName="withBorder"
-                                            className="withBorder"
-                                            autoComplete={"off"}
-                                            disabledKeyboardNavigation
-                                            onChangeRaw={(e) => e.preventDefault()}
-                                            disabled={false}
-                                            mandatory={true}
-                                            errors={errors && errors.toDate}
-                                        />
-                                    </div>
-                                </Col></>}
 
 
-                            {/* <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={`Index Premium(Currency)`}
-                                    name={"indexPremium"}
-                                    placeholder={"Enter"}
-                                    defaultValue={''}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { number, integerOnly },
-                                    }}
-                                    mandatory={false}
-                                    className=" "
-                                    customClassName=" withBorder"
-                                    disabled={false}
-                                    handleChange={() => { }}
-                                    errors={errors.indexPremium}
-                                />
-                            </Col> */}
-                            <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={`Exchange Rate Source Premium(Currency)`}
-                                    name={"ExRateSrcPremium"}
-                                    placeholder={"Enter"}
-                                    defaultValue={''}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { number, integerOnly },
-                                    }}
-                                    mandatory={false}
-                                    className=" "
-                                    customClassName=" withBorder"
-                                    disabled={false}
-                                    handleChange={() => { }}
-                                    errors={errors.ExRateSrcPremium}
-                                />
-                            </Col>
-                            <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={`Index Rate(Currency)`}
-                                    name={"indexRateCurrency"}
-                                    placeholder={"Enter"}
-                                    defaultValue={''}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { number, integerOnly },
-                                    }}
-                                    mandatory={false}
-                                    className=" "
-                                    customClassName=" withBorder"
-                                    disabled={false}
-                                    handleChange={() => { }}
-                                    errors={errors.indexRateCurrency}
-                                />
-                            </Col></>}
                         <>
                             {states.isImport &&
                                 <Col className="col-md-15">
@@ -1093,50 +1209,50 @@ function AddRMFinancialDetails(props) {
                                     errors={errors.cutOffPriceBaseCurrency}
                                 />
                             </Col>
-                            {!RMIndex &&
-                                <>  {states.isImport && <Col className="col-md-15">
+
+                            <>  {states.isImport && <Col className="col-md-15">
+                                <TextFieldHookForm
+                                    label={labelWithUOMAndCurrency("Basic Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
+                                    name={"BasicRateSelectedCurrency"}
+                                    type="text"
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    rules={{
+                                        required: true,
+                                        validate: { positiveAndDecimalNumber, maxLength10, decimalLengthsix, number },
+                                    }}
+                                    mandatory={true}
+                                    handleChange={() => { }}
+                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                />
+                            </Col>}
+
+                                <Col className="col-md-15">
+                                    {states.isImport && <TooltipCustom disabledIcon={true} id="rm-basic-rate-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextBasicRateBaseCurrency} />}
                                     <TextFieldHookForm
-                                        label={labelWithUOMAndCurrency("Basic Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                        name={"BasicRateSelectedCurrency"}
-                                        type="text"
+                                        label={labelWithUOMAndCurrency("Basic Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
+                                        name={"BasicRateBaseCurrency"}
+                                        placeholder={props.isEditFlag || (props.isEditFlag && props.isRMAssociated) ? '-' : "Enter"}
+                                        defaultValue={state.cutOffPrice}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
+                                        id="rm-basic-rate-base-currency"
                                         rules={{
                                             required: true,
                                             validate: { positiveAndDecimalNumber, maxLength10, decimalLengthsix, number },
                                         }}
                                         mandatory={true}
-                                        handleChange={() => { }}
-                                        disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                        disabled={states.isImport || state.isShowIndexCheckBox ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                         className=" "
                                         customClassName=" withBorder"
+                                        handleChange={() => { }}
+                                        errors={errors.BasicRateBaseCurrency}
                                     />
-                                </Col>}
-
-                                    <Col className="col-md-15">
-                                        {states.isImport && <TooltipCustom disabledIcon={true} id="rm-basic-rate-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextBasicRateBaseCurrency} />}
-                                        <TextFieldHookForm
-                                            label={labelWithUOMAndCurrency("Basic Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                            name={"BasicRateBaseCurrency"}
-                                            placeholder={props.isEditFlag || (props.isEditFlag && props.isRMAssociated) ? '-' : "Enter"}
-                                            defaultValue={state.cutOffPrice}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            id="rm-basic-rate-base-currency"
-                                            rules={{
-                                                required: true,
-                                                validate: { positiveAndDecimalNumber, maxLength10, decimalLengthsix, number },
-                                            }}
-                                            mandatory={true}
-                                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                            className=" "
-                                            customClassName=" withBorder"
-                                            handleChange={() => { }}
-                                            errors={errors.BasicRateBaseCurrency}
-                                        />
-                                    </Col></>}
+                                </Col></>
 
 
                             <Col className="col-md-15">
@@ -1483,13 +1599,13 @@ function AddRMFinancialDetails(props) {
                                 </>
                             }
                             {/* add new other cost */}
-                            {true && states.costingTypeId === ZBCTypeId && <>
+                            {true && <>
                                 {states.isImport && <Col className="col-md-15">
                                     <div className='d-flex align-items-center'>
                                         <div className='w-100'>
                                             <TextFieldHookForm
                                                 label={`Other Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`}
-                                                name={"FinalConditionCostSelectedCurrency"}
+                                                name={"Othet"}
                                                 placeholder={"-"}
                                                 Controller={Controller}
                                                 control={control}
@@ -1516,7 +1632,7 @@ function AddRMFinancialDetails(props) {
                                         <div className='w-100'>
                                             <TextFieldHookForm
                                                 label={labelWithUOMAndCurrency("Other Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                                name={"FinalConditionCostBaseCurrency"}
+                                                name={"OtherCostBaseCurrency"}
                                                 placeholder={"-"}
                                                 Controller={Controller}
                                                 control={control}
@@ -1538,323 +1654,7 @@ function AddRMFinancialDetails(props) {
                                     </div>
                                 </Col>
                             </>}
-                            {/* {states.isImport && <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Local Logistic ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"LocalLogisticSelectedCurrency"}
-                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                    handleChange={() => { }}
-                                    className=" "
-                                    customClassName=" withBorder"
-                                    errors={errors.LocalLogisticSelectedCurrency}
-                                />
-                            </Col>} */}
 
-                            {/* <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Local Logistic ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"LocalLogisticBaseCurrency"}
-                                    placeholder={"-"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: true,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    className=" "
-                                    handleChange={() => { }}
-                                    customClassName=" withBorder"
-                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                    mandatory={true}
-                                    errors={errors.LocalLogisticBaseCurrency}
-                                />
-                            </Col> */}
-                            {/* {states.isImport && <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Yield Loss ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"YieldLossSelectedCurrency"}
-                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                    handleChange={() => { }}
-                                    className=" "
-                                    customClassName=" withBorder"
-                                    errors={errors.YieldLossSelectedCurrency}
-                                />
-                            </Col>}
-                            <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Yield Loss ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"YieldLossBaseCurrency"}
-                                    placeholder={"-"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: true,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    className=" "
-                                    handleChange={() => { }}
-                                    customClassName=" withBorder"
-                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                    mandatory={true}
-                                    errors={errors.YieldLossBaseCurrency}
-                                />
-                            </Col>
-                            {states.isImport && <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Packaging and Freight ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"PackagingAndFreightSelectedCurrency"}
-                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                    handleChange={() => { }}
-                                    className=" "
-                                    customClassName=" withBorder"
-                                    errors={errors.PackagingAndFreightSelectedCurrency}
-                                />
-                            </Col>}
-                            <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Packaging and Freight ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"PackagingAndFreightBaseCurrency"}
-                                    placeholder={"-"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: true,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    className=" "
-                                    handleChange={() => { }}
-                                    customClassName=" withBorder"
-                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                    mandatory={true}
-                                    errors={errors.PackagingAndFreightBaseCurrency}
-                                />
-                            </Col>
-                            {states.isImport && <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Overhead Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"OverheadCostSelectedCurrency"}
-                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                    handleChange={() => { }}
-                                    className=" "
-                                    customClassName=" withBorder"
-                                    errors={errors.OverheadCostSelectedCurrency}
-                                />
-                            </Col>}
-                            <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Overhead Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"OverheadCostBaseCurrency"}
-                                    placeholder={"-"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: true,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    className=" "
-                                    handleChange={() => { }}
-                                    customClassName=" withBorder"
-                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                    mandatory={true}
-                                    errors={errors.OverheadCostBaseCurrency}
-                                />
-                            </Col>
-                            {states.isImport && <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Profit Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"ProfitCostSelectedCurrency"}
-                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                    handleChange={() => { }}
-                                    className=" "
-                                    customClassName=" withBorder"
-                                    errors={errors.ProfitCostSelectedCurrency}
-                                />
-                            </Col>}
-                            <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Profit Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"ProfitCostBaseCurrency"}
-                                    placeholder={"-"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: true,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    className=" "
-                                    handleChange={() => { }}
-                                    customClassName=" withBorder"
-                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                    mandatory={true}
-                                    errors={errors.ProfitCostBaseCurrency}
-                                />
-                            </Col>
-                            {states.isImport && <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Discount Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                    name={"DiscountCostSelectedCurrency"}
-                                    placeholder={isViewFlag ? '-' : "Enter"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: false,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                    handleChange={() => { }}
-                                    className=" "
-                                    customClassName=" withBorder"
-                                    errors={errors.DiscountCostSelectedCurrency}
-                                />
-                            </Col>}
-                            <Col className="col-md-15">
-                                <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Discount Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                    name={"DiscountCostBaseCurrency"}
-                                    placeholder={"-"}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: true,
-                                        validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                    }}
-                                    className=" "
-                                    handleChange={() => { }}
-                                    customClassName=" withBorder"
-                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                    mandatory={true}
-                                    errors={errors.DiscountCostBaseCurrency}
-                                />
-                            </Col> */}
-                            {/* //RE */}
-                            {IsShowFreightAndShearingCostFields() && (
-                                <>
-                                    {states.isImport && <Col className="col-md-15">{/* //RE */}
-                                        <TextFieldHookForm
-                                            label={labelWithUOMAndCurrency("Freight Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                            name={"FreightChargeSelectedCurrency"}
-                                            placeholder={isViewFlag ? '-' : "Enter"}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{
-                                                required: false,
-                                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                            }}
-                                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                            className=" "
-                                            handleChange={() => { }}
-                                            maxLength="15"
-                                            customClassName=" withBorder"
-
-                                        />
-                                    </Col>}
-                                    <Col className="col-md-15">
-                                        {states.isImport && <TooltipCustom disabledIcon={true} id="rm-freight-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextFreightCostBaseCurrency} />}                               <TextFieldHookForm
-                                            label={labelWithUOMAndCurrency("Freight Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                            name={"FreightChargeBaseCurrency"}
-                                            placeholder={isViewFlag ? '-' : "Enter"}
-                                            id="rm-freight-base-currency"
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{
-                                                required: false,
-                                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                            }}
-                                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                            className=" "
-                                            handleChange={() => { }}
-                                            customClassName=" withBorder"
-                                        />
-                                    </Col>
-                                    {/* //RE */}
-                                    {states.isImport && <Col className="col-md-15">{/* //RE */}
-                                        <TextFieldHookForm
-                                            label={labelWithUOMAndCurrency("Shearing Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, state.currency?.label === undefined ? 'Currency' : state.currency?.label)}
-                                            name={"ShearingCostSelectedCurrency"}
-                                            placeholder={isViewFlag ? '-' : "Enter"}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{
-                                                required: false,
-                                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                            }}
-                                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                            className=" "
-                                            handleChange={() => { }}
-                                            customClassName=" withBorder"
-                                        />
-                                    </Col>}
-                                    <Col className="col-md-15">
-                                        {states.isImport && <TooltipCustom disabledIcon={true} id="rm-shearing-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextShearingCostBaseCurrency} />}
-                                        <TextFieldHookForm
-                                            label={labelWithUOMAndCurrency("Shearing Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
-                                            name={"ShearingCostBaseCurrency"}
-                                            placeholder={isViewFlag ? '-' : "Enter"}
-                                            id="rm-shearing-base-currency"
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{
-                                                required: false,
-                                                validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
-                                            }}
-                                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
-                                            className=" "
-                                            handleChange={() => { }}
-                                            customClassName=" withBorder"
-                                        />
-                                    </Col>
-                                </>)}
                             {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && states.costingTypeId === ZBCTypeId && <>
                                 {states.isImport && <Col className="col-md-15">
                                     <TooltipCustom disabledIcon={true} id="rm-basic-price-currency" width={'350px'} tooltipText={basicPriceTitle()?.toolTipTextBasicPriceSelectedCurrency} />
@@ -2031,17 +1831,12 @@ function AddRMFinancialDetails(props) {
                 true && state.isOpenOtherCostDrawer &&
                 <AddOtherCostDrawer
                     isOpen={state.isOpenOtherCostDrawer}
-                    //tableData={state.conditionTableData}
+                    rmTableData={state.otherCostTableData}
                     closeDrawer={closeOtherCostToggle}
                     anchor={'right'}
-                    basicRateCurrency={state.FinalBasicPriceSelectedCurrency}
-                    basicRateBase={state.FinalBasicPriceBaseCurrency}
-                    ViewMode={((state.isEditFlag && state.isRMAssociated) || state.isViewFlag)}
-                    isFromMaster={true}
-                    isFromImport={states.isImport}
-                    EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
-                    currency={state.currency}
-                    currencyValue={state.currencyValue}
+                    rawMaterial={true}
+                    rmBasicRate={state.totalBasicRate}
+                    ViewMode={isViewFlag}
                 />
             }
 

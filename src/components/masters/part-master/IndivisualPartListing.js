@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { isResetClick } from "../../../actions/Common";
-import { getPartDataList, deletePart, } from "../actions/Part";
+import { getPartDataList, deletePart, activeInactivePartUser } from "../actions/Part";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
@@ -30,6 +30,8 @@ import Button from "../../layout/Button";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
+import { showTitleForActiveToggle } from '../../../../src/helper/util';
+import Switch from "react-switch";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -63,6 +65,11 @@ const IndivisualPartListing = (props) => {
     deletedId: "",
     render: false,
     showExtraData: false,
+    rowData: null,
+    row: [],
+    cell: [],
+    showPopupToggle: false,
+    showPopupToggle2: false,
   });
   const [searchText, setSearchText] = useState('');
   const { newPartsListing, allNewPartsListing } = useSelector((state) => state.part);
@@ -333,6 +340,27 @@ const IndivisualPartListing = (props) => {
     setState((prevState) => ({ ...prevState, showPopup: false }));
   };
 
+  const handleChange = (cell, row) => {
+    setState((prevState) => ({ ...prevState, showPopupToggle: true, row: row, cell: cell }))
+  }
+
+  /**
+      * @method statusButtonFormatter
+      * @description Renders buttons
+      */
+
+  const statusButtonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive');
+    return (
+      <>
+        <label htmlFor="normal-switch" className="normal-switch Tour_List_Status">
+          <Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!permissions.Activate} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
+        </label>
+      </>
+    )
+  }
   const buttonFormatter = (props) => {
     const cellValue = props?.value;
     const rowData = props?.data;
@@ -422,6 +450,39 @@ const IndivisualPartListing = (props) => {
       return cellValue;
     }
   };
+
+
+  /**
+   * @method onPopupToggleConfirm
+   * @description popup for toggle status
+   */
+  const onPopupToggleConfirm = () => {
+    let data = { Id: state.row.PartId, LoggedInUserId: loggedInUserId(), IsActive: !state.cell, }
+    dispatch(activeInactivePartUser(data, (res) => {
+      if (res && res.data && res.data.Result) {
+        if (Boolean(state.cell) === true) {
+          Toaster.success(MESSAGES.PART_INACTIVE_SUCCESSFULLY)
+        } else {
+          Toaster.success(MESSAGES.PART_ACTIVE_SUCCESSFULLY)
+
+        }
+        getTableListData(currentRowIndex, defaultPageSize, state.floatingFilterData, true)
+        setState((prevState) => ({ ...prevState, dataCount: 0 }))
+      }
+    }))
+    setState((prevState) => ({ ...prevState, showPopupToggle: false }))
+    setState((prevState) => ({ ...prevState, showPopupToggle2: false }))
+
+  }
+
+  /**
+    * @method closeTogglePopup
+    * @description used for closing status toggle popup
+    */
+  const closeTogglePopup = () => {
+    setState((prevState) => ({ ...prevState, showPopupToggle: false }))
+    setState((prevState) => ({ ...prevState, showPopupToggle2: false }))
+  }
 
   /**
    * @method effectiveDateFormatter
@@ -638,6 +699,7 @@ const IndivisualPartListing = (props) => {
     hyphenFormatter: hyphenFormatter,
     effectiveDateFormatter: effectiveDateFormatter,
     checkBoxRenderer: checkBoxRenderer,
+    statusButtonFormatter: statusButtonFormatter,
   };
   return (
     <>
@@ -774,6 +836,7 @@ const IndivisualPartListing = (props) => {
                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
+                <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
                 <AgGridColumn field="PartId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>
               </AgGridReact>}
             <div className="button-wrapper">
@@ -802,6 +865,12 @@ const IndivisualPartListing = (props) => {
             message={`${MESSAGES.CONFIRM_DELETE}`}
           />
         )}
+        {state.showPopupToggle && (
+          <PopupMsgWrapper
+            isOpen={state.showPopupToggle}
+            closePopUp={closeTogglePopup}
+            confirmPopup={onPopupToggleConfirm}
+            message={`${state.cell ? MESSAGES.PART_DEACTIVE_ALERT : MESSAGES.PART_ACTIVE_ALERT}`} />)}
       </div>
     </>
   );

@@ -134,7 +134,10 @@ function AddRM(props) {
       CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId || Number(costData.CostingTypeId) === PFS1TypeId
         || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : costData.CostingTypeId,
 
-      CustomerId: costData.CustomerId
+      CustomerId: costData.CustomerId,
+      PartId: costData?.PartId,
+      IsRFQ: false,
+      QuotationPartId: null
     }
     dispatch(getRMDrawerDataList(data, isNFR, rmNameList, (res) => {
       if (res && res.status === 200) {

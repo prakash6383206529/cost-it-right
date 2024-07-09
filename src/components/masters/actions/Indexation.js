@@ -14,7 +14,10 @@ import {
     GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD,
     GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS, GET_STANDARDIZEDCOMMODITY_FOR_DOWNLOAD,
     GET_INDEXDATA_LIST_SUCCESS, GET_INDEXDATA_FOR_DOWNLOAD, CREATE_MATERIAL_SUCCESS,
-    GET_COMMODITY_STANDARD_FOR_DOWNLOAD, GET_COMMODITY_STANDARD_DATALIST_SUCCESS
+    GET_COMMODITY_STANDARD_FOR_DOWNLOAD, GET_COMMODITY_STANDARD_DATALIST_SUCCESS,
+    GET_OTHER_COST_SELECTLIST, GET_OTHER_COST_APPLICABILITY_SELECTLIST,
+    SET_COMMODITY_DETAILS, SET_OTHER_COST_DETAILS,
+    GET_LAST_REVISION_RAW_MATERIAL_DETAILS
 }
     from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
@@ -166,7 +169,7 @@ export function getCommodityIndexDataListAPI(obj, isPagination, skip, take, isAd
             });
         } else {
             queryParams = encodeQueryParamsAndLog({
-                IndexExchangeId: "", indexExchangeName: obj.IndexExchangeName, description: "", isApplyPagination: isPagination, skip: skip, take: take
+                IndexExchangeId: "", indexExchangeName: obj.IndexExchangeName, description: "", applyPagination: isPagination, skip: skip, take: take
             });
         }
         dispatch({ type: API_REQUEST });
@@ -201,7 +204,7 @@ export function getCommodityIndexDataListAPI(obj, isPagination, skip, take, isAd
 export function getCommodityInIndexDataListAPI(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
-            indexExchangeCommodityLinkingId: "", commodityId: "", commodityName: obj.CommodityName, commodityShortName: "", indexExchangeName: obj.IndexExchangeName, description: "", isApplyPagination: isPagination, skip: skip, take: take
+            indexExchangeCommodityLinkingId: "", commodityId: "", commodityName: obj.CommodityName, commodityShortName: "", indexExchangeName: obj.IndexExchangeName, description: "", applyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getCommodityInIndexDataList}?${queryParams}`, config())
@@ -241,7 +244,7 @@ export function getStandardizedCommodityListAPI(obj, isPagination, skip, take, i
             });
         } else {
             queryParams = encodeQueryParamsAndLog({
-                commodityStandardizationId: "", commodityStandardName: obj.CommodityStandardName, commodityName: obj.CommodityName, indexExchangeName: obj.IndexExchangeName, Remark: '', isApplyPagination: isPagination, skip: skip, take: take
+                commodityStandardizationId: "", commodityStandardName: obj.CommodityStandardName, commodityName: obj.CommodityName, indexExchangeName: obj.IndexExchangeName, Remark: '', applyPagination: isPagination, skip: skip, take: take
             });
         }
         dispatch({ type: API_REQUEST });
@@ -279,7 +282,7 @@ export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
             commodityMaterialDetailId: "", rate: obj.Rate, currencyCharge: obj.CurrencyCharge, exchangeRate: obj.ExchangeRate,
             rateConversion: obj.RateConversion, exchangeRateSourceName: obj.ExchangeRateSourceName, effectiveDate: obj.EffectiveDate, commodityName: obj.CommodityName,
             indexExchangeName: obj.IndexExchangeName, uom: obj.UOM, currency: obj.Currency,
-            Remark: '', isApplyPagination: isPagination, skip: skip, take: take
+            Remark: '', applyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getIndexDataList}?${queryParams}`, config())
@@ -561,7 +564,7 @@ export function updateIndex(requestData, callback) {
 export function getCommodityStandardList(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
-            commodityStandardId: "", commodityStandardName: obj.CommodityStandardName, isApplyPagination: isPagination, skip: skip, take: take
+            commodityStandardId: "", commodityStandardName: obj.CommodityStandardName, applyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getCommodityStandardList}?${queryParams}`, config())
@@ -639,5 +642,109 @@ export function deleteIndexDetailData(commodityIndexRateDetailId, callback) {
                 callback(error.response);
                 dispatch({ type: API_FAILURE });
             });
+    };
+}
+/**
+ * @method getOtherCostApplicabilitySelectList
+ * @description get Other Cost Applicability
+ */
+export function getOtherCostApplicabilitySelectList(callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getOtherCostApplicabilitySelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_OTHER_COST_APPLICABILITY_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+/**
+ * @method getOtherCostSelectList
+ * @description get other cost Select
+ */
+export function getOtherCostSelectList(callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getOtherCostSelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_OTHER_COST_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+export function setCommodityDetails(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_COMMODITY_DETAILS,
+            payload: data
+        })
+    }
+}
+export function setOtherCostDetails(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_OTHER_COST_DETAILS,
+            payload: data
+        })
+    }
+}
+// /**
+//  * @method getLastRevisionRawMaterialDetails
+//  * @description get Last Revision Raw Material
+//  */
+// export function getLastRevisionRawMaterialDetails(rawMaterialEntryType, costingHeadId, technologyId, rawMaterialChildId, rawMaterialGradeId, rawMaterialSpecificationId, effectiveDate, plantId, vendorId, customerId, rawMaterialId, callback) {
+
+//     return (dispatch) => {
+//         dispatch({ type: API_REQUEST });
+//         const request = axios.get(`${API.getLastRevisionRawMaterialDetails}?rawMaterialEntryType=${rawMaterialEntryType}&costingHeadId=${costingHeadId}&technologyId=${technologyId}&rawMaterialChildId=${rawMaterialChildId}&rawMaterialGradeId=${rawMaterialGradeId}&rawMaterialSpecificationId=${rawMaterialSpecificationId}&effectiveDate=${effectiveDate}&plantId=${plantId}&vendorId=${vendorId}&customerId=${customerId}&rawMaterialId=${rawMaterialId}`, config());
+//         request.then((response) => {
+//             if (response.data.Result) {
+//                 dispatch({
+//                     type: GET_LAST_REVISION_RAW_MATERIAL_DETAILS,
+//                     payload: response.data.Data,
+//                 });
+//                 callback(response);
+//             }
+//         }).catch((error) => {
+//             dispatch({ type: API_FAILURE, });
+//             apiErrors(error);
+//         });
+//     };
+// }
+
+/**
+ * @method getLastRevisionRawMaterialDetails
+ * @description get Last Revision Raw Material
+ */
+export function getLastRevisionRawMaterialDetails(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.getLastRevisionRawMaterialDetails, data, config());
+        request.then((response) => {
+            if (response?.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }

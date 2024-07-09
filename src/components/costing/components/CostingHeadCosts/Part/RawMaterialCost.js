@@ -154,13 +154,14 @@ function RawMaterialCost(props) {
         }
       }))
     }
-    switch (costData.TechnologyName) {
-      case 'Sheet Metal':
+    switch (costData.TechnologyId) {
+      case SHEETMETAL:
         return setGridLength(0)
-      case 'Plastic':
+      case PLASTIC:
         return setGridLength(0)
-      case 'Ferrous Casting':
-      case 'Rubber':
+      case Ferrous_Casting:
+      case RUBBER:
+      case CORRUGATEDBOX:
         if (props.data && props.data[0]?.RawMaterialCalculatorId) {
           setIsMultiCalculatorData(true)
           let arr = [...gridData]
@@ -170,7 +171,7 @@ function RawMaterialCost(props) {
           setIsMultiCalculatorData(false)
         }
         return setGridLength(3)
-      case 'Forgining':
+      case FORGING:
         return setGridLength(0)
       default:
         return setGridLength(0)
@@ -244,7 +245,7 @@ function RawMaterialCost(props) {
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
 
-    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER)))) {
+    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || Number(costData?.TechnologyId) === Number(CORRUGATEDBOX)))) {
       setShowPopup(true)
       setDrawerOpen(false)
     }
@@ -445,7 +446,7 @@ function RawMaterialCost(props) {
     setCalculatorTypeStore(e)
     dispatch(setFerrousCalculatorReset(false))
 
-    if (String(e) === String('rubber') || String(e) === String('ferrous')) {
+    if (String(e) === String('rubber') || String(e) === String('ferrous') || String(e) === String('CorrugatedBox') || String(e) === String('CorrugatedAndMonoCartonBox')) {
       setIsMultiCalculatorData(true)
     }
     if (Number(costData?.TechnologyId) === MACHINING) {
@@ -947,6 +948,32 @@ function RawMaterialCost(props) {
           })
         }, 500)
       }
+      if (Number(costData?.TechnologyId) === Number(CORRUGATEDBOX) && calculatorTypeStore === 'CorrugatedAndMonoCartonBox') {
+        if (weightData.WeightCalculationId) {
+          gridData && gridData.map((item, index) => {
+            if (index !== 0) {
+              item.FinishWeight = 0
+              item.GrossWeight = 0
+              item.NetLandedCost = 0
+              item.ScrapWeight = 0
+            }
+            return item
+          })
+          setTimeout(() => {
+            gridData && gridData.map((item, index) => {
+              setValue(`${rmGridFields}.${index}.GrossWeight`, 0)
+              setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
+              setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
+              if (index !== 0) {
+                item.NetLandedCost = 0
+              }
+              setValue(`${rmGridFields}.${index}.ScrapWeight`, 0)
+              return null
+            })
+          }, 200);
+
+        }
+      }
       if (Number(costData?.TechnologyId) === Number(MACHINING)) {
         tempData = {
           ...tempData,
@@ -1005,6 +1032,7 @@ function RawMaterialCost(props) {
       setValue(`${rmGridFields}.${index}.FinishWeight`, '')
       return item
     })
+    setCalculatorTypeStore('')
     setShowPopupDelete(false)
     setGridData(tempList)
 
@@ -1017,7 +1045,7 @@ function RawMaterialCost(props) {
 
   const deleteMultiple = (index) => {
 
-    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER)))) {
+    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || Number(costData?.TechnologyId) === Number(CORRUGATEDBOX)))) {
       setShowPopupDelete(true)
       setDeleteIndex(index)
     } else {
@@ -1275,16 +1303,17 @@ function RawMaterialCost(props) {
       item.GrossWeight = 0
       item.ScrapWeight = 0
       item.WeightCalculatorRequest = {}
-      setValue(`${rmGridFields}.${index}.GrossWeight`, '')     //COMMENT
-      setValue(`${rmGridFields}.${index}.FinishWeight`, '')
+      setValue(`${rmGridFields}.${index}.GrossWeight`, 0)     //COMMENT
+      setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
       return item
     })
+    setCalculatorTypeStore('')
     setShowPopup(false)
     setGridData(tempList)
     setTimeout(() => {
       setConfirmPopup(true)
       setDrawerOpen(true)
-    }, 200);
+    }, 700);
   }
 
   const closePopUp = () => {
@@ -1545,7 +1574,7 @@ function RawMaterialCost(props) {
                                       validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                       max: {
                                         value: 100,
-                                        message: 'Percentage should be less than 100'
+                                        message: 'Percentage should be less than 100.'
                                       },
                                     }}
                                     defaultValue={checkForDecimalAndNull(item.ScrapRecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput)}
@@ -1556,7 +1585,7 @@ function RawMaterialCost(props) {
                                       handleScrapRecoveryChange(e, index)
                                     }}
                                     errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
-                                    disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) || gridData[index].IsCalculatedEntry || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") ? true : false}
+                                    disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) || gridData[index].IsCalculatedEntry || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || disabledForMonoCartonCorrugated ? true : false}
                                   />
                                 </div>
                               </td>
@@ -1600,7 +1629,7 @@ function RawMaterialCost(props) {
                                   id={`RM_delete${index}`}
                                   title='Delete'
                                   type={'button'}
-                                  onClick={() => (costData?.TechnologyId === Ferrous_Casting || costData?.TechnologyId === RUBBER) ? deleteMultiple(index) : deleteItem(index)}
+                                  onClick={() => (costData?.TechnologyId === Ferrous_Casting || costData?.TechnologyId === RUBBER) || costData?.TechnologyId === CORRUGATEDBOX ? deleteMultiple(index) : deleteItem(index)}
                                 />}
                                 <Popup className='rm-popup' trigger={<button id={`RM_popUpTrigger${index}`} title="Remark" className="Comment-box" type={'button'} />}
                                   position="top right">
@@ -1753,7 +1782,7 @@ function RawMaterialCost(props) {
                         validate: { number, checkWhiteSpaces, percentageLimitValidation },
                         max: {
                           value: 100,
-                          message: 'Percentage cannot be greater than 100'
+                          message: 'Percentage cannot be greater than 100.'
                         },
                       }}
                       defaultValue={""}

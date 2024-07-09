@@ -1481,3 +1481,21 @@ export function getSimulationRmMachiningCalculation(simulationId, costingId, raw
     });
   };
 }
+export function getSimulationCorrugatedAndMonoCartonCalculation(simulationId, costingId, rawMaterialId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&rawMaterialId=${rawMaterialId}`
+    const request = axios.get(`${API.getSimulationCorrugatedAndMonoCartonCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}

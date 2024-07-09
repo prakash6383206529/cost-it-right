@@ -6233,6 +6233,7 @@ body {
       .RejectedBySystem,
       .History,
       .ApprovedByAssembly,
+      .PreDraft,
       .Sent {
         min-width: calc(90px * 80 / 100);
         height: calc(30px * 80 / 100);
@@ -6914,7 +6915,7 @@ body {
 }
 
 .imagClass {
-  margin-top: 45px !important;
+  margin-top: 10px !important;
 
   &.mt-0 {
     margin-top: 0 !important;

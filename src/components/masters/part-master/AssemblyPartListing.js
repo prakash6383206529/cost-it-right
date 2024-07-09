@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
-import { getAssemblyPartDataList, deleteAssemblyPart } from "../actions/Part";
+import { getAssemblyPartDataList, deleteAssemblyPart, activeInactivePartUser } from "../actions/Part";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
@@ -25,7 +25,8 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { TourStartAction } from "../../../actions/Common";
-
+import { showTitleForActiveToggle } from '../../../../src/helper/util';
+import Switch from "react-switch";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -69,6 +70,11 @@ const AssemblyPartListing = React.memo((props) => {
     paginationPageSize: defaultPageSize,
     openTechnologyUpdateDrawer: false,
     render: true,
+    rowData: null,
+    row: [],
+    cell: [],
+    showPopupToggle: false,
+    showPopupToggle2: false,
   });
 
   const permissions = useContext(ApplyPermission);
@@ -138,6 +144,29 @@ const AssemblyPartListing = React.memo((props) => {
     confirmDeleteItem(state.deletedId);
   };
 
+
+  /**
+    * @method onPopupToggleConfirm
+    * @description popup for toggle status
+    */
+  const onPopupToggleConfirm = () => {
+    let data = { Id: state.row.PartId, LoggedInUserId: loggedInUserId(), IsActive: !state.cell, }
+    dispatch(activeInactivePartUser(data, (res) => {
+      if (res && res.data && res.data.Result) {
+        if (Boolean(state.cell) === true) {
+          Toaster.success(MESSAGES.PART_INACTIVE_SUCCESSFULLY)
+        } else {
+          Toaster.success(MESSAGES.PART_ACTIVE_SUCCESSFULLY)
+
+        }
+        getTableListData();
+        setState((prevState) => ({ ...prevState, dataCount: 0 }))
+      }
+    }))
+    setState((prevState) => ({ ...prevState, showPopupToggle: false }))
+    setState((prevState) => ({ ...prevState, showPopupToggle2: false }))
+
+  }
   const closePopUp = () => {
     // Correctly access the previous state using a callback function
     setState((prevState) => ({
@@ -145,6 +174,15 @@ const AssemblyPartListing = React.memo((props) => {
       showPopup: false,
     }));
   };
+
+  /**
+     * @method closeTogglePopup
+     * @description used for closing status toggle popup
+     */
+  const closeTogglePopup = () => {
+    setState((prevState) => ({ ...prevState, showPopupToggle: false }))
+    setState((prevState) => ({ ...prevState, showPopupToggle2: false }))
+  }
   const effectiveDateFormatter = (props) => {
     if (tourStartData?.showExtraData && props?.rowIndex === 0) {
       return "Lorem Ipsum";
@@ -195,6 +233,27 @@ const AssemblyPartListing = React.memo((props) => {
     }));
   };
   // 
+  const handleChange = (cell, row) => {
+    setState((prevState) => ({ ...prevState, showPopupToggle: true, row: row, cell: cell }))
+  }
+
+  /**
+    * @method statusButtonFormatter
+    * @description Renders buttons
+    */
+
+  const statusButtonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive');
+    return (
+      <>
+        <label htmlFor="normal-switch" className="normal-switch Tour_List_Status">
+          <Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!permissions.Activate} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
+        </label>
+      </>
+    )
+  }
 
   const buttonFormatter = useMemo(() => {
     return (props) => {
@@ -301,6 +360,7 @@ const AssemblyPartListing = React.memo((props) => {
     indexFormatter: indexFormatter,
     hyphenFormatter: hyphenFormatter,
     effectiveDateFormatter: effectiveDateFormatter,
+    statusButtonFormatter: statusButtonFormatter,
   };
 
   const onGridReady = (params) => {
@@ -531,6 +591,7 @@ const AssemblyPartListing = React.memo((props) => {
               <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
               <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
               <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}              ></AgGridColumn>
+              <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
               <AgGridColumn field="PartId" width={250} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned={window.screen.width < 1920 ? "right" : ""} type="rightAligned" floatingFilter={false} cellRenderer={"buttonFormatter"}              ></AgGridColumn>
             </AgGridReact>}
 
@@ -572,6 +633,12 @@ const AssemblyPartListing = React.memo((props) => {
           message={`${MESSAGES.BOM_DELETE_ALERT}`}
         />
       )}
+      {state.showPopupToggle && (
+        <PopupMsgWrapper
+          isOpen={state.showPopupToggle}
+          closePopUp={closeTogglePopup}
+          confirmPopup={onPopupToggleConfirm}
+          message={`${state.cell ? MESSAGES.PART_DEACTIVE_ALERT : MESSAGES.PART_ACTIVE_ALERT}`} />)}
     </div>
   );
 });

@@ -10,7 +10,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
-import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from "../../../helper";
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
 import TourWrapper from "../../common/Tour/TourWrapper";
@@ -20,7 +20,7 @@ import { RMMATERIALISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
 import ReactExport from "react-export-excel";
 import BulkUpload from "../../massUpload/BulkUpload";
-import { resetStatePagination,updatePageSize, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
+import { resetStatePagination, updatePageSize, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -29,6 +29,8 @@ import PaginationControls from "../../common/Pagination/PaginationControls";
 import { deleteIndexDetailData, getIndexDataListAPI } from "../actions/Indexation";
 import AddRMDrawer from "../material-master/AddRMDrawer";
 import DayTime from "../../common/DayTimeWrapper";
+import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
+import _ from "lodash";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -36,12 +38,11 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const IndexDataListing = (props) => {
-    
+
     const dispatch = useDispatch();
     const { rmIndexDataList } = useSelector((state) => state?.indexation);
     const permissions = useContext(ApplyPermission);
     const { globalTakes } = useSelector((state) => state?.pagination)
-    console.log('globalTakes: ', globalTakes);
     const { t } = useTranslation("common")
     const searchRef = useRef(null);
 
@@ -49,7 +50,6 @@ const IndexDataListing = (props) => {
         isOpen: false,
         isEditFlag: false,
         ID: "",
-        gridApi: null,
         gridColumnApi: null,
         rowData: null,
         showPopup: false,
@@ -59,6 +59,8 @@ const IndexDataListing = (props) => {
         showExtraData: false,
         isBulkUpload: false,
     });
+    const { selectedRowForPagination } = useSelector((state => state.simulation))
+
     const [floatingFilterData, setFloatingFilterData] = useState({ IndexExchangeName: '' })
     const [isLoader, setIsLoader] = useState(false);
     const [totalRecordCount, setTotalRecordCount] = useState(1)
@@ -73,7 +75,11 @@ const IndexDataListing = (props) => {
     useEffect(() => {
         getTableListData(0, defaultPageSize, true)
         return () => {
+            dispatch(setSelectedRowForPagination([]))
+
             dispatch(resetStatePagination());
+            reactLocalStorage.setObject('selectedRow', {})
+
 
         }
     }, [])
@@ -87,7 +93,7 @@ const IndexDataListing = (props) => {
 
     }, [rmIndexDataList])
     const getTableListData = (skip = 0, take = 10, isPagination = true) => {
-        if (isPagination === true ){ setIsLoader(true)}
+        if (isPagination === true) { setIsLoader(true) }
         let dataObj = { ...floatingFilterData }
         dispatch(getIndexDataListAPI(dataObj, isPagination, skip, take, (res) => {
             if (isPagination === true || isPagination === null) setIsLoader(false)
@@ -137,12 +143,12 @@ const IndexDataListing = (props) => {
             isLoader: type === "submit" ? true : prevState.isLoader,
             dataCount: type === "submit" ? 0 : prevState.dataCount,
         }));
-    
+
         if (type === "submit") {
             getTableListData(0, defaultPageSize, true);
         }
     };
-    
+
     /**
      * @method onFloatingFilterChanged
      * @description Filter data when user type in searching input
@@ -189,15 +195,7 @@ const IndexDataListing = (props) => {
             setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
         }
     }
-    /**
-     * @method editItemDetails
-     * @description edit Raw Material
-     */
-    const editItemDetails = (Id) => {
-        setState((prevState) => ({
-            ...prevState, isEditFlag: true, isOpen: true, ID: Id,
-        }));
-    };
+
     /**
      * @method deleteItem
      * @description confirm delete Raw Material
@@ -228,7 +226,7 @@ const IndexDataListing = (props) => {
         setTimeout(() => {
             setState((prevState) => ({ ...prevState, render: false }));
         }, 100);
-    }   
+    }
     const onPopupConfirm = () => {
         confirmDelete(state?.deletedId);
     };
@@ -243,7 +241,7 @@ const IndexDataListing = (props) => {
         const cellValue = props?.valueFormatted
             ? props.valueFormatted
             : props?.value;
-        
+
         const rowData = props?.data?.CommodityIndexRateDetailId;
         let isEditable = false
         let isDeleteButton = false
@@ -287,18 +285,70 @@ const IndexDataListing = (props) => {
     const onGridReady = (params) => {
         setGridApi(params.api);
 
-        params.api.sizeColumnsToFit();
+        // params.api.sizeColumnsToFit();
         setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
         params.api.paginationGoToPage(0);
     };
 
 
 
-    const onRowSelect = () => {
-        const selectedRows = gridApi?.getSelectedRows();
-        setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
-    };
+    const onRowSelect = (event) => {
 
+        var selectedRows = gridApi && gridApi?.getSelectedRows();
+        if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
+            selectedRows = selectedRowForPagination
+        } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
+
+            let finalData = []
+            if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                for (let i = 0; i < selectedRowForPagination.length; i++) {
+                    if (selectedRowForPagination[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                        continue;
+                    }
+                    finalData.push(selectedRowForPagination[i])
+                }
+
+            } else {
+                finalData = selectedRowForPagination
+            }
+            selectedRows = [...selectedRows, ...finalData]
+
+        }
+
+        let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
+        setDataCount(uniqeArray.length)
+        dispatch(setSelectedRowForPagination(uniqeArray))
+        let finalArr = selectedRows
+        let length = finalArr?.length
+        let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
+
+        if (props?.benchMark) {
+            let uniqueArrayNew = _.uniqBy(selectedRows, v => [v.TechnologyId, v.RawMaterial].join())
+
+            if (uniqueArrayNew.length > 1) {
+                dispatch(setSelectedRowForPagination([]))
+                gridApi.deselectAll()
+                Toaster.warning("Technology & Raw material should be same")
+            }
+        }
+    }
+    const checkBoxRenderer = (props) => {
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (selectedRowForPagination?.length > 0) {
+            selectedRowForPagination.map((item) => {
+                if (item.RawMaterialId === props.node.data.RawMaterialId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+    }
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
@@ -317,16 +367,18 @@ const IndexDataListing = (props) => {
         }
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
-        dispatch(updateCurrentRowIndex(0));
+        dispatch(updateCurrentRowIndex(10));
+        dispatch(setSelectedRowForPagination([]))
+
         dispatch(updatePageNumber(1));
-        getTableListData(0, 10, true)
+        getTableListData(0, globalTakes, true)
         dispatch(updateGlobalTake(10))
         dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }));
         setDataCount(0)
         reactLocalStorage.setObject('selectedRow', {})
         if (searchRef.current) {
             searchRef.current.value = '';
-          }
+        }
     }
 
     const onSearch = () => {
@@ -334,12 +386,12 @@ const IndexDataListing = (props) => {
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         dispatch(updatePageNumber(1))
-        dispatch(updateCurrentRowIndex(0))
+        dispatch(updateCurrentRowIndex(10))
         gridOptions?.columnApi?.resetColumnState();
         getTableListData(0, globalTakes, true)
     }
 
-    const { isOpen, isEditFlag, ID, showExtraData, render, isBulkUpload } = state;
+    const { isOpen, isEditFlag, ID, showExtraData, isBulkUpload } = state;
     const isFirstColumn = (params) => {
 
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -356,7 +408,10 @@ const IndexDataListing = (props) => {
     const defaultColDef = {
         resizable: true,
         filter: true,
+        sortable: false,
         headerCheckboxSelectionFilteredOnly: true,
+        headerCheckboxSelection: (props?.benchMark) ? isFirstColumn : false,
+
         checkboxSelection: isFirstColumn,
     };
     const priceFormatter = (props) => {
@@ -385,7 +440,9 @@ const IndexDataListing = (props) => {
         hyphenFormatter: hyphenFormatter,
         customNoRowsOverlay: NoContentFound,
         priceFormatter: priceFormatter,
-        effectiveDateFormatter: effectiveDateFormatter
+        effectiveDateFormatter: effectiveDateFormatter,
+        checkBoxRenderer: checkBoxRenderer,
+
     };
     const onBtExport = () => {
         let tempArr = [];
@@ -471,19 +528,19 @@ const IndexDataListing = (props) => {
 
             <Row>
                 <Col>
-                    <div   className={`ag-grid-wrapper height-width-wrapper ${(rmIndexDataList && rmIndexDataList?.length <= 0) || noData  ? "overlay-contain" : ""}`}  
+                    <div className={`ag-grid-wrapper height-width-wrapper ${(rmIndexDataList && rmIndexDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}
                     >
                         <div className="ag-grid-header">
-                            <input ref={searchRef}  type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+                            <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
                             <TourWrapper
                                 buttonSpecificProp={{ id: "RM_Listing_Tour", onClick: toggleExtraData }}
                                 stepsSpecificProp={{
                                     steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, bulkUpload: false, addButton: false, filterButton: false, costMovementButton: false, viewButton: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
-                                }}/>
+                                }} />
                         </div>
-                        <div className={`ag-theme-material ${isLoader && "max-loader-height"  }`}
+                        <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}
                         >
-                            {noData && ( <NoContentFound title={EMPTY_DATA}  customClassName="no-content-found" />  )}
+                            {noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
                             {(state?.render || isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
@@ -501,11 +558,11 @@ const IndexDataListing = (props) => {
                                 }}
                                 rowSelection={"multiple"}
                                 frameworkComponents={frameworkComponents}
-                                onSelectionChanged={onRowSelect}
+                                onRowSelected={onRowSelect}
                                 onFilterModified={onFloatingFilterChanged}
                                 suppressRowClickSelection={true}
                             >
-                                <AgGridColumn field="IndexExchangeName" headerName="Index"></AgGridColumn>
+                                <AgGridColumn cellClass='has-checkbox' field="IndexExchangeName" cellRenderer={checkBoxRenderer} headerName="Index"></AgGridColumn>
                                 <AgGridColumn field="CommodityName" headerName="Commodity Name" ></AgGridColumn>
                                 <AgGridColumn field="IndexUOM" headerName="Index UOM"></AgGridColumn>
                                 <AgGridColumn field="ConvertedUOM" headerName="UOM"></AgGridColumn>
@@ -514,17 +571,16 @@ const IndexDataListing = (props) => {
                                 <AgGridColumn field="EffectiveDate" headerName="Indexed On" cellRenderer='effectiveDateFormatter'></AgGridColumn>
                                 <AgGridColumn field="RatePerIndexUOM" headerName="Index Rate/Index UOM" cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="RatePerConvertedUOM" headerName="Index Rate/UOM" cellRenderer='priceFormatter'></AgGridColumn>
-                                {/* <AgGridColumn field="CurrencyCharge" headerName="Premium (Charge)"></AgGridColumn> */}
                                 <AgGridColumn field="ExchangeRate" headerName={`Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="RateConversionPerIndexUOM" headerName="Conversion Rate/Index UOM" cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="RateConversionPerConvertedUOM" headerName="Conversion Rate/UOM " cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                             </AgGridReact>}
 
-  <div className={`button-wrapper`}>
-    {!isLoader && <PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData" />}
-    <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData" />
-</div>
+                            <div className={`button-wrapper`}>
+                                {!isLoader && <PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData" />}
+                                <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData" />
+                            </div>
 
                         </div>
                     </div>

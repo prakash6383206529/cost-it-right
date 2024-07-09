@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getAllCity, getCityByCountry, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, RMIndex, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
+import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import { getConfigurationKey, loggedInUserId } from "../../../helper"
@@ -63,7 +63,7 @@ function AddRMDetails(props) {
         isCodeDisabled: false, // THIS STATE IS USED TO DISABLE CODE,
         files: [],
         remarks: '',
-        isRmOpen: false,
+        isRmOpen: true,
         isCommodityOpen: false,
         isOpenAssociation: false,
         isVendorAccOpen: false,
@@ -71,7 +71,7 @@ function AddRMDetails(props) {
     });
 
     const dispatch = useDispatch()
-    const { indexCommodityData } = useSelector((state) => state.indexation);
+
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const customerSelectList = useSelector((state) => state.client.clientSelectList)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -81,8 +81,7 @@ function AddRMDetails(props) {
     const categoryList = useSelector((state) => state.comman.categoryList)
     const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList)
     const cityList = useSelector((state) => state.comman.cityList)
-    const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList);
-
+    const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
 
 
 
@@ -91,8 +90,6 @@ function AddRMDetails(props) {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
         dispatch(getRawMaterialCategory((res) => { }))
-        dispatch(getExchangeRateSource((res) => { }))
-        dispatch(getIndexSelectList((res) => { }));
         dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
         dispatch(getAllCity(cityId => {
             dispatch(getCityByCountry(cityId, 0, () => { }))
@@ -128,6 +125,9 @@ function AddRMDetails(props) {
             setValue('Source', Data.Source)
             setValue('SourceLocation', { label: Data.SourceSupplierLocationName, value: Data.SourceLocation })
             setValue('clientName', { label: Data.CustomerName, value: Data.CustomerId })
+            setValue('Index', { label: Data.IndexExchangeName, value: Data.IndexExchangeId })
+            setValue('ExchangeSource', { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName })
+            setValue('Material', { label: Data.MaterialType, value: Data.MaterialId })
             dispatch(SetRawMaterialDetails({ Technology: { label: Data.TechnologyName, value: Data.TechnologyId } }, () => { }))
             setState(prevState => ({
                 ...prevState,
@@ -174,23 +174,7 @@ function AddRMDetails(props) {
             return temp;
         }
 
-        if (label === 'IndexExchangeName') {
-            indexCommodityData && indexCommodityData.map((item) => {
-                if (item.Value === '--0--') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-        if (label === 'ExchangeSource') {
-            exchangeRateSourceList && exchangeRateSourceList.map((item) => {
-                if (item.Value === '--Exchange Rate Source Name--') return false
 
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
 
         if (label === 'Technology') {
             technologySelectList && technologySelectList.map((item) => {
@@ -309,26 +293,6 @@ function AddRMDetails(props) {
         }
         dispatch(SetRawMaterialDetails({ customer: newValue }, () => { }))
     };
-    const handleIndex = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setState(prevState => ({ ...prevState, index: newValue }));
-        } else {
-            setState(prevState => ({ ...prevState, index: [] }));
-        }
-        // dispatch(SetRawMaterialDetails({ customer: newValue }, () => { }))
-        dispatch(SetCommodityIndexAverage('', newValue?.value, '', 0, '', '', ''))
-    };
-
-    const handleExchangeRate = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setState(prevState => ({ ...prevState, exchange: newValue }));
-        } else {
-            setState(prevState => ({ ...prevState, exchangeRate: [] }));
-        }
-        // dispatch(SetRawMaterialDetails({ customer: newValue }, () => { }))
-        dispatch(SetCommodityIndexAverage('', 0, '', 0, newValue?.value, '', ''))
-    };
-
     /**
  * @method handleVendor
  * @description called
@@ -614,8 +578,7 @@ function AddRMDetails(props) {
                     </div>
                 </Col>
                 {
-                    state.isRmOpen &&
-                    <div className="accordian-content row mx-0 w-100">
+                    <div className={`accordian-content row mx-0 w-100 ${state.isRmOpen ? '' : 'd-none'}`} >
                         <Col className="col-md-15">
                             <SearchableSelectHookForm
                                 label={"Technology"}
@@ -780,78 +743,13 @@ function AddRMDetails(props) {
                                 </Col>
                             </>
                         )}
-                        {RMIndex && <>
-                            <Col className="col-md-15">
-                                <SearchableSelectHookForm
-                                    name="Index"
-                                    label="Index"
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={true}
-                                    rules={{ required: true }}
-                                    placeholder={'Select'}
-                                    options={renderListing("IndexExchangeName")}
-                                    handleChange={handleIndex}
-                                    disabled={isEditFlag || isViewFlag}
-                                    errors={errors.Index}
-                                />
-                            </Col>
-                            <Col className="col-md-15">
-                                <SearchableSelectHookForm
-                                    name="ExchangeSource"
-                                    label="Exchange Rate Source"
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={true}
-                                    rules={{ required: true }}
-                                    placeholder={'Select'}
-                                    options={renderListing("ExchangeSource")}
-                                    handleChange={handleExchangeRate}
-                                    disabled={isEditFlag || isViewFlag}
-                                    errors={errors.ExchangeSource}
-                                />
-                            </Col>
-
-                            <Col className="col-md-15">
-                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                    <div className="fullinput-icon">
-                                        <SearchableSelectHookForm
-                                            name="Material"
-                                            label="Material"
-                                            placeholder={"Select"}
-                                            Controller={Controller}
-                                            control={control}
-                                            rules={{ required: true }}
-                                            options={renderListing("material")}
-                                            mandatory={true}
-                                            handleChange={handleRM}
-                                            // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
-                                            className="fullinput-icon"
-                                            disabled={isEditFlag || isViewFlag || RMIndex}
-                                            errors={errors.Material}
-                                            isClearable={true}
-                                        />
-                                    </div>
-                                    {/* {(!props.isEditFlag) && (
-                                        <Button
-                                            id="addRMDomestic_RMToggle"
-                                            onClick={openAssociationDrawer}
-                                            className={"right"}
-                                            variant="plus-icon-square"
-                                        />
-                                    )} */}
-                                </div>
-                            </Col>
-                        </>}
 
                     </div>
                 }
 
             </Row>
 
-            <Row className="mb-3 accordian-container">
+            {states.costingTypeId !== CBCTypeId && <Row className="mb-3 accordian-container">
                 <Col md="6" className='d-flex align-items-center'>
                     <HeaderTitle
                         title={'Vendor:'}
@@ -863,7 +761,7 @@ function AddRMDetails(props) {
                         <button className="btn btn-small-primary-circle ml-1" onClick={openVendorAcc} type="button">{state.isVendorAccOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                     </div>
                 </Col>
-                {state.isVendorAccOpen && <Row className="align-items-center mb-3">
+                {<Row className={`align-items-center mb-3 ${state.isVendorAccOpen ? '' : 'd-none'}`}>
                     {states.costingTypeId !== CBCTypeId && (<>
                         <Col md="3">
                             <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
@@ -880,7 +778,7 @@ function AddRMDetails(props) {
                                         onKeyDown={(onKeyDown) => {
                                             if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                         }}
-                                        onBlur={() => setState({ showErrorOnFocus: true })}
+                                        onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
                                     />
                                 </div>
                                 {!props.isEditFlag && (
@@ -1009,7 +907,7 @@ function AddRMDetails(props) {
                         />
                     )
                 }
-            </Row>
+            </Row>}
         </Fragment>
     )
 }
