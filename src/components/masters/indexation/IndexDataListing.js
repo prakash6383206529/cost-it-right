@@ -285,7 +285,7 @@ const IndexDataListing = (props) => {
     const onGridReady = (params) => {
         setGridApi(params.api);
 
-        params.api.sizeColumnsToFit();
+        // params.api.sizeColumnsToFit();
         setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
         params.api.paginationGoToPage(0);
     };
