@@ -27,7 +27,7 @@ import { MESSAGES } from '../../../../../config/message';
 import { IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
-import { PreviousTabData } from '../../CostingHeaderTabs';
+import { PreviousTabData } from '../../costingHeaderTabs';
 function PartCompoment(props) {
 
   const { rmData, bopData, ccData, item } = props;

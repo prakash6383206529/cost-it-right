@@ -65,7 +65,7 @@ function ViewDrawer(props) {
     const [storeNfrId, setStoreNfrId] = useState('')
     const [inputLoader, setInputLoader] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
-    const [activeTab, setActiveTab] = useState("1");
+    const [activeTab, setActiveTab] = useState(props.partType !== 'RM'?"1":"3");
     const [specification, setSpecification] = useState("")
     const [editIndex, setEditIndex] = useState(null);  // To keep track of the index being edited
     const [files, setFiles] = useState([]);  // State for files
@@ -88,9 +88,9 @@ function ViewDrawer(props) {
     const [viewTooltip, setViewTooltip] = useState(false)
     const [partRemark, setPartRemark] = useState('')
     useEffect(() => {
-        setValue('AssemblyPartNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
+        setValue('AssemblyPartNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
         if (type === Component) {
-            setValue('partNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
+            setValue('partNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
         } else {
             if (!isViewFlag) {
                 dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => { }))
@@ -701,7 +701,7 @@ function ViewDrawer(props) {
                             </Col>
                         </Row>
                         <Nav tabs className="subtabs cr-subtabs-head ">
-                            <NavItem>
+                          { (props.partType === 'component')&& <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "1" })}
                                     onClick={() => setActiveTab("1")
@@ -709,8 +709,8 @@ function ViewDrawer(props) {
                                 >
                                     RM
                                 </NavLink>
-                            </NavItem>
-                            <NavItem>
+                            </NavItem>}
+                          { (props.partType !== 'RM')&&  <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "2" })}
                                     onClick={() => setActiveTab("2")
@@ -718,7 +718,7 @@ function ViewDrawer(props) {
                                 >
                                     Specification
                                 </NavLink>
-                            </NavItem>
+                            </NavItem>}
                             <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "3" })}

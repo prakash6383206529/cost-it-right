@@ -11,7 +11,7 @@ import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 import { WACTypeId } from '../../../../../config/constants';
-import { PreviousTabData } from '../../CostingHeaderTabs';
+import { PreviousTabData } from '../../costingHeaderTabs';
 function AssemblyOverheadProfit(props) {
   const { item } = props;
 

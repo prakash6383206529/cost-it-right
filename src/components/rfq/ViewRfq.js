@@ -1016,7 +1016,19 @@ function RfqListing(props) {
         setSelectedRowIndex('')
         gridApi.deselectAll()
     }
-
+const headerPartType = ()=>{
+    switch (props.partType) {
+        case 'RM':
+            return "RM Name"
+        case 'BOP':
+            return "BOP Name"  
+        case 'Part':
+            return "Part Name"  
+    
+        default:
+            break;
+    }
+}
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -1113,9 +1125,9 @@ function RfqListing(props) {
                                             onFirstDataRendered={onFirstDataRendered}
                                             enableBrowserTooltips={true}
                                         >
-                                            <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName='Part No' cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                            <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName={headerPartType()}cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                             {initialConfiguration.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
-                                            <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                           {!props.partType ==='BOP'&& <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}

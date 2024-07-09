@@ -565,6 +565,7 @@ function RfqListing(props) {
                         <ViewRfq
                             data={viewRfqData}
                             isOpen={viewRfq}
+                            partType={'BOP'}
                             closeDrawer={closeDrawerViewRfq}
                         />
 

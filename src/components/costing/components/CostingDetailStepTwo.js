@@ -8,7 +8,7 @@ import {
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, showBopLabel } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
-import CostingHeadTabs from './CostingHeaderTabs/index';
+import CostingHeadTabs from './costingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
 import { ViewCostingContext, CostingTypeContext, IsPartType, IsNFR } from './CostingDetails';

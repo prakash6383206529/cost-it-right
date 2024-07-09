@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Tooltip } from 'reactstrap';
-import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
+import { Row, Col, Tooltip, FormGroup, Label, Input, Form } from 'reactstrap';
+import { AsyncSearchableSelectHookForm, RadioHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI, getUOMSelectList } from '../.././actions/Common';
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId } from '../.././helper';
@@ -39,11 +39,19 @@ import { getSelectListPartType } from '../masters/actions/Part';
 import ProcessDrawer from './ProcessDrawer';
 import Button from '../layout/Button';
 import { ApplyPermission } from './RfqListing';
+import AddRm from './RM/AddRfqRmDetails';
+import AddRfqRmDetails from './RM/AddRfqRmDetails';
 
 const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
 function AddRfq(props) {
+
+    const [isRmSelected, setIsRmSelected] = useState(false); // State to track if "RM" is selected
+    const [selectedOption, setSelectedOption] = useState('componentAssembly');
+
+
+
     const permissions = useContext(ApplyPermission);
 
     const Vendor = permissions.permissionDataVendor
@@ -61,7 +69,11 @@ function AddRfq(props) {
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
+        defaultValues: {
+            radioOption: false, // Initialize default value for the radio button
+        }
     });
+
 
     const currentDate = new Date()
     const currentHours = currentDate.getHours();
@@ -169,6 +181,18 @@ function AddRfq(props) {
     const [sopdate, setSOPDate] = useState('')
     const [disabledVendoUi, setDisabledVendoUId] = useState(true)
     const [showVendorSection, setShowVendorSection] = useState(true)
+    const [quationType, setQuationType] = useState('Component/Assembly')
+
+
+    const handleRadioChange = (e) => {
+        console.log("Radio value changed:", e.target.value);
+        const value = e.target.value;
+        console.log(value, "value")
+        setSelectedOption(e.target.value);
+        // Update state based on radio button selection
+        setQuationType(value);
+
+    };
 
 
 
@@ -718,6 +742,10 @@ function AddRfq(props) {
 
         //handleSubmit(() => onSubmit(data, e, isSent))()
         onSubmit(data, e, isPartDetailSent)
+    };
+
+    const onRadioSubmit = (data) => {
+        console.log('Form data:', data);
     };
 
     /**
@@ -2114,7 +2142,67 @@ function AddRfq(props) {
                                     </h3>
                                 </div>
                             </div>
-                            <div >
+                            <div>
+                                <div className='raise-rfq-radio-wrap mt-3'>
+                                    <Form>
+                                        <FormGroup className="d-flex" tag="fieldset">
+                                            <FormGroup check>
+                                                <Label check>
+                                                    <Input
+                                                        name="radioGroup"
+                                                        type="radio"
+                                                        value="componentAssembly"
+                                                        checked={selectedOption === 'componentAssembly'}
+                                                        onChange={handleRadioChange}
+                                                    />
+                                                    {' '}
+                                                    Component/Assembly
+                                                </Label>
+                                            </FormGroup>
+                                            <FormGroup check>
+                                                <Label check>
+                                                    <Input
+                                                        name="radioGroup"
+                                                        type="radio"
+                                                        value="RM"
+                                                        checked={selectedOption === 'RM'}
+                                                        onChange={handleRadioChange}
+                                                    />
+                                                    {' '}
+                                                    RM
+                                                </Label>
+                                            </FormGroup>
+                                            <FormGroup check>
+                                                <Label check>
+                                                    <Input
+                                                        name="radioGroup"
+                                                        type="radio"
+                                                        value="BOP"
+                                                        checked={selectedOption === 'BOP'}
+                                                        onChange={handleRadioChange}
+                                                    />
+                                                    {' '}
+                                                    BOP
+                                                </Label>
+                                            </FormGroup>
+                                            <FormGroup check>
+                                                <Label check>
+                                                    <Input
+                                                        name="radioGroup"
+                                                        type="radio"
+                                                        value="tooling"
+                                                        checked={selectedOption === 'tooling'}
+                                                        onChange={handleRadioChange}
+                                                    />
+                                                    {' '}
+                                                    Tooling
+                                                </Label>
+                                            </FormGroup>
+                                        </FormGroup>
+                                    </Form>
+
+                                </div>
+
                                 <form>
                                     <Row className="part-detail-wrapper">
                                         <Col md="3">
@@ -2135,7 +2223,7 @@ function AddRfq(props) {
                                                     || (partList?.length !== 0 || vendorList?.length !== 0)}
                                             />
                                         </Col>
-                                        {initialConfiguration.IsNFRConfigured && <Col md="3">
+                                        {initialConfiguration.IsNFRConfigured && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
                                             <SearchableSelectHookForm
                                                 label={"NFR No."}
                                                 name={"nfrId"}
@@ -2204,6 +2292,12 @@ function AddRfq(props) {
                                             </div>
                                         </Col>
                                     </Row>
+
+
+
+
+
+                                  {quationType ==='componentAssembly' && <>
                                     <HeaderTitle title={'Part:'} />
                                     <Row className="part-detail-wrapper">
                                         {havellsKey && <Col md="3">
@@ -2249,7 +2343,6 @@ function AddRfq(props) {
                                                     title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={partName?.length === 0 || disabledPartUid}></Button>
                                             )}
                                         </Col>
-
                                         {havellsKey && <Col md="3">
                                             <TextFieldHookForm
                                                 // title={titleObj.descriptionTitle}
@@ -2269,7 +2362,9 @@ function AddRfq(props) {
                                                 placeholder="-"
                                             />
                                         </Col>
+
                                         }
+
                                         {havellsKey && <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Havells Design part /Proprietary part"}
@@ -2288,6 +2383,15 @@ function AddRfq(props) {
                                                 disabled={(dataProps?.isViewFlag) ? true : false || updateButtonPartNoTable || disabledPartUid}
                                             />
                                         </Col>}
+                                        </Row>
+                                  </>}
+                                   <Row>
+                                      {quationType ==='RM' &&  <AddRfqRmDetails />}
+
+
+
+
+
                                         {!havellsKey && (
                                             checkForNull(technology?.value) !== LOGISTICS && (
                                                 <>
@@ -2481,6 +2585,7 @@ function AddRfq(props) {
                                             </button>}
                                         </Col>
                                     </Row >
+
                                     <div className='rfq-part-list'>
                                         {/* {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To edit the quantity please double click on the field."}</Tooltip>} */}
                                         {!loader ? <div className={`ag-grid-react`}>
@@ -2510,6 +2615,13 @@ function AddRfq(props) {
                                                                     suppressColumnVirtualisation={true}
                                                                     enableBrowserTooltips={true}
                                                                 >
+                                                                     <AgGridColumn width={"230px"} field="Name" headerName="Name" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>
+
+                                                                     <AgGridColumn width={"230px"} field="Grade" headerName="Grade" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>
+
+                                                                     <AgGridColumn width={"230px"} field="Specification" headerName="Specification" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>
+
+                                                                     <AgGridColumn width={"230px"} field="Code" headerName="Code" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                                                     <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                                                     <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                                     {/* {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
@@ -2750,6 +2862,7 @@ function AddRfq(props) {
                                                         disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                                     />
                                                 </Col>
+
                                                 <Col md="3">
                                                     {visibilityMode?.value === DATE_STRING && <div className="inputbox date-section">
                                                         <div className="form-group">
@@ -2998,6 +3111,7 @@ function AddRfq(props) {
                                             childPartFiles={childPartFiles}
                                             setRemark={setRemark}
                                             remark={remark}
+                                            partType={'component'}
                                             isViewFlag={viewQuotationPart}
                                             partListData={partList}
                                             setPartListData={setPartList}
@@ -3008,15 +3122,12 @@ function AddRfq(props) {
                                             sopdate={sopdate}
                                             setSOPDate={setSOPDate}
                                             effectiveMinDate={effectiveMinDate}
-
-
-
                                         />
                                     )
                                 }
 
 
-                            </div >
+                            </div>
                         </div >
                     </div >
                 </div >
@@ -3028,6 +3139,8 @@ function AddRfq(props) {
                     plantId={plantId} redirectPath={blocked ? "/initiate-unblocking" : ""} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={blocked ? `${popupMessage}` : `${MESSAGES.RFQ_ADD_SUCCESS}`} />
             }
         </div >
+
+
     );
 }
 
