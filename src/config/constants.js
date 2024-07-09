@@ -77,17 +77,6 @@ export const API = {
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
 
 
-  //add exchnage rate
-
-  getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
-
-  //add frequency of settlement
-
-  getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
-
-  // add commodity index rate average
-
-  getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
   ///INDEXATION
   getCommoditySelectList: `${BASE_URL}/masters-material/select-list-index-exchange`,
   getCommodityNameInIndexSelectList: `${BASE_URL}/masters-material/select-list-index-exchange-commodity-linking`,
@@ -117,6 +106,9 @@ export const API = {
   deleteIndexDetailData: `${BASE_URL}/masters-material/delete-commodity-index-rate-details`,
   getAssociatedMaterial: `${BASE_URL}//masters-material/get-material-type`,
   getLastRevisionRawMaterialDetails: `${BASE_URL}/masters-raw-material/get-last-revision-raw-material-details`,
+  getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
+  getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
+  getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
