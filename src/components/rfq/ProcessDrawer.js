@@ -65,7 +65,7 @@ function ViewDrawer(props) {
     const [storeNfrId, setStoreNfrId] = useState('')
     const [inputLoader, setInputLoader] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
-    const [activeTab, setActiveTab] = useState(props.partType !== 'RM'?"1":"3");
+    const [activeTab, setActiveTab] = useState(props.partType === 'RM'?"3":props.partType === 'BOP' ? '2':'1' );
     const [specification, setSpecification] = useState("")
     const [editIndex, setEditIndex] = useState(null);  // To keep track of the index being edited
     const [files, setFiles] = useState([]);  // State for files
@@ -710,7 +710,7 @@ function ViewDrawer(props) {
                                     RM
                                 </NavLink>
                             </NavItem>}
-                          { (props.partType !== 'RM')&&  <NavItem>
+                          { (props.partType !== 'RM' || props.partType === 'BOP') && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "2" })}
                                     onClick={() => setActiveTab("2")
@@ -719,14 +719,14 @@ function ViewDrawer(props) {
                                     Specification
                                 </NavLink>
                             </NavItem>}
-                            <NavItem>
+                            { (props.partType !== 'RM' || props.partType === 'BOP') && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "3" })}
                                     onClick={() => setActiveTab("3")
                                     }
                                 >
                                     Remarks & Attachments                                </NavLink>
-                            </NavItem>
+                            </NavItem>}
                         </Nav>
                         <TabContent activeTab={activeTab}>
                             {Number(activeTab) === 1 && (<TabPane tabId="1">
@@ -1101,7 +1101,7 @@ function ViewDrawer(props) {
                                     </tbody>
                                 </Table>
 
-                                {activeTab === "2" && (
+                                {activeTab === "2" && props.partType !=='BOP'&& (
                                     <>
                                         <HeaderTitle title={'Add Volume'} customClass="mt-5" />
                                         <Row className='mt-3 mb-1'>

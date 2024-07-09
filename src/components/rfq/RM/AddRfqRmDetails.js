@@ -208,6 +208,8 @@ const AddRfqRmDetails = () => {
                             anchor={"right"}
                             closeDrawer={closeDrawer}
                             partType={'RM'}
+                            quationType={'RM'}
+                            
                             setViewQuotationPart={setViewQuotationPart}
                         />
                     )
