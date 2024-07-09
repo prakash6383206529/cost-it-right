@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react"
-import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement } from "../../../actions/Common"
+import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement, getExchangeRateSource } from "../../../actions/Common"
 import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
@@ -27,7 +27,7 @@ import AddOtherCostDrawer from "./AddOtherCostDrawer"
 import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears } from 'date-fns';
 import { TestHeadless } from "ag-grid-community"
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
-import { setOtherCostDetails } from "../actions/Indexation"
+import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, DataToChange } = props
     const { isEditFlag, isViewFlag } = data
@@ -91,6 +91,9 @@ function AddRMFinancialDetails(props) {
         otherCostTableData: [],
         totalOtherCost: 0,
         isShowIndexCheckBox: false,
+        exchange: [],
+        index: []
+
     });
     const [showScrapKeys, setShowScrapKeys] = useState({
         showForging: false,
@@ -102,6 +105,8 @@ function AddRMFinancialDetails(props) {
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const frequncySettlementList = useSelector((state) => state.comman.frequencyOfSettlement)
+    const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList);
+    const { indexCommodityData } = useSelector((state) => state.indexation);
     const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
     const fieldValuesImport = useWatch({
         control,
@@ -142,6 +147,8 @@ function AddRMFinancialDetails(props) {
         dispatch(getFrequencySettlement(() => { }))
         allFieldsInfoIcon(true)
         dispatch(getCurrencySelectList(() => { }))
+        dispatch(getExchangeRateSource((res) => { }))
+        dispatch(getIndexSelectList((res) => { }));
     }, [])
     useEffect(() => {
         if (rawMaterailDetails && rawMaterailDetails?.Technology && Object.keys(rawMaterailDetails?.Technology).length > 0) {
@@ -173,7 +180,7 @@ function AddRMFinancialDetails(props) {
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
             let Data = props?.DataToChange
-
+            console.log('here');
             setValue('UnitOfMeasurement', { label: Data.UnitOfMeasurementName, value: Data.UOM })
             setValue('cutOffPriceSelectedCurrency', Data?.CutOffPrice)
             setValue('cutOffPriceBaseCurrency', states.isImport ? Data?.CutOffPriceInINR : Data?.CutOffPrice)
@@ -223,13 +230,16 @@ function AddRMFinancialDetails(props) {
                 showCurrency: true,
                 currencyValue: Data.CurrencyExchangeRate,
                 calculatedFactor: Data.CalculatedFactor,
-                otherCostTableData: Data?.RawMaterialOtherCostDetails
+                otherCostTableData: Data?.RawMaterialOtherCostDetails,
+                isShowIndexCheckBox: Data?.IsIndexationDetails
             }))
+            dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
+            dispatch(SetRawMaterialDetails({ states: state }, () => { }))
             checkTechnology()
         }
     }, [props?.DataToChange])
     useEffect(() => {
-        if (RMIndex) {
+        if (state.isIndexationOpen) {
             setValue('BasicRateBaseCurrency', checkForDecimalAndNull(state?.totalBasicRate, getConfigurationKey().NoOfDecimalForPrice))
         }
     }, [state?.totalBasicRate])
@@ -299,7 +309,23 @@ function AddRMFinancialDetails(props) {
             });
             return temp;
         }
+        if (label === 'IndexExchangeName') {
+            indexCommodityData && indexCommodityData.map((item) => {
+                if (item.Value === '--0--') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+        if (label === 'ExchangeSource') {
+            exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+                if (item.Value === '--Exchange Rate Source Name--') return false
 
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
 
     }
 
@@ -867,26 +893,45 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, isCommodityOpen: !state.isCommodityOpen }))
     }
     const setTotalBasicRate = (totalBasicRate) => {
+        console.log('totalBasicRate: ', totalBasicRate);
         setState(prevState => ({ ...prevState, totalBasicRate: totalBasicRate }))
     }
     const isShowIndexCheckBox = () => {
         setState(prevState => ({ ...prevState, isShowIndexCheckBox: !state.isShowIndexCheckBox }))
+        dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: !state.isShowIndexCheckBox }, () => { }))
     }
+    const handleIndex = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            setState(prevState => ({ ...prevState, index: newValue }));
+        } else {
+            setState(prevState => ({ ...prevState, index: [] }));
+        }
+        dispatch(SetCommodityIndexAverage('', newValue?.value, '', 0, '', '', ''))
+    };
+
+    const handleExchangeRate = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            setState(prevState => ({ ...prevState, exchange: newValue }));
+        } else {
+            setState(prevState => ({ ...prevState, exchange: [] }));
+        }
+        dispatch(SetCommodityIndexAverage('', 0, '', 0, newValue?.value, '', ''))
+    };
+
     return (
         <Fragment>
             <Row >
                 <Col md="6" className='d-flex align-items-center mb-3'>
                     {getConfigurationKey().IsShowMaterialIndexation && (
                         <label id="AddRMDomestic_HasDifferentSource"
-                            className={`custom-checkbox w-auto mb-0 ${(states.costingTypeId === VBCTypeId) ? "disabled" : ""
-                                }`}
+                            className={`custom-checkbox w-auto mb-0 `}
                             onChange={isShowIndexCheckBox}
                         >
                             RM Indexation
                             <input
                                 type="checkbox"
                                 checked={state.isShowIndexCheckBox}
-                            // disabled={(states.costingTypeId === VBCTypeId) ? true : false}
+                                disabled={isViewFlag}
                             />
                             <span
                                 className=" before-box p-0"
@@ -912,30 +957,78 @@ function AddRMFinancialDetails(props) {
                         </div>
                     </Col>
                     {
-                        state.isIndexationOpen &&
-                        <div className="accordian-content row mx-0 w-100">
+                        <div className={`accordian-content row mx-0 w-100 ${state.isIndexationOpen ? '' : 'd-none'}`} >
+                            {RMIndex && <>
+                                <Col className="col-md-15">
+                                    <SearchableSelectHookForm
+                                        name="Index"
+                                        label="Index"
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{ required: true }}
+                                        placeholder={'Select'}
+                                        options={renderListing("IndexExchangeName")}
+                                        handleChange={handleIndex}
+                                        disabled={isEditFlag || isViewFlag}
+                                        errors={errors.Index}
+                                    />
+                                </Col>
+                                <Col className="col-md-15">
+                                    <SearchableSelectHookForm
+                                        name="ExchangeSource"
+                                        label="Exchange Rate Source"
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{ required: true }}
+                                        placeholder={'Select'}
+                                        options={renderListing("ExchangeSource")}
+                                        handleChange={handleExchangeRate}
+                                        disabled={isEditFlag || isViewFlag}
+                                        errors={errors.ExchangeSource}
+                                    />
+                                </Col>
+                                <Col className="col-md-15">
+                                    <SearchableSelectHookForm
+                                        name="Material"
+                                        label="Material"
+                                        placeholder={"Select"}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: false }}
+                                        options={renderListing("material")}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
+                                        className="fullinput-icon"
+                                        disabled={isEditFlag || isViewFlag || RMIndex}
+                                        errors={errors.Material}
+                                        isClearable={true}
+                                    />
+                                </Col>
+                                <Col className="col-md-15">
+                                    <SearchableSelectHookForm
+                                        label={`Frequency of settlement`}
+                                        name={"frequencyOfSettlement"}
+                                        errors={errors.currency}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                        }}
+                                        placeholder={'Select'}
+                                        options={renderListing("Frequency")}
+                                        handleChange={handleFrequencyChange}
+                                        disabled={isEditFlag || isViewFlag}
+                                    />
 
-                            {RMIndex && <><Col className="col-md-15">
-                                <SearchableSelectHookForm
-                                    label={`Frequency of settlement`}
-                                    name={"frequencyOfSettlement"}
-                                    errors={errors.currency}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={true}
-                                    rules={{
-                                        required: true,
-                                    }}
-                                    placeholder={'Select'}
-                                    options={renderListing("Frequency")}
-                                    handleChange={handleFrequencyChange}
-                                    disabled={isEditFlag || isViewFlag}
-                                />
-
-                            </Col>
-
-                                {RMIndex && <><Col className="col-md-15">
+                                </Col>
+                                <Col className="col-md-15">
                                     <div className="inputbox date-section">
                                         <DatePickerHookForm
                                             name={`fromDate`}
@@ -964,55 +1057,35 @@ function AddRMFinancialDetails(props) {
                                         />
                                     </div>
                                 </Col>
-                                    <Col className="col-md-15">
-                                        <div className="inputbox date-section">
-                                            <DatePickerHookForm
-                                                name={`toDate`}
-                                                label={'To Date'}
-                                                handleChange={(date) => {
-                                                    handleToEffectiveDateChange(date);
-                                                }}
-                                                rules={{ required: false }}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                showMonthDropdown
-                                                showYearDropdown
-                                                dateFormat="DD/MM/YYYY"
-                                                minDate={state.minDate}
-                                                maxDate={state.maxDate}
-                                                placeholder={!state.disableToDate ? "Select date" : ''}
-                                                customClassName="withBorder"
-                                                className="withBorder"
-                                                autoComplete={"off"}
-                                                disabledKeyboardNavigation
-                                                onChangeRaw={(e) => e.preventDefault()}
-                                                disabled={state.disableToDate}
-                                                mandatory={false}
-                                                errors={errors && errors.toDate}
-                                            />
-                                        </div>
-                                    </Col></>}
                                 <Col className="col-md-15">
-                                    <SearchableSelectHookForm
-                                        name="UnitOfMeasurement"
-                                        label="UOM"
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        options={renderListing("uom")}
-                                        rules={{ required: true }}
-                                        defaultValue={state.UOM}
-                                        mandatory={true}
-                                        handleChange={handleUOM}
-                                        customClassName="withBorder"
-                                        disabled={isEditFlag || isViewFlag || RMIndex}
-                                        errors={errors.UnitOfMeasurement}
-                                    />
-                                </Col>
-                            </>
-                            }
+                                    <div className="inputbox h-auto date-section">
+                                        <DatePickerHookForm
+                                            name={`toDate`}
+                                            label={'To Date'}
+                                            handleChange={(date) => {
+                                                handleToEffectiveDateChange(date);
+                                            }}
+                                            rules={{ required: false }}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dateFormat="DD/MM/YYYY"
+                                            minDate={state.minDate}
+                                            maxDate={state.maxDate}
+                                            placeholder={!state.disableToDate ? "Select date" : ''}
+                                            customClassName="withBorder"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                            disabled={state.disableToDate}
+                                            mandatory={false}
+                                            errors={errors && errors.toDate}
+                                        />
+                                    </div>
+                                </Col></>}
                         </div>
                     }
                 </Row >}
@@ -1051,9 +1124,25 @@ function AddRMFinancialDetails(props) {
                     </div>
                 </Col>
                 {
-                    state.isCostOpen &&
-                    <div className="accordian-content row mx-0 w-100">
-
+                    <div className={`accordian-content row mx-0 w-100 ${state.isCostOpen ? '' : 'd-none'}`} >
+                        <Col className="col-md-15">
+                            <SearchableSelectHookForm
+                                name="UnitOfMeasurement"
+                                label="UOM"
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                options={renderListing("uom")}
+                                rules={{ required: true }}
+                                defaultValue={state.UOM}
+                                mandatory={true}
+                                handleChange={handleUOM}
+                                customClassName="withBorder"
+                                disabled={state.isIndexationOpen === true ? true : isEditFlag || isViewFlag}
+                                errors={errors.UnitOfMeasurement}
+                            />
+                        </Col>
                         {states.isImport && <Col className="col-md-15">
                             <SearchableSelectHookForm
                                 name="currency"
@@ -1157,7 +1246,7 @@ function AddRMFinancialDetails(props) {
                                             validate: { positiveAndDecimalNumber, maxLength10, decimalLengthsix, number },
                                         }}
                                         mandatory={true}
-                                        disabled={states.isImport || RMIndex ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                        disabled={states.isImport || state.isShowIndexCheckBox ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                         className=" "
                                         customClassName=" withBorder"
                                         handleChange={() => { }}

@@ -75,7 +75,7 @@ function AddRMMaster(props) {
     })
 
     useEffect(() => {
-        if (getValues('Material') && getValues('Index') && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate')) {
+        if (getValues('Material')?.value !== null && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate')) {
             dispatch(getCommodityIndexRateAverage(
                 getValues('Material')?.value,
                 getValues('Index').value,
@@ -127,7 +127,7 @@ function AddRMMaster(props) {
         getDetails(data)
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
         return () => {
-            dispatch(SetRawMaterialDetails({ states: {}, Technology: {}, ShowScrapKeys: {} }, () => { }))
+            dispatch(SetRawMaterialDetails({ states: {}, Technology: {}, ShowScrapKeys: {}, isShowIndexCheckBox: false }, () => { }))
             dispatch(setCommodityDetails([]))
             dispatch(setOtherCostDetails([]))
         }
@@ -171,16 +171,18 @@ function AddRMMaster(props) {
             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state.costingTypeId),
             plantId: plantId
         }
-        dispatch(checkFinalUser(obj, (res) => {
-            if (res?.data?.Result) {
-                setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false }))
-            }
-            if (res?.data?.Data?.IsUserInApprovalFlow === false) {
-                setState(prevState => ({ ...prevState, disableSendForApproval: true }))
-            } else {
-                setState(prevState => ({ ...prevState, disableSendForApproval: false }))
-            }
-        }))
+        if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+            dispatch(checkFinalUser(obj, (res) => {
+                if (res?.data?.Result) {
+                    setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false }))
+                }
+                if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: true }))
+                } else {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: false }))
+                }
+            }))
+        }
         setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
     }
     /**
@@ -203,7 +205,6 @@ function AddRMMaster(props) {
                         }))
                         dispatch(setOtherCostDetails(Data?.RawMaterialOtherCostDetails))
                         dispatch(setCommodityDetails(Data?.MaterialCommodityIndexRateDetails))
-                        console.log('Data?.MaterialCommodityIndexRateDetails: ', Data?.MaterialCommodityIndexRateDetails);
                         if (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
                             dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
                                 setTimeout(() => {
@@ -247,8 +248,6 @@ function AddRMMaster(props) {
 
 
     const onSubmit = debounce(handleSubmit((values) => {
-        // console.log('values: ', values);
-
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -375,7 +374,7 @@ function AddRMMaster(props) {
             "OtherNetCost": values.OtherCostBaseCurrency,
             "OtherNetCostConversion": values.OtherCostBaseCurrency,
             "RawMaterialOtherCostDetails": otherCostDetailsArray,
-
+            "IsIndexationDetails": rawMaterailDetails?.isShowIndexCheckBox === true ? true : false
         }
 
 
@@ -385,17 +384,19 @@ function AddRMMaster(props) {
         let freightCost = state.isImport ? checkForNull(values?.FreightChargeSelectedCurrency) : checkForNull(values.FreightChargeBaseCurrency)
         let machiningScrapCost = state.isImport ? checkForNull(values?.MachiningScrapSelectedCurrency) : checkForNull(values.MachiningScrapBaseCurrency)
         let circleScrapCost = state.isImport ? checkForNull(values?.CircleScrapCostSelectedCurrency) : checkForNull(values.CircleScrapCostBaseCurrency)
+        let otherCost = state.isImport ? checkForNull(values?.OtherCostSelectedCurrency) : checkForNull(values.OtherCostBaseCurrency)
+        console.log('values: ', values);
 
+        console.log('DataToChange: ', DataToChange);
         let financialDataNotChanged = (cuttOffPrice === checkForNull(DataToChange?.CutOffPrice)) && (basicRate === checkForNull(DataToChange?.BasicRatePerUOM)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
-            && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (freightCost === checkForNull(DataToChange?.RMFreightCost))
+            && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (freightCost === checkForNull(DataToChange?.RMFreightCost) && otherCost === checkForNull(DataToChange?.OtherNetCost))
             && (shearingCost === checkForNull(DataToChange?.RMShearingCost)) && (circleScrapCost === checkForNull(DataToChange?.JaliScrapCost)) && (machiningScrapCost === checkForNull(DataToChange?.MachiningScrapRate))
         let nonFinancialDataNotChanged = (JSON.stringify(rawMaterailDetails.Files) === JSON.stringify(DataToChange?.FileList) && values?.Remarks === DataToChange?.Remark)
-        console.log('CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.isFinalApprovar && !financialDataNotChanged: ', CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !state.isFinalApprovar && !financialDataNotChanged);
         if (state.isEditFlag) {
             if (!isRMAssociated) {
 
                 if (financialDataNotChanged && nonFinancialDataNotChanged) {
-                    if (!state.isFinalApprovar) {
+                    if (!state.isFinalApprovar && getConfigurationKey().IsMasterApprovalAppliedConfigure) {
                         Toaster.warning('Please change data to send RM for approval')
                         return false
                     }
@@ -419,7 +420,6 @@ function AddRMMaster(props) {
         } else {
             if (state.isEditFlag) {
                 formData.IsSendForApproval = false
-
                 dispatch(updateRMAPI(formData, (res) => {
                     if (res?.data?.Result) {
                         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
@@ -581,8 +581,7 @@ function AddRMMaster(props) {
                                         id="addRMDomestic_sendForApproval"
                                         type="button"
                                         className="approval-btn mr5"
-                                        // disabled={isViewFlag || state.disableSendForApproval}
-                                        disabled={false}
+                                        disabled={isViewFlag || state.disableSendForApproval}
                                         onClick={onSubmit}
                                         icon={showSendForApproval() ? "send-for-approval" : "save-icon"}
                                         buttonName={showSendForApproval() ? "Send For Approval" : 'Update'}
@@ -592,8 +591,7 @@ function AddRMMaster(props) {
                                         id="addRMDomestic_updateSave"
                                         type="button"
                                         className="mr5"
-                                        // disabled={isViewFlag || state.disableSendForApproval}
-                                        disabled={false}
+                                        disabled={isViewFlag || state.disableSendForApproval}
                                         onClick={onSubmit}
                                         icon={"save-icon"}
                                         buttonName={data.isEditFlag ? "Update" : "Save"}
