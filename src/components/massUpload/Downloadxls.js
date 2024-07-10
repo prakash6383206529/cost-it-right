@@ -434,7 +434,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === 'ADD RFQ')) {
+        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === 'ADD RFQ' || fileName === 'Index' || fileName === 'Index Data' || fileName === 'Commodity (In Index)' || fileName === 'Commodity Standard' || fileName === 'Commodity Standardization')) {
 
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
