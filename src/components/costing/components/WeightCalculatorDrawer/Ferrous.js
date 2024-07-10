@@ -64,7 +64,6 @@ function Ferrous(props) {
         defaultValues: defaultValues,
     })
 
-    const [netRMCost, setNetRMCost] = useState(0);
 
 
     useEffect(() => {
@@ -247,7 +246,9 @@ function Ferrous(props) {
             const BasicRate = parseFloat(item.RawMaterialRate || 0);
             return acc + (Percentage * BasicRate) / 100;
         }, 0);
-        setValue('NetRMRate', checkForDecimalAndNull(NetRMRate, getConfigurationKey().NoOfDecimalForPrice));
+        setValue('NetRMRate', NetRMRate);
+        return checkForDecimalAndNull(NetRMRate, getConfigurationKey().NoOfDecimalForPrice);
+
     };
     useEffect(() => {
         const totalCost = calculateTotalCost();
@@ -261,8 +262,12 @@ function Ferrous(props) {
             const ScrapRate = parseFloat(item.ScrapRate || 0);
             return acc + (Percentage * ScrapRate) / 100;
         }, 0);
-        setValue('NetScrapRate', checkForDecimalAndNull(NetScrapRate, getConfigurationKey().NoOfDecimalForPrice));
-    };
+          // Store full precision value
+    setValue('NetScrapRate', NetScrapRate);
+    
+    // Display formatted value
+    return checkForDecimalAndNull(NetScrapRate, getConfigurationKey().NoOfDecimalForPrice);
+};
     const calculateLossWeight = (castingWeight, lossPercentage) => {
         return (castingWeight * lossPercentage) / 100;
     };
@@ -1184,6 +1189,8 @@ function Ferrous(props) {
                                     customClassName={'withBorder'}
                                     errors={errors.NetRMRate}
                                     disabled={true}
+                                    formatter={(value) => checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}
+
                                 />
                             </Col>
                             <Col md="3">
@@ -1202,6 +1209,8 @@ function Ferrous(props) {
                                     customClassName={'withBorder'}
                                     errors={errors.NetScrapRate}
                                     disabled={true}
+                                    formatter={(value) => checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}
+
                                 />
                             </Col>
                             <Col md="3">
@@ -1400,6 +1409,9 @@ function Ferrous(props) {
                                     Controller={Controller}
                                     control={control}
                                     register={register}
+                                    rules={{
+                                        validate: {  decimalAndNumberValidation },
+                                    }}
                                     mandatory={false}
                                     handleChange={() => { }}
                                     defaultValue={''}
@@ -1443,6 +1455,9 @@ function Ferrous(props) {
                                     Controller={Controller}
                                     control={control}
                                     register={register}
+                                    rules={{
+                                        validate: { checkForDecimalAndNull },
+                                    }}
                                     mandatory={false}
                                     handleChange={() => { }}
                                     defaultValue={WeightCalculatorRequest &&
