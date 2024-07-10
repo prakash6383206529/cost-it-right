@@ -73,7 +73,6 @@ function RawMaterialCost(props) {
   const [calculatorTypeStore, setCalculatorTypeStore] = useState(costData.TechnologyId === CORRUGATEDBOX ? item?.CostingPartDetails?.CalculatorType : '')
   const [isMultiCalculatorData, setIsMultiCalculatorData] = useState(false);
   const [headerPinned, setHeaderPinned] = useState(true)
-
   const [tourState, setTourState] = useState({
     steps: []
   })
@@ -451,9 +450,9 @@ function RawMaterialCost(props) {
       setIsMultiCalculatorData(true)
     }
     if (Number(costData?.TechnologyId) === MACHINING) {
-      setMachiningCalculatorLayoutType(weightData.LayoutType)
+      setMachiningCalculatorLayoutType(weightData?.LayoutType)
     }
-    setInputDiameter(weightData.Diameter)
+    setInputDiameter(weightData?.Diameter)
     setWeight(weightData, originalWeight)
 
     setWeightDrawerOpen(false)
@@ -816,35 +815,35 @@ function RawMaterialCost(props) {
     let ScrapWeight
     // GROSS WEIGHT WILL ALWAYS BE KG ON THIS TAB, SO CONVERTING OTHER UNIT INTO KG
     if (Object.keys(weightData).length > 0) {
-      if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_G) {
-        grossWeight = weightData.GrossWeight / 1000
-        finishWeight = weightData.FinishWeight / 1000
-        netLandedCost = weightData.RawMaterialCost / 1000
-        ScrapWeight = weightData.ScrapWeight / 1000
+      if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData?.UOMForDimension === DISPLAY_G) {
+        grossWeight = weightData?.GrossWeight / 1000
+        finishWeight = weightData?.FinishWeight / 1000
+        netLandedCost = weightData?.RawMaterialCost / 1000
+        ScrapWeight = weightData?.ScrapWeight / 1000
 
-      } else if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_KG) {
-        grossWeight = weightData.GrossWeight
-        finishWeight = weightData.FinishWeight
-        netLandedCost = weightData.RawMaterialCost
-        ScrapWeight = weightData.ScrapWeight
+      } else if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData?.UOMForDimension === DISPLAY_KG) {
+        grossWeight = weightData?.GrossWeight
+        finishWeight = weightData?.FinishWeight
+        netLandedCost = weightData?.RawMaterialCost
+        ScrapWeight = weightData?.ScrapWeight
 
-      } else if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_MG) {
-        grossWeight = weightData.GrossWeight / 1000000
-        finishWeight = weightData.FinishWeight / 1000000
-        netLandedCost = weightData.RawMaterialCost / 1000000
-        ScrapWeight = weightData.ScrapWeight / 1000000
+      } else if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData?.UOMForDimension === DISPLAY_MG) {
+        grossWeight = weightData?.GrossWeight / 1000000
+        finishWeight = weightData?.FinishWeight / 1000000
+        netLandedCost = weightData?.RawMaterialCost / 1000000
+        ScrapWeight = weightData?.ScrapWeight / 1000000
 
       } else {
-        grossWeight = weightData.GrossWeight
-        finishWeight = weightData.FinishWeight
-        netLandedCost = weightData.RawMaterialCost
-        ScrapWeight = weightData.ScrapWeight
+        grossWeight = weightData?.GrossWeight
+        finishWeight = weightData?.FinishWeight
+        netLandedCost = weightData?.RawMaterialCost
+        ScrapWeight = weightData?.ScrapWeight
       }
 
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
-      const RecoveryPercentage = weightData.RecoveryPercentage
-      const scrapWeight = weightData.ScrapWeight ? ScrapWeight : checkForNull(GrossWeight - FinishWeight)
+      const RecoveryPercentage = weightData?.RecoveryPercentage
+      const scrapWeight = weightData?.ScrapWeight ? ScrapWeight : checkForNull(GrossWeight - FinishWeight)
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
       tempData = {
@@ -853,12 +852,12 @@ function RawMaterialCost(props) {
         GrossWeight: GrossWeight ? GrossWeight : 0,
         NetLandedCost: netLandedCost,
         WeightCalculatorRequest: weightData,
-        WeightCalculationId: weightData.WeightCalculationId,
-        RawMaterialCalculatorId: weightData.WeightCalculationId,
+        WeightCalculationId: weightData?.WeightCalculationId,
+        RawMaterialCalculatorId: weightData?.WeightCalculationId,
         IsCalculatedEntry: true,
         CutOffRMC: CutOffRMC,
         ScrapRecoveryPercentage: RecoveryPercentage,
-        BurningLossWeight: weightData.BurningValue,
+        BurningLossWeight: weightData?.BurningValue,
         ScrapWeight: scrapWeight,
         IsCalculaterAvailable: true,
         CalculatorType: weightData?.CalculatorType
@@ -870,7 +869,7 @@ function RawMaterialCost(props) {
         setValue(`${rmGridFields}.${editIndex}.GrossWeight`, checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${editIndex}.FinishWeight`, checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${editIndex}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue(`${rmGridFields}.${editIndex}.BurningLossWeight`, checkForDecimalAndNull(weightData.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${editIndex}.BurningLossWeight`, checkForDecimalAndNull(weightData?.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${editIndex}.ScrapWeight`, checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         dispatch(setRMCCErrors({})) //USED FOR ERROR HANDLING
         counter = 0 //USED FOR ERROR HANDLING 
@@ -882,59 +881,66 @@ function RawMaterialCost(props) {
       setGridData(tempArr)
 
       if (Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
-
-        gridData && gridData.map((item, index) => {
-          item.FinishWeight = weightData.CostingFerrousCalculationRawMaterials[index].FinishWeight ? weightData.CostingFerrousCalculationRawMaterials[index].FinishWeight : 0
-          item.GrossWeight = weightData.CostingFerrousCalculationRawMaterials[index].GrossWeight ? weightData.CostingFerrousCalculationRawMaterials[index].GrossWeight : 0
-          item.NetLandedCost = index === 0 ? weightData.RawMaterialCost : 0
-          item.WeightCalculatorRequest = weightData
-          item.WeightCalculationId = weightData.WeightCalculationId
-          item.RawMaterialCalculatorId = weightData.WeightCalculationId
-          item.IsCalculatedEntry = true
-          item.IsCalculaterAvailable = true
-          item.CutOffRMC = CutOffRMC
-          item.ScrapRecoveryPercentage = RecoveryPercentage
-          item.ScrapWeight = weightData?.CostingFerrousCalculationRawMaterials[index]?.ScrapWeight ? weightData?.CostingFerrousCalculationRawMaterials[index]?.ScrapWeight : 0
-          item.Percentage = weightData.CostingFerrousCalculationRawMaterials[index].Percentage
-          item.CalculatorType = weightData?.CalculatorType
-          // item.IsScrapRecoveryPercentageApplied = true
-        })
-        setTimeout(() => {
-          setGridData(gridData)
-          gridData && gridData.map((item, index) => {
-            setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightData.CostingFerrousCalculationRawMaterials[index].GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
-            setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightData.CostingFerrousCalculationRawMaterials[index].FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-            setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
-            // setValue(`${rmGridFields}.${index}.NetRMCost`, checkForDecimalAndNull(NetRMCost, getConfigurationKey().NoOfDecimalForInputOutput))
-            setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull((weightData?.CostingFerrousCalculationRawMaterials[index]?.ScrapWeight), getConfigurationKey().NoOfDecimalForInputOutput))
-
-            return null
-          })
-        }, 500)
-      }
+        if (Object.keys(weightData).length > 0) {
+            const updatedGridData = weightData.CostingFerrousCalculationRawMaterials.map((calculatedRM, index) => {
+                const existingRM = gridData.find(item => item.RawMaterialId === calculatedRM.RawMaterialId);
+    
+                if (existingRM) {
+                    return {
+                        ...existingRM,
+                        FinishWeight: calculatedRM.FinishWeight || 0,
+                        GrossWeight: calculatedRM.GrossWeight || 0,
+                        NetLandedCost: index === 0 ? weightData.RawMaterialCost : 0,
+                        WeightCalculatorRequest: weightData,
+                        WeightCalculationId: weightData.WeightCalculationId,
+                        RawMaterialCalculatorId: weightData.WeightCalculationId,
+                        IsCalculatedEntry: true,
+                        IsCalculaterAvailable: true,
+                        ScrapRecoveryPercentage: weightData.RecoveryPercentage,
+                        ScrapWeight: calculatedRM.ScrapWeight || 0,
+                        Percentage: calculatedRM.Percentage || 0,
+                        CalculatorType: weightData.CalculatorType
+                    };
+                }
+                return null;
+            }).filter(Boolean); // Remove any null entries
+       
+            setGridData(updatedGridData);
+    
+            // Use Promise to ensure state is updated before setting form values
+            Promise.resolve().then(() => {
+                updatedGridData.forEach((item, index) => {
+                    setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+                    setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+                    setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.ScrapRecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput));
+                    setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+                });
+            });
+        }
+    }
 
       if (Number(costData?.TechnologyId) === Number(RUBBER)) {
         gridData && gridData.map((item, index) => {
-          item.FinishWeight = weightData.CostingRubberCalculationRawMaterials[index].FinishWeight ? weightData.CostingRubberCalculationRawMaterials[index].FinishWeight : 0
-          item.GrossWeight = weightData.CostingRubberCalculationRawMaterials[index].GrossWeight ? weightData.CostingRubberCalculationRawMaterials[index].GrossWeight : 0
-          item.NetLandedCost = index === 0 ? weightData.RawMaterialCost : 0
+          item.FinishWeight = weightData?.CostingRubberCalculationRawMaterials[index].FinishWeight ? weightData?.CostingRubberCalculationRawMaterials[index].FinishWeight : 0
+          item.GrossWeight = weightData?.CostingRubberCalculationRawMaterials[index].GrossWeight ? weightData?.CostingRubberCalculationRawMaterials[index].GrossWeight : 0
+          item.NetLandedCost = index === 0 ? weightData?.RawMaterialCost : 0
           item.WeightCalculatorRequest = weightData
-          item.WeightCalculationId = weightData.WeightCalculationId
-          item.RawMaterialCalculatorId = weightData.WeightCalculationId
+          item.WeightCalculationId = weightData?.WeightCalculationId
+          item.RawMaterialCalculatorId = weightData?.WeightCalculationId
           item.IsCalculatedEntry = true
           item.IsCalculaterAvailable = true
           item.CutOffRMC = CutOffRMC
           item.ScrapRecoveryPercentage = RecoveryPercentage
           item.ScrapWeight = weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight ? weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight : 0
-          item.Percentage = weightData.CostingRubberCalculationRawMaterials[index].Percentage
+          item.Percentage = weightData?.CostingRubberCalculationRawMaterials[index].Percentage
           return item
         })
 
         setTimeout(() => {
           setGridData(gridData)
           gridData && gridData.map((item, index) => {
-            setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightData.CostingRubberCalculationRawMaterials[index].GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
-            setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightData.CostingRubberCalculationRawMaterials[index].FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightData?.CostingRubberCalculationRawMaterials[index].GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightData?.CostingRubberCalculationRawMaterials[index].FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
             setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
             // setValue(`${rmGridFields}.${index}.NetRMCost`, checkForDecimalAndNull(NetRMCost, getConfigurationKey().NoOfDecimalForInputOutput))
             setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull((weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight), getConfigurationKey().NoOfDecimalForInputOutput))
@@ -971,12 +977,12 @@ function RawMaterialCost(props) {
       if (Number(costData?.TechnologyId) === Number(MACHINING)) {
         tempData = {
           ...tempData,
-          NetLandedCost: weightData.LayoutType === 'Bar' ? weightData.RawMaterialCost : weightData.NetRM,
+          NetLandedCost: weightData?.LayoutType === 'Bar' ? weightData?.RawMaterialCost : weightData?.NetRM,
           //MINDA
-          // NetLandedCost: weightData.RMPerPiece,
+          // NetLandedCost: weightData?.RMPerPiece,
           WeightCalculatorRequest: weightData,
-          WeightCalculationId: weightData.WeightCalculationId,
-          RawMaterialCalculatorId: weightData.WeightCalculationId,
+          WeightCalculationId: weightData?.WeightCalculationId,
+          RawMaterialCalculatorId: weightData?.WeightCalculationId,
           IsCalculatedEntry: true,
         }
         tempArr = Object.assign([...gridData], { [editIndex]: tempData })
@@ -984,13 +990,19 @@ function RawMaterialCost(props) {
       }
     }
   }
-
+ 
   /**
   * @method selectedIds
   * @description SELECTED IDS
   */
   const selectedIds = (tempArr) => {
+    let selectedId = [];
     tempArr && tempArr.map(el => {
+      if(Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
+        selectedId.push(el.RawMaterialId)
+        setIds(selectedId)
+        
+      }
       if (Ids.includes(el.RawMaterialId) === false) {
         let selectedIds = Ids;
         selectedIds.push(el.RawMaterialId)
