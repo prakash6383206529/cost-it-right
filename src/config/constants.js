@@ -77,17 +77,6 @@ export const API = {
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
 
 
-  //add exchnage rate
-
-  getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
-
-  //add frequency of settlement
-
-  getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
-
-  // add commodity index rate average
-
-  getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
   ///INDEXATION
   getCommoditySelectList: `${BASE_URL}/masters-material/select-list-index-exchange`,
   getCommodityNameInIndexSelectList: `${BASE_URL}/masters-material/select-list-index-exchange-commodity-linking`,
@@ -117,6 +106,9 @@ export const API = {
   deleteIndexDetailData: `${BASE_URL}/masters-material/delete-commodity-index-rate-details`,
   getAssociatedMaterial: `${BASE_URL}//masters-material/get-material-type`,
   getLastRevisionRawMaterialDetails: `${BASE_URL}/masters-raw-material/get-last-revision-raw-material-details`,
+  getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
+  getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
+  getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -1195,6 +1187,10 @@ export const API = {
   getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
   // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
   // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
+
+  //SAP API FOR APPROVAL PUSH
+  getEvaluationType: `${BASE_URL}/ExternalIntegration/select-list-of-valuations`
+
 }
 //VENDOR MANAGEMENT
 
@@ -1991,6 +1987,7 @@ export const PARTSPECIFICATIONRFQDATA = 'PARTSPECIFICATIONRFQDATA'
 export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
 export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
 export const HAVELLS_DESIGN_PARTS = "Havells Design part"
+export const GET_SAP_EVALUATIONTYPE = "GET_SAP_EVALUATIONTYPE"
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
@@ -3126,7 +3123,6 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 export const PartTypeIDFromAPI = 2
-export const RMIndex = true
 export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
 
@@ -3134,7 +3130,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.1";
+export const VERSION = "V3.0.3";
 
 
 

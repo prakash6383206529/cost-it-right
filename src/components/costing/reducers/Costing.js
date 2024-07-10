@@ -21,7 +21,8 @@ import {
   SET_COMPONENT_PAYMENT_TERMS_DATA,
   CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
-  PARTSPECIFICATIONRFQDATA
+  PARTSPECIFICATIONRFQDATA,
+  GET_SAP_EVALUATIONTYPE
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -72,11 +73,12 @@ const initialState = {
     ApplicabilityCost: '',
     RejectionRecoveryNetCost: ''
   },
-  partSpecificationRFQData :[]
+  partSpecificationRFQData: [],
+  evaluationType: []
 }
 
 export default function costingReducer(state = initialState, action) {
-  
+
   switch (action.type) {
     case API_REQUEST:
       return {
@@ -859,14 +861,21 @@ export default function costingReducer(state = initialState, action) {
         loading: false,
         viewCostingDetailDataForAssembly: action.payload,
       }
-      case PARTSPECIFICATIONRFQDATA  :
-      
-        
+    case PARTSPECIFICATIONRFQDATA:
+
+
       return {
         ...state,
         loading: false,
         partSpecificationRFQData: action.payload,
       }
+    case GET_SAP_EVALUATIONTYPE:
+      return {
+        ...state,
+        loading: false,
+        evaluationType: action.payload,
+      }
+
     default:
       return state
   }
