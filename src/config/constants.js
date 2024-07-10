@@ -1188,6 +1188,10 @@ export const API = {
   getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
   // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
   // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
+
+  //SAP API FOR APPROVAL PUSH
+  getEvaluationType: `${BASE_URL}/ExternalIntegration/select-list-of-valuations`
+
 }
 //VENDOR MANAGEMENT
 
@@ -1984,6 +1988,7 @@ export const PARTSPECIFICATIONRFQDATA = 'PARTSPECIFICATIONRFQDATA'
 export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
 export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
 export const HAVELLS_DESIGN_PARTS = "Havells Design part"
+export const GET_SAP_EVALUATIONTYPE = "GET_SAP_EVALUATIONTYPE"
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
