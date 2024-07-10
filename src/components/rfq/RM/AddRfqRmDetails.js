@@ -199,7 +199,7 @@ const AddRfqRmDetails = () => {
                 </Col> */}
             </Row>
 
-            <div className='rfq-part-list'>
+            <div className=''>
                 {
                     drawerOpen &&
                     (
@@ -208,6 +208,8 @@ const AddRfqRmDetails = () => {
                             anchor={"right"}
                             closeDrawer={closeDrawer}
                             partType={'RM'}
+                            quationType={'RM'}
+                            
                             setViewQuotationPart={setViewQuotationPart}
                         />
                     )

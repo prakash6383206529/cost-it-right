@@ -588,11 +588,13 @@ export function getMaterialTypeDataAPI(rawMaterialId, gradeId, callback) {
         if (rawMaterialId || gradeId) {
             axios.get(`${API.getMaterialTypeDataAPI}?materialTypeId=${rawMaterialId}&rawMaterialGradeId=${gradeId}`, config())
                 .then((response) => {
-                    dispatch({
-                        type: GET_MATERIAL_TYPE_DATA_SUCCESS,
-                        payload: response?.data.Data,
-                    });
-                    callback(response)
+                    if (response?.data.Result) {
+                        dispatch({
+                            type: GET_MATERIAL_TYPE_DATA_SUCCESS,
+                            payload: response?.data?.Data,
+                        });
+                        callback(response)
+                    }
                 }).catch((error) => {
                     dispatch({ type: API_FAILURE });
                     apiErrors(error);
