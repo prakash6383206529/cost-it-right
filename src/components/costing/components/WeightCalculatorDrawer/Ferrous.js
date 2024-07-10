@@ -246,8 +246,7 @@ function Ferrous(props) {
             const BasicRate = parseFloat(item.RawMaterialRate || 0);
             return acc + (Percentage * BasicRate) / 100;
         }, 0);
-        setValue('NetRMRate', NetRMRate);
-        return checkForDecimalAndNull(NetRMRate, getConfigurationKey().NoOfDecimalForPrice);
+        setValue('NetRMRate', checkForDecimalAndNull(NetRMRate, getConfigurationKey().NoOfDecimalForPrice));
 
     };
     useEffect(() => {
@@ -263,10 +262,10 @@ function Ferrous(props) {
             return acc + (Percentage * ScrapRate) / 100;
         }, 0);
           // Store full precision value
-    setValue('NetScrapRate', NetScrapRate);
+    setValue('NetScrapRate', checkForDecimalAndNull(NetScrapRate, getConfigurationKey().NoOfDecimalForPrice));
     
     // Display formatted value
-    return checkForDecimalAndNull(NetScrapRate, getConfigurationKey().NoOfDecimalForPrice);
+    return ;
 };
     const calculateLossWeight = (castingWeight, lossPercentage) => {
         return (castingWeight * lossPercentage) / 100;
@@ -316,8 +315,8 @@ function Ferrous(props) {
         setBinderRawMaterials([]); // Add this line
 
         // Restore the preserved values
-        setValue('NetRMRate', currentNetRMRate);
-        setValue('NetScrapRate', currentNetScrapRate);
+        setValue('NetRMRate', checkForDecimalAndNull(currentNetRMRate, getConfigurationKey().NoOfDecimalForPrice));
+        setValue('NetScrapRate', checkForDecimalAndNull(currentNetScrapRate, getConfigurationKey().NoOfDecimalForPrice));
         setValue('castingWeight', currentCastingWeight);
 
         // Recalculate total cost
@@ -1189,7 +1188,6 @@ function Ferrous(props) {
                                     customClassName={'withBorder'}
                                     errors={errors.NetRMRate}
                                     disabled={true}
-                                    formatter={(value) => checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}
 
                                 />
                             </Col>
@@ -1209,7 +1207,6 @@ function Ferrous(props) {
                                     customClassName={'withBorder'}
                                     errors={errors.NetScrapRate}
                                     disabled={true}
-                                    formatter={(value) => checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}
 
                                 />
                             </Col>
