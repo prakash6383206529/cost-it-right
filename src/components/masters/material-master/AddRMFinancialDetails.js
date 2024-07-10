@@ -126,7 +126,10 @@ function AddRMFinancialDetails(props) {
         name: ['JaliScrapCostSelectedCurrency', 'ForgingScrapSelectedCurrency', 'ScrapRateSelectedCurrency', 'cutOffPriceSelectedCurrency', 'CircleScrapCostSelectedCurrency', 'MachiningScrapSelectedCurrency']
     })
     useEffect(() => {
-    }, [state.otherCostTableData])
+        setState(prevState => ({
+            ...prevState, totalBasicRate: getValues('BasicRateBaseCurrency')
+        }))
+    }, [fieldValuesDomestic])
     useEffect(() => {
         if (isEditFlag) {
             handleFinancialDataChange()
@@ -728,9 +731,9 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: true }))
     }
 
-    const closeOtherCostToggle = (type, data, total) => {
-        setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: total }))
-        setValue('OtherCostBaseCurrency', total)
+    const closeOtherCostToggle = (type, data, total, totalBase) => {
+        setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
+        setValue('OtherCostBaseCurrency', totalBase)
         dispatch(setOtherCostDetails(data))
     }
 

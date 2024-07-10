@@ -13,7 +13,6 @@ import { getCostingCondition } from '../../../actions/Common'
 import { getRMCostIds } from '../../common/CommonFunctions'
 
 function AddOtherCostDrawer(props) {
-    console.log('props: ', props);
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
@@ -331,7 +330,11 @@ function AddOtherCostDrawer(props) {
         if (!type || !cost) return false;
         if (type.label === "Percentage") {
             // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
-            if (!applicability || !applicabilityBaseCost || !percentage) return false;
+            if (!applicability || !applicabilityBaseCost || !percentage || percentage !== 0) {
+                Toaster.warning('Cost should not be zero or empty.');
+                return false;
+            }
+
         } else if (type.label === 'Fixed') {
             // If 'Type' is 'fixed', check for 'CostCurrency' and 'CostBaseCurrency'
             if (!costBaseCurrency) return false;
