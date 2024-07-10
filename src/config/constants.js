@@ -3124,7 +3124,6 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 export const PartTypeIDFromAPI = 2
-export const RMIndex = true
 export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
 
@@ -3132,7 +3131,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.2";
+export const VERSION = "V3.0.3";
 
 
 
