@@ -369,7 +369,10 @@ function AddRMDetails(props) {
     */
     const handleCode = (newValue) => {
         if (newValue && newValue !== '') {
-            setState({ rmCode: newValue, isDisabled: true })
+            setState(prevState => ({
+                ...prevState,
+                rmCode: newValue, isDisabled: true
+            }))
             delete errors.RawMaterialName
             dispatch(getRMSpecificationDataAPI(newValue.value, true, (res) => {
                 if (res.status === 204) {
