@@ -18,6 +18,7 @@ import { debounce } from 'lodash';
 import { getUsersOnboardingLevelAPI } from '../../../actions/auth/AuthActions';
 import LoaderCustom from '../../common/LoaderCustom';
 import { REMARKMAXLENGTH } from '../../../config/masterData';
+import { checkFinalUser } from '../../costing/actions/Costing';
 
 
 const SendForApproval = (props) => {
@@ -36,16 +37,19 @@ const SendForApproval = (props) => {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [showValidation, setShowValidation] = useState(false)
-  const deptList = useSelector((state) => state.approval.approvalDepartmentList)
+  const { deptList } = useSelector((state) => state.material)
   const [selectedApproverLevelId, setSelectedApproverLevelId] = useState('')
   const [selectedApprover, setSelectedApprover] = useState('')
   const [approver, setApprover] = useState('')
+  const [selectedDepartment, setSelectedDepartment] = useState('')
   const [approvalType, setApprovalType] = useState({});
   const [approverIdList, setApproverIdList] = useState([])
   const [lpsApprovalDropDown, setLPSApprovalDropDown] = useState([])
+  const [approvalDropDown, setApprovalDropDown] = useState([])
   const [classificationApprovalDropDown, setClassificationApprovalDropDown] = useState([])
   const [lpsApproverIdList, setLPSApproverIdList] = useState([]) // [loggedInUserId(), setLPSApproverIdList]
   const [classificationApproverIdList, setClassificationApproverIdList] = useState([])
+  const [noApprovalExistMessage, setNoApprovalExistMessage] = useState('')
   const [levelDetails, setLevelDetails] = useState('');
 
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
@@ -384,6 +388,103 @@ const SendForApproval = (props) => {
     setSelectedApprover(data.value)
     setSelectedApproverLevelId({ levelName: data.levelName, levelId: data.levelId })
   }
+  const callCheckFinalUserApi = (newValue, approvalId) => {
+    const tempDropdownList = []
+    let requestObject = {
+      LoggedInUserId: loggedInUserId(),
+      DepartmentId: newValue.value,
+      MasterId: 0,
+      ReasonId: 0,
+      PlantId: deviationData?.PlantId ?? EMPTY_GUID,
+      OnboardingMasterId: 1,
+      ApprovalTypeId: approvalId
+    }
+    let Data = []
+    let approverIdListTemp = []
+    let obj = {
+      DepartmentId: newValue?.value,
+      UserId: loggedInUserId(),
+      TechnologyId: '',
+      Mode: 'onboarding',
+      approvalTypeId: approvalId,
+      plantId: deviationData.PlantId ?? EMPTY_GUID
+    }
+    dispatch(checkFinalUser(obj, (res) => {
+      const data = res?.data?.Data
+      if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
+        dispatch(getAllMasterApprovalUserByDepartment(requestObject, (res) => {
+
+          const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+          if (Data?.length !== 0) {
+            setTimeout(() => {
+              setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+              setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+            }, 100);
+
+            let tempDropdownList = []
+            res.data.DataList &&
+              res.data.DataList.map((item) => {
+                if (item.Value === '0') return false;
+                tempDropdownList.push({
+                  label: item.Text,
+                  value: item.Value,
+                  levelId: item.LevelId,
+                  levelName: item.LevelName
+                })
+                approverIdListTemp.push(item.Value)
+                return null
+              })
+            setTimeout(() => {
+              setApprovalDropDown(tempDropdownList)
+
+              setApproverIdList(approverIdListTemp)
+            }, 100)
+          }
+        },),)
+      } else if (data?.IsUserInApprovalFlow === false) {
+        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+        setApprover('')
+        setSelectedApprover('')
+        setApprovalDropDown([])
+        setApproverIdList([])
+        Toaster.warning('This user is not in approval flow.')
+        setNoApprovalExistMessage('')
+        return false
+      } else if (data?.IsNextLevelUserExist === false && data?.IsUserInApprovalFlow === true) {
+        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+        setApprover('')
+        setSelectedApprover('')
+        setApprovalDropDown([])
+        setApproverIdList([])
+        setNoApprovalExistMessage('There is no higher approver available for this user in this department.')
+        return false
+      } else if (data?.IsUserInApprovalFlow === false) {
+        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+        setApprover('')
+        setSelectedApprover('')
+        setApprovalDropDown([])
+        setApproverIdList([])
+        Toaster.warning('This user is not in approval flow.')
+        setNoApprovalExistMessage('')
+        return false
+      }
+
+    }))
+  }
+  const handleDepartmentChange = (newValue, approvalId) => {
+
+    if (newValue && newValue !== '') {
+      setValue('approver', '')
+      setApprover('')
+      setSelectedApprover('')
+      setShowValidation(false)
+      callCheckFinalUserApi(newValue, approvalId)
+      setSelectedDepartment(newValue)
+    } else {
+      setSelectedDepartment('')
+    }
+  }
+
   const approverMessage = `This user is not in approval cycle for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type, please contact admin to add approver for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`;
 
   return (
@@ -436,7 +537,7 @@ const SendForApproval = (props) => {
                         options={searchableSelectType("Dept")}
                         disabled={disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
                         mandatory={true}
-                        // handleChange={handleDepartmentChange}
+                        handleChange={(e) => handleDepartmentChange(e, CLASSIFICATIONAPPROVALTYPEID)}
                         errors={errors.dept}
                       />
                     </div>
@@ -560,7 +661,7 @@ const SendForApproval = (props) => {
                         options={searchableSelectType("Dept")}
                         disabled={disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
                         mandatory={true}
-                        // handleChange={handleDepartmentChange}
+                        handleChange={(e) => handleDepartmentChange(e, LPSAPPROVALTYPEID)}
                         errors={errors.dept1}
                       />
                     </div>
@@ -590,8 +691,9 @@ const SendForApproval = (props) => {
                         errors={errors.approver1}
                       />}
                     {
-                      showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
+                      !noApprovalExistMessage && showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
                     }
+                    {noApprovalExistMessage && <span className="warning-top"><WarningMessage title={noApprovalExistMessage} message={noApprovalExistMessage} /></span>}
                   </Col >
                 </Row>
                 <Row>
