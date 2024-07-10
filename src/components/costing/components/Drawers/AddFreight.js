@@ -440,7 +440,7 @@ function AddFreight(props) {
       FreightId: isEditFlag ? rowObjData.FreightId : '',
       IsPartTruckLoad: freightTypeText,
       Capacity: data?.Capacity?.value,
-      Criteria: data?.Criteria?.value,
+      Criteria: freightType === Percentage ? applicability?.label : data?.Criteria?.value,
       Rate: data?.Rate,
       Quantity: checkForNull(data?.Quantity),
       FreightCost: freightType === Percentage ? freightCost : data?.FreightCost,

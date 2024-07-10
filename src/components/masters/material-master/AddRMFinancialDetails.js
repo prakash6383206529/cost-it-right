@@ -87,7 +87,7 @@ function AddRMFinancialDetails(props) {
         disableToDate: true,
         isIndexationOpen: false,
         isCommodityOpen: false,
-        totalBasicRate: 0,
+        totalBasicRate: getValues('BasicRateBaseCurrency'),
         otherCostTableData: [],
         totalOtherCost: 0,
         isShowIndexCheckBox: false,
@@ -893,7 +893,6 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, isCommodityOpen: !state.isCommodityOpen }))
     }
     const setTotalBasicRate = (totalBasicRate) => {
-        console.log('totalBasicRate: ', totalBasicRate);
         setState(prevState => ({ ...prevState, totalBasicRate: totalBasicRate }))
     }
     const isShowIndexCheckBox = () => {
