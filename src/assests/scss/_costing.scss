@@ -764,4 +764,9 @@
   .text-help {
     position: absolute;
   }
+  &.hide-error {
+    .text-help {
+      display: none;
+    } 
+  }
 }
