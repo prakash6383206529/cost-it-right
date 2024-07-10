@@ -153,7 +153,7 @@ function AddRfq(props) {
     const [targetPrice, setTargetPrice] = useState("")
     const [quotationIdentity, setQuotationIdentity] = useState('')
     const [partIdentity, setPartIdentity] = useState(0)
-    const [showGrid, setShowGrid]=useState(true)
+    const [showGrid, setShowGrid] = useState(true)
     const [isPartDetailUpdate, setIsPartDeailUpdate] = useState(false)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
@@ -230,12 +230,12 @@ function AddRfq(props) {
         }
     }, [showSendButton, Vendor, Part])
 
-useEffect(()=>{
-setShowGrid(false)
-setTimeout(() => {
-    setShowGrid(true)
-}, 10);
-},[quationType])
+    useEffect(() => {
+        setShowGrid(false)
+        setTimeout(() => {
+            setShowGrid(true)
+        }, 10);
+    }, [quationType])
     useEffect(() => {
         const partTypeString = initialConfiguration?.HavellsPartTypeList;
         if (partTypeString) {
@@ -2134,7 +2134,7 @@ setTimeout(() => {
 
     return (
         <div className="container-fluid">
-            <div className="signup-form">
+            <div className="signup-form raise-rfq">
                 <div className="row">
                     <div className="col-md-12">
                         <div className="shadow-lgg login-formg">
@@ -2211,8 +2211,9 @@ setTimeout(() => {
                                 </div>
 
                                 <form>
-                                    {selectedOption !== 'BOP' && (
-                                        <Row className="part-detail-wrapper">
+
+                                    <Row className="part-detail-wrapper">
+                                        {quationType !== 'BOP' && (
                                             <Col md="3">
                                                 <SearchableSelectHookForm
                                                     label={"Technology"}
@@ -2230,77 +2231,77 @@ setTimeout(() => {
                                                     disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
                                                         || (partList?.length !== 0 || vendorList?.length !== 0)}
                                                 />
-                                            </Col>
-                                            {initialConfiguration.IsNFRConfigured &&
-                                                <Col md="3" className={isRmSelected ? 'd-none' : ''}>
-                                                    <SearchableSelectHookForm
-                                                        label={"NFR No."}
-                                                        name={"nfrId"}
-                                                        isClearable={true}
-                                                        placeholder={"Select"}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        rules={{ required: false }}
-                                                        register={register}
-                                                        defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                        options={renderListing("nfrId")}
-                                                        mandatory={false}
-                                                        handleChange={handleNfrChnage}
-                                                        errors={errors.nfrId}
-                                                        disabled={((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
-                                                            || (partList?.length !== 0)}
-                                                    // isLoading={VendorLoaderObj}
-                                                    />
-                                                </Col>}
-                                            <Col md="3">
+                                            </Col>)}
+                                        {initialConfiguration.IsNFRConfigured &&
+                                            <Col md="3" className={isRmSelected ? 'd-none' : ''}>
                                                 <SearchableSelectHookForm
-                                                    label={"Plant (Code)"}
-                                                    name={"plant"}
+                                                    label={quationType === 'BOP' ? "PR No." : "NFR No."}
+                                                    name={"nfrId"}
+                                                    isClearable={true}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
                                                     control={control}
-                                                    rules={{ required: true }}
+                                                    rules={{ required: false }}
                                                     register={register}
-                                                    defaultValue={Object.keys(plant).length !== 0 ? plant : ""}
-                                                    options={renderListing("plant")}
-                                                    mandatory={true}
-                                                    handleChange={handlePlant}
-                                                    errors={errors.plant}
-                                                    disabled={(vendorList?.length !== 0 || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
+                                                    defaultValue={nfrId?.length !== 0 ? nfrId : ""}
+                                                    options={renderListing("nfrId")}
+                                                    mandatory={false}
+                                                    handleChange={handleNfrChnage}
+                                                    errors={errors.nfrId}
+                                                    disabled={((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
+                                                        || (partList?.length !== 0)}
+                                                // isLoading={VendorLoaderObj}
                                                 />
-                                            </Col>
-                                            <Col md="3">
-                                                <div className="inputbox date-section">
-                                                    <div className="form-group">
-                                                        <label>Last Submission Date</label>
-                                                        <div className="inputbox date-section">
-                                                            <DatePicker
-                                                                id="submissionDate_container"
-                                                                name={'SubmissionDate'}
-                                                                placeholder={'Select'}
-                                                                //selected={submissionDate}
-                                                                selected={DayTime(submissionDate).isValid() ? new Date(submissionDate) : ''}
-                                                                onChange={handleSubmissionDateChange}
-                                                                showMonthDropdown
-                                                                showYearDropdown
-                                                                dropdownMode="select"
-                                                                minDate={new Date()}
-                                                                dateFormat="dd/MM/yyyy"
-                                                                placeholderText="Select date"
-                                                                className="withBorder"
-                                                                autoComplete={"off"}
-                                                                mandatory={true}
-                                                                errors={errors.SubmissionDate}
-                                                                disabledKeyboardNavigation
-                                                                onChangeRaw={(e) => e.preventDefault()}
-                                                                disabled={dataProps?.isEditFlag ? !isEditSubmissionDate : dataProps?.isViewFlag ? true : false || disabledPartUid}
-                                                            />
-                                                            {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
-                                                        </div>
+                                            </Col>}
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"Plant (Code)"}
+                                                name={"plant"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                defaultValue={Object.keys(plant).length !== 0 ? plant : ""}
+                                                options={renderListing("plant")}
+                                                mandatory={true}
+                                                handleChange={handlePlant}
+                                                errors={errors.plant}
+                                                disabled={(vendorList?.length !== 0 || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <div className="inputbox date-section">
+                                                <div className="form-group">
+                                                    <label>Last Submission Date</label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            id="submissionDate_container"
+                                                            name={'SubmissionDate'}
+                                                            placeholder={'Select'}
+                                                            //selected={submissionDate}
+                                                            selected={DayTime(submissionDate).isValid() ? new Date(submissionDate) : ''}
+                                                            onChange={handleSubmissionDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            dropdownMode="select"
+                                                            minDate={new Date()}
+                                                            dateFormat="dd/MM/yyyy"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={"off"}
+                                                            mandatory={true}
+                                                            errors={errors.SubmissionDate}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={dataProps?.isEditFlag ? !isEditSubmissionDate : dataProps?.isViewFlag ? true : false || disabledPartUid}
+                                                        />
+                                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                                     </div>
                                                 </div>
-                                            </Col>
-                                        </Row>)}
+                                            </div>
+                                        </Col>
+                                    </Row>
 
                                     {quationType === 'componentAssembly' && <>
                                         <HeaderTitle title={'Part:'} />
@@ -2392,7 +2393,7 @@ setTimeout(() => {
                                     </>}
                                     {quationType === 'RM' && <AddRfqRmDetails />}
                                     <Row>
-                                       
+
                                         {quationType === 'BOP' && <RaiseRfqBopDetails />}
 
                                         {!havellsKey && (
@@ -2458,123 +2459,123 @@ setTimeout(() => {
                                                 </>))}
 
                                         <Col md={12}>
-                                        {selectedOption !== "BOP" && (
-                                        
-                                            <Row>
+                                            {selectedOption !== "BOP" && (
 
-                                                {UOMSelectList && havellsKey &&
+                                                <Row>
 
-
-                                                    <Col md="3">
-                                                        <SearchableSelectHookForm
-                                                            label={"UOM"}
-                                                            name={'UOM'}
-                                                            placeholder={"Select"}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            rules={{ required: false }}
-                                                            register={register}
-                                                            customClassName="costing-version"
-                                                            options={renderListing("UOM")}
-                                                            mandatory={false}
-                                                            handleChange={(newValue) => handleChangeUOM(newValue)}
-                                                            errors={errors?.UOM}
-                                                            disabled={(dataProps?.isViewFlag) ? true : false || disabledPartUid}
-                                                        />
-                                                    </Col>
-                                                }
-                                                {havellsKey &&
+                                                    {UOMSelectList && havellsKey &&
 
 
-                                                    <Col md="3">
-                                                        <TextFieldHookForm
-                                                            // title={titleObj.descriptionTitle}
-                                                            label="Target Price"
-                                                            name={'TargetPrice'}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            rules={{ required: false }}
-                                                            mandatory={false}
-                                                            handleChange={() => { }}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder'}
-                                                            errors={errors.TargetPrice}
-                                                            disabled={true}
-                                                            placeholder="-"
-                                                        />
-                                                    </Col>
-                                                }
-                                                {
-                                                    <Col md="3">
-                                                        <div className="inputbox date-section">
-                                                            <div className="form-group">
-                                                                <label>Requirement Timeline<span className="asterisk-required">*</span></label>
-                                                                <div id="addRFQDate_container" className="inputbox date-section">
-                                                                    <DatePicker
+                                                        <Col md="3">
+                                                            <SearchableSelectHookForm
+                                                                label={"UOM"}
+                                                                name={'UOM'}
+                                                                placeholder={"Select"}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                rules={{ required: false }}
+                                                                register={register}
+                                                                customClassName="costing-version"
+                                                                options={renderListing("UOM")}
+                                                                mandatory={false}
+                                                                handleChange={(newValue) => handleChangeUOM(newValue)}
+                                                                errors={errors?.UOM}
+                                                                disabled={(dataProps?.isViewFlag) ? true : false || disabledPartUid}
+                                                            />
+                                                        </Col>
+                                                    }
+                                                    {havellsKey &&
 
-                                                                        name={'RequirementDate'}
-                                                                        placeholder={'Select'}
-                                                                        //selected={submissionDate}
-                                                                        selected={DayTime(requirementDate).isValid() ? new Date(requirementDate) : ''}
-                                                                        onChange={handleRequirementDateChange}
-                                                                        showMonthDropdown
-                                                                        showYearDropdown
-                                                                        dropdownMode='select'
-                                                                        minDate={new Date()}
-                                                                        dateFormat="dd/MM/yyyy"
-                                                                        placeholderText="Select date"
-                                                                        className="withBorder"
-                                                                        autoComplete={"off"}
-                                                                        mandatory={true}
-                                                                        disabled={(dataProps?.isViewFlag) ? true : false || disabledPartUid}
-                                                                        errors={errors.RequirementDate}
-                                                                        disabledKeyboardNavigation
-                                                                        onChangeRaw={(e) => e.preventDefault()}
-                                                                    // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
-                                                                    />
-                                                                    {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+
+                                                        <Col md="3">
+                                                            <TextFieldHookForm
+                                                                // title={titleObj.descriptionTitle}
+                                                                label="Target Price"
+                                                                name={'TargetPrice'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                rules={{ required: false }}
+                                                                mandatory={false}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.TargetPrice}
+                                                                disabled={true}
+                                                                placeholder="-"
+                                                            />
+                                                        </Col>
+                                                    }
+                                                    {
+                                                        <Col md="3">
+                                                            <div className="inputbox date-section h-auto">
+                                                                <div className="form-group">
+                                                                    <label>Requirement Timeline<span className="asterisk-required">*</span></label>
+                                                                    <div id="addRFQDate_container" className="inputbox date-section">
+                                                                        <DatePicker
+
+                                                                            name={'RequirementDate'}
+                                                                            placeholder={'Select'}
+                                                                            //selected={submissionDate}
+                                                                            selected={DayTime(requirementDate).isValid() ? new Date(requirementDate) : ''}
+                                                                            onChange={handleRequirementDateChange}
+                                                                            showMonthDropdown
+                                                                            showYearDropdown
+                                                                            dropdownMode='select'
+                                                                            minDate={new Date()}
+                                                                            dateFormat="dd/MM/yyyy"
+                                                                            placeholderText="Select date"
+                                                                            className="withBorder"
+                                                                            autoComplete={"off"}
+                                                                            mandatory={true}
+                                                                            disabled={(dataProps?.isViewFlag) ? true : false || disabledPartUid}
+                                                                            errors={errors.RequirementDate}
+                                                                            disabledKeyboardNavigation
+                                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                                        // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                                        />
+                                                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
 
+                                                        </Col>
+
+
+                                                    }
+                                                    <Col md="3" className='d-flex align-items-center pb-1'>
+                                                        <button
+                                                            id="add_part"
+                                                            type="button"
+                                                            className={'user-btn pull-left'}
+                                                            onClick={() => addRowPartNoTable()}
+                                                            disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
+                                                        >
+                                                            <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
+                                                        </button>
+                                                        <button
+                                                            id="reset_part"
+                                                            onClick={onResetPartNoTable} // Need to change this cancel functionality
+                                                            type="button"
+                                                            value="CANCEL"
+                                                            className="reset ml-2 mr5"
+                                                            disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
+                                                        >
+                                                            <div className={''}></div>
+                                                            RESET
+                                                        </button>
+                                                        {(false && checkForNull(technology?.value) === LOGISTICS) && <button
+                                                            type="button"
+                                                            className={"user-btn "}
+                                                            onClick={bulkToggle}
+                                                            title="Bulk Upload"
+                                                            disabled={partNoDisable || disabledPartUid}
+                                                        >
+                                                            <div className={"upload mr-0"}></div>
+                                                        </button>}
                                                     </Col>
-
-
-                                                }
-                                                <Col md="3" className='d-flex align-items-center pb-1'>
-                                            <button
-                                                id="add_part"
-                                                type="button"
-                                                className={'user-btn pull-left'}
-                                                onClick={() => addRowPartNoTable()}
-                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
-                                            >
-                                                <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
-                                            </button>
-                                            <button
-                                                id="reset_part"
-                                                onClick={onResetPartNoTable} // Need to change this cancel functionality
-                                                type="button"
-                                                value="CANCEL"
-                                                className="reset ml-2 mr5"
-                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
-                                            >
-                                                <div className={''}></div>
-                                                RESET
-                                            </button>
-                                            {(false && checkForNull(technology?.value) === LOGISTICS) && <button
-                                                type="button"
-                                                className={"user-btn "}
-                                                onClick={bulkToggle}
-                                                title="Bulk Upload"
-                                                disabled={partNoDisable || disabledPartUid}
-                                            >
-                                                <div className={"upload mr-0"}></div>
-                                            </button>}
-                                        </Col>
-                                            </Row>)}
+                                                </Row>)}
                                         </Col>
 
 
@@ -2600,7 +2601,7 @@ setTimeout(() => {
                                                 customClassName={'withBorder'}
                                             />
                                         </Col> */}
-                                        
+
                                     </Row >
 
                                     <div className='rfq-part-list'>
@@ -2611,9 +2612,9 @@ setTimeout(() => {
                                                     <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
                                                         <div className={`ag-theme-material ${!state ? "custom-min-height-208px" : ''}`}>
-                                                            {!showGrid ?  <LoaderCustom customClass={""} /> :
+                                                            {!showGrid ? <LoaderCustom customClass={""} /> :
                                                                 <AgGridReact
-                                                                     defaultColDef={defaultColDef}
+                                                                    defaultColDef={defaultColDef}
                                                                     floatingFilter={false}
                                                                     domLayout='autoHeight'
                                                                     // columnDefs={c}
@@ -2642,31 +2643,37 @@ setTimeout(() => {
 
                                                                     {quationType === "componentAssembly" && <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
 
-                                                                    {quationType === "componentAssembly" &&<AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+
+                                                                    
                                                                     {/* {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>} */}
                                                                     {/* <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
                                                                     <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn> */}
                                                                     <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} ></AgGridColumn>
-                                                                    {quationType === "componentAssembly" &&<AgGridColumn width={"230px"} field="UOM" headerName="UOM" ></AgGridColumn>}
-                                                                    {quationType === "componentAssembly" &&<AgGridColumn width={"230px"} field="TargetPrice" headerName="Target Price" ></AgGridColumn>}
-                                                                    {quationType === "componentAssembly" &&<AgGridColumn width={"230px"} field="TimeLine" headerName="Requirement Timeline" cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>}
 
-                                                                    {quationType === "componentAssembly" &&<AgGridColumn width={"190px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>}
+                                                                   
 
+                                                                    
+                                                                    {(quationType === 'componentAssembly' || quationType ==='RM') &&  <AgGridColumn width={"230px"} field="TargetPrice" headerName="Target Price" ></AgGridColumn>}
 
-                                                                    {quationType === "BOP" && <AgGridColumn width={"190px"} field="BOP No" cellClass="ag-grid-action-container" headerName="BOP NO." floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>}
+                                                                    {quationType === "BOP" && <AgGridColumn width={"190px"} field="BOP No" cellClass="ag-grid-action-container" headerName="BOP No." floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>}
 
-                                                                    {quationType === "BOP" &&<AgGridColumn width={"190px"} field="BOPName" cellClass="ag-grid-action-container" headerName="BOP Name" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>}
+                                                                    {quationType === "BOP" && <AgGridColumn width={"190px"} field="BOPName" cellClass="ag-grid-action-container" headerName="BOP Name" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>}
 
-                                                                    {quationType === "BOP" &&<AgGridColumn width={"190px"} field="Category" cellClass="ag-grid-action-container" headerName="Category" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>}
-
-                                                                    {quationType === "BOP" &&<AgGridColumn width={"190px"} field="UOM" cellClass="ag-grid-action-container" headerName="UOM" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>}
-
-                                                                    {quationType === "BOP" &&<AgGridColumn width={"190px"} field="RequestedTimeline" cellClass="ag-grid-action-container" headerName="Requested Timeline" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>}
+                                                                    {quationType === "BOP" && <AgGridColumn width={"190px"} field="Category" cellClass="ag-grid-action-container" headerName="Category" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>}
 
 
+                                                                    {(quationType === "BOP" || quationType ==='RM' || quationType ==='componentAssembly') && <AgGridColumn width={"190px"} field="UOM" cellClass="ag-grid-action-container" headerName="UOM" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>}
+
+                                                                   
+
+                                                                    <AgGridColumn width={"230px"} field="TimeLine" headerName="Requirement Timeline" cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
+
+                                                                    {(quationType === "componentAssembly" || quationType ==='RM' || quationType ==='BOP' )&&<AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+
+
+                                                                    <AgGridColumn width={"190px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
                                                                 </AgGridReact>
                                                             }
                                                         </div>

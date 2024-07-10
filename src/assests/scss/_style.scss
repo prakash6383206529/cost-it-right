@@ -9154,3 +9154,9 @@ iframe {
     margin-right: 10px;
   }
 }
+
+.signup-form.raise-rfq{
+  .rfq-part-list{
+    min-height: calc(100vh - 42rem);
+  }
+}

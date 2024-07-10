@@ -39,71 +39,9 @@ const RaiseRfqBopDetails = () => {
         <div className='bop-details-wrapper'>
             <HeaderTitle title={'BOP:'} />
             <Row className="part-detail-wrapper">
-                <Col md="3">
-                    <SearchableSelectHookForm
-                        label={"PR NO."}
-                        name={"PRno"}
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        options={options}
-                        mandatory={true}
-                        handleChange={""}
-                        errors={errors.Part}
-
-                    />
-                </Col>
-                <Col md="3">
-                    <SearchableSelectHookForm
-                        label={"Plant"}
-                        name={"plant"}
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        options={options}
-                        mandatory={true}
-                        handleChange={""}
-                        errors={errors.Part}
-
-                    />
-                </Col>
-                <Col md="3">
-                    <div className="inputbox date-section">
-                        <div className="form-group">
-                            <label>Last Submission Date<span className="asterisk-required">*</span></label>
-                            <div id="addRFQDate_container" className="inputbox date-section">
-                                <DatePicker
-                                    name={'RequirementDate'}
-                                    placeholder={'Select'}
-                                    //selected={submissionDate}
-                                    selected={""}
-                                    onChange={""}
-                                    showMonthDropdown
-                                    showYearDropdown
-                                    dropdownMode='select'
-                                    minDate={new Date()}
-                                    dateFormat="dd/MM/yyyy"
-                                    placeholderText="Select date"
-                                    className="withBorder"
-                                    autoComplete={"off"}
-                                    mandatory={true}
-                                    errors={errors.RequirementDate}
-                                    disabledKeyboardNavigation
-                                    onChangeRaw={(e) => e.preventDefault()}
-                                // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
-                                />
-
-                            </div>
-                        </div>
-                    </div>
-
-                </Col>
-
                 <Col md="3" >
                     <TextFieldHookForm
-                        label="BOP NO."
+                        label="BOP No."
                         name={"BOPNo"}
                         Controller={Controller}
                         control={control}
@@ -187,7 +125,7 @@ const RaiseRfqBopDetails = () => {
                     />
                 </Col>
                 <Col md="3">
-                    <div className="inputbox date-section">
+                    <div className="inputbox date-section h-auto">
                         <div className="form-group">
                             <label>Requirement Timeline<span className="asterisk-required">*</span></label>
                             <div id="addRFQDate_container" className="inputbox date-section">
@@ -239,7 +177,7 @@ const RaiseRfqBopDetails = () => {
                 </Col>
             </Row>
 
-            <div className='rfq-part-list'>
+            <div className=''>
                 {
                     drawerOpen &&
                     (

@@ -199,7 +199,7 @@ const AddRfqRmDetails = () => {
                 </Col> */}
             </Row>
 
-            <div className='rfq-part-list'>
+            <div className=''>
                 {
                     drawerOpen &&
                     (
