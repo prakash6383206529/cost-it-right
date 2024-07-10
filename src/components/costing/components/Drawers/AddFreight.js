@@ -432,8 +432,8 @@ function AddFreight(props) {
 
     if (freightType === Fixed) freightTypeText = 'Fixed';
     if (freightType === Percentage) freightTypeText = 'Percentage';
-    if (freightType === FullTruckLoad) freightTypeText = 'FTL';
-    if (freightType === PartTruckLoad) freightTypeText = 'PTL';
+    if (freightType === FullTruckLoad) freightTypeText = 'Full Truck Load';
+    if (freightType === PartTruckLoad) freightTypeText = 'Part Truck Load';
 
     let formData = {
       FreightDetailId: isEditFlag ? rowObjData?.FreightDetailId : '',
