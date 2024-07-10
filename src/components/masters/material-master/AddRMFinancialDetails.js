@@ -1555,7 +1555,7 @@ function AddRMFinancialDetails(props) {
                                             handleChange={() => { }}
                                             customClassName=" withBorder"
                                             errors={errors.JaliScrapCostBaseCurrency}
-
+                                            mandatory={!states.isImport ? true : false}
                                         />
                                     </Col>
                                     {states.isImport && <Col className="col-md-15">

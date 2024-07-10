@@ -243,7 +243,7 @@ const IndexListing = () => {
         if (showExtraData && props.rowIndex === 0) {
             isDeleteButton = true
         } else {
-            if (permissions.Delete) {
+            if (permissions.Delete && !rowData.IsAssociated) {
                 isDeleteButton = true
             }
         }

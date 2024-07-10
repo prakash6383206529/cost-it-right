@@ -376,6 +376,7 @@ export function deleteCommodityStandardization(commodityStandardizationId, callb
                 callback(response);
             }).catch((error) => {
                 callback(error.response);
+                apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
     };
@@ -642,6 +643,7 @@ export function deleteIndexDetailData(commodityIndexRateDetailId, callback) {
                 callback(response);
             }).catch((error) => {
                 callback(error.response);
+                apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
     };

@@ -52,7 +52,6 @@ function AddIndexationMaterialListing(props) {
             return sum + baseCurrencyBypercentage;
         }, 0);
         setState(prevState => ({ ...prevState, totalBasicRate: totalRate }))
-        console.log('totalRate: ', totalRate);
         props.setTotalBasicRate(totalRate)
     }, [state.isLoader, state.commodityDetailsState]);
 

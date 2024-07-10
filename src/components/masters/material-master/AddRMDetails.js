@@ -622,6 +622,7 @@ function AddRMDetails(props) {
                                         onClick={openRMdrawer}
                                         className={"right"}
                                         variant="plus-icon-square"
+                                        disabled={isViewFlag}
                                     />
                                 )}
                             </div>

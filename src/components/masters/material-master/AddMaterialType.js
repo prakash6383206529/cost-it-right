@@ -96,7 +96,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
 
   const onSubmit = debounce(values => {
     if (isEditFlag) {
-      if (Number(materialTypeData?.materialTypeData?.Density) === Number(values.CalculatedDensityValue) && materialTypeData?.materialTypeData?.MaterialType === values.MaterialType) {
+      if (Number(materialTypeData?.materialTypeData?.Density) === Number(values.CalculatedDensityValue) && materialTypeData?.materialTypeData?.MaterialType === values.MaterialType && materialTypeData?.materialTypeData?.MaterialCommodityStandardDetails?.length === state.tableData?.length) {
         cancel('cancel');
         return false;
       }
