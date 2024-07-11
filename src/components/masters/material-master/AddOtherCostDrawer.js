@@ -55,11 +55,8 @@ function AddOtherCostDrawer(props) {
                         req.RawMaterialCommodityIndexRateAndOtherCostDetailsId === item.RawMaterialCommodityIndexRateAndOtherCostDetailsId
                     )
                 );
-
-                console.log('filteredData: ', filteredData);
                 setTableData(filteredData);
             } else {
-                console.error('props.RowData.RawMaterialCommodityIndexRateDetailsRequest is not an array');
                 setTableData([]);
             }
         }
@@ -632,7 +629,7 @@ function AddOtherCostDrawer(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.CostCurrency}
-                                                disabled={type?.label === 'Percentage' ? true : false || state.disableCostCurrency}
+                                                disabled={type?.label === 'Percentage' ? true : false || state.disableCostCurrency || props.ViewMode}
                                             />
                                         </Col>}
                                         <Col md={3} className={'px-2'}>
@@ -655,7 +652,7 @@ function AddOtherCostDrawer(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.CostBaseCurrency}
-                                                disabled={type?.label === 'Percentage' ? true : false || state.disableCostBaseCurrency}
+                                                disabled={type?.label === 'Percentage' ? true : false || state.disableCostBaseCurrency || props.ViewMode}
                                             />
                                         </Col>
 
@@ -694,7 +691,6 @@ function AddOtherCostDrawer(props) {
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
                                                 </tr>
 
-                                                {console.log('tableData: ', tableData)}
                                                 {tableData && tableData.map((item, index) => (
                                                     <Fragment key={index}>
                                                         <tr>
