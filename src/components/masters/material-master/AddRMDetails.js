@@ -619,13 +619,12 @@ function AddRMDetails(props) {
                                         isClearable={true}
                                     />
                                 </div>
-                                {(!props.isEditFlag) && (
+                                {!(isEditFlag || isViewFlag) && (
                                     <Button
                                         id="addRMDomestic_RMToggle"
                                         onClick={openRMdrawer}
-                                        className={"right"}
+                                        className={`right`}
                                         variant="plus-icon-square"
-                                        disabled={isViewFlag}
                                     />
                                 )}
                             </div>
@@ -785,7 +784,7 @@ function AddRMDetails(props) {
                                         onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
                                     />
                                 </div>
-                                {!props.isEditFlag && (
+                                {!(isEditFlag || isViewFlag) && (
 
                                     <Button
                                         id="addRMDomestic_vendorToggle"
@@ -793,7 +792,6 @@ function AddRMDetails(props) {
                                         className={"right mt-0"}
                                         variant="plus-icon-square"
                                     />
-
                                 )}
                             </div>
                             {((state.showErrorOnFocus && state.vendor?.length === 0)) && <div className='text-help mt-1'>This field is required.</div>}

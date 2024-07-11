@@ -20,7 +20,7 @@ import { setCommodityDetails } from '../actions/Indexation'
 
 const gridOptions = {};
 function AddIndexationMaterialListing(props) {
-
+    const { isViewFlag } = props
     const { setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -40,7 +40,6 @@ function AddIndexationMaterialListing(props) {
         isLoader: false
     })
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
-    // console.log('commodityDetailsArray: ', commodityDetailsArray);
     useEffect(() => {
         setState(prevState => ({ ...prevState, commodityDetailsState: commodityDetailsArray }))
     }, [commodityDetailsArray])
@@ -58,7 +57,6 @@ function AddIndexationMaterialListing(props) {
     useEffect(() => {
         setState(prevState => ({ ...prevState, commodityDetailsState: props.commodityDetails }))
     }, [props.commodityDetails])
-    // console.log('props.commodityDetails: ', props.commodityDetails);
 
     const onGridReady = (params) => {
         setGridApi(params.api)
@@ -135,9 +133,8 @@ function AddIndexationMaterialListing(props) {
                 {/* <Button id="nfr_add" className={"mr5"} onClick={() => AddTotalCost(cellValue, rowData)} title={"Add"} icon={"plus"} /> */}
                 <div className="d-flex justify-content-between">{checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}{<button
                     type="button"
-                    className={"mr5 mt-2 add-out-sourcing "}
+                    className={`mr5 mt-2 ${isViewFlag ? 'View small' : 'add-out-sourcing'} `}
                     onClick={() => AddTotalCost(cellValue, rowData, props.rowIndex)}
-                    // disabled={!item?.isRowActionEditable}
                     title="Add"
                 >
                 </button>}
@@ -226,8 +223,6 @@ function AddIndexationMaterialListing(props) {
                                     </Row >
                                 )
                                 }
-                                {/* {console.log('state.commodityDetailsState: ', state.commodityDetailsState)} */}
-                                {/* {console.log('state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest: ', state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest)} */}
                                 {
                                     state.isOpenOtherCost &&
                                     <AddOtherCostDrawer
@@ -235,7 +230,7 @@ function AddIndexationMaterialListing(props) {
                                         //tableData={state.conditionTableData}
                                         closeDrawer={closeOtherCostToggle}
                                         anchor={'right'}
-                                        ViewMode={props.isViewFlag}
+                                        ViewMode={isViewFlag}
                                         isFromMaster={true}
                                         RowData={state.commodityDetailsState[state?.rowIndex]}
                                         tableData={state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest ? state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest : []} //commodityDetailsState[state?.rowIndex]?.data}
