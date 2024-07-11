@@ -35,6 +35,8 @@ import { useTranslation } from 'react-i18next';
 import { agGridStatus, getGridHeight, isResetClick } from '../../actions/Common';
 import SingleDropdownFloationFilter from '../masters/material-master/SingleDropdownFloationFilter';
 import WarningMessage from '../common/WarningMessage';
+import RMCompareTable from './compareTable/RMCompareTable';
+import BOPCompareTable from './compareTable/BOPCompareTable';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -85,6 +87,9 @@ function RfqListing(props) {
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
     const [costingsDifferentStatus, setCostingsDifferentStatus] = useState(false)
     const agGridRef = useRef(null);
+    const [viewRMCompare, setViewRMCompare] = useState(false)
+    const [viewBOPCompare, setViewBOPCompare] = useState(false)
+    const [partType, setPartType] = useState('')
     const [matchedStatus, setMatchedStatus] = useState([])
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     let arr = []
@@ -97,6 +102,9 @@ function RfqListing(props) {
     useEffect(() => {
         if (rowData[0]?.QuotationId) {
             dispatch(setQuotationIdForRFQ(rowData[0]?.QuotationId))
+        }
+        if (rowData[0]?.PartType) {
+            setPartType(rowData[0]?.PartType)
         }
     }, [rowData[0]?.QuotationId])
 
@@ -851,6 +859,7 @@ function RfqListing(props) {
                 arr.push(item?.CostingId)
             }
         })
+
         setCompareButtonPressed(true)
         setCostingListToShow(arr)
         let temp = []
@@ -862,26 +871,47 @@ function RfqListing(props) {
 
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
-
-        setloader(true)
         setSelectedCostingList([])
-        dispatch(getMultipleCostingDetails(costingIdList, (res) => {
-            if (res) {
-                res?.map((item) => {
-                    tempObj = formViewData(item?.data?.Data)
-                    temp.push(tempObj[0])
-                    return null
-                })
-                let dat = [...temp]
-                let tempArrToSend = _.uniqBy(dat, 'costingId')
-                let arr = bestCostObjectFunction(tempArrToSend)
-                setMultipleCostingDetails([...arr])
-                dispatch(setCostingViewData([...arr]))
-                setaddComparisonToggle(true)
-                setloader(false)
-            }
-            setCompareButtonPressed(false)
-        }))
+        switch (partType) {
+            case 'Component':
+            case 'Assembly':
+                setloader(true)
+                dispatch(getMultipleCostingDetails(costingIdList, (res) => {
+                    if (res) {
+                        res?.map((item) => {
+                            tempObj = formViewData(item?.data?.Data)
+                            temp.push(tempObj[0])
+                            return null
+                        })
+                        let dat = [...temp]
+                        let tempArrToSend = _.uniqBy(dat, 'costingId')
+                        let arr = bestCostObjectFunction(tempArrToSend)
+                        setMultipleCostingDetails([...arr])
+                        dispatch(setCostingViewData([...arr]))
+
+                        setaddComparisonToggle(true)
+                        setloader(false)
+                        setViewRMCompare(false)
+                        setViewBOPCompare(false)
+                    }
+                    setCompareButtonPressed(false)
+                }))
+                break;
+            case 'RawMaterial':
+                setViewRMCompare(true)
+                setaddComparisonToggle(false)
+                setViewBOPCompare(false)
+                break
+            case 'BoughtOutPart':
+                setViewBOPCompare(true)
+                setViewRMCompare(false)
+                setViewRMCompare(false)
+                break
+            default:
+                break;
+        }
+
+
     }
 
 
@@ -1071,7 +1101,7 @@ function RfqListing(props) {
                                                 id='ViewRfq_compare'
                                                 type="button"
                                                 className={'user-btn comparison-btn ml-1'}
-                                                disabled={addComparisonButton}
+                                                disabled={addComparisonButton || !partType}
                                                 onClick={addComparisonDrawerToggle}
                                             >
                                                 <div className="compare-arrows"></div>Compare</button>
@@ -1220,31 +1250,37 @@ function RfqListing(props) {
                 }
                 {
                     <div id='rfq-compare-drawer'>
-                        {addComparisonToggle && (
-                        <QuotationId.Provider value={data?.QuotationId}>
+                        {!viewRMCompare && addComparisonToggle && (
+                            <QuotationId.Provider value={data?.QuotationId}>
 
-                            <CostingSummaryTable
-                                viewMode={true}
-                                isRfqCosting={true}
-                                // costingID={approvalDetails.CostingId}
-                                approvalMode={true}
-                                // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
-                                simulationMode={false}
-                                uniqueShouldCostingId={uniqueShouldCostingId}
-                                costingIdExist={true}
-                                bestCostObjectFunction={bestCostObjectFunction}
-                                crossButton={hideSummaryHandler}
-                                costingIdList={costingListToShow}
-                                isFromViewRFQ={true}
-                                checkCostingSelected={checkCostingSelected}
-                                disableApproveRejectButton={disableApproveRejectButton}
-                                compareButtonPressed={compareButtonPressed}
-                                showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
-                                selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
-                                costingsDifferentStatus={costingsDifferentStatus}
-                            />
-                        </QuotationId.Provider>
+                                <CostingSummaryTable
+                                    viewMode={true}
+                                    isRfqCosting={true}
+                                    // costingID={approvalDetails.CostingId}
+                                    approvalMode={true}
+                                    // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
+                                    simulationMode={false}
+                                    uniqueShouldCostingId={uniqueShouldCostingId}
+                                    costingIdExist={true}
+                                    bestCostObjectFunction={bestCostObjectFunction}
+                                    crossButton={hideSummaryHandler}
+                                    costingIdList={costingListToShow}
+                                    isFromViewRFQ={true}
+                                    checkCostingSelected={checkCostingSelected}
+                                    disableApproveRejectButton={disableApproveRejectButton}
+                                    compareButtonPressed={compareButtonPressed}
+                                    showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
+                                    selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
+                                    costingsDifferentStatus={costingsDifferentStatus}
+                                />
+                            </QuotationId.Provider>
                         )}
+                        {viewRMCompare && <RMCompareTable
+                            checkCostingSelected={checkCostingSelected}
+                            selectedRows={selectedRows} />}
+                        {viewBOPCompare && <BOPCompareTable
+                            checkCostingSelected={checkCostingSelected}
+                            selectedRows={selectedRows} />}
                     </div>
                 }
                 {remarkHistoryDrawer &&
