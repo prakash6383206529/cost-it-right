@@ -13,7 +13,6 @@ import { getCostingCondition } from '../../../actions/Common'
 import { getRMCostIds } from '../../common/CommonFunctions'
 
 function AddOtherCostDrawer(props) {
-    console.log('props: ', props);
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
@@ -56,11 +55,8 @@ function AddOtherCostDrawer(props) {
                         req.RawMaterialCommodityIndexRateAndOtherCostDetailsId === item.RawMaterialCommodityIndexRateAndOtherCostDetailsId
                     )
                 );
-
-                console.log('filteredData: ', filteredData);
                 setTableData(filteredData);
             } else {
-                console.error('props.RowData.RawMaterialCommodityIndexRateDetailsRequest is not an array');
                 setTableData([]);
             }
         }
@@ -331,7 +327,11 @@ function AddOtherCostDrawer(props) {
         if (!type || !cost) return false;
         if (type.label === "Percentage") {
             // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
-            if (!applicability || !applicabilityBaseCost || !percentage) return false;
+            if (!applicability || !applicabilityBaseCost || !percentage || percentage !== 0) {
+                Toaster.warning('Cost should not be zero or empty.');
+                return false;
+            }
+
         } else if (type.label === 'Fixed') {
             // If 'Type' is 'fixed', check for 'CostCurrency' and 'CostBaseCurrency'
             if (!costBaseCurrency) return false;
@@ -629,7 +629,7 @@ function AddOtherCostDrawer(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.CostCurrency}
-                                                disabled={type?.label === 'Percentage' ? true : false || state.disableCostCurrency}
+                                                disabled={type?.label === 'Percentage' ? true : false || state.disableCostCurrency || props.ViewMode}
                                             />
                                         </Col>}
                                         <Col md={3} className={'px-2'}>
@@ -652,7 +652,7 @@ function AddOtherCostDrawer(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.CostBaseCurrency}
-                                                disabled={type?.label === 'Percentage' ? true : false || state.disableCostBaseCurrency}
+                                                disabled={type?.label === 'Percentage' ? true : false || state.disableCostBaseCurrency || props.ViewMode}
                                             />
                                         </Col>
 
@@ -691,7 +691,6 @@ function AddOtherCostDrawer(props) {
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
                                                 </tr>
 
-                                                {console.log('tableData: ', tableData)}
                                                 {tableData && tableData.map((item, index) => (
                                                     <Fragment key={index}>
                                                         <tr>

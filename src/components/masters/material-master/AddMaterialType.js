@@ -45,7 +45,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
 
   useEffect(() => {
     const fetchData = () => {
-      const materialId = isEditFlag ? ID : ''; // Use a default value for ID
+      const materialId = isEditFlag || isViewFlag ? ID : ''; // Use a default value for ID
       dispatch(getMaterialTypeDataAPI(materialId, '', res => {
         const data = res?.data?.Data;
         if (data) {
@@ -62,7 +62,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
     };
 
     fetchData();
-  }, [isEditFlag, ID, dispatch, setValue]);
+  }, [isEditFlag, isViewFlag, ID, dispatch, setValue]);
 
   const cancel = (type) => {
     reset();
@@ -96,7 +96,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
 
   const onSubmit = debounce(values => {
     if (isEditFlag) {
-      if (Number(materialTypeData?.materialTypeData?.Density) === Number(values.CalculatedDensityValue) && materialTypeData?.materialTypeData?.MaterialType === values.MaterialType) {
+      if (Number(materialTypeData?.materialTypeData?.Density) === Number(values.CalculatedDensityValue) && materialTypeData?.materialTypeData?.MaterialType === values.MaterialType && materialTypeData?.materialTypeData?.MaterialCommodityStandardDetails?.length === state.tableData?.length) {
         cancel('cancel');
         return false;
       }

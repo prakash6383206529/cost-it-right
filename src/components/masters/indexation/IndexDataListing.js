@@ -207,9 +207,7 @@ const IndexDataListing = (props) => {
     const confirmDelete = (ID) => {
         dispatch(
             deleteIndexDetailData(ID, (res) => {
-                if (res.status === 417 && res.data.Result === false) {
-                    Toaster.error(res.data.Message);
-                } else if (res && res.data && res.data.Result === true) {
+                if (res && res.data && res.data.Result === true) {
                     Toaster.success(MESSAGES.INDEX_DELETE_SUCCESS);
                     setState((prevState) => ({ ...prevState, dataCount: 0 }));
                     // getTableListData();
@@ -238,15 +236,11 @@ const IndexDataListing = (props) => {
 
     const buttonFormatter = (props) => {
         const { showExtraData } = state
-        const cellValue = props?.valueFormatted
-            ? props.valueFormatted
-            : props?.value;
-
         const rowData = props?.data?.CommodityIndexRateDetailId;
         let isEditable = false
         let isDeleteButton = false
         isEditable = permissions?.Edit;
-        isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions?.Delete);
+        isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions?.Delete && !props?.data?.IsAssociated);
 
         return (
             <>
@@ -461,11 +455,8 @@ const IndexDataListing = (props) => {
         temp =
             TempData &&
             TempData.map((item) => {
-                if (item.RMName === "-") {
-                    item.RMName = " ";
-                }
-                if (item.RMGrade === "-") {
-                    item.RMGrade = " ";
+                if (item?.EffectiveDate?.includes('T')) {
+                    item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
                 }
                 return item;
             });
