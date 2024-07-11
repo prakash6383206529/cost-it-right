@@ -422,6 +422,7 @@ const IndexDataListing = (props) => {
 * @description Renders buttons
 */
     const effectiveDateFormatter = (props) => {
+
         if (showExtraData && props?.rowIndex === 0) {
             return "Lorem Ipsum";
         } else {
@@ -441,12 +442,8 @@ const IndexDataListing = (props) => {
     const onBtExport = () => {
         let tempArr = [];
         tempArr = gridApi && gridApi?.getSelectedRows();
-        tempArr =
-            tempArr && tempArr.length > 0
-                ? tempArr
-                : rmIndexDataList
-                    ? rmIndexDataList
-                    : [];
+        let orignalCopyArr = _.cloneDeep(rmIndexDataList)
+        tempArr = tempArr && tempArr.length > 0 ? tempArr : orignalCopyArr ? orignalCopyArr : [];
         return returnExcelColumn(RMMATERIALISTING_DOWNLOAD_EXCEl, tempArr);
     };
 
@@ -455,7 +452,7 @@ const IndexDataListing = (props) => {
         temp =
             TempData &&
             TempData.map((item) => {
-                if (item?.EffectiveDate?.includes('T')) {
+                if (item.EffectiveDate?.includes('T')) {
                     item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
                 }
                 return item;
