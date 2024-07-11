@@ -69,6 +69,7 @@ import {
   CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
   PARTSPECIFICATIONRFQDATA,
+  GET_SAP_EVALUATIONTYPE,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -593,7 +594,7 @@ export function getBOPData(data, callback) {
  */
 export function getRMDrawerDataList(data, isNFR, rmNameList, callback) {
   return (dispatch) => {
-    const queryParams = `technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&vendorId=${data.VendorId}&customerId=${data.CustomerId}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`
+    const queryParams = `technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&vendorId=${data.VendorId}&customerId=${data.CustomerId}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}&partId=${data.PartId}&isRFQ=${data.IsRFQ}&quotationPartId=${data.QuotationPartId}`
     //const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`
     const request = axios.get(`${API.getRMDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
@@ -1105,9 +1106,13 @@ export function getRateCriteriaByCapacitySelectList(Capacity) {
  */
 export function getRateByCapacityCriteria(data, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getRateByCapacityCriteria}?Capacity=${data.Capacity}&Criteria=${data.Criteria}`, config(),)
+    const request = axios.get(`${API.getRateByCapacityCriteria}?Capacity=${data?.Capacity}&Criteria=${data?.Criteria}&plantId=${data?.PlantId}&vendorId=${data?.VendorId}&customerId=${data?.CustomerId}&effectiveDate=${data?.EffectiveDate}&costingTypeId=${data?.CostingTypeId}&EFreightLoadType=${data?.EFreightLoadType}`, config(),)
     request.then((response) => {
-      callback(response)
+      if (response?.data?.Result) {
+        callback(response)
+      } else if (response?.status === 204) {
+        Toaster.warning("There is no data for Freight.")
+      }
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
@@ -2996,7 +3001,28 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
       .catch((error) => {
         dispatch({ type: API_FAILURE });
         // Handle errors
-        console.error(error);
       });
   };
+}
+/**
+ * @method getExternalIntegrationEvaluationType
+ * @description getExternalIntegrationEvaluationType
+ */
+export function getExternalIntegrationEvaluationType(data, callback) {
+
+  return (dispatch) => {
+    const request = axios.post(API.getEvaluationType, data, config())
+    request.then((response) => {
+      if (response.data.Result || response?.status === 204) {
+        dispatch({
+          type: GET_SAP_EVALUATIONTYPE,
+          payload: response?.status === 200 ? response?.data?.SelectList : [],
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
 }

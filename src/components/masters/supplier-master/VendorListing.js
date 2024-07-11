@@ -39,7 +39,6 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const VendorListing = (props) => {
-  console.log('props: ', props);
   const dispatch = useDispatch();
   const { t } = useTranslation("common")
 

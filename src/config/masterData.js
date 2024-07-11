@@ -969,11 +969,13 @@ export const IndexCommodityListingTempData = [
     }
 ]
 export const CommodityInIndexListing = [
-    { label: "Index", value: "CommodityName" },
+    { label: "Index", value: "IndexExchangeName" },
+    { label: "Commodity (In Index)", value: "CommodityName" },
 ]
 export const CommodityInIndexListingTempData = [
     {
-        "CommodityName": "21FD2",
+        "IndexExchangeName": "LME",
+        "CommodityName": "Al",
     }
 ]
 export const StandardizedCommodityNameListing = [
@@ -986,6 +988,14 @@ export const StandardizedCommodityNameTempData = [
         "IndexExchangeName": "21FD2",
         "CommodityName": "al",
         "CustomMaterialName": "alloy",
+    }
+]
+export const CommodityStandard = [
+    { label: "Commodity Name (Standard)", value: "CommodityStandardName" },
+]
+export const CommodityStandardTempData = [
+    {
+        "CommodityStandardName": "Alluminum",
     }
 ]
 /**
@@ -8209,7 +8219,7 @@ export const statusDropdownforRfq = [
     { label: "History", value: "10" },
     { label: "Not Selected", value: "11" },
     { label: "PreDraft", value: "12" },
-  ];
+];
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },
     { label: 'PendingForApproval', value: 2 },
@@ -8280,3 +8290,8 @@ export const REJECTION_RECOVERY_APPLICABILITY = [
 ]
 
 export const PACK_AND_FREIGHT_PER_KG = 'Per kg'
+
+export const FREIGHT_LOAD_OPTIONS = [
+    { label: "Full Truck Load", value: 3 },
+    { label: "Part Truck Load", value: 4 },
+]

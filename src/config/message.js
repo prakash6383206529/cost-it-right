@@ -101,6 +101,9 @@ export const MESSAGES = {
   ASSOCIATED_ADDED_SUCCESS: 'Raw Material associated successfully.',
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
 
+  //FERROUSCALCULATOR 
+  FERROUSCALCULATOR_RESET_RM: 'Are you sure you want to delete this raw material? Deleting it will also remove all associated calculations.',
+  FERROUSCALCULATOR_UNUSED_RM : 'Rm which are not used will be get deleted from the grid',
   //INDEXATION
   INDEX_ADD_SUCCESS: 'Index added successfully',
   INDEX_DELETE_ALERT: 'Are you sure you want to delete this Record?',
@@ -255,6 +258,12 @@ export const MESSAGES = {
   ROLE_ACTIVE_ALERT: 'Are you sure you want to activate this role?',
   ROLE_ACTIVE_SUCCESSFULLY: 'Role activated successfully',
   ROLE_INACTIVE_SUCCESSFULLY: 'Role de-activated successfully',
+
+  //Part
+  PART_DEACTIVE_ALERT: 'Are you sure you want to de-activate this part?',
+  PART_ACTIVE_ALERT: 'Are you sure you want to activate this part?',
+  PART_ACTIVE_SUCCESSFULLY: 'Part activated successfully',
+  PART_INACTIVE_SUCCESSFULLY: 'Part de-activated successfully',
 
   //DEPARTMENT
   DEPARTMENT_DELETE_ALERT: `Are you sure you want to delete this ${handleDepartmentHeader()}?`,

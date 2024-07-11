@@ -10,13 +10,13 @@ import {
   GET_APPROVAL_SUMMARY,
   GET_SELECTED_COSTING_STATUS,
   GET_APPROVAL_LIST_DRAFT,
-  SET_SAP_DATA
+  SET_SAP_DATA,
 } from '../../../config/constants'
 import { tokenStatus, tokenStatusName } from '../../../config/masterData'
 import { userDetails, checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 
 const initialState = {
-  SAPObj: { PurchasingGroup: '', MaterialGroup: '' }
+  SAPObj: { PurchasingGroup: '', MaterialGroup: '', infoCategory: '', evaluationType: '', leadTime: '' }
 }
 
 export default function ApprovalReducer(state = initialState, action) {

@@ -287,3 +287,7 @@ export const OperationFileData = (fileData) => {
     });
     return fileData;
 }
+export const getRMCostIds = () => {
+    let costIds = reactLocalStorage.getObject('InitialConfiguration').CostingConditionTypes
+    return costIds
+}

@@ -7,7 +7,7 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, PREDRAFT, PRODUCT_ID, RFQ, RFQVendor, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RFQ, RFQVendor, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq } from './actions/rfq';
+import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -167,11 +167,8 @@ function AddRfq(props) {
     const [sopQuantityList, setSopQuantityList] = useState([]);
     const [disabledPartUid, setDisabledPartUId] = useState(true)
     const [sopdate, setSOPDate] = useState('')
-
-
-
     const [disabledVendoUi, setDisabledVendoUId] = useState(true)
-
+    const [showVendorSection, setShowVendorSection] = useState(true)
 
 
 
@@ -182,6 +179,7 @@ function AddRfq(props) {
     useEffect(() => {
         if (dataProps?.isAddFlag) {
             dispatch(setQuotationIdForRfq(""))
+            dispatch(setTargetPriceDetail({}))
             setTimeout(() => {
                 const obj = createQuotationObject(null);
                 dispatch(createRfqQuotation(obj, (res) => {
@@ -196,17 +194,17 @@ function AddRfq(props) {
     useEffect(() => {
         if (showSendButton === DRAFT) {
             setDisabledVendoUId((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
+            setShowVendorSection((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
+
         } else if (dataProps?.isAddFlag || showSendButton === PREDRAFT) {
 
             setDisabledPartUId((Part && (Part?.Add || Part?.Edit)) ? false : true)
+        } else {
+            setShowVendorSection(false)
         }
     }, [showSendButton, Vendor, Part])
 
-    useEffect(() => {
-        if (getTargetprice && getTargetprice?.TargetPrice) {
-            setValue('TargetPrice', getTargetprice?.TargetPrice)
-        }
-    }, [getTargetprice])
+
     useEffect(() => {
         const partTypeString = initialConfiguration?.HavellsPartTypeList;
         if (partTypeString) {
@@ -565,8 +563,10 @@ function AddRfq(props) {
             setValue('partNumber', { label: rowData?.PartNumber, value: rowData?.PartId })
             setValue('PartType', { label: rowData?.PartType, value: rowData?.PartTypeId })
             setValue('HavellsDesignPart', { label: rowData?.HavellsDesignPart, value: rowData?.HavellsDesignPartId })
-            setValue('UOM', { label: rowData?.UOM, value: rowData?.UOMId })
+            setValue('UOM', { label: rowData?.UOMSymbol, value: rowData?.UOMId })
             setValue('Description', rowData?.Description)
+            setValue("TargetPrice", rowData?.TargetPrice)
+
             setPartType({ label: rowData?.PartType, value: rowData?.PartTypeId })
             setPartName({ label: rowData?.PartNumber, value: rowData?.PartId })
             setRequirementDate(rowData?.TimeLine || '')
@@ -727,6 +727,8 @@ function AddRfq(props) {
     const cancel = () => {
         props.closeDrawer('', {})
         dispatch(setQuotationIdForRfq(""))
+        dispatch(setTargetPriceDetail({}))
+
     }
 
     const onSubmit = (data, e, isPartDetailsSent) => {
@@ -760,6 +762,7 @@ function AddRfq(props) {
         } else if (Object.keys(errors).length > 0) {
             return false
         }
+
         let IsPartDetailsSent;
         let isSent;
         const isShowRfqPartDetail = initialConfiguration?.IsShowRFQPartDetailBreakup
@@ -822,6 +825,8 @@ function AddRfq(props) {
             setQuotationIdentity(res?.data?.Identity)
             if (res?.data?.Result) {
                 dispatch(setQuotationIdForRfq(""))
+                dispatch(setTargetPriceDetail({}))
+
                 if ((!showSendButton === "") && (!(showSendButton === DRAFT) || !(showSendButton === PREDRAFT))) {
                     Toaster.success(MESSAGES.RFQ_UPDATE_SUCCESS)
                 } else if (isSent) {
@@ -1125,13 +1130,13 @@ function AddRfq(props) {
                     newObjTemp.PartId = getValues('partNumber')?.value;
                     newObjTemp.UOM = getValues('UOM')?.label;
                     newObjTemp.UOMId = getValues('UOM')?.value;
-                    newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0;
+                    newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "-";
                     newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
                     newObjTemp.PartType = getValues('PartType')?.label;
                     newObjTemp.PartTypeId = getValues('PartType')?.value;
                     newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label;
                     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
-                    newObjTemp.Description = getValues('Description');
+                    newObjTemp.Description = getValues('Description') || "";
 
                     arrTemp.push(newObjTemp);  // Push the new object to the array
 
@@ -1203,9 +1208,9 @@ function AddRfq(props) {
             } else if (requirementDate === "") {
                 Toaster.warning("Please select Requirement Date");
                 return false;
-            } else if (/* getTargetprice && Object.keys(getTargetprice).length === 0 */targetPrice === "" && havellsDesignPart === "Havells Design part") {
-                Toaster.warning("ZBC costing approval is required for this plant to raise a quote.")
-                return false
+            } else if (["", "-"].includes(getValues('TargetPrice')) && getValues("HavellsDesignPart")?.label === HAVELLS_DESIGN_PARTS) {
+                Toaster.warning("ZBC costing approval is required for this plant to raise a quote.");
+                return false;
             } else {
 
                 if (nfrId && nfrId.value !== null) {//CHECK_NFR
@@ -1304,7 +1309,8 @@ function AddRfq(props) {
                     newObjTemp.PartTypeId = getValues('PartType')?.value;
                     newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label;
                     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
-                    newObjTemp.Description = getValues('Description');
+                    newObjTemp.Description = getValues('Description') || "";
+
                     newObjTemp.SOPQuantityDetails = sopQuantityList
 
                     arrTemp.push(newObjTemp);  // Push the new object to the array
@@ -1373,14 +1379,14 @@ function AddRfq(props) {
                         temppartObj.IsChildPart = false
                         // temppartObj.QuotationPartId = ""
                         temppartObj.PartType = partType?.label || ''
-                        temppartObj.TargetPrice = getTargetprice?.TargetPrice || 0
+                        temppartObj.TargetPrice = getTargetprice?.TargetPrice || "-"
                         temppartObj.TimeLine = requirementDate || "";
                         temppartObj.Remarks = remark || null
                         temppartObj.Attachments = childPartFiles || []
                         temppartObj.HavellsDesignPart = getValues('HavellsDesignPart')?.label || ''
                         temppartObj.UnitOfMeasurementId = getValues('UOM')?.value || ''
                         temppartObj.ExistingVendor = vendorList.join(',') || '';
-                        temppartObj.Description = getValues('Description') || null
+                        temppartObj.Description = getValues('Description') || ""
                         temppartObj.SopDate = sopdate || null
                         //temppartObj.SOPQuantityDetails = obj[0]?.SOPQuantityDetails
 
@@ -1540,6 +1546,8 @@ function AddRfq(props) {
                         setValue('HavellsDesignPart', "");
                         setValue("UOM", "")
                         setValue("Description", "")
+                        setValue("TargetPrice", "")
+
                         setUpdateButtonPartNoTable(false);
                         setEditQuotationPart(false);
                         setIsPartDeailUpdate(false)
@@ -1577,11 +1585,14 @@ function AddRfq(props) {
         setValue("UOM", "")
         setValue("Description", "")
         setValue("SOPDate", "")
+        setValue('TargetPrice', "")
         setRequirementDate("")
         setUpdateButtonPartNoTable(false);
         setEditQuotationPart(false)
         setTableData([]);
         setSpecificationList([]);
+        setChildPartFiles([]);
+        setRemark('')
         setSopQuantityList([])
         setSOPDate('')
         setStorePartsDetail([]);
@@ -1697,11 +1708,18 @@ function AddRfq(props) {
             setGetReporterListDropDown(res?.data?.SelectList)
             setValue('contactPerson', "")
         }))
-        dispatch(getrRqVendorDetails(data.value, (res) => {
-            const { PaymentTerms, IncoTerms, IncoTermIdRef, PaymentTermIdRef } = res?.data?.Data
-            setValue('IncoTerms', IncoTerms)
-            setValue('PaymentTerms', PaymentTerms)
-        }))
+        dispatch(checkRegisteredVendor(data.value, (res) => {
+            let isRegisteredVendor = res?.data?.Data?.IsRegisteredVendor;
+            if (isRegisteredVendor) {
+
+                dispatch(getrRqVendorDetails(data.value, (res) => {
+                    const { PaymentTerms, IncoTerms, IncoTermIdRef, PaymentTermIdRef } = res?.data?.Data;
+                    setValue('IncoTerms', IncoTerms);
+                    setValue('PaymentTerms', PaymentTerms);
+                }));
+            }
+        }));
+
     }
     const vendorFilterList = async (inputValue) => {
         if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1745,6 +1763,12 @@ function AddRfq(props) {
     const handleHavellsDesignPart = (newValue) => {
 
         setHavellsDesignPart(newValue)
+        if (getTargetprice && getTargetprice?.TargetPrice && newValue?.label === HAVELLS_DESIGN_PARTS) {
+            setValue('TargetPrice', getTargetprice?.TargetPrice)
+        } else {
+            setValue('TargetPrice', "-")
+
+        }
         if (updateButtonPartNoTable) {
             setStorePartsDetail((prevDetails) => {
                 return prevDetails.map((item) => {
@@ -2510,7 +2534,7 @@ function AddRfq(props) {
                                         </div>
                                         }
                                     </div >
-                                    {!disabledVendoUi && (<>
+                                    {!showVendorSection && (<>
                                         <HeaderTitle title={'Vendor:'} customClass="mt-4" />
                                         <Row className="mt-1 part-detail-wrapper">
                                             <Col md="3">

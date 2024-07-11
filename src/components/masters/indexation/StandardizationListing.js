@@ -167,9 +167,7 @@ const StandardizationListing = (props) => {
     const confirmDelete = (ID) => {
         dispatch(
             deleteCommodityStandardization(ID, (res) => {
-                if (res.status === 417 && res.data.Result === false) {
-                    Toaster.error(res.data.Message);
-                } else if (res && res.data && res.data.Result === true) {
+                if (res && res.data && res.data.Result === true) {
                     Toaster.success(MESSAGES.INDEX_DELETE_SUCCESS);
                     setState((prevState) => ({ ...prevState, dataCount: 0 }));
                     getTableListData();
@@ -201,13 +199,13 @@ const StandardizationListing = (props) => {
         }));
     }, []);
     const buttonFormatter = (props) => {
-        
+
         const { showExtraData } = state
         const cellValue = props?.data?.CommodityStandardizationId
         let isEditbale = false
         let isDeleteButton = false
         isEditbale = permissions.Edit;
-        isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete);
+        isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete && !props?.data.IsAssociated);
 
         return (
             <>
@@ -252,7 +250,7 @@ const StandardizationListing = (props) => {
         setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
         params.api.paginationGoToPage(0);
     };
-  
+
     const onRowSelect = () => {
         const selectedRows = gridApi?.getSelectedRows();
         setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
@@ -354,9 +352,9 @@ const StandardizationListing = (props) => {
         );
     };
     return (
-          
-                    <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""
-                } ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} `}>
+
+        <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""
+            } ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} `}>
 
             {isLoader && <LoaderCustom />}
             <Row className="pt-4">
@@ -441,9 +439,9 @@ const StandardizationListing = (props) => {
                             </AgGridReact>}
 
                             <div className={`button-wrapper`}>
-    {!isLoader && <PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData" />}
-    <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData" />
-</div>
+                                {!isLoader && <PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData" />}
+                                <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexData" />
+                            </div>
                         </div>
                     </div>
                 </Col>

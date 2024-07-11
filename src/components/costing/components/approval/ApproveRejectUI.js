@@ -3,7 +3,7 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
-import { getReasonSelectList } from '../../../costing/actions/Approval'
+import { getReasonSelectList, setSAPData } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm, AllApprovalField } from '../../../layout/HookFormInputs'
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
@@ -27,6 +27,7 @@ import PushSection from '../../../common/PushSection'
 import { transformApprovalItem } from '../../../common/CommonFunctions'
 import Button from '../../../layout/Button'
 import { submit } from 'redux-form'
+import SAPApproval from '../../../SAPApproval'
 
 function ApproveRejectUI(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -330,6 +331,27 @@ function ApproveRejectUI(props) {
               </Row>
 
               <Row className="ml-0">
+                {
+                  type === 'Sender' && getConfigurationKey().IsSAPConfigured &&
+
+                  <Col md="12" className="simulation-sap-approval">
+                    <Row >
+                      <Col md="12">
+                        <div className="left-border">{"SAP-Push Details"}</div>
+                      </Col>
+                      <SAPApproval
+                        isSimulation={true}
+                        Controller={Controller}
+                        register={register}
+                        errors={errors}
+                        control={control}
+                        plantId={props?.plantId}
+                      />
+
+                    </Row>
+                  </Col>
+                }
+
                 {getConfigurationKey().IsReleaseStrategyConfigured && showApprovalTypeDropdown && <Col md="6">
                   <SearchableSelectHookForm
                     label={"Approval Type"}

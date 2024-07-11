@@ -9,20 +9,17 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
-import { loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import { debounce } from 'lodash';
-import Button from '../../layout/Button';
 import { MESSAGES } from '../../../config/message';
 import { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, decimalLengthFour, hashValidation, positiveAndDecimalNumber, required } from '../../../helper';
 import AddMaterialTypeDetail from './AddMaterialTypeDetail';
-import { RMIndex } from '../../../config/constants';
-import { getAssociatedMaterial } from '../actions/Indexation';
 
 const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFlag }) => {
   const { t } = useTranslation("RawMaterialMaster");
   const dispatch = useDispatch();
-
+  const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
   const [state, setState] = useState({
     isShowForm: false,
     MaterialTypeId: '',
@@ -48,7 +45,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
 
   useEffect(() => {
     const fetchData = () => {
-      const materialId = isEditFlag ? ID : ''; // Use a default value for ID
+      const materialId = isEditFlag || isViewFlag ? ID : ''; // Use a default value for ID
       dispatch(getMaterialTypeDataAPI(materialId, '', res => {
         const data = res?.data?.Data;
         if (data) {
@@ -65,7 +62,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
     };
 
     fetchData();
-  }, [isEditFlag, ID, dispatch, setValue]);
+  }, [isEditFlag, isViewFlag, ID, dispatch, setValue]);
 
   const cancel = (type) => {
     reset();
@@ -99,7 +96,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
 
   const onSubmit = debounce(values => {
     if (isEditFlag) {
-      if (Number(materialTypeData?.materialTypeData?.Density) === Number(values.CalculatedDensityValue) && materialTypeData?.materialTypeData?.MaterialType === values.MaterialType) {
+      if (Number(materialTypeData?.materialTypeData?.Density) === Number(values.CalculatedDensityValue) && materialTypeData?.materialTypeData?.MaterialType === values.MaterialType && materialTypeData?.materialTypeData?.MaterialCommodityStandardDetails?.length === state.tableData?.length) {
         cancel('cancel');
         return false;
       }
@@ -227,7 +224,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
                   />
                 </Col>
               </Row>
-              {}
+              { }
               {RMIndex && <AddMaterialTypeDetail tableData={tableData} tableDataState={state.tableData} isViewFlag={isViewFlag} isEditFlag={isEditFlag} />}
               <Row className=" no-gutters justify-content-between">
                 <div className="col-md-12">

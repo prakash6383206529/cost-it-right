@@ -12,7 +12,7 @@ import Toaster from '../common/Toaster';
 import { getReasonSelectList } from '../costing/actions/Approval';
 import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
-import { BOPTYPE, BUDGETTYPE, BUDGET_ID, EMPTY_GUID, MACHINETYPE, OPERATIONTYPE, RMTYPE, VBCTypeId, ZBCTypeId } from '../../config/constants';
+import { BOPTYPE, BUDGETTYPE, BUDGET_ID, CBCTypeId, EMPTY_DATA, EMPTY_GUID, MACHINETYPE, OPERATIONTYPE, RMTYPE, VBCTypeId, ZBCTypeId } from '../../config/constants';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { REMARKMAXLENGTH, SHEETMETAL } from '../../config/masterData';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
@@ -20,21 +20,31 @@ import { masterApprovalAPI, masterApprovalRequestBySenderBudget } from './action
 import TooltipCustom from '../common/Tooltip';
 import LoaderCustom from '../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { getLastRevisionRawMaterialDetails } from './actions/Indexation';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import HeaderTitle from '../common/HeaderTitle';
 
 function MasterSendForApproval(props) {
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
+    console.log('approvalObj: ', approvalObj);
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+    const gridOptions = {};
     const [approvalDropDown, setApprovalDropDown] = useState([])
     const [approverIdList, setApproverIdList] = useState([])
     const [isDisable, setIsDisable] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
+    const [agGridLoader, setAgGridLoader] = useState(false)
+    const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [isLastRevisionOpen, setIsLastRevisionOpen] = useState(false)
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const { deptList } = useSelector((state) => state.material)
     const { initialConfiguration } = useSelector(state => state.auth)
+    const { lastRevisionRawMaterialDetails } = useSelector(state => state.indexation)
     const toggleDrawer = (event, type = 'cancel') => {
         if (isDisable) {
             return false
@@ -49,7 +59,6 @@ function MasterSendForApproval(props) {
     }
 
     useEffect(() => {
-
         dispatch(getReasonSelectList((res) => { }))
         setValue('ScrapRateUOM', { label: approvalObj?.ScrapUnitOfMeasurement, value: approvalObj?.ScrapUnitOfMeasurementId })
         dispatch(getAllMasterApprovalDepartment((res) => {
@@ -100,17 +109,33 @@ function MasterSendForApproval(props) {
                 }
             },),)
         }))
+        getLastRevisionData()
     }, [])
 
-
-    const labelWithUOM = (value) => {
-        return <div>
-            <span className='d-flex'>Basic Rate/{displayUOM(value)} ({reactLocalStorage.getObject("baseCurrency")})</span>
-        </div>
+    const getLastRevisionData = () => {
+        if (approvalObj && Object.keys(approvalObj).length > 0) {
+            setAgGridLoader(true)
+            let data = {
+                OldMasterRecordIds: [],
+                LastRawMaterialDetails: [{
+                    "RawMaterialEntryType": approvalObj.RawMaterialEntryType,
+                    "CostingHeadId": approvalObj.CostingTypeId,
+                    "TechnologyId": approvalObj.TechnologyId,
+                    "RawMaterialChildId": 'b520f3c3-9934-4695-a6de-6cdbdb57d08a',
+                    "RawMaterialGradeId": approvalObj.RMGrade,
+                    "RawMaterialSpecificationId": approvalObj.RMSpec,
+                    "EffectiveDate": DayTime(approvalObj.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+                    "PlantId": approvalObj?.Plant[0]?.PlantId,
+                    "VendorId": approvalObj.Vendor,
+                    "CustomerId": approvalObj.CostingTypeId === CBCTypeId ? approvalObj.Customer : EMPTY_GUID,
+                    "RawMaterialId": EMPTY_GUID
+                }]
+            }
+            dispatch(getLastRevisionRawMaterialDetails(data, (res) => {
+                setAgGridLoader(false)
+            }))
+        }
     }
-
-
-
     const renderDropdownListing = (label) => {
         const tempDropdownList = []
         if (label === 'Dept') {
@@ -180,7 +205,7 @@ function MasterSendForApproval(props) {
         const dept = getValues('dept')
         const approver = getValues('approver')
         setIsDisable(true)
-        if (initialConfiguration.IsMultipleUserAllowForApproval && (!getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
+        if (initialConfiguration?.IsMultipleUserAllowForApproval && (!getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
             Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.')
             setIsDisable(false)
             return false
@@ -198,7 +223,7 @@ function MasterSendForApproval(props) {
             senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
             // senderObj.ApproverId = approver && approver.value ? approver.value : ''
-            senderObj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
+            senderObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
             senderObj.SenderLevelId = levelDetails?.LevelId
             senderObj.SenderId = loggedInUserId()
             senderObj.SenderLevel = levelDetails?.Level
@@ -425,7 +450,7 @@ function MasterSendForApproval(props) {
             obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
             obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
             // obj.ApproverId = approver && approver.value ? approver.value : ''
-            obj.ApproverIdList = initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
+            obj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
             obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
             obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             obj.Remark = remark
@@ -500,690 +525,35 @@ function MasterSendForApproval(props) {
         }
         return { labelSelectedCurrency: labelSelectedCurrency, labelBaseCurrency: labelBaseCurrency }
     }
-
-    const showPriceKeysCommonBOP = () => {
-        return (
-            <>
-                <div className="input-group form-group col-md-6">
-                    <TextFieldHookForm
-                        label={`Basic Rate/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
-                        name={'basicRate'}
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.basicRate}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-
-                </div>
-                {props?.IsImportEntry && <div className="input-group form-group col-md-6">
-                    <TextFieldHookForm
-                        label={`Basic Rate/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
-                        name={'basicRateBase'}
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.basicRateBase}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRateConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-
-                </div>}
-
-                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && props.costingTypeId === ZBCTypeId &&
-                    <>
-                        <div className="input-group form-group col-md-6">
-                            <Col>
-                                <TooltipCustom id="bop-basic-price-currency" tooltipText={props?.toolTipTextObject?.basicPriceSelectedCurrency} />
-                                <TextFieldHookForm
-                                    label={`Basic Price/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
-                                    name={'BasicPrice'}
-                                    Controller={Controller}
-                                    control={control}
-                                    placeholder={'-'}
-                                    register={register}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    errors={errors.BasicPrice}
-                                    defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                    disabled={true}
-                                />
-                            </Col>
-                        </div>
-                        {props?.IsImportEntry && <div className="input-group form-group col-md-6">
-                            <Col>
-                                <TooltipCustom id="bop-basic-price-base-currency" tooltipText={props?.toolTipTextObject?.basicPriceBaseCurrency} />
-                                <TextFieldHookForm
-                                    label={`Basic Price/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
-                                    name={'BasicPriceBase'}
-                                    Controller={Controller}
-                                    control={control}
-                                    placeholder={'-'}
-                                    register={register}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    errors={errors.BasicPriceBase}
-                                    defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                    disabled={true}
-                                />
-                            </Col>
-                        </div>}
-
-
-                        <div className="input-group form-group col-md-6">
-                            <TextFieldHookForm
-                                label={`Condition Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
-                                name={'ConditionCost'}
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.ConditionCost}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-
-                        </div>
-                        {props?.IsImportEntry && <div className="input-group form-group col-md-6">
-                            <TextFieldHookForm
-                                label={`Condition Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
-                                name={'ConditionCostBase'}
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.ConditionCostBase}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetConditionCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-
-                        </div>}
-                    </>
-                }
-
-                <div className="input-group form-group col-md-6">
-                    <Col>
-                        <TooltipCustom id="bop-net-cost-currency" tooltipText={props?.toolTipTextObject?.netCostCurrency} />
-                        <TextFieldHookForm
-                            label={`Net Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
-                            name={'netCost'}
-                            Controller={Controller}
-                            control={control}
-                            placeholder={'-'}
-                            register={register}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.NetLandedCost}
-                            disabled={true}
-                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        />
-                    </Col>
-                </div>
-                {props?.IsImportEntry && <div className="input-group form-group col-md-6">
-                    <Col>
-                        <TooltipCustom id="bop-net-cost-base-currency" tooltipText={props?.toolTipTextObject?.netCostBaseCurrency} />
-                        <TextFieldHookForm
-                            label={`Net Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
-                            name={'netCostBase'}
-                            Controller={Controller}
-                            control={control}
-                            placeholder={'-'}
-                            register={register}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.NetLandedCostConversion}
-                            disabled={true}
-                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        />
-                    </Col>
-                </div>}
-            </>
-        )
+    const onGridReady = (params) => {
+        setGridApi(params.api)
+        setGridColumnApi(params.columnApi)
+        params.api?.sizeColumnsToFit();
+        params.api.paginationGoToPage(0);
+        setTimeout(() => {
+        }, 100);
+    };
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: false,
+        editable: true
+    };
+    /**
+ * @method effectiveDateFormatter
+ * @description Renders buttons
+ */
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
-
-    const showPriceKeysCommonRM = () => {
-        return (
-            <>
-                <Col md="6">
-                    <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Cut Off Price ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
-                        name={"cutOffPrice"}
-                        type="text"
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.CutOffPrice}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.CutOffPrice, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-                </Col>
-
-                {props?.IsImportEntry && <Col md="6">
-                    <TooltipCustom id="rm-cut-off-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextCutOffBaseCurrency} />
-                    <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Cut Off Price ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
-                        name={"cutOffPriceBase"}
-                        type="text"
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.CutOffPriceInINR}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.CutOffPriceInINR, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-                </Col>}
-
-
-
-
-                <Col md="6">
-                    <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Basic Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
-                        name={"BasicRateCurrency"}
-                        type="text"
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.BasicRatePerUOM}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-                </Col>
-                {props?.IsImportEntry && <Col md="6">
-                    <TooltipCustom id="rm-basic-rate-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextBasicRateBaseCurrency} />
-                    <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Basic Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
-                        name={"BasicRateBase"}
-                        type="text"
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.BasicRatePerUOMConversion}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRatePerUOMConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-                </Col>}
-
-
-                {approvalObj?.IsScrapUOMApply && <>
-                    <Col md="6">
-                        <SearchableSelectHookForm
-                            label={'Scrap Rate UOM'}
-                            name={'ScrapRateUOM'}
-                            placeholder={'Select'}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: false }}
-                            register={register}
-                            options={approvalDropDown}
-                            mandatory={true}
-                            handleChange={() => { }}
-                            disabled={true}
-                            errors={errors.approver}
-                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRateUOM, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        />
-                    </Col>
-                    <Col md="6">
-                        <TextFieldHookForm
-                            label={`Conversion Ratio (${approvalObj?.ScrapUnitOfMeasurement}/${approvalObj?.UnitOfMeasurementName})`}
-                            name={"UOMToScrapUOMRatio"}
-                            type="text"
-                            Controller={Controller}
-                            control={control}
-                            placeholder={'-'}
-                            register={register}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.ScrapRate}
-                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.UOMToScrapUOMRatio, initialConfiguration.NoOfDecimalForPrice) : ''}
-                            disabled={true}
-                        />
-                    </Col>
-                    <Col md="6">
-                        <TooltipCustom id="conversion-factor-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextCalculatedFactor} />
-                        <TextFieldHookForm
-                            label={`Calculated Factor (${approvalObj?.UnitOfMeasurementName}/${approvalObj?.ScrapUnitOfMeasurement})`}
-                            name={"CalculatedFactor"}
-                            type="text"
-                            Controller={Controller}
-                            control={control}
-                            placeholder={'-'}
-                            register={register}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.ScrapRate}
-                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.CalculatedFactor, initialConfiguration.NoOfDecimalForPrice) : ''}
-                            disabled={true}
-                        />
-                    </Col>
-                    <Col md="6">
-                        <TextFieldHookForm
-                            label={labelForScrapRate()?.labelSelectedCurrency}
-                            name={"ScrapRatePerScrapUOM"}
-                            type="text"
-                            Controller={Controller}
-                            control={control}
-                            placeholder={'-'}
-                            register={register}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.ScrapRate}
-                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRatePerScrapUOM, initialConfiguration.NoOfDecimalForPrice) : ''}
-                            disabled={true}
-                        />
-                    </Col>
-                    {props?.IsImportEntry && <Col md="6">
-                        <TooltipCustom id="scrap-rate-per-scrap-conversion-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextScrapRatePerScrapUOMBaseCurrency} />
-                        <TextFieldHookForm
-                            label={labelForScrapRate()?.labelBaseCurrency}
-                            name={"ScrapRatePerScrapUOMConversion"}
-                            type="text"
-                            Controller={Controller}
-                            control={control}
-                            placeholder={'-'}
-                            register={register}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.ScrapRate}
-                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRatePerScrapUOMConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                            disabled={true}
-                        />
-                    </Col>}
-                </>}
-
-                {/* {(!this.state.showForgingMachiningScrapCost && !this.state.showExtraCost) && */}
-                {showScrapKeys?.showScrap &&
-                    <>
-                        <Col md="6">
-                            <TooltipCustom id="rm-scrap-rate-selected-currency" tooltipText={props?.toolTipTextObject?.toolTipTextScrapCostBaseCurrencyPerOldUOM} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
-                                name={"ScrapRateCurrency"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.ScrapRate}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>
-                        {props?.IsImportEntry && <Col md="6">
-                            <TooltipCustom id="rm-scrap-rate-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextScrapCostBaseCurrency} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
-                                name={"ScrapRateBase"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.ScrapRateInINR}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>}
-                    </>}
-                {showScrapKeys?.showForging &&
-                    <>
-                        <Col md="6">
-                            <TooltipCustom id="rm-forging-scrap-selected-currency" tooltipText={props?.toolTipTextObject?.toolTipTextForgingScrapCostSelectedCurrency} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Forging Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
-                                name={"ForgingScrap"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.ScrapRate}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>
-                        {props?.IsImportEntry && <Col md="6" className=" mb-3">
-                            <TooltipCustom id="rm-forging-scrap-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextForgingScrapCostBaseCurrency} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Forging Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
-                                name={"ForgingScrapBase"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.ScrapRateInINR}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>}
-
-
-
-                        <Col md="6">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Machining Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
-                                name={"MachiningScrap"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.MachiningScrapRate}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.MachiningScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>
-                        {props?.IsImportEntry && <Col md="6">
-                            <TooltipCustom id="rm-machining-scrap-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextMachiningScrapCostBaseCurrency} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Machining Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
-                                name={"MachiningScrapBase"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.MachiningScrapRateInINR}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.MachiningScrapRateInINR, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>}
-                    </>
-                }
-                {showScrapKeys?.showCircleJali &&
-                    <>
-                        <Col md="6">
-                            <TooltipCustom id="jali-scrap-cost-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Jali Scrap Rate 66", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
-                                name={"JaliScrapCost"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.ScrapRate}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>
-                        {props?.IsImportEntry && <Col md="6">
-                            <TooltipCustom id="rm-jali-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextJaliScrapCostBaseCurrency} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Jali Scrap Rate 44", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
-                                name={"JaliScrapCostBase"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.ScrapRateInINR}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>}
-
-
-
-                        <Col md="6">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Circle Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
-                                name={"CircleScrapCost"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.JaliScrapCost}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.JaliScrapCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>
-                        {props?.IsImportEntry && <Col md="6">
-                            <TooltipCustom id="rm-circle-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextCircleScrapCostBaseCurrency} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Circle Scrap Rate ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
-                                name={"CircleScrapCostBase"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.JaliScrapCostConversion}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.JaliScrapCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>}
-                    </>
-                }
-                {IsShowFreightAndShearingCostFields() && (
-                    <>
-
-                        <Col md="6">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Freight Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
-                                name={"FreightChargeCuurency"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.RMFreightCost}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RMFreightCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>
-                        {props?.IsImportEntry && <Col md="6">
-                            <TooltipCustom id="rm-freight-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextFreightCostBaseCurrency} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Freight Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
-                                name={"FreightChargeBase"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.RawMaterialFreightCostConversion}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RawMaterialFreightCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>}
-
-
-
-                        <Col md="6">
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Shearing Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
-                                name={"ShearingCost"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.RMShearingCost}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RMShearingCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>
-                        {props?.IsImportEntry && <Col md="6">
-                            <TooltipCustom id="rm-shearing-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextShearingCostBaseCurrency} />
-                            <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Shearing Cost ", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, reactLocalStorage.getObject("baseCurrency"))}
-                                name={"ShearingCostBase"}
-                                type="text"
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.RawMaterialShearingCostConversion}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RawMaterialShearingCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-                        </Col>}
-                    </>)}
-                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && props.costingTypeId === ZBCTypeId && <>
-                    <Col md="6">
-                        <TooltipCustom id="rm-basic-price" tooltipText={props?.toolTipTextObject?.basicPriceCurrency} />
-                        <TextFieldHookForm
-                            label={`Basic Price (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
-                            name={"BasicPriceCurrency"}
-                            type="text"
-                            Controller={Controller}
-                            control={control}
-                            placeholder={'-'}
-                            register={register}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.NetCostWithoutConditionCost}
-                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                            disabled={true}
-                        />
-                    </Col>
-                    {props?.IsImportEntry && <Col md="6">
-                        <TooltipCustom id="rm-basic-base-price" tooltipText={props?.toolTipTextObject?.basicPriceBaseCurrency} />
-                        <TextFieldHookForm
-                            label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
-                            name={"BasicPriceBase"}
-                            type="text"
-                            Controller={Controller}
-                            control={control}
-                            placeholder={'-'}
-                            register={register}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.NetCostWithoutConditionCostConversion}
-                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                            disabled={true}
-                        />
-                    </Col>}
-
-
-                    <Col md="6">
-                        <TextFieldHookForm
-                            label={`Condition Cost (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
-                            name={"FinalConditionCostCurrency"}
-                            type="text"
-                            Controller={Controller}
-                            control={control}
-                            placeholder={'-'}
-                            register={register}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.NetConditionCost}
-                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                            disabled={true}
-                        />
-                    </Col>
-
-                    {props?.IsImportEntry && <Col md="6">
-                        <TooltipCustom id="rm-condition-cost-base-currency" tooltipText={props?.toolTipTextObject?.toolTipTextConditionCostBaseCurrency} />
-                        <TextFieldHookForm
-                            label={`Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`}
-                            name={"FinalConditionCostBase"}
-                            type="text"
-                            Controller={Controller}
-                            control={control}
-                            placeholder={'-'}
-                            register={register}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.NetConditionCostConversion}
-                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetConditionCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                            disabled={true}
-                        />
-                    </Col>}
-
-                </>}
-                <Col md="6">
-                    <TooltipCustom id="rm-net-cost-currency" tooltipText={props?.toolTipTextObject?.netCostCurrency} />
-                    <TextFieldHookForm
-                        label={`Net Cost (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
-                        name={"NetLandedCostCurrency"}
-                        type="text"
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.NetLandedCost}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-                </Col>
-                {props?.IsImportEntry && <Col md="6">
-                    <TooltipCustom id="rm-net-cost-base-currency" tooltipText={props?.toolTipTextObject?.netCostBaseCurrency} />
-                    <TextFieldHookForm
-                        label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}
-                        name={"NetLandedCostBase"}
-                        type="text"
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.NetLandedCostConversion}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-                </Col>}
-            </>
-        )
+    const frameworkComponents = {
+        customLoadingOverlay: LoaderCustom,
+        effectiveDateFormatter: effectiveDateFormatter
+    };
+    const lastRevisionToggle = () => {
+        setIsLastRevisionOpen(!isLastRevisionOpen)
     }
-
     return (
         <>
             <Drawer
@@ -1191,7 +561,7 @@ function MasterSendForApproval(props) {
                 open={props.isOpen}
             >
                 <Container>
-                    <div className={'drawer-wrapper'}>
+                    <div className={'drawer-wrapper layout-min-width-680px'}>
                         <form
                         >
                             <Row className="drawer-heading">
@@ -1208,10 +578,10 @@ function MasterSendForApproval(props) {
                                 </Col>
                             </Row>
                             {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
-                            <Row className="ml-0">
+                            <Row>
                                 {(!IsFinalLevelButtonShow && (type === 'Approve' || type === 'Sender')) && (
                                     <>
-                                        <div className="input-group form-group col-md-12 input-withouticon">
+                                        <div className="input-group form-group col-md-6 input-withouticon">
                                             <SearchableSelectHookForm
                                                 label={`${handleDepartmentHeader()}`}
                                                 name={"dept"}
@@ -1225,11 +595,11 @@ function MasterSendForApproval(props) {
                                                 mandatory={false}
                                                 handleChange={handleDepartmentChange}
                                                 errors={errors.dept}
-                                                disabled={initialConfiguration.IsMultipleUserAllowForApproval}
+                                                disabled={initialConfiguration?.IsMultipleUserAllowForApproval}
                                             />
                                         </div>
-                                        <div className="input-group form-group col-md-12 input-withouticon">
-                                            {initialConfiguration.IsMultipleUserAllowForApproval ? <>
+                                        <div className="input-group form-group col-md-6 input-withouticon">
+                                            {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                                                 <AllApprovalField
                                                     label="Approver"
                                                     approverList={approvalDropDown}
@@ -1258,7 +628,7 @@ function MasterSendForApproval(props) {
                                     (type === 'Sender' && !IsFinalLevel) &&
                                     <>
 
-                                        <div className="input-group form-group col-md-12">
+                                        <div className="input-group form-group col-md-6">
                                             <SearchableSelectHookForm
                                                 label={'Reason'}
                                                 name={'reason'}
@@ -1274,8 +644,27 @@ function MasterSendForApproval(props) {
                                             />
                                         </div>
                                         {
-                                            !isBulkUpload && checkForNull(masterId) === 1 &&
+                                            !isBulkUpload && (checkForNull(masterId) === 1 || checkForNull(masterId) === 2) &&
                                             <>
+                                                {/* <div className="input-group form-group col-md-6">
+                                                    <label className='height-0'>Effective Date</label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            name="EffectiveDate"
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            dropdownMode="select"
+                                                            dateFormat="dd/MM/yyyy"
+                                                            placeholderText="-"
+                                                            className="withBorder"
+                                                            autoComplete={"off"}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </div> */}
                                                 <div className="input-group form-group col-md-6">
                                                     <label className='height-0'>Effective Date</label>
                                                     <div className="inputbox date-section">
@@ -1295,64 +684,50 @@ function MasterSendForApproval(props) {
                                                         />
                                                     </div>
                                                 </div>
+                                                <Col md="6">
+                                                    <TooltipCustom id="rm-net-cost-currency" tooltipText={props?.toolTipTextObject?.netCostCurrency} />
+                                                    <TextFieldHookForm
+                                                        label={`Net Cost (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
+                                                        name={"NetLandedCostCurrency"}
+                                                        type="text"
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        placeholder={'-'}
+                                                        register={register}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.NetLandedCost}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                                {props?.IsImportEntry && <Col md="6">
+                                                    <TooltipCustom id="rm-net-cost-base-currency" tooltipText={props?.toolTipTextObject?.netCostBaseCurrency} />
+                                                    <TextFieldHookForm
+                                                        label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                                        name={"NetLandedCostBase"}
+                                                        type="text"
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        placeholder={'-'}
+                                                        register={register}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.NetLandedCostConversion}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                                        disabled={true}
+                                                    />
+                                                </Col>}
 
-                                                {showPriceKeysCommonRM()}
 
                                             </>
                                         }
 
-                                        {
-                                            !isBulkUpload && checkForNull(masterId) === 2 &&
-                                            <>
-                                                <div className="input-group form-group col-md-12">
-                                                    <label className='height-0'>Effective Date</label>
-                                                    <div className="inputbox date-section">
-                                                        <DatePicker
-                                                            name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
-                                                            showMonthDropdown
-                                                            showYearDropdown
-                                                            dropdownMode="select"
-                                                            dateFormat="dd/MM/yyyy"
-                                                            placeholderText="-"
-                                                            className="withBorder"
-                                                            autoComplete={"off"}
-                                                            disabledKeyboardNavigation
-                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={true}
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                {showPriceKeysCommonBOP()}
-
-
-                                            </>
-                                        }
 
 
                                         {
                                             !isBulkUpload && checkForNull(masterId) === 3 &&
                                             <>
-                                                <div className="input-group form-group col-md-12">
-                                                    <label className='height-0'>Effective Date</label>
-                                                    <div className="inputbox date-section">
-                                                        <DatePicker
-                                                            name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
-                                                            showMonthDropdown
-                                                            showYearDropdown
-                                                            dropdownMode="select"
-                                                            dateFormat="dd/MM/yyyy"
-                                                            placeholderText="-"
-                                                            className="withBorder"
-                                                            autoComplete={"off"}
-                                                            disabledKeyboardNavigation
-                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={true}
-                                                        />
-                                                    </div>
-                                                </div>
 
                                                 <div className="input-group form-group col-md-12">
                                                     <TextFieldHookForm
@@ -1364,7 +739,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.basicRate}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.Rate, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.Rate, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                         placeholder={'-'}
                                                     />
@@ -1412,7 +787,7 @@ function MasterSendForApproval(props) {
                                                                 className=""
                                                                 customClassName={'withBorder'}
                                                                 errors={errors.basicRate}
-                                                                defaultValue={checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}
+                                                                defaultValue={checkForDecimalAndNull(item.MachineRate, initialConfiguration?.NoOfDecimalForPrice)}
                                                                 disabled={true}
 
                                                             />
@@ -1570,7 +945,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.totalSum}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPrice, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPrice, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                         placeholder={'-'}
                                                     />
@@ -1587,7 +962,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.totalSum}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPriceInCurrency, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPriceInCurrency, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                         placeholder={'-'}
                                                     />
@@ -1619,6 +994,53 @@ function MasterSendForApproval(props) {
 
                                 </div>
                             </Row>
+                            {getConfigurationKey()?.IsShowMaterialIndexation && <Row className="mb-2 accordian-container">
+                                <Col md="6" className='d-flex align-items-center'>
+                                    <HeaderTitle
+                                        title={'Last Revision Data:'}
+                                        customClass={'Personal-Details'}
+                                    />
+                                </Col>
+                                <Col md="6">
+                                    <div className={'right-details text-right'}>
+                                        <button className="btn btn-small-primary-circle ml-1" onClick={lastRevisionToggle} type="button">{isLastRevisionOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
+                                    </div>
+                                </Col>
+                                {isLastRevisionOpen && <Col md="12" className={`ag-grid-react mb-2`}>
+                                    <div className={`ag-grid-wrapper budgeting-table  ${lastRevisionRawMaterialDetails && lastRevisionRawMaterialDetails?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
+                                        <div className="ag-theme-material" >
+                                            {agGridLoader ? (<LoaderCustom customClass="simulation-Loader" />) : (
+                                                <>
+                                                    <AgGridReact
+                                                        style={{ height: '100%', width: '100%' }}
+                                                        defaultColDef={defaultColDef}
+                                                        domLayout='autoHeight'
+                                                        // columnDefs={c}
+                                                        rowData={lastRevisionRawMaterialDetails}
+                                                        // onCellValueChanged={onCellValueChanged}
+                                                        pagination={true}
+                                                        paginationPageSize={12}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        loadingOverlayComponent={'customLoadingOverlay'}
+                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: EMPTY_DATA,
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                        suppressColumnVirtualisation={true}
+                                                        stopEditingWhenCellsLoseFocus={true}
+                                                    >
+                                                        <AgGridColumn width={115} field="FrequencyOfSettlement" headerName="FrequencyOfSettlement" editable={false}></AgGridColumn>
+                                                        <AgGridColumn width={115} field="FromDate" headerName="FromDate" cellRenderer='effectiveDateFormatter' editable={false}></AgGridColumn>
+                                                        <AgGridColumn width={115} field="ToDate" headerName="ToDate" cellRenderer='effectiveDateFormatter' editable={false}></AgGridColumn>
+                                                        <AgGridColumn width={115} field="NetLandedCost" headerName="Net Cost" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                    </AgGridReact>
+                                                </>)}
+                                        </div>
+                                    </div>
+                                </Col >}
+                            </Row>}
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-sm-12 text-right bluefooter-butn">
                                     <button

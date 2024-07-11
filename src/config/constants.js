@@ -20,18 +20,7 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.11.81:8080/api/v1`;
-// const BASE_URL = `http://10.10.8.109:8070/api/v1`
 //const BASE_URL = `http://10.10.1.100:10152/api/v1`
-// const BASE_URL = `http://10.10.1.100:10172/api/v1`
-// const BASE_URL = `http://10.10.8.160/api/v1`;  //
-// const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
-// const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-// const BASE_URL = `http://10.10.8.120:81/api/v1`; 
-// const BASE_URL = `http://10.10.8.109:8070/api/v1`; rrr
-// const BASE_URL = `https://upsapi.costitright.com/api/v1`;
-//FILE URL
-//http://10.10.8.120:1005/
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -52,6 +41,10 @@ export const API = {
   getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
   getPartSelectLists: `${BASE_URL}/masters-part/select-list-component-part-for-convert-to-assembly`,
+
+
+  //Part Active InActive
+  ActiveInActivePartUser: `${BASE_URL}/masters-part/part-active`,
 
   //Combo apis
 
@@ -84,17 +77,6 @@ export const API = {
   getRawMaterialCategory: `${BASE_URL}/configuration-raw-material/select-list-get-raw-material-category`,
 
 
-  //add exchnage rate
-
-  getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
-
-  //add frequency of settlement
-
-  getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
-
-  // add commodity index rate average
-
-  getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
   ///INDEXATION
   getCommoditySelectList: `${BASE_URL}/masters-material/select-list-index-exchange`,
   getCommodityNameInIndexSelectList: `${BASE_URL}/masters-material/select-list-index-exchange-commodity-linking`,
@@ -123,6 +105,10 @@ export const API = {
   deleteCommodityStandardization: `${BASE_URL}/masters-material/delete-commodity-standardization`,
   deleteIndexDetailData: `${BASE_URL}/masters-material/delete-commodity-index-rate-details`,
   getAssociatedMaterial: `${BASE_URL}//masters-material/get-material-type`,
+  getLastRevisionRawMaterialDetails: `${BASE_URL}/masters-raw-material/get-last-revision-raw-material-details`,
+  getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
+  getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
+  getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -1119,6 +1105,7 @@ export const API = {
   getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
   getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
   deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
+  checkRegisteredVendor: `${BASE_URL}/rfq-quotation/check-registered-vendor`,
   // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
 
 
@@ -1160,7 +1147,6 @@ export const API = {
   updateMultiTechnologyTopAndWorkingRowCalculation: `${BASE_URL}/costing/update-multi-technology-top-and-working-row-calculation`,
 
   //RFQ
-  getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
   getQuotationDetailsByVendor: `${BASE_URL}/rfq-quotation/get-quotation-details-by-vendor`,
   createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   updateRfqQuotation: `${BASE_URL}/rfq-quotation/update`,
@@ -1201,6 +1187,10 @@ export const API = {
   getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
   // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
   // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
+
+  //SAP API FOR APPROVAL PUSH
+  getEvaluationType: `${BASE_URL}/ExternalIntegration/select-list-of-valuations`
+
 }
 //VENDOR MANAGEMENT
 
@@ -1264,6 +1254,11 @@ export const GET_INDEXDATA_LIST_SUCCESS = 'GET_INDEXDATA_LIST_SUCCESS'
 export const GET_INDEXDATA_FOR_DOWNLOAD = 'GET_INDEXDATA_FOR_DOWNLOAD'
 export const GET_COMMODITY_STANDARD_FOR_DOWNLOAD = 'GET_COMMODITY_STANDARD_FOR_DOWNLOAD'
 export const GET_COMMODITY_STANDARD_DATALIST_SUCCESS = 'GET_COMMODITY_STANDARD_DATALIST_SUCCESS'
+export const GET_OTHER_COST_SELECTLIST = 'GET_OTHER_COST_SELECTLIST'
+export const GET_OTHER_COST_APPLICABILITY_SELECTLIST = 'GET_OTHER_COST_APPLICABILITY_SELECTLIST'
+export const SET_COMMODITY_DETAILS = 'SET_COMMODITY_DETAILS'
+export const SET_OTHER_COST_DETAILS = 'SET_OTHER_COST_DETAILS'
+export const GET_LAST_REVISION_RAW_MATERIAL_DETAILS = 'GET_LAST_REVISION_RAW_MATERIAL_DETAILS'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
@@ -1991,6 +1986,8 @@ export const GET_RFQ_RAISE_NUMBER = "GET_RFQ_RAISE_NUMBER"
 export const PARTSPECIFICATIONRFQDATA = 'PARTSPECIFICATIONRFQDATA'
 export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
 export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
+export const HAVELLS_DESIGN_PARTS = "Havells Design part"
+export const GET_SAP_EVALUATIONTYPE = "GET_SAP_EVALUATIONTYPE"
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
@@ -3127,7 +3124,6 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 export const PartTypeIDFromAPI = 2
-export const RMIndex = true
 export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
 
@@ -3135,7 +3131,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V2.2.26";
+export const VERSION = "V3.0.5";
 
 
 
