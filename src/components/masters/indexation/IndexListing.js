@@ -196,9 +196,7 @@ const IndexListing = () => {
     const confirmDelete = (ID) => {
         dispatch(
             deleteIndexData(ID, (res) => {
-                if (res.status === 417 && res.data.Result === false) {
-                    Toaster.error(res.data.Message);
-                } else if (res && res.data && res.data.Result === true) {
+                if (res && res.data && res.data.Result === true) {
                     Toaster.success(MESSAGES.INDEX_DELETE_SUCCESS);
                     setState((prevState) => ({ ...prevState, dataCount: 0 }));
                     getTableListData();
@@ -241,7 +239,14 @@ const IndexListing = () => {
         let isEditbale = false
         let isDeleteButton = false
         isEditbale = permissions.Edit;
-        isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete);
+        // isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete);
+        if (showExtraData && props.rowIndex === 0) {
+            isDeleteButton = true
+        } else {
+            if (permissions.Delete && !rowData.IsAssociated) {
+                isDeleteButton = true
+            }
+        }
 
         return (
             <>

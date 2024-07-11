@@ -1149,7 +1149,6 @@ export const API = {
   updateMultiTechnologyTopAndWorkingRowCalculation: `${BASE_URL}/costing/update-multi-technology-top-and-working-row-calculation`,
 
   //RFQ
-  getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
   getQuotationDetailsByVendor: `${BASE_URL}/rfq-quotation/get-quotation-details-by-vendor`,
   createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   updateRfqQuotation: `${BASE_URL}/rfq-quotation/update`,
@@ -1190,6 +1189,10 @@ export const API = {
   getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
   // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
   // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
+
+  //SAP API FOR APPROVAL PUSH
+  getEvaluationType: `${BASE_URL}/ExternalIntegration/select-list-of-valuations`
+
 }
 //VENDOR MANAGEMENT
 
@@ -1988,6 +1991,7 @@ export const PARTSPECIFICATIONRFQDATA = 'PARTSPECIFICATIONRFQDATA'
 export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
 export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
 export const HAVELLS_DESIGN_PARTS = "Havells Design part"
+export const GET_SAP_EVALUATIONTYPE = "GET_SAP_EVALUATIONTYPE"
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
@@ -3123,7 +3127,6 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 export const PartTypeIDFromAPI = 2
-export const RMIndex = true
 export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
 
@@ -3131,7 +3134,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.2";
+export const VERSION = "V3.0.5";
 
 
 

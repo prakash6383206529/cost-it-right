@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllApprovalUserFilterByDepartment, getReasonSelectList, } from '../../../costing/actions/Approval'
+import { getAllApprovalUserFilterByDepartment, getReasonSelectList, setSAPData } from '../../../costing/actions/Approval'
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { BOPIMPORT, EMPTY_GUID, EXCHNAGERATE, RMIMPORT } from '../../../../config/constants'
@@ -58,6 +58,7 @@ function SimulationApproveReject(props) {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const SAPData = useSelector(state => state.approval.SAPObj)
+
   const [approverIdList, setApproverIdList] = useState([])
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
@@ -489,6 +490,10 @@ function SimulationApproveReject(props) {
       senderObj.Attachements = updatedFiles
       senderObj.LinkedTokenNumber = linkingTokenDropDown.value
       senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false      // IF WE SEND MULTIPLE TOKENS FOR SIMULATION THEN THIS WILL BE TRUE (requirement)
+      senderObj.InfoCategeory = SAPData?.infoCategory
+      senderObj.ValuationType = SAPData?.evaluationType
+      senderObj.PlannedDelTime = SAPData?.leadTime
+
 
       //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
       dispatch(simulationApprovalRequestBySender(senderObj, res => {
@@ -496,6 +501,7 @@ function SimulationApproveReject(props) {
         if (res?.data?.Result) {
           Toaster.success('Simulation token has been sent for approval.')
           props.closeDrawer('', 'submit')
+          dispatch(setSAPData({}))
         }
       }))
     }
@@ -592,6 +598,7 @@ function SimulationApproveReject(props) {
         fileDataCallback={fileDataCallback}
         isSimulationApprovalListing={props?.isSimulationApprovalListing}
         isDisableSubmit={isDisableSubmit}
+        plantCode={selectedRowData && selectedRowData[0]?.PlantCode ? selectedRowData[0]?.PlantCode : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID}
       />
 
       {
