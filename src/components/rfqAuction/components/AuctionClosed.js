@@ -68,44 +68,11 @@ const AuctionClosed = (props) => {
       setState((prevState) => ({ ...prevState, tableData: processList }));
     }
   }, [processList]);
-
-  const editItemDetails = (Id) => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpenProcessDrawer: true,
-      isEditFlag: true,
-      Id: Id,
-      // dataCount: 0,
-    }));
-    getDataList();
-  };
-
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted
       ? props.valueFormatted
       : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-    return (
-      <>
-        {/* {permissions.Edit && (
-          <button
-            title="Edit"
-            className="Edit mr-2 Tour_List_Edit"
-            type={"button"}
-            onClick={() => editItemDetails(cellValue, rowData)}
-          />
-        )}
-        {permissions.Delete && (
-          <button
-            title="Delete"
-            className="Delete Tour_List_Delete"
-            type={"button"}
-            onClick={() => deleteItem(cellValue)}
-          />
-        )} */}
-      </>
-    );
   };
 
   const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
@@ -133,47 +100,6 @@ const AuctionClosed = (props) => {
     );
   };
 
-  const deleteItem = (Id) => {
-    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
-  };
-
-  const confirmDelete = (ID) => {
-    const loggedInUser = loggedInUserId();
-    dispatch(
-      deleteProcess(ID, loggedInUser, (res) => {
-        if (res.data.Result === true) {
-          Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY);
-          getDataList();
-          setState((prevState) => ({ ...prevState, dataCount: 0 }));
-        }
-      })
-    );
-    setState((prevState) => ({ ...prevState, showPopup: false }));
-  };
-  const onPopupConfirm = () => {
-    confirmDelete(state.deletedId);
-  };
-
-  const closePopUp = () => {
-    setState((prevState) => ({ ...prevState, showPopup: false }));
-  };
-
-  const processToggler = () => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpenProcessDrawer: true,
-      isEditFlag: false,
-      Id: "",
-    }));
-  };
-
-  const closeProcessDrawer = (e = "", formData, type) => {
-    setState((prevState) => ({ ...prevState, isOpenProcessDrawer: false }));
-    if (type === "submit") {
-      getDataList();
-    }
-    setState((prevState) => ({ ...prevState, dataCount: 0 }));
-  };
   /**
                  @method toggleExtraData
                  @description Handle specific module tour state to display lorem data
@@ -198,24 +124,6 @@ const AuctionClosed = (props) => {
     }, 500);
   };
 
-  const returnExcelColumn = (data = [], TempData) => {
-    let temp = [];
-    temp = TempData;
-
-    return (
-      <ExcelSheet data={temp} name={`${ProcessMaster}`}>
-        {data &&
-          data.map((ele, index) => (
-            <ExcelColumn
-              key={index}
-              label={ele.label}
-              value={ele.value}
-              style={ele.style}
-            />
-          ))}
-      </ExcelSheet>
-    );
-  };
   const onGridReady = (params) => {
     setState((prevState) => ({
       ...prevState,
@@ -236,14 +144,6 @@ const AuctionClosed = (props) => {
       dataCount: selectedRows.length,
     }));
   };
-  const onBtExport = () => {
-    let tempArr = [];
-    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
-    tempArr =
-      tempArr && tempArr.length > 0 ? tempArr : processList ? processList : [];
-    return returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr);
-  };
-
   const onFilterTextBoxChanged = (e) => {
     state.gridApi.setQuickFilter(e.target.value);
     if (
@@ -266,7 +166,7 @@ const AuctionClosed = (props) => {
     gridOptions.api.setFilterModel(null);
   };
 
-  const { isOpenProcessDrawer, isEditFlag, noData } = state;
+  const { noData } = state;
   const ExcelFile = ReactExport.ExcelFile;
 
   const isFirstColumn = (params) => {

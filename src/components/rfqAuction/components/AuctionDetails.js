@@ -14,7 +14,6 @@ import { PROCESSLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { PaginationWrapper } from "../../common/commonPagination";
 import {
   loggedInUserId,
@@ -72,44 +71,10 @@ const AuctionDetails = (props) => {
       setState((prevState) => ({ ...prevState, tableData: processList }));
     }
   }, [processList]);
-
-  const editItemDetails = (Id) => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpenProcessDrawer: true,
-      isEditFlag: true,
-      Id: Id,
-      // dataCount: 0,
-    }));
-    getDataList();
-  };
-
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted
       ? props.valueFormatted
       : props?.value;
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-    return (
-      <>
-        {/* {permissions.Edit && (
-          <button
-            title="Edit"
-            className="Edit mr-2 Tour_List_Edit"
-            type={"button"}
-            onClick={() => editItemDetails(cellValue, rowData)}
-          />
-        )}
-        {permissions.Delete && (
-          <button
-            title="Delete"
-            className="Delete Tour_List_Delete"
-            type={"button"}
-            onClick={() => deleteItem(cellValue)}
-          />
-        )} */}
-      </>
-    );
   };
 
   const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
@@ -136,48 +101,6 @@ const AuctionDetails = (props) => {
       })
     );
   };
-
-  const deleteItem = (Id) => {
-    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
-  };
-
-  const confirmDelete = (ID) => {
-    const loggedInUser = loggedInUserId();
-    dispatch(
-      deleteProcess(ID, loggedInUser, (res) => {
-        if (res.data.Result === true) {
-          Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY);
-          getDataList();
-          setState((prevState) => ({ ...prevState, dataCount: 0 }));
-        }
-      })
-    );
-    setState((prevState) => ({ ...prevState, showPopup: false }));
-  };
-  const onPopupConfirm = () => {
-    confirmDelete(state.deletedId);
-  };
-
-  const closePopUp = () => {
-    setState((prevState) => ({ ...prevState, showPopup: false }));
-  };
-
-  const processToggler = () => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpenProcessDrawer: true,
-      isEditFlag: false,
-      Id: "",
-    }));
-  };
-
-  const closeProcessDrawer = (e = "", formData, type) => {
-    setState((prevState) => ({ ...prevState, isOpenProcessDrawer: false }));
-    if (type === "submit") {
-      getDataList();
-    }
-    setState((prevState) => ({ ...prevState, dataCount: 0 }));
-  };
   /**
                  @method toggleExtraData
                  @description Handle specific module tour state to display lorem data
@@ -202,24 +125,6 @@ const AuctionDetails = (props) => {
     }, 500);
   };
 
-  const returnExcelColumn = (data = [], TempData) => {
-    let temp = [];
-    temp = TempData;
-
-    return (
-      <ExcelSheet data={temp} name={`${ProcessMaster}`}>
-        {data &&
-          data.map((ele, index) => (
-            <ExcelColumn
-              key={index}
-              label={ele.label}
-              value={ele.value}
-              style={ele.style}
-            />
-          ))}
-      </ExcelSheet>
-    );
-  };
   const onGridReady = (params) => {
     setState((prevState) => ({
       ...prevState,
@@ -239,13 +144,6 @@ const AuctionDetails = (props) => {
       selectedRowData: selectedRows,
       dataCount: selectedRows.length,
     }));
-  };
-  const onBtExport = () => {
-    let tempArr = [];
-    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
-    tempArr =
-      tempArr && tempArr.length > 0 ? tempArr : processList ? processList : [];
-    return returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr);
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -270,8 +168,7 @@ const AuctionDetails = (props) => {
     gridOptions.api.setFilterModel(null);
   };
 
-  const { isOpenProcessDrawer, isEditFlag, noData } = state;
-  const ExcelFile = ReactExport.ExcelFile;
+  const { noData } = state;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -331,42 +228,7 @@ const AuctionDetails = (props) => {
                     ) : (
                       ""
                     )}
-                    {/* {permissions.Add && (
-                  <button
-                    type="button"
-                    className={"user-btn mr5 Tour_List_Add"}
-                    title="Add"
-                    onClick={processToggler}
-                  >
-                    <div className={"plus mr-0"}></div>
-                  </button>
-                )} */}
-                    {/* {permissions.Download && (
-                  <>
-                    <ExcelFile
-                      filename={ProcessMaster}
-                      fileExtension={".xls"}
-                      element={
-                        <button
-                          title={`Download ${state.dataCount === 0
-                            ? "All"
-                            : "(" + state.dataCount + ")"
-                            }`}
-                          type="button"
-                          className={"user-btn mr5 Tour_List_Download"}
-                        >
-                          <div className="download mr-1"></div>
-                          {`${state.dataCount === 0
-                            ? "All"
-                            : "(" + state.dataCount + ")"
-                            }`}
-                        </button>
-                      }
-                    >
-                      {onBtExport()}
-                    </ExcelFile>
-                  </>
-                )} */}
+
                     <Button
                       id="rmDomesticListing_add"
                       className={"mr5 Tour_List_Add"}

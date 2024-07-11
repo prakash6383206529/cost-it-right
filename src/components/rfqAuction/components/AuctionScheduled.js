@@ -2,19 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
-import { deleteProcess, getProcessDataList } from "../actions/Process";
+import { getProcessDataList } from "../actions/Process";
 import NoContentFound from "../../common/NoContentFound";
-import { MESSAGES } from "../../../config/message";
-import Toaster from "../../common/Toaster";
+
 // import AddProcessDrawer from "./AddProcessDrawer";
 import LoaderCustom from "../../common/LoaderCustom";
-import { ProcessMaster } from "../../../config/constants";
-import ReactExport from "react-export-excel";
-import { PROCESSLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { PaginationWrapper } from "../../common/commonPagination";
 import {
   loggedInUserId,
@@ -25,10 +20,6 @@ import {
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
-import Button from "../../layout/Button";
-
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -69,43 +60,11 @@ const AuctionScheduled = (props) => {
     }
   }, [processList]);
 
-  const editItemDetails = (Id) => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpenProcessDrawer: true,
-      isEditFlag: true,
-      Id: Id,
-      // dataCount: 0,
-    }));
-    getDataList();
-  };
-
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted
       ? props.valueFormatted
       : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-    return (
-      <>
-        {/* {permissions.Edit && (
-          <button
-            title="Edit"
-            className="Edit mr-2 Tour_List_Edit"
-            type={"button"}
-            onClick={() => editItemDetails(cellValue, rowData)}
-          />
-        )}
-        {permissions.Delete && (
-          <button
-            title="Delete"
-            className="Delete Tour_List_Delete"
-            type={"button"}
-            onClick={() => deleteItem(cellValue)}
-          />
-        )} */}
-      </>
-    );
   };
 
   const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
@@ -133,47 +92,6 @@ const AuctionScheduled = (props) => {
     );
   };
 
-  const deleteItem = (Id) => {
-    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
-  };
-
-  const confirmDelete = (ID) => {
-    const loggedInUser = loggedInUserId();
-    dispatch(
-      deleteProcess(ID, loggedInUser, (res) => {
-        if (res.data.Result === true) {
-          Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY);
-          getDataList();
-          setState((prevState) => ({ ...prevState, dataCount: 0 }));
-        }
-      })
-    );
-    setState((prevState) => ({ ...prevState, showPopup: false }));
-  };
-  const onPopupConfirm = () => {
-    confirmDelete(state.deletedId);
-  };
-
-  const closePopUp = () => {
-    setState((prevState) => ({ ...prevState, showPopup: false }));
-  };
-
-  const processToggler = () => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpenProcessDrawer: true,
-      isEditFlag: false,
-      Id: "",
-    }));
-  };
-
-  const closeProcessDrawer = (e = "", formData, type) => {
-    setState((prevState) => ({ ...prevState, isOpenProcessDrawer: false }));
-    if (type === "submit") {
-      getDataList();
-    }
-    setState((prevState) => ({ ...prevState, dataCount: 0 }));
-  };
   /**
                  @method toggleExtraData
                  @description Handle specific module tour state to display lorem data
@@ -198,24 +116,6 @@ const AuctionScheduled = (props) => {
     }, 500);
   };
 
-  const returnExcelColumn = (data = [], TempData) => {
-    let temp = [];
-    temp = TempData;
-
-    return (
-      <ExcelSheet data={temp} name={`${ProcessMaster}`}>
-        {data &&
-          data.map((ele, index) => (
-            <ExcelColumn
-              key={index}
-              label={ele.label}
-              value={ele.value}
-              style={ele.style}
-            />
-          ))}
-      </ExcelSheet>
-    );
-  };
   const onGridReady = (params) => {
     setState((prevState) => ({
       ...prevState,
@@ -235,13 +135,6 @@ const AuctionScheduled = (props) => {
       selectedRowData: selectedRows,
       dataCount: selectedRows.length,
     }));
-  };
-  const onBtExport = () => {
-    let tempArr = [];
-    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
-    tempArr =
-      tempArr && tempArr.length > 0 ? tempArr : processList ? processList : [];
-    return returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr);
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -266,8 +159,7 @@ const AuctionScheduled = (props) => {
     gridOptions.api.setFilterModel(null);
   };
 
-  const { isOpenProcessDrawer, isEditFlag, noData } = state;
-  const ExcelFile = ReactExport.ExcelFile;
+  const { noData } = state;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -313,42 +205,7 @@ const AuctionScheduled = (props) => {
                   ) : (
                     ""
                   )}
-                  {/* {permissions.Add && (
-                  <button
-                    type="button"
-                    className={"user-btn mr5 Tour_List_Add"}
-                    title="Add"
-                    onClick={processToggler}
-                  >
-                    <div className={"plus mr-0"}></div>
-                  </button>
-                )} */}
-                  {/* {permissions.Download && (
-                  <>
-                    <ExcelFile
-                      filename={ProcessMaster}
-                      fileExtension={".xls"}
-                      element={
-                        <button
-                          title={`Download ${state.dataCount === 0
-                            ? "All"
-                            : "(" + state.dataCount + ")"
-                            }`}
-                          type="button"
-                          className={"user-btn mr5 Tour_List_Download"}
-                        >
-                          <div className="download mr-1"></div>
-                          {`${state.dataCount === 0
-                            ? "All"
-                            : "(" + state.dataCount + ")"
-                            }`}
-                        </button>
-                      }
-                    >
-                      {onBtExport()}
-                    </ExcelFile>
-                  </>
-                )} */}
+
                   <button
                     type="button"
                     className="user-btn Tour_List_Reset "

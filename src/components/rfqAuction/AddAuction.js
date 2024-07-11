@@ -68,8 +68,6 @@ import {
   getrRqVendorDetails,
   getTargetPrice,
   setVendorDetails,
-  getAssemblyChildpart,
-  getRfqRaiseNumber,
   saveRfqPartDetails,
   getRfqPartDetails,
   deleteQuotationPartDetail,
@@ -86,7 +84,6 @@ import {
   autoCompleteDropdown,
   autoCompleteDropdownPart,
 } from "../common/CommonFunctions";
-import BulkUpload from "../massUpload/BulkUpload";
 import _ from "lodash";
 import { getPartSelectListWtihRevNo } from "../masters/actions/Volume";
 import {
@@ -2191,47 +2188,6 @@ function AddAuction(props) {
 
     return opts1;
   };
-
-  const handleRMName = (newValue) => {
-    setRMName({ label: newValue?.label, value: newValue?.value });
-    setRmNameSelected(true);
-    dispatch(
-      getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => {})
-    );
-  };
-
-  const handleRMGrade = (newValue) => {
-    setRMGrade({ label: newValue?.label, value: newValue?.value });
-    dispatch(fetchSpecificationDataAPI(newValue.value, (res) => {}));
-  };
-
-  const handleRMSpecification = (newValue) => {
-    setRMSpecification({ label: newValue?.label, value: newValue?.value });
-  };
-  const handleChangeUOM = (newValue) => {
-    setSelectedUOM(newValue);
-    if (updateButtonPartNoTable) {
-      setStorePartsDetail((prevDetails) => {
-        return prevDetails.map((item) => {
-          if (item.PartId === getValues("partNumber")?.value) {
-            return {
-              ...item,
-              UnitOfMeasurementId: newValue?.value || null,
-              HavellsDesignPart: getValues("HavellsDesignPart")?.value || null,
-              TimeLine: requirementDate || "",
-            };
-          } else {
-            return {
-              ...item,
-              UnitOfMeasurementId: null,
-              HavellsDesignPart: null,
-              TimeLine: null,
-            };
-          }
-        });
-      });
-    }
-  };
   const EditableCallback = (props) => {
     let value;
     if (getValues("nfrId")) {
@@ -2731,19 +2687,6 @@ function AddAuction(props) {
                             <div className="form-group">
                               <label>Time</label>
                               <div className="inputbox date-section">
-                                {/* <DatePicker
-                                                                    name="startPlanDate"
-                                                                    selected={time}
-                                                                    showTimeInput
-                                                                    timeFormat='HH:mm'
-                                                                    showTimeSelectOnly                                                    
-                                                                    placeholderText="Select"
-                                                                    onChange={handleChangeTime}
-                                                                    disabledKeyboardNavigation
-                                                                    className="withBorder"
-                                                                    autoComplete={'off'}
-                                                                    dateFormat="HH:mm"
-                                                                /> */}
                                 <TextFieldHookForm
                                   label=""
                                   name={"Time"}
@@ -3305,178 +3248,6 @@ function AddAuction(props) {
                         {/* {selectedType === 'value' && ( */}
                       </Row>
 
-                      {!disabledVendoUi && (
-                        <>
-                          <HeaderTitle title={"Vendor:"} customClass="mt-4" />
-                          <Row className="mt-1 part-detail-wrapper">
-                            <Col md="3">
-                              <AsyncSearchableSelectHookForm
-                                label={"Vendor Name"}
-                                name={"vendor"}
-                                placeholder={"Select"}
-                                Controller={Controller}
-                                control={control}
-                                rules={{ required: false }}
-                                register={register}
-                                defaultValue={vendor.length !== 0 ? vendor : ""}
-                                options={renderListing("vendor")}
-                                mandatory={true}
-                                handleChange={handleVendorChange}
-                                // handleChange={() => { }}
-                                errors={errors.vendor}
-                                isLoading={VendorLoaderObj}
-                                asyncOptions={vendorFilterList}
-                                disabled={
-                                  dataProps?.isViewFlag
-                                    ? true
-                                    : false ||
-                                      isDropdownDisabled ||
-                                      disabledVendoUi
-                                }
-                                NoOptionMessage={
-                                  MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN
-                                }
-                              />
-                            </Col>
-                            <Col
-                              md="3"
-                              className="d-flex align-items-center pb-1"
-                            >
-                              <button
-                                id="add_vendor"
-                                type="button"
-                                className={"user-btn pull-left"}
-                                onClick={() => addRowVendorTable()}
-                                disabled={
-                                  disabledVendoUi
-                                    ? true
-                                    : dataProps?.isAddFlag
-                                    ? false
-                                    : isViewFlag || !isEditAll
-                                }
-                              >
-                                <div className={"plus"}></div>
-                                {!updateButtonVendorTable ? "ADD" : "UPDATE"}
-                              </button>
-
-                              <button
-                                id="reset_vendor"
-                                onClick={onResetVendorTable} // Need to change this cancel functionality
-                                type="button"
-                                value="CANCEL"
-                                className="reset ml-2"
-                                disabled={
-                                  disabledVendoUi
-                                    ? true
-                                    : dataProps?.isAddFlag
-                                    ? false
-                                    : isViewFlag || !isEditAll
-                                }
-                              >
-                                <div className={""}></div>
-                                RESET
-                              </button>
-                            </Col>
-                          </Row>
-
-                          <div>
-                            {!loader ? (
-                              <div className={`ag-grid-react`}>
-                                <Row>
-                                  <Col>
-                                    <div
-                                      className={`ag-grid-wrapper height-width-wrapper ${
-                                        vendorList && vendorList.length <= 0
-                                          ? "overlay-contain non-filter border"
-                                          : ""
-                                      } `}
-                                    >
-                                      <div
-                                        className={`ag-theme-material  max-loader-height`}
-                                      >
-                                        <AgGridReact
-                                          defaultColDef={defaultColDef}
-                                          //floatingFilter={true}
-                                          domLayout="autoHeight"
-                                          // columnDefs={c}
-                                          rowData={vendorList}
-                                          //pagination={true}
-                                          paginationPageSize={10}
-                                          onGridReady={onGridReady}
-                                          gridOptions={gridOptionsVendor}
-                                          noRowsOverlayComponent={
-                                            "customNoRowsOverlay"
-                                          }
-                                          noRowsOverlayComponentParams={{
-                                            title: EMPTY_DATA,
-                                            imagClass: "imagClass mt-0",
-                                          }}
-                                          frameworkComponents={
-                                            frameworkComponents
-                                          }
-                                        >
-                                          <AgGridColumn
-                                            field="Vendor"
-                                            headerName="Vendor (Code)"
-                                          ></AgGridColumn>
-                                          {IsSendQuotationToPointOfContact() && (
-                                            <AgGridColumn
-                                              width={"270px"}
-                                              field="ContactPerson"
-                                              headerName="Point of Contact"
-                                            ></AgGridColumn>
-                                          )}
-                                          {vendorList && havellsKey && (
-                                            <AgGridColumn
-                                              field="IncoTerms"
-                                              header="Inco Terms"
-                                              cellRenderer={"hyphenFormatter"}
-                                            ></AgGridColumn>
-                                          )}
-                                          {vendorList && havellsKey && (
-                                            <AgGridColumn
-                                              field="PaymentTerms"
-                                              header="Payment Terms"
-                                              cellRenderer={"hyphenFormatter"}
-                                            ></AgGridColumn>
-                                          )}
-                                          {vendorList && havellsKey && (
-                                            <AgGridColumn
-                                              field="LDClause"
-                                              header="LD Clause"
-                                              cellRenderer={"hyphenFormatter"}
-                                            ></AgGridColumn>
-                                          )}
-                                          <AgGridColumn
-                                            width={"270px"}
-                                            field="VendorId"
-                                            headerName="Vendor Id"
-                                            hide={true}
-                                          ></AgGridColumn>
-                                          <AgGridColumn
-                                            width={"180px"}
-                                            field="VendorId"
-                                            headerName="Action"
-                                            type="rightAligned"
-                                            floatingFilter={false}
-                                            cellRenderer={
-                                              "buttonFormatterVendorTable"
-                                            }
-                                          ></AgGridColumn>
-                                        </AgGridReact>
-                                      </div>
-                                    </div>
-                                  </Col>
-                                </Row>
-                              </div>
-                            ) : (
-                              <div>
-                                <LoaderCustom />
-                              </div>
-                            )}
-                          </div>
-                        </>
-                      )}
                       <Row className="justify-content-between sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer mt-4">
                         <div className="col-sm-12 text-right bluefooter-butn">
                           <button

@@ -2277,58 +2277,11 @@ function ComparsionAuction(props) {
     return cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
   };
 
-  const frameworkComponents = {
-    hyphenFormatter: hyphenFormatter,
-    buttonFormatterFirst: buttonFormatterFirst,
-    buttonFormatterVendorTable: buttonFormatterVendorTable,
-    customNoRowsOverlay: NoContentFound,
-    partNumberFormatter: partNumberFormatter,
-    sopFormatter: sopFormatter,
-    EditableCallback: EditableCallback,
-    afcFormatter: afcFormatter,
-    quantityHeader: quantityHeader,
-    effectiveDateFormatter: effectiveDateFormatter,
-  };
-
-  const VendorLoaderObj = { isLoader: VendorInputLoader };
-  const plantLoaderObj = { isLoader: inputLoader };
-
   const [isPercentage, setIsPercentage] = useState(false);
   const toggleInputType = () => {
     setIsPercentage(!isPercentage);
   };
 
-  const filterList = async (inputValue) => {
-    if (
-      inputValue &&
-      typeof inputValue === "string" &&
-      inputValue.includes(" ")
-    ) {
-      inputValue = inputValue.trim();
-    }
-    const resultInput = inputValue.slice(0, searchCount);
-    if (inputValue?.length >= searchCount && vendorName !== resultInput) {
-      let res;
-      res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput);
-      setVendorName(resultInput);
-      let vendorDataAPI = res?.data?.SelectList;
-      if (inputValue) {
-        return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true);
-      } else {
-        return vendorDataAPI;
-      }
-    } else {
-      if (inputValue?.length < searchCount) return false;
-      else {
-        let VendorData = reactLocalStorage?.getObject("Data");
-        if (inputValue) {
-          return autoCompleteDropdown(inputValue, VendorData, false, [], false);
-        } else {
-          return VendorData;
-        }
-      }
-    }
-  };
   // Table data Array
   const dataArray = [
     { rank: "Rank 1", bids: [1008, 1007, 1005, 1004, 1004] },
@@ -2358,6 +2311,9 @@ function ComparsionAuction(props) {
     durationLabel: "Duration",
     endTimeLabel: "End Time",
     remainingTimeLabel: "Remaining Time",
+    bopNameLabel: "BOP Name",
+    bopNumberLabel: "BOP No",
+    bopCategoryLabel: "Category",
   };
   const data = {
     rfqNumber: "12345",
@@ -2508,19 +2464,19 @@ function ComparsionAuction(props) {
                     </Col>
                     <Col md="2" className="mb-2">
                       <div className="view-label">
-                        <label>BOP No.:</label>
+                        <label>{labels.bopNumberLabel}:</label>
                         <span>{data.bopNumber}</span>
                       </div>
                     </Col>
                     <Col md="2" className="mb-2">
                       <div className="view-label">
-                        <label>BOP Name:</label>
+                        <label>{labels.bopNameLabel}:</label>
                         <span>{data.bopName}</span>
                       </div>
                     </Col>
                     <Col md="2" className="mb-2">
                       <div className="view-label">
-                        <label>Category:</label>
+                        <label>{labels.bopCategoryLabel}:</label>
                         <span>{data.bopCategory}</span>
                       </div>
                     </Col>
