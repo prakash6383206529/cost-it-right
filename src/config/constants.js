@@ -2739,6 +2739,7 @@ export const EXCHNAGERATE = '8'
 export const MACHINERATE = '9'
 export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
+export const RAWMATERIALINDEX = '11'
 
 // BULK UPLOAD
 export const SHEETMETAL_GROUP_BULKUPLOAD = 1
@@ -3131,7 +3132,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.5";
+export const VERSION = "V3.0.6";
 
 
 
