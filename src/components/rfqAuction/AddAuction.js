@@ -15,8 +15,11 @@ import { searchCount, VBC_VENDOR_TYPE, ZBC } from "../../config/constants";
 import { getPlantSelectListByType, getVendorNameByVendorSelectList } from "../../actions/Common";
 import { autoCompleteDropdown } from "../common/CommonFunctions";
 import { reactLocalStorage } from "reactjs-localstorage";
-
-
+import Switch from 'react-switch'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull } from "../../helper";
+import DatePicker from 'react-datepicker'
+import { setHours, setMinutes } from 'date-fns';
+import DayTime from "../common/DayTimeWrapper";
 function AddAuction(props) {
   const dispatch = useDispatch();
   const { data: dataProps } = props;
@@ -33,6 +36,10 @@ function AddAuction(props) {
     mode: "onChange",
     reValidateMode: "onChange",
   });
+  const currentDate = new Date()
+  const currentHours = currentDate.getHours();
+  const currentMinutes = currentDate.getMinutes();
+  //states
   const [state, setState] = useState({
     isViewFlag: false,
     drawerOpen: false,
@@ -40,10 +47,34 @@ function AddAuction(props) {
     selectedPriceZoneType: "priceZone%",
     selectedType: "%",
     comparsionData: {},
-    vendorName: ''
+    vendorName: '',
+    partType: '',
+    reductionPrice: false,
+    priceZoneReduction: false,
+    formData: []
+  })
+  const [calculationState, setCalculationState] = useState({
+    BasePrice: '',
+    MinimumReductionPriceValue: '',
+    MinimumReductionPricePercentage: '',
+    RedZoneValue: '',
+    RedZonePercentage: '',
+    YellowZoneValue: '',
+    YellowZonePercentage: '',
+    GreenZoneValue: '',
+    GreenZonePercentage: '',
 
   })
+  const [dateAndTimeState, setDateAndTimeState] = useState({
+    dateAndTime: '',
+    minHours: currentHours,
+    minMinutes: currentMinutes,
+
+  })
+
+  // useSelectors
   const { plantSelectList } = useSelector(state => state.comman);
+  const { NoOfDecimalForPrice } = useSelector((state) => state.auth.initialConfiguration)
   useEffect(() => {
     dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
   }, [])
@@ -59,7 +90,7 @@ function AddAuction(props) {
     } else if (label === 'RFQNumber') {
       temp = RFQ
     } else if (label === 'Plant') {
-      console.log('plantSelectList: ', plantSelectList);
+
       plantSelectList && plantSelectList.map(item => {
         temp.push({ label: item.PlantNameCode, value: item.PlantId })
       })
@@ -82,9 +113,9 @@ function AddAuction(props) {
     setState(prevState => ({ ...prevState, comparsionAuction: true }));
     // props.hide(false);
   };
-  const onSubmit = (data, e, isPartDetailsSent) => {
+  const onSubmit = (data) => {
 
-
+    dispatch()
   };
 
 
@@ -95,6 +126,7 @@ function AddAuction(props) {
   ];
 
   const handleRadioChange = (e) => {
+
     setState(prevState => ({ ...prevState, selectedType: e.target.value }));
   };
   //   Price Zone
@@ -139,6 +171,74 @@ function AddAuction(props) {
       }
     }
   };
+  const reductionPriceToggle = (type) => {
+    if (type === 'basePrice') {
+      setState(prevState => ({ ...prevState, reductionPrice: !state.reductionPrice }))
+    } else if (type === 'priceZone') {
+      setState(prevState => ({ ...prevState, priceZoneReduction: !state.priceZoneReduction }))
+    }
+  }
+  const calculateReversePercentage = (value) => {
+    const basePrice = checkForNull(getValues('BasePrice')) ?? 0
+    const calculatedValue = calculatePercentageValue(basePrice, value)
+    const returnValue = basePrice - checkForNull(calculatedValue)
+    return returnValue;
+  }
+  const calculateReverseValue = (value) => {
+    const basePrice = checkForNull(getValues('BasePrice')) ?? 0
+    const inputPrice = basePrice - value;
+    const returnValue = (inputPrice * 100) / basePrice
+    return returnValue;
+  }
+  const basePriceHandle = (event) => {
+    setCalculationState(prevState => ({ ...prevState, BasePrice: event.target.value }))
+    const calculationFields = ['MinimumReductionPricePercentage', 'MinimumReductionPriceValue', 'MinimumReductionPriceValue', 'MinimumReductionPricePercentage', 'RedZoneValue', 'RedZonePercentage', 'YellowZoneValue', 'YellowZonePercentage', 'GreenZoneValue', 'GreenZonePercentage']
+    calculationFields.map(item => {
+      setValue(item, '')
+      setCalculationState(prevState => ({ ...prevState, [item]: 0 }))
+    })
+  }
+
+  const calculateBasePriceValueAndPer = (event) => {
+    if (!state.reductionPrice) {
+      const MinimumReductionPriceValue = calculateReversePercentage(event.target.value)
+      setValue('MinimumReductionPriceValue', checkForDecimalAndNull(MinimumReductionPriceValue, NoOfDecimalForPrice))
+      setCalculationState(prevState => ({ ...prevState, MinimumReductionPriceValue: MinimumReductionPriceValue }))
+    } else if (state.reductionPrice) {
+      const MinimumReductionPricePercentage = calculateReverseValue(event.target.value)
+      setValue('MinimumReductionPricePercentage', checkForDecimalAndNull(MinimumReductionPricePercentage, NoOfDecimalForPrice))
+      setCalculationState(prevState => ({ ...prevState, MinimumReductionPricePercentage: MinimumReductionPricePercentage }))
+    }
+  }
+  const PriceZoneCalculation = (key, value) => {
+    if (!state.priceZoneReduction) {
+      const returnValue = calculateReversePercentage(value)
+      setValue(key, checkForDecimalAndNull(returnValue, NoOfDecimalForPrice))
+      setCalculationState(prevState => ({ ...prevState, [key]: returnValue }))
+    } else {
+      const returnValue = calculateReverseValue(value)
+      setValue(key, checkForDecimalAndNull(returnValue, NoOfDecimalForPrice))
+      setCalculationState(prevState => ({ ...prevState, [key]: returnValue }))
+    }
+  }
+
+
+  const handleChangeDateAndTime = (value) => {
+    const localCurrentDate = new Date();
+    if (localCurrentDate.toLocaleDateString() !== value.toLocaleDateString()) {
+      setDateAndTimeState(prevState => ({ ...prevState, minMinutes: 0, minHours: 0, dateAndTime: DayTime(value).format('YYYY-MM-DD HH:mm:ss') }))
+    } else {
+      setDateAndTimeState(prevState => ({ ...prevState, minMinutes: currentMinutes, minHours: currentHours }))
+
+      if (value.getHours() > currentHours ? true : value.getMinutes() > currentMinutes) {
+        setDateAndTimeState(prevState => ({ ...prevState, dateAndTime: DayTime(value).format('YYYY-MM-DD HH:mm:ss') }))
+
+      } else {
+        const selectedDateTime = setHours(setMinutes(value, new Date().getMinutes()), new Date().getHours());
+        setDateAndTimeState(prevState => ({ ...prevState, dateAndTime: DayTime(selectedDateTime).format('YYYY-MM-DD HH:mm:ss') }))
+      }
+    }
+  }
   return (
     <>
       {!state.comparsionAuction && (
@@ -155,8 +255,25 @@ function AddAuction(props) {
                     </div>
                   </div>
                   <div>
-                    <form>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                       <Row className="part-detail-wrapper">
+                        <Col md="3">
+                          <TextFieldHookForm
+                            // title={titleObj.descriptionTitle}
+                            label="Auction Name"
+                            name={"AuctionName"}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            rules={{ required: false }}
+                            mandatory={false}
+                            handleChange={() => { }}
+                            defaultValue={""}
+                            className=""
+                            customClassName={"withBorder"}
+                            errors={errors.AuctionName}
+                          />
+                        </Col>
                         <Col md="3">
                           <SearchableSelectHookForm
                             label={"RFQ No."}
@@ -166,11 +283,45 @@ function AddAuction(props) {
                             control={control}
                             rules={{ required: true }}
                             register={register}
-
                             options={renderListing("RFQNumber")}
                             mandatory={true}
                             handleChange={() => { }}
                             errors={errors.RFQNumber}
+                            disabled={false}
+                          />
+                        </Col>
+
+                        <Col md="3" className="d-flex align-items-center">
+                          <SearchableSelectHookForm
+                            label={"Part No"}
+                            name={"PartNumber"}
+                            placeholder={"Select"}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={""}
+                            options={renderListing("PartNumber")}
+                            mandatory={true}
+                            handleChange={() => { }}
+                            errors={errors.PartNumber}
+                            disabled={false}
+                          />
+                        </Col>
+                        <Col className="col-3">
+                          <SearchableSelectHookForm
+                            label={"Part Type"}
+                            name={"PartType"}
+                            placeholder={"Select"}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={""}
+                            options={renderListing("PartType")}
+                            mandatory={true}
+                            handleChange={(e) => { setState(prevState => ({ ...prevState, partType: e.label })) }}
+                            errors={errors.Part}
                             disabled={false}
                           />
                         </Col>
@@ -190,58 +341,6 @@ function AddAuction(props) {
                             errors={errors.technology}
                             disabled={false}
                           />
-                        </Col>
-                        <Col className="col-3">
-                          <SearchableSelectHookForm
-                            label={"Part Type"}
-                            name={"PartType"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={""}
-                            options={renderListing("PartType")}
-                            mandatory={true}
-                            handleChange={() => { }}
-                            errors={errors.Part}
-                            disabled={false}
-                          />
-                        </Col>
-                        <Col md="3" className="d-flex align-items-center">
-                          <SearchableSelectHookForm
-                            label={"Part No"}
-                            name={"PartNumber"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={""}
-                            options={renderListing("PartNumber")}
-                            mandatory={true}
-                            handleChange={() => { }}
-                            errors={errors.PartNumber}
-                            disabled={false}
-                          />
-                          {/* {partType.length !== 0 &&
-                            partTypeforRM !== BoughtOutPart && (
-                              <Button
-                                id="addRMSpecificatione"
-                                className={"ml-2 mb-2"}
-                                // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
-                                variant={
-                                  updateButtonPartNoTable
-                                    ? "Edit"
-                                    : "plus-icon-square"
-                                }
-                                title={updateButtonPartNoTable ? "Edit" : "Add"}
-                                onClick={DrawerToggle}
-                                disabled={
-                                  partName?.length === 0 || disabledPartUid
-                                }
-                              ></Button>
-                            )} */}
                         </Col>
 
                         <Col md="3">
@@ -282,24 +381,7 @@ function AddAuction(props) {
                             errors={errors.Plant}
                           />
                         </Col>
-                        <Col md="3">
-                          <TextFieldHookForm
-                            // title={titleObj.descriptionTitle}
-                            label="Auction Name"
-                            name={"AuctionName"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{ required: false }}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            defaultValue={""}
-                            className=""
-                            customClassName={"withBorder"}
-                            errors={errors.AuctionName}
-                          />
-                        </Col>
-                        <Col md="3">
+                        {state.partType === 'RawMaterial' && <> <Col md="3">
                           <SearchableSelectHookForm
                             label={"RM Name"}
                             name={"rmName"}
@@ -316,58 +398,59 @@ function AddAuction(props) {
                             disabled={true}
                           />
                         </Col>
-                        <Col md="3">
-                          <SearchableSelectHookForm
-                            label={"RM Grade"}
-                            name={"rmgrade"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={""}
-                            options={renderListing("rmgrade")}
-                            mandatory={true}
-                            // handleChange={handlePlant}
-                            errors={errors.rmgrade}
-                            disabled={true}
-                          />
-                        </Col>
-                        <Col md="3">
-                          <SearchableSelectHookForm
-                            label={"RM Specification"}
-                            name={"rmspecification"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={""}
-                            options={renderListing("rmspecification")}
-                            mandatory={true}
-                            // handleChange={handlePlant}
-                            errors={errors.rmspecification}
-                            disabled={true}
-                          />
-                        </Col>
-                        <Col md="3">
-                          <SearchableSelectHookForm
-                            label={"RM Code"}
-                            name={"rmCode"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={""}
-                            options={renderListing("rmCode")}
-                            mandatory={true}
-                            // handleChange={handlePlant}
-                            errors={errors.rmCode}
-                            disabled={true}
-                          />
-                        </Col>
-                        <Col md="3">
+                          <Col md="3">
+                            <SearchableSelectHookForm
+                              label={"RM Grade"}
+                              name={"rmgrade"}
+                              placeholder={"Select"}
+                              Controller={Controller}
+                              control={control}
+                              rules={{ required: true }}
+                              register={register}
+                              defaultValue={""}
+                              options={renderListing("rmgrade")}
+                              mandatory={true}
+                              // handleChange={handlePlant}
+                              errors={errors.rmgrade}
+                              disabled={true}
+                            />
+                          </Col>
+                          <Col md="3">
+                            <SearchableSelectHookForm
+                              label={"RM Specification"}
+                              name={"rmspecification"}
+                              placeholder={"Select"}
+                              Controller={Controller}
+                              control={control}
+                              rules={{ required: true }}
+                              register={register}
+                              defaultValue={""}
+                              options={renderListing("rmspecification")}
+                              mandatory={true}
+                              // handleChange={handlePlant}
+                              errors={errors.rmspecification}
+                              disabled={true}
+                            />
+                          </Col>
+                          <Col md="3">
+                            <SearchableSelectHookForm
+                              label={"RM Code"}
+                              name={"rmCode"}
+                              placeholder={"Select"}
+                              Controller={Controller}
+                              control={control}
+                              rules={{ required: true }}
+                              register={register}
+                              defaultValue={""}
+                              options={renderListing("rmCode")}
+                              mandatory={true}
+                              // handleChange={handlePlant}
+                              errors={errors.rmCode}
+                              disabled={true}
+                            />
+                          </Col></>}
+
+                        {state.partType === 'BOP' && <><Col md="3">
                           <SearchableSelectHookForm
                             label={"BOP No."}
                             name={"bopNumber"}
@@ -383,72 +466,75 @@ function AddAuction(props) {
                             disabled={true}
                           />
                         </Col>
-                        <Col md="3">
-                          <SearchableSelectHookForm
-                            label={"BOP Name"}
-                            name={"bopName"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-
-                            options={renderListing("bopName")}
-                            mandatory={true}
-                            // handleChange={handlePlant}
-                            errors={errors.bopName}
-                            disabled={true}
-                          />
-                        </Col>
-                        <Col md="3">
-                          <SearchableSelectHookForm
-                            label={"Category"}
-                            name={"bopCategory"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={""}
-                            options={renderListing("bopCategory")}
-                            mandatory={true}
-                            // handleChange={handlePlant}
-                            errors={errors.bopCategory}
-                            disabled={true}
-                          />
-                        </Col>
-                        <Col md="3">
-                          <div className="inputbox date-section">
-                            <DatePickerHookForm
-                              name={`fromDate`}
-                              label={"Select Date"}
-                              // handleChange={(date) => {
-                              //     handleFromEffectiveDateChange(date);
-                              // }}
-                              rules={{ required: true }}
+                          <Col md="3">
+                            <SearchableSelectHookForm
+                              label={"BOP Name"}
+                              name={"bopName"}
+                              placeholder={"Select"}
                               Controller={Controller}
                               control={control}
+                              rules={{ required: true }}
                               register={register}
-                              showMonthDropdown
-                              showYearDropdown
-                              dateFormat="DD/MM/YYYY"
-                              // maxDate={maxDate}
-                              placeholder="Select date"
-                              customClassName="withBorder"
-                              className="withBorder"
-                              autoComplete={"off"}
-                              disabledKeyboardNavigation
-                              onChangeRaw={(e) => e.preventDefault()}
-                              disabled={false}
+
+                              options={renderListing("bopName")}
                               mandatory={true}
-                              errors={errors && errors.fromDate}
+                              // handleChange={handlePlant}
+                              errors={errors.bopName}
+                              disabled={true}
                             />
+                          </Col>
+                          <Col md="3">
+                            <SearchableSelectHookForm
+                              label={"Category"}
+                              name={"bopCategory"}
+                              placeholder={"Select"}
+                              Controller={Controller}
+                              control={control}
+                              rules={{ required: true }}
+                              register={register}
+                              defaultValue={""}
+                              options={renderListing("bopCategory")}
+                              mandatory={true}
+                              // handleChange={handlePlant}
+                              errors={errors.bopCategory}
+                              disabled={true}
+                            />
+                          </Col></>}
+                        <Col md="3">
+                          <div className="inputbox date-section">
+                            <div className="form-group">
+                              <label>Date & Time</label>
+                              <div className="inputbox date-section rfq-calendar">
+                                <DatePicker
+                                  name="startPlanDate"
+                                  selected={DayTime(dateAndTimeState.dateAndTime).isValid() ? new Date(dateAndTimeState.dateAndTime) : null}
+                                  onChange={handleChangeDateAndTime}
+                                  showMonthDropdown
+                                  showYearDropdown
+                                  dropdownMode='select'
+                                  minDate={new Date()}
+                                  timeFormat='HH:mm'
+                                  dateFormat="dd/MM/yyyy HH:mm"
+                                  minTime={setHours(setMinutes(new Date(), dateAndTimeState.minMinutes), dateAndTimeState.minHours)}
+                                  maxTime={setHours(setMinutes(new Date(), 59), 23)}
+                                  placeholderText="Select"
+                                  className="withBorder "
+                                  autoComplete={'off'}
+                                  showTimeSelect={true}
+                                  timeIntervals={1}
+                                  errors={errors.startPlanDate}
+                                  disabledKeyboardNavigation
+                                  onChangeRaw={(e) => e.preventDefault()}
+                                  disabled={false}
+                                />
+                              </div>
+                            </div>
                           </div>
                         </Col>
                         <Col md="3">
                           <div className="inputbox date-section">
                             <div className="form-group">
-                              <label>Time</label>
+                              <label>Duration</label>
                               <div className="inputbox date-section">
                                 <TextFieldHookForm
                                   label=""
@@ -497,7 +583,7 @@ function AddAuction(props) {
                             register={register}
                             rules={{ required: false }}
                             mandatory={false}
-                            handleChange={() => { }}
+                            handleChange={(e) => basePriceHandle(e)}
                             defaultValue={""}
                             className=""
                             customClassName={"withBorder"}
@@ -505,133 +591,67 @@ function AddAuction(props) {
                             placeholder="Base Price"
                           />
                         </Col>
-                        <Col md="3">
-                          <FormGroup tag="fieldset">
-                            <label>Minimum Reduction Type</label>
-                            <div className="d-flex">
-                              {MinimumReductionTypeData.map((option) => (
-                                <FormGroup
-                                  check
-                                  key={option.value}
-                                  className="mr-4"
-                                >
-                                  <Label check>
-                                    <Input
-                                      type="radio"
-                                      name="MinimumReductionType"
-                                      value={option.value}
-                                      {...register("MinimumReductionType", {
-                                        required: true,
-                                      })}
-                                      checked={state.selectedType === option.value}
-                                      onChange={handleRadioChange}
-                                    />{" "}
-                                    {option.label}
-                                  </Label>
-                                </FormGroup>
-                              ))}
-                            </div>
-                            {errors.MinimumReductionType && (
-                              <p>This field is required</p>
-                            )}
-                          </FormGroup>
+                        <Col md="2">
+                          <label>Minimum Reduction Type</label>
+                          <div className="d-flex">
+                            <label className="switch-level mt-2">
+                              <div className={'left-title mr-1'}>{'Percentage'}</div>
+                              <Switch
+                                onChange={() => reductionPriceToggle('basePrice')}
+                                checked={state.reductionPrice}
+                                id="normal-switch"
+                                disabled={false}
+                                background="#4DC771"
+                                onColor="#4DC771"
+                                onHandleColor="#ffffff"
+                                offColor="#4DC771"
+                                uncheckedIcon={false}
+                                checkedIcon={false}
+                                height={20}
+                                width={46}
+                              />
+                              <div className={'right-title ml-1'}>{'Fixed'}</div>
+                            </label>
+                          </div>
                         </Col>
 
-                        <Col md="3">
-                          <label>Reduction Price</label>
+                        <Col md="4">
                           <div className="d-flex">
-                            {state.selectedType === "%" ? (
-                              <>
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price %"
-                                  name="MinimumReductionPricePercentage"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={
-                                    errors.MinimumReductionPricePercentage
-                                  }
-                                  placeholder={"Reduction Price %"}
-                                  disabled={state.selectedType === "value"}
-                                />
+                            <TextFieldHookForm
+                              label="Price %"
+                              name="MinimumReductionPricePercentage"
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              rules={{ required: false }}
+                              mandatory={false}
+                              handleChange={(e) => calculateBasePriceValueAndPer(e)}
+                              defaultValue=""
+                              className=""
+                              customClassName="withBorder remove-mh"
+                              errors={
+                                errors.MinimumReductionPricePercentage
+                              }
+                              placeholder={"Reduction Price %"}
+                              disabled={state.reductionPrice}
+                            />
 
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price Value"
-                                  name="MinimumReductionPriceValue"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={errors.MinimumReductionPriceValue}
-                                  disabled={state.selectedType === "%"}
-                                  placeholder={"Reduction Price Value"}
-                                />
-                              </>
-                            ) : state.selectedType === "value" ? (
-                              <>
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price %"
-                                  name="MinimumReductionPricePercentage"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={
-                                    errors.MinimumReductionPricePercentage
-                                  }
-                                  placeholder={"Reduction Price %"}
-                                  disabled={state.selectedType === "value"}
-                                />
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price Value"
-                                  name="MinimumReductionPriceValue"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={errors.MinimumReductionPriceValue}
-                                  disabled={state.selectedType === "%"}
-                                  placeholder={"Reduction Price Value"}
-                                />
-                              </>
-                            ) : (
-                              <TextFieldHookForm
-                                // label="Minimum Reduction Price Value"
-                                name="MinimumReductionPriceValue"
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{ required: false }}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                defaultValue=""
-                                className=""
-                                customClassName="withBorder remove-mh"
-                                errors={errors.MinimumReductionPriceValue}
-                                placeholder={"Reduction Price Value"}
-                              />
-                            )}
+                            <TextFieldHookForm
+                              label="Price Value"
+                              name="MinimumReductionPriceValue"
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              rules={{ required: false }}
+                              mandatory={false}
+                              handleChange={(e) => calculateBasePriceValueAndPer(e)}
+                              defaultValue=""
+                              className=""
+                              customClassName="withBorder remove-mh"
+                              errors={errors.MinimumReductionPriceValue}
+                              disabled={!state.reductionPrice}
+                              placeholder={"Reduction Price Value"}
+                            />
                           </div>
                         </Col>
                         <Col md="3">
@@ -655,356 +675,149 @@ function AddAuction(props) {
                       <HeaderTitle title={"Price Zone:"} />
                       <Row className="part-detail-wrapper prize-zone-wrapper">
                         <Col md="3">
-                          <FormGroup tag="fieldset">
-                            <label>Minimum Price Reduction Type</label>
-                            <div className="d-flex">
-                              {MinimumPriceZoneTypeData.map((option) => (
-                                <FormGroup
-                                  check
-                                  key={option.value}
-                                  className="mr-4"
-                                >
-                                  <Label check>
-                                    <Input
-                                      type="radio"
-                                      name="MinimumReductionTypePrice"
-                                      value={option.value}
-                                      {...register(
-                                        "MinimumReductionTypePrice",
-                                        {
-                                          required: true,
-                                        }
-                                      )}
-                                      onChange={handleRadioPriceChange}
-                                      checked={
-                                        state.selectedPriceZoneType === option.value
-                                      }
-                                    />{" "}
-                                    {option.label}
-                                  </Label>
-                                </FormGroup>
-                              ))}
-                            </div>
-                            {errors.MinimumReductionType && (
-                              <p>This field is required</p>
-                            )}
-                          </FormGroup>
+                          <label>Minimum Price Reduction Type</label>
+                          <div className="d-flex">
+                            <label className="switch-level mt-2">
+                              <div className={'left-title mr-1'}>{'Percentage'}</div>
+                              <Switch
+                                onChange={() => reductionPriceToggle('priceZone')}
+                                checked={state.priceZoneReduction}
+                                id="normal-switch"
+                                disabled={false}
+                                background="#4DC771"
+                                onColor="#4DC771"
+                                onHandleColor="#ffffff"
+                                offColor="#4DC771"
+                                uncheckedIcon={false}
+                                checkedIcon={false}
+                                height={20}
+                                width={46}
+                              />
+                              <div className={'right-title ml-1'}>{'Fixed'}</div>
+                            </label>
+                          </div>
                         </Col>
 
                         <Col md="3">
                           <label>Red</label>
                           <div className="d-flex">
-                            {state.selectedPriceZoneType === "priceZone%" ? (
-                              <>
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price %"
-                                  name="MinimumReductionPricePercentage"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={
-                                    errors.MinimumReductionPricePercentage
-                                  }
-                                  placeholder={"Reduction Price %"}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZonevalue"
-                                  }
-                                />
-
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price Value"
-                                  name="MinimumReductionPriceValue"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={errors.MinimumReductionPriceValue}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZone%"
-                                  }
-                                  placeholder={"Reduction Price Value"}
-                                />
-                              </>
-                            ) : state.selectedPriceZoneType === "priceZonevalue" ? (
-                              <>
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price %"
-                                  name="MinimumReductionPricePercentage"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={
-                                    errors.MinimumReductionPricePercentage
-                                  }
-                                  placeholder={"Reduction Price %"}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZonevalue"
-                                  }
-                                />
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price Value"
-                                  name="MinimumReductionPriceValue"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={errors.MinimumReductionPriceValue}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZone%"
-                                  }
-                                  placeholder={"Reduction Price Value"}
-                                />
-                              </>
-                            ) : (
-                              <TextFieldHookForm
-                                // label="Minimum Reduction Price Value"
-                                name="MinimumReductionPriceValue"
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{ required: false }}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                defaultValue=""
-                                className=""
-                                customClassName="withBorder remove-mh"
-                                errors={errors.MinimumReductionPriceValue}
-                                placeholder={"Reduction Price Value"}
-                              />
-                            )}
+                            <TextFieldHookForm
+                              label="Price %"
+                              name="RedZonePercentage"
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              rules={{ required: false }}
+                              mandatory={false}
+                              handleChange={(e) => PriceZoneCalculation('RedZoneValue', e.target.value)}
+                              defaultValue=""
+                              className=""
+                              customClassName="withBorder remove-mh"
+                              errors={
+                                errors.RedZonePercentage
+                              }
+                              placeholder={"Reduction Price %"}
+                              disabled={state.priceZoneReduction}
+                            />
+                            <TextFieldHookForm
+                              label="Price Value"
+                              name="RedZoneValue"
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              rules={{ required: false }}
+                              mandatory={false}
+                              handleChange={(e) => PriceZoneCalculation('RedZonePercentage', e.target.value)}
+                              defaultValue=""
+                              className=""
+                              customClassName="withBorder remove-mh"
+                              errors={errors.RedZoneValue}
+                              disabled={!state.priceZoneReduction}
+                              placeholder={"Reduction Price Value"}
+                            />
                           </div>
                         </Col>
 
                         <Col md="3">
                           <label>Yellow</label>
                           <div className="d-flex">
-                            {state.selectedPriceZoneType === "priceZone%" ? (
-                              <>
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price %"
-                                  name="MinimumReductionPricePercentage"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={
-                                    errors.MinimumReductionPricePercentage
-                                  }
-                                  placeholder={"Reduction Price %"}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZonevalue"
-                                  }
-                                />
-
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price Value"
-                                  name="MinimumReductionPriceValue"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={errors.MinimumReductionPriceValue}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZone%"
-                                  }
-                                  placeholder={"Reduction Price Value"}
-                                />
-                              </>
-                            ) : state.selectedPriceZoneType === "priceZonevalue" ? (
-                              <>
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price %"
-                                  name="MinimumReductionPricePercentage"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={
-                                    errors.MinimumReductionPricePercentage
-                                  }
-                                  placeholder={"Reduction Price %"}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZonevalue"
-                                  }
-                                />
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price Value"
-                                  name="MinimumReductionPriceValue"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={errors.MinimumReductionPriceValue}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZone%"
-                                  }
-                                  placeholder={"Reduction Price Value"}
-                                />
-                              </>
-                            ) : (
+                            <div className="d-flex">
                               <TextFieldHookForm
-                                // label="Minimum Reduction Price Value"
-                                name="MinimumReductionPriceValue"
+                                label="Price %"
+                                name="YellowZonePercentage"
                                 Controller={Controller}
                                 control={control}
                                 register={register}
                                 rules={{ required: false }}
                                 mandatory={false}
-                                handleChange={() => { }}
+                                handleChange={(e) => PriceZoneCalculation('YellowZoneValue', e.target.value)}
                                 defaultValue=""
                                 className=""
                                 customClassName="withBorder remove-mh"
-                                errors={errors.MinimumReductionPriceValue}
+                                errors={
+                                  errors.YellowZonePercentage
+                                }
+                                placeholder={"Reduction Price %"}
+                                disabled={state.priceZoneReduction}
+                              />
+                              <TextFieldHookForm
+                                label="Price Value"
+                                name="YellowZoneValue"
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{ required: false }}
+                                mandatory={false}
+                                handleChange={(e) => PriceZoneCalculation('YellowZonePercentage', e.target.value)}
+                                defaultValue=""
+                                className=""
+                                customClassName="withBorder remove-mh"
+                                errors={errors.YellowZoneValue}
+                                disabled={!state.priceZoneReduction}
                                 placeholder={"Reduction Price Value"}
                               />
-                            )}
+                            </div>
                           </div>
                         </Col>
                         <Col md="3">
                           <label>Green</label>
                           <div className="d-flex">
-                            {state.selectedPriceZoneType === "priceZone%" ? (
-                              <>
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price %"
-                                  name="MinimumReductionPricePercentage"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={
-                                    errors.MinimumReductionPricePercentage
-                                  }
-                                  placeholder={"Reduction Price %"}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZonevalue"
-                                  }
-                                />
-
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price Value"
-                                  name="MinimumReductionPriceValue"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={errors.MinimumReductionPriceValue}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZone%"
-                                  }
-                                  placeholder={"Reduction Price Value"}
-                                />
-                              </>
-                            ) : state.selectedPriceZoneType === "value" ? (
-                              <>
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price %"
-                                  name="MinimumReductionPricePercentage"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={
-                                    errors.MinimumReductionPricePercentage
-                                  }
-                                  placeholder={"Reduction Price %"}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZonevalue"
-                                  }
-                                />
-                                <TextFieldHookForm
-                                  // label="Minimum Reduction Price Value"
-                                  name="MinimumReductionPriceValue"
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  rules={{ required: false }}
-                                  mandatory={false}
-                                  handleChange={() => { }}
-                                  defaultValue=""
-                                  className=""
-                                  customClassName="withBorder remove-mh"
-                                  errors={errors.MinimumReductionPriceValue}
-                                  disabled={
-                                    state.selectedPriceZoneType === "priceZone%"
-                                  }
-                                  placeholder={"Reduction Price Value"}
-                                />
-                              </>
-                            ) : (
+                            <div className="d-flex">
                               <TextFieldHookForm
-                                // label="Minimum Reduction Price Value"
-                                name="MinimumReductionPriceValue"
+                                label="Price %"
+                                name="GreenZonePercentage"
                                 Controller={Controller}
                                 control={control}
                                 register={register}
                                 rules={{ required: false }}
                                 mandatory={false}
-                                handleChange={() => { }}
+                                handleChange={(e) => PriceZoneCalculation('GreenZoneValue', e.target.value)}
                                 defaultValue=""
                                 className=""
                                 customClassName="withBorder remove-mh"
-                                errors={errors.MinimumReductionPriceValue}
+                                errors={
+                                  errors.GreenZonePercentage
+                                }
+                                placeholder={"Reduction Price %"}
+                                disabled={state.priceZoneReduction}
+                              />
+                              <TextFieldHookForm
+                                label="Price Value"
+                                name="GreenZoneValue"
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{ required: false }}
+                                mandatory={false}
+                                handleChange={(e) => PriceZoneCalculation('GreenZonePercentage', e.target.value)}
+                                defaultValue=""
+                                className=""
+                                customClassName="withBorder remove-mh"
+                                errors={errors.GreenZoneValue}
+                                disabled={!state.priceZoneReduction}
                                 placeholder={"Reduction Price Value"}
                               />
-                            )}
+                            </div>
                           </div>
                         </Col>
 
