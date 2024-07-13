@@ -2234,6 +2234,7 @@ export const SIMULATION_PATH = '/simulation'
 export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
+export const AUCTION_LISTING = '/auction'
 export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
 export const RESET_PASSWORD = '/reset-password'
@@ -2742,6 +2743,7 @@ export const EXCHNAGERATE = '8'
 export const MACHINERATE = '9'
 export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
+export const RAWMATERIALINDEX = '11'
 
 // BULK UPLOAD
 export const SHEETMETAL_GROUP_BULKUPLOAD = 1
@@ -3134,7 +3136,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.5";
+export const VERSION = "V3.0.7";
 
 
 
