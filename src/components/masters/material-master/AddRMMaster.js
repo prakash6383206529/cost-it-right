@@ -92,7 +92,8 @@ function AddRMMaster(props) {
                             ...detail,
                             BasicRateConversion: avgRate ? avgRate.RateConversionPerConvertedUOM : null,
                             BasicRate: avgRate ? avgRate.RatePerConvertedUOM : null,
-                            ExchangeRate: avgRate ? avgRate.ExchangeRate : null
+                            ExchangeRate: avgRate ? avgRate.ExchangeRate : null,
+                            TotalCostPercent: checkForNull(avgRate?.RateConversionPerConvertedUOM) * checkForNull(avgRate?.Percentage) / 100,
                         };
                     });
                     setState(prevState => ({ ...prevState, commodityDetails: updatedCommodityDetails }));
@@ -133,8 +134,14 @@ function AddRMMaster(props) {
         }
     }, [])
     useEffect(() => {
+
         if (!isViewFlag && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-            commonFunction()
+
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
+                setTimeout(() => {
+                    commonFunction()
+                }, 100);
+            }))
         }
     }, [state.costingTypeId])
 
@@ -162,6 +169,7 @@ function AddRMMaster(props) {
     const commonFunction = (plantId = EMPTY_GUID) => {
         let levelDetailsTemp = []
         levelDetailsTemp = userTechnologyDetailByMasterId(state.costingTypeId, RM_MASTER_ID, userMasterLevelAPI)
+
         setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }))
         let obj = {
             DepartmentId: userDetails().DepartmentId,
@@ -173,10 +181,12 @@ function AddRMMaster(props) {
         }
         if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
             dispatch(checkFinalUser(obj, (res) => {
-                if (res?.data?.Result) {
-                    setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false }))
+                if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+                    console.log(res?.data?.Data?.IsFinalApprover, "res?.data?.Data?.IsFinalApprover");
+                    setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
                 }
-                if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+                    console.log("COMING IN ANOT");
                     setState(prevState => ({ ...prevState, disableSendForApproval: true }))
                 } else {
                     setState(prevState => ({ ...prevState, disableSendForApproval: false }))
@@ -302,7 +312,7 @@ function AddRMMaster(props) {
             "CostingTypeId": state?.costingTypeId,
             "RawMaterialCode": values?.RawMaterialCode?.value,
             "CutOffPrice": state?.isImport ? values?.cutOffPriceSelectedCurrency : values?.cutOffPriceBaseCurrency,
-            "IsCutOffApplicable": true,
+            "IsCutOffApplicable": (values?.cutOffPriceBaseCurrency < values?.NetLandedCostBaseCurrency && values.cutOffPriceBaseCurrency !== 0 && values.cutOffPriceBaseCurrency !== '') ? true : false,
             "TechnologyId": values?.Technology?.value,
             "TechnologyName": values?.Technology?.label,
             "RawMaterialEntryType": state.isImport ? checkForNull(ENTRY_TYPE_IMPORT) : checkForNull(ENTRY_TYPE_DOMESTIC),
@@ -385,9 +395,9 @@ function AddRMMaster(props) {
         let machiningScrapCost = state.isImport ? checkForNull(values?.MachiningScrapSelectedCurrency) : checkForNull(values.MachiningScrapBaseCurrency)
         let circleScrapCost = state.isImport ? checkForNull(values?.CircleScrapCostSelectedCurrency) : checkForNull(values.CircleScrapCostBaseCurrency)
         let otherCost = state.isImport ? checkForNull(values?.OtherCostSelectedCurrency) : checkForNull(values.OtherCostBaseCurrency)
-        console.log('values: ', values);
 
-        console.log('DataToChange: ', DataToChange);
+
+
         let financialDataNotChanged = (cuttOffPrice === checkForNull(DataToChange?.CutOffPrice)) && (basicRate === checkForNull(DataToChange?.BasicRatePerUOM)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
             && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (freightCost === checkForNull(DataToChange?.RMFreightCost) && otherCost === checkForNull(DataToChange?.OtherNetCost))
             && (shearingCost === checkForNull(DataToChange?.RMShearingCost)) && (circleScrapCost === checkForNull(DataToChange?.JaliScrapCost)) && (machiningScrapCost === checkForNull(DataToChange?.MachiningScrapRate))
@@ -583,8 +593,8 @@ function AddRMMaster(props) {
                                         className="approval-btn mr5"
                                         disabled={isViewFlag || state.disableSendForApproval}
                                         onClick={onSubmit}
-                                        icon={showSendForApproval() ? "send-for-approval" : "save-icon"}
-                                        buttonName={showSendForApproval() ? "Send For Approval" : 'Update'}
+                                        icon={(showSendForApproval() || !state.disableSendForApproval) ? "send-for-approval" : "save-icon"}
+                                        buttonName={(showSendForApproval() || !state.disableSendForApproval) ? "Send For Approval" : data.isEditFlag ? "Update" : "Save1"}
                                     />
                                     :
                                     <Button

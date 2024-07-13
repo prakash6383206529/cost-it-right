@@ -101,12 +101,17 @@ function AddIndexationMaterialListing(props) {
         let tempArray = state.commodityDetailsState;
         let tempData = tempArray[rowIndex];
 
+        const totalCostForPercent = checkForNull(TotalCostConversion) + checkForNull(tempData?.BasicRateConversion)
+
+
         tempData = {
             ...tempData,
             TotalCostConversion, // Add BasicRateConversion to the object
             TotalCost,// Add totalCostCurrency to the object
+            TotalCostPercent: totalCostForPercent * tempData.Percentage / 100,
             RawMaterialCommodityIndexRateDetailsRequest,
         };
+
         tempArray[rowIndex] = tempData;
 
         setState(prevState => ({ ...prevState, commodityDetailsState: tempArray, isLoader: true }));
@@ -156,6 +161,7 @@ function AddIndexationMaterialListing(props) {
         const cell = props?.data?.TotalCostConversion ? props?.data?.TotalCostConversion + props?.data?.BasicRateConversion : props?.data?.BasicRateConversion;
         const percentage = props?.data?.Percentage
         const value = percentage ? cell * percentage / 100 : cell
+
         return (
             <>
                 {value != null ? checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice) : ''}
