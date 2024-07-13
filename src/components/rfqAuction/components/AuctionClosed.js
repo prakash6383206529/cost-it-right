@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
-import { deleteProcess, getProcessDataList } from "../actions/Process";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
@@ -16,11 +15,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { PaginationWrapper } from "../../common/commonPagination";
-import {
-  loggedInUserId,
-  searchNocontentFilter,
-  setLoremIpsum,
-} from "../../../helper";
+import { loggedInUserId, searchNocontentFilter, setLoremIpsum, } from "../../../helper";
 //import { ApplyPermission } from ".";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
@@ -85,19 +80,7 @@ const AuctionClosed = (props) => {
       ProcessCode: ProcessCode,
     };
     setState((prevState) => ({ ...prevState, isLoader: true }));
-    dispatch(
-      getProcessDataList(filterData, (res) => {
-        setState((prevState) => ({ ...prevState, isLoader: false }));
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setState((prevState) => ({ ...prevState, tableData: Data }));
-        } else if (res && res.response && res.response.status === 412) {
-          setState((prevState) => ({ ...prevState, tableData: [] }));
-        } else {
-          setState((prevState) => ({ ...prevState, tableData: [] }));
-        }
-      })
-    );
+
   };
 
   /**
@@ -191,7 +174,7 @@ const AuctionClosed = (props) => {
   return (
     <>
       <div className={`ag-grid-react`}>
-        {state.isLoader && <LoaderCustom />}
+        {false && <LoaderCustom />}
         <form noValidate>
           <Row className="pt-4">
             <Col md="6" className="search-user-block mb-3">
@@ -265,12 +248,7 @@ const AuctionClosed = (props) => {
         <Row>
           <Col>
             <div
-              className={`ag-grid-wrapper height-width-wrapper ${
-                (processList && processList?.length <= 0) || noData
-                  ? "overlay-contain"
-                  : ""
-              }`}
-            >
+              className={`ag-grid-wrapper height-width-wrapper ${true ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input
                   type="text"
@@ -306,9 +284,8 @@ const AuctionClosed = (props) => {
                 />
               </div>
               <div
-                className={`ag-theme-material ${
-                  state.isLoader && "max-loader-height"
-                }`}
+                className={`ag-theme-material ${false && "max-loader-height"
+                  }`}
               >
                 {noData && (
                   <NoContentFound
@@ -321,11 +298,7 @@ const AuctionClosed = (props) => {
                   floatingFilter={true}
                   domLayout="autoHeight"
                   // columnDefs={c}
-                  rowData={
-                    state.showExtraData && processList
-                      ? [...setLoremIpsum(processList[0]), ...processList]
-                      : processList
-                  }
+                  rowData={[]}
                   pagination={true}
                   paginationPageSize={defaultPageSize}
                   onGridReady={onGridReady}
@@ -340,129 +313,34 @@ const AuctionClosed = (props) => {
                   onFilterModified={onFloatingFilterChanged}
                   suppressRowClickSelection={true}
                 >
-                  <AgGridColumn
-                    field="RFQ"
-                    headerName="RFQ No."
-                    cellRenderer={"costingHeadFormatter"}
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="Technology"
-                    headerName="Technology"
-                    cellRenderer={"costingHeadFormatter"}
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="PartType"
-                    headerName="Part Type"
-                    cellRenderer={"costingHeadFormatter"}
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="PartNo"
-                    headerName="Part No."
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="AuctionName"
-                    headerName="Auction Name"
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="RMName"
-                    headerName="RM Name"
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="RMGrade"
-                    headerName="RM Grade"
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="RMSpecification"
-                    headerName="RM Specification"
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="RMCode"
-                    headerName="RM Code"
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="BOPNumber"
-                    headerName="BOP No."
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="BOPName"
-                    headerName="BOP Name"
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="BOPCategory"
-                    headerName="Category"
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="VendorName"
-                    headerName="Vendor Name"
-                  ></AgGridColumn>
-                  <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
-
-                  <AgGridColumn field="Date" headerName="Date"></AgGridColumn>
-
-                  <AgGridColumn field="Time" headerName="Time"></AgGridColumn>
-
-                  <AgGridColumn
-                    field="TotalVendors"
-                    headerName="Total Vendors"
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="BasePrice"
-                    headerName="Base Price"
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="LevelOnePrice"
-                    headerName="Level One Price"
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    field="LevelOneVendorName"
-                    headerName="Level One Vendor"
-                  ></AgGridColumn>
-                  <AgGridColumn
-                    headerClass="justify-content-center"
-                    cellClass="text-center"
-                    width={180}
-                    headerName="Color Codes"
-                    marryChildren={true}
-                  >
-                    <AgGridColumn
-                      width={50}
-                      cellRenderer="oldBasicRateFormatter"
-                      field="RedCode"
-                      headerName="R"
-                    ></AgGridColumn>
-                    <AgGridColumn
-                      width={50}
-                      cellRenderer="newBasicRateFormatter"
-                      onCellValueChanged="cellChange"
-                      field="GreenCode"
-                      headerName="G"
-                      colId="GreenColor"
-                    ></AgGridColumn>
-                    <AgGridColumn
-                      width={50}
-                      cellRenderer="newBasicRateFormatter"
-                      onCellValueChanged="cellChange"
-                      field="BlueCode"
-                      headerName="B"
-                      colId="BlueColor"
-                    ></AgGridColumn>
+                  <AgGridColumn field="RFQ" headerName="RFQ No." cellRenderer={"costingHeadFormatter"} />
+                  <AgGridColumn field="Technology" headerName="Technology" cellRenderer={"costingHeadFormatter"} />
+                  <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={"costingHeadFormatter"} />
+                  <AgGridColumn field="PartNo" headerName="Part No." />
+                  <AgGridColumn field="AuctionName" headerName="Auction Name" />
+                  <AgGridColumn field="RMName" headerName="RM Name" />
+                  <AgGridColumn field="RMGrade" headerName="RM Grade" />
+                  <AgGridColumn field="RMSpecification" headerName="RM Specification" />
+                  <AgGridColumn field="RMCode" headerName="RM Code" />
+                  <AgGridColumn field="BOPNumber" headerName="BOP No." />
+                  <AgGridColumn field="BOPName" headerName="BOP Name" />
+                  <AgGridColumn field="BOPCategory" headerName="Category" />
+                  <AgGridColumn field="VendorName" headerName="Vendor Name" />
+                  <AgGridColumn field="Plant" headerName="Plant" />
+                  <AgGridColumn field="Date" headerName="Date" />
+                  <AgGridColumn field="Time" headerName="Time" />
+                  <AgGridColumn field="TotalVendors" headerName="Total Vendors" />
+                  <AgGridColumn field="BasePrice" headerName="Base Price" />
+                  <AgGridColumn field="LevelOnePrice" headerName="Level One Price" />
+                  <AgGridColumn field="LevelOneVendorName" headerName="Level One Vendor" />
+                  <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={180} headerName="Color Codes" marryChildren={true}>
+                    <AgGridColumn width={50} cellRenderer="oldBasicRateFormatter" field="RedCode" headerName="R" />
+                    <AgGridColumn width={50} cellRenderer="newBasicRateFormatter" onCellValueChanged="cellChange" field="GreenCode" headerName="G" colId="GreenColor" />
+                    <AgGridColumn width={50} cellRenderer="newBasicRateFormatter" onCellValueChanged="cellChange" field="BlueCode" headerName="B" colId="BlueColor" />
                   </AgGridColumn>
-                  <AgGridColumn
-                    field="ProcessId"
-                    cellClass="ag-grid-action-container"
-                    pinned="right"
-                    headerName="Action"
-                    type="rightAligned"
-                    floatingFilter={false}
-                    cellRenderer={"totalValueRenderer"}
-                  ></AgGridColumn>
+                  <AgGridColumn field="ProcessId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} />
                 </AgGridReact>
-                {
-                  <PaginationWrapper
-                    gridApi={state.gridApi}
-                    setPage={onPageSizeChanged}
-                  />
-                }
+                {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
               </div>
             </div>
           </Col>

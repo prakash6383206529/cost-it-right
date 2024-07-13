@@ -61,7 +61,6 @@ import "react-dropzone-uploader/dist/styles.css";
 import Toaster from "../common/Toaster";
 import { MESSAGES } from "../../config/message";
 import {
-  createRfqQuotation,
   fileUploadQuotation,
   getQuotationById,
   updateRfqQuotation,
@@ -263,12 +262,7 @@ function ComparsionAuction(props) {
 
   // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
   const plantSelectList = useSelector((state) => state.comman.plantSelectList);
-  const {
-    getRfqVendorDetail,
-    getTargetprice,
-    getPartIndentity,
-    getQuotationIdForRFQ,
-  } = useSelector((state) => state.rfq);
+
 
   const [viewQuotationPart, setViewQuotationPart] = useState(false);
   const [havellsPartTypeList, setHavellsPartTypeList] = useState([]);
@@ -295,14 +289,8 @@ function ComparsionAuction(props) {
   let partIndex = "";
   useEffect(() => {
     if (dataProps?.isAddFlag) {
-      dispatch(setQuotationIdForRfq(""));
       setTimeout(() => {
         const obj = createQuotationObject(null);
-        dispatch(
-          createRfqQuotation(obj, (res) => {
-            setQuotationIdentity(res?.data?.Identity);
-          })
-        );
       }, 200);
     }
   }, []);
@@ -316,11 +304,7 @@ function ComparsionAuction(props) {
   //     }
   // }, [showSendButton, Vendor, Part])
 
-  useEffect(() => {
-    if (getTargetprice && getTargetprice?.TargetPrice) {
-      setValue("TargetPrice", getTargetprice?.TargetPrice);
-    }
-  }, [getTargetprice]);
+
   useEffect(() => {
     const partTypeString = initialConfiguration?.HavellsPartTypeList;
     if (partTypeString) {
@@ -333,8 +317,8 @@ function ComparsionAuction(props) {
   }, [initialConfiguration]);
   useEffect(() => {
     const { vbcVendorGrid } = props;
-    dispatch(getUOMSelectList(() => {}));
-    dispatch(getPlantSelectListByType(ZBC, "RFQ", nfrId, () => {}));
+    dispatch(getUOMSelectList(() => { }));
+    dispatch(getPlantSelectListByType(ZBC, "RFQ", nfrId, () => { }));
     //MINDA
     // dispatch(getPlantSelectListByType(ZBC, nfrId, () => { }))
     dispatch(
@@ -343,10 +327,7 @@ function ComparsionAuction(props) {
       })
     );
 
-    dispatch(getRawMaterialNameChild(() => {}));
-    if (initialConfiguration.IsNFRConfigured) {
-      dispatch(getNfrSelectList(() => {}));
-    }
+
     let tempArr = [];
     vbcVendorGrid &&
       vbcVendorGrid.map((el) => {
@@ -359,7 +340,6 @@ function ComparsionAuction(props) {
       reactLocalStorage?.setObject("Data", []);
       reactLocalStorage.setObject("PartData", []);
       setUpdateButtonVendorTable(false);
-      dispatch(setRFQBulkUpload([]));
     };
   }, []);
 
@@ -500,68 +480,14 @@ function ComparsionAuction(props) {
   };
 
   useEffect(() => {
-    dispatch(getCostingSpecificTechnology(loggedInUserId(), () => {}));
-    dispatch(getReporterList(() => {}));
+    dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }));
+    dispatch(getReporterList(() => { }));
 
     var newDate = addDays(new Date(), 7);
     setSubmissionDate(newDate);
 
     if (dataProps?.isEditFlag || dataProps?.isViewFlag) {
       setLoader(true);
-      dispatch(
-        getQuotationById(dataProps?.Id, (res) => {
-          setPartNoDisable(false);
-
-          if (res?.data?.Data) {
-            let data = res?.data?.Data;
-            setIsEditAll(data?.IsSent ? false : true);
-            setIsEditSubmissionDate(
-              data?.IsLastSubmissionEditable ? true : false
-            );
-            setIsViewFlag(dataProps?.isViewFlag);
-            setValue("technology", {
-              label: data.TechnologyName,
-              value: data.TechnologyId,
-            });
-            setValue("plant", {
-              label: data.PlantName,
-              value: data.PlantId,
-            });
-            dispatch(setQuotationIdForRfq(data?.QuotationId));
-            setTechnology({
-              label: data.TechnologyName,
-              value: data.TechnologyId,
-            });
-            // setInitialFiles(data?.Attachments)
-            // setValue('SubmissionDate', data?.LastSubmissionDate)
-            setSubmissionDate(data?.LastSubmissionDate);
-            setIsConditionalVisible(data?.IsConditionallyVisible);
-            setValue("VisibilityMode", {
-              value: data?.VisibilityMode,
-              label: data?.VisibilityMode,
-            });
-            setVisibilityMode({
-              value: data?.VisibilityMode,
-              label: data?.VisibilityMode,
-            });
-            setDateAndTime(data?.VisibilityDate);
-            setValue("Time", data?.VisibilityDuration);
-            setFiles(data?.Attachments);
-            setPartList(
-              convertToPartList(data.PartList, data?.NfrId ? true : false)
-            );
-            setVendorList(data.VendorList);
-            setValue("remark", data.Remark);
-            setValue("nfrId", { label: data?.NfrNumber, value: data?.NfrId });
-            setNfrId({ label: data?.NfrNumber, value: data?.NfrId });
-            setData(data);
-            setIsNFRFlow(data?.NfrId ? true : false);
-          }
-          setTimeout(() => {
-            setLoader(false);
-          }, 100);
-        })
-      );
     }
   }, []);
 
@@ -634,29 +560,6 @@ function ComparsionAuction(props) {
       setApiCallCounter((prevCounter) => prevCounter + 1); // Increment the API call counter for loader showing
       setAttachmentLoader(true);
       setIsDisable(true);
-      dispatch(
-        fileUploadQuotation(data, (res) => {
-          setDisableFalseFunction();
-          if ("response" in res) {
-            status = res && res?.response?.status;
-            dropzone.current.files.pop();
-            setAttachmentLoader(false);
-          } else {
-            let Data = res.data[0];
-            setFiles((prevFiles) => [...prevFiles, Data]); // Update the state using the callback function
-          }
-          setApiCallCounter((prevCounter) => prevCounter - 1);
-
-          // Check if this is the last API call
-          if (apiCallCounter === 0) {
-            setAttachmentLoader(false);
-            setIsDisable(false);
-            setTimeout(() => {
-              setIsOpen(!IsOpen);
-            }, 500);
-          }
-        })
-      );
     }
 
     if (status === "rejected_file_type") {
@@ -686,14 +589,10 @@ function ComparsionAuction(props) {
     setShowCounterPopup(false);
   };
 
-  const onPopupConfirm = () => {};
+  const onPopupConfirm = () => { };
 
   const deleteItemPartTable = (rowData, final) => {
-    dispatch(
-      deleteQuotationPartDetail(rowData?.QuotationPartId, (res) => {
-        Toaster.success("Part has been deleted successfully");
-      })
-    );
+
     let arr = final && final.filter((item) => item.PartId !== rowData?.PartId);
 
     setPartList(arr);
@@ -730,18 +629,11 @@ function ComparsionAuction(props) {
     }, 200);
 
     // setValue('uom', { label: rowData[0]?.Uom, value: rowData[0]?.UomId })
-    dispatch(
-      getRfqPartDetails(rowData?.QuotationPartId, (res) => {
-        const PartList = res?.data?.Data?.PartList;
-        setStorePartsDetail(PartList);
-      })
-    );
     setEditQuotationPart(viewMode);
     //setDrawerOpen(true)
   };
   const ViewItemPartTable = (rowData, final, viewMode) => {
     setViewQuotationPart(true);
-    dispatch(getRfqPartDetails(rowData?.QuotationPartId, (res) => {}));
     setDrawerOpen(true);
   };
 
@@ -946,27 +838,7 @@ function ComparsionAuction(props) {
       IsPartDetailsSent
     );
 
-    dispatch(
-      createRfqQuotation(obj, (res) => {
-        setQuotationIdentity(res?.data?.Identity);
-        if (res?.data?.Result) {
-          dispatch(setQuotationIdForRfq(""));
-          if (
-            !showSendButton === "" &&
-            (!(showSendButton === DRAFT) || !(showSendButton === PREDRAFT))
-          ) {
-            Toaster.success(MESSAGES.RFQ_UPDATE_SUCCESS);
-          } else if (isSent) {
-            Toaster.success(MESSAGES.RFQ_SENT_SUCCESS);
-          } else {
-            Toaster.success(MESSAGES.RFQ_ADD_SUCCESS);
-          }
-          cancel();
-        }
-      })
-    );
 
-    dispatch(setVendorDetails({}));
   };
 
   const defaultColDef = {
@@ -1012,8 +884,8 @@ function ComparsionAuction(props) {
               showSendButton === DRAFT
                 ? true
                 : dataProps?.isAddFlag
-                ? false
-                : dataProps?.isViewFlag || !isEditAll
+                  ? false
+                  : dataProps?.isViewFlag || !isEditAll
             }
             type={"button"}
             onClick={() => editItemPartTable(rowData, props, true)}
@@ -1038,8 +910,8 @@ function ComparsionAuction(props) {
               showSendButton === DRAFT
                 ? true
                 : dataProps?.isAddFlag
-                ? false
-                : dataProps?.isViewFlag || !isEditAll
+                  ? false
+                  : dataProps?.isViewFlag || !isEditAll
             }
             type={"button"}
             onClick={() => deleteItemPartTable(row, final)}
@@ -1099,255 +971,9 @@ function ComparsionAuction(props) {
     data.PartIdList = _.uniq(temp);
     data.PlantId = getValues("plant")?.value;
     data.VendorId = getValues("vendor")?.value;
-    dispatch(
-      checkLPSAndSCN(data, (res, err) => {
-        if (err) {
-          Toaster.error("An error occurred while checking LPS and SCN.");
-
-          return;
-        }
-        let Data = res?.data?.Data;
-        if (
-          res?.data?.Result &&
-          Data &&
-          (Data?.LPSRatingIsBlocked || Data?.ClassificationIsBlocked)
-        ) {
-          const additionalMessage =
-            ' Do you want to initiate an unblocking deviation for this vendor at the specified plant? If yes, please click "OK"';
-
-          if (
-            Data?.ClassificationDeviationIsInApprovalProcess ||
-            Data?.LPSRatingDeviationIsInApprovalProcess
-          ) {
-            // setShowPopup(true)
-            setBlocked(true);
-            Toaster.warning(res?.data?.Message);
-            setAlreadyInDeviation(true);
-            setValue("vendor", "");
-            setShowPopup(false);
-            return false;
-          } else {
-            setPopupMessage(res?.data?.Message + additionalMessage);
-            setShowPopup(true);
-            setVendorId(getValues("vendor"));
-            setPlantId(getValues("plant"));
-            setBlocked(true);
-            return false;
-          }
-        }
-        dispatch(
-          checkExistCosting(data, (res) => {
-            if (res?.data?.DynamicData?.IsExist) {
-              Toaster.warning("Costing already exists for this vendor.");
-              return false;
-            } else {
-              let obj = {};
-              obj.VendorId = getValues("vendor")?.value;
-              obj.ContactPersonId = getValues("contactPerson")?.value;
-              obj.Vendor = getValues("vendor")?.label;
-              obj.ContactPerson = getValues("contactPerson")?.label;
-              obj.IncoTermsIdRef = getRfqVendorDetail?.IncoTermIdRef;
-              obj.IncoTerms = getRfqVendorDetail?.IncoTerms;
-              obj.PaymentTermsIdRef = getRfqVendorDetail?.PaymentTermIdRef;
-              obj.PaymentTerms = getRfqVendorDetail?.PaymentTerms;
-              obj.WarrantyTerms = getValues("WarrantyTerms")?.label;
-              obj.LDClause = getValues("LDClause");
-              if (obj.VendorId === null || obj.VendorId === undefined) {
-                Toaster.warning("Please fill all the mandatory fields first.");
-                return false;
-              }
-
-              // Check IsSendQuotationToPointOfContact() result and ContactPersonId
-              if (
-                IsSendQuotationToPointOfContact() &&
-                (obj.ContactPersonId === null ||
-                  obj.ContactPersonId === undefined)
-              ) {
-                Toaster.warning("Please fill all the mandatory fields first.");
-                return false;
-              }
-
-              if (!updateButtonVendorTable) {
-                vendorList &&
-                  vendorList.map((item) => {
-                    if (item.VendorId === obj.VendorId) {
-                      isDuplicateEntry = true;
-                    }
-                    return null;
-                  });
-              }
-
-              if (isDuplicateEntry) {
-                Toaster.warning("This vendor is already added.");
-                return false;
-              }
-
-              let arr = [...vendorList, obj];
-
-              if (updateButtonVendorTable) {
-                //EDIT CASE
-                arr = [];
-                vendorList &&
-                  vendorList.map((item) => {
-                    if (
-                      JSON.stringify(selectedRowVendorTable) ===
-                      JSON.stringify(item)
-                    ) {
-                      return false;
-                    } else {
-                      arr.push(item);
-                    }
-                    return null;
-                  });
-
-                arr.map((item) => {
-                  if (item.VendorId === obj.VendorId) {
-                    isDuplicateEntry = true;
-                  }
-                  return null;
-                });
-
-                if (isDuplicateEntry) {
-                  Toaster.warning("This vendor is already added.");
-                  return false;
-                }
-
-                arr.push(obj);
-              }
-
-              setVendorList(arr);
-              setValue("vendor", "");
-              setValue("contactPerson", "");
-              setValue("LDClause", "");
-              setValue("WarrantyTerms", "");
-              setValue("PaymentTerms", "");
-              setValue("IncoTerms", "");
-              setUpdateButtonVendorTable(false);
-              setGetReporterListDropDown([]);
-              dispatch(setVendorDetails({}));
-            }
-          })
-        );
-      })
-    );
   };
   const addRowPartNoTable = () => {
     if (isNFRFlow) {
-      dispatch(
-        getPartNFRRMList(nfrId.value, getValues("partNumber")?.value, (res) => {
-          let list = [...rmAPIList];
-          let obj = {
-            partName: getValues("partNumber"),
-            RmList: res.data.DataList,
-          };
-          list.push(obj);
-
-          setRMAPIList(list);
-
-          let objTemp = {};
-          let arrTemp = [];
-          let Data = {};
-          if (nfrId && nfrId.value !== null) {
-            dispatch(
-              getNfrAnnualForecastQuantity(
-                nfrId.value,
-                getValues("partNumber")?.value,
-                (sopdate = ""),
-                (res) => {
-                  //CHECK_NFR
-                  Data = res.data.Data;
-                }
-              )
-            );
-          }
-          let dataObj = {
-            PartIdList: [getValues("partNumber")?.value],
-            PlantId: getValues("plant")?.value,
-            VendorId: null,
-          };
-
-          let vendorList = [];
-          let vendorListFinal = [];
-
-          dispatch(
-            checkExistCosting(dataObj, (res) => {
-              if (res?.data?.Result) {
-                vendorList = [...res?.data?.DataList];
-                vendorList &&
-                  vendorList?.map((item) => {
-                    vendorListFinal.push(
-                      `${item?.VendorName} (${item?.VendorCode})`
-                    );
-                  });
-              }
-
-              let tempArrayparts = [...selectedparts, getValues("partNumber")];
-              setSelectedParts(tempArrayparts);
-
-              let partNumber = getValues("partNumber");
-
-              let arrTemp = [];
-
-              let newObjTemp = {}; // Initialize the new object
-
-              newObjTemp.PartNo = partNumber?.label;
-              newObjTemp.PartId = getValues("partNumber")?.value;
-              newObjTemp.UOM = getValues("UOM")?.label;
-              newObjTemp.UOMId = getValues("UOM")?.value;
-              newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0;
-              newObjTemp.TimeLine = requirementDate.split(" ")[0] || "";
-              newObjTemp.PartType = getValues("PartType")?.label;
-              newObjTemp.PartTypeId = getValues("PartType")?.value;
-              newObjTemp.HavellsDesignPart =
-                getValues("HavellsDesignPart")?.label;
-              newObjTemp.HavellsDesignPartId =
-                getValues("HavellsDesignPart")?.value;
-              newObjTemp.Description = getValues("Description");
-
-              arrTemp.push(newObjTemp); // Push the new object to the array
-
-              let dataList = [...arrTemp];
-              list[list.length - 1].RmList &&
-                list[list.length - 1].RmList?.map((item, index) => {
-                  let obj = arrTemp[index] ?? {};
-                  obj.RMGrade = item.RawMaterialGrade;
-                  obj.RawMaterialGradeId = item.RawMaterialGradeId;
-                  obj.RMName = item.RawMaterialName;
-                  obj.RawMaterialChildId = item.RawMaterialChildId;
-                  obj.RMSpecification = item.RawMaterialSpecification;
-                  obj.RawMaterialSpecificationId =
-                    item.RawMaterialSpecificationId;
-
-                  if (index > arrTemp?.length - 1) {
-                    obj.PartId = arrTemp[0].PartId;
-                    obj.PartNo = arrTemp[0].PartNo;
-                    obj.Quantity = 0;
-                    obj.isEdit = true;
-                    dataList.push(obj);
-                  } else {
-                    Object.assign([...dataList], { index: obj });
-                  }
-                });
-
-              let arr = [...partList, ...dataList];
-              setPartList(arr);
-              setValue("partNumber", "");
-
-              setRequirementDate("");
-
-              setValue("RMName", "");
-              setValue("RMGrade", "");
-              setValue("RMSpecification", "");
-              setUpdateButtonPartNoTable(false);
-              setRMName("");
-              setRMGrade("");
-              setRMSpecification("");
-              dispatch(clearGradeSelectList([]));
-              dispatch(clearSpecificationSelectList([]));
-            })
-          );
-        })
-      );
     } else {
       let objTemp = {};
       let arrTemp = [];
@@ -1376,7 +1002,7 @@ function ComparsionAuction(props) {
         return false;
       } else if (
         /* getTargetprice && Object.keys(getTargetprice).length === 0 */ targetPrice ===
-          "" &&
+        "" &&
         havellsDesignPart === "Havells Design part"
       ) {
         Toaster.warning(
@@ -1386,16 +1012,6 @@ function ComparsionAuction(props) {
       } else {
         if (nfrId && nfrId.value !== null) {
           //CHECK_NFR
-          dispatch(
-            getNfrAnnualForecastQuantity(
-              nfrId.value,
-              getValues("partNumber")?.value,
-              (sopdate = ""),
-              (res) => {
-                Data = res.data.Data;
-              }
-            )
-          );
         }
         let dataObj = {
           // Part Handle change
@@ -1406,307 +1022,6 @@ function ComparsionAuction(props) {
 
         let vendorList = [];
         let vendorListFinal = [];
-
-        dispatch(
-          checkExistCosting(dataObj, (res) => {
-            // Part Handle change
-            if (res?.data?.Result) {
-              vendorList = [...res?.data?.DataList];
-              vendorList &&
-                vendorList?.map((item) => {
-                  vendorListFinal.push(
-                    `${item?.VendorName} (${item?.VendorCode})`
-                  );
-                });
-            }
-
-            let tempArrayparts = [...selectedparts, getValues("partNumber")];
-            setSelectedParts(tempArrayparts);
-
-            let partNumber = getValues("partNumber");
-
-            let arrTemp = [];
-
-            let newObjTemp = {}; // Initialize the new object
-
-            newObjTemp.PartNumber = partNumber?.label;
-            newObjTemp.PartId = getValues("partNumber")?.value;
-            newObjTemp.UOM = getValues("UOM")?.label;
-            newObjTemp.UOMId = getValues("UOM")?.value;
-            newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0;
-            newObjTemp.TimeLine = requirementDate.split(" ")[0] || "";
-            newObjTemp.PartType = getValues("PartType")?.label;
-            newObjTemp.PartTypeId = getValues("PartType")?.value;
-            newObjTemp.HavellsDesignPart =
-              getValues("HavellsDesignPart")?.label;
-            newObjTemp.HavellsDesignPartId =
-              getValues("HavellsDesignPart")?.value;
-            newObjTemp.Description = getValues("Description");
-            newObjTemp.SOPQuantityDetails = sopQuantityList;
-
-            arrTemp.push(newObjTemp); // Push the new object to the array
-
-            //let dataList = [...arrTemp]
-
-            let arr = updateButtonPartNoTable
-              ? partList.map((item) =>
-                  item.PartId === getValues("partNumber")?.value
-                    ? { ...item, ...arrTemp[0] }
-                    : item
-                )
-              : [...partList, ...arrTemp];
-
-            let obj = {};
-            let temppartArr = [];
-            let tempArr = [...arr];
-            let list = [];
-            list =
-              tempArr &&
-              tempArr?.map((item) => {
-                if (isNaN(Number(item?.Quantity))) {
-                  item.Quantity = 0;
-                }
-                return item;
-              });
-
-            obj.QuotationId = getQuotationIdForRFQ ? getQuotationIdForRFQ : "";
-            obj.TechnologyId = getValues("technology").value;
-            obj.PlantId = getValues("plant")?.value;
-            obj.LoggedInUserId = loggedInUserId();
-            let partIdList = _.uniq(_.map(list, "PartId"));
-
-            let childPartIdList = _.uniq(_.map(tableData, "PartId"));
-            partIdList &&
-              partIdList?.map((item) => {
-                if (item !== getValues("partNumber")?.value) return false;
-                let temppartObj = {};
-                let partListArr = [];
-                let partObject = [];
-                temppartObj.PartId = item;
-                let obj = arr && arr?.filter((ele) => ele?.PartId === item);
-
-                let rmList = [];
-                if (isNFRFlow) {
-                  let arrList =
-                    rmAPIList &&
-                    rmAPIList?.filter(
-                      (element) => element?.partName?.value === item
-                    )[0]?.RmList;
-                  rmList =
-                    arrList &&
-                    arrList?.filter(
-                      (element) =>
-                        element?.RawMaterialChildId ||
-                        element?.RawMaterialGradeId ||
-                        element?.RawMaterialSpecificationId
-                    );
-                } else {
-                  tableData &&
-                    tableData.map((item2) => {
-                      if (item2?.PartId === item) {
-                        rmList = [
-                          {
-                            RawMaterialChildId:
-                              item2?.RawMaterialChildId || null,
-                            RawMaterialGradeId:
-                              item2?.RawMaterialGradeId || null,
-                            RawMaterialSpecificationId:
-                              item2?.RawMaterialSpecificationId || null,
-                          },
-                        ];
-                      }
-                    });
-                }
-
-                temppartObj.RMDetails = rmList;
-                temppartObj.SOPQuantityDetails = sopQuantityList;
-                temppartObj.IsChildPart = false;
-                // temppartObj.QuotationPartId = ""
-                temppartObj.PartType = partType?.label || "";
-                temppartObj.TargetPrice = getTargetprice?.TargetPrice || 0;
-                temppartObj.TimeLine = requirementDate || "";
-                temppartObj.Remarks = remark || null;
-                temppartObj.Attachments = childPartFiles || [];
-                temppartObj.HavellsDesignPart =
-                  getValues("HavellsDesignPart")?.label || "";
-                temppartObj.UnitOfMeasurementId = getValues("UOM")?.value || "";
-                temppartObj.ExistingVendor = vendorList.join(",") || "";
-                temppartObj.Description = getValues("Description") || null;
-                temppartObj.SopDate = sopdate || null;
-                //temppartObj.SOPQuantityDetails = obj[0]?.SOPQuantityDetails
-
-                //ExistingVendor
-                let PartSpecificationList = {};
-                let PartSpecification = [];
-
-                if (specificationList?.length > 0) {
-                  specificationList.forEach((item) => {
-                    let specObj = {
-                      Specification: item?.Specification,
-                      Value: item?.Value,
-                      LoggedInUserId: loggedInUserId(),
-                    };
-                    PartSpecification.push(specObj);
-                  });
-                }
-
-                // Populate PartSpecificationList object
-                PartSpecificationList = {
-                  QuotationPartIdRef: temppartObj?.PartId || 0,
-                  PartSpecification: PartSpecification,
-                };
-
-                // Assuming temppartObj already exists and you're assigning PartSpecificationList to it
-                temppartObj.PartSpecificationList = PartSpecificationList;
-
-                temppartArr.push(temppartObj);
-                // if (updateButtonPartNoTable) {
-                //     let updatedarr = temppartArr[partIndex];
-                //     const updatedSopQuantityList = sopQuantityList; // Store sopQuantityList in a constant
-                //     if (updatedarr) {
-                //         updatedarr.SOPQuantityDetails = updatedSopQuantityList;
-                //         temppartArr[partIndex] = updatedarr;
-                //     }
-                // }
-
-                // Child Part Details
-                if (partType?.label === "Assembly") {
-                  childPartIdList &&
-                    childPartIdList.map((childItem) => {
-                      tableData &&
-                        tableData.map((item2) => {
-                          if (item2?.PartId === childItem) {
-                            let childPartObj = {};
-                            childPartObj.PartId = item2?.PartId;
-                            childPartObj.RMDetails = [
-                              {
-                                RawMaterialChildId: item2?.RawMaterialChildId,
-                                RawMaterialGradeId: item2?.RawMaterialGradeId,
-                                RawMaterialSpecificationId:
-                                  item2?.RawMaterialSpecificationId,
-                              },
-                            ];
-                            childPartObj.SOPQuantityDetails = [];
-                            childPartObj.IsChildPart = true;
-                            childPartObj.PartType = null;
-                            childPartObj.QuotationPartId = "";
-                            childPartObj.PartSpecificationList = {
-                              QuotationPartIdRef: null,
-                              PartSpecification: null,
-                            };
-
-                            childPartObj.HavellsDesignPart = null;
-                            childPartObj.TargetPrice = null;
-                            childPartObj.TimeLine = null;
-                            childPartObj.UnitOfMeasurementId = null;
-                            childPartObj.SopDate = null;
-                            childPartObj.Remarks = null;
-                            childPartObj.Description = null;
-                            childPartObj.Attachments = [];
-                            temppartArr.push(childPartObj);
-                          }
-                          return null;
-                        });
-                    });
-                }
-
-                return null;
-              });
-
-            let updatedPartList = [];
-            if (updateButtonPartNoTable) {
-              if (isPartDetailUpdate) {
-                updatedPartList = temppartArr;
-              } else if (!isPartDetailUpdate) {
-                updatedPartList = [...storePartsDetail];
-                updatedPartList[0] = {
-                  ...updatedPartList[0], // Preserve existing properties
-                  UnitOfMeasurementId: getValues("UOM")?.value || "",
-                  HavellsDesignPart:
-                    getValues("HavellsDesignPart")?.label || "",
-                  TimeLine: requirementDate || "",
-                };
-              }
-            } else {
-              updatedPartList = temppartArr;
-            }
-
-            obj.PartList = updatedPartList; // Move this line inside the block
-
-            //obj.PartList = updateButtonPartNoTable ? (isPartDetailUpdate ? temppartArr : storePartsDetail) : temppartArr
-
-            let updatedArr = [];
-            //
-
-            dispatch(
-              saveRfqPartDetails(obj, (res) => {
-                if (res?.data?.Result) {
-                  if (!updateButtonPartNoTable) {
-                    Toaster.success(
-                      "Part Details has been added successfully."
-                    );
-                  } else {
-                    Toaster.success(
-                      "Part Details has been updated successfully."
-                    );
-                  }
-
-                  setPartIdentity(res?.data?.Identity);
-                  // onResetPartNoTable();
-                  // setTableData([]);
-                  // setSpecificationList([]);
-                  //
-                  //
-                  updatedArr = arr.map((obj) => {
-                    if (obj.PartId === assemblyPartNumber.value) {
-                      //
-                      return { ...obj, QuotationPartId: res?.data?.Identity };
-                    }
-                    return obj;
-                  });
-                  //
-
-                  setPartList(updatedArr);
-                }
-                const newIdentityArray = _.uniq(
-                  _.map(updatedArr, "QuotationPartId")
-                ); // Convert to number
-                //
-                setUniquePartList(newIdentityArray);
-              })
-            );
-
-            setTimeout(() => {
-              setValue("partNumber", "");
-              setRequirementDate("");
-              setValue("RMName", "");
-              setValue("RMGrade", "");
-              setValue("RMSpecification", "");
-              setValue("PartType", "");
-              setValue("HavellsDesignPart", "");
-              setValue("UOM", "");
-              setValue("Description", "");
-              setUpdateButtonPartNoTable(false);
-              setEditQuotationPart(false);
-              setIsPartDeailUpdate(false);
-              setRMName("");
-              setRMGrade("");
-              setRMSpecification("");
-              // setAssemblyPartNumber("")
-              setTableData([]);
-              setSpecificationList([]);
-              setSopQuantityList([]);
-              setSOPDate("");
-              setAssemblyPartNumber("");
-              // setQuotationIdentity('');
-              setStorePartsDetail([]);
-              dispatch(clearGradeSelectList([]));
-              dispatch(clearSpecificationSelectList([]));
-              dispatch(setRfqPartDetails([]));
-              //dispatch(setQuotationIdForRfq(""))
-            }, 200);
-          })
-        );
       }
     }
   };
@@ -1810,7 +1125,7 @@ function ComparsionAuction(props) {
       setValue("partNumber", "");
       setPartName("");
       reactLocalStorage.setObject("PartData", []);
-      dispatch(getPlantSelectListByType(ZBC, "RFQ", newValue?.value, () => {}));
+      dispatch(getPlantSelectListByType(ZBC, "RFQ", newValue?.value, () => { }));
       setNfrId(newValue);
       setIsNFRFlow(true);
     } else {
@@ -1834,22 +1149,7 @@ function ComparsionAuction(props) {
     setPartName([]);
     reactLocalStorage.setObject("PartData", []);
   };
-  const handleVendorChange = (data) => {
-    dispatch(
-      getContactPerson(data.value, (res) => {
-        setGetReporterListDropDown(res?.data?.SelectList);
-        setValue("contactPerson", "");
-      })
-    );
-    dispatch(
-      getrRqVendorDetails(data.value, (res) => {
-        const { PaymentTerms, IncoTerms, IncoTermIdRef, PaymentTermIdRef } =
-          res?.data?.Data;
-        setValue("IncoTerms", IncoTerms);
-        setValue("PaymentTerms", PaymentTerms);
-      })
-    );
-  };
+
   const vendorFilterList = async (inputValue) => {
     if (
       inputValue &&
@@ -2004,26 +1304,25 @@ function ComparsionAuction(props) {
         dataProps?.isAddFlag && props.data.isEdit
           ? true
           : dataProps?.isViewFlag
-          ? false
-          : isEditAll && props.data.isEdit
-          ? true
-          : false;
+            ? false
+            : isEditAll && props.data.isEdit
+              ? true
+              : false;
     } else {
       isEnable = dataProps?.isAddFlag
         ? true
         : dataProps?.isViewFlag
-        ? false
-        : isEditAll
-        ? true
-        : false;
+          ? false
+          : isEditAll
+            ? true
+            : false;
     }
     return (
       <>
         {
           <span
-            className={`form-control custom-max-width-110px  ${
-              isEnable ? "" : "disabled"
-            }`}
+            className={`form-control custom-max-width-110px  ${isEnable ? "" : "disabled"
+              }`}
           >
             {value ? Number(cell) : 0}
           </span>
@@ -2046,8 +1345,8 @@ function ComparsionAuction(props) {
     const value = row?.RevisionNumber
       ? row?.PartNumber + " (" + row?.RevisionNumber + ")"
       : row?.PartNumber
-      ? row?.PartNumber
-      : "";
+        ? row?.PartNumber
+        : "";
     return (
       <div className={`${value ? "font-ellipsis" : "row-merge"}`}>{value}</div>
     );
@@ -2182,13 +1481,13 @@ function ComparsionAuction(props) {
     setRMName({ label: newValue?.label, value: newValue?.value });
     setRmNameSelected(true);
     dispatch(
-      getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => {})
+      getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { })
     );
   };
 
   const handleRMGrade = (newValue) => {
     setRMGrade({ label: newValue?.label, value: newValue?.value });
-    dispatch(fetchSpecificationDataAPI(newValue.value, (res) => {}));
+    dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }));
   };
 
   const handleRMSpecification = (newValue) => {
@@ -2225,18 +1524,18 @@ function ComparsionAuction(props) {
         dataProps?.isAddFlag && props.data.isEdit
           ? true
           : dataProps?.isViewFlag
-          ? false
-          : isEditAll && props.data.isEdit
-          ? true
-          : false;
+            ? false
+            : isEditAll && props.data.isEdit
+              ? true
+              : false;
     } else {
       value = dataProps?.isAddFlag
         ? true
         : dataProps?.isViewFlag
-        ? false
-        : isEditAll
-        ? true
-        : false;
+          ? false
+          : isEditAll
+            ? true
+            : false;
     }
 
     return value;
@@ -2257,17 +1556,7 @@ function ComparsionAuction(props) {
         setPartEffectiveDate(res.data.Data?.EffectiveDate);
       })
     );
-    dispatch(
-      getTargetPrice(
-        plant?.value,
-        value?.value,
-        Number(technology?.value),
-        (res) => {
-          const { TargetPrice } = res?.data?.Data;
-          setTargetPrice(TargetPrice !== undefined ? TargetPrice : "");
-        }
-      )
-    );
+
   };
 
   const effectiveDateFormatter = (props) => {
@@ -2559,11 +1848,10 @@ function ComparsionAuction(props) {
                                               <strong>
                                                 {idx === item.bids.length - 2
                                                   ? "Current Bid"
-                                                  : `${
-                                                      idx === 0
-                                                        ? "First"
-                                                        : `${idx}th`
-                                                    } Revision`}
+                                                  : `${idx === 0
+                                                    ? "First"
+                                                    : `${idx}th`
+                                                  } Revision`}
                                               </strong>
                                             </span>
                                             <span className="pie-chart-wrapper pie-chart-wrapper-1">
@@ -2596,13 +1884,12 @@ function ComparsionAuction(props) {
                                                   <span>
                                                     <strong>
                                                       {idx ===
-                                                      item.bids.length - 1
+                                                        item.bids.length - 1
                                                         ? "Current Bid"
-                                                        : `${
-                                                            idx === 0
-                                                              ? "First"
-                                                              : `${idx}th`
-                                                          } Revision`}
+                                                        : `${idx === 0
+                                                          ? "First"
+                                                          : `${idx}th`
+                                                        } Revision`}
                                                     </strong>
                                                   </span>
                                                   <span className="pie-chart-wrapper pie-chart-wrapper-1">
@@ -2701,100 +1988,14 @@ function ComparsionAuction(props) {
                   </Row>
                 </form>
 
-                {isBulkUpload && (
-                  <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    // densityAlert={densityAlert}
-                    fileName={"ADD RFQ"}
-                    messageLabel={"RFQ Part's"}
-                    anchor={"right"}
-                    technologyId={technology}
-                    // isFinalApprovar={isFinalLevelUser}
-                  />
-                )}
-                {drawerOpen && (
-                  <ProcessDrawer
-                    isOpen={drawerOpen}
-                    anchor={"right"}
-                    closeDrawer={closeDrawer}
-                    isEditFlag={editQuotationPart}
-                    dataProp={dataProps}
-                    technology={technology}
-                    nfrId={nfrId}
-                    partName={partName}
-                    AssemblyPartNumber={assemblyPartNumber}
-                    type={partTypeforRM}
-                    tableData={tableData}
-                    setTableData={setTableData}
-                    specificationList={specificationList}
-                    setSpecificationList={setSpecificationList}
-                    setChildPartFiles={setChildPartFiles}
-                    childPartFiles={childPartFiles}
-                    setRemark={setRemark}
-                    remark={remark}
-                    isViewFlag={viewQuotationPart}
-                    partListData={partList}
-                    setPartListData={setPartList}
-                    setViewQuotationPart={setViewQuotationPart}
-                    addRowPartNoTable={addRowPartNoTable}
-                    setSopQuantityList={setSopQuantityList}
-                    sopQuantityList={sopQuantityList}
-                    sopdate={sopdate}
-                    setSOPDate={setSOPDate}
-                    effectiveMinDate={effectiveMinDate}
-                  />
-                )}
+
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* </Drawer > */}
-      {showPopup && (
-        <PopupMsgWrapper
-          disablePopup={alreadyInDeviation}
-          vendorId={vendorId}
-          plantId={plantId}
-          redirectPath={blocked ? "/initiate-unblocking" : ""}
-          isOpen={showPopup}
-          closePopUp={closePopUp}
-          confirmPopup={onPopupConfirm}
-          message={blocked ? `${popupMessage}` : `${MESSAGES.RFQ_ADD_SUCCESS}`}
-        />
-      )}
-      {showCounterPopup && (
-        <PopupMsgWrapper
-          header={"Counter Offer"}
-          isOpen={showCounterPopup}
-          closePopUp={closePopUp}
-          confirmPopup={onPopupConfirm}
-          customClass={"counterOfferModal"}
-          message={
-            <>
-              <TextFieldHookForm
-                // title={titleObj.descriptionTitle}
-                label="Counter Offer:"
-                name={"AuctionName"}
-                Controller={Controller}
-                control={control}
-                register={register}
-                rules={{ required: false }}
-                mandatory={false}
-                handleChange={() => {}}
-                defaultValue={""}
-                className=""
-                customClassName={
-                  "withBorder d-flex align-items-center justify-content-center"
-                }
-                errors={errors.AuctionName}
-              />
-            </>
-          }
-        />
-      )}
+
     </div>
   );
 }
