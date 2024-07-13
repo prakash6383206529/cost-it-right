@@ -200,14 +200,14 @@ function AddOtherCostDrawer(props) {
                 return;
             }
 
-            const item = tableData.find(item => item.CostHeaderName === Applicability);
+            const item = tableData.find(item => item?.CostHeaderName === Applicability);
             if (item) {
-                totalCostCurrency += item.NetCost;
+                totalCostCurrency += props.rawMaterial ? item?.NetCostConversion : item?.NetCost;
 
                 if (selectedApplicabilities.includes('Basic Rate')) {
                     // totalCostCurrency += BasicRateIndexCurrency;
                     totalBasicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency
-                    total = totalCostCurrency + totalBasicRate
+                    total = checkForNull(totalCostCurrency) + checkForNull(totalBasicRate)
                 } else {
                     total = totalCostCurrency
                 }

@@ -1112,6 +1112,7 @@ export function getRateByCapacityCriteria(data, callback) {
         callback(response)
       } else if (response?.status === 204) {
         Toaster.warning("There is no data for Freight.")
+        callback(response)
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
