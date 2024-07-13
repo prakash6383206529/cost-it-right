@@ -126,7 +126,10 @@ function AddRMFinancialDetails(props) {
         name: ['JaliScrapCostSelectedCurrency', 'ForgingScrapSelectedCurrency', 'ScrapRateSelectedCurrency', 'cutOffPriceSelectedCurrency', 'CircleScrapCostSelectedCurrency', 'MachiningScrapSelectedCurrency']
     })
     useEffect(() => {
-    }, [state.otherCostTableData])
+        setState(prevState => ({
+            ...prevState, totalBasicRate: getValues('BasicRateBaseCurrency')
+        }))
+    }, [fieldValuesDomestic])
     useEffect(() => {
         if (isEditFlag) {
             handleFinancialDataChange()
@@ -728,10 +731,14 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: true }))
     }
 
-    const closeOtherCostToggle = (type, data, total) => {
-        setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: total }))
-        setValue('OtherCostBaseCurrency', total)
-        dispatch(setOtherCostDetails(data))
+    const closeOtherCostToggle = (type, data, total, totalBase) => {
+        if (type === 'Save') {
+            setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
+            setValue('OtherCostBaseCurrency', totalBase)
+            dispatch(setOtherCostDetails(data))
+        } else {
+            setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
+        }
     }
 
     const conditionToggle = () => {
@@ -1552,7 +1559,7 @@ function AddRMFinancialDetails(props) {
                                             handleChange={() => { }}
                                             customClassName=" withBorder"
                                             errors={errors.JaliScrapCostBaseCurrency}
-
+                                            mandatory={!states.isImport ? true : false}
                                         />
                                     </Col>
                                     {states.isImport && <Col className="col-md-15">

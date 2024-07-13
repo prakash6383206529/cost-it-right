@@ -20,7 +20,7 @@ import { setCommodityDetails } from '../actions/Indexation'
 
 const gridOptions = {};
 function AddIndexationMaterialListing(props) {
-
+    const { isViewFlag } = props
     const { setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -40,7 +40,6 @@ function AddIndexationMaterialListing(props) {
         isLoader: false
     })
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
-    // console.log('commodityDetailsArray: ', commodityDetailsArray);
     useEffect(() => {
         setState(prevState => ({ ...prevState, commodityDetailsState: commodityDetailsArray }))
     }, [commodityDetailsArray])
@@ -52,14 +51,12 @@ function AddIndexationMaterialListing(props) {
             return sum + baseCurrencyBypercentage;
         }, 0);
         setState(prevState => ({ ...prevState, totalBasicRate: totalRate }))
-        console.log('totalRate: ', totalRate);
         props.setTotalBasicRate(totalRate)
     }, [state.isLoader, state.commodityDetailsState]);
 
     useEffect(() => {
         setState(prevState => ({ ...prevState, commodityDetailsState: props.commodityDetails }))
     }, [props.commodityDetails])
-    // console.log('props.commodityDetails: ', props.commodityDetails);
 
     const onGridReady = (params) => {
         setGridApi(params.api)
@@ -99,27 +96,38 @@ function AddIndexationMaterialListing(props) {
     }
 
     const closeOtherCostToggle = (type, RawMaterialCommodityIndexRateDetailsRequest, TotalCost, TotalCostConversion, rowIndex) => {
-        // setState(prevState => ({ ...prevState, isLoader: true }));
-        // if (RawMaterialCommodityIndexRateDetailsRequest.length >= 1) {
-        let tempArray = state.commodityDetailsState;
-        let tempData = tempArray[rowIndex];
+        if (type === 'Cancel') {
+            setState(prevState => ({ ...prevState, isOpenOtherCost: false, reRender: !prevState.reRender }));
+            return
+        } else {
+            // setState(prevState => ({ ...prevState, isLoader: true }));
+            // if (RawMaterialCommodityIndexRateDetailsRequest.length >= 1) {
+            let tempArray = state.commodityDetailsState;
+            let tempData = tempArray[rowIndex];
 
-        tempData = {
-            ...tempData,
-            TotalCostConversion, // Add BasicRateConversion to the object
-            TotalCost,// Add totalCostCurrency to the object
-            RawMaterialCommodityIndexRateDetailsRequest,
-        };
-        tempArray[rowIndex] = tempData;
+            const totalCostForPercent = checkForNull(TotalCostConversion) + checkForNull(tempData?.BasicRateConversion)
 
-        setState(prevState => ({ ...prevState, commodityDetailsState: tempArray, isLoader: true }));
 
-        setTimeout(() => {
-            setState(prevState => ({ ...prevState, isLoader: false }));
-        }, 500);
-        // }
-        dispatch(setCommodityDetails(tempArray))
-        setState(prevState => ({ ...prevState, isOpenOtherCost: false, reRender: !prevState.reRender }));
+            tempData = {
+                ...tempData,
+                TotalCostConversion, // Add BasicRateConversion to the object
+                TotalCost,// Add totalCostCurrency to the object
+                TotalCostPercent: totalCostForPercent * tempData.Percentage / 100,
+                RawMaterialCommodityIndexRateDetailsRequest,
+            };
+
+            tempArray[rowIndex] = tempData;
+
+            setState(prevState => ({ ...prevState, commodityDetailsState: tempArray, isLoader: true }));
+
+            setTimeout(() => {
+                setState(prevState => ({ ...prevState, isLoader: false }));
+            }, 500);
+            // }
+            dispatch(setCommodityDetails(tempArray))
+            setState(prevState => ({ ...prevState, isOpenOtherCost: false, reRender: !prevState.reRender }));
+        }
+
     }
     /**
 * @method buttonFormatter
@@ -133,15 +141,14 @@ function AddIndexationMaterialListing(props) {
         return (
             <>
 
-                {/* <Button id="nfr_add" className={"mr5"} onClick={() => AddTotalCost(cellValue, rowData)} title={"Add"} icon={"plus"} /> */}
-                <div className="d-flex justify-content-between">{checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}{<button
-                    type="button"
-                    className={"mr5 mt-2 add-out-sourcing "}
-                    onClick={() => AddTotalCost(cellValue, rowData, props.rowIndex)}
-                    // disabled={!item?.isRowActionEditable}
-                    title="Add"
-                >
-                </button>}
+                <div className="d-flex justify-content-between">{checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}
+                    {<button
+                        type="button"
+                        className={`mr5 mt-2 ${isViewFlag ? 'View small' : 'add-out-sourcing'} `}
+                        onClick={() => AddTotalCost(cellValue, rowData, props.rowIndex)}
+                        title="Add"
+                    >
+                    </button>}
                 </div>
             </>
         )
@@ -160,6 +167,7 @@ function AddIndexationMaterialListing(props) {
         const cell = props?.data?.TotalCostConversion ? props?.data?.TotalCostConversion + props?.data?.BasicRateConversion : props?.data?.BasicRateConversion;
         const percentage = props?.data?.Percentage
         const value = percentage ? cell * percentage / 100 : cell
+
         return (
             <>
                 {value != null ? checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice) : ''}
@@ -227,8 +235,6 @@ function AddIndexationMaterialListing(props) {
                                     </Row >
                                 )
                                 }
-                                {/* {console.log('state.commodityDetailsState: ', state.commodityDetailsState)} */}
-                                {/* {console.log('state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest: ', state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest)} */}
                                 {
                                     state.isOpenOtherCost &&
                                     <AddOtherCostDrawer
@@ -236,7 +242,7 @@ function AddIndexationMaterialListing(props) {
                                         //tableData={state.conditionTableData}
                                         closeDrawer={closeOtherCostToggle}
                                         anchor={'right'}
-                                        ViewMode={props.isViewFlag}
+                                        ViewMode={isViewFlag}
                                         isFromMaster={true}
                                         RowData={state.commodityDetailsState[state?.rowIndex]}
                                         tableData={state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest ? state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest : []} //commodityDetailsState[state?.rowIndex]?.data}

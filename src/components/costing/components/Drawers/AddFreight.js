@@ -46,8 +46,8 @@ function AddFreight(props) {
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
-  const [capacity, setCapacity] = useState([]);
-  const [criteria, setCriteria] = useState([]);
+  const [capacity, setCapacity] = useState(isEditFlag ? { label: rowObjData.Capacity, value: rowObjData.Capacity } : []);
+  const [criteria, setCriteria] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
   const [IsPartTruckLoad, setIsPartTruckLoad] = useState(isEditFlag ? rowObjData.IsPartTruckLoad : false);
 
   const [freightType, setfreightType] = useState(isEditFlag ? rowObjData.EFreightLoadType : FullTruckLoad);
@@ -224,23 +224,17 @@ function AddFreight(props) {
   const handleCapacityChange = (newValue) => {
     if (newValue && newValue !== '') {
       setCapacity(newValue)
-      // dispatch(getRateCriteriaByCapacitySelectList(newValue.value, res => { }))
+      callFreightAPI(newValue, criteria)
     } else {
       setCapacity([])
     }
   }
 
-  /**
-  * @method handleCriteriaChange
-  * @description  CRITERIA CHANGE HANDLE
-  */
-  const handleCriteriaChange = (newValue) => {
-    if (newValue && newValue !== '') {
-      setCriteria(newValue)
-      calculateApplicabilityCost(newValue.value)
+  const callFreightAPI = (capacityValue, criteriaValue) => {
+    if (Object.keys(capacityValue)?.length > 0 && Object.keys(criteriaValue)?.length > 0) {
       const data = {
-        Capacity: capacity?.value ? capacity?.value : null,
-        Criteria: newValue?.value ? newValue?.value : null,
+        Capacity: capacityValue?.value ? capacityValue?.value : null,
+        Criteria: criteriaValue?.value ? criteriaValue?.value : null,
         PlantId: costData?.PlantId ? costData?.PlantId : null,
         VendorId: costData?.VendorId ? costData?.VendorId : null,
         CustomerId: costData?.CustomerId ? costData?.CustomerId : null,
@@ -254,8 +248,22 @@ function AddFreight(props) {
           setValue('Rate', Data?.Rate)
           setFullTruckLoadId(Data?.FullTruckLoadId)
           errors.Rate = {}
+        } else {
+          setValue('Rate', '')
         }
       }))
+    }
+  }
+
+  /**
+  * @method handleCriteriaChange
+  * @description  CRITERIA CHANGE HANDLE
+  */
+  const handleCriteriaChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setCriteria(newValue)
+      calculateApplicabilityCost(newValue.value)
+      callFreightAPI(capacity, newValue)
     } else {
       setCriteria([])
       setValue('Rate', '')
@@ -432,8 +440,8 @@ function AddFreight(props) {
 
     if (freightType === Fixed) freightTypeText = 'Fixed';
     if (freightType === Percentage) freightTypeText = 'Percentage';
-    if (freightType === FullTruckLoad) freightTypeText = 'FTL';
-    if (freightType === PartTruckLoad) freightTypeText = 'PTL';
+    if (freightType === FullTruckLoad) freightTypeText = 'Full Truck Load';
+    if (freightType === PartTruckLoad) freightTypeText = 'Part Truck Load';
 
     let formData = {
       FreightDetailId: isEditFlag ? rowObjData?.FreightDetailId : '',
@@ -573,7 +581,7 @@ function AddFreight(props) {
                       mandatory={true}
                       handleChange={handleCapacityChange}
                       errors={errors.Capacity}
-                      disabled={(isEditFlag) ? true : false}
+                      disabled={false}
                     />
                   </Col>}
                   {showFields?.Applicability && <Col md="12">
@@ -607,7 +615,7 @@ function AddFreight(props) {
                       mandatory={true}
                       handleChange={handleCriteriaChange}
                       errors={errors.Criteria}
-                      disabled={(isEditFlag) ? true : false}
+                      disabled={false}
                     />
                   </Col>}
                   {showFields?.Rate && <Col md="12">

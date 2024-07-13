@@ -131,8 +131,8 @@ function FreightCost(props) {
 
                         if (item.EFreightLoadType === Fixed) EFreightLoadTypeText = 'Fixed';
                         if (item.EFreightLoadType === Percentage) EFreightLoadTypeText = 'Percentage';
-                        if (item.EFreightLoadType === FullTruckLoad) EFreightLoadTypeText = 'FTL';
-                        if (item.EFreightLoadType === PartTruckLoad) EFreightLoadTypeText = 'PTL';
+                        if (item.EFreightLoadType === FullTruckLoad) EFreightLoadTypeText = 'Full Truck Load';
+                        if (item.EFreightLoadType === PartTruckLoad) EFreightLoadTypeText = 'Part Truck Load';
 
                         return (
                           <tr key={index}>
