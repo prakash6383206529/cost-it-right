@@ -45,7 +45,7 @@ function AddIndexationMaterialListing(props) {
     }, [commodityDetailsArray])
     useEffect(() => {
         // Calculate totalBasicRate whenever commodityDetailsState changes
-        const totalRate = state.commodityDetailsState.reduce((sum, row) => {
+        const totalRate = state.commodityDetailsState && state.commodityDetailsState?.reduce((sum, row) => {
             const baseCurrency = row.TotalCostConversion ? row.TotalCostConversion + row.BasicRateConversion : row.BasicRateConversion || 0;
             const baseCurrencyBypercentage = baseCurrency * row.Percentage / 100 || 0;
             return sum + baseCurrencyBypercentage;
@@ -170,7 +170,7 @@ function AddIndexationMaterialListing(props) {
     }
 
     const frameworkComponents = {
-        customLoadingOverlay: LoaderCustom,
+        // customLoadingOverlay: LoaderCustom,
         commonFormatter: commonFormatter,
         customNoRowsOverlay: NoContentFound,
         priceFormatter: priceFormatter,
@@ -198,7 +198,7 @@ function AddIndexationMaterialListing(props) {
                                                                 defaultColDef={defaultColDef}
                                                                 domLayout='autoHeight'
                                                                 // columnDefs={c}
-                                                                rowData={commodityDetailsArray}
+                                                                rowData={commodityDetailsArray ?? []}
                                                                 // onCellValueChanged={onCellValueChanged}
                                                                 pagination={true}
                                                                 paginationPageSize={12}
