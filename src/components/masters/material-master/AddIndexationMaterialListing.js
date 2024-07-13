@@ -96,32 +96,38 @@ function AddIndexationMaterialListing(props) {
     }
 
     const closeOtherCostToggle = (type, RawMaterialCommodityIndexRateDetailsRequest, TotalCost, TotalCostConversion, rowIndex) => {
-        // setState(prevState => ({ ...prevState, isLoader: true }));
-        // if (RawMaterialCommodityIndexRateDetailsRequest.length >= 1) {
-        let tempArray = state.commodityDetailsState;
-        let tempData = tempArray[rowIndex];
+        if (type === 'Cancel') {
+            setState(prevState => ({ ...prevState, isOpenOtherCost: false, reRender: !prevState.reRender }));
+            return
+        } else {
+            // setState(prevState => ({ ...prevState, isLoader: true }));
+            // if (RawMaterialCommodityIndexRateDetailsRequest.length >= 1) {
+            let tempArray = state.commodityDetailsState;
+            let tempData = tempArray[rowIndex];
 
-        const totalCostForPercent = checkForNull(TotalCostConversion) + checkForNull(tempData?.BasicRateConversion)
+            const totalCostForPercent = checkForNull(TotalCostConversion) + checkForNull(tempData?.BasicRateConversion)
 
 
-        tempData = {
-            ...tempData,
-            TotalCostConversion, // Add BasicRateConversion to the object
-            TotalCost,// Add totalCostCurrency to the object
-            TotalCostPercent: totalCostForPercent * tempData.Percentage / 100,
-            RawMaterialCommodityIndexRateDetailsRequest,
-        };
+            tempData = {
+                ...tempData,
+                TotalCostConversion, // Add BasicRateConversion to the object
+                TotalCost,// Add totalCostCurrency to the object
+                TotalCostPercent: totalCostForPercent * tempData.Percentage / 100,
+                RawMaterialCommodityIndexRateDetailsRequest,
+            };
 
-        tempArray[rowIndex] = tempData;
+            tempArray[rowIndex] = tempData;
 
-        setState(prevState => ({ ...prevState, commodityDetailsState: tempArray, isLoader: true }));
+            setState(prevState => ({ ...prevState, commodityDetailsState: tempArray, isLoader: true }));
 
-        setTimeout(() => {
-            setState(prevState => ({ ...prevState, isLoader: false }));
-        }, 500);
-        // }
-        dispatch(setCommodityDetails(tempArray))
-        setState(prevState => ({ ...prevState, isOpenOtherCost: false, reRender: !prevState.reRender }));
+            setTimeout(() => {
+                setState(prevState => ({ ...prevState, isLoader: false }));
+            }, 500);
+            // }
+            dispatch(setCommodityDetails(tempArray))
+            setState(prevState => ({ ...prevState, isOpenOtherCost: false, reRender: !prevState.reRender }));
+        }
+
     }
     /**
 * @method buttonFormatter
@@ -135,14 +141,14 @@ function AddIndexationMaterialListing(props) {
         return (
             <>
 
-                {/* <Button id="nfr_add" className={"mr5"} onClick={() => AddTotalCost(cellValue, rowData)} title={"Add"} icon={"plus"} /> */}
-                <div className="d-flex justify-content-between">{checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}{<button
-                    type="button"
-                    className={`mr5 mt-2 ${isViewFlag ? 'View small' : 'add-out-sourcing'} `}
-                    onClick={() => AddTotalCost(cellValue, rowData, props.rowIndex)}
-                    title="Add"
-                >
-                </button>}
+                <div className="d-flex justify-content-between">{checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}
+                    {<button
+                        type="button"
+                        className={`mr5 mt-2 ${isViewFlag ? 'View small' : 'add-out-sourcing'} `}
+                        onClick={() => AddTotalCost(cellValue, rowData, props.rowIndex)}
+                        title="Add"
+                    >
+                    </button>}
                 </div>
             </>
         )

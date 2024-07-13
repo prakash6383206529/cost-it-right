@@ -732,9 +732,13 @@ function AddRMFinancialDetails(props) {
     }
 
     const closeOtherCostToggle = (type, data, total, totalBase) => {
-        setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
-        setValue('OtherCostBaseCurrency', totalBase)
-        dispatch(setOtherCostDetails(data))
+        if (type === 'Save') {
+            setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
+            setValue('OtherCostBaseCurrency', totalBase)
+            dispatch(setOtherCostDetails(data))
+        } else {
+            setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
+        }
     }
 
     const conditionToggle = () => {
