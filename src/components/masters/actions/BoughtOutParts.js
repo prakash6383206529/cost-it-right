@@ -15,7 +15,8 @@ import {
   config,
   GET_SOB_LISTING,
   GET_INCO_SELECTLIST_SUCCESS,
-  GET_PAYMENT_SELECTLIST_SUCCESS
+  GET_PAYMENT_SELECTLIST_SUCCESS,
+  GET_VIEW_BOUGHT_OUT_PART_SUCCESS
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -354,6 +355,26 @@ export function getManageBOPSOBDataList(data, callback) {
       if (response.data.Result || response.status === 204) {
         dispatch({
           type: GET_SOB_LISTING,
+          payload: response.status === 204 ? [] : response.data.DataList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      //apiErrors(error);
+    });
+  };
+}
+export function getViewBoughtOutPart(data, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const queryParams = `entryType=${data.entryType}&bopCategory=${data.bopCategory}&bopName=${data.bopName}&bopNumber=${data.bopNumber}`;
+    const request = axios.get(`${API.getViewBoughtOutPart}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_VIEW_BOUGHT_OUT_PART_SUCCESS,
           payload: response.status === 204 ? [] : response.data.DataList,
         });
         callback(response);

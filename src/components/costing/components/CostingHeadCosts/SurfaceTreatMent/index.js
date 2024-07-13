@@ -18,7 +18,7 @@ import { debounce } from 'lodash';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 import { ASSEMBLY, ASSEMBLYNAME, LEVEL0, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { PreviousTabData } from '../../costingHeaderTabs';
+import { PreviousTabData } from '../../CostingHeaderTabs';
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
   const previousTab = useContext(PreviousTabData) || 0;

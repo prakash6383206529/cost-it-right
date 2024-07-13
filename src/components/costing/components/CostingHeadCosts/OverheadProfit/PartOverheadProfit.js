@@ -11,7 +11,7 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { IsPartType } from '../../CostingDetails';
 import { PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
-import { PreviousTabData } from '../../costingHeaderTabs';
+import { PreviousTabData } from '../../CostingHeaderTabs';
 function PartOverheadProfit(props) {
 
   const { item } = props;

@@ -443,7 +443,16 @@ function RfqListing(props) {
         filter: true,
         sortable: false,
     };
+    const hyphenFormatter = (props) => {
 
+        const cellValue = props?.value;
+        return cellValue !== " " &&
+            cellValue !== null &&
+            cellValue !== "" &&
+            cellValue !== undefined
+            ? cellValue
+            : "-";
+    };
 
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
@@ -456,6 +465,7 @@ function RfqListing(props) {
         dashFormatter: dashFormatter,
         dateTimeFormatter: dateTimeFormatter,
         valuesFloatingFilter: SingleDropdownFloationFilter,
+        hyphenFormatter: hyphenFormatter,
     }
 
 
@@ -533,7 +543,9 @@ function RfqListing(props) {
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
                                                 {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
-                                                <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150}></AgGridColumn>
+                                                <AgGridColumn field="PartType" headerName="Part Type" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                 <AgGridColumn field="NoOfQuotationReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                                 <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
@@ -541,6 +553,8 @@ function RfqListing(props) {
                                                 <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" width={"160px"} headerName='Raised By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter'></AgGridColumn>
+                                                <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='Part Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
+
                                                 <AgGridColumn field="VisibilityMode" width={"200px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityDate" width={"160px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>

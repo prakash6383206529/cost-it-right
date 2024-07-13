@@ -20,7 +20,8 @@ import {
     GET_SOB_LISTING,
     GET_BOP_APPROVAL_LIST,
     GET_INCO_SELECTLIST_SUCCESS,
-    GET_PAYMENT_SELECTLIST_SUCCESS
+    GET_PAYMENT_SELECTLIST_SUCCESS,
+    GET_VIEW_BOUGHT_OUT_PART_SUCCESS
 } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
@@ -122,11 +123,11 @@ export default function BOPReducer(state = initialState, action) {
         case GET_BOP_DOMESTIC_DATA_LIST:
 
             let arr = []
-            
+
             arr = action.payload && action.payload.filter((el) => {                 //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: '2021-03-01T00:00:00' BUT WE WERE RECEIVING DATE IN 01/03/2021
                 el.EffectiveDateNew = el.EffectiveDate
                 el.OriginalBasicRate = el.BasicRate
-                el.OriginalNetLandedCost= el.NetLandedCost
+                el.OriginalNetLandedCost = el.NetLandedCost
                 el.OriginalNetCostWithoutConditionCost = el.NetCostWithoutConditionCost
                 el.BasicRate = checkForDecimalAndNull(el.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice)
                 el.NetCostWithoutConditionCost = checkForDecimalAndNull(el.NetCostWithoutConditionCost, getConfigurationKey()?.NoOfDecimalForPrice)
@@ -208,6 +209,12 @@ export default function BOPReducer(state = initialState, action) {
                 loading: false,
                 PaymentTermsSelectList: action.payload
             }
+        case GET_VIEW_BOUGHT_OUT_PART_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                getViewBoughtOutParts: action.payload
+            };
         default:
             return state;
     }

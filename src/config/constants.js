@@ -19,8 +19,18 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-//const BASE_URL = `http://10.10.1.100:10152/api/v1`
+//const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.8.109:8070/api/v1`
+const BASE_URL = `http://10.10.8.120:1005/api/v1`
+// const BASE_URL = `http://10.10.1.100:10172/api/v1`
+// const BASE_URL = `http://10.10.8.160/api/v1`;  //
+// const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
+// const BASE_URL = `https://demov3api.costitright.com/api/v1`;
+// const BASE_URL = `http://10.10.8.120:81/api/v1`; 
+// const BASE_URL = `http://10.10.8.109:8070/api/v1`;
+// const BASE_URL = `https://upsapi.costitright.com/api/v1`;
+//FILE URL
+//http://10.10.8.120:1005/
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -332,6 +342,8 @@ export const API = {
   updateBOPSOBVendors: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-vendor-share-of-business`,
   getIncoTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-inco-terms`,
   getPaymentTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-payment-terms`,
+  getViewBoughtOutPart: `${BASE_URL}/masters-bought-out-part/get-all-manage-bought-out-part`,
+
 
   //BOP APPROVAL API'S
 
@@ -1106,6 +1118,9 @@ export const API = {
   getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
   deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
   checkRegisteredVendor: `${BASE_URL}/rfq-quotation/check-registered-vendor`,
+  getPurchaseRequisitionSelectList: `${BASE_URL}/rfq-quotation/get-bop-rfq-pr-details`,
+  getRfqBopNumberSelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-child`,
+  getRfqBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
   // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
 
 
@@ -1447,6 +1462,7 @@ export const GET_SOB_LISTING = 'GET_SOB_LISTING'
 export const GET_BOP_APPROVAL_LIST = 'GET_BOP_APPROVAL_LIST'
 export const GET_INCO_SELECTLIST_SUCCESS = 'GET_INCO_SELECTLIST_SUCCESS'
 export const GET_PAYMENT_SELECTLIST_SUCCESS = 'GET_PAYMENT_SELECTLIST_SUCCESS'
+export const GET_VIEW_BOUGHT_OUT_PART_SUCCESS = 'GET_VIEW_BOUGHT_OUT_PART_SUCCESS'
 
 //PROCESS MASTER
 export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS'
@@ -1988,10 +2004,15 @@ export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
 export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
 export const HAVELLS_DESIGN_PARTS = "Havells Design part"
 export const GET_SAP_EVALUATIONTYPE = "GET_SAP_EVALUATIONTYPE"
+export const SET_RM_SPECIFIC_ROW_DATA = "SET_RM_SPECIFIC_ROW_DATA"
+export const SELECT_BOP_NUMBER = "SELECT_BOP_NUMBER"
+export const SELECT_BOP_CATEGORY = "SELECT_BOP_CATEGORY"
+export const SET_BOP_SPECIFIC_ROW_DATA = "SET_BOP_SPECIFIC_ROW_DATA"
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
 export const SET_OPEN_ALL_TABS = 'SET_OPEN_ALL_TABS'
+export const SELECT_PURCHASE_REQUISITION = 'SELECT_PURCHASE_REQUISITION'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'

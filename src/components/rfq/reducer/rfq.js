@@ -1,11 +1,16 @@
-import { CHECK_RFQ_BULK_UPLOAD, GET_ASSEMBLY_CHILD_PART, GET_NFR_SELECT_LIST, GET_PART_IDENTITY, GET_QUOTATION_DETAILS_LIST, GET_QUOTATION_ID_FOR_RFQ, GET_RFQ_PART_DETAILS, GET_RFQ_RAISE_NUMBER, GET_RFQ_VENDOR_DETAIL, GET_TARGET_PRICE, SELECTED_ROW_ARRAY, SET_QUOTATION_ID_FOR_RFQ } from "../../../config/constants";
+import { CHECK_RFQ_BULK_UPLOAD, GET_ASSEMBLY_CHILD_PART, GET_NFR_SELECT_LIST, GET_PART_IDENTITY, GET_QUOTATION_DETAILS_LIST, GET_QUOTATION_ID_FOR_RFQ, GET_RFQ_PART_DETAILS, GET_RFQ_RAISE_NUMBER, GET_RFQ_VENDOR_DETAIL, GET_TARGET_PRICE, SELECTED_ROW_ARRAY, SELECT_BOP_CATEGORY, SELECT_BOP_NUMBER, SELECT_PURCHASE_REQUISITION, SET_BOP_SPECIFIC_ROW_DATA, SET_QUOTATION_ID_FOR_RFQ, SET_RM_SPECIFIC_ROW_DATA } from "../../../config/constants";
 
 const initialState = {
     checkRFQPartBulkUpload: [],
     selectedRowRFQ: [],
-    quotationDetailsList   : [],
+    quotationDetailsList: [],
     getPartIndentity: 0,
-    getQuotationIdForRFQ: ""
+    getQuotationIdForRFQ: "",
+    rmSpecificRowData: [],
+    SelectBopNumber: [],
+    SelectBopCategory: [],
+    bopSpecificRowData: []
+
 };
 
 export default function RFQReducer(state = initialState, action) {
@@ -71,12 +76,47 @@ export default function RFQReducer(state = initialState, action) {
                 loading: false,
                 getQuotationIdForRFQ: action.payload,
             }
-            case GET_QUOTATION_DETAILS_LIST :
-                return {
-                    ...state,
-                    loading: false,
-                    quotationDetailsList: action.payload,
-                }
+        case GET_QUOTATION_DETAILS_LIST:
+            return {
+                ...state,
+                loading: false,
+                quotationDetailsList: action.payload,
+            }
+        case SET_RM_SPECIFIC_ROW_DATA:
+
+            return {
+                ...state,
+                loading: false,
+                rmSpecificRowData: action.payload,
+            }
+        case SELECT_PURCHASE_REQUISITION:
+
+            return {
+                ...state,
+                loading: false,
+                SelectPurchaseRequisition: action.payload,
+            }
+        case SELECT_BOP_NUMBER:
+
+            return {
+                ...state,
+                loading: false,
+                SelectBopNumber: action.payload,
+            }
+        case SELECT_BOP_CATEGORY:
+
+            return {
+                ...state,
+                loading: false,
+                SelectBopCategory: action.payload,
+            }
+        case SET_BOP_SPECIFIC_ROW_DATA:
+
+            return {
+                ...state,
+                loading: false,
+                bopSpecificRowData: action.payload,
+            }
         default:
             return state;
     }

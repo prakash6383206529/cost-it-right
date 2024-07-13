@@ -22,7 +22,7 @@ import { REMARKMAXLENGTH } from '../../config/masterData'
 import Dropzone from 'react-dropzone-uploader'
 import LoaderCustom from '../common/LoaderCustom'
 import Toaster from '../common/Toaster'
-import { fileUploadQuotation, getAssemblyChildpart, getRfqPartDetails, setRfqPartDetails } from './actions/rfq'
+import { fileUploadQuotation, getAssemblyChildpart, getRfqPartDetails, setBopSpecificRowData, setRfqPartDetails, setRmSpecificRowData } from './actions/rfq'
 import _ from 'lodash';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import DatePicker from 'react-datepicker'
@@ -41,7 +41,8 @@ function ViewDrawer(props) {
         { sop: 'SOP5' },
     ]
 
-    const { type, isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, setPartListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles } = props
+    const { type, isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber } = props
+
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -50,7 +51,8 @@ function ViewDrawer(props) {
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
     const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
-    const { getChildParts, getRfqPartDetails } = useSelector(state => state?.rfq);
+    const { getChildParts, getRfqPartDetails, bopSpecificRowData } = useSelector(state => state?.rfq);
+
 
     // const [sopQuantityList, setSopQuantityList] = useState([]);
 
@@ -65,7 +67,7 @@ function ViewDrawer(props) {
     const [storeNfrId, setStoreNfrId] = useState('')
     const [inputLoader, setInputLoader] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
-    const [activeTab, setActiveTab] = useState(props.partType === 'RM'?"3":props.partType === 'BOP' ? '2':'1' );
+    const [activeTab, setActiveTab] = useState(props.partType === 'RM' ? "3" : props.partType === 'BOP' ? '2' : '1');
     const [specification, setSpecification] = useState("")
     const [editIndex, setEditIndex] = useState(null);  // To keep track of the index being edited
     const [files, setFiles] = useState([]);  // State for files
@@ -87,69 +89,83 @@ function ViewDrawer(props) {
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
     const [partRemark, setPartRemark] = useState('')
+
     useEffect(() => {
-        setValue('AssemblyPartNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
-        if (type === Component) {
-            setValue('partNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
-        } else {
-            if (!isViewFlag) {
-                dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => { }))
+        if (partType === 'component') {
+            setValue('AssemblyPartNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
+            if (type === Component) {
+                setValue('partNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
+            } else {
+                if (!isViewFlag) {
+                    dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => { }))
+                }
             }
+        } else if (partType === 'BOP') {
+            setValue('AssemblyPartNumber', { label: bopNumber?.label, value: bopNumber?.value })
         }
-    }, [AssemblyPartNumber])
+
+    }, [AssemblyPartNumber, bopNumber])
     useEffect(() => {
-        if ((isEditFlag || isViewFlag) && getRfqPartDetails) {
-            const partList = getRfqPartDetails?.PartList || [];
+        if (partType === "component") {
+            if ((isEditFlag || isViewFlag) && getRfqPartDetails && getRfqPartDetails?.PartList) {
+                const partList = getRfqPartDetails?.PartList || [];
 
-            const sopDate = partList[0]?.SOPDate
+                const sopDate = partList[0]?.SOPDate
 
-            setSOPDate(sopDate || '')
-            if (partList.length > 0) {
-                let arr = []
-                partList.forEach((part, index) => {
+                setSOPDate(sopDate || '')
+                if (partList.length > 0) {
+                    let arr = []
+                    partList.forEach((part, index) => {
+                        const PartId = part.PartId || '';
+                        const PartNumber = part.PartNumber || '';
+                        if (index === 0) {
+                            const allSopQuantityDetails = part?.SOPQuantityDetails || []
+                            setSopQuantityList(sopQuantityList => allSopQuantityDetails)
+                        }
 
-
-
-                    const PartId = part.PartId || '';
-                    const PartNumber = part.PartNumber || '';
-                    if (index === 0) {
-                        const allSopQuantityDetails = part?.SOPQuantityDetails || []
-                        setSopQuantityList(sopQuantityList => allSopQuantityDetails)
-                    }
-
-                    const allSpecifications = (part.PartSpecification || []).map(detail => ({
-                        ...detail,
-                        PartId: PartId,
-                        PartNumber: PartNumber,
-                        uniqueKey: `${PartId}-${detail.Specification}` //QuotationPartSpecificationIdRef
-                    }));
+                        const allSpecifications = (part.PartSpecification || []).map(detail => ({
+                            ...detail,
+                            PartId: PartId,
+                            PartNumber: PartNumber,
+                            uniqueKey: `${PartId}-${detail.Specification}` //QuotationPartSpecificationIdRef
+                        }));
 
 
 
-                    arr.push(...allSpecifications)
+                        arr.push(...allSpecifications)
 
 
-                    const allRMDetails = (part.RMDetails || []).map(detail => ({
-                        ...detail,
-                        PartId: PartId,
-                        PartNumber: PartNumber,
-                        uniqueKey: `${PartId}-${detail.RawMaterialSpecificationId}`
-                    }));
+                        const allRMDetails = (part.RMDetails || []).map(detail => ({
+                            ...detail,
+                            PartId: PartId,
+                            PartNumber: PartNumber,
+                            uniqueKey: `${PartId}-${detail.RawMaterialSpecificationId}`
+                        }));
 
-                    setTableData(tableData => _.uniqBy([...allRMDetails], 'RawMaterialChildId'));
-                    const remarks = part.Remarks || '';
-                    setValue('remark', remarks);
-                    setRemark(remarks);
+                        setTableData(tableData => _.uniqBy([...allRMDetails], 'RawMaterialChildId'));
+                        const remarks = part.Remarks || '';
+                        setValue('remark', remarks);
+                        setRemark(remarks);
 
-                    const allFiles = part.Attachments || [];
-                    setFiles(files => [...allFiles]);
-                    setChildPartFiles(childPartFiles => [...allFiles]);
-                });
-                setSpecificationList(specificationList => _.uniqBy([...arr], 'QuotationPartSpecificationIdRef'));
+                        const allFiles = part.Attachments || [];
+                        setFiles(files => [...allFiles]);
+                        setChildPartFiles(childPartFiles => [...allFiles]);
+                    });
+                    setSpecificationList(specificationList => _.uniqBy([...arr], 'QuotationPartSpecificationIdRef'));
+                }
             }
         }
     }, [getRfqPartDetails, isViewFlag, isEditFlag]);
-
+    useEffect(() => {
+        if (partType === 'RM') {
+            if ((isEditFlag || isViewFlag) && rmSpecificRowData.length > 0) {
+                setValue('remark', rmSpecificRowData[0].Remarks);
+                setRemark(rmSpecificRowData[0].Remarks)
+                setFiles(rmSpecificRowData[0].Attachments);
+                setChildPartFiles(rmSpecificRowData[0].Attachments);
+            }
+        }
+    }, [partType, rmSpecificRowData, isEditFlag, isViewFlag])
     useEffect(() => {
         // if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
         //     Toaster.warning("Please select part number and SOP date");
@@ -203,10 +219,33 @@ function ViewDrawer(props) {
     }, [sopdate])
     useEffect(() => {
         if (!isViewFlag && !isEditFlag) {
+
             setValue("remark", remark)
             setFiles(childPartFiles)
         }
     }, [isEditFlag, isViewFlag])
+    useEffect(() => {
+
+
+        if (partType === "BOP") {
+            if ((isEditFlag || isViewFlag) && bopSpecificRowData && bopSpecificRowData.length > 0) {
+                setValue('AssemblyPartNumber', { label: bopSpecificRowData[0]?.BoughtOutPartNumber, value: bopSpecificRowData[0]?.BoughtOutPartChildId })
+                const BoughtOutPartChildId = bopSpecificRowData[0]?.BoughtOutPartChildId
+                const allSpecifications = (bopSpecificRowData[0]?.PartSpecification || []).map(detail => ({
+                    ...detail,
+                    BoughtOutPartChildId: BoughtOutPartChildId,
+                    uniqueKey: `${BoughtOutPartChildId}-${detail.Specification}` //QuotationPartSpecificationIdRef
+                }));
+                setSpecificationList(specificationList => _.uniqBy([...allSpecifications], 'uniqueKey'));
+                setValue('remark', bopSpecificRowData[0].Remarks);
+                setRemark(bopSpecificRowData[0].Remarks)
+                setFiles(bopSpecificRowData[0].Attachments);
+                setChildPartFiles(bopSpecificRowData[0].Attachments);
+            }
+        }
+    }, [bopSpecificRowData, isViewFlag, isEditFlag, partType]);
+
+
     const removeAddedParts = (arr) => {
         const filteredArray = arr.filter((item) => {
             return !selectedparts.some((element) => {
@@ -313,6 +352,8 @@ function ViewDrawer(props) {
         setRMSpecification({ label: newValue?.label, value: newValue?.value })
     }
     const handleRemarkChange = (newValue) => {
+
+        setValue('remark', newValue)
         setRemark(newValue);
     }
     const resetFormAndDropdowns = () => {
@@ -322,6 +363,13 @@ function ViewDrawer(props) {
         setValue('RMSpecification', '')
         setValue('Specification', '')
         setValue('Value', '')
+        if (!isViewFlag && !isEditFlag) {
+
+            setValue('remark', '')
+            setFiles([])
+            setChildPartFiles([])
+            setRemark('')
+        }
     };
 
     const handleSpecification = (newValue) => {
@@ -423,13 +471,53 @@ function ViewDrawer(props) {
         //     saveRfqPartsData()
 
         // }
+        if (getValues('remark') === '' || files.length === 0) {
+            Toaster.warning('Before saving, please add remarks and attachments.');
+            return;
+        }
+
+
         props?.closeDrawer('', true);
         props?.setViewQuotationPart(false)
         dispatch(setRfqPartDetails({}));
+        if (partType === "RM") {
+            const attachment = files;  // Assume files is the new value for Attachments
+            const updatedRemark = getValues('remark') || null;  // Assume getValues('remark') gets the new value for Remarks
+
+            if (Array.isArray(rmSpecificRowData) && rmSpecificRowData.length > 0) {
+                // Create a new updated object with the first object updated
+                const updatedObject = {
+                    ...rmSpecificRowData[0],
+                    Attachments: attachment,
+                    Remarks: updatedRemark
+                };
+                const updatedArray = [updatedObject];
+                dispatch(setRmSpecificRowData(updatedArray));
+            }
+        } else if (partType === "BOP") {
+            const attachment = files;
+
+            const updatedRemark = getValues('remark') || null;
+
+            const specification = specificationList
+
+            if (Array.isArray(bopSpecificRowData) && bopSpecificRowData.length > 0) {
+                const updatedObject = {
+                    ...bopSpecificRowData[0],
+                    Attachments: attachment,
+                    Remarks: updatedRemark,
+                    PartSpecification: specification
+                };
+                const updatedArray = [updatedObject];
+                dispatch(setBopSpecificRowData(updatedArray));
+            }
+        }
+
 
 
     }
     const cancelUpdate = () => {
+
         setIsEdit(false);
         // setTableData([]);
         // setSpecificationList([]);
@@ -532,12 +620,14 @@ function ViewDrawer(props) {
             setIsDisable(true);
 
             dispatch(fileUploadQuotation(data, (res) => {
+
                 if ('response' in res) {
                     status = res?.response?.status;
                     dropzone.current.files.pop();
                     setAttachmentLoader(false);
                 } else {
                     let Data = res?.data[0];
+
                     setFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
                     setChildPartFiles(prevFiles => [...prevFiles, Data]);
                     setAttachmentLoader(false)
@@ -557,7 +647,7 @@ function ViewDrawer(props) {
         }
 
         if (status === 'rejected_file_type') {
-            Toaster.warning('Allowed only xls, doc, jpeg, pdf, zip files.');
+            Toaster.warning('Allowed only xls, doc, docx, pptx jpeg, pdf, zip files.');
         } else if (status === 'error_file_size') {
             setAttachmentLoader(false);
             dropzone.current.files.pop();
@@ -701,7 +791,7 @@ function ViewDrawer(props) {
                             </Col>
                         </Row>
                         <Nav tabs className="subtabs cr-subtabs-head ">
-                          { (props.partType === 'component')&& <NavItem>
+                            {(props.partType === 'component') && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "1" })}
                                     onClick={() => setActiveTab("1")
@@ -710,7 +800,7 @@ function ViewDrawer(props) {
                                     RM
                                 </NavLink>
                             </NavItem>}
-                          { (props.partType !== 'RM' || props.partType === 'BOP') && <NavItem>
+                            {(props.partType !== 'RM' || props.partType === 'BOP') && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "2" })}
                                     onClick={() => setActiveTab("2")
@@ -719,7 +809,7 @@ function ViewDrawer(props) {
                                     Specification
                                 </NavLink>
                             </NavItem>}
-                            { (props.partType !== 'RM' || props.partType === 'BOP') && <NavItem>
+                            {(props.partType !== 'RM' || props.partType === 'BOP') && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "3" })}
                                     onClick={() => setActiveTab("3")
@@ -823,7 +913,7 @@ function ViewDrawer(props) {
                                         <Row>
                                             <Col md="3">
                                                 <AsyncSearchableSelectHookForm
-                                                    label={"Assembly Part No"}
+                                                    label={partType === "BOP" ? "BOP Part No" : "Assembly Part No"}
                                                     name={"AssemblyPartNumber"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
@@ -898,6 +988,7 @@ function ViewDrawer(props) {
                                                 required: true,
                                                 maxLength: REMARKMAXLENGTH,
                                             }}
+                                            mandatory={true}
                                             register={register}
                                             //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
                                             // options={renderListing("DestinationPlant")}
@@ -912,7 +1003,7 @@ function ViewDrawer(props) {
                                     </Col>
                                 </Row>
                                 <Col md="6" className="height152-label">
-                                    <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required"></span></label>
+                                    <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
                                     <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit has been reached.
                                     </div>
@@ -921,7 +1012,7 @@ function ViewDrawer(props) {
                                             ref={dropzone}
                                             onChangeStatus={handleChangeStatus}
                                             PreviewComponent={Preview}
-                                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx,.zip"
+                                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx,.zip, .docx,.pptx"
                                             initialFiles={[]}
                                             maxFiles={4}
                                             maxSizeBytes={20000000}  // 20 MB in bytes
@@ -1101,7 +1192,7 @@ function ViewDrawer(props) {
                                     </tbody>
                                 </Table>
 
-                                {activeTab === "2" && props.partType !=='BOP'&& (
+                                {activeTab === "2" && props.partType !== 'BOP' && (
                                     <>
                                         <HeaderTitle title={'Add Volume'} customClass="mt-5" />
                                         <Row className='mt-3 mb-1'>
@@ -1211,5 +1302,29 @@ function ViewDrawer(props) {
         </>
     )
 }
+ViewDrawer.defaultProps = {
+    type: null,
+    isOpen: null,
+    anchor: null,
+    isEditFlag: null,
+    isViewFlag: null,
+    AssemblyPartNumber: null,
+    tableData: null,
+    setTableData: null,
+    specificationList: null,
+    setSpecificationList: null,
+    setRemark: null,
+    setChildPartFiles: null,
+    remark: null,
+    partListData: null,
+    sopQuantityList: null,
+    setSopQuantityList: null,
+    sopdate: null,
+    setSOPDate: null,
+    effectiveMinDate: null,
+    childPartFiles: null,
+    rmSpecificRowData: null,
+    partType: null
+};
 
 export default React.memo(ViewDrawer)

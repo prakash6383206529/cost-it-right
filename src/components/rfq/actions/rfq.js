@@ -18,6 +18,11 @@ import {
     GET_QUOTATION_DETAILS_LIST,
     GET_PART_IDENTITY,
     GET_QUOTATION_ID_FOR_RFQ,
+    SET_RM_SPECIFIC_ROW_DATA,
+    SELECT_PURCHASE_REQUISITION,
+    SELECT_BOP_NUMBER,
+    SELECT_BOP_CATEGORY,
+    SET_BOP_SPECIFIC_ROW_DATA,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -50,7 +55,7 @@ export function getQuotationList(DepartmentCode, Timezone, callback) {
 
 
 export function createRfqQuotation(data, callback) {
-    
+
 
     return (dispatch) => {
         const request = axios.post(API.createRfqQuotation, data, config());
@@ -109,6 +114,7 @@ export function getQuotationById(id, callback) {
             .then((response) => {
                 callback(response)
             }).catch((error) => {
+
                 dispatch({ type: API_FAILURE });
                 apiErrors(error);
             });
@@ -121,6 +127,7 @@ export function getQuotationById(id, callback) {
  * @description File Upload Quotation
  */
 export function fileUploadQuotation(data, callback) {
+
     return (dispatch) => {
         const request = axios.post(API.fileUploadQuotation, data, config())
         request.then((response) => {
@@ -611,3 +618,99 @@ export function checkRegisteredVendor(vendorId, callback) {
     };
 }
 
+export function setRmSpecificRowData(data) {
+
+    return (dispatch) => {
+        dispatch({
+            type: SET_RM_SPECIFIC_ROW_DATA,
+            payload: data || [],
+        });
+    }
+};
+export function getPurchaseRequisitionSelectList(partId, callback) {
+
+    // const quotationPartId = Number(partId)
+
+    // return (dispatch) => {
+    //     dispatch({
+    //         type: SELECT_PURCHASE_REQUISITION,
+    //         payload: []
+    //     })
+    //     const request = axios.get(`${API.getPurchaseRequisitionSelectList}?quotationPartId=${quotationPartId}`, config());
+    //     request.then((response) => {
+    //         if (response.data.Result || response.status === 204) {
+
+    //             dispatch({
+    //                 type: GET_BOP_RFQ_PR_DETAILS,
+    //                 payload: response.status === 204 ? [] : response?.data?.Data
+    //             })
+
+    //             callback(response);
+    //         }
+    //     }).catch((error) => {
+
+    //         dispatch({ type: API_FAILURE });
+    //         apiErrors(error);
+    //     });
+    // };
+}
+export function getBopNumberSelectList(callback) {
+
+    return (dispatch) => {
+        dispatch({
+            type: SELECT_BOP_NUMBER,
+            payload: []
+        })
+        const request = axios.get(`${API.getRfqBopNumberSelectList}`, config());
+        request.then((response) => {
+
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: SELECT_BOP_NUMBER,
+                    payload: response.status === 204 ? [] : response?.data?.SelectList
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+
+
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function getBopCategorySelectList(boughtOutPartChildId, callback) {
+    return (dispatch) => {
+        dispatch({
+            type: SELECT_BOP_CATEGORY,
+            payload: []
+        })
+        const request = axios.get(`${API.getRfqBOPCategorySelectList}/${boughtOutPartChildId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: SELECT_BOP_CATEGORY,
+                    payload: response.status === 204 ? [] : response?.data?.SelectList
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function setBopSpecificRowData(data) {
+
+    return (dispatch) => {
+        dispatch({
+            type: SET_BOP_SPECIFIC_ROW_DATA,
+            payload: data || [],
+        });
+    }
+};
