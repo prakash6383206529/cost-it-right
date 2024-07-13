@@ -23,10 +23,11 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { getLastRevisionRawMaterialDetails } from './actions/Indexation';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import HeaderTitle from '../common/HeaderTitle';
+import NoContentFound from '../common/NoContentFound';
 
 function MasterSendForApproval(props) {
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
-    console.log('approvalObj: ', approvalObj);
+
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -40,11 +41,13 @@ function MasterSendForApproval(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [isLastRevisionOpen, setIsLastRevisionOpen] = useState(false)
+    const [lastRevisionRawMaterialDetails, setLastRevisionRawMaterialDetails] = useState([])
+
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const { deptList } = useSelector((state) => state.material)
     const { initialConfiguration } = useSelector(state => state.auth)
-    const { lastRevisionRawMaterialDetails } = useSelector(state => state.indexation)
+    // const { lastRevisionRawMaterialDetails } = useSelector(state => state.indexation)
     const toggleDrawer = (event, type = 'cancel') => {
         if (isDisable) {
             return false
@@ -113,26 +116,32 @@ function MasterSendForApproval(props) {
     }, [])
 
     const getLastRevisionData = () => {
-        if (approvalObj && Object.keys(approvalObj).length > 0) {
+
+        if (approvalObj && Object.keys(approvalObj).length > 0 && getConfigurationKey()?.IsShowMaterialIndexation && Number(masterId) === 1) {
             setAgGridLoader(true)
             let data = {
                 OldMasterRecordIds: [],
                 LastRawMaterialDetails: [{
-                    "RawMaterialEntryType": approvalObj.RawMaterialEntryType,
-                    "CostingHeadId": approvalObj.CostingTypeId,
-                    "TechnologyId": approvalObj.TechnologyId,
-                    "RawMaterialChildId": 'b520f3c3-9934-4695-a6de-6cdbdb57d08a',
-                    "RawMaterialGradeId": approvalObj.RMGrade,
-                    "RawMaterialSpecificationId": approvalObj.RMSpec,
+                    "RawMaterialEntryType": approvalObj?.RawMaterialEntryType,
+                    "CostingHeadId": approvalObj?.CostingTypeId,
+                    "TechnologyId": approvalObj?.TechnologyId,
+                    "RawMaterialChildId": approvalObj?.RawMaterial,
+                    "RawMaterialGradeId": approvalObj?.RMGrade,
+                    "RawMaterialSpecificationId": approvalObj?.RMSpec,
                     "EffectiveDate": DayTime(approvalObj.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                     "PlantId": approvalObj?.Plant[0]?.PlantId,
-                    "VendorId": approvalObj.Vendor,
-                    "CustomerId": approvalObj.CostingTypeId === CBCTypeId ? approvalObj.Customer : EMPTY_GUID,
-                    "RawMaterialId": EMPTY_GUID
+                    "VendorId": approvalObj?.Vendor,
+                    "CustomerId": approvalObj?.CostingTypeId === CBCTypeId ? approvalObj?.Customer : null,
+                    "RawMaterialId": null
                 }]
             }
             dispatch(getLastRevisionRawMaterialDetails(data, (res) => {
-                setAgGridLoader(false)
+
+                if (res.status === 200 || res.status === 204) {
+
+                    setLastRevisionRawMaterialDetails(res.status === 200 ? res?.data?.DataList : [])
+                    setAgGridLoader(false)
+                }
             }))
         }
     }
@@ -211,7 +220,16 @@ function MasterSendForApproval(props) {
             return false
         }
         if (type === 'Sender') {
-            //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
+            const bulkuploadArray = (approvalData) => {
+
+                let bulkuploadIdsArray = []
+                approvalData && approvalData.map(item => {
+                    bulkuploadIdsArray.push({ OldRawMaterialId: masterId === 1 ? item?.OldRawMaterialId ?? null : null, MasterRecordId: masterId === 1 ? item?.RawMaterialId : masterId === 2 ? item?.BoughtOutPartId : masterId === 3 ? item?.OperationId : masterId === 4 ? item.MachineId : null })
+                })
+
+            }
+
+            //THIS OBJ IS FOR MASTER SEND FOR APPROVAL
             let senderObj = {}
             senderObj.ReasonId = reason ? reason.value : 0
             senderObj.Reason = reason ? reason.label : ''
@@ -240,17 +258,18 @@ function MasterSendForApproval(props) {
 
             ]
             senderObj.BudgetingIdList = []
-            let tempArray = []
+
             switch (checkForNull(masterId)) {
                 case 1:                        // CASE 1 FOR RAW MATERIAL
                     if (isBulkUpload) {
-                        senderObj.MasterIdList = approvalData.map(item => item?.RawMaterialId)
+                        senderObj.MasterIdList = bulkuploadArray(approvalData)
                         senderObj.MasterCreateRequest = {
                             CreateRawMaterial: {}
                         }
                     } else {
                         senderObj.MasterIdList = []
                         senderObj.MasterCreateRequest = {
+                            OldRawMaterialId: lastRevisionRawMaterialDetails[0]?.RawMaterialId,
                             CreateRawMaterial: approvalObj
                         }
                     }
@@ -272,13 +291,14 @@ function MasterSendForApproval(props) {
 
                 case 2:  //CASE 2 FOR BOP
                     if (isBulkUpload) {
-                        senderObj.MasterIdList = approvalData.map(item => item?.BoughtOutPartId)
+                        senderObj.MasterIdList = bulkuploadArray(approvalData)
                         senderObj.MasterCreateRequest = {
                             CreateBoughtOutPart: {}
                         }
                     } else {
                         senderObj.MasterIdList = []
                         senderObj.MasterCreateRequest = {
+                            OldRawMaterialId: null,
                             CreateBoughtOutPart: approvalObj
                         }
                     }
@@ -301,13 +321,14 @@ function MasterSendForApproval(props) {
 
 
                     if (isBulkUpload) {
-                        senderObj.MasterIdList = approvalData.map(item => item?.OperationId)
+                        senderObj.MasterIdList = bulkuploadArray(approvalData)
                         senderObj.MasterCreateRequest = {
                             CreateOperationRequest: {}
                         }
                     } else {
                         senderObj.MasterIdList = []
                         senderObj.MasterCreateRequest = {
+                            OldRawMaterialId: null,
                             CreateOperationRequest: approvalObj
                         }
                     }
@@ -338,8 +359,9 @@ function MasterSendForApproval(props) {
                     //     tempArray.push({ MachineId: EMPTY_GUID, IsImportEntry: IsImportEntry, MachineRequest: approvalObj })
                     // }
                     if (isBulkUpload) {
-                        senderObj.MasterIdList = approvalData.map(item => item?.MachineId)
+                        senderObj.MasterIdList = bulkuploadArray(approvalData)
                         senderObj.MasterCreateRequest = {
+                            OldRawMaterialId: null,
                             CreateRawMaterial: {}
                         }
                     } else if (props.detailEntry) {
@@ -545,14 +567,21 @@ function MasterSendForApproval(props) {
  */
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+    }
+
+    const dashcellFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? cellValue : '-';
     }
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
-        effectiveDateFormatter: effectiveDateFormatter
+        effectiveDateFormatter: effectiveDateFormatter,
+        dashcellFormatter: dashcellFormatter,
     };
     const lastRevisionToggle = () => {
         setIsLastRevisionOpen(!isLastRevisionOpen)
+        setAgGridLoader(false)
     }
     return (
         <>
@@ -577,7 +606,7 @@ function MasterSendForApproval(props) {
                                     ></div>
                                 </Col>
                             </Row>
-                            {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
+                            {(isLoader || agGridLoader) && <LoaderCustom customClass="approve-reject-drawer-loader" />}
                             <Row>
                                 {(!IsFinalLevelButtonShow && (type === 'Approve' || type === 'Sender')) && (
                                     <>
@@ -994,7 +1023,7 @@ function MasterSendForApproval(props) {
 
                                 </div>
                             </Row>
-                            {getConfigurationKey()?.IsShowMaterialIndexation && <Row className="mb-2 accordian-container">
+                            {getConfigurationKey()?.IsShowMaterialIndexation && Number(masterId) === 1 && type === 'Sender' && <Row className="mb-2 accordian-container">
                                 <Col md="6" className='d-flex align-items-center'>
                                     <HeaderTitle
                                         title={'Last Revision Data:'}
@@ -1009,34 +1038,35 @@ function MasterSendForApproval(props) {
                                 {isLastRevisionOpen && <Col md="12" className={`ag-grid-react mb-2`}>
                                     <div className={`ag-grid-wrapper budgeting-table  ${lastRevisionRawMaterialDetails && lastRevisionRawMaterialDetails?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                                         <div className="ag-theme-material" >
-                                            {agGridLoader ? (<LoaderCustom customClass="simulation-Loader" />) : (
-                                                <>
-                                                    <AgGridReact
-                                                        style={{ height: '100%', width: '100%' }}
-                                                        defaultColDef={defaultColDef}
-                                                        domLayout='autoHeight'
-                                                        // columnDefs={c}
-                                                        rowData={lastRevisionRawMaterialDetails}
-                                                        // onCellValueChanged={onCellValueChanged}
-                                                        pagination={true}
-                                                        paginationPageSize={12}
-                                                        onGridReady={onGridReady}
-                                                        gridOptions={gridOptions}
-                                                        loadingOverlayComponent={'customLoadingOverlay'}
-                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                        noRowsOverlayComponentParams={{
-                                                            title: EMPTY_DATA,
-                                                        }}
-                                                        frameworkComponents={frameworkComponents}
-                                                        suppressColumnVirtualisation={true}
-                                                        stopEditingWhenCellsLoseFocus={true}
-                                                    >
-                                                        <AgGridColumn width={115} field="FrequencyOfSettlement" headerName="FrequencyOfSettlement" editable={false}></AgGridColumn>
-                                                        <AgGridColumn width={115} field="FromDate" headerName="FromDate" cellRenderer='effectiveDateFormatter' editable={false}></AgGridColumn>
-                                                        <AgGridColumn width={115} field="ToDate" headerName="ToDate" cellRenderer='effectiveDateFormatter' editable={false}></AgGridColumn>
-                                                        <AgGridColumn width={115} field="NetLandedCost" headerName="Net Cost" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
-                                                    </AgGridReact>
-                                                </>)}
+                                            {lastRevisionRawMaterialDetails?.length === 0 && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                            <>
+                                                <AgGridReact
+                                                    style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+                                                    domLayout='autoHeight'
+                                                    // columnDefs={c}
+                                                    rowData={lastRevisionRawMaterialDetails}
+                                                    // onCellValueChanged={onCellValueChanged}
+                                                    pagination={true}
+                                                    paginationPageSize={12}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    // loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: EMPTY_DATA,
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                    // suppressColumnVirtualisation={true}
+                                                    stopEditingWhenCellsLoseFocus={true}
+                                                >
+                                                    <AgGridColumn width={120} field="FrequencyOfSettlement" dashcellFormatter={dashcellFormatter} headerName="Frequency Of Settlement" editable={false}></AgGridColumn>
+                                                    <AgGridColumn width={115} field="FromDate" headerName="From Date" cellRenderer='effectiveDateFormatter' editable={false}></AgGridColumn>
+                                                    <AgGridColumn width={115} field="ToDate" headerName="To Date" cellRenderer='effectiveDateFormatter' editable={false}></AgGridColumn>
+                                                    <AgGridColumn width={115} field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter' editable={false}></AgGridColumn>
+                                                    <AgGridColumn field="NetLandedCost" headerName="Net Cost" dashcellFormatter={dashcellFormatter} editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                </AgGridReact>
+                                            </>
                                         </div>
                                     </div>
                                 </Col >}
