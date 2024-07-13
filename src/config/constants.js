@@ -110,6 +110,10 @@ export const API = {
   getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
   getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
 
+  // INDEXATION SIMULATION
+  getRMIndexationSimulationListing: `${BASE_URL}/simulation/get-raw-material-records-for-simulation`,
+  editRMIndexedSimulationData: `${BASE_URL}/simulation/edit-raw-material-records-for-simulation`,
+
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
   getMaterialTypeDataAPI: `${BASE_URL}/masters-material/get-material-type`,
@@ -1259,6 +1263,9 @@ export const GET_OTHER_COST_APPLICABILITY_SELECTLIST = 'GET_OTHER_COST_APPLICABI
 export const SET_COMMODITY_DETAILS = 'SET_COMMODITY_DETAILS'
 export const SET_OTHER_COST_DETAILS = 'SET_OTHER_COST_DETAILS'
 export const GET_LAST_REVISION_RAW_MATERIAL_DETAILS = 'GET_LAST_REVISION_RAW_MATERIAL_DETAILS'
+
+//INDEXATION SIMULATION
+export const GET_RM_INDEXATION_SIMULATION_LIST = 'GET_RM_INDEXATION_SIMULATION_LIST'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'

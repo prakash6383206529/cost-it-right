@@ -31,7 +31,8 @@ import {
     SET_SIMULATION_APPLICABILITY,
     SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT,
     SET_SELECTED_CUSTOMER_SIMULATION,
-    GET_SELECTLIST_COSTING_HEADS
+    GET_SELECTLIST_COSTING_HEADS,
+    GET_RM_INDEXATION_SIMULATION_LIST
 
 } from '../../../config/constants';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
@@ -312,6 +313,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 selectListCostingHead: action.payload
+            }
+        case GET_RM_INDEXATION_SIMULATION_LIST:
+            return {
+                ...state,
+                loading: false,
+                rmIndexationSimulationList: action.payload
             }
         default:
             return state;

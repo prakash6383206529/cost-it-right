@@ -7,6 +7,7 @@ import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId, DIECASTING, MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, LOGISTICS, CORRUGATEDBOX, FABRICATION, FERROUSCASTING, WIREFORMING, ELECTRONICSNAME, ELECTRIC, Assembly, ASSEMBLYNAME, PLASTICNAME,
+  RAWMATERIALINDEX,
 } from '../config/constants'
 import { IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
@@ -1142,7 +1143,7 @@ export function CheckApprovalApplicableMaster(number) {
 
 // THIS FUNCTION WILL BE USED IF WE FOR EDITING OF SIMUALTION,WE DON'T NEED ANY FILTER
 export function applyEditCondSimulation(master) {
-  const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE]
+  const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, RAWMATERIALINDEX]
   return ApplyEditCondition.includes(String(master))
 }
 
@@ -1342,7 +1343,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
 
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
-    
+
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');

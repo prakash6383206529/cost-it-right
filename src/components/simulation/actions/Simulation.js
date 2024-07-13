@@ -58,11 +58,13 @@ import {
     SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT,
     SET_SELECTED_CUSTOMER_SIMULATION,
     GET_SELECTLIST_COSTING_HEADS,
+    GET_RM_INDEXATION_SIMULATION_LIST
 } from '../../../config/constants';
-import { apiErrors } from '../../../helper/util';
+import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config
 
@@ -1762,6 +1764,87 @@ export function getCostingHeadsList(callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getRMIndexationSimulationListing
+ * @description Used to get RM Indexation Simulation Listing
+ */
+export function getRMIndexationSimulationListing(data, skip, take, isPagination, callback) {
+    return (dispatch) => {
+        const queryParams = encodeQueryParamsAndLog({
+            // technology_id: data.technologyId,
+            // net_landed_min_range: data.net_landed_min_range,
+            // net_landed_max_range: data.net_landed_max_range,
+            // ListFor: data.ListFor ? data.ListFor : '',
+            // StatusId: data.StatusId ? data.StatusId : '',
+            LoggedInUserId: loggedInUserId(),
+            IsIndexationDetails: data.isIndexationDetails,
+            // DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : '',
+            // CustomerName: obj.CustomerName !== undefined ? obj.CustomerName : '',
+            // FromDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : '',
+            // ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : '',
+            IsCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false,
+            IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc,
+            IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc,
+            VendorId: data.vendorId ? data.vendorId : null,
+            PlantId: data.plantId ? data.plantId : null,
+            RMChildId: data.RMChildId ? data.RMChildId : null,
+            GradeId: data.GradeId ? data.GradeId : null,
+            CustomerId: data.CustomerId ? data.CustomerId : null,
+            RawMaterialEntryType: data.RawMaterialEntryType ? data.RawMaterialEntryType : null,
+            // ScrapUnitOfMeasurement: obj.ScrapUnitOfMeasurement !== undefined ? obj.ScrapUnitOfMeasurement : '',
+            // IsScrapUOMApply: obj.IsScrapUOMApply ? (obj.IsScrapUOMApply.toLowerCase() === 'yes' ? true : false) : '',
+            // CalculatedFactor: obj.CalculatedFactor !== undefined ? obj.CalculatedFactor : '',
+            // ScrapRatePerScrapUOM: obj.ScrapRatePerScrapUOM !== undefined ? obj.ScrapRatePerScrapUOM : '',
+            // UOMToScrapUOMRatio: obj.UOMToScrapUOMRatio !== undefined ? obj.UOMToScrapUOMRatio : '',
+            // NetConditionCost: obj.NetConditionCost !== undefined ? obj.NetConditionCost : "",
+            // NetLandedCostConversion: obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : "",
+            // BasicRatePerUOMConversion: obj.BasicRatePerUOMConversion !== undefined ? obj.BasicRatePerUOMConversion : "",
+            // ScrapRateInINR: obj.ScrapRateInINR !== undefined ? obj.ScrapRateInINR : "",
+            // RawMaterialFreightCostConversion: obj.RawMaterialFreightCostConversion !== undefined ? obj.RawMaterialFreightCostConversion : "",
+            // RMFreightCost: obj.RMFreightCost,
+            // RawMaterialShearingCostConversion: obj.RawMaterialShearingCostConversion !== undefined ? obj.RawMaterialShearingCostConversion : "",
+            // NetCostWithoutConditionCostConversion: obj.NetCostWithoutConditionCostConversion !== undefined ? obj.NetCostWithoutConditionCostConversion : "",
+            // NetConditionCostConversion: obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : "",
+            // NetLandedCostConversionAPI: obj.NetLandedCostConversionAPI !== undefined ? obj.NetLandedCostConversionAPI : "",
+        });
+        // const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}&ScrapUnitOfMeasurement=${obj.ScrapUnitOfMeasurement !== undefined ? obj.ScrapUnitOfMeasurement : ''}&IsScrapUOMApply=${obj.IsScrapUOMApply ? (obj.IsScrapUOMApply?.toLowerCase() === 'yes' ? true : false) : ''}&CalculatedFactor=${obj.CalculatedFactor !== undefined ? obj.CalculatedFactor : ''}&ScrapRatePerScrapUOM=${obj.ScrapRatePerScrapUOM !== undefined ? obj.ScrapRatePerScrapUOM : ''}&UOMToScrapUOMRatio=${obj.UOMToScrapUOMRatio !== undefined ? obj.UOMToScrapUOMRatio : ''}&NetConditionCost=${obj.NetConditionCost !== undefined ? obj.NetConditionCost : ""}&NetLandedCostConversion=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&BasicRatePerUOMConversion=${obj.BasicRatePerUOMConversion !== undefined ? obj.BasicRatePerUOMConversion : ""}&ScrapRateInINR=${obj.ScrapRateInINR !== undefined ? obj.ScrapRateInINR : ""}&RawMaterialFreightCostConversion=${obj.RawMaterialFreightCostConversion !== undefined ? obj.RawMaterialFreightCostConversion : ""}&RawMaterialShearingCostConversion=${obj.RawMaterialShearingCostConversion !== undefined ? obj.RawMaterialShearingCostConversion : ""}&NetCostWithoutConditionCostConversion=${obj.NetCostWithoutConditionCostConversion !== undefined ? obj.NetCostWithoutConditionCostConversion : ""}&NetConditionCostConversion=${obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : ""}&NetLandedCostConversionAPI=${obj.NetLandedCostConversionAPI !== undefined ? obj.NetLandedCostConversionAPI : ""}`
+        const request = axios.get(`${API.getRMIndexationSimulationListing}?${queryParams}`, config());
+        request.then((response) => {
+            if (response?.data.Result || response?.status === 204) {
+                dispatch({
+                    type: GET_RM_INDEXATION_SIMULATION_LIST,
+                    payload: response?.status === 204 ? [] : response?.data.DataList
+                })
+                callback(response);
+            }
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method editRMIndexedSimulationData
+ * @description EDIT RM INDEXED SIMULATION DATA
+ */
+export function editRMIndexedSimulationData(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.editRMIndexedSimulationData, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
