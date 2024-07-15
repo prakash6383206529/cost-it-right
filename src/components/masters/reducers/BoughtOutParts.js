@@ -21,12 +21,13 @@ import {
     GET_BOP_APPROVAL_LIST,
     GET_INCO_SELECTLIST_SUCCESS,
     GET_PAYMENT_SELECTLIST_SUCCESS,
-    GET_VIEW_BOUGHT_OUT_PART_SUCCESS
+    GET_VIEW_BOUGHT_OUT_PART_SUCCESS,
+    GET_BOP_DETAILS
 } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const initialState = {
-
+    viewBOPDetails: []
 };
 
 export default function BOPReducer(state = initialState, action) {
@@ -201,6 +202,12 @@ export default function BOPReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 IncoTermsSelectList: action.payload
+            }
+        case GET_BOP_DETAILS:
+            return {
+                ...state,
+                loading: false,
+                viewBOPDetails: action.payload
             }
         case GET_PAYMENT_SELECTLIST_SUCCESS:
             return {

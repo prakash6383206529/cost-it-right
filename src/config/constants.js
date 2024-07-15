@@ -298,6 +298,8 @@ export const API = {
   bulkUploadRMSpecification: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-spec-json`,
   getRawMaterialChildById: `${BASE_URL}/masters-raw-material/get-raw-material-child-by-id`,
   updateRawMaterialChildName: `${BASE_URL}/masters-raw-material/update-raw-material-name`,
+  getViewRawMaterialDetails: `${BASE_URL}/masters-raw-material/get-view-raw-material`,
+  getViewBOPDetails: `${BASE_URL}/masters-bought-out-part/get-view-bought-out-part`,
 
   //PLANT MASTER
   //createPlantAPI: `${BASE_URL}/plant/create`,
@@ -1758,6 +1760,8 @@ export const SET_CALL_ST_API = 'SET_CALL_ST_API';
 export const GET_COSTING_PAYMENT_TERM_DETAIL = "GET_COSTING_PAYMENT_TERM_DETAIL"
 export const SET_PAYMENT_TERM_COST = "SET_PAYMENT_TERM_COST"
 export const SET_COSTING_VIEW_DATA_FOR_ASSEMBLY = 'SET_COSTING_VIEW_DATA_FOR_ASSEMBLY';
+export const GET_RM_DETAILS = 'GET_RM_DETAILS';
+export const GET_BOP_DETAILS = 'GET_BOP_DETAILS';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'

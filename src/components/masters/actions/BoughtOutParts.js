@@ -16,7 +16,8 @@ import {
   GET_SOB_LISTING,
   GET_INCO_SELECTLIST_SUCCESS,
   GET_PAYMENT_SELECTLIST_SUCCESS,
-  GET_VIEW_BOUGHT_OUT_PART_SUCCESS
+  GET_VIEW_BOUGHT_OUT_PART_SUCCESS,
+  GET_BOP_DETAILS
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -499,4 +500,30 @@ export function checkAndGetBopPartNo(obj, callback) {
       apiErrors(error);
     });
   };
+}
+
+export function getViewBOPDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.getViewBOPDetails, data, config())
+    request
+      .then((response) => {
+        if (response?.data.Result) {
+          dispatch({
+            type: GET_BOP_DETAILS,
+            payload: response.status === 200 ? response?.data.DataList : []
+          })
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response?.data.Message) {
+            Toaster.error(response?.data.Message)
+          }
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+        callback(error)
+      })
+  }
 }
