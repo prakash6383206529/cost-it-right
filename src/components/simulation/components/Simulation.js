@@ -22,7 +22,7 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { allEqual, applyEditCondSimulation, checkForNull, checkPermission, getFilteredData, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
+import { allEqual, applyEditCondSimulation, checkForNull, checkPermission, getConfigurationKey, getFilteredData, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
 import { ProcessListingSimulation } from './ProcessListingSimulation';
@@ -328,7 +328,7 @@ function Simulation(props) {
         setPlant('')
         setValue('Plant', '')
         setShowDropdown({})
-        if ((IdForMultiTechnology.includes(String(value?.value)) && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS)) {
+        if ((IdForMultiTechnology.includes(String(value?.value)) && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS) || Number(master.value) === Number(RMDOMESTIC)) {
             setTechnology(value)
             setShowMasterList(false)
             dispatch(setTechnologyForSimulation(value))
@@ -711,9 +711,16 @@ function Simulation(props) {
             // return <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} assemblyTechnology={true} technology={technology} closeSimulation={closeSimulation} />
             return <AssemblySimulationListing isOperation={true} cancelRunSimulation={cancelRunSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology} master={master.value} rowCount={rowCount} tokenForMultiSimulation={{}} cancelViewPage={cancelViewPage} showHide={showHide} cancelSimulationListingPage={cancelSimulationListingPage} isCustomer={isCustomer} customer={customer} plant={plant} vendor={vendor} costingHead={costingHead} />
         } else {
+            console.log(type, 'type');
+
             switch (value.value) {
+
                 case RMDOMESTIC:
-                    return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
+                    if (type?.label === "Indexed") {
+                        return (<RMIndexationSimulationListing master={master.value} rawMaterialIds={rawMaterialIds} isSimulation={true} type={type} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
+                    } else {
+                        return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
+                    }
                 case RMIMPORT:
                     return (<RMImportListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
                 case MACHINERATE:
@@ -731,7 +738,7 @@ function Simulation(props) {
                 case COMBINED_PROCESS:
                     return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} customerId={customer.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
                 case RAWMATERIALINDEX:
-                    return (<RMIndexationSimulationListing rawMaterialIds={rawMaterialIds} isSimulation={true} type={type} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
+                    return (<RMIndexationSimulationListing master={master.value} rawMaterialIds={rawMaterialIds} isSimulation={true} type={type} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
                 // case BOPIMPORT:
                 //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
                 // case BOPIMPORT:
@@ -1689,28 +1696,7 @@ function Simulation(props) {
                                         </div>
                                     </div>
                                 }
-                                {
-                                    (String(master?.value) === RAWMATERIALINDEX) &&
-                                    <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
-                                        <div className="flex-fills label">Type:</div>
-                                        <div className="flex-fills hide-label pl-0 d-flex mr-3">
-                                            <SearchableSelectHookForm
-                                                label={''}
-                                                name={'Type'}
-                                                placeholder={'Select'}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                defaultValue={type.length !== 0 ? type : ''}
-                                                options={renderListing('type')}
-                                                mandatory={false}
-                                                handleChange={handleType}
-                                                errors={errors.Type}
-                                            />
-                                        </div>
-                                    </div>
-                                }
+
                                 {((String(selectedMasterForSimulation?.value) !== BOPDOMESTIC && String(selectedMasterForSimulation?.value) !== BOPIMPORT) ? true :
                                     (association !== '' && association?.value !== NON_ASSOCIATED)) &&
                                     getTechnologyForSimulation.includes(master.value) &&
@@ -1731,6 +1717,28 @@ function Simulation(props) {
                                                 handleChange={handleTechnologyChange}
                                                 errors={errors.Technology}
                                                 disabled={isTechnologyDisable}
+                                            />
+                                        </div>
+                                    </div>
+                                }
+                                {
+                                    ((String(master?.value) === RAWMATERIALINDEX) || ((String(master?.value) === RMDOMESTIC || String(master?.value) === RMIMPORT) && getConfigurationKey()?.IsShowMaterialIndexation)) &&
+                                    <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
+                                        <div className="flex-fills label">Type:</div>
+                                        <div className="flex-fills hide-label pl-0 d-flex mr-3">
+                                            <SearchableSelectHookForm
+                                                label={''}
+                                                name={'Type'}
+                                                placeholder={'Select'}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={type.length !== 0 ? type : ''}
+                                                options={renderListing('type')}
+                                                mandatory={false}
+                                                handleChange={handleType}
+                                                errors={errors.Type}
                                             />
                                         </div>
                                     </div>

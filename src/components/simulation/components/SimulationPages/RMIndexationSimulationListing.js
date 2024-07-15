@@ -18,7 +18,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from '../../../../helper';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
-import { editRMIndexedSimulationData, getListingForSimulationCombined, getRMIndexationSimulationListing, setSelectedRowForPagination } from '../../../simulation/actions/Simulation';
+import { editRMIndexedSimulationData, getListingForSimulationCombined, getRMIndexationCostingSimulationListing, getRMIndexationSimulationListing, setSelectedRowForPagination } from '../../../simulation/actions/Simulation';
 import WarningMessage from '../../../common/WarningMessage';
 import _ from 'lodash'; 
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -42,7 +42,8 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function RMIndexationSimulationListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, ListFor, initialConfiguration } = props;
+    const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, master } = props;
+    console.log('master: ', master);
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [isBulkUpload, setisBulkUpload] = useState(false);
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
@@ -164,14 +165,64 @@ function RMIndexationSimulationListing(props) {
             }
         }
     }, [])
+    const apiResponse = (res, isPagination,) => {
+        if (isSimulation) {
+            props?.changeTokenCheckBox(true)
+        }
+        if (res && res.status === 200) {
+            setloader(false);
 
+        } else if (res && res.response && res.response.status === 412) {
+            setloader(false);
+
+        } else {
+            setloader(false);
+        }
+
+        if (res && isPagination === false) {
+            setDisableDownload(false)
+            setTimeout(() => {
+                dispatch(disabledClass(false))
+                let button = document.getElementById('Excel-Downloads-rm-import')
+                button && button.click()
+            }, 500);
+        }
+
+        if (res && res.status === 204) {
+            setTotalRecordCount(0)
+            dispatch(updatePageNumber(0))
+            // setPageNo(0)
+        }
+
+        if (res) {
+            let isReset = true
+            setTimeout(() => {
+                for (var prop in floatingFilterData) {
+
+                    if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
+                        isReset = false
+                    }
+
+                }
+                // Sets the filter model via the grid API
+                isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+            }, 300);
+
+            setTimeout(() => {
+                setWarningMessage(false)
+            }, 330);
+
+            setTimeout(() => {
+                setIsFilterButtonClicked(false)
+            }, 600);
+        }
+    }
 
     /**
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = (dataObj, skip = 0, take = 10, isPagination = true, isReset = false) => {
-        const { isSimulation } = props
 
         if (filterModel?.EffectiveDate && !isReset) {
 
@@ -205,60 +256,18 @@ function RMIndexationSimulationListing(props) {
         if (isPagination === true) {
             setloader(true)
         }
-        dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
-        dispatch(getRMIndexationSimulationListing(filterData, skip, take, isPagination, (res) => {
-            // apply(selectedRowForPagination, selectedRowForPagination.length)
-            if (isSimulation) {
-                props?.changeTokenCheckBox(true)
-            }
-            if (res && res.status === 200) {
-                setloader(false);
+        if (String(master) === RMDOMESTIC) {
+            dispatch(getRMIndexationCostingSimulationListing(filterData, skip, take, isPagination, (res) => {
+                apiResponse(res, isPagination)
+            }))
+        } else {
+            filterData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
+            dispatch(getRMIndexationSimulationListing(filterData, skip, take, isPagination, (res) => {
+                // apply(selectedRowForPagination, selectedRowForPagination.length)
+                apiResponse(res, isPagination)
+            }))
+        }
 
-            } else if (res && res.response && res.response.status === 412) {
-                setloader(false);
-
-            } else {
-                setloader(false);
-            }
-
-            if (res && isPagination === false) {
-                setDisableDownload(false)
-                setTimeout(() => {
-                    dispatch(disabledClass(false))
-                    let button = document.getElementById('Excel-Downloads-rm-import')
-                    button && button.click()
-                }, 500);
-            }
-
-            if (res && res.status === 204) {
-                setTotalRecordCount(0)
-                dispatch(updatePageNumber(0))
-                // setPageNo(0)
-            }
-
-            if (res) {
-                let isReset = true
-                setTimeout(() => {
-                    for (var prop in floatingFilterData) {
-
-                        if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
-                            isReset = false
-                        }
-
-                    }
-                    // Sets the filter model via the grid API
-                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
-                }, 300);
-
-                setTimeout(() => {
-                    setWarningMessage(false)
-                }, 330);
-
-                setTimeout(() => {
-                    setIsFilterButtonClicked(false)
-                }, 600);
-            }
-        }))
     }
     var setDate = (date) => {
         setFloatingFilterData((prevState) => ({ ...prevState, EffectiveDate: date }));

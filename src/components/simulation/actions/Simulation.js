@@ -60,7 +60,8 @@ import {
     GET_SELECTLIST_COSTING_HEADS,
     GET_RM_INDEXATION_SIMULATION_LIST,
     GET_INDEXED_RM_FOR_SIMULATION,
-    GET_SIMULATED_RAW_MATERIAL_SUMMARY
+    GET_SIMULATED_RAW_MATERIAL_SUMMARY,
+    GET_RM_INDEXATION_COSTING_SIMULATION_LIST
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1952,6 +1953,43 @@ export function getApprovalSimulatedRawMaterialSummary(params, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getRMIndexationCostingSimulationListing
+ * @description Used to get RM Indexation Costing Simulation Listing
+ */
+export function getRMIndexationCostingSimulationListing(data, skip, take, isPagination, callback) {
+    return (dispatch) => {
+        const queryParams = encodeQueryParamsAndLog({
+            LoggedInUserId: loggedInUserId(),
+            IsIndexationDetails: data.isIndexationDetails,
+            IsCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false,
+            IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc,
+            IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc,
+            VendorId: data.vendorId ? data.vendorId : null,
+            PlantId: data.plantId ? data.plantId : null,
+            RMChildId: data.RMChildId ? data.RMChildId : null,
+            GradeId: data.GradeId ? data.GradeId : null,
+            CustomerId: data.CustomerId ? data.CustomerId : null,
+
+        });
+        const request = axios.get(`${API.getRMIndexationCostingSimulationListing}?${queryParams}`, config());
+        request.then((response) => {
+            if (response?.data.Result || response?.status === 204) {
+                dispatch({
+                    type: GET_RM_INDEXATION_COSTING_SIMULATION_LIST,
+                    payload: response?.status === 204 ? [] : response?.data.DataList
+                })
+                callback(response);
+            }
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
             callback(error);
             apiErrors(error);
         });

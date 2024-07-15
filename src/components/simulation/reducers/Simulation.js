@@ -34,7 +34,8 @@ import {
     GET_SELECTLIST_COSTING_HEADS,
     GET_RM_INDEXATION_SIMULATION_LIST,
     GET_INDEXED_RM_FOR_SIMULATION,
-    GET_SIMULATED_RAW_MATERIAL_SUMMARY
+    GET_SIMULATED_RAW_MATERIAL_SUMMARY,
+    GET_RM_INDEXATION_COSTING_SIMULATION_LIST
 } from '../../../config/constants';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
 import { showBopLabel, updateBOPValues } from '../../../helper';
@@ -333,6 +334,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 simulatedRawMaterialSummary: action.payload
+            }
+        case GET_RM_INDEXATION_COSTING_SIMULATION_LIST:
+            return {
+                ...state,
+                loading: false,
+                rmIndexationCostingSimulationList: action.payload
             }
         default:
             return state;
