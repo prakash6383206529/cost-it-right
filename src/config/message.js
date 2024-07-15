@@ -172,6 +172,8 @@ export const MESSAGES = {
   BOP_DELETE_SUCCESS: `${showBopLabel()} deleted successfully`,
   BOP_BREAKUP_WARNING: `${showBopLabel()} with breakup will be visible in Approval Status tab until it's costing is approved.`,
 
+  //SAPCODE
+  SAP_CODE_WARNING: "Click on edit icon again to save the data.",
   //FUEL & POWER MASTER
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
   FUEL_ADD_SUCCESS: 'Fuel added successfully',
