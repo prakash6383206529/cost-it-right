@@ -123,7 +123,7 @@ class AddGrade extends Component {
         }
         this.props.updateIndex(formData, (res) => {
           if (res.data.Result) {
-            Toaster.success(MESSAGES.RM_GRADE_UPDATE_SUCCESS);
+            Toaster.success(MESSAGES.INDEX_UPDATE_SUCCESS);
             this.toggleDrawer('', formData, 'submit')
           }
         })
@@ -135,7 +135,7 @@ class AddGrade extends Component {
         this.props.reset()
         this.props.createIndex(formData, (res) => {
           if (res.data.Result) {
-            Toaster.success(MESSAGES.GRADE_ADD_SUCCESS);
+            Toaster.success(MESSAGES.INDEX_ADD_SUCCESS);
             this.toggleDrawer('', formData, 'submit')
           }
         });

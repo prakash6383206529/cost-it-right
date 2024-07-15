@@ -37,14 +37,14 @@ import {
 import {
     AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm, RMMaterialListing,
     IndexCommodityListing, CommodityInIndexListing, StandardizedCommodityNameListing,
-    // CommodityStandard,
     IndexDataListing,
     OverheadVBC,
     Overhead,
     OverheadCBC,
     ProfitVBC,
     Profit,
-    ProfitCBC
+    ProfitCBC,
+    CommodityStandard
 } from '../../config/masterData';
 import { CheckApprovalApplicableMaster, checkForSameFileUpload, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
@@ -455,7 +455,6 @@ class BulkUpload extends Component {
                                 checkForFileHead = checkForSameFileUpload(ProfitCBC, fileHeads)
                             }
                             break;
-
                         case String(RMMATERIALBULKUPLOAD):
                             checkForFileHead = checkForSameFileUpload(IndexDataListing, fileHeads)
                             break;
@@ -468,9 +467,9 @@ class BulkUpload extends Component {
                         case String(COMMODITYSTANDARDIZATION):
                             checkForFileHead = checkForSameFileUpload(StandardizedCommodityNameListing, fileHeads)
                             break;
-                        // case String(COMMODITYSTANDARD):
-                        //     checkForFileHead = checkForSameFileUpload(CommodityStandard, fileHeads)
-                        // break;
+                        case String(COMMODITYSTANDARD):
+                            checkForFileHead = checkForSameFileUpload(CommodityStandard, fileHeads)
+                            break;
                         default:
                             break;
                     }
@@ -607,7 +606,7 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'Commodity (In Index)' || fileHeads[i] === 'Commodity Name (In Index)') {
                                     fileHeads[i] = 'CommodityName'
                                 }
-                                if (fileHeads[i] === 'Commodity (Standard)' || fileHeads[i] === 'Commodity Name (In CIR)') {
+                                if (fileHeads[i] === 'Commodity Name (Standard)' || fileHeads[i] === 'Commodity Name (In CIR)') {
                                     fileHeads[i] = 'CommodityStandardName'
                                 }
                                 if (fileHeads[i] === 'Index Rate (Currency)') {

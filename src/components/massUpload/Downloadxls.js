@@ -20,9 +20,9 @@ import {
     IndexCommodityListing, IndexCommodityListingTempData, CommodityInIndexListing, CommodityInIndexListingTempData,
     StandardizedCommodityNameTempData, StandardizedCommodityNameListing,
     CommodityStandardTempData,
-    // CommodityStandard,
     IndexDataListingTempData,
-    IndexDataListing
+    IndexDataListing,
+    CommodityStandard
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
@@ -179,8 +179,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(CommodityInIndexListing, CommodityInIndexListingTempData);
             case 'Commodity Standardization':
                 return this.returnExcelColumn(StandardizedCommodityNameListing, StandardizedCommodityNameTempData);
-            // case 'Commodity Standard':
-            //     return this.returnExcelColumn(CommodityStandard, CommodityStandardTempData);
+            case 'Commodity Standard':
+                return this.returnExcelColumn(CommodityStandard, CommodityStandardTempData);
             case 'Fuel':
                 return this.returnExcelColumn(Fuel, FuelTempData);
             case 'Profit':
@@ -437,7 +437,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === 'ADD RFQ')) {
+        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === 'ADD RFQ' || fileName === 'Index' || fileName === 'Index Data' || fileName === 'Commodity (In Index)' || fileName === 'Commodity Standard' || fileName === 'Commodity Standardization')) {
 
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >

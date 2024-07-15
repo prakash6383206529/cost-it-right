@@ -23,6 +23,7 @@ const gridOptions = {};
 function AddRM(props) {
 
   const { IsApplyMasterBatch, Ids, rmNameList, item } = props;
+  
   const { handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -49,6 +50,7 @@ function AddRM(props) {
 
   const onRowSelect = (event) => {
     var selectedRows = gridApi && gridApi?.getSelectedRows();
+    
 
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
     if (item?.IsMultipleRMApplied) {
@@ -132,7 +134,10 @@ function AddRM(props) {
       CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId || Number(costData.CostingTypeId) === PFS1TypeId
         || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : costData.CostingTypeId,
 
-      CustomerId: costData.CustomerId
+      CustomerId: costData.CustomerId,
+      PartId: costData?.PartId,
+      IsRFQ: false,
+      QuotationPartId: null
     }
     dispatch(getRMDrawerDataList(data, isNFR, rmNameList, (res) => {
       if (res && res.status === 200) {
@@ -213,7 +218,11 @@ function AddRM(props) {
     priceFormatter: priceFormatter
   };
 
-  const isRowSelectable = rowNode => rowNode.data ? !Ids.includes(rowNode.data.RawMaterialId) : false;
+  const isRowSelectable = (rowNode) =>{
+    
+    
+      return rowNode.data ? !Ids.includes(rowNode.data.RawMaterialId) : false;
+    } 
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();

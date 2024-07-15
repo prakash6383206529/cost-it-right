@@ -131,7 +131,7 @@ const CommodityInIndexListing = (props) => {
     const confirmDelete = (ID) => {
         dispatch(
             deleteIndexCommodityLinking(ID, (res) => {
-                if (res.status === 417 && res.data.Result === false) {
+                if (res.data.Result === false) {
                     Toaster.error(res.data.Message);
                 } else if (res && res.data && res.data.Result === true) {
                     Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
@@ -171,7 +171,7 @@ const CommodityInIndexListing = (props) => {
         let isEditbale = false
         let isDeleteButton = false
         isEditbale = permissions.Edit;
-        isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete);
+        isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete && !rowData.IsAssociated);
 
         return (
             <>
@@ -228,7 +228,7 @@ const CommodityInIndexListing = (props) => {
 
         }
     }, [])
- 
+
 
     const resetState = () => {
         setNoData(false)
@@ -262,7 +262,7 @@ const CommodityInIndexListing = (props) => {
         if (isPagination === true || isPagination === null) setIsLoader(true)
         let dataObj = { ...floatingFilterData }
         dispatch(getCommodityInIndexDataListAPI(dataObj, isPagination, skip, take, (res) => {
-            if (isPagination === true || isPagination === null){ setIsLoader(false)}
+            if (isPagination === true || isPagination === null) { setIsLoader(false) }
             if ((res && res.status === 204) || res.length === 0) {
                 setTotalRecordCount(0)
                 dispatch(updatePageNumber(0))
@@ -370,8 +370,8 @@ const CommodityInIndexListing = (props) => {
     };
 
     return (
-       
-                    <div className={`ag-grid-react {permissions.Download ? "show-table-btn" : ""
+
+        <div className={`ag-grid-react {permissions.Download ? "show-table-btn" : ""
                 } ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} `}>
 
             {isLoader && <LoaderCustom />}
@@ -458,13 +458,13 @@ const CommodityInIndexListing = (props) => {
                                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                             </AgGridReact>}
                             <div className='button-wrapper'>
-                                        {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="CommodityInIndex" />}
-                                        {!isLoader &&
-                                            <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="CommodityInIndex" />
+                                {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="CommodityInIndex" />}
+                                {!isLoader &&
+                                    <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="CommodityInIndex" />
 
-                                        }
+                                }
 
-                                    </div>
+                            </div>
 
                         </div>
                     </div>

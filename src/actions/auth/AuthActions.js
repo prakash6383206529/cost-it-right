@@ -2068,12 +2068,18 @@ export function getOnboardingLevelById(isAPICall, approvalId, callback) {
 export function getPlantSelectListForDepartment(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantSelectListForDepartment}?departmentId=${data}`, config());
+        const request = axios.post(`${API.getPlantSelectListForDepartment}`, data, config());
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.status === 200) {
                 dispatch({
                     type: GET_PLANT_SELECT_LIST_FOR_DEPARTMENT,
                     payload: response.data.DataList,
+                });
+                callback(response);
+            } else if (response.status === 204) {
+                dispatch({
+                    type: GET_PLANT_SELECT_LIST_FOR_DEPARTMENT,
+                    payload: [],
                 });
                 callback(response);
             } else {

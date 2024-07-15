@@ -206,7 +206,7 @@ const CommodityStandardListing = (props) => {
         let isEditbale = false
         let isDeleteButton = false
         isEditbale = permissions.Edit;
-        isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete);
+        isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete && !props?.data.IsAssociated);
 
         return (
             <>
@@ -347,7 +347,7 @@ const CommodityStandardListing = (props) => {
         );
     };
     return (
-       
+
         <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} `}>
 
             {isLoader && <LoaderCustom />}
@@ -431,9 +431,9 @@ const CommodityStandardListing = (props) => {
                             </AgGridReact>}
 
                             <div className={`button-wrapper`}>
-    {!isLoader && <PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="StandardizedCommodity" />}
-    <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="StandardizedCommodity" />
-</div>
+                                {!isLoader && <PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="StandardizedCommodity" />}
+                                <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="StandardizedCommodity" />
+                            </div>
                         </div>
                     </div>
                 </Col>
