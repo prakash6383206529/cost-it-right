@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Table, Container } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import NoContentFound from "../../../common/NoContentFound";
-import { EMPTY_DATA } from "../../../../config/constants";
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs';
 import { useForm, Controller } from "react-hook-form";
 import { Drawer } from "@material-ui/core";
-import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
-import { MESSAGES } from '../../../../config/message';
-import Button from '../../../layout/Button';
-import {
-    getIndexSelectList, getCommodityNameInIndexSelectList, getCommodityCustomNameSelectListByType,
-    getStandardizedCommodityListAPI, updateCommodityStandardization,
-    createCommodityStandardization,
-} from '../../../masters/actions/Indexation'
+
+
 import { debounce, values } from 'lodash';
-import Toaster from '../../../common/Toaster';
-import { loggedInUserId } from "../../../../helper/auth";
+
 import AddIndexationMaterialListing from "../../../masters/material-master/AddIndexationMaterialListing";
 
 const CommoditySimulationDrawer = (props) => {
-    const { isEditFlag, isOpen, closeDrawer, anchor } = props;
-    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+    console.log('props: ', props);
+    const { rowData } = props?.rowData
+
+    const { isEditFlag, isOpen, anchor } = props;
     const [isEdit, setIsEdit] = useState(false);
     const [editIndex, setEditIndex] = useState('')
     const [state, setState] = useState({
@@ -31,18 +23,16 @@ const CommoditySimulationDrawer = (props) => {
         setDisable: false,
         showPopup: false,
     });
-    const { register, formState: { errors, isDirty }, control, setValue, handleSubmit, reset } = useForm({
+    const { formState: { errors }, setValue, handleSubmit, reset } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
     const dispatch = useDispatch()
-    const { indexCommodityData } = useSelector((state) => state.indexation);
-    const { commodityInIndex } = useSelector((state) => state.indexation);
-    const { customNameCommodityData } = useSelector((state) => state.indexation);
-    //const { standardizedCommodityDataList } = useSelector((state) => state.indexation);
+
 
 
     const [gridData, setGridData] = useState([]);
+    const [basicRate, setBasicRate] = useState('')
     const [formData, setFormData] = useState({
         CommodityExchangeName: '',
         CommodityName: '',
@@ -50,6 +40,9 @@ const CommoditySimulationDrawer = (props) => {
 
     });
 
+    const setTotalBasicRate = (basicRateFromDrawer) => {
+        setBasicRate(basicRateFromDrawer)
+    }
 
     const resetData = () => {
         setValue('CommodityExchangeName', '');
@@ -66,89 +59,16 @@ const CommoditySimulationDrawer = (props) => {
 
 
     const onSubmit = debounce(values => {
-        // if (isEdit) {
-        //     setState(prevState => ({ ...prevState, setDisable: true }));
+        props.closeDrawer('Save', basicRate)
 
-        //     //   const updateData = {
-        //     //     Index: values.Index,
-        //     //     ModifiedBy: loggedInUserId(),            
-        //     //     MaterialName: values.MaterialName,
-        //     //     MaterialNameCustom: values.MaterialNameCustom,
-        //     //     IsActive: true,
-        //     //   };
-        //     const updateData = {
-        //         CommodityExchangeName: values.CommodityExchangeName,
-        //         ModifiedBy: loggedInUserId(),
-        //         CommodityName: values.CommodityName,
-        //         CustomMaterialName: values.CustomMaterialName,
-        //         IsActive: true,
-        //     };
-
-        //     dispatch(updateCommodityStandardization(updateData, res => {
-        //         setState(prevState => ({ ...prevState, setDisable: false }));
-        //         if (res?.data?.Result) {
-        //             Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
-        //             dispatch(getStandardizedCommodityListAPI('', res => { }));
-        //             reset();
-        //             toggleDrawer('', updateData, 'submit');
-        //         }
-        //     }));
-        // } else {
-        //     setState(prevState => ({ ...prevState, setDisable: true }));
-
-        //     // const formData = {
-        //     //     Index: values.Index,
-        //     //     MaterialName: values.MaterialName,
-        //     //     MaterialNameCustom: values.MaterialNameCustom,
-        //     //     // MaterialType: values.MaterialType,
-        //     //     // CalculatedDensityValue: values.CalculatedDensityValue,
-        //     //     CreatedBy: loggedInUserId(),
-        //     //     IsActive: true,
-        //     // };
-
-        //     const formDataToSubmit = {
-
-        //         CommodityExchangeName: values.CommodityExchangeName,
-        //         CommodityName: values.CommodityName,
-        //         CustomMaterialName: values.CustomMaterialName,
-        //         CreatedBy: loggedInUserId(),
-        //         IsActive: true,
-        //     };
-        //     dispatch(createCommodityStandardization(formDataToSubmit, res => {
-
-        //         setState(prevState => ({ ...prevState, setDisable: false }));
-
-        //         if (res?.data?.Result) {
-        //             Toaster.success(MESSAGES.COMMODITYNAME_ADD_SUCCESS);
-        //             dispatch(getStandardizedCommodityListAPI('', res => { }));
-        //             reset();
-        //             toggleDrawer('', formDataToSubmit, 'submit');
-        //         }
-        //     }));
-        // }
-    }, 500);
-
-    const updateRow = () => {
-        const obj = {
-            CommodityExchangeName: formData.CommodityExchangeName,
-            CommodityName: formData.CommodityName,
-            CustomMaterialName: formData.CustomMaterialName
-        }
-
-        const updatedGridData = gridData.map((item, index) =>
-            index === editIndex ? obj : item
-        );
-        setGridData(updatedGridData);
-
-        setIsEdit(false);
-        resetData();
-    };
+    });
 
 
-    const addRow = () => {
+
+
+    const saveRow = () => {
 
         const obj = {
-
             CommodityExchangeName: formData.CommodityExchangeName,
             CommodityName: formData.CommodityName,
             CustomMaterialName: formData.CustomMaterialName
@@ -161,13 +81,8 @@ const CommoditySimulationDrawer = (props) => {
     };
 
 
-    // const toggleDrawer = (event, formData, type) => {
-    //     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-    //         return;
-    //     }
-    // };
     const cancel = (type) => {
-        console.log('type: ', type);
+
         reset();
         props.closeDrawer(type)
     };
@@ -177,7 +92,7 @@ const CommoditySimulationDrawer = (props) => {
         <div>
             <Drawer anchor={anchor} open={isOpen}>
                 <Container>
-                    <div className={'drawer-wrapper layout-min-width-820px'}>
+                    <div className={'drawer-wrapper drawer-1500px px-2'}>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row className="drawer-heading">
                                 <Col>
@@ -196,9 +111,10 @@ const CommoditySimulationDrawer = (props) => {
                                 <AddIndexationMaterialListing
                                     states={state}
                                     isOpen={true}
-                                    commodityDetails={[]}
-                                    // isViewFlag={isViewFlag}
-                                    setTotalBasicRate={() => { }}
+                                    commodityDetails={props?.commodityDetails}
+                                    isFromSimulation={true}
+                                    isViewFlag={props?.isViewFlag}
+                                    setTotalBasicRate={setTotalBasicRate}
                                     closeDrawer={cancel}
                                 />
                             </Row>
@@ -212,6 +128,7 @@ const CommoditySimulationDrawer = (props) => {
                                             onClick={cancel}
                                             value="CANCEL"
                                             className="mr15 cancel-btn"
+
                                         >
                                             <div className={"cancel-icon"}></div>
                                             CANCEL
@@ -220,6 +137,7 @@ const CommoditySimulationDrawer = (props) => {
                                             id="AddMaterialType_Save"
                                             type="submit"
                                             className="user-btn save-btn"
+                                            disabled={props?.isViewFlag}
                                         >
                                             {" "}
                                             <div className={"save-icon"}></div>

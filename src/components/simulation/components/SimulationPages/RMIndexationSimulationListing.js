@@ -147,7 +147,7 @@ function RMIndexationSimulationListing(props) {
             setvalue({ min: 0, max: 0 });
         }
         // dispatch(editRMIndexedSimulationData(props.rawMaterialIds, (res) => {
-        //     console.log('res: ', res);
+        //     
 
         // }))
     }, [])

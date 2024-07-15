@@ -61,6 +61,7 @@ function Simulation(props) {
     const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting, selectListCostingHead } = useSelector(state => state.simulation)
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const [master, setMaster] = useState([])
+
     const [technology, setTechnology] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
     const [showUploadDrawer, setShowDrawer] = useState(false)
@@ -1444,10 +1445,10 @@ function Simulation(props) {
             case String(COMBINED_PROCESS):                //RE
             case String(RAWMATERIALINDEX):
                 if (Data && Data.length === 0) {
-                    console.log('Data: ', Data);
+
                     setEditWarning(true)
                 } else {
-                    console.log('here');
+
                     setEditWarning(false)
                 }
                 break;
@@ -1463,6 +1464,7 @@ function Simulation(props) {
             Toaster.warning("Please select at least one record.")
             return false
         }
+
         setShowEditTable(true)
         setShowMasterList(false)
     }
@@ -1484,6 +1486,7 @@ function Simulation(props) {
     }
 
     const editMasterPage = (page) => {
+
         // let tempObject = token && token.map((item) => {
         //     let obj = {}
         //     obj.SimulationId = item.value
@@ -1524,7 +1527,7 @@ function Simulation(props) {
                 } else {
                     return ''
                 }
-            case RAWMATERIALINDEX:
+            case String(RAWMATERIALINDEX):
                 return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} />
             default:
                 break;
@@ -1598,12 +1601,19 @@ function Simulation(props) {
     }
 
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
-    if (props?.isFromApprovalListing === true) {
+    if (props?.isFromApprovalListing === true && String(props?.master) !== RAWMATERIALINDEX) {
         const simulationId = props?.approvalProcessId;
         const masterId = props?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
 
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={props?.isFromApprovalListing} statusForLinkedToken={props?.statusForLinkedToken} />
+    }
+    if (props?.isFromApprovalListing === true && String(props?.master) === RAWMATERIALINDEX) {
+        const simulationId = props?.approvalProcessId;
+        const masterId = props?.master
+        // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
+
+        return <RMIndexationSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={props?.isFromApprovalListing} statusForLinkedToken={props?.statusForLinkedToken} isImpactedMaster={false} />
     }
 
     return (
