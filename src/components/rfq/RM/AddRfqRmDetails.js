@@ -354,8 +354,6 @@ const AddRfqRmDetails = (props) => {
                         variant={'plus-icon-square'}
                         title={'Add'} onClick={DrawerToggle} >
                     </Button> */}
-                    { }
-                    { }
                     <Button id="addRMSpecificatione" className={"ml-2 mb-2"}
                         // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
                         variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}

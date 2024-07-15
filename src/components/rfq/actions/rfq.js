@@ -23,6 +23,8 @@ import {
     SELECT_BOP_NUMBER,
     SELECT_BOP_CATEGORY,
     SET_BOP_SPECIFIC_ROW_DATA,
+    GET_BOP_PR_QUOTATION_DETAILS,
+    SET_BOP_PR_QUOTATION_IDENTITY,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -627,32 +629,33 @@ export function setRmSpecificRowData(data) {
         });
     }
 };
-export function getPurchaseRequisitionSelectList(partId, callback) {
+export function getPurchaseRequisitionSelectList(callback) {
 
-    // const quotationPartId = Number(partId)
 
-    // return (dispatch) => {
-    //     dispatch({
-    //         type: SELECT_PURCHASE_REQUISITION,
-    //         payload: []
-    //     })
-    //     const request = axios.get(`${API.getPurchaseRequisitionSelectList}?quotationPartId=${quotationPartId}`, config());
-    //     request.then((response) => {
-    //         if (response.data.Result || response.status === 204) {
+    return (dispatch) => {
+        dispatch({
+            type: SELECT_PURCHASE_REQUISITION,
+            payload: []
+        })
+        const request = axios.get(`${API.getPurchaseRequisitionSelectList}`, config());
+        request.then((response) => {
 
-    //             dispatch({
-    //                 type: GET_BOP_RFQ_PR_DETAILS,
-    //                 payload: response.status === 204 ? [] : response?.data?.Data
-    //             })
+            if (response.data.Result || response.status === 204) {
 
-    //             callback(response);
-    //         }
-    //     }).catch((error) => {
+                dispatch({
+                    type: SELECT_PURCHASE_REQUISITION,
+                    payload: response.status === 204 ? [] : response?.data?.SelectList
+                })
 
-    //         dispatch({ type: API_FAILURE });
-    //         apiErrors(error);
-    //     });
-    // };
+                callback(response);
+            }
+        }).catch((error) => {
+
+
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
 }
 export function getBopNumberSelectList(callback) {
 
@@ -714,3 +717,36 @@ export function setBopSpecificRowData(data) {
         });
     }
 };
+export function createQuotationPrParts(data, callback) {
+    const prNumbersId = Number(data.prNumbersId)
+    return (dispatch) => {
+        const request = axios.post(API.createQuotationPrParts, data, config());
+        request.then((response) => {
+
+            if (response.data.Result) {
+                dispatch({
+                    type: SET_BOP_PR_QUOTATION_IDENTITY,
+                    payload: response.status === 204 ? [] : response?.data?.Identity
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+};
+// return (dispatch) => {
+//     const request = axios.post(`${API.createQuotationPrParts}?prNumbersId=${prNumbersId}&quotationId=${obj.quotationId}&loggedInUserId=${obj.loggedInUserId}`, config());
+//     request.then((response) => {
+//         if (response.data.Result) {
+//             callback(response);
+//         }
+//     }).catch((error) => {
+//         dispatch({ type: API_FAILURE });
+//         apiErrors(error);
+//         callback(error)
+//     });
+// };
+//}

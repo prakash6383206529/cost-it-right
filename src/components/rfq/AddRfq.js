@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor, setRmSpecificRowData, getPurchaseRequisitionSelectList, setBopSpecificRowData } from './actions/rfq';
+import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor, setRmSpecificRowData, getPurchaseRequisitionSelectList, setBopSpecificRowData, createQuotationPrParts } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -164,8 +164,9 @@ function AddRfq(props) {
 
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
-    const { getRfqVendorDetail, getTargetprice, getPartIndentity, getQuotationIdForRFQ, rmSpecificRowData, SelectPurchaseRequisition } = useSelector((state) => state.rfq)
+    const state123 = useSelector((state) => state)
 
+    const { getRfqVendorDetail, getTargetprice, getPartIndentity, getQuotationIdForRFQ, rmSpecificRowData, SelectPurchaseRequisition, getBopPrQuotationIdentity } = useSelector((state) => state.rfq)
 
     const [viewQuotationPart, setViewQuotationPart] = useState(false)
     const [havellsPartTypeList, setHavellsPartTypeList] = useState([]);
@@ -194,7 +195,8 @@ function AddRfq(props) {
     const [editRawMaterialId, setEditRawMaterialId] = useState("")
     const [editBopId, setEditBopId] = useState("")
     const [isLoader, setIsLoader] = useState(false)
-    const [prNumber, setPrNumber] = useState('')
+    const [prNumber, setPrNumber] = useState([])
+
 
 
 
@@ -206,7 +208,11 @@ function AddRfq(props) {
 
     };
 
-
+    useEffect(() => {
+        if (selectedOption === "BOP") {
+            dispatch(getPurchaseRequisitionSelectList(() => { }))
+        }
+    }, [selectedOption])
     useEffect(() => {
         if (dataProps?.rowData && dataProps?.rowData?.PartType !== "") {
             const partTypes = dataProps?.rowData?.PartType?.split(',');
@@ -241,6 +247,7 @@ function AddRfq(props) {
             setTimeout(() => {
                 const obj = createQuotationObject(null);
                 dispatch(createRfqQuotation(obj, (res) => {
+
                     setQuotationIdentity(res?.data?.Identity)
                 }))
             }, 200)
@@ -471,50 +478,65 @@ function AddRfq(props) {
 
         if (dataProps?.isEditFlag || dataProps?.isViewFlag) {
             setLoader(true)
-            dispatch(getQuotationById(dataProps?.Id, (res) => {
-
-                setPartNoDisable(false)
-
-                if (res?.data?.Data) {
-                    let data = res?.data?.Data
-                    setIsEditAll(data?.IsSent ? false : true)
-                    setIsEditSubmissionDate(data?.IsLastSubmissionEditable ? true : false)
-                    setIsViewFlag(dataProps?.isViewFlag)
-                    setValue("technology", {
-                        label: data.TechnologyName, value: data.TechnologyId
-                    })
-                    setValue("plant", {
-                        label: data.PlantName, value: data.PlantId
-                    })
-                    dispatch(setQuotationIdForRfq(data?.QuotationId))
-                    setTechnology({ label: data.TechnologyName, value: data.TechnologyId })
-                    // setInitialFiles(data?.Attachments)
-                    // setValue('SubmissionDate', data?.LastSubmissionDate)
-                    setSubmissionDate(data?.LastSubmissionDate)
-                    setIsConditionalVisible(data?.IsConditionallyVisible)
-                    setValue('VisibilityMode', { value: data?.VisibilityMode, label: data?.VisibilityMode })
-                    setVisibilityMode({ value: data?.VisibilityMode, label: data?.VisibilityMode })
-                    setDateAndTime(data?.VisibilityDate)
-                    setValue('Time', data?.VisibilityDuration)
-                    setFiles(data?.Attachments)
-                    setPartList(convertToPartList(data.PartList, data?.NfrId ? true : false))
-                    setRmDataList(convertToRmList(data.RawMaterialList, data?.NfrId ? true : false))
-                    setBopDataList(convertToBopList(data.BoughtOutPartList, data?.NfrId ? true : false))
-                    setVendorList(data.VendorList)
-                    setValue("remark", data.Remark)
-                    setValue("nfrId", { label: data?.NfrNumber, value: data?.NfrId })
-                    setNfrId({ label: data?.NfrNumber, value: data?.NfrId })
-                    setData(data)
-                    setIsNFRFlow(data?.NfrId ? true : false)
-                }
-                setTimeout(() => {
-                    setLoader(false)
-                }, 100);
-            })
-            )
+            getQuotationDataById(dataProps?.Id)
         }
     }, [])
 
+    const getQuotationDataById = (quotationId) => {
+
+
+
+        //const quotationId = (dataProps?.isEditFlag || dataProps?.isViewFlag) ? dataProps?.Id : getBopPrQuotationIdentity
+
+
+        setLoader(true)
+        dispatch(getQuotationById(quotationId, (res) => {
+
+
+            setPartNoDisable(false)
+
+            if (res?.data?.Data) {
+                setLoader(false)
+
+                let data = res?.data?.Data
+                setIsEditAll(data?.IsSent ? false : true)
+                setIsEditSubmissionDate(data?.IsLastSubmissionEditable ? true : false)
+                setIsViewFlag(dataProps?.isViewFlag)
+                setValue("technology", {
+                    label: data.TechnologyName, value: data.TechnologyId
+                })
+                setValue("plant", {
+                    label: data.PlantName, value: data.PlantId
+                })
+                setValue("prId", { label: data.PRNumber, value: data.PRNumberId })
+                dispatch(setQuotationIdForRfq(data?.QuotationId))
+                setTechnology({ label: data.TechnologyName, value: data.TechnologyId })
+                // setInitialFiles(data?.Attachments)
+                // setValue('SubmissionDate', data?.LastSubmissionDate)
+                setSubmissionDate(data?.LastSubmissionDate)
+                setIsConditionalVisible(data?.IsConditionallyVisible)
+                setValue('VisibilityMode', { value: data?.VisibilityMode, label: data?.VisibilityMode })
+                setVisibilityMode({ value: data?.VisibilityMode, label: data?.VisibilityMode })
+                setDateAndTime(data?.VisibilityDate)
+                setValue('Time', data?.VisibilityDuration)
+                setFiles(data?.Attachments)
+                setPartList(convertToPartList(data.PartList, data?.NfrId ? true : false))
+                setRmDataList(convertToRmList(data.RawMaterialList, data?.NfrId ? true : false))
+                setBopDataList(convertToBopList(data.BoughtOutPartList, data?.NfrId ? true : false))
+                setVendorList(data.VendorList)
+                setValue("remark", data.Remark)
+                setValue("nfrId", { label: data?.NfrNumber, value: data?.NfrId })
+                setNfrId({ label: data?.NfrNumber, value: data?.NfrId })
+                setData(data)
+                setIsNFRFlow(data?.NfrId ? true : false)
+            }
+            setTimeout(() => {
+                setLoader(false)
+            }, 100);
+        })
+        )
+
+    }
 
     const deleteFile = (FileId, OriginalFileName) => {
         if (dataProps?.isAddFlag ? false : dataProps?.isViewFlag || !isEditAll) {
@@ -847,7 +869,7 @@ function AddRfq(props) {
             })
             return temp
         }
-        if (label === 'BOP') {
+        if (label === 'prNo') {
             SelectPurchaseRequisition && SelectPurchaseRequisition.map((item) => {
                 if (item.Value === '0') return false
                 temp.push({ label: item.Text, value: item.Value })
@@ -1792,7 +1814,7 @@ function AddRfq(props) {
                             let bopIdList = _.uniq(_.map(bopList, 'BoughtOutPartChildId'));
                             bopIdList && bopIdList.forEach((bopId) => {
                                 bopList && bopList.forEach((item2) => {
-                                    console.log('item2: ', item2);
+
                                     if (item2?.BoughtOutPartChildId === bopId) {
                                         let tempBopObj = {
                                             BoughtOutPartChildId: item2.BoughtOutPartChildId,
@@ -1950,6 +1972,7 @@ function AddRfq(props) {
                         setEditRawMaterialId("")
                         setEditBopId("")
                         setBopList([])
+                        // setPrNumber([])
                         //dispatch(setQuotationIdForRfq(""))
                     }, 200)
 
@@ -2065,10 +2088,24 @@ function AddRfq(props) {
     const handleNfrChnage = (newValue) => {
         if (newValue && newValue !== '') {
             // setPartNoDisable(false)
-            setPrNumber(newValue?.value)
+            setPrNumber({ label: newValue.label, value: newValue.value })
             setValue('partNumber', "")
             setPartName('')
-            // dispatch(getQuotationById(newValue?.value, () => { }))
+            let obj = {
+                quotationId: quotationIdentity,
+                prNumbersId: newValue.value,
+                loggedInUserId: loggedInUserId()
+            }
+            dispatch(createQuotationPrParts(obj, (res) => {
+
+                if (res?.status === 200) {
+                    setTimeout(() => {
+                        getQuotationDataById(res.data?.Identity)
+
+                    }, 300)
+
+                }
+            }))
             reactLocalStorage.setObject('PartData', [])
             dispatch(getPlantSelectListByType(ZBC, 'RFQ', newValue?.value, () => { }))
             setNfrId(newValue)
@@ -2592,7 +2629,7 @@ function AddRfq(props) {
                                             <Col md="3" className={isRmSelected ? 'd-none' : ''}>
                                                 <SearchableSelectHookForm
                                                     label={quationType === 'BOP' ? "PR No." : "NFR No."}
-                                                    name={"nfrId"}
+                                                    name={quationType === 'BOP' ? "prId" : "nfrId"}
                                                     isClearable={true}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
@@ -2604,7 +2641,7 @@ function AddRfq(props) {
                                                     mandatory={false}
                                                     handleChange={handleNfrChnage}
                                                     errors={errors.nfrId}
-                                                    disabled={((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
+                                                    disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
                                                         || (partList?.length !== 0)}
                                                 // isLoading={VendorLoaderObj}
                                                 />
@@ -2625,7 +2662,7 @@ function AddRfq(props) {
                                                 errors={errors.plant}
                                                 // disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
                                                 //     || (partList?.length !== 0 || vendorList?.length !== 0)}
-                                                disabled={((partList?.length !== 0 || vendorList?.length !== 0) || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
+                                                disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
                                             />
                                         </Col>
                                         <Col md="3">
@@ -2749,10 +2786,11 @@ function AddRfq(props) {
                                             </Col>}
                                         </Row>
                                     </>}
+                                    {loader && <LoaderCustom customClass="Rfq-Loader" />}
                                     {quationType === 'RM' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} />}
                                     <Row>
 
-                                        {quationType === 'BOP' && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} />}
+                                        {quationType === 'BOP' && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} />}
 
                                         {!havellsKey && (
                                             checkForNull(technology?.value) !== LOGISTICS && (
@@ -2838,7 +2876,7 @@ function AddRfq(props) {
                                                             mandatory={false}
                                                             handleChange={(newValue) => handleChangeUOM(newValue)}
                                                             errors={errors?.UOM}
-                                                            disabled={(dataProps?.isViewFlag) ? true : false || disabledPartUid}
+                                                            disabled={Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid}
                                                         />
                                                     </Col>
                                                 }
@@ -2887,7 +2925,7 @@ function AddRfq(props) {
                                                                         className="withBorder"
                                                                         autoComplete={"off"}
                                                                         mandatory={true}
-                                                                        disabled={(dataProps?.isViewFlag) ? true : false || disabledPartUid}
+                                                                        disabled={Object.keys(prNumber).length !== 0 ? !updateButtonPartNoTable/* :(!updateButtonPartNoTable && dataProps?.isAddFlag) ? Object.keys(prNumber).length !== 0  */ : (dataProps?.isViewFlag) ? true : false || disabledPartUid}
                                                                         errors={errors.RequirementDate}
                                                                         disabledKeyboardNavigation
                                                                         onChangeRaw={(e) => e.preventDefault()}

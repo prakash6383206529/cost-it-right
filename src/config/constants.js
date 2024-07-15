@@ -19,9 +19,9 @@ export const config = () => {
 
 
 // DEVELOPMENT
-//const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.109:8070/api/v1`
-const BASE_URL = `http://10.10.8.120:1005/api/v1`
+//const BASE_URL = `http://10.10.8.120:1005/api/v1`
 // const BASE_URL = `http://10.10.1.100:10172/api/v1`
 // const BASE_URL = `http://10.10.8.160/api/v1`;  //
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
@@ -1120,9 +1120,10 @@ export const API = {
   getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
   deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
   checkRegisteredVendor: `${BASE_URL}/rfq-quotation/check-registered-vendor`,
-  getPurchaseRequisitionSelectList: `${BASE_URL}/rfq-quotation/get-bop-rfq-pr-details`,
+  getPurchaseRequisitionSelectList: `${BASE_URL}/rfq-quotation/select-list-pr-number`,
   getRfqBopNumberSelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-child`,
   getRfqBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
+  createQuotationPrParts: `${BASE_URL}/rfq-quotation/create-quotation-pr-parts`,
   // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
 
 
@@ -2012,6 +2013,8 @@ export const SET_RM_SPECIFIC_ROW_DATA = "SET_RM_SPECIFIC_ROW_DATA"
 export const SELECT_BOP_NUMBER = "SELECT_BOP_NUMBER"
 export const SELECT_BOP_CATEGORY = "SELECT_BOP_CATEGORY"
 export const SET_BOP_SPECIFIC_ROW_DATA = "SET_BOP_SPECIFIC_ROW_DATA"
+export const GET_BOP_PR_QUOTATION_DETAILS = "GET_BOP_PR_QUOTATION_DETAILS"
+export const SET_BOP_PR_QUOTATION_IDENTITY = "SET_BOP_PR_QUOTATION_IDENTITY"
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'

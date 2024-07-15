@@ -11,7 +11,8 @@ import { getBopCategorySelectList, getBopNumberSelectList } from '../actions/rfq
 import { DRAFT, SENT } from "../../../config/constants";
 
 const RaiseRfqBopDetails = (props) => {
-    const { setViewQuotationPart, updateBopList, isEditFlag, isViewFlag, updateButtonPartNoTable, dataProps, resetBopFields, plant } = props
+    const { setViewQuotationPart, updateBopList, isEditFlag, isViewFlag, updateButtonPartNoTable, dataProps, resetBopFields, plant, prNumber, disabledPartUid } = props
+
     const [drawerOpen, setDrawerOpen] = useState(false);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -31,8 +32,6 @@ const RaiseRfqBopDetails = (props) => {
     const [bopAttchment, setBopAttchment] = useState([])
     const [bopRemark, setBopRemark] = useState("");
     const [bopSpecificationList, setBopSpecificationList] = useState([])
-
-
     const { bopSpecificRowData } = useSelector(state => state?.rfq);
     const showStatus = dataProps?.rowData?.Status || ""
 
@@ -81,6 +80,7 @@ const RaiseRfqBopDetails = (props) => {
         setBopNumber([]);
         setBopName([]);
         setBopAttchment([]);
+        setBopSpecificationList([]);
         setBopRemark("");
         setValue('BOPName', '')
         setValue('BOPNo', '')
@@ -165,6 +165,7 @@ const RaiseRfqBopDetails = (props) => {
 
 
     }
+
     return (
         <div className='bop-details-wrapper'>
             <HeaderTitle title={'BOP:'} />
@@ -180,7 +181,8 @@ const RaiseRfqBopDetails = (props) => {
                         options={renderListing("bopNumber")}
                         mandatory={true}
                         handleChange={handleBopNo}
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || Object.keys(plant).length === 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) ||
+                            Object.keys(prNumber).length !== 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
 
                         // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
                         className="fullinput-icon"
@@ -204,7 +206,7 @@ const RaiseRfqBopDetails = (props) => {
                         handleChange={(e) => { }}
                         defaultValue={""}
                         className=""
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || Object.keys(plant).length === 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) || Object.keys(prNumber).length !== 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
 
                         customClassName={"withBorder"}
                         errors={errors.MBName}
@@ -225,20 +227,18 @@ const RaiseRfqBopDetails = (props) => {
                             handleChange={handleBopCategory}
                             // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
                             className="fullinput-icon"
-                            disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || Object.keys(plant).length === 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                            disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) || Object.keys(prNumber).length !== 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
 
                             // disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
                             errors={errors.Category}
                             isClearable={true}
                         />
                         <Button id="addRMSpecificatione" className={"ml-2 mb-2 "}
-
-
-                            // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}     
-
-                            variant={'plus-icon-square'}
-                            title={'Add'} onClick={DrawerToggle} >
+                            variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
+                            title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || showStatus === SENT}
+                        >
                         </Button>
+
                     </div>
 
                 </Col>

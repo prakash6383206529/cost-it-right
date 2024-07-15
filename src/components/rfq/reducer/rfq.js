@@ -1,4 +1,4 @@
-import { CHECK_RFQ_BULK_UPLOAD, GET_ASSEMBLY_CHILD_PART, GET_NFR_SELECT_LIST, GET_PART_IDENTITY, GET_QUOTATION_DETAILS_LIST, GET_QUOTATION_ID_FOR_RFQ, GET_RFQ_PART_DETAILS, GET_RFQ_RAISE_NUMBER, GET_RFQ_VENDOR_DETAIL, GET_TARGET_PRICE, SELECTED_ROW_ARRAY, SELECT_BOP_CATEGORY, SELECT_BOP_NUMBER, SELECT_PURCHASE_REQUISITION, SET_BOP_SPECIFIC_ROW_DATA, SET_QUOTATION_ID_FOR_RFQ, SET_RM_SPECIFIC_ROW_DATA } from "../../../config/constants";
+import { CHECK_RFQ_BULK_UPLOAD, GET_ASSEMBLY_CHILD_PART, GET_BOP_PR_QUOTATION_DETAILS, GET_NFR_SELECT_LIST, GET_PART_IDENTITY, GET_QUOTATION_DETAILS_LIST, GET_QUOTATION_ID_FOR_RFQ, GET_RFQ_PART_DETAILS, GET_RFQ_RAISE_NUMBER, GET_RFQ_VENDOR_DETAIL, GET_TARGET_PRICE, SELECTED_ROW_ARRAY, SELECT_BOP_CATEGORY, SELECT_BOP_NUMBER, SELECT_PURCHASE_REQUISITION, SET_BOP_PR_QUOTATION_IDENTITY, SET_BOP_SPECIFIC_ROW_DATA, SET_QUOTATION_ID_FOR_RFQ, SET_RM_SPECIFIC_ROW_DATA } from "../../../config/constants";
 
 const initialState = {
     checkRFQPartBulkUpload: [],
@@ -9,7 +9,9 @@ const initialState = {
     rmSpecificRowData: [],
     SelectBopNumber: [],
     SelectBopCategory: [],
-    bopSpecificRowData: []
+    bopSpecificRowData: [],
+    getBopPrQuotationDetails: [],
+    getBopPrQuotationIdentity: ""
 
 };
 
@@ -116,6 +118,20 @@ export default function RFQReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 bopSpecificRowData: action.payload,
+            }
+        case GET_BOP_PR_QUOTATION_DETAILS:
+
+            return {
+                ...state,
+                loading: false,
+                getBopPrQuotationDetails: action.payload,
+            }
+        case SET_BOP_PR_QUOTATION_IDENTITY:
+
+            return {
+                ...state,
+                loading: false,
+                getBopPrQuotationIdentity: action.payload,
             }
         default:
             return state;
