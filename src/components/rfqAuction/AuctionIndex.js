@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import classnames from "classnames";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -10,11 +10,13 @@ import AuctionPending from "./components/AuctionClosed";
 import { data } from "jquery";
 import AuctionClosed from "./components/AuctionClosed";
 import AuctionScheduled from "./components/AuctionScheduled";
+import ComparsionAuction from "./ComparsionAuction";
 
 function AuctionIndex(props) {
   let history = useHistory();
   const [activeTab, setActiveTab] = useState("1");
   const [hideNavBar, setHideNavBar] = useState(true);
+  const { showHideBidWindow } = useSelector(state => state.Auction);
 
   /**
    * @method toggle
@@ -54,7 +56,7 @@ function AuctionIndex(props) {
         {/* {this.props.loading && <Loader/>} */}
         <div>
           {/* Add New Auction Button Here */}
-          {hideNavBar && (
+          {(hideNavBar && !showHideBidWindow.showBidWindow) && (
             <span className="position-relative costing-page-tabs auction-page-tabs d-block w-100 mt-1">
               <div className="right-actions d-flex">
                 <div
@@ -97,7 +99,7 @@ function AuctionIndex(props) {
             </span>
           )}
           {/* Add New Auction Button End Here */}
-          {hideNavBar && (
+          {(hideNavBar && !showHideBidWindow.showBidWindow) && (
             <Nav tabs className="subtabs mt-0">
               <NavItem>
                 <NavLink
@@ -134,25 +136,27 @@ function AuctionIndex(props) {
               </NavItem>
             </Nav>
           )}
-          <TabContent activeTab={activeTab}>
-            {activeTab === "1" && (
-              <TabPane tabId="1">
-                <AuctionDetails toggle={toggle} hide={formToggle} />
-              </TabPane>
-            )}
-            {activeTab === "2" && (
-              <TabPane tabId="2">
-                <AuctionScheduled activeTab={activeTab} />
-              </TabPane>
-            )}
-            {activeTab === "3" && (
-              <TabPane tabId="3">
-                <AuctionClosed activeTab={activeTab} />
-              </TabPane>
-            )}
-          </TabContent>
+          {!showHideBidWindow.showBidWindow &&
+            <TabContent activeTab={activeTab}>
+              {activeTab === "1" && (
+                <TabPane tabId="1">
+                  <AuctionDetails toggle={toggle} hide={formToggle} />
+                </TabPane>
+              )}
+              {activeTab === "2" && (
+                <TabPane tabId="2">
+                  <AuctionScheduled activeTab={activeTab} />
+                </TabPane>
+              )}
+              {activeTab === "3" && (
+                <TabPane tabId="3">
+                  <AuctionClosed activeTab={activeTab} />
+                </TabPane>
+              )}
+            </TabContent>}
         </div>
       </div>
+      {showHideBidWindow.showBidWindow && <ComparsionAuction quotationAuctionId={showHideBidWindow.QuotationAuctionId} />}
     </>
   );
 }
