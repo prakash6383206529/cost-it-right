@@ -61,7 +61,7 @@ function AddIndexationMaterialListing(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        params.api?.sizeColumnsToFit();
+        // params.api?.sizeColumnsToFit();
         params.api.paginationGoToPage(0);
         setTimeout(() => {
         }, 100);
@@ -219,14 +219,14 @@ function AddIndexationMaterialListing(props) {
                                                                 suppressColumnVirtualisation={true}
                                                                 stopEditingWhenCellsLoseFocus={true}
                                                             >
-                                                                <AgGridColumn width={115} field="CommodityStandardName" headerName="Commodity Name" editable={false}></AgGridColumn>
+                                                                <AgGridColumn width={200} field="CommodityStandardName" headerName="Commodity Name" editable={false}></AgGridColumn>
                                                                 <AgGridColumn width={115} field="Percentage" headerName="Percentage" editable={false}></AgGridColumn>
-                                                                <AgGridColumn width={115} field="ExchangeRate" headerName="Exchange Rate" editable={false}></AgGridColumn>
-                                                                <AgGridColumn width={115} field="BasicRate" headerName="Basic Rate (Index Currency)" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={115} field="BasicRateConversion" headerName={`Basic Rate (${reactLocalStorage.getObject('baseCurrency')})`} editable={false} cellRenderer='priceFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={115} field="BasicRate" headerName="Total Cost (Currency)" cellRenderer='totalCostCurrencyFormatter' editable={false} ></AgGridColumn>
-                                                                <AgGridColumn width={115} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')})`} cellRenderer='buttonFormatter' editable={false} ></AgGridColumn>
-                                                                <AgGridColumn width={115} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')}) by %`} cellRenderer='totalFormatter' editable={false} ></AgGridColumn>
+                                                                <AgGridColumn width={150} field="ExchangeRate" headerName="Exchange Rate" editable={false}></AgGridColumn>
+                                                                <AgGridColumn width={225} field="BasicRate" headerName="Basic Rate (Index Currency)" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={150} field="BasicRateConversion" headerName={`Basic Rate (${reactLocalStorage.getObject('baseCurrency')})`} editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={190} field="BasicRate" headerName="Total Cost (Currency)" cellRenderer='totalCostCurrencyFormatter' editable={false} ></AgGridColumn>
+                                                                <AgGridColumn width={180} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')})`} cellRenderer='buttonFormatter' editable={false} ></AgGridColumn>
+                                                                <AgGridColumn width={180} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')}) by %`} cellRenderer='totalFormatter' editable={false} ></AgGridColumn>
                                                             </AgGridReact>
                                                         </>)}
                                                 </div>

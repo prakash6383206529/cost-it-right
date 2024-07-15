@@ -20,7 +20,7 @@ import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilt
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import { editRMIndexedSimulationData, getListingForSimulationCombined, getRMIndexationSimulationListing, setSelectedRowForPagination } from '../../../simulation/actions/Simulation';
 import WarningMessage from '../../../common/WarningMessage';
-import _ from 'lodash';
+import _ from 'lodash'; 
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../../common/CommonFunctions';
 import Attachament from '../../../costing/components/Drawers/Attachament';
