@@ -88,6 +88,7 @@ const CommoditySimulationDrawer = (props) => {
     };
 
 
+
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>
