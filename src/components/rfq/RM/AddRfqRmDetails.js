@@ -13,7 +13,7 @@ import { fetchSpecificationDataAPI } from '../../../actions/Common';
 import { getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild } from '../../masters/actions/Material';
 import Toaster from "../../common/Toaster";
 import { ObjectCanon } from "@apollo/client/cache/inmemory/object-canon";
-import { DRAFT, SENT } from "../../../config/constants";
+import { DRAFT, PREDRAFT, SENT } from "../../../config/constants";
 
 
 
@@ -44,6 +44,7 @@ const AddRfqRmDetails = (props) => {
     const dispatch = useDispatch()
     const [rmRemark, setRmRemark] = useState("");
     const showStatus = dataProps?.rowData?.Status || ""
+    console.log('showStatus: ', showStatus);
     // const [viewQuotationPart, setViewQuotationPart] = useState(false)
     const rawMaterialNameSelectList = useSelector((state) => state.material.rawMaterialNameSelectList)
     const gradeSelectList = useSelector((state) => state.material.gradeSelectList)
@@ -272,6 +273,8 @@ const AddRfqRmDetails = (props) => {
             setValue('Specifications', '')
         }
     }
+    console.log(isViewFlag, isEditFlag, dataProps?.isViewFlag, dataProps?.isEditFlag, Object.keys(technology).length === 0, (dataProps?.isEditFlag && showStatus == !PREDRAFT));
+    console.log('(dataProps?.isEditFlag && showStatus == !PREDRAFT): ', dataProps?.isEditFlag, showStatus !== PREDRAFT);
     return (
 
         <>
@@ -290,7 +293,7 @@ const AddRfqRmDetails = (props) => {
                         handleChange={handleRM}
                         // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
                         className="fullinput-icon"
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || Object.keys(technology).length === 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
                         errors={errors.RmName}
                         isClearable={true}
                     />
@@ -307,7 +310,7 @@ const AddRfqRmDetails = (props) => {
                         required={true}
                         mandatory={true}
                         handleChange={handleGrade}
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || Object.keys(technology).length === 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
                         // disabled={isEditFlag || isViewFlag || state.isDisabled}
                         errors={errors.Grade}
                     />
@@ -323,7 +326,7 @@ const AddRfqRmDetails = (props) => {
                         options={renderListing("specification")}
                         mandatory={true}
                         handleChange={handleSpecification}
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || Object.keys(technology).length === 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
                         // defaultValue={state.rmSpec.length !== 0 ? state.rmSpec : ""}
                         // disabled={isEditFlag || isViewFlag || state.isDisabled}
                         errors={errors.Specifications}
@@ -343,7 +346,7 @@ const AddRfqRmDetails = (props) => {
                         // defaultValue={state.rmCode.length !== 0 ? state.rmCode : ""}
                         handleChange={handleCode}
                         isClearable={true}
-                        disabled={updateButtonPartNoTable || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || Object.keys(technology).length === 0}
+                        disabled={updateButtonPartNoTable || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}
                         errors={errors.Code}
                     />
                     {/* <Button id="addRMSpecificatione" className={"ml-2 mb-2 "}
@@ -358,7 +361,7 @@ const AddRfqRmDetails = (props) => {
                         // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
                         variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
 
-                        title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || showStatus === SENT}></Button>
+                        title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}></Button>
 
                 </Col>
             </Row>

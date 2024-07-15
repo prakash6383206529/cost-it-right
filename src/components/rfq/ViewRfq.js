@@ -90,6 +90,7 @@ function RfqListing(props) {
     const [viewRMCompare, setViewRMCompare] = useState(false)
     const [viewBOPCompare, setViewBOPCompare] = useState(false)
     const [partType, setPartType] = useState('')
+
     const [matchedStatus, setMatchedStatus] = useState([])
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     let arr = []
@@ -169,8 +170,30 @@ function RfqListing(props) {
             let newArray = []
             // SET ROW DATA FOR GRID
             data.map((item) => {
+
+
                 newArray = [...newArray, ...item]
-                let temp = item.filter(el => el.CostingId !== null)
+
+
+                let temp
+
+                switch (item[0].PartType) {
+                    case 'Component':
+                        temp = item.filter(el => el.CostingId !== null);
+                        break;
+                    case 'RawMaterial':
+
+                        temp = item.filter(el => el.RawMaterialId !== null);
+
+                        break;
+                    case 'BoughtOutPart':
+                        temp = item.filter(el => el.BoughtOutPartId !== null);
+                        break;
+
+                }
+
+
+
                 if (temp.length > 0) {
                     item[Math.round(item.length / 2) - 1].ShowCheckBox = true;                      // SET CHECKBOX FOR CREATED COSTINGS
                 }
@@ -937,11 +960,40 @@ function RfqListing(props) {
 
 
         const selectedRows = gridApi?.getSelectedRows()
+
         let partNumber = []
 
-        selectedRows?.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
 
-        let data = partNumber.map(item => rowData.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+        let data
+        switch (selectedRows[0]?.PartType) {
+            case 'RawMaterial':
+                selectedRows?.map(item => partNumber.push(item.RawMaterial))
+                data = partNumber.map(item => rowData.filter(el => el.RawMaterial === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+
+
+                break;
+            case 'BoughtOutPart':
+                selectedRows?.map(item => partNumber.push(item.BoughtOutPart))
+                data = partNumber.map(item => rowData.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+
+
+                break;
+            case 'Component':
+                selectedRows?.map(item => partNumber.push(item.PartNo))
+                data = partNumber.map(item => rowData.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+
+
+                break;
+
+
+        }
+
+
+
+
+
+
+
         let newArray = []
 
         data.map((item) => {
@@ -950,11 +1002,14 @@ function RfqListing(props) {
         })
 
 
+
+
         if (selectedRows && selectedRows.length > 0 && selectedRows[0]?.IsVisibiltyConditionMet && selectedRows[0].IsShowNetPoPrice) {
             setisVisibiltyConditionMet(true)
         } else {
             setisVisibiltyConditionMet(false)
         }
+
 
 
         setSelectedRows(newArray)
@@ -1046,19 +1101,34 @@ function RfqListing(props) {
         setSelectedRowIndex('')
         gridApi.deselectAll()
     }
-const headerPartType = ()=>{
-    switch (props.partType) {
-        case 'RM':
-            return "RM Name"
-        case 'BOP':
-            return "BOP Name"  
-        case 'Part':
-            return "Part Name"  
-    
-        default:
-            break;
+    const headerPartType = () => {
+
+        switch (partType) {
+            case 'RawMaterial':
+                return "RM Name"
+            case 'BOP':
+                return "BOP Name"
+            case 'Part':
+                return "Part Name"
+
+            default:
+                break;
+        }
     }
-}
+    const fieldPartType = () => {
+        switch (partType) {
+            case 'RawMaterial':
+                return "RawMaterial"
+            case 'BOP':
+                return "BoughtOutPart"
+
+            case 'Part':
+                return "PartId"
+
+            default:
+                break;
+        }
+    }
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -1155,9 +1225,11 @@ const headerPartType = ()=>{
                                             onFirstDataRendered={onFirstDataRendered}
                                             enableBrowserTooltips={true}
                                         >
-                                            <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName={headerPartType()}cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="PartType" cellClass={cellClass} headerName="Part Type" width={150} cellRenderer={'partNumberFormatter'}></AgGridColumn>
+
+                                            <AgGridColumn cellClass={cellClass} field={fieldPartType()} tooltipField="PartNo" headerName={headerPartType()} cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                             {initialConfiguration.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
-                                           {!props.partType ==='BOP'&& <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
+                                            {!props.partType === 'BOP' && <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}

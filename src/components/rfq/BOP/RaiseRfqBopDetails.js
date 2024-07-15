@@ -8,7 +8,7 @@ import ProcessDrawer from '../ProcessDrawer';
 import { AsyncSearchableSelectHookForm, RadioHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../layout/HookFormInputs'
 import Button from '../../layout/Button';
 import { getBopCategorySelectList, getBopNumberSelectList } from '../actions/rfq';
-import { DRAFT, SENT } from "../../../config/constants";
+import { DRAFT, PREDRAFT, SENT } from "../../../config/constants";
 
 const RaiseRfqBopDetails = (props) => {
     const { setViewQuotationPart, updateBopList, isEditFlag, isViewFlag, updateButtonPartNoTable, dataProps, resetBopFields, plant, prNumber, disabledPartUid } = props
@@ -181,8 +181,8 @@ const RaiseRfqBopDetails = (props) => {
                         options={renderListing("bopNumber")}
                         mandatory={true}
                         handleChange={handleBopNo}
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) ||
-                            Object.keys(prNumber).length !== 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) ||
+                            Object.keys(prNumber).length !== 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
 
                         // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
                         className="fullinput-icon"
@@ -206,7 +206,7 @@ const RaiseRfqBopDetails = (props) => {
                         handleChange={(e) => { }}
                         defaultValue={""}
                         className=""
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) || Object.keys(prNumber).length !== 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) || Object.keys(prNumber).length !== 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
 
                         customClassName={"withBorder"}
                         errors={errors.MBName}
@@ -227,7 +227,7 @@ const RaiseRfqBopDetails = (props) => {
                             handleChange={handleBopCategory}
                             // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
                             className="fullinput-icon"
-                            disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT || showStatus === SENT || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) || Object.keys(prNumber).length !== 0}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                            disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || (Object.keys(prNumber).length === 0 && Object.keys(plant).length === 0) || Object.keys(prNumber).length !== 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
 
                             // disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || showStatus === DRAFT}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
                             errors={errors.Category}
@@ -235,7 +235,7 @@ const RaiseRfqBopDetails = (props) => {
                         />
                         <Button id="addRMSpecificatione" className={"ml-2 mb-2 "}
                             variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
-                            title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || showStatus === SENT}
+                            title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}
                         >
                         </Button>
 
