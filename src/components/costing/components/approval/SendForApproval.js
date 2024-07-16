@@ -347,7 +347,7 @@ const SendForApproval = (props) => {
 
 
   useEffect(() => {
-    if (approvalType.length > 0) {
+    if (approvalType?.length > 0) {
       handleDepartmentChange(getValues('dept'))
     }
   }, [approvalType])
