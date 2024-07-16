@@ -1342,7 +1342,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
 
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
-    
+
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
@@ -1634,3 +1634,53 @@ export const changeBOPLabel = (arr, bopReplacement) => {
 export const getFilteredDropdownOptions = (options, selectedValues) => {
   return options.filter(option => !selectedValues.includes(option.value));
 };
+
+export const extenstionTime = (length = 5, timeGap = 1, TimeCategory = 'min') => {
+  let temp = [];
+  for (let i = 1; i <= length; i++) {
+    if (i % timeGap === 0) {
+      temp.push({ label: `${i} (${TimeCategory})` })
+    }
+  }
+  return temp;
+}
+
+export function calculateEndDate(startDateString, durationString) {
+  // Validate input (optional)
+  if (isNaN(new Date(startDateString).getTime())) {
+    throw new Error('Invalid start date format. Use YYYY-MM-DD HH:MM:SS');
+  }
+
+  // Parse duration string
+  const [hours, minutes] = durationString.split(':').map(Number);
+
+  // Validate duration format (optional)
+  if (isNaN(hours) || isNaN(minutes) || hours < 0 || minutes < 0 || minutes >= 60) {
+    throw new Error('Invalid duration format. Use HH:MM (hours and minutes)');
+  }
+
+  // Convert start date to UTC
+  const startDate = new Date(startDateString);
+  const utcStartDate = new Date(
+    startDate.getUTCFullYear(),
+    startDate.getUTCMonth(),
+    startDate.getUTCDate(),
+    startDate.getUTCHours(),
+    startDate.getUTCMinutes(),
+    startDate.getUTCSeconds(),
+    startDate.getUTCMilliseconds()
+  );
+
+  // Convert duration to milliseconds
+  const durationMs = hours * 60 * 60 * 1000 + minutes * 60 * 1000;
+
+  // Create end date in UTC
+  const endDate = new Date(utcStartDate.getTime() + durationMs);
+
+  // Optional: Convert end date to local time (adjust based on your needs)
+  // endDate.setHours(endDate.getUTCHours() - startDate.getTimezoneOffset() / (60 * 60));
+  // endDate.setMinutes(endDate.getMinutes() - startDate.getTimezoneOffset() % (60 * 60));
+
+  // Format the end date and time as a string (YYYY-MM-DD HH:MM:SS)
+  return endDate.toISOString().slice(0, 19).replace('T', ' ');
+}

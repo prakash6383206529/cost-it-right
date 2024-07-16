@@ -46,15 +46,16 @@ function AddFreight(props) {
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
-  const [capacity, setCapacity] = useState([]);
-  const [criteria, setCriteria] = useState([]);
+  const [capacity, setCapacity] = useState(isEditFlag ? { label: rowObjData.Capacity, value: rowObjData.Capacity } : []);
+  const [criteria, setCriteria] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
   const [IsPartTruckLoad, setIsPartTruckLoad] = useState(isEditFlag ? rowObjData.IsPartTruckLoad : false);
 
   const [freightType, setfreightType] = useState(isEditFlag ? rowObjData.EFreightLoadType : FullTruckLoad);
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
   const [showFields, setShowFields] = useState({});
+  const [fullTruckLoadId, setFullTruckLoadId] = useState('');
 
-  const { RMCCTabData } = useSelector(state => state.costing)
+  const { RMCCTabData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   const [freightCost, setFreightCost] = useState('')
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
@@ -140,7 +141,6 @@ function AddFreight(props) {
 
         break;
       case PartTruckLoad:
-        obj.Capacity = true
         obj.Criteria = true
         obj.Rate = true
         obj.Quantity = true
@@ -224,9 +224,34 @@ function AddFreight(props) {
   const handleCapacityChange = (newValue) => {
     if (newValue && newValue !== '') {
       setCapacity(newValue)
-      // dispatch(getRateCriteriaByCapacitySelectList(newValue.value, res => { }))
+      callFreightAPI(newValue, criteria)
     } else {
       setCapacity([])
+    }
+  }
+
+  const callFreightAPI = (capacityValue, criteriaValue) => {
+    if (Object.keys(capacityValue)?.length > 0 && Object.keys(criteriaValue)?.length > 0) {
+      const data = {
+        Capacity: capacityValue?.value ? capacityValue?.value : null,
+        Criteria: criteriaValue?.value ? criteriaValue?.value : null,
+        PlantId: costData?.PlantId ? costData?.PlantId : null,
+        VendorId: costData?.VendorId ? costData?.VendorId : null,
+        CustomerId: costData?.CustomerId ? costData?.CustomerId : null,
+        EffectiveDate: CostingEffectiveDate ? CostingEffectiveDate : null,
+        EFreightLoadType: freightType ? freightType : null,
+        CostingTypeId: costData?.CostingTypeId ? costData?.CostingTypeId : null,
+      }
+      dispatch(getRateByCapacityCriteria(data, res => {
+        if (res && res?.data && res?.data?.Result) {
+          let Data = res?.data?.Data;
+          setValue('Rate', Data?.Rate)
+          setFullTruckLoadId(Data?.FullTruckLoadId)
+          errors.Rate = {}
+        } else {
+          setValue('Rate', '')
+        }
+      }))
     }
   }
 
@@ -238,13 +263,7 @@ function AddFreight(props) {
     if (newValue && newValue !== '') {
       setCriteria(newValue)
       calculateApplicabilityCost(newValue.value)
-      const data = { Capacity: capacity.value, Criteria: newValue.value }
-      dispatch(getRateByCapacityCriteria(data, res => {
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.DynamicData;
-          setValue('Rate', Data.Rate)
-        }
-      }))
+      callFreightAPI(capacity, newValue)
     } else {
       setCriteria([])
       setValue('Rate', '')
@@ -276,7 +295,8 @@ function AddFreight(props) {
     })
     // setTotalFinishWeight(perKgFinishWeight)
     let totalFreightCost = checkForNull(perKgFinishWeight) * checkForNull(RateAsPercentage)
-    setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+    setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+    errors.FreightCost = {}
     setFreightCost(totalFreightCost)
   }
 
@@ -302,56 +322,57 @@ function AddFreight(props) {
       case 'RM':
       case 'Part Cost':
         totalFreightCost = checkForNull(NetRawMaterialsCost) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'BOP':
         totalFreightCost = checkForNull(NetBoughtOutPartCost) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'RM + CC':
       case 'Part Cost + CC':
         totalFreightCost = checkForNull(RMCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'BOP + CC':
         totalFreightCost = checkForNull(BOPCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
       case 'CC':
         totalFreightCost = checkForNull(ConversionCostForCalculation) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull((totalFreightCost), getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'RM + CC + BOP':
       case 'Part Cost + CC + BOP':
         totalFreightCost = checkForNull(RMBOPCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       case 'RM + BOP':
       case 'Part Cost + BOP':
         totalFreightCost = checkForNull(RMBOP) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
       case 'Net Cost':
         totalFreightCost = checkForNull(totalTabCost) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
         setFreightCost(totalFreightCost)
         break;
 
       default:
         break;
     }
+    errors.FreightCost = {}
   }
 
   // MAY BE USED LATER 
@@ -360,9 +381,9 @@ function AddFreight(props) {
       const Rate = getValues('Rate')
       if (Rate !== '') {
         const cost = checkForNull(Rate) * checkForNull(event.target.value);
-        setValue('FreightCost', checkForDecimalAndNull(cost, 2));
+        setValue('FreightCost', cost ? checkForDecimalAndNull(cost, getConfigurationKey().NoOfDecimalForPrice) : '');
       } else {
-        setValue('FreightCost', 0);
+        setValue('FreightCost', '');
       }
     } else {
       Toaster.warning('Please enter valid number.')
@@ -419,15 +440,15 @@ function AddFreight(props) {
 
     if (freightType === Fixed) freightTypeText = 'Fixed';
     if (freightType === Percentage) freightTypeText = 'Percentage';
-    if (freightType === FullTruckLoad) freightTypeText = 'FTL';
-    if (freightType === PartTruckLoad) freightTypeText = 'PTL';
+    if (freightType === FullTruckLoad) freightTypeText = 'Full Truck Load';
+    if (freightType === PartTruckLoad) freightTypeText = 'Part Truck Load';
 
     let formData = {
       FreightDetailId: isEditFlag ? rowObjData?.FreightDetailId : '',
       FreightId: isEditFlag ? rowObjData.FreightId : '',
       IsPartTruckLoad: freightTypeText,
       Capacity: data?.Capacity?.value,
-      Criteria: data?.Criteria?.value,
+      Criteria: freightType === Percentage ? applicability?.label : data?.Criteria?.value,
       Rate: data?.Rate,
       Quantity: checkForNull(data?.Quantity),
       FreightCost: freightType === Percentage ? freightCost : data?.FreightCost,
@@ -435,6 +456,7 @@ function AddFreight(props) {
       EFreightLoadType: freightType,
       FreightType: freightTypeText,
       FreightCRMHead: data?.crmHeadFreight ? data?.crmHeadFreight?.label : '',
+      FullTruckLoadId: isEditFlag ? rowObjData?.FullTruckLoadId : fullTruckLoadId,
     }
     toggleDrawer('', formData)
   }
@@ -559,7 +581,7 @@ function AddFreight(props) {
                       mandatory={true}
                       handleChange={handleCapacityChange}
                       errors={errors.Capacity}
-                      disabled={(isEditFlag) ? true : false}
+                      disabled={false}
                     />
                   </Col>}
                   {showFields?.Applicability && <Col md="12">
@@ -593,7 +615,7 @@ function AddFreight(props) {
                       mandatory={true}
                       handleChange={handleCriteriaChange}
                       errors={errors.Criteria}
-                      disabled={(isEditFlag) ? true : false}
+                      disabled={false}
                     />
                   </Col>}
                   {showFields?.Rate && <Col md="12">
@@ -606,7 +628,7 @@ function AddFreight(props) {
                       mandatory={freightType !== Fixed ? true : false}
                       rules={{
                         required: freightType !== Fixed ? true : false,
-                        validate: freightType !== Fixed ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                        validate: freightType !== Fixed ? { number, checkWhiteSpaces, percentageLimitValidation } : {},
                         max: {
                           value: 100,
                           message: 'Percentage should be less than 100'
@@ -617,7 +639,7 @@ function AddFreight(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Rate}
-                      disabled={(freightType !== Percentage && freightType !== FullTruckLoad && freightType !== PartTruckLoad) ? true : false}
+                      disabled={(freightType !== Percentage) ? true : false}
                     // disabled={(freightType !== Percentage  ) ? true : false} OPEN WHEN API INTEGRATED
                     />
                   </Col>}
@@ -654,8 +676,8 @@ function AddFreight(props) {
                       control={control}
                       register={register}
                       rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                        required: true,
+                        validate: freightType === Fixed ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

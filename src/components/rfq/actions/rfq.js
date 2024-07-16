@@ -196,7 +196,7 @@ export function deleteQuotationPartDetail(partId, callback) {
                 apiErrors(error)
                 dispatch({ type: API_FAILURE })
             })
- 
+
     };
 }
 
@@ -484,6 +484,14 @@ export function setVendorDetails(data) {
         });
     }
 };
+export function setTargetPriceDetail(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_TARGET_PRICE,
+            payload: data || {},
+        });
+    }
+};
 export function setRfqPartDetails(data) {
     return (dispatch) => {
         dispatch({
@@ -555,9 +563,9 @@ export function saveRfqPartDetails(data, callback) {
 }
 
 export function getRfqPartDetails(partId, callback) {
- 
+
     const quotationPartId = Number(partId)
- 
+
     return (dispatch) => {
         dispatch({
             type: GET_RFQ_PART_DETAILS,
@@ -566,16 +574,16 @@ export function getRfqPartDetails(partId, callback) {
         const request = axios.get(`${API.getRfqPartDetails}?quotationPartId=${quotationPartId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
- 
+
                 dispatch({
                     type: GET_RFQ_PART_DETAILS,
                     payload: response.status === 204 ? [] : response?.data?.Data
                 })
- 
+
                 callback(response);
             }
         }).catch((error) => {
- 
+
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -589,3 +597,17 @@ export function setQuotationIdForRfq(data) {
         });
     }
 };
+export function checkRegisteredVendor(vendorId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.checkRegisteredVendor}?vendorId=${vendorId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+

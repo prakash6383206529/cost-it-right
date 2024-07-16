@@ -233,3 +233,11 @@
         height: 28px;
     }
 }
+
+.raw-material-dropdown {
+    margin-bottom: 20px;
+    .form-group-searchable-select {
+        min-height : auto !important;
+        margin-bottom: 0 !important;
+    }
+}

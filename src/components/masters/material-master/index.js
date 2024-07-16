@@ -242,37 +242,13 @@ function RowMaterialMaster(props) {
                                         Manage Material
                                     </NavLink>
                                 </NavItem>}
-                                {/* {<NavItem>
-                                    <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
-                                        Index
-                                    </NavLink>
-                                </NavItem>}
-                                {<NavItem>
-                                    <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => { toggle('6'); }}>
-                                        Commodity (In Index)
-                                    </NavLink>
-                                </NavItem>}
-                                {<NavItem>
-                                    <NavLink className={classnames({ active: activeTab === '7' })} onClick={() => { toggle('7'); }}>
-                                        Standardized Commodity Name
-                                    </NavLink>
-                                </NavItem>}
-                                {<NavItem>
-                                    <NavLink className={classnames({ active: activeTab === '8' })} onClick={() => { toggle('8'); }}>
-                                        Index Data
-                                    </NavLink>
-                                </NavItem>} */}
-                                {/* {<NavItem>
-                                    <NavLink className={classnames({ active: activeTab === '7' })} onClick={() => { toggle('7'); }}>
-                                        Material Indexation
-                                    </NavLink>
-                                </NavItem>} */}
+
                                 {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
                                 {(CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
                                     {/* {ViewRMAccessibility && <NavItem> */}
-                                    <NavLink className={classnames({ active: activeTab === '9' })} onClick={() => {
-                                        toggle('9');
+                                    <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
+                                        toggle('5');
                                         // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                     }}>
                                         Approval Status
@@ -364,35 +340,10 @@ function RowMaterialMaster(props) {
 
                                             />
                                         </TabPane>}
+
                                     {Number(activeTab) === 5 &&
                                         <TabPane tabId="5">
-                                            <IndexCommodityListing />
-                                        </TabPane>}
-                                    {Number(activeTab) === 6 &&
-                                        <TabPane tabId="6">
-                                            <CommodityInIndexListing />
-                                        </TabPane>}
-                                    {Number(activeTab) === 7 &&
-                                        <TabPane tabId="7">
-                                            <RMDetailListing />
-                                        </TabPane>}
-                                    {Number(activeTab) === 8 &&
-                                        <TabPane tabId="8">
-                                            <RMMaterialListing />
-                                        </TabPane>}
-                                    {/* {Number(activeTab) === 7 &&
-                                        <TabPane tabId="7">
-                                            <RMIndexationListing isOpen={isOpenCallback} />
-                                        </TabPane>} */}
-                                    {Number(activeTab) === 9 &&
-                                        <TabPane tabId="9">
-                                            {/* {
-                                            this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
-                                        } */}
 
-                                            {/* <Link to="/raw-material-approval"></Link> */}
-                                            {/* <Route path="/raw-material-approval">
-                                        </Route> */}
                                             <CommonApproval
                                                 AddAccessibility={AddAccessibility}
                                                 EditAccessibility={EditAccessibility}

@@ -59,7 +59,6 @@ function AddPackaging(props) {
   const [packagingCost, setPackagingCost] = useState(0)
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
-  const [showCostError, setShowCostError] = useState(false)
   const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -85,7 +84,7 @@ function AddPackaging(props) {
         }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
-      
+
       setValue("Quantity", totalFinishWeight)
 
     }
@@ -93,7 +92,7 @@ function AddPackaging(props) {
 
   useEffect(() => {
     if (applicability && applicability?.value !== undefined) {
-      
+
       calculateApplicabilityCost(applicability?.label)
     }
   }, [fieldValues]);
@@ -171,7 +170,6 @@ function AddPackaging(props) {
     } else {
       setApplicability([])
     }
-    setShowCostError(false)
     setErrorMessage('')
   }
 
@@ -193,7 +191,7 @@ function AddPackaging(props) {
    * @description APPLICABILITY CALCULATION
    */
   const calculateApplicabilityCost = (Text, applicablityDropDownChange = false) => {
-    
+
 
     const { NetRawMaterialsCost, NetBoughtOutPartCost, } = headCostData;
 
@@ -212,99 +210,99 @@ function AddPackaging(props) {
     switch (Text) {
       case 'RM':
       case 'Part Cost':
-        
+
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
         } else {
           totalPackagingCost = NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
       case 'BOP':
-        
+
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
         } else {
           totalPackagingCost = NetBoughtOutPartCost * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
 
       case 'RM + CC':
       case 'Part Cost + CC':
-        
+
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
         } else {
           totalPackagingCost = RMCC * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
       case 'BOP + CC':
-        
+
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
         } else {
           totalPackagingCost = BOPCC * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
 
       case 'CC':
-        
+
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
         } else {
           totalPackagingCost = (ConversionCostForCalculation) * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
 
       case 'RM + CC + BOP':
       case 'Part Cost + CC + BOP':
-        
+
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (RMBOPCC) * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
 
       case 'RM + BOP':
       case 'Part Cost + BOP':
-        
+
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (RMBOP) * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
       case 'Net Cost':
-        
+
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (totalTabCost) * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
       case 'Fixed':
-        
+
         if (!PackageType) {
           setValue('PackagingCost', PackagingCostPercentage)
         } else {
@@ -312,7 +310,7 @@ function AddPackaging(props) {
           // setValue('PackagingCost',PackagingCostPercentage)
           setPackagingCost(totalPackagingCost)
           if (applicablityDropDownChange) {
-            setValue('PackagingCost', 0)
+            setValue('PackagingCost', '')
             setPackagingCost(0)
           }
         }
@@ -320,13 +318,15 @@ function AddPackaging(props) {
       default:
         break;
     }
+    errors.PackagingCost = {}
   }
 
   const calculatePerKg = (rate, weight) => {
     const packagingCost = checkForNull(rate) * checkForNull(weight)
-    
-    setValue('PackagingCost', checkForDecimalAndNull(packagingCost, getConfigurationKey().NoOfDecimalForPrice))
+
+    setValue('PackagingCost', packagingCost ? checkForDecimalAndNull(packagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
     setPackagingCost(packagingCost)
+    errors.PackagingCost = {}
   }
 
   /**
@@ -346,29 +346,21 @@ function AddPackaging(props) {
     props.closeDrawer('', {})
   }
   const packingCostHandler = (e) => {
-    
+
     let message = ''
     if (decimalNumberLimit6(e.target.value)) {
-      setShowCostError(true)
       message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
     } else if (!isNumber(e.target.value)) {
-      setShowCostError(true)
       message = NoSignNoDecimalMessage
     } else if (e.target.value === '') {
-      setShowCostError(true)
       message = 'This field is required'
     } else {
       setPackagingCostDataFixed(e.target.value)
-      setShowCostError(false)
       message = ''
     }
     setErrorMessage(message)
   }
   const onSubmit = data => {
-    if (showCostError || (applicability?.label === 'Fixed' && (checkForNull(packagingCostDataFixed) === 0 || packagingCostDataFixed === ''))) {
-      setShowCostError(true)
-      return false
-    }
     let formData
     if (costingData.TechnologyId === LOGISTICS) {
       formData = {
@@ -636,10 +628,10 @@ function AddPackaging(props) {
                       control={control}
                       register={register}
                       mandatory={applicability?.label === 'Fixed' ? true : false}
-                      // rules={{
-                      //   required: true,
-                      //   validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
-                      // }}
+                      rules={{
+                        required: true,
+                        validate: applicability?.label === 'Fixed' ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
+                      }}
                       handleChange={packingCostHandler}
                       defaultValue={''}
                       className=""
@@ -647,7 +639,6 @@ function AddPackaging(props) {
                       errors={errors.PackagingCost}
                       disabled={applicability?.label === 'Fixed' ? false : true}
                     />
-                    {applicability?.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={errorMessage} />}
                   </Col>
                   }
 

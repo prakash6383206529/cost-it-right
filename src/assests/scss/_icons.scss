@@ -87,6 +87,11 @@
 .View {
     @include icons("../../images/Group-8858.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     @include extra-icon-styles;
+
+    &.small {
+        width: 20px !important;
+        height: 20px !important;
+    }
 }
 
 .additional-add {

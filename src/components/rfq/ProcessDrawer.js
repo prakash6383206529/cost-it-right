@@ -1,4 +1,4 @@
-import { Drawer } from '@material-ui/core'
+import { Drawer, Tooltip } from '@material-ui/core'
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { Col, Nav, NavItem, NavLink, Row, TabContent, Table, TabPane } from 'reactstrap'
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../layout/HookFormInputs'
@@ -41,7 +41,7 @@ function ViewDrawer(props) {
         { sop: 'SOP5' },
     ]
 
-    const { type, isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, setPartListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate } = props
+    const { type, isOpen, anchor, isEditFlag, dataProps, isViewFlag, isEditAll, technology, nfrId, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, setPartListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles } = props
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -84,6 +84,9 @@ function ViewDrawer(props) {
 
     const [fiveyearList, setFiveyearList] = useState([])
     const [isNewDate, setIsNewDate] = useState(false)
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [viewTooltip, setViewTooltip] = useState(false)
+    const [partRemark, setPartRemark] = useState('')
     useEffect(() => {
         setValue('AssemblyPartNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
         if (type === Component) {
@@ -111,10 +114,6 @@ function ViewDrawer(props) {
                     const PartNumber = part.PartNumber || '';
                     if (index === 0) {
                         const allSopQuantityDetails = part?.SOPQuantityDetails || []
-
-
-                        const uniqueSopQuantityDetails = _.uniqBy(allSopQuantityDetails, item => `${item.PartId}-${item.PartNumber}`);
-
                         setSopQuantityList(sopQuantityList => allSopQuantityDetails)
                     }
 
@@ -144,7 +143,7 @@ function ViewDrawer(props) {
 
                     const allFiles = part.Attachments || [];
                     setFiles(files => [...allFiles]);
-                    setChildPartFiles(childPartFiles => [...childPartFiles, ...allFiles]);
+                    setChildPartFiles(childPartFiles => [...allFiles]);
                 });
                 setSpecificationList(specificationList => _.uniqBy([...arr], 'QuotationPartSpecificationIdRef'));
             }
@@ -202,7 +201,12 @@ function ViewDrawer(props) {
             }
         }
     }, [sopdate])
-
+    useEffect(() => {
+        if (!isViewFlag && !isEditFlag) {
+            setValue("remark", remark)
+            setFiles(childPartFiles)
+        }
+    }, [isEditFlag, isViewFlag])
     const removeAddedParts = (arr) => {
         const filteredArray = arr.filter((item) => {
             return !selectedparts.some((element) => {
@@ -290,35 +294,7 @@ function ViewDrawer(props) {
         setChildPart({ label: newValue?.label, value: newValue?.value })
 
     }
-    // const handleSOPDateChange = (value) => {
-    //     let year = new Date(value).getFullYear()
-    //     const yearList = getNextFiveYears(year)
-    //     setFiveyearList(yearList)
-    //     setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
-    //     if (updateButtonPartNoTable) {
-    //         setStorePartsDetail((prevDetails) => {
-    //             return prevDetails.map((item) => {
-    //                 if (item.PartId === getValues('partNumber')?.value) {
-    //                     return {
-    //                         ...item,
-    //                         UnitOfMeasurementIdRef: getValues('UnitOfMeasurementIdRef')?.value || null,
-    //                         SOPDate: DayTime(value).format('YYYY-MM-DD HH:mm:ss') || "",
-    //                         HavellsDesignPart: getValues('HavellsDesignPart')?.value || "",
-    //                         TimeLine: requirementDate || ""
-    //                     };
-    //                 } else {
-    //                     return {
-    //                         ...item,
-    //                         UnitOfMeasurementIdRef: null,
-    //                         SOPDate: null,
-    //                         HavellsDesignPart: null,
-    //                         TimeLine: null
-    //                     };
-    //                 }
-    //             });
-    //         });
-    //     }
-    // }
+
     const handleRMName = (newValue) => {
         setRMName({ label: newValue?.label, value: newValue?.value })
         setRmNameSelected(true)
@@ -410,9 +386,7 @@ function ViewDrawer(props) {
             //     Toaster.warning("You can only add up to 3 specifications.");
             // } 
             else {
-
                 setSpecificationList(prevData => [...prevData, specificationObj]);
-
                 resetFormAndDropdowns();
             }
 
@@ -554,18 +528,20 @@ function ViewDrawer(props) {
             let data = new FormData();
             data.append('file', file);
             setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
-            setAttachmentLoader(false);
+            setAttachmentLoader(true);
             setIsDisable(true);
 
             dispatch(fileUploadQuotation(data, (res) => {
                 if ('response' in res) {
-                    status = res.response.status;
+                    status = res?.response?.status;
                     dropzone.current.files.pop();
                     setAttachmentLoader(false);
                 } else {
-                    let Data = res.data[0];
+                    let Data = res?.data[0];
                     setFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
                     setChildPartFiles(prevFiles => [...prevFiles, Data]);
+                    setAttachmentLoader(false)
+
                 }
                 setApiCallCounter(prevCounter => prevCounter - 1);
 
@@ -608,10 +584,14 @@ function ViewDrawer(props) {
         setGridColumnApi(params.columnApi)
         setGridApi(params.api)
         params.api.paginationGoToPage(0);
-        // setTimeout(() => {
-        //     setShowTooltip(true)
-        // }, 100);
+        setTimeout(() => {
+
+            setShowTooltip(true)
+        }, 100);
     };
+    const tooltipToggle = () => {
+        setViewTooltip(!viewTooltip)
+    }
     const EditableCallback = (props) => {
 
         let value
@@ -620,13 +600,13 @@ function ViewDrawer(props) {
 
         return value
     }
-    const quantityHeader = (props) => {
-        return (
-            <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text d-flex'>Annual Forecast Quantity<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"quantity-tooltip"}></i> </span>
-            </div>
-        );
-    };
+    // const quantityHeader = (props) => {
+    //     return (
+    //         <div className='ag-header-cell-label'>
+    //             <span className='ag-header-cell-text d-flex'>Annual Forecast Quantity<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"quantity-tooltip"}></i> </span>
+    //         </div>
+    //     );
+    // };
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -699,7 +679,7 @@ function ViewDrawer(props) {
         sopFormatter: sopFormatter,
         EditableCallback: EditableCallback,
         afcFormatter: afcFormatter,
-        quantityHeader: quantityHeader
+        // quantityHeader: quantityHeader
     };
 
     return (
@@ -793,7 +773,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmname')}
                                             mandatory={false}
                                             handleChange={(newValue) => handleRMName(newValue)}
-                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : isEdit ? false : !isEditFlag ? false : true}
+                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false /* || (isEdit ? false : !isEditFlag ? false : true) */}
                                         // errors={`${indexInside} CostingVersion`}
                                         />
                                     </Col>
@@ -812,7 +792,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmgrade')}
                                             mandatory={rmNameSelected}
                                             handleChange={(newValue) => handleRMGrade(newValue)}
-                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : isEdit ? false : !isEditFlag ? false : true}
+                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false /* isEdit ? false : !isEditFlag ? false : true */}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -830,7 +810,7 @@ function ViewDrawer(props) {
                                             options={renderListingRM('rmspecification')}
                                             mandatory={rmNameSelected}
                                             handleChange={(newValue) => handleRMSpecification(newValue)}
-                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : isEdit ? false : !isEditFlag ? false : true}
+                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false /* || (isEdit ? false : !isEditFlag ? false : true) */}
                                         />
                                     </Col>
 
@@ -1155,6 +1135,8 @@ function ViewDrawer(props) {
                                             </Col>
                                         </Row>
                                         <div className="tab-pane fade active show" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                            {/* {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To edit the quantity please double click on the field."}</Tooltip>} */}
+
                                             <Row>
                                                 <Col md="12" className='ag-grid-react'>
                                                     <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${partListData && partListData.length === 0 ? "overlay-contain border" : ""} `} >
@@ -1181,7 +1163,7 @@ function ViewDrawer(props) {
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
-                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" /* headerComponent={'quantityHeader'} */ cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
                                                                 {/* <AgGridColumn width={"180px"} field="PartNumber" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn> */}
 
 
