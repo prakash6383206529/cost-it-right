@@ -2489,7 +2489,6 @@ function UserRegistration(props) {
       setValue('plant', '');  // Assuming you want to clear the form value when nothing is selected
     }
   }
-  const plantLabel = initialConfiguration.IsMultipleDepartmentAllowed ? 'Plant (Code) - (Department (code) list)' : "Plant (Code)"
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -3003,7 +3002,7 @@ function UserRegistration(props) {
                         }
                         {getConfigurationKey().IsPlantsAllowedForDepartment && <div className="col-md-3">
                           <SearchableSelectHookForm
-                            label={plantLabel}
+                            label={`Plant(Code) - (${handleDepartmentHeader()}(code) list)`}
                             name="plant"
                             placeholder={"Select"}
                             type="text"

@@ -15,7 +15,9 @@ import {
   config,
   GET_SOB_LISTING,
   GET_INCO_SELECTLIST_SUCCESS,
-  GET_PAYMENT_SELECTLIST_SUCCESS
+  GET_PAYMENT_SELECTLIST_SUCCESS,
+  GET_VIEW_BOUGHT_OUT_PART_SUCCESS,
+  GET_BOP_DETAILS
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -365,6 +367,26 @@ export function getManageBOPSOBDataList(data, callback) {
     });
   };
 }
+export function getViewBoughtOutPart(data, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const queryParams = `entryType=${data.entryType}&bopCategory=${data.bopCategory}&bopName=${data.bopName}&bopNumber=${data.bopNumber}`;
+    const request = axios.get(`${API.getViewBoughtOutPart}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_VIEW_BOUGHT_OUT_PART_SUCCESS,
+          payload: response.status === 204 ? [] : response.data.DataList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      //apiErrors(error);
+    });
+  };
+}
 
 /**
  * @method getManageBOPSOBById
@@ -478,4 +500,30 @@ export function checkAndGetBopPartNo(obj, callback) {
       apiErrors(error);
     });
   };
+}
+
+export function getViewBOPDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.getViewBOPDetails, data, config())
+    request
+      .then((response) => {
+        if (response?.data.Result) {
+          dispatch({
+            type: GET_BOP_DETAILS,
+            payload: response.status === 200 ? response?.data.DataList : []
+          })
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response?.data.Message) {
+            Toaster.error(response?.data.Message)
+          }
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+        callback(error)
+      })
+  }
 }
