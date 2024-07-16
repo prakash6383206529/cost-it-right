@@ -1092,7 +1092,7 @@ function RMIndexationSimulation(props) {
                             </Col>
                         </Row>
                         {
-                            !isImpactedMaster &&
+                            !isImpactedMaster && !isApprovalSummary &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
                                     {/* <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
@@ -1115,7 +1115,7 @@ function RMIndexationSimulation(props) {
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div> */}
 
-                                    {!isRunSimulationClicked && !isApprovalSummary && <button onClick={verifySimulation} type="submit" id="verify-btn" className="user-btn mr5 save-btn verifySimulation" disabled={isDisable}>
+                                    {!isRunSimulationClicked && <button onClick={verifySimulation} type="submit" id="verify-btn" className="user-btn mr5 save-btn verifySimulation" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Run Simulation"}
