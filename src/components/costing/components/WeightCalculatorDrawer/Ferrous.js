@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment, useRef } from 'react'
 import { Col, Row, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import {  SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForFerrous } from '../../actions/CostWorking'
@@ -11,31 +11,18 @@ import { debounce } from 'lodash'
 import TooltipCustom from '../../../common/Tooltip'
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalAndNumberValidation } from "../../../../helper/validation";
 import NoContentFound from '../../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../../config/constants'
+import { EMPTY_DATA, LOGIN_PAGE_INIT_CONFIGURATION } from '../../../../config/constants'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import { MESSAGES } from '../../../../config/message'
 
 function Ferrous(props) {
-    const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
+    const WeightCalculatorRequest = props?.rmRowData?.WeightCalculatorRequest
+    
     const [resetLossTable, setResetLossTable] = useState(false);
     const dispatch = useDispatch()
     const { ferrousCalculatorReset } = useSelector(state => state.costing)
     const [addError, setAddError] = useState('');
     const [binderError, setBinderError] = useState('');
-    const defaultValues = {
-        castingWeight: WeightCalculatorRequest && WeightCalculatorRequest.CastingWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.CastingWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        recovery: WeightCalculatorRequest && WeightCalculatorRequest.RecoveryPercentage !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest?.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
-        NetRMRate: WeightCalculatorRequest && WeightCalculatorRequest.NetRMRate !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetRMRate, getConfigurationKey().NoOfDecimalForPrice) : '',
-        NetScrapRate: WeightCalculatorRequest && WeightCalculatorRequest.NetScrapRate !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetScrapRate, getConfigurationKey().NoOfDecimalForPrice) : '',
-        scrapCost: WeightCalculatorRequest && checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) : '',
-        NetRMCost: WeightCalculatorRequest && checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',
-        BinderOrAdditivesTotalCost: WeightCalculatorRequest && WeightCalculatorRequest.BinderOrAdditivesTotalCost !== undefined
-            ? checkForDecimalAndNull(WeightCalculatorRequest.BinderOrAdditivesTotalCost, getConfigurationKey().NoOfDecimalForPrice)
-            : '',
-    }
     const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
@@ -55,16 +42,19 @@ function Ferrous(props) {
     const [calculatedCost, setCalculatedCost] = useState([])
     const [totalCostCalculated, setTotalCostCalculated] = useState(0);
     const [unusedRMsMessage, setUnusedRMsMessage] = useState('');
-
+const [netRmRate , setNetRmRate] = useState(0)
+const [netScrapRate , setNetScrapRate] = useState(0)
+const [netGrossWeight , setNetGrossWeight] = useState(0)
+const [scrapWeight , setScrapWeight] = useState(0)
+const [netRMCost , setNetRMCost] = useState(0)
+const [scrapCost , setScrapCost] = useState(0)
     const rmGridFields = 'rmGridFields';
 
     const { register, control, setValue, handleSubmit, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
-        defaultValues: defaultValues,
+        // defaultValues: defaultValues,
     })
-
-
 
     useEffect(() => {
         const castingWeight = checkForNull(getValues("castingWeight"))
@@ -73,6 +63,17 @@ function Ferrous(props) {
             setValue('finishedWeight', '')
         }
     }, [inputFinishWeight])
+    const watchedValues = useWatch({
+        control,
+        name: ['castingWeight', 'finishedWeight', 'recovery', 'otherCost'],
+    });
+    
+    useEffect(() => {
+        if (!CostingViewMode) {
+                calculateRemainingCalculation();
+         
+        }
+    }, [watchedValues]);
     useEffect(() => {
         if (ferrousCalculatorReset === true) {
             reset({
@@ -93,12 +94,7 @@ function Ferrous(props) {
             setTableVal([])
         }
     }, [ferrousCalculatorReset])
-
-    const fieldValues = useWatch({
-        control,
-        name: ['finishedWeight', 'recovery', 'castingWeight', 'Percentage'],
-    })
-
+    
     const tableData = (value = []) => {
         setTableVal(value)
     }
@@ -120,19 +116,20 @@ function Ferrous(props) {
             value: 4,
         },
     ]
-    const setWeightCalculatorData = (data) => {
-
-
+    const defaultValues = () => {
+        let data = WeightCalculatorRequest
+        
         // Set form values
         setValue('castingWeight', checkForDecimalAndNull(data.CastingWeight, getConfigurationKey().NoOfDecimalForInputOutput));
         setValue('recovery', checkForDecimalAndNull(data.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput));
         setValue('grossWeight', checkForDecimalAndNull(data.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput));
         setValue('finishedWeight', checkForDecimalAndNull(data?.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput));
-        setValue('scrapWeight', checkForDecimalAndNull(data.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput));
-        setValue('NetRMRate', checkForDecimalAndNull(data.NetRMRate, getConfigurationKey().NoOfDecimalForPrice));
-        setValue('NetScrapRate', checkForDecimalAndNull(data.NetScrapRate, getConfigurationKey().NoOfDecimalForPrice));
-        setValue('scrapCost', checkForDecimalAndNull(data.ScrapCost, getConfigurationKey().NoOfDecimalForPrice));
-        setValue('NetRMCost', checkForDecimalAndNull(data.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice));
+        setValue('scrapWeight', checkForDecimalAndNull(data?.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+        setValue('NetRMRate', checkForDecimalAndNull(data?.NetRMRate, getConfigurationKey().NoOfDecimalForPrice));
+        
+        setValue('NetScrapRate', checkForDecimalAndNull(data?.NetScrapRate, getConfigurationKey().NoOfDecimalForPrice));
+        setValue('scrapCost', checkForDecimalAndNull(data?.ScrapCost, getConfigurationKey().NoOfDecimalForPrice));
+        setValue('NetRMCost', checkForDecimalAndNull(data?.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice));
         setValue('otherCost', checkForDecimalAndNull(data.OtherCost, getConfigurationKey().NoOfDecimalForPrice));
 
         // Set state variables
@@ -159,6 +156,7 @@ function Ferrous(props) {
             setValue(`rmGridFields.${index}.Percentage`, checkForDecimalAndNull(item.Percentage, getConfigurationKey().NoOfDecimalForInputOutput));
         });
 
+        
         const binders = data.CostingFerrousCalculationRawMaterials
             .filter(rm => rm.IsBinders)
             .map(rm => ({
@@ -180,26 +178,22 @@ function Ferrous(props) {
             setValue(`binderQuantity.${index}`, checkForDecimalAndNull(binder.quantity, getConfigurationKey().NoOfDecimalForInputOutput));
         });
 
-        // Update calculated values
         const updatedCalculatedValues = rawMaterials.map(item => ({
             ...item,
             calculatedBasicValue: (item.Percentage / 100) * item.RawMaterialRate,
             calculatedScrapValue: (item.Percentage / 100) * item.ScrapRate,
         }));
         setCalculatedValues(updatedCalculatedValues);
-
-        // Set fields enabled if total percentage is 100
         const totalPercentage = rawMaterials.reduce((sum, item) => sum + (item.Percentage || 0), 0);
         setFieldsEnabled(totalPercentage === 100);
         setValue('BinderOrAdditivesTotalCost', checkForDecimalAndNull(data.BinderOrAdditivesTotalCost, getConfigurationKey().NoOfDecimalForPrice));
-
-        // Recalculate Net RM Rate and Net Scrap Rate
-        calculateNetRmRate();
-        calculateNetScrapRate();
+        //calculateNetRmRate();//
+        //calculateNetScrapRate();
     };
+    
     useEffect(() => {
         if (WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length > 0) {
-            setWeightCalculatorData(WeightCalculatorRequest);
+            defaultValues(WeightCalculatorRequest);
         }
     }, [WeightCalculatorRequest]);
 
@@ -214,6 +208,7 @@ function Ferrous(props) {
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     };
     const percentageChange = (percentage, index) => {
+        
         setValue(`rmGridFields.${index}.Percentage`, percentage);
 
         setTimeout(() => {
@@ -233,9 +228,11 @@ function Ferrous(props) {
                 };
             });
 
-            setCalculatedValues(updatedItems);
-            calculateNetRmRate();
-            calculateNetScrapRate();
+            if (percentage !== '') {
+                calculateNetRmRate();
+                calculateNetScrapRate();
+            }
+    
             calculateRemainingCalculation();
         }, 300);
     };
@@ -246,9 +243,10 @@ function Ferrous(props) {
             const BasicRate = parseFloat(item.RawMaterialRate || 0);
             return acc + (Percentage * BasicRate) / 100;
         }, 0);
-        setValue('NetRMRate', NetRMRate);
+        setValue('NetRMRate', checkForDecimalAndNull(NetRMRate, getConfigurationKey().NoOfDecimalForPrice));
+        
+        setNetRmRate(NetRMRate);
         return checkForDecimalAndNull(NetRMRate, getConfigurationKey().NoOfDecimalForPrice);
-
     };
     useEffect(() => {
         const totalCost = calculateTotalCost();
@@ -262,41 +260,44 @@ function Ferrous(props) {
             const ScrapRate = parseFloat(item.ScrapRate || 0);
             return acc + (Percentage * ScrapRate) / 100;
         }, 0);
-          // Store full precision value
-    setValue('NetScrapRate', NetScrapRate);
-    
-    // Display formatted value
-    return checkForDecimalAndNull(NetScrapRate, getConfigurationKey().NoOfDecimalForPrice);
-};
+        setValue('NetScrapRate', checkForDecimalAndNull(NetScrapRate, getConfigurationKey().NoOfDecimalForPrice));
+        setNetScrapRate(NetScrapRate);
+        return checkForDecimalAndNull(NetScrapRate, getConfigurationKey().NoOfDecimalForPrice);
+
+    };
     const calculateLossWeight = (castingWeight, lossPercentage) => {
         return (castingWeight * lossPercentage) / 100;
     };
 
     const calculateGrossWeight = (castingWeight, totalLossWeight) => {
-        return castingWeight + totalLossWeight;
+        const grossWeight = castingWeight + totalLossWeight;
+        
+        setNetGrossWeight(grossWeight);
+        setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+        return grossWeight;
     };
 
     const calculateScrapWeight = (castingWeight, finishWeight) => {
-        return castingWeight - finishWeight;
+        const scrapWeight = castingWeight - finishWeight;
+        setScrapWeight(scrapWeight);
+        setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+        return scrapWeight;
+
     };
 
     const calculateScrapCost = (scrapWeight, recovery, netScrapRate) => {
-        return (scrapWeight * recovery * netScrapRate) / 100;
+        const scrapCost = (scrapWeight * recovery * netScrapRate) / 100;
+        setScrapCost(scrapCost);
+        setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForInputOutput));
+        return scrapCost;
     };
     const handleAddBinderMaterialsToTable = () => {
         if (binderRawMaterials.length === 0) {
             setBinderError('Please select binders before adding.');
             return;
         }
-    
         setBinderError('');
-        // Preserve current values
-        const currentNetRMRate = getValues('NetRMRate');
-        const currentNetScrapRate = getValues('NetScrapRate');
-        const currentCastingWeight = getValues('castingWeight');
-
-        // Add selected binders to the table
-        setBinderRm(prev => [...prev, ...binderRawMaterials]);
+            setBinderRm(prev => [...prev, ...binderRawMaterials]);
         // Remove the added binders from the main raw materials list
         setTableRawMaterials(prev => prev.filter(item =>
             !binderRawMaterials.some(binder => binder.value === item.value)
@@ -308,19 +309,8 @@ function Ferrous(props) {
         ));
         // Clear the form value for RawMaterialBinders
         setValue('RawMaterialBinders', []);
-
-        // Clear the searchable select field for binders
         setValueTableForm('RawMaterialBinders', []); // Add this line
-
-        // Clear the selected binder raw materials
         setBinderRawMaterials([]); // Add this line
-
-        // Restore the preserved values
-        setValue('NetRMRate', currentNetRMRate);
-        setValue('NetScrapRate', currentNetScrapRate);
-        setValue('castingWeight', currentCastingWeight);
-
-        // Recalculate total cost
         const newCalculatedCost = [...calculatedCost, ...binderRawMaterials.map(item => ({
             ...item,
             calculatedBindersBasicValue: 0 // Initialize with 0, will be updated when quantity is entered
@@ -331,32 +321,28 @@ function Ferrous(props) {
         calculateRemainingCalculation();
     };
     const calculateNetRMCost = (grossWeight, netRMRate, scrapCost, totalCostCalculated, otherCost, castingWeight) => {
-        return ((grossWeight * netRMRate) - scrapCost + totalCostCalculated + otherCost) / castingWeight;
+        const netRMCost = ((grossWeight * netRMRate) - scrapCost + totalCostCalculated + otherCost) / castingWeight;
+        
+        setNetRMCost(netRMCost);
+        setValue('NetRMCost', checkForDecimalAndNull(netRMCost, getConfigurationKey().NoOfDecimalForInputOutput));
+        return netRMCost;
     };
 
     const calculateRemainingCalculation = React.useCallback(() => {
         const castingWeight = checkForNull(getValues("castingWeight"));
         const finishedWeight = checkForNull(getValues('finishedWeight'));
         const recovery = checkForNull(getValues('recovery'));
-        const NetRMRate = checkForNull(getValues('NetRMRate'));
-        const NetScrapRate = checkForNull(getValues('NetScrapRate'));
-        const otherCost = checkForNull(getValues('otherCost'));
+                const otherCost = checkForNull(getValues('otherCost'));
 
         if (castingWeight) {
-            // Calculate loss weight for each type of loss
             const lossWeights = tableVal?.map(loss => ({
                 ...loss,
                 LossWeight: calculateLossWeight(castingWeight, loss.LossPercentage)
             }));
 
-            // Calculate total loss weight
             const totalLossWeight = lossWeights?.reduce((sum, loss) => sum + loss.LossWeight, 0) || 0;
-
-            // Calculate gross weight
             const grossWeight = calculateGrossWeight(castingWeight, totalLossWeight);
 
-            // Update gross weight in the form and state
-            setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput));
             setDataToSend(prev => ({
                 ...prev,
                 totalGrossWeight: grossWeight,
@@ -371,15 +357,15 @@ function Ferrous(props) {
                 LossWeight: calculateLossWeight(castingWeight, loss.LossPercentage)
             })));
 
-            if (finishedWeight !== undefined && recovery !== undefined && NetScrapRate !== undefined && NetRMRate !== undefined) {
+            if (finishedWeight !== undefined && recovery !== undefined && netScrapRate !== undefined && netRmRate !== undefined) {
                 // Calculate scrap weight
                 const scrapWeight = calculateScrapWeight(castingWeight, finishedWeight);
 
                 // Calculate scrap cost
-                const scrapCost = calculateScrapCost(scrapWeight, recovery, NetScrapRate);
+                const scrapCost = calculateScrapCost(scrapWeight, recovery, netScrapRate);
 
                 // Calculate Net RM Cost
-                const NetRMCost = calculateNetRMCost(grossWeight, NetRMRate, scrapCost, totalCostCalculated, otherCost, castingWeight);
+                const NetRMCost = calculateNetRMCost(grossWeight, netRmRate, scrapCost, totalCostCalculated, otherCost, castingWeight);
 
                 // Update additional state and form values
                 setDataToSend(prev => ({
@@ -389,43 +375,18 @@ function Ferrous(props) {
                     NetRMCost: NetRMCost,
                     RecoveryPercentage: recovery
                 }));
-
-                setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput));
-                setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice));
-                setValue('NetRMCost', checkForDecimalAndNull(NetRMCost, getConfigurationKey().NoOfDecimalForPrice));
-                setValue('recovery', checkForDecimalAndNull(recovery, getConfigurationKey().NoOfDecimalForInputOutput));
-                setValue('BinderOrAdditivesTotalCost', checkForDecimalAndNull(totalCostCalculated, getConfigurationKey().NoOfDecimalForPrice));
             }
         }
 
-        // Always preserve these values
-        setValue('NetRMRate', NetRMRate);
-        setValue('NetScrapRate', NetScrapRate);
-        setValue('castingWeight', castingWeight);
     }, [getValues, setValue, tableVal, totalCostCalculated]);
-    const watchedValues = useWatch({
-        control,
-        name: ['castingWeight', 'finishedWeight', 'recovery', 'otherCost'],
-    });
+   
     useEffect(() => {
         const recovery = getValues('recovery');
         if (recovery !== undefined) {
             calculateRemainingCalculation();
         }
     }, [getValues('recovery')]);
-    useEffect(() => {
-        if (!CostingViewMode) {
-            const debouncedCalculation = debounce(() => {
-                calculateRemainingCalculation();
-            }, 300);
-
-            debouncedCalculation();
-
-            return () => {
-                debouncedCalculation.cancel();
-            };
-        }
-    }, [watchedValues, CostingViewMode]);
+   
 
 
     const getUnusedRawMaterials = () => {
@@ -489,33 +450,36 @@ function Ferrous(props) {
         }
     };
     const saveRawMaterialCalculation = (usedRMIdsParam) => {
+        
         const formValues = getValues();
         const usedRMIds = usedRMIdsParam || [
             ...tableRawMaterials.map(rm => rm.value),
             ...binderRm.map(rm => rm.value)
         ];
+        
         let obj = {
             FerrousCastingWeightCalculatorId: WeightCalculatorRequest?.WeightCalculationId || 0,
             BaseCostingIdRef: item.CostingId || "00000000-0000-0000-0000-000000000000",
             CostingRawMaterialDetailsIdRef: rmRowData.RawMaterialDetailId || "00000000-0000-0000-0000-000000000000",
             RawMaterialIdRef: rmRowData?.RawMaterialId || "00000000-0000-0000-0000-000000000000",
             LoggedInUserId: loggedInUserId() || "00000000-0000-0000-0000-000000000000",
-            FinishWeight: checkForNull(formValues.finishedWeight),
+            FinishWeight: checkForNull(formValues.finishedWeight) || 0,
             GrossWeight: checkForNull(dataToSend.totalGrossWeight),
             ScrapWeight: checkForNull(dataToSend.scrapWeight),
             ScrapCost: checkForNull(dataToSend.scrapCost),
-            RecoveryPercentage: checkForNull(formValues.recovery),
+            RecoveryPercentage: checkForNull(formValues.recovery) || 0,
             NetRMRate: checkForNull(formValues.NetRMRate),
             NetScrapRate: checkForNull(formValues.NetScrapRate),
             CastingWeight: checkForNull(formValues.castingWeight),
             NetLossWeight: checkForNull(lostWeight),
-            RawMaterialCost: checkForNull(dataToSend.NetRMCost),
-            OtherCost: checkForNull(formValues.otherCost),
+            RawMaterialCost: checkForNull(dataToSend?.NetRMCost),
+            OtherCost: checkForNull(formValues.otherCost) || 0,
             OtherCostDescription: "",
             BinderOrAdditivesTotalCost: checkForNull(totalCostCalculated),
-            LossOfTypeDetails: tableVal.map(item => ({
-                LossOfTypeId: item.LossOfType,
-                LossOfType: item.LossOfType,
+            LossOfTypeDetails: (tableVal && tableVal.length > 0) 
+                        ? tableVal.map(item => ({
+                LossOfTypeId: item?.LossOfTypeId || 0,
+                LossOfType: item?.LossOfType || "",
                 FlashLossId: 0,
                 FlashLoss: "",
                 FlashLength: 0,
@@ -523,10 +487,17 @@ function Ferrous(props) {
                 FlashWidth: 0,
                 BarDiameter: 0,
                 BladeThickness: 0,
-                LossPercentage: item.LossPercentage,
-                LossWeight: item.LossWeight,
-                CostingCalculationDetailId: item.CostingCalculationDetailId || 0
-            })),
+                LossPercentage: item?.LossPercentage || 0,
+                LossWeight: item?.LossWeight || 0,
+                CostingCalculationDetailId: item?.CostingCalculationDetailId || 0
+            }))
+            : [{
+                LossOfTypeId: 0,
+                LossOfType: "",
+                LossPercentage: 0,
+                LossWeight: 0,
+                CostingCalculationDetailId: 0
+            }],
             CostingFerrousCalculationRawMaterials: [
                 ...tableRawMaterials
                     .filter(item => usedRMIds.includes(item.value))
@@ -572,6 +543,7 @@ function Ferrous(props) {
         };
 
         dispatch(saveRawMaterialCalculationForFerrous(obj, res => {
+            
             if (res?.data?.Result) {
                 obj.WeightCalculationId = res.data.Identity;
                 Toaster.success("Calculation saved successfully");
@@ -579,11 +551,17 @@ function Ferrous(props) {
             }
         }));
     };
+    const [isSaveEnabled, setIsSaveEnabled] = useState(false);
+
+useEffect(() => {
+    const totalPercentage = totalPercentageValue();
+    setIsSaveEnabled(totalPercentage === 100 && tableRawMaterials.length > 0);
+}, [tableRawMaterials, getValues]);
     const onSubmit = debounce(handleSubmit((values) => {
-        if (!fieldsEnabled) {
-            Toaster.warning('Please add raw materials and ensure their percentages sum up to 100% before saving.');
-            return false;
-        }
+        // if (!fieldsEnabled) {
+        //     Toaster.warning('Please add raw materials and ensure their percentages sum up to 100% before saving.');
+        //     return false;
+        // }
         if (totalPercentageValue() !== 100) {
             Toaster.warning(`Total percentage is ${totalPercentageValue()}%, must be 100% to save the values`)
             return false;
@@ -596,6 +574,7 @@ function Ferrous(props) {
     }
 
     const handleKeyDown = function (e) {
+        
         if (e.key === 'Enter' && e.shiftKey === false) {
             e.preventDefault();
         }
@@ -617,7 +596,10 @@ function Ferrous(props) {
 
 
 
-
+    const handleLossDelete = (updatedLosses) => {
+        setTableVal(updatedLosses);
+        calculateRemainingCalculation();
+      };
     const rawMaterialHandler = (newValue) => {
 
         if (Array.isArray(newValue) && newValue.some(item => item?.value === 'select_all')) {
@@ -808,25 +790,7 @@ function Ferrous(props) {
         setShowResetPopup(false);
     };
 
-    // const confirmResetMainRawMaterials = () => {
-    //     // Reset table data and related state variables
-    //     setTableRawMaterials([]);
-    //     setCalculatedValues([]);
-    //     setPercentage(0);
-    //     setFieldsEnabled(false);
-
-    //     // Reset form values
-    //     setValue('NetRMRate', '');
-    //     setValue('NetScrapRate', '');
-    //     // ... reset other form fields as needed
-
-    //     // Recalculate values
-    //     calculateNetRmRate();
-    //     calculateNetScrapRate();
-    //     calculateRemainingCalculation();
-
-    //     closeResetPopup();
-    // };
+   
     const confirmResetMainRawMaterials = () => {
         // Reset table data and related state variables
         setTableRawMaterials([]);
@@ -980,22 +944,6 @@ function Ferrous(props) {
         setTotalCostCalculated(newTotalCost);
         calculateRemainingCalculation();
     };
-    const editMainRawMaterial = (index) => {
-        const item = tableRawMaterials[index];
-        setSelectedRm([item]);
-        setValue('RawMaterial', [{ label: item.label, value: item.value }]);
-        setValue(`rmGridFields.${index}.Percentage`, item.Percentage);
-        // Add any other fields that need to be set for editing
-    };
-
-    const editBinderMaterial = (index) => {
-        const item = binderRm[index];
-        setBinderRawMaterials([item]);
-        setValue('RawMaterialBinders', [{ label: item.label, value: item.value }]);
-        setValue(`binderQuantity.${index}`, item.quantity);
-        // Add any other fields that need to be set for editing
-    };
-
 
     return (
         <Fragment>
@@ -1074,13 +1022,19 @@ function Ferrous(props) {
                                         <th style={{ width: "190px" }}>
                                             {`Percentage`}
                                             <span style={{ marginLeft: '10px', minWidth: '40px', display: 'inline-block' }}>
-                                                {percentage > 0 ? `(${checkForDecimalAndNull(percentage, getConfigurationKey().NoOfDecimalForInputOutput)}%)` : '0%'}
+                                                {props.CostingViewMode
+                                                    ? '(100%)'
+                                                    : percentage > 0
+                                                        ? `(${checkForDecimalAndNull(percentage, getConfigurationKey().NoOfDecimalForInputOutput)}%)`
+                                                        : '(0%)'
+                                                }
                                             </span>
                                         </th>
                                         <th>{`Basic Rate`}</th>
                                         <th>{`Value`}</th>
                                         <th>{`Scrap Rate`}</th>
                                         <th>{`Value`}</th>
+                                        <th>{'Action'}</th>
                                     </tr>
                                 </thead>
                                 <tbody className='rm-table-body'>
@@ -1118,8 +1072,7 @@ function Ferrous(props) {
                                                             />
                                                         </div>
                                                     </td>
-                                                    <td>{item.RawMaterialRate}</td>
-                                                    {/* <td>{checkForDecimalAndNull(calculatedItem.calculatedBasicValue, getConfigurationKey().NoOfDecimalForInputOutput)}</td> */}
+                                                    <td>{checkForDecimalAndNull(item.RawMaterialRate, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                                                     <td>
                                                         <TooltipCustom
                                                             disabledIcon={true}
@@ -1130,7 +1083,7 @@ function Ferrous(props) {
                                                             {checkForDecimalAndNull(calculatedItem.calculatedBasicValue, getConfigurationKey().NoOfDecimalForInputOutput)}
                                                         </div>
                                                     </td>
-                                                    <td>{item.ScrapRate}</td>
+                                                    <td> {checkForDecimalAndNull(item.ScrapRate, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                                                     <td>
                                                         <TooltipCustom
                                                             disabledIcon={true}
@@ -1141,7 +1094,6 @@ function Ferrous(props) {
                                                             {checkForDecimalAndNull(calculatedItem.calculatedScrapValue, getConfigurationKey().NoOfDecimalForInputOutput)}
                                                         </div>
                                                     </td>
-                                                    {/* <td>{checkForDecimalAndNull(calculatedItem.calculatedScrapValue, getConfigurationKey().NoOfDecimalForInputOutput)}</td> */}
                                                     <td>
                                                         <React.Fragment>
 
@@ -1189,7 +1141,6 @@ function Ferrous(props) {
                                     customClassName={'withBorder'}
                                     errors={errors.NetRMRate}
                                     disabled={true}
-                                    formatter={(value) => checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}
 
                                 />
                             </Col>
@@ -1209,7 +1160,6 @@ function Ferrous(props) {
                                     customClassName={'withBorder'}
                                     errors={errors.NetScrapRate}
                                     disabled={true}
-                                    formatter={(value) => checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}
 
                                 />
                             </Col>
@@ -1261,7 +1211,7 @@ function Ferrous(props) {
                                     value={getValuesTableForm('RawMaterialBinders')} // Add this line
 
                                 />
-                                        {binderError && <div className="text-help mt-2">{binderError}</div>}
+                                {binderError && <div className="text-help mt-2">{binderError}</div>}
 
                             </Col>
                             <Col md="3">
@@ -1270,14 +1220,14 @@ function Ferrous(props) {
                                         type="button"
                                         className={'user-btn pull-left'}
                                         onClick={handleAddBinderMaterialsToTable}
-                                        disabled={!fieldsEnabled}
+                                        disabled={!fieldsEnabled || props.CostingViewMode}
                                     >
                                         <div className={'plus'}></div>ADD
                                     </button>
                                     <button
                                         type="button"
                                         className={"mr15 ml-2 reset-btn"}
-                                        disabled={!fieldsEnabled}
+                                        disabled={!fieldsEnabled || props.CostingViewMode}
                                         onClick={resetBinderMaterials}
                                     >
                                         Reset
@@ -1315,7 +1265,7 @@ function Ferrous(props) {
                                                         customClassName={'withBorder'}
                                                         handleChange={(e) => { quantityChange(e.target.value, index) }}
                                                         errors={errors?.binderQuantity?.[index] || ''}
-                                                        disabled={!fieldsEnabled}
+                                                        disabled={!fieldsEnabled || props.CostingViewMode}
                                                     />
                                                 </td>
                                                 <td>{item?.RawMaterialRate}</td>
@@ -1354,10 +1304,10 @@ function Ferrous(props) {
                                     </tbody>
                                 ) : (
                                     <tr>
-                                    <td colSpan={6}>
-                                        <NoContentFound title={EMPTY_DATA} />
-                                    </td>
-                                </tr>
+                                        <td colSpan={6}>
+                                            <NoContentFound title={EMPTY_DATA} />
+                                        </td>
+                                    </tr>
                                 )}
                             </Table>
                         </div>
@@ -1366,8 +1316,8 @@ function Ferrous(props) {
                             CostingViewMode={props.CostingViewMode}
                             calculation={calculateRemainingCalculation}
                             weightValue={Number(getValues('castingWeight'))}
-                            netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
-                            sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
+                            netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== undefined ? WeightCalculatorRequest.NetLossWeight : ''}
+                            sendTable={WeightCalculatorRequest && WeightCalculatorRequest?.LossOfTypeDetails !== undefined ? WeightCalculatorRequest?.LossOfTypeDetails : []}
                             tableValue={tableData}
                             isLossStandard={false}
                             isPlastic={false}
@@ -1376,6 +1326,8 @@ function Ferrous(props) {
                             isFerrous={true}
                             fieldsEnabled={fieldsEnabled}
                             resetTrigger={resetLossTable}
+                            onLossDelete={handleLossDelete}
+
 
                         />
 
@@ -1393,7 +1345,7 @@ function Ferrous(props) {
 
                                     }}
                                     handleChange={() => { }}
-                                    defaultValue={''}
+                                    defaultValue={'0'}
                                     className=""
                                     customClassName={'withBorder'}
                                     // errors={errors.otherCost}
@@ -1410,7 +1362,7 @@ function Ferrous(props) {
                                     control={control}
                                     register={register}
                                     rules={{
-                                        validate: {  decimalAndNumberValidation },
+                                        validate: { decimalAndNumberValidation },
                                     }}
                                     mandatory={false}
                                     handleChange={() => { }}
@@ -1438,7 +1390,7 @@ function Ferrous(props) {
                                         },
                                     }}
                                     handleChange={(e) => { handleFinishedWeight(e?.target?.value) }}
-                                    defaultValue={''}
+                                    defaultValue={'0'}
                                     className=""
                                     customClassName={'withBorder'}
                                     errors={errors.finishedWeight}
@@ -1490,6 +1442,7 @@ function Ferrous(props) {
                                         calculateRemainingCalculation();
                                     }}
                                     className=""
+                                    defaultValue={'0'}
                                     customClassName={'withBorder'}
                                     errors={errors.recovery}
                                     disabled={!fieldsEnabled || props?.CostingViewMode}
@@ -1555,7 +1508,7 @@ function Ferrous(props) {
                         <button
                             type="button"
                             onClick={onSubmit}
-                            disabled={props.CostingViewMode ? true : false || !fieldsEnabled}
+                            disabled={props.CostingViewMode|| !fieldsEnabled}
                             className="btn-primary save-btn"
                         >
                             <div className={'save-icon'}>
