@@ -1,4 +1,5 @@
 import RFQReducer from '../rfq/reducer/rfq';
+import RfqAuction from '../rfqAuction/reducer/RfqAuction';
 import Approval from './reducers/Approval';
 import Costing from './reducers/Costing';
 import CostWorking from './reducers/CostWorking';
@@ -9,6 +10,7 @@ const mainReducer = {
   costing: Costing,
   costWorking: CostWorking,
   subAssembly: SubAssembly,
-  rfq: RFQReducer
+  rfq: RFQReducer,
+  Auction: RfqAuction
 }
 export default mainReducer;

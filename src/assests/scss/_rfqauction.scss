@@ -10,11 +10,13 @@
     }
 
     .part-detail-wrapper {
+
         .col-md-3,
         .col-md-6 {
+
             // padding-right: 7px;
             // padding-left: 7px;
-            > div {
+            >div {
                 margin-bottom: 0 !important;
             }
         }
@@ -60,7 +62,7 @@
     font-size: 14px;
     margin-bottom: 0;
 
-    > div {
+    >div {
         padding-left: 10px;
 
         span {
@@ -138,21 +140,26 @@
         }
     }
 }
+
 .auction-page-tabs {
     .right-actions {
         top: -11px;
     }
 }
+
 .card-border-no-arrow::after {
     display: none;
 }
+
 .card-border-no-arrow {
     .top {
         background: none;
         line-height: 1;
+
         b {
             font-size: 14px;
         }
+
         .left {
             background: none;
             color: #3d4465;
@@ -160,20 +167,24 @@
             width: 100%;
             padding: 0;
         }
+
         .right {
             padding: 0 5px;
             width: 100%;
             color: #3d4465;
+
             span {
                 font-size: 16px;
             }
         }
     }
 }
+
 .shadow-lgg.login-formg form {
     .remove-mh {
         min-height: auto;
     }
+
     .prize-zone-wrapper {
         .form-group.inputbox {
             min-height: auto;
@@ -181,51 +192,61 @@
         }
     }
 }
+
 .bid-details-wrapper {
     min-height: 150px;
     height: auto;
 }
+
 .bids-dropdown-menu {
     width: 260px;
     font-size: 14px;
 }
+
 .bids-btn {
     background: #5fa9ef;
     font-size: 12px;
     padding: 8px;
 }
+
 .auction-price-wrapper {
     .remove-mh {
-        label {
-            display: none;
-        }
+
+        // label {
+        //     display: none;
+        // }
         div:first-child {
             margin-right: 8px;
         }
     }
 }
+
 .prize-zone-wrapper {
     .remove-mh {
         label {
             display: none;
         }
+
         div:first-child {
             margin-right: 8px;
         }
     }
 }
+
 .refresh-div {
-    margin-left: auto;
     max-width: 200px;
 }
+
 .cursor-pointer {
     cursor: pointer;
 }
+
 .counterOfferModal {
     .modal-body {
         .img-block {
             display: none;
         }
+
         .form-group {
             label {
                 width: auto;
@@ -234,4 +255,46 @@
             }
         }
     }
+}
+
+.App {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+/* styles.css */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+.countdown {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 1rem;
+}
+
+.countdown span {
+    display: inline-block;
+    animation: fadeIn 0.5s;
+}
+
+.countdown.last-minute span {
+    color: red;
+    animation: fadeIn 0.5s, blink 1s step-end infinite;
+}
+
+.opacity-down {
+    opacity: 0.7;
 }
