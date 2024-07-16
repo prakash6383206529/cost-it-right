@@ -764,13 +764,12 @@
   .text-help {
     position: absolute;
   }
-
-  &.hide-error {
+}
+  .hide-error {
     .text-help {
       display: none;
     }
   }
-}
 
 .simulation-sap-approval {
 
