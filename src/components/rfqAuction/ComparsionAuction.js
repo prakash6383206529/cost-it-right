@@ -109,9 +109,9 @@ function ComparsionAuction(props) {
       CounterOffer: checkForNull(getValues('CounterOfferPrice'))
     }
     dispatch(sendCounterOffer(obj, (res) => {
-      if (res.data.Result) [
+      if (res.data.Result) {
         Toaster.success('Couter offer sent')
-      ]
+      }
       setState(prevState => ({ ...prevState, showCounterPopup: false }))
     }))
   }
