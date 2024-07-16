@@ -4,11 +4,10 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import NoContentFound from "../../common/NoContentFound";
-import { AuctionLiveId, defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import { AuctionClosedId, AuctionLiveId, defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { useDispatch, useSelector } from "react-redux";
 import { searchNocontentFilter } from "../../../helper";
-import AuctionClosed from "./AuctionClosed";
 import Button from "../../layout/Button";
 import { ShowBidWindow } from "../actions/RfqAuction";
 
@@ -151,7 +150,7 @@ const AuctionGrid = (props) => {
                                 <AgGridColumn width={50} field="YellowCount" headerName="Y" colId="GreenColor"></AgGridColumn>
                                 <AgGridColumn width={50} field="RedCount" headerName="B" colId="BlueColor"></AgGridColumn>
                             </AgGridColumn>
-                            {(auctionlistId === AuctionLiveId || auctionlistId === AuctionClosed) && <AgGridColumn width={'80px'} field="QuotationPartId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>}
+                            {(auctionlistId === AuctionLiveId || auctionlistId === AuctionClosedId) && <AgGridColumn width={'80px'} field="QuotationPartId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>}
                         </AgGridReact>
                         {
                             <PaginationWrapper
