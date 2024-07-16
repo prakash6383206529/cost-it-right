@@ -1646,42 +1646,29 @@ export const extenstionTime = (length = 5, timeGap = 1, TimeCategory = 'min') =>
   return temp;
 }
 
-export function calculateEndDate(startDateString, durationString) {
-  // Validate input (optional)
-  if (isNaN(new Date(startDateString).getTime())) {
-    throw new Error('Invalid start date format. Use YYYY-MM-DD HH:MM:SS');
-  }
+export function calculateEndDateTime(startDateTime, duration) {
+  console.log('duration: ', duration);
+  console.log('startDateTime: ', startDateTime);
+  if (!startDateTime || !duration) return null;
 
-  // Parse duration string
-  const [hours, minutes] = durationString.split(':').map(Number);
+  // Parse startDateTime
+  const startDate = new Date(startDateTime);
+  console.log('startDate: ', startDate);
 
-  // Validate duration format (optional)
-  if (isNaN(hours) || isNaN(minutes) || hours < 0 || minutes < 0 || minutes >= 60) {
-    throw new Error('Invalid duration format. Use HH:MM (hours and minutes)');
-  }
+  // Adjust for UTC+05:30 (India Standard Time)
+  const adjustedStartDate = new Date(startDate.getTime() + (5.5 * 60 * 60 * 1000));
+  console.log('adjustedStartDate: ', adjustedStartDate);
 
-  // Convert start date to UTC
-  const startDate = new Date(startDateString);
-  const utcStartDate = new Date(
-    startDate.getUTCFullYear(),
-    startDate.getUTCMonth(),
-    startDate.getUTCDate(),
-    startDate.getUTCHours(),
-    startDate.getUTCMinutes(),
-    startDate.getUTCSeconds(),
-    startDate.getUTCMilliseconds()
-  );
+  // Parse duration (HH:MM)
+  const [durationHours, durationMinutes] = duration.split(':').map(Number);
 
-  // Convert duration to milliseconds
-  const durationMs = hours * 60 * 60 * 1000 + minutes * 60 * 1000;
+  // Calculate endDateTime
+  const endDateTime = new Date(adjustedStartDate);
+  endDateTime.setHours(adjustedStartDate.getHours() + durationHours);
+  endDateTime.setMinutes(adjustedStartDate.getMinutes() + durationMinutes);
 
-  // Create end date in UTC
-  const endDate = new Date(utcStartDate.getTime() + durationMs);
+  // Format endDateTime as a string (YYYY-MM-DD HH:mm:ss)
+  const formattedEndDateTime = endDateTime.toISOString().slice(0, 19).replace('T', ' ');
 
-  // Optional: Convert end date to local time (adjust based on your needs)
-  // endDate.setHours(endDate.getUTCHours() - startDate.getTimezoneOffset() / (60 * 60));
-  // endDate.setMinutes(endDate.getMinutes() - startDate.getTimezoneOffset() % (60 * 60));
-
-  // Format the end date and time as a string (YYYY-MM-DD HH:MM:SS)
-  return endDate.toISOString().slice(0, 19).replace('T', ' ');
+  return formattedEndDateTime;
 }

@@ -164,8 +164,6 @@ function AddRfq(props) {
 
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
-    const state123 = useSelector((state) => state)
-
     const { getRfqVendorDetail, getTargetprice, getPartIndentity, getQuotationIdForRFQ, rmSpecificRowData, SelectPurchaseRequisition, getBopPrQuotationIdentity } = useSelector((state) => state.rfq)
 
     const [viewQuotationPart, setViewQuotationPart] = useState(false)
@@ -677,7 +675,7 @@ function AddRfq(props) {
         onResetPartNoTable()
     }
     const editItemPartTable = (rowData, final, viewMode) => {
-        
+
 
         setResetRmFields(false)
         setResetBopFields(false)
@@ -1071,7 +1069,7 @@ function AddRfq(props) {
             </>
         )
     };
-    
+
     const buttonFormatterVendorTable = (props) => {
         return (
             <>
@@ -2489,7 +2487,7 @@ function AddRfq(props) {
 
         setAssemblyPartNumber(value)
         dispatch(getPartInfo(value?.value, (res) => {
-            
+
 
             setValue("Description", res.data?.Data?.PartName);
             setPartEffectiveDate(res.data.Data?.EffectiveDate);
