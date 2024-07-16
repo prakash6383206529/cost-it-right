@@ -884,12 +884,14 @@ function RawMaterialCost(props) {
         if (Object.keys(weightData).length > 0) {
             const updatedGridData = weightData.CostingFerrousCalculationRawMaterials.map((calculatedRM, index) => {
                 const existingRM = gridData.find(item => item.RawMaterialId === calculatedRM.RawMaterialId);
+                console.log('gridData: ', gridData);
+                console.log('existingRM: ', existingRM);
     
                 if (existingRM) {
                     return {
                         ...existingRM,
-                        FinishWeight: calculatedRM.FinishWeight || 0,
-                        GrossWeight: calculatedRM.GrossWeight || 0,
+                        FinishWeight: weightData?.FinishWeight || 0,
+                        GrossWeight: weightData?.GrossWeight || 0,
                         NetLandedCost: index === 0 ? weightData.RawMaterialCost : 0,
                         WeightCalculatorRequest: weightData,
                         WeightCalculationId: weightData.WeightCalculationId,
@@ -897,8 +899,8 @@ function RawMaterialCost(props) {
                         IsCalculatedEntry: true,
                         IsCalculaterAvailable: true,
                         ScrapRecoveryPercentage: weightData.RecoveryPercentage,
-                        ScrapWeight: calculatedRM.ScrapWeight || 0,
-                        Percentage: calculatedRM.Percentage || 0,
+                        ScrapWeight: weightData?.ScrapWeight || 0,
+                        Percentage:calculatedRM?.Percentage || 0,
                         CalculatorType: weightData.CalculatorType
                     };
                 }
