@@ -7,7 +7,7 @@ import { getReasonSelectList, setSAPData } from '../../../costing/actions/Approv
 import { TextAreaHookForm, SearchableSelectHookForm, AllApprovalField } from '../../../layout/HookFormInputs'
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { FILE_URL, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
+import { FILE_URL, RAWMATERIALINDEX, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
 import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
@@ -30,6 +30,7 @@ import { submit } from 'redux-form'
 import SAPApproval from '../../../SAPApproval'
 
 function ApproveRejectUI(props) {
+  console.log('props: ', props);
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
   const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId } = props
@@ -480,7 +481,7 @@ function ApproveRejectUI(props) {
                             errors={errors.reason}
                           />
                         </div>
-                        {!isSimulationApprovalListing &&
+                        {(!isSimulationApprovalListing && (String(props?.SimulationTechnologyId) !== RAWMATERIALINDEX)) &&
                           <div className="input-group form-group col-md-12">
                             <label>Effective Date<span className="asterisk-required">*</span></label>
                             <div className="inputbox date-section">

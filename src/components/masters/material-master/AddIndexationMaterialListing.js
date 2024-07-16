@@ -12,14 +12,13 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import NoContentFound from '../../common/NoContentFound'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import Button from '../../layout/Button'
 import AddOtherCostDrawer from './AddOtherCostDrawer'
-import { isLastDayOfMonth, setSeconds } from 'date-fns'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCommodityDetails } from '../actions/Indexation'
 
 const gridOptions = {};
 function AddIndexationMaterialListing(props) {
+
     const { isViewFlag } = props
     const { setValue } = useForm({
         mode: 'onChange',
@@ -39,13 +38,15 @@ function AddIndexationMaterialListing(props) {
         commodityDetailsState: [],
         isLoader: false
     })
+    // 
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
+
     useEffect(() => {
         setState(prevState => ({ ...prevState, commodityDetailsState: commodityDetailsArray }))
     }, [commodityDetailsArray])
     useEffect(() => {
         // Calculate totalBasicRate whenever commodityDetailsState changes
-        const totalRate = state.commodityDetailsState.reduce((sum, row) => {
+        const totalRate = state.commodityDetailsState && state.commodityDetailsState?.reduce((sum, row) => {
             const baseCurrency = row.TotalCostConversion ? row.TotalCostConversion + row.BasicRateConversion : row.BasicRateConversion || 0;
             const baseCurrencyBypercentage = baseCurrency * row.Percentage / 100 || 0;
             return sum + baseCurrencyBypercentage;
@@ -55,13 +56,14 @@ function AddIndexationMaterialListing(props) {
     }, [state.isLoader, state.commodityDetailsState]);
 
     useEffect(() => {
+
         setState(prevState => ({ ...prevState, commodityDetailsState: props.commodityDetails }))
     }, [props.commodityDetails])
 
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        params.api?.sizeColumnsToFit();
+        // params.api?.sizeColumnsToFit();
         params.api.paginationGoToPage(0);
         setTimeout(() => {
         }, 100);
@@ -176,7 +178,7 @@ function AddIndexationMaterialListing(props) {
     }
 
     const frameworkComponents = {
-        customLoadingOverlay: LoaderCustom,
+        // customLoadingOverlay: LoaderCustom,
         commonFormatter: commonFormatter,
         customNoRowsOverlay: NoContentFound,
         priceFormatter: priceFormatter,
@@ -204,7 +206,7 @@ function AddIndexationMaterialListing(props) {
                                                                 defaultColDef={defaultColDef}
                                                                 domLayout='autoHeight'
                                                                 // columnDefs={c}
-                                                                rowData={commodityDetailsArray}
+                                                                rowData={commodityDetailsArray ?? []}
                                                                 // onCellValueChanged={onCellValueChanged}
                                                                 pagination={true}
                                                                 paginationPageSize={12}
@@ -219,14 +221,14 @@ function AddIndexationMaterialListing(props) {
                                                                 suppressColumnVirtualisation={true}
                                                                 stopEditingWhenCellsLoseFocus={true}
                                                             >
-                                                                <AgGridColumn width={115} field="CommodityStandardName" headerName="Commodity Name" editable={false}></AgGridColumn>
+                                                                <AgGridColumn width={200} field="CommodityStandardName" headerName="Commodity Name" editable={false}></AgGridColumn>
                                                                 <AgGridColumn width={115} field="Percentage" headerName="Percentage" editable={false}></AgGridColumn>
-                                                                <AgGridColumn width={115} field="ExchangeRate" headerName="Exchange Rate" editable={false}></AgGridColumn>
-                                                                <AgGridColumn width={115} field="BasicRate" headerName="Basic Rate (Index Currency)" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={115} field="BasicRateConversion" headerName={`Basic Rate (${reactLocalStorage.getObject('baseCurrency')})`} editable={false} cellRenderer='priceFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={115} field="BasicRate" headerName="Total Cost (Currency)" cellRenderer='totalCostCurrencyFormatter' editable={false} ></AgGridColumn>
-                                                                <AgGridColumn width={115} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')})`} cellRenderer='buttonFormatter' editable={false} ></AgGridColumn>
-                                                                <AgGridColumn width={115} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')}) by %`} cellRenderer='totalFormatter' editable={false} ></AgGridColumn>
+                                                                <AgGridColumn width={150} field="ExchangeRate" headerName="Exchange Rate" editable={false}></AgGridColumn>
+                                                                <AgGridColumn width={225} field="BasicRate" headerName="Basic Rate (Index Currency)" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={150} field="BasicRateConversion" headerName={`Basic Rate (${reactLocalStorage.getObject('baseCurrency')})`} editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={190} field="BasicRate" headerName="Total Cost (Currency)" cellRenderer='totalCostCurrencyFormatter' editable={false} ></AgGridColumn>
+                                                                <AgGridColumn width={180} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')})`} cellRenderer='buttonFormatter' editable={false} ></AgGridColumn>
+                                                                <AgGridColumn width={180} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')}) by %`} cellRenderer='totalFormatter' editable={false} ></AgGridColumn>
                                                             </AgGridReact>
                                                         </>)}
                                                 </div>
