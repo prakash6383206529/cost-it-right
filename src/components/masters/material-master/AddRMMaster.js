@@ -182,11 +182,11 @@ function AddRMMaster(props) {
         if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
             dispatch(checkFinalUser(obj, (res) => {
                 if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
-                    console.log(res?.data?.Data?.IsFinalApprover, "res?.data?.Data?.IsFinalApprover");
+
                     setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
                 }
                 else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
-                    console.log("COMING IN ANOT");
+
                     setState(prevState => ({ ...prevState, disableSendForApproval: true }))
                 } else {
                     setState(prevState => ({ ...prevState, disableSendForApproval: false }))

@@ -20,7 +20,6 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.8.120:1005/api/v1`
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -109,6 +108,17 @@ export const API = {
   getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
   getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
   getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
+
+  // INDEXATION SIMULATION
+  getRMIndexationSimulationListing: `${BASE_URL}/simulation/get-raw-material-records-for-simulation`,
+  editRMIndexedSimulationData: `${BASE_URL}/simulation/get-all-simulated-raw-material`,
+  draftSimulationForRMMaster: `${BASE_URL}/simulation/draft-simulation-raw-material-master`,
+  updateSimulationRawMaterial: `${BASE_URL}/simulation/update-simulation-raw-material`,
+  runSimulationOnRawMaterial: `${BASE_URL}/simulation/run-simulation-on-raw-material-master`,
+  getAllSimulatedRawMaterial: `${BASE_URL}/simulation/get-all-simulated-raw-material`,
+  getApprovalSimulatedRawMaterialSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-raw-material-summary`,
+  getRMIndexationCostingSimulationListing: `${BASE_URL}/simulation/get-impacted-raw-material-details`,
+
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -288,6 +298,8 @@ export const API = {
   bulkUploadRMSpecification: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-spec-json`,
   getRawMaterialChildById: `${BASE_URL}/masters-raw-material/get-raw-material-child-by-id`,
   updateRawMaterialChildName: `${BASE_URL}/masters-raw-material/update-raw-material-name`,
+  getViewRawMaterialDetails: `${BASE_URL}/masters-raw-material/get-view-raw-material`,
+  getViewBOPDetails: `${BASE_URL}/masters-bought-out-part/get-view-bought-out-part`,
 
   //PLANT MASTER
   //createPlantAPI: `${BASE_URL}/plant/create`,
@@ -332,6 +344,8 @@ export const API = {
   updateBOPSOBVendors: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-vendor-share-of-business`,
   getIncoTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-inco-terms`,
   getPaymentTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-payment-terms`,
+  getViewBoughtOutPart: `${BASE_URL}/masters-bought-out-part/get-all-manage-bought-out-part`,
+
 
   //BOP APPROVAL API'S
 
@@ -1106,6 +1120,10 @@ export const API = {
   getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
   deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
   checkRegisteredVendor: `${BASE_URL}/rfq-quotation/check-registered-vendor`,
+  getPurchaseRequisitionSelectList: `${BASE_URL}/rfq-quotation/select-list-pr-number`,
+  getRfqBopNumberSelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-child`,
+  getRfqBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
+  createQuotationPrParts: `${BASE_URL}/rfq-quotation/create-quotation-pr-parts`,
   // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
 
   //Auction
@@ -1266,6 +1284,11 @@ export const GET_OTHER_COST_APPLICABILITY_SELECTLIST = 'GET_OTHER_COST_APPLICABI
 export const SET_COMMODITY_DETAILS = 'SET_COMMODITY_DETAILS'
 export const SET_OTHER_COST_DETAILS = 'SET_OTHER_COST_DETAILS'
 export const GET_LAST_REVISION_RAW_MATERIAL_DETAILS = 'GET_LAST_REVISION_RAW_MATERIAL_DETAILS'
+
+//INDEXATION SIMULATION
+export const GET_RM_INDEXATION_SIMULATION_LIST = 'GET_RM_INDEXATION_SIMULATION_LIST'
+export const GET_SIMULATED_RAW_MATERIAL_SUMMARY = 'GET_SIMULATED_RAW_MATERIAL_SUMMARY'
+export const GET_RM_INDEXATION_COSTING_SIMULATION_LIST = 'GET_RM_INDEXATION_COSTING_SIMULATION_LIST'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
@@ -1454,6 +1477,7 @@ export const GET_SOB_LISTING = 'GET_SOB_LISTING'
 export const GET_BOP_APPROVAL_LIST = 'GET_BOP_APPROVAL_LIST'
 export const GET_INCO_SELECTLIST_SUCCESS = 'GET_INCO_SELECTLIST_SUCCESS'
 export const GET_PAYMENT_SELECTLIST_SUCCESS = 'GET_PAYMENT_SELECTLIST_SUCCESS'
+export const GET_VIEW_BOUGHT_OUT_PART_SUCCESS = 'GET_VIEW_BOUGHT_OUT_PART_SUCCESS'
 
 //PROCESS MASTER
 export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS'
@@ -1749,6 +1773,8 @@ export const SET_CALL_ST_API = 'SET_CALL_ST_API';
 export const GET_COSTING_PAYMENT_TERM_DETAIL = "GET_COSTING_PAYMENT_TERM_DETAIL"
 export const SET_PAYMENT_TERM_COST = "SET_PAYMENT_TERM_COST"
 export const SET_COSTING_VIEW_DATA_FOR_ASSEMBLY = 'SET_COSTING_VIEW_DATA_FOR_ASSEMBLY';
+export const GET_RM_DETAILS = 'GET_RM_DETAILS';
+export const GET_BOP_DETAILS = 'GET_BOP_DETAILS';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
@@ -1995,6 +2021,12 @@ export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
 export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
 export const HAVELLS_DESIGN_PARTS = "Havells Design part"
 export const GET_SAP_EVALUATIONTYPE = "GET_SAP_EVALUATIONTYPE"
+export const SET_RM_SPECIFIC_ROW_DATA = "SET_RM_SPECIFIC_ROW_DATA"
+export const SELECT_BOP_NUMBER = "SELECT_BOP_NUMBER"
+export const SELECT_BOP_CATEGORY = "SELECT_BOP_CATEGORY"
+export const SET_BOP_SPECIFIC_ROW_DATA = "SET_BOP_SPECIFIC_ROW_DATA"
+export const GET_BOP_PR_QUOTATION_DETAILS = "GET_BOP_PR_QUOTATION_DETAILS"
+export const SET_BOP_PR_QUOTATION_IDENTITY = "SET_BOP_PR_QUOTATION_IDENTITY"
 
 //AUCTION 
 export const SET_AUCTION_DATA = 'SET_AUCTION_DATA'
@@ -2011,6 +2043,10 @@ export const AuctionLiveId = 38
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
 export const SET_OPEN_ALL_TABS = 'SET_OPEN_ALL_TABS'
+export const SELECT_PURCHASE_REQUISITION = 'SELECT_PURCHASE_REQUISITION'
+
+//SIMULATION FOR INDEXED RM
+export const GET_INDEXED_RM_FOR_SIMULATION = 'GET_INDEXED_RM_FOR_SIMULATION'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
@@ -2924,6 +2960,8 @@ export const BUDGETBULKUPLOAD = 'Budget'
 //added for OverheadProfit
 export const OVERHEADBULKUPLOAD = 'Overhead'
 export const PROFITBULKUPLOAD = 'Profit'
+
+
 
 
 //STATUS FILTER DROPDOWN OPTIONS

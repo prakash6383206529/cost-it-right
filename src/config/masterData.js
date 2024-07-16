@@ -8295,3 +8295,8 @@ export const FREIGHT_LOAD_OPTIONS = [
     { label: "Full Truck Load", value: 3 },
     { label: "Part Truck Load", value: 4 },
 ]
+
+export const indexationDropdown = [
+    { label: 'Indexed', value: 'Indexed' },
+    { label: 'Non Indexed', value: 'Non Indexed' },
+]

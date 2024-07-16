@@ -13,6 +13,7 @@ import { getCostingCondition } from '../../../actions/Common'
 import { getRMCostIds } from '../../common/CommonFunctions'
 
 function AddOtherCostDrawer(props) {
+
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
@@ -27,6 +28,7 @@ function AddOtherCostDrawer(props) {
     const [totalCostCurrency, setTotalCostCurrency] = useState('')
     const [totalCostBase, setTotalCostBase] = useState('')
     const [disableCurrency, setDisableCurrency] = useState(false)
+    const [RawMaterialCommodityIndexRateAndOtherCostDetailsId, setRawMaterialCommodityIndexRateAndOtherCostDetailsId] = useState('')
     const ExchangeRate = RowData?.ExchangeRate
     const BasicRateIndexCurrency = RowData?.BasicRate
     const [state, setState] = useState({
@@ -114,6 +116,7 @@ function AddOtherCostDrawer(props) {
         setValue('CostCurrency', selectedData.NetCost);
         setValue('CostBaseCurrency', selectedData.NetCostConversion);
         setValue('CostDescription', selectedData.Description);
+        setRawMaterialCommodityIndexRateAndOtherCostDetailsId(selectedData?.RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null)
         // setTotalCostCurrency(selectedData.CostCurrency);
         // setType(selectedData.ConditionType);
 
@@ -337,6 +340,7 @@ function AddOtherCostDrawer(props) {
         }
         const newData = {
             MaterialCommodityStandardDetailsId: RowData?.MaterialCommodityStandardDetailsId, // Add MaterialCommodityStandardDetailsId
+            RawMaterialCommodityIndexRateAndOtherCostDetailsId: RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null,
             Type: getValues('Type') ? getValues('Type').label : '-',
             CostHeaderName: getValues('Cost') ? getValues('Cost').label : '-',
             Applicability: getValues('Applicability') ? getValues('Applicability').label : '-',
