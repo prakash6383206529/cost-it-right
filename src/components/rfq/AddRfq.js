@@ -677,6 +677,7 @@ function AddRfq(props) {
         onResetPartNoTable()
     }
     const editItemPartTable = (rowData, final, viewMode) => {
+        
 
         setResetRmFields(false)
         setResetBopFields(false)
@@ -1070,12 +1071,12 @@ function AddRfq(props) {
             </>
         )
     };
-
+    
     const buttonFormatterVendorTable = (props) => {
         return (
             <>
-                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={(dataProps?.isAddFlag || showSendButton === DRAFT) ? false : (dataProps?.isViewFlag || !isEditAll)} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={(dataProps?.isAddFlag || showSendButton === DRAFT) ? false : (dataProps?.isViewFlag || !isEditAll)} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -1524,7 +1525,7 @@ function AddRfq(props) {
                     // Common properties
                     newObjTemp.UOM = getValues('UOM')?.label;
                     newObjTemp.UOMId = getValues('UOM')?.value;
-                    newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0;
+                    newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "-";
                     newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
                     newObjTemp.PartType = getValues('PartType')?.label;
                     newObjTemp.PartTypeId = getValues('PartType')?.value;
@@ -2488,8 +2489,9 @@ function AddRfq(props) {
 
         setAssemblyPartNumber(value)
         dispatch(getPartInfo(value?.value, (res) => {
+            
 
-            setValue("Description", res.data?.Data?.Description);
+            setValue("Description", res.data?.Data?.PartName);
             setPartEffectiveDate(res.data.Data?.EffectiveDate);
         }));
         dispatch(getTargetPrice(plant?.value, value?.value, Number(technology?.value), (res) => {
@@ -3044,7 +3046,7 @@ function AddRfq(props) {
                                                                     <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn> */}
                                                                     <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} ></AgGridColumn>
 
-                                                                    {(selectedOption === 'componentAssembly' /* || quationType === 'RM' */) && <AgGridColumn width={"230px"} field="TargetPrice" headerName="Target Price" ></AgGridColumn>}
+                                                                    {(selectedOption === 'componentAssembly' /* || quationType === 'RM' */) && <AgGridColumn width={"230px"} field="TargetPrice" headerName="Target Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {quationType === "BOP" && <AgGridColumn width={"190px"} field="BoughtOutPartNumber" headerName="BOP No." cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 

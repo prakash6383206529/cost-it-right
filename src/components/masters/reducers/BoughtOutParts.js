@@ -204,6 +204,7 @@ export default function BOPReducer(state = initialState, action) {
                 IncoTermsSelectList: action.payload
             }
         case GET_BOP_DETAILS:
+
             return {
                 ...state,
                 loading: false,

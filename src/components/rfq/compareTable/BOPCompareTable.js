@@ -7,8 +7,12 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { getViewBOPDetails } from '../../masters/actions/BoughtOutParts';
 
 const BOPCompareTable = (props) => {
+
     const dispatch = useDispatch()
-    const { viewBOPDetails } = useSelector(state => state.material)
+    const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
+
+
+
     const [sectionData, setSectionData] = useState([])
     const [mainHeadingData, setMainHeadingData] = useState([])
     const [checkBoxCheck, setCheckBoxCheck] = useState({})
@@ -16,7 +20,8 @@ const BOPCompareTable = (props) => {
     const [isLoader, setIsLoader] = useState(false)
     useEffect(() => {
         setIsLoader(true)
-        const idArr = props.selectedRows.map(item => item.BoughtOutPart.Id)
+        const idArr = props.selectedRows.map(item => item.BoughtOutPartId)
+
         dispatch(getViewBOPDetails(idArr, res => { setIsLoader(false) }))
     }, [])
     useEffect(() => {
