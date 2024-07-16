@@ -13,7 +13,8 @@ import TooltipCustom from '../../../common/Tooltip'
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
 import { FORGING } from '../../../../config/masterData'
 function LossStandardTable(props) {
-  const { rmRowData, isLossStandard, isNonFerrous, disableAll, isFerrous, fieldsEnabled, resetTrigger } = props;
+  
+  const { rmRowData, isLossStandard, isNonFerrous, disableAll, isFerrous, fieldsEnabled, resetTrigger,onLossDelete } = props;
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [lossWeight, setLossWeight] = useState('')
@@ -102,7 +103,13 @@ function LossStandardTable(props) {
     }
 }, [props.castingWeightChanged]);
   useEffect(() => {
-    setTableData(props.sendTable ? props.sendTable : [])
+    if(isFerrous ){
+      setTableData( (props?.sendTable.length !== 0 && props?.sendTable[0]?.LossWeight !==0 ) ? props?.sendTable : [])
+    }
+    else{
+
+      setTableData(props?.sendTable ? props?.sendTable : [])
+    }
 
 
     if (props?.sendTable?.length === 0) {
@@ -517,6 +524,10 @@ function LossStandardTable(props) {
 
     setTableData(tempData)
     cancelUpdate()
+
+    
+    onLossDelete(tempData);
+
   }
 
   const getLossTypeName = (number) => {
@@ -560,7 +571,7 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossOfType}
-            disabled={props.CostingViewMode || disableLossType || disableAll || !fieldsEnabled}
+            disabled={props.CostingViewMode || disableLossType || disableAll || (isFerrous ? !fieldsEnabled :fieldsEnabled) }
           />
         </Col>
 
@@ -765,14 +776,14 @@ function LossStandardTable(props) {
                   type="button"
                   className={'user-btn mt30 pull-left'}
                   onClick={addRow}
-                  disabled={props.CostingViewMode || disableAll || !fieldsEnabled}
+                  disabled={props.CostingViewMode || disableAll || (isFerrous ? !fieldsEnabled : fieldsEnabled)}
                 >
                   <div className={'plus'}></div>ADD
                 </button>
                 <button
                   type="button"
                   className={"mr15 ml-1 mt30 reset-btn"}
-                  disabled={props.CostingViewMode || disableAll || !fieldsEnabled}  
+                  disabled={props.CostingViewMode || disableAll || (isFerrous ? !fieldsEnabled : fieldsEnabled)}  
                   onClick={rateTableReset}
                 >
                   Reset
