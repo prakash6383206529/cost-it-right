@@ -1,0 +1,300 @@
+@import "./abstracts/_variable.scss";
+
+.rfq-container-drawer {
+    .container {
+        padding-right: 0 !important;
+    }
+
+    .drawer-wrapper {
+        min-width: 992px;
+    }
+
+    .part-detail-wrapper {
+
+        .col-md-3,
+        .col-md-6 {
+
+            // padding-right: 7px;
+            // padding-left: 7px;
+            >div {
+                margin-bottom: 0 !important;
+            }
+        }
+
+        .inputbox {
+            border-bottom: none;
+        }
+
+        textarea {
+            min-height: 9.4rem;
+        }
+    }
+
+    .overlay-contain {
+        .ag-center-cols-container {
+            border: 1px solid $agGridBorder;
+            border-top: none;
+        }
+    }
+}
+
+.border-color {
+    border-bottom: 1px solid $agGridBorder !important;
+}
+
+.colorWhite {
+    background-color: #fff;
+}
+
+.margin-top {
+    .ag-cell-wrapper {
+        margin-top: 17px;
+    }
+
+    &.ag-cell-focus {
+        border-color: $agGridBorder !important;
+        border-bottom-color: #fff !important;
+    }
+}
+
+.heading-container {
+    height: 100%;
+    font-size: 14px;
+    margin-bottom: 0;
+
+    >div {
+        padding-left: 10px;
+
+        span {
+            font-weight: 500;
+            color: $grid-font;
+        }
+    }
+}
+
+// .rfq-calendar {
+//     .react-datepicker {
+//         display: flex;
+//     }
+// }
+
+.font-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-center {
+    .ag-cell-label-container {
+        .ag-header-cell-label {
+            justify-content: center;
+        }
+    }
+}
+
+.rfq-listing-action {
+    .ag-react-container {
+        text-align: right;
+        padding-right: 0 !important;
+        margin-right: -0.25rem !important;
+    }
+}
+
+.rfq-portal {
+    .ag-row-even {
+        z-index: 1;
+    }
+}
+
+.rfq-calendar {
+    .react-datepicker {
+        display: flex;
+    }
+}
+
+.chat-container {
+    padding: 5px 10px;
+    background-color: $primaryBackground;
+    border-radius: 5px;
+    margin-top: 8px;
+
+    .sender-name {
+        font-weight: 700;
+        font-size: 17px;
+        color: $colorPrimary;
+    }
+
+    .sender-message {
+        font-size: 14px;
+        max-width: 310px;
+        font-weight: 400;
+    }
+
+    .sender-date {
+        font-size: 11px;
+        font-weight: 600;
+        color: #a3a6a8;
+        margin-top: 4px;
+
+        .sender-time {
+            margin-left: 8px;
+        }
+    }
+}
+
+.auction-page-tabs {
+    .right-actions {
+        top: -11px;
+    }
+}
+
+.card-border-no-arrow::after {
+    display: none;
+}
+
+.card-border-no-arrow {
+    .top {
+        background: none;
+        line-height: 1;
+
+        b {
+            font-size: 14px;
+        }
+
+        .left {
+            background: none;
+            color: #3d4465;
+            max-width: 165px;
+            width: 100%;
+            padding: 0;
+        }
+
+        .right {
+            padding: 0 5px;
+            width: 100%;
+            color: #3d4465;
+
+            span {
+                font-size: 16px;
+            }
+        }
+    }
+}
+
+.shadow-lgg.login-formg form {
+    .remove-mh {
+        min-height: auto;
+    }
+
+    .prize-zone-wrapper {
+        .form-group.inputbox {
+            min-height: auto;
+            margin-bottom: 5px;
+        }
+    }
+}
+
+.bid-details-wrapper {
+    min-height: 150px;
+    height: auto;
+}
+
+.bids-dropdown-menu {
+    width: 260px;
+    font-size: 14px;
+}
+
+.bids-btn {
+    background: #5fa9ef;
+    font-size: 12px;
+    padding: 8px;
+}
+
+.auction-price-wrapper {
+    .remove-mh {
+
+        // label {
+        //     display: none;
+        // }
+        div:first-child {
+            margin-right: 8px;
+        }
+    }
+}
+
+.prize-zone-wrapper {
+    .remove-mh {
+        label {
+            display: none;
+        }
+
+        div:first-child {
+            margin-right: 8px;
+        }
+    }
+}
+
+.refresh-div {
+    max-width: 200px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.counterOfferModal {
+    .modal-body {
+        .img-block {
+            display: none;
+        }
+
+        .form-group {
+            label {
+                width: auto;
+                margin-right: 10px;
+                margin-bottom: 0 !important;
+            }
+        }
+    }
+}
+
+.App {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+/* styles.css */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+.countdown {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 1rem;
+}
+
+.countdown span {
+    display: inline-block;
+    animation: fadeIn 0.5s;
+}
+
+.countdown.last-minute span {
+    color: red;
+    animation: fadeIn 0.5s, blink 1s step-end infinite;
+}
+
+.opacity-down {
+    opacity: 0.7;
+}

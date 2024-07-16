@@ -20,7 +20,7 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-//const BASE_URL = `http://10.10.1.100:10152/api/v1`
+// const BASE_URL = `http://10.10.8.120:1005/api/v1`
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -1108,7 +1108,14 @@ export const API = {
   checkRegisteredVendor: `${BASE_URL}/rfq-quotation/check-registered-vendor`,
   // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
 
-
+  //Auction
+  auctionRfqSelectList: `${BASE_URL}/rfq-quotation/select-list-rfq-number`,
+  checkQuatationForAuction: `${BASE_URL}/rfq-quotation/check-quotation-auction-part-details`,
+  createAuction: `${BASE_URL}/rfq-quotation/create-auction`,
+  auctionListByStatus: `${BASE_URL}/rfq-quotation/get-quotation-auction-list`,
+  auctionBidDetails: `${BASE_URL}/rfq-quotation/get-quotation-auction-vendor-bid-price-details`,
+  auctionHeaderDetails: `${BASE_URL}/rfq-quotation/get-quotation-auction-by-id`,
+  sendCounterOffer: `${BASE_URL}/rfq-quotation/create-counter-offer`,
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
   // getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
@@ -1989,6 +1996,18 @@ export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
 export const HAVELLS_DESIGN_PARTS = "Havells Design part"
 export const GET_SAP_EVALUATIONTYPE = "GET_SAP_EVALUATIONTYPE"
 
+//AUCTION 
+export const SET_AUCTION_DATA = 'SET_AUCTION_DATA'
+export const SET_AUCTION_DATA_BY_RFQ = 'SET_AUCTION_DATA_BY_RFQ'
+export const SELECT_AUCTION_RFQ_LIST = 'SELECT_AUCTION_RFQ_LIST'
+export const AUCTION_LIST_BY_STATUS = 'AUCTION_LIST_BY_STATUS'
+export const SHOW_HIDE_BID_WINDOW = 'SHOW_HIDE_BID_WINDOW'
+export const GET_BID_DETAIL_BY_QUATATION = 'GET_BID_DETAIL_BY_QUATATION'
+export const GET_HEADER_DETAIL_BY_QUATATION = 'GET_HEADER_DETAIL_BY_QUATATION'
+
+export const AuctionScheduledId = 35
+export const AuctionClosedId = 37
+export const AuctionLiveId = 38
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
 export const SET_OPEN_ALL_TABS = 'SET_OPEN_ALL_TABS'
@@ -2230,6 +2249,7 @@ export const SIMULATION_PATH = '/simulation'
 export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
+export const AUCTION_LISTING = '/auction'
 export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
 export const RESET_PASSWORD = '/reset-password'
@@ -2738,6 +2758,7 @@ export const EXCHNAGERATE = '8'
 export const MACHINERATE = '9'
 export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
+export const RAWMATERIALINDEX = '11'
 
 // BULK UPLOAD
 export const SHEETMETAL_GROUP_BULKUPLOAD = 1
@@ -3130,7 +3151,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.5";
+export const VERSION = "V3.0.7";
 
 
 

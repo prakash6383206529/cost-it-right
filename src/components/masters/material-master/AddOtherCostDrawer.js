@@ -200,14 +200,14 @@ function AddOtherCostDrawer(props) {
                 return;
             }
 
-            const item = tableData.find(item => item.CostHeaderName === Applicability);
+            const item = tableData.find(item => item?.CostHeaderName === Applicability);
             if (item) {
-                totalCostCurrency += item.NetCost;
+                totalCostCurrency += props.rawMaterial ? item?.NetCostConversion : item?.NetCost;
 
                 if (selectedApplicabilities.includes('Basic Rate')) {
                     // totalCostCurrency += BasicRateIndexCurrency;
                     totalBasicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency
-                    total = totalCostCurrency + totalBasicRate
+                    total = checkForNull(totalCostCurrency) + checkForNull(totalBasicRate)
                 } else {
                     total = totalCostCurrency
                 }
@@ -318,7 +318,7 @@ function AddOtherCostDrawer(props) {
         const type = getValues('Type');
         const cost = getValues('Cost');
         const applicability = getValues('Applicability');
-        const percentage = getValues('Percentage');
+        const percentage = Number(getValues('Percentage'));
         const costBaseCurrency = getValues('CostBaseCurrency');
         const applicabilityBaseCost = getValues('ApplicabilityBaseCost');
 
@@ -327,11 +327,10 @@ function AddOtherCostDrawer(props) {
         if (!type || !cost) return false;
         if (type.label === "Percentage") {
             // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
-            if (!applicability || !applicabilityBaseCost || !percentage || percentage !== 0) {
+            if (!applicability || !applicabilityBaseCost || !percentage || percentage === 0) {
                 Toaster.warning('Cost should not be zero or empty.');
                 return false;
             }
-
         } else if (type.label === 'Fixed') {
             // If 'Type' is 'fixed', check for 'CostCurrency' and 'CostBaseCurrency'
             if (!costBaseCurrency) return false;
