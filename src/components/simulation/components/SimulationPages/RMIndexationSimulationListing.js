@@ -20,7 +20,7 @@ import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilt
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import { editRMIndexedSimulationData, getListingForSimulationCombined, getRMIndexationCostingSimulationListing, getRMIndexationSimulationListing, setSelectedRowForPagination } from '../../../simulation/actions/Simulation';
 import WarningMessage from '../../../common/WarningMessage';
-import _ from 'lodash'; 
+import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../../common/CommonFunctions';
 import Attachament from '../../../costing/components/Drawers/Attachament';
@@ -263,6 +263,7 @@ function RMIndexationSimulationListing(props) {
         } else {
             filterData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
             dispatch(getRMIndexationSimulationListing(filterData, skip, take, isPagination, (res) => {
+                console.log('filterData: ', filterData);
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 apiResponse(res, isPagination)
             }))
