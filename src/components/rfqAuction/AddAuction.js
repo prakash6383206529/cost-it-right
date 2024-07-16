@@ -9,11 +9,10 @@ import { MESSAGES } from "../../config/message";
 import HeaderTitle from "../common/HeaderTitle";
 
 import _, { debounce } from "lodash";
-import ComparsionAuction from "./ComparsionAuction";
 import { technology } from "../../helper/Dummy";
 
 import Switch from 'react-switch'
-import { required, calculatePercentageValue, checkForDecimalAndNull, checkForNull, checkWhiteSpaces, extenstionTime, decimalNumberLimit, maxPercentageValue, number, acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation, calculateEndDate, userDetails, loggedInUserId, getTimeZone } from "../../helper";
+import { required, calculatePercentageValue, checkForDecimalAndNull, checkForNull, checkWhiteSpaces, extenstionTime, decimalNumberLimit, maxPercentageValue, number, acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation, calculateEndDate, userDetails, loggedInUserId, getTimeZone, calculateEndDateTime } from "../../helper";
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
 import DayTime from "../common/DayTimeWrapper";
@@ -133,7 +132,7 @@ function AddAuction(props) {
     data.AuctionStartDateTime = dateAndTimeState.dateAndTime
     data.MinimumReductionApplicabilityType = state.reductionPrice ? 'Fixed' : 'Percentage'
     data.PriceZoneApplicabilityType = state.priceZoneReduction ? 'Fixed' : 'Percentage'
-    data.AuctionEndDateTime = '2024-07-15 16:00:00'
+    data.AuctionEndDateTime = calculateEndDateTime(dateAndTimeState.dateAndTime, String(value.AuctionDuration))
     data.AuctionStartDateTimeUTC = ''
     data.AuctionEndDateTimeUTC = ''
 
@@ -235,7 +234,18 @@ function AddAuction(props) {
     })
     return temp;
   }
+  const partLabel = ['PartNumber']
+  const rmLabel = ['RawMaterialName', 'RawMaterialCode', 'RawMaterialGrade', 'RawMaterialSpecification'];
+  const boplabel = ['BopName', 'BoughtOutPartNumber', 'BoughtOutPartCategoryName']
+
+  const reset = (...arr) => {
+    arr.map(item => {
+      setValue(item, '')
+      return null
+    })
+  }
   const RFQHandler = (newValue) => {
+    reset(...partLabel, ...rmLabel, ...boplabel)
     dispatch(getQuotationById(newValue.value, (res) => {
       if (res?.data?.Data) {
         let data = res?.data?.Data
@@ -281,25 +291,30 @@ function AddAuction(props) {
       setState(prevState => ({ ...prevState, QuotationPartId: newValue.QuotationPartId }))
     }
     const arrIteration = (arr) => {
-      arr.forEach(key => {
-        setValue(key, newValue?.[key])
+      arr.forEach((key, index) => {
+        if (index !== 0) {
+          setValue(key, newValue?.[key])
+        }
       });
     }
-    if (PartType === RM) {
-      const rmLabel = ['RawMaterialCode', 'RawMaterialGrade', 'RawMaterialSpecification'];
-      if (newValue) {
-        arrIteration(rmLabel)
-      }
-    } else if (PartType === BOP) {
-      const boplabel = ['BoughtOutPartNumber', 'BoughtOutPartCategoryName']
-      if (newValue) {
-        arrIteration(boplabel)
-      }
-    } else if (PartType === ASSEMBLY || PartType === COMPONENT) {
-
-    }
     dispatch(checkQuatationForAuction(newValue.QuotationPartId, res => {
+      if (res.data) {
+        if (PartType === RM) {
+          if (newValue) {
+            arrIteration(rmLabel)
+          }
+        } else if (PartType === BOP) {
+          if (newValue) {
+            arrIteration(boplabel)
+          }
+        }
+      } else {
+        reset(...partLabel, ...rmLabel, ...boplabel)
+      }
     }))
+  }
+  const durationHandle = (event) => {
+
   }
   return (
     <>
@@ -474,7 +489,7 @@ function AddAuction(props) {
                         <Col md="3">
                           <SearchableSelectHookForm
                             label={"BOP Name"}
-                            name={"bopName"}
+                            name={"BopName"}
                             placeholder={"Select"}
                             Controller={Controller}
                             control={control}
@@ -483,7 +498,7 @@ function AddAuction(props) {
                             options={state.BoughtOutPartList}
                             mandatory={true}
                             handleChange={(e) => handlePartChange(e, BOP)}
-                            errors={errors.bopName}
+                            errors={errors.BopName}
                             disabled={false}
                           />
                         </Col>
@@ -608,15 +623,15 @@ function AddAuction(props) {
                                 control={control}
                                 register={register}
                                 rules={{
-                                  required: false,
+                                  required: true,
                                   pattern: {
                                     value: /^([0-9]*):([0-5]?[0-9])$/i,
                                     message:
                                       "Hours should be in hh:mm format.",
                                   },
                                 }}
-                                mandatory={false}
-                                handleChange={() => { }}
+                                mandatory={true}
+                                handleChange={(e) => durationHandle(e)}
                                 defaultValue={""}
                                 className=""
                                 customClassName={
