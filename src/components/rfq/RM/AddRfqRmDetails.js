@@ -44,7 +44,7 @@ const AddRfqRmDetails = (props) => {
     const dispatch = useDispatch()
     const [rmRemark, setRmRemark] = useState("");
     const showStatus = dataProps?.rowData?.Status || ""
-    console.log('showStatus: ', showStatus);
+
     // const [viewQuotationPart, setViewQuotationPart] = useState(false)
     const rawMaterialNameSelectList = useSelector((state) => state.material.rawMaterialNameSelectList)
     const gradeSelectList = useSelector((state) => state.material.gradeSelectList)
@@ -273,8 +273,8 @@ const AddRfqRmDetails = (props) => {
             setValue('Specifications', '')
         }
     }
-    console.log(isViewFlag, isEditFlag, dataProps?.isViewFlag, dataProps?.isEditFlag, Object.keys(technology).length === 0, (dataProps?.isEditFlag && showStatus == !PREDRAFT));
-    console.log('(dataProps?.isEditFlag && showStatus == !PREDRAFT): ', dataProps?.isEditFlag, showStatus !== PREDRAFT);
+
+
     return (
 
         <>

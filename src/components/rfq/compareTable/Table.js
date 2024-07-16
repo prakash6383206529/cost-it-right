@@ -3,6 +3,8 @@ import React from 'react';
 
 const Table = (props) => {
     const { headerData, sectionData, children } = props;
+
+
     const renderList = (sectionData) => {
         const { isHighlightedRow, header, data } = sectionData
         return <>

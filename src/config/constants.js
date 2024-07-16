@@ -20,7 +20,6 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.8.120:1005/api/v1`
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -109,6 +108,17 @@ export const API = {
   getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
   getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
   getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
+
+  // INDEXATION SIMULATION
+  getRMIndexationSimulationListing: `${BASE_URL}/simulation/get-raw-material-records-for-simulation`,
+  editRMIndexedSimulationData: `${BASE_URL}/simulation/get-all-simulated-raw-material`,
+  draftSimulationForRMMaster: `${BASE_URL}/simulation/draft-simulation-raw-material-master`,
+  updateSimulationRawMaterial: `${BASE_URL}/simulation/update-simulation-raw-material`,
+  runSimulationOnRawMaterial: `${BASE_URL}/simulation/run-simulation-on-raw-material-master`,
+  getAllSimulatedRawMaterial: `${BASE_URL}/simulation/get-all-simulated-raw-material`,
+  getApprovalSimulatedRawMaterialSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-raw-material-summary`,
+  getRMIndexationCostingSimulationListing: `${BASE_URL}/simulation/get-impacted-raw-material-details`,
+
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -1275,6 +1285,11 @@ export const SET_COMMODITY_DETAILS = 'SET_COMMODITY_DETAILS'
 export const SET_OTHER_COST_DETAILS = 'SET_OTHER_COST_DETAILS'
 export const GET_LAST_REVISION_RAW_MATERIAL_DETAILS = 'GET_LAST_REVISION_RAW_MATERIAL_DETAILS'
 
+//INDEXATION SIMULATION
+export const GET_RM_INDEXATION_SIMULATION_LIST = 'GET_RM_INDEXATION_SIMULATION_LIST'
+export const GET_SIMULATED_RAW_MATERIAL_SUMMARY = 'GET_SIMULATED_RAW_MATERIAL_SUMMARY'
+export const GET_RM_INDEXATION_COSTING_SIMULATION_LIST = 'GET_RM_INDEXATION_COSTING_SIMULATION_LIST'
+
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
 export const GET_CATEGORY_TYPE_DATA_SUCCESS = 'GET_CATEGORY_TYPE_DATA_SUCCESS'
@@ -2029,6 +2044,9 @@ export const AuctionLiveId = 38
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
 export const SET_OPEN_ALL_TABS = 'SET_OPEN_ALL_TABS'
 export const SELECT_PURCHASE_REQUISITION = 'SELECT_PURCHASE_REQUISITION'
+
+//SIMULATION FOR INDEXED RM
+export const GET_INDEXED_RM_FOR_SIMULATION = 'GET_INDEXED_RM_FOR_SIMULATION'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
@@ -2942,6 +2960,8 @@ export const BUDGETBULKUPLOAD = 'Budget'
 //added for OverheadProfit
 export const OVERHEADBULKUPLOAD = 'Overhead'
 export const PROFITBULKUPLOAD = 'Profit'
+
+
 
 
 //STATUS FILTER DROPDOWN OPTIONS

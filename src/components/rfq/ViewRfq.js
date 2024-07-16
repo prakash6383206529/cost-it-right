@@ -182,9 +182,7 @@ function RfqListing(props) {
                         temp = item.filter(el => el.CostingId !== null);
                         break;
                     case 'RawMaterial':
-
                         temp = item.filter(el => el.RawMaterialId !== null);
-
                         break;
                     case 'BoughtOutPart':
                         temp = item.filter(el => el.BoughtOutPartId !== null);
@@ -948,8 +946,10 @@ function RfqListing(props) {
     }
 
     const onRowSelect = (event) => {
+        
         if (event.node.isSelected()) {
             const selectedRowIndex = event.node.rowIndex;
+            
 
             setSelectedRowIndex(selectedRowIndex)
         } else {
@@ -960,6 +960,7 @@ function RfqListing(props) {
 
 
         const selectedRows = gridApi?.getSelectedRows()
+        
 
         let partNumber = []
 
@@ -968,14 +969,10 @@ function RfqListing(props) {
         switch (selectedRows[0]?.PartType) {
             case 'RawMaterial':
                 selectedRows?.map(item => partNumber.push(item.RawMaterial))
-                data = partNumber.map(item => rowData.filter(el => el.RawMaterial === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
-
-
-                break;
+                data = partNumber.map(item => rowData.filter(el => el.RawMaterial === item))             // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
             case 'BoughtOutPart':
                 selectedRows?.map(item => partNumber.push(item.BoughtOutPart))
                 data = partNumber.map(item => rowData.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
-
 
                 break;
             case 'Component':
@@ -988,6 +985,7 @@ function RfqListing(props) {
 
         }
 
+        
 
 
 
@@ -1013,6 +1011,7 @@ function RfqListing(props) {
 
 
         setSelectedRows(newArray)
+        
         if (selectedRows.length === 0) {
             setAddComparisonButton(true)
         } else {
@@ -1049,6 +1048,9 @@ function RfqListing(props) {
 
     const partNumberFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        
+        
+        
         if (props?.rowIndex === selectedRowIndex) {
             props.node.setSelected(true)
         }
@@ -1106,9 +1108,10 @@ function RfqListing(props) {
         switch (partType) {
             case 'RawMaterial':
                 return "RM Name"
-            case 'BOP':
+            case 'BoughtOutPart':
                 return "BOP Name"
-            case 'Part':
+            case 'Component':
+            case 'Assembly':
                 return "Part Name"
 
             default:
@@ -1119,10 +1122,11 @@ function RfqListing(props) {
         switch (partType) {
             case 'RawMaterial':
                 return "RawMaterial"
-            case 'BOP':
+            case 'BoughtOutPart':
                 return "BoughtOutPart"
 
-            case 'Part':
+            case 'Component':
+            case 'Assembly':
                 return "PartId"
 
             default:
