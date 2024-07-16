@@ -711,10 +711,8 @@ function Simulation(props) {
             // return <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} assemblyTechnology={true} technology={technology} closeSimulation={closeSimulation} />
             return <AssemblySimulationListing isOperation={true} cancelRunSimulation={cancelRunSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology} master={master.value} rowCount={rowCount} tokenForMultiSimulation={{}} cancelViewPage={cancelViewPage} showHide={showHide} cancelSimulationListingPage={cancelSimulationListingPage} isCustomer={isCustomer} customer={customer} plant={plant} vendor={vendor} costingHead={costingHead} />
         } else {
-            console.log(type, 'type');
 
             switch (value.value) {
-
                 case RMDOMESTIC:
                     if (type?.label === "Indexed") {
                         return (<RMIndexationSimulationListing master={master.value} rawMaterialIds={rawMaterialIds} isSimulation={true} type={type} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)

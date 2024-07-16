@@ -43,7 +43,6 @@ const gridOptions = {};
 
 function RMIndexationSimulationListing(props) {
     const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, master } = props;
-    console.log('master: ', master);
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [isBulkUpload, setisBulkUpload] = useState(false);
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
@@ -257,13 +256,12 @@ function RMIndexationSimulationListing(props) {
             setloader(true)
         }
         if (String(master) === RMDOMESTIC) {
+            filterData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
             dispatch(getRMIndexationCostingSimulationListing(filterData, skip, take, isPagination, (res) => {
                 apiResponse(res, isPagination)
             }))
         } else {
-            filterData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
             dispatch(getRMIndexationSimulationListing(filterData, skip, take, isPagination, (res) => {
-                console.log('filterData: ', filterData);
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 apiResponse(res, isPagination)
             }))
