@@ -41,7 +41,8 @@ import {
     GET_ALL_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
     GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT, EMPTY_GUID, BUDGET_ID, GET_VOLUME_DATA_LIST, GET_SPECIFICATION_SELECTLIST_SUCCESS, GET_RM_SPECIFICATION_LIST_SUCCESS, GET_BOP_IMPORT_DATA_LIST, ONBOARDINGID, GET_ONBOARDING_SUMMARY_DATA_LIST, RAW_MATERIAL_DETAILS,
-    COMMODITY_INDEX_RATE_AVERAGE
+    COMMODITY_INDEX_RATE_AVERAGE,
+    GET_RM_DETAILS
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1723,5 +1724,31 @@ export function SetCommodityIndexAverage(materialTypeId, indexExchangeId, unitOf
         if (callback) {
             callback();
         }
+    }
+}
+
+export function getViewRawMaterialDetails(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.getViewRawMaterialDetails, data, config())
+        request
+            .then((response) => {
+                if (response?.data.Result) {
+                    dispatch({
+                        type: GET_RM_DETAILS,
+                        payload: response.status === 200 ? response?.data.DataList : []
+                    })
+                    callback(response)
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response?.data.Message) {
+                        Toaster.error(response?.data.Message)
+                    }
+                }
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE })
+                apiErrors(error)
+                callback(error)
+            })
     }
 }
