@@ -60,7 +60,7 @@ const RMCompareTable = (props) => {
                 //mainheader data start
                 const mainHeaderObj = {
                     vendorName: item.VendorName,
-                    onChange: () => checkBoxHanlde(index),
+                    onChange: () => checkBoxHanlde(index, item),
                     checked: checkBoxCheck[index],
                     isCheckBox: item.IsShowCheckBoxForApproval
 
@@ -87,9 +87,13 @@ const RMCompareTable = (props) => {
         }
     }, [viewRmDetails])
 
-    const checkBoxHanlde = (index) => {
+    const checkBoxHanlde = (index, item) => {
+        let selectedData = []
+        selectedData.push(item?.RawMaterialId)
+
+
         setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
-        props.checkCostingSelected()
+        props.checkCostingSelected(selectedData, index)
     }
     return (
         <div>

@@ -29,16 +29,21 @@ const BOPCompareTable = (props) => {
             let sectionOne = [];
             let sectionTwo = [];
             let sectionThree = []
-            let sectionOneHeader = ['Plant (Code)', 'Category', 'Effective Date', 'Basic Rate']
-            let sectionTwoHeader = ['CutOff Price', 'Scrap Rate', 'RM Shearing Cost', 'RM Freight Cost', 'RM Net Cost']
+            let sectionOneHeader = ["BOP No.", "BOP Name", "Category", "UOM", /* "Specification", */ 'Plant (Code)', "vendor (Code)", 'Effective Date', 'Basic Rate']
+            let sectionTwoHeader = ['CutOff Price', 'Scrap Rate', 'BOP Shearing Cost', 'BOP Freight Cost', 'BOP Net Cost']
             let sectionThreeHeader = ['Remark']
             let mainHeader = []
             viewBOPDetails.map((item, index) => {
                 //section one data start
                 const effectiveDate = <input className='form-control defualt-input-value' disabled={true} value={DayTime(item.EffectiveDate).format('DD/MM/YYYY')} />
                 const formattedDataOne = [
-                    item.DestinationPlantName,
-                    item.BoughtOutPartCategoryName,
+                    item.BoughtOutPartNumber,
+                    item.BoughtOutPartName,
+                    item.BoughtOutPartCategory,
+                    item.UOM,
+                    /*  item.BoughtOutPartSpecificationName, */
+                    item.Plants,
+                    item.Vendor,
                     effectiveDate,
                     item.BasicRatePerUOM
                 ];
@@ -59,8 +64,8 @@ const BOPCompareTable = (props) => {
 
                 //mainheader data start
                 const mainHeaderObj = {
-                    vendorName: item.VendorName,
-                    onChange: () => checkBoxHanlde(index),
+                    vendorName: item.Vendor,
+                    onChange: () => checkBoxHanlde(item, index),
                     checked: checkBoxCheck[index],
                     isCheckBox: item.IsShowCheckBoxForApproval
 
@@ -87,9 +92,13 @@ const BOPCompareTable = (props) => {
         }
     }, [viewBOPDetails])
 
-    const checkBoxHanlde = (index) => {
+    const checkBoxHanlde = (index, item) => {
+        let selectedData = []
+        selectedData.push(item?.BoughtOutPartId)
+
+
         setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
-        props.checkCostingSelected()
+        props.checkCostingSelected(selectedData, index)
     }
     return (
         <div>
