@@ -11,13 +11,27 @@ import { data } from "jquery";
 import AuctionClosed from "./components/AuctionClosed";
 import AuctionScheduled from "./components/AuctionScheduled";
 import ComparsionAuction from "./ComparsionAuction";
+import { getLiveAndScheduledCount } from "./actions/RfqAuction";
 
 function AuctionIndex(props) {
   let history = useHistory();
   const [activeTab, setActiveTab] = useState("1");
   const [hideNavBar, setHideNavBar] = useState(true);
+  const [status, setStatus] = useState({
+    Live: 0,
+    Scheduled: 0,
+    Closed: 0
+  })
   const { showHideBidWindow } = useSelector(state => state.Auction);
+  const dispatch = useDispatch()
 
+  useEffect(() => {
+    dispatch(getLiveAndScheduledCount(res => {
+      if (res.data.Result) {
+        setStatus(res.data.Data)
+      }
+    }))
+  }, [activeTab])
   /**
    * @method toggle
    * @description toggling the tabs
@@ -72,7 +86,7 @@ function AuctionIndex(props) {
                       {/* <span className="d-block">Level</span> */}
                     </div>
                     <div className="right text-center">
-                      <span className="fw-bold">10</span>
+                      <span className="fw-bold">{status.Live}</span>
                     </div>
                   </div>
                   {/* top */}
@@ -90,7 +104,7 @@ function AuctionIndex(props) {
                       {/* <span className="d-block">Level</span> */}
                     </div>
                     <div className="right text-center">
-                      <span className="fw-bold">5</span>
+                      <span className="fw-bold">{status.Scheduled}</span>
                     </div>
                   </div>
                   {/* top */}

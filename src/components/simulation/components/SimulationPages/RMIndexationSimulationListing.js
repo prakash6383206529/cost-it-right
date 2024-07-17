@@ -43,7 +43,6 @@ const gridOptions = {};
 
 function RMIndexationSimulationListing(props) {
     const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, master } = props;
-    console.log('master: ', master);
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [isBulkUpload, setisBulkUpload] = useState(false);
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
@@ -55,7 +54,7 @@ function RMIndexationSimulationListing(props) {
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     const { globalTakes } = useSelector((state) => state.pagination);
     const rmIndexationSimulationList = useSelector((state) => state.simulation.rmIndexationSimulationList);
-
+    const rmIndexationCostingSimulationList = useSelector((state) => state.simulation.rmIndexationCostingSimulationList);
 
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
@@ -243,7 +242,7 @@ function RMIndexationSimulationListing(props) {
             // material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : materialId,
             // grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : gradeId,
             // vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : vendorId,
-            // technologyId: isSimulation ? props.technology : technologyId,
+            Technology: props.isCostingSimulation ? Number(props.technology) : '',
             // net_landed_min_range: value.min,
             // net_landed_max_range: value.max,
             // departmentCode: isSimulation ? userDepartmetList() : "",
@@ -257,13 +256,12 @@ function RMIndexationSimulationListing(props) {
             setloader(true)
         }
         if (String(master) === RMDOMESTIC) {
+            filterData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
             dispatch(getRMIndexationCostingSimulationListing(filterData, skip, take, isPagination, (res) => {
                 apiResponse(res, isPagination)
             }))
         } else {
-            filterData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
             dispatch(getRMIndexationSimulationListing(filterData, skip, take, isPagination, (res) => {
-                console.log('filterData: ', filterData);
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 apiResponse(res, isPagination)
             }))
@@ -978,7 +976,7 @@ function RMIndexationSimulationListing(props) {
                                         defaultColDef={defaultColDef}
                                         floatingFilter={true}
                                         domLayout='autoHeight'
-                                        rowData={showExtraData && rmIndexationSimulationList ? [...setLoremIpsum(rmIndexationSimulationList[0]), ...rmIndexationSimulationList] : rmIndexationSimulationList}
+                                        rowData={props.isCostingSimulation ? rmIndexationCostingSimulationList : rmIndexationSimulationList}
 
                                         pagination={true}
                                         paginationPageSize={globalTakes}
@@ -997,30 +995,30 @@ function RMIndexationSimulationListing(props) {
                                         enableBrowserTooltips={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
-                                        <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                        <AgGridColumn field={props.isCostingSimulation ? 'Technology' : 'TechnologyName'} headerName='Technology'></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
-                                        <AgGridColumn field="RawMaterialGradeName" headerName="Grade"></AgGridColumn>
-                                        <AgGridColumn field="RawMaterialSpecificationName" headerName="Spec"></AgGridColumn>
+                                        <AgGridColumn field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} headerName="Grade"></AgGridColumn>
+                                        <AgGridColumn field={props.isCostingSimulation ? 'RawMaterialSpecs' : "RawMaterialSpecificationName"} headerName="Spec"></AgGridColumn>
                                         <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                         <AgGridColumn field="Category"></AgGridColumn>
                                         <AgGridColumn field="MaterialType"></AgGridColumn>
-                                        <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
-                                        <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
+                                        <AgGridColumn field={props.isCostingSimulation ? 'PlantCode' : "DestinationPlantName"} headerName="Plant (Code)"></AgGridColumn>
+                                        <AgGridColumn field={props.isCostingSimulation ? 'VendorCode' : "VendorName"} headerName="Vendor (Code)"></AgGridColumn>
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
-                                        {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                        <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
+                                        {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field={props.isCostingSimulation ? 'CustomerCode' : "CustomerName"} headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                        <AgGridColumn field={props.isCostingSimulation ? 'UOM' : "UnitOfMeasurementName"} headerName='UOM'></AgGridColumn>
 
-                                        <AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        <AgGridColumn field="CalculatedFactor" headerName='Calculated Factor' cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        <AgGridColumn field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)' cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        {props.isMasterSummaryDrawer && rmIndexationSimulationList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Rate'></AgGridColumn>}
-                                        {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
-                                        <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
+                                        {!props.isCostingSimulation && <><AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
+                                            <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                            <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
+                                            <AgGridColumn field="CalculatedFactor" headerName='Calculated Factor' cellRenderer='commonCostFormatter'></AgGridColumn>
+                                            <AgGridColumn field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)' cellRenderer='commonCostFormatter'></AgGridColumn>
+                                            <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                            {props.isMasterSummaryDrawer && rmIndexationSimulationList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Rate'></AgGridColumn>}
+                                            {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
+                                            <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
 
-                                        <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn></>}
                                         {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                         <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                         <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>

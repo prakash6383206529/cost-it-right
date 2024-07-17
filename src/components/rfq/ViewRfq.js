@@ -207,7 +207,8 @@ function RfqListing(props) {
 
                 seprateData[Math.round(seprateData.length / 2) - 1].PartNo = x;
                 seprateData[Math.round(seprateData.length / 2) - 1].NfrNo = seprateData[0].NfrNumber;             // SHOWING PART NUMBER IN MIDDLE
-                seprateData[Math.round(seprateData.length / 2) - 1].PartTypes = seprateData[0].PartType;             // SHOWING PART NUMBER IN MIDDLE
+                seprateData[Math.round(seprateData.length / 2) - 1].PartTypes = seprateData[0].PartType;
+                seprateData[Math.round(seprateData.length / 2) - 1].PRNo = seprateData[0].PRNumber;           // SHOWING PART NUMBER IN MIDDLE
                 seprateData[seprateData.length - 1].LastRow = true;                                               // ADDING LASTROW KEY FOR SHOWING SEPERATE BORDER
                 seprateData[Math.round(seprateData.length / 2) - 1].RowMargin = seprateData.length >= 2 && seprateData.length % 2 === 0 && 'margin-top';    // ADDING ROWMARGIN KEY IN THE GRID FOR EVEN ROW AND AS WELL AS PARTS HAVE TWO OR MORE COSTING
                 data.push(seprateData)
@@ -1004,7 +1005,7 @@ function RfqListing(props) {
             case 'BoughtOutPart':
                 setViewBOPCompare(true)
                 setViewRMCompare(false)
-                setViewRMCompare(false)
+
                 setaddComparisonToggle(true)
                 break
             default:
@@ -1286,10 +1287,10 @@ function RfqListing(props) {
                                         >
 
                                             <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName={headerPartType()} cellRenderer={'partNumberFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="PartTypes" cellClass={cellClass} headerName="Part Type" width={150} cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="PartTypes" cellClass={cellClass} headerName="Part Type" width={150} cellRenderer={seperateHyphenFormatter}></AgGridColumn>
                                             {initialConfiguration.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
                                             {!props.partType === 'BOP' && <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
-                                            {props.partType === 'BOP' && <AgGridColumn field="PRNumber" headerName='PR Number'></AgGridColumn>}
+                                            {props.partType === 'BOP' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
 
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
@@ -1395,7 +1396,7 @@ function RfqListing(props) {
                 }
                 {
                     <div id='rfq-compare-drawer'>
-                        {!viewRMCompare && addComparisonToggle && (
+                        {(!viewRMCompare && !viewBOPCompare) && addComparisonToggle && (
                             <QuotationId.Provider value={data?.QuotationId}>
 
                                 <CostingSummaryTable
