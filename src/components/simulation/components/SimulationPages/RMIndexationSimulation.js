@@ -1154,11 +1154,11 @@ function RMIndexationSimulation(props) {
                             </Col>
                         </Row>
                         {
-                            !isImpactedMaster && !isApprovalSummary && props.isCostingSimulation &&
+                            !isImpactedMaster && !isApprovalSummary &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                    <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
-                                        <DatePicker
+                                    {props.isCostingSimulation && <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
+                                        {<DatePicker
                                             name="EffectiveDate"
                                             id="EffectiveDate"
                                             selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
@@ -1173,12 +1173,12 @@ function RMIndexationSimulation(props) {
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
-                                        />
+                                        />}
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
-                                    </div>
+                                    </div>}
 
-                                    {!isRunSimulationClicked && !isCostingSimulation && <button onClick={(e) => verifySimulation(e, 'run')} type="submit" id="verify-btn" onsolelassName="user-btn mr5 save-btn verifySimulation" disabled={isDisable}>
-                                        <div className={"Run-icon"}>verifySimulation
+                                    {!isRunSimulationClicked && !isCostingSimulation && <button onClick={(e) => verifySimulation(e, 'run')} type="submit" id="verify-btn" className="user-btn mr5 save-btn verifySimulation" disabled={isDisable}>
+                                        <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Run Simulation"}
                                     </button>}
