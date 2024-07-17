@@ -34,7 +34,7 @@ const RaiseRfqBopDetails = (props) => {
     const [bopSpecificationList, setBopSpecificationList] = useState([])
     const { bopSpecificRowData } = useSelector(state => state?.rfq);
     const showStatus = dataProps?.rowData?.Status || ""
-    const showAddButton = !disabledPartUid || dataProps?.isAddFlag || (dataProps?.isEditFlag && showStatus === PREDRAFT) || (dataProps?.isViewFlag) ? false : true
+    const showAddButton = !disabledPartUid || dataProps?.isAddFlag || (dataProps?.isEditFlag && showStatus === PREDRAFT) || (dataProps?.isViewFlag || dataProps?.isEditFlag ? false : true)
 
 
     useEffect(() => {
