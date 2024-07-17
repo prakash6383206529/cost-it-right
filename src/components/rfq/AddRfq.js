@@ -2625,27 +2625,27 @@ function AddRfq(props) {
                                                         || (partList?.length !== 0 || vendorList?.length !== 0)}
                                                 />
                                             </Col>)}
-                                        {initialConfiguration.IsNFRConfigured &&
-                                            <Col md="3" className={isRmSelected ? 'd-none' : ''}>
-                                                <SearchableSelectHookForm
-                                                    label={quationType === 'BOP' ? "PR No." : "NFR No."}
-                                                    name={quationType === 'BOP' ? "prId" : "nfrId"}
-                                                    isClearable={true}
-                                                    placeholder={"Select"}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                    options={renderListing(quationType === 'BOP' ? "prNo" : "nfrId")}
-                                                    mandatory={false}
-                                                    handleChange={handleNfrChnage}
-                                                    errors={errors.nfrId}
-                                                    disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
-                                                        || (partList?.length !== 0)}
-                                                // isLoading={VendorLoaderObj}
-                                                />
-                                            </Col>}
+
+                                        {quationType === 'BOP' && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
+                                            <SearchableSelectHookForm
+                                                label={quationType === 'BOP' ? "PR No." : "NFR No."}
+                                                name={quationType === 'BOP' ? "prId" : "nfrId"}
+                                                isClearable={true}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
+                                                options={renderListing(quationType === 'BOP' ? "prNo" : "nfrId")}
+                                                mandatory={false}
+                                                handleChange={handleNfrChnage}
+                                                errors={errors.nfrId}
+                                                disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
+                                                    || (partList?.length !== 0)}
+                                            // isLoading={VendorLoaderObj}
+                                            />
+                                        </Col>}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Plant (Code)"}
