@@ -506,6 +506,7 @@ function AddRfq(props) {
                 setValue("plant", {
                     label: data.PlantName, value: data.PlantId
                 })
+                setPlant({ label: data.PlantName, value: data.PlantId })
                 setValue("prId", { label: data.PRNumber, value: data.PRNumberId })
                 dispatch(setQuotationIdForRfq(data?.QuotationId))
                 setTechnology({ label: data.TechnologyName, value: data.TechnologyId })
@@ -1045,27 +1046,22 @@ function AddRfq(props) {
 
     const buttonFormatterFirst = (props) => {
 
-
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
-
         const show = selectedOption === "componentAssembly"
             ? (rowData?.PartNumber !== undefined)
             : (selectedOption === "BOP" ? rowData?.BoughtOutPartChildId !== undefined : rowData?.RawMaterialChildId !== undefined)
 
         const row = props?.data;
-
-
-
+        const isSendButtonVisible = dataProps?.isViewFlag || (dataProps?.isAddFlag ? false : (dataProps?.isEditFlag && showSendButton === PREDRAFT ? false : true))
         return (
             <>
-                {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={showSendButton === DRAFT ? true : dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} type={'button'} onClick={() => editItemPartTable(rowData, props, true)} />}
+                {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => editItemPartTable(rowData, props, true)} />}
                 {show && < button title='View' className="View mr-2 align-middle" disabled={false} type={'button'} onClick={() => ViewItemPartTable(rowData, props, false)} />}
 
                 {/*  {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
-                {(show && prNumber === "") && <button title='Delete' className="Delete align-middle" disabled={showSendButton === DRAFT ? true : dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
+                {(show && prNumber.length === 0) && <button title='Delete' className="Delete align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
             </>
         )
     };
@@ -1228,7 +1224,7 @@ function AddRfq(props) {
         } else if (selectedOption === "BOP" && bopList[0]?.BopReamrk === "" || bopList[0]?.BopAttachments?.length === 0) {
             Toaster.warning('Remarks and Attachments are required!');
             return;
-        } if (rmDataList?.map(item => item?.RawMaterialCode)?.includes(RawMaterialList[0]?.RawMaterialCode)) {
+        } if (!updateButtonPartNoTable && rmDataList?.map(item => item?.RawMaterialCode)?.includes(RawMaterialList[0]?.RawMaterialCode)) {
 
             Toaster.warning('This part is already added.');
 
@@ -2554,6 +2550,7 @@ function AddRfq(props) {
                                                         value="componentAssembly"
                                                         checked={selectedOption === 'componentAssembly'}
                                                         onChange={handleRadioChange}
+                                                        disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
                                                     />
                                                     {' '}
                                                     Component/Assembly
@@ -2567,6 +2564,8 @@ function AddRfq(props) {
                                                         value="RM"
                                                         checked={selectedOption === 'RM'}
                                                         onChange={handleRadioChange}
+                                                        disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+
                                                     />
                                                     {' '}
                                                     RM
@@ -2580,6 +2579,8 @@ function AddRfq(props) {
                                                         value="BOP"
                                                         checked={selectedOption === 'BOP'}
                                                         onChange={handleRadioChange}
+                                                        disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+
                                                     />
                                                     {' '}
                                                     BOP
@@ -2593,6 +2594,8 @@ function AddRfq(props) {
                                                         value="tooling"
                                                         checked={selectedOption === 'tooling'}
                                                         onChange={handleRadioChange}
+                                                        disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+
                                                     />
                                                     {' '}
                                                     Tooling
@@ -2622,30 +2625,30 @@ function AddRfq(props) {
                                                     handleChange={handleTechnologyChange}
                                                     errors={errors.technology}
                                                     disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
-                                                        || (partList?.length !== 0 || vendorList?.length !== 0)}
+                                                        || (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
                                                 />
                                             </Col>)}
-                                        {initialConfiguration.IsNFRConfigured &&
-                                            <Col md="3" className={isRmSelected ? 'd-none' : ''}>
-                                                <SearchableSelectHookForm
-                                                    label={quationType === 'BOP' ? "PR No." : "NFR No."}
-                                                    name={quationType === 'BOP' ? "prId" : "nfrId"}
-                                                    isClearable={true}
-                                                    placeholder={"Select"}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                    options={renderListing(quationType === 'BOP' ? "prNo" : "nfrId")}
-                                                    mandatory={false}
-                                                    handleChange={handleNfrChnage}
-                                                    errors={errors.nfrId}
-                                                    disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
-                                                        || (partList?.length !== 0)}
-                                                // isLoading={VendorLoaderObj}
-                                                />
-                                            </Col>}
+
+                                        {quationType === 'BOP' && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
+                                            <SearchableSelectHookForm
+                                                label={quationType === 'BOP' ? "PR No." : "NFR No."}
+                                                name={quationType === 'BOP' ? "prId" : "nfrId"}
+                                                isClearable={true}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
+                                                options={renderListing(quationType === 'BOP' ? "prNo" : "nfrId")}
+                                                mandatory={false}
+                                                handleChange={handleNfrChnage}
+                                                errors={errors.nfrId}
+                                                disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
+                                                    || (partList?.length !== 0)}
+                                            // isLoading={VendorLoaderObj}
+                                            />
+                                        </Col>}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Plant (Code)"}
@@ -2738,7 +2741,7 @@ function AddRfq(props) {
                                                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                                 />
                                                 {partType.length !== 0 && partTypeforRM !== BoughtOutPart && (
-                                                    <Button id="addRMSpecificatione" className={"ml-2 mb-2"}
+                                                    <Button id="addComponentSpecificatione" className={"ml-2 mb-2"}
                                                         // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
                                                         variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
                                                         title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={partName?.length === 0 || disabledPartUid}></Button>
@@ -3105,25 +3108,27 @@ function AddRfq(props) {
                                                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                                 />
                                             </Col>
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    label={"Vendor's Point of Contact"}
-                                                    name={"contactPerson"}
-                                                    placeholder={"Select"}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                                    options={renderListing("reporter")}
-                                                    mandatory={true}
-                                                    // handleChange={handleDestinationPlantChange}
-                                                    handleChange={() => { }}
-                                                    errors={errors.contactPerson}
-                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
-                                                    isLoading={plantLoaderObj}
-                                                />
-                                            </Col>
+                                            {IsSendQuotationToPointOfContact() && (
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        label={"Vendor's Point of Contact"}
+                                                        name={"contactPerson"}
+                                                        placeholder={"Select"}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                                                        options={renderListing("reporter")}
+                                                        mandatory={true}
+                                                        // handleChange={handleDestinationPlantChange}
+                                                        handleChange={() => { }}
+                                                        errors={errors.contactPerson}
+                                                        disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                        isLoading={plantLoaderObj}
+                                                    />
+                                                </Col>
+                                            )}
 
                                             {havellsKey && (<>
                                                 <Col md="3">

@@ -30,7 +30,7 @@ const BOPCompareTable = (props) => {
             let sectionTwo = [];
             let sectionThree = []
             let sectionOneHeader = ["BOP No.", "BOP Name", "Category", "UOM", /* "Specification", */ 'Plant (Code)', "vendor (Code)", 'Effective Date', 'Basic Rate']
-            let sectionTwoHeader = ['CutOff Price', 'Scrap Rate', 'BOP Shearing Cost', 'BOP Freight Cost', 'BOP Net Cost']
+            let sectionTwoHeader = ['Minimum Order Quantity', 'BOP Net Cost']
             let sectionThreeHeader = ['Remark']
             let mainHeader = []
             viewBOPDetails.map((item, index) => {
@@ -45,16 +45,13 @@ const BOPCompareTable = (props) => {
                     item.Plants,
                     item.Vendor,
                     effectiveDate,
-                    item.BasicRatePerUOM
+                    item.BasicRate
                 ];
                 sectionOne.push(formattedDataOne);
 
                 //section two data start
                 const formattedDataTwo = [
-                    item.CutOffPrice,
-                    item.ScrapRate,
-                    item.RMShearingCost,
-                    item.RMFreightCost,
+                    item.NumberOfPieces,
                     item.NetLandedCost
                 ]
                 sectionTwo.push(formattedDataTwo)

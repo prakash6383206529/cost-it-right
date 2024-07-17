@@ -781,7 +781,7 @@ function ViewDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{"Add RM & Specification"}</h3>
+                                    <h3> {partType === "RM" ? "Add Remark & Attachment" : (partType === "component" ? "Add RM & Specification" : "Add Specification & Attachment")}</h3>
                                 </div>
 
                                 <div
