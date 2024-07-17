@@ -1,46 +1,51 @@
 import React, { useState, useEffect } from 'react';
 
-const CountdownTimer = ({ startTime, endTime }) => {
-    const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining());
-    const [formattedTime, setFormattedTime] = useState(formatTime(timeRemaining));
+const CountdownTimer = ({ endTime, checkTimerRunning }) => {
+    const calculateTimeLeft = () => {
+        const difference = new Date(endTime) - new Date();
+        let timeLeft = {};
 
-    function calculateTimeRemaining() {
-        const start = new Date(startTime).getTime();
-        const end = new Date(endTime).getTime();
-        const now = Date.now();
-        return end - now;
-    }
+        if (difference > 0) {
+            timeLeft = {
+                hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+                minutes: Math.floor((difference / 1000 / 60) % 60),
+                seconds: Math.floor((difference / 1000) % 60)
+            };
+        } else {
+            timeLeft = { hours: 0, minutes: 0, seconds: 0 };
+        }
+
+        return timeLeft;
+    };
+
+    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+    const [isTimerRunning, setIsTimerRunning] = useState(true);
 
     useEffect(() => {
-        const intervalId = setInterval(() => {
-            const timeLeft = calculateTimeRemaining();
-            setTimeRemaining(timeLeft);
-            setFormattedTime(formatTime(timeLeft));
+        checkTimerRunning(isTimerRunning)
+        if (isTimerRunning) {
+            const timer = setInterval(() => {
+                const newTimeLeft = calculateTimeLeft();
+                setTimeLeft(newTimeLeft);
 
-            if (timeLeft <= 0) {
-                clearInterval(intervalId);
-            }
-        }, 1000);
+                if (newTimeLeft.hours === 0 && newTimeLeft.minutes === 0 && newTimeLeft.seconds === 0) {
+                    clearInterval(timer);
+                    setIsTimerRunning(false);
+                }
+            }, 1000);
 
-        return () => clearInterval(intervalId);
-    }, [startTime, endTime]);
+            return () => clearInterval(timer);
+        }
+    }, [endTime, isTimerRunning]);
 
-    function formatTime(ms) {
-        const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-
-    const isLastMinute = timeRemaining <= 60000; // 1 minute in milliseconds
-
+    const formatTime = (time) => {
+        return time.toString().padStart(2, '0');
+    };
     return (
-        <div className={`countdown ${isLastMinute ? 'last-minute' : ''}`}>
-            {formattedTime.split('').map((char, index) => (
-                <span key={index}>{char}</span>
-            ))}
+        <div>
+            <span>{formatTime(timeLeft.hours)}:</span>
+            <span>{formatTime(timeLeft.minutes)}:</span>
+            <span>{formatTime(timeLeft.seconds)}</span>
         </div>
     );
 };
