@@ -1135,6 +1135,9 @@ export const API = {
   auctionBidDetails: `${BASE_URL}/rfq-quotation/get-quotation-auction-vendor-bid-price-details`,
   auctionHeaderDetails: `${BASE_URL}/rfq-quotation/get-quotation-auction-by-id`,
   sendCounterOffer: `${BASE_URL}/rfq-quotation/create-counter-offer`,
+  getLiveAndScheduledCount: `${BASE_URL}/rfq-quotation/get-auction-active-scheduled-and-closed-count`,
+  updateShowVendorRank: `${BASE_URL}/rfq-quotation/update-display-rank-to-vendor`,
+
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
   // getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
