@@ -36,7 +36,9 @@ const AddRfqRmDetails = (props) => {
     const rmSpecificationSelectList = useSelector((state) => state.comman.rmSpecification)
     const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList)
 
-    const showAddButton = !disabledPartUid || dataProps?.isAddFlag || (dataProps?.isEditFlag && showStatus === PREDRAFT) || (dataProps?.isViewFlag) ? false : true
+    const showAddButton = !disabledPartUid || dataProps?.isAddFlag || (dataProps?.isEditFlag && showStatus === PREDRAFT) || (dataProps?.isViewFlag || dataProps?.isEditFlag ? false : true)
+
+
 
     useEffect(() => {
         dispatch(getRawMaterialNameChild(() => { }))

@@ -3034,10 +3034,10 @@ function AddRfq(props) {
                                                                     suppressColumnVirtualisation={true}
                                                                     enableBrowserTooltips={true}
                                                                 >
-                                                                    {selectedOption === "RM" && (<><AgGridColumn width={"230px"} field="RawMaterialName" headerName="Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                                        <AgGridColumn width={"230px"} field="RawMaterialGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                                        <AgGridColumn width={"230px"} field="RawMaterialSpecification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                                        <AgGridColumn width={"230px"} field="RawMaterialCode" headerName="Code" cellRenderer={'hyphenFormatter'}></AgGridColumn></>)}
+                                                                    {selectedOption === "RM" && <AgGridColumn width={"230px"} field="RawMaterialName" headerName="Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "RM" && <AgGridColumn width={"230px"} field="RawMaterialGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "RM" && <AgGridColumn width={"230px"} field="RawMaterialSpecification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "RM" && <AgGridColumn width={"230px"} field="RawMaterialCode" headerName="Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {selectedOption === "componentAssembly" && <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
                                                                     {/* {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
