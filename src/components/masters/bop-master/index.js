@@ -235,7 +235,7 @@ const BOPMaster = () => {
                       toggle("3");
                     }}
                   >
-                    Manage SOB
+                    Manage Specification
                   </NavLink>
                 </NavItem>
                 <NavItem>
@@ -245,7 +245,7 @@ const BOPMaster = () => {
                       toggle("4");
                     }}
                   >
-                    Manage Specification
+                    Manage SOB
                   </NavLink>
                 </NavItem>
 
@@ -293,7 +293,7 @@ const BOPMaster = () => {
 
                   {Number(state.activeTab) === 3 && (
                     <TabPane tabId="3">
-                      <SOBListing
+                      <BOPManage
                         displayForm={displayImportForm}
                         getDetails={getImportDetails}
 
@@ -302,7 +302,7 @@ const BOPMaster = () => {
                   )}
                   {Number(state.activeTab) === 4 && (
                     <TabPane tabId="4">
-                      <BOPManage
+                      <SOBListing
                         displayForm={displayImportForm}
                         getDetails={getImportDetails}
 
