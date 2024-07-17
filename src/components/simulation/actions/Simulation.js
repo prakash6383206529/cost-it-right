@@ -1964,7 +1964,6 @@ export function getApprovalSimulatedRawMaterialSummary(params, callback) {
  * @description Used to get RM Indexation Costing Simulation Listing
  */
 export function getRMIndexationCostingSimulationListing(data, skip, take, isPagination, callback) {
-    console.log('data: ', data);
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
             LoggedInUserId: loggedInUserId(),
@@ -1978,6 +1977,7 @@ export function getRMIndexationCostingSimulationListing(data, skip, take, isPagi
             GradeId: data.GradeId ? data.GradeId : null,
             CustomerId: data.CustomerId ? data.CustomerId : null,
             RawMaterialEntryType: data.RawMaterialEntryType,
+            // Technology: data.Technology,
         });
         const request = axios.get(`${API.getRMIndexationCostingSimulationListing}?${queryParams}`, config());
         request.then((response) => {
