@@ -22,7 +22,7 @@ import TourWrapper from "../common/Tour/TourWrapper";
 import Button from "../layout/Button";
 import CountdownTimer from "./components/CountdownTimer";
 import InputTimer from "./components/InputTimer";
-import { auctionHeaderDetails, sendCounterOffer, ShowBidWindow } from "./actions/RfqAuction";
+import { auctionBidDetails, auctionHeaderDetails, sendCounterOffer, ShowBidWindow, updateShowVendorRank } from './actions/RfqAuction';
 import { ASSEMBLY, BOP, COMPONENT, RM } from "./AddAuction";
 import DayTime from "../common/DayTimeWrapper";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
@@ -51,9 +51,7 @@ function ComparsionAuction(props) {
 
 
   const [isViewFlag, setIsViewFlag] = useState(false);
-  const [showCounterPopup, setShowCounterPopup] = useState(false);
   const [loader, setLoader] = useState(false);
-  const [isEditable, setIsEditable] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState({});
   const { bidDetails } = useSelector(state => state.Auction);
   const [state, setState] = useState({
@@ -61,9 +59,10 @@ function ComparsionAuction(props) {
     PartType: '',
     headerDetails: {},
     showCounterPopup: false,
-    counterOfferId: ''
+    counterOfferId: '',
+    isTimerRunning: false,
   })
-
+  const [dispayRank, setDisplayRank] = useState({})
   const handleSubmitClick = (data, e, isPartDetailSent) => {
     //handleSubmit(() => onSubmit(data, e, isSent))()
     onSubmit(data, e, isPartDetailSent);
@@ -126,6 +125,23 @@ function ComparsionAuction(props) {
     }));
   };
 
+  const checkTimerShop = (value) => {
+    setState(prevState => ({ ...prevState, isTimerRunning: value }))
+  }
+
+  const showVendorRank = (data, check) => {
+    let obj = {
+      QuotationAuctionVendorId: data.QuotationAuctionVendorId,
+      LoggedInUserId: loggedInUserId(),
+      IsDisplayRankToVendor: !check
+    }
+    dispatch(updateShowVendorRank(obj, res => {
+      if (res.data.Result) {
+        dispatch(auctionBidDetails(props.quotationAuctionId, () => { }))
+        Toaster.success(`Now, ${data.VendorName} can ${check ? 'not' : ''} see the rank.`)
+      }
+    }))
+  }
   const labels = {
     rfqNumberLabel: "RFQ No",
     auctionNameLabel: "Auction Name",
@@ -140,26 +156,6 @@ function ComparsionAuction(props) {
     bopNumberLabel: "BOP No",
     bopCategoryLabel: "Category",
   };
-  const data = {
-    rfqNumber: "12345",
-    auctionName: "Auction A",
-    partType: "Assembly",
-    partNumber: "PN-6789",
-    rmName: "John Doe",
-    rmgrade: "RM Wide Test",
-    rmSpecification: "CRCA D",
-    rmCode: "RM-1000202",
-    bopName: "Machine",
-    bopNumber: "BOP-12345",
-    bopCategory: "STD",
-    time: "10:00",
-    duration: "2:00",
-    endTime: "12:00",
-    remainingTime: "1:30",
-  };
-
-  const startTime = new Date().toISOString();
-  const endTime = new Date(new Date().getTime() + 72000).toISOString();
   const { headerDetails } = state
   return (
     <div className="container-fluid">
@@ -171,24 +167,16 @@ function ComparsionAuction(props) {
                 <div className="col-md-6">
                   <h1>
                     Comparison Auction / Bids
-                    {!isViewFlag && (
-                      <TourWrapper
-                        buttonSpecificProp={{ id: "Comparsion_Bids_Form" }}
-                        stepsSpecificProp={{
-                          steps: Steps(t).RFQ_FORM,
-                        }}
-                      />
-                    )}
                   </h1>
                 </div>
                 <div className="col-md-6 d-flex justify-content-end">
                   <div className="mr-3">
                     <p>Remaining Time</p>
-                    <CountdownTimer startTime={startTime} endTime={endTime} />
+                    <CountdownTimer endTime={headerDetails.AuctionEndDateTime} checkTimerRunning={checkTimerShop} />
                   </div>
                   <div className="d-flex flex-wrap refresh-div">
                     <label className="mb-0 pr-4">Refresh In:</label>
-                    <InputTimer quotationAuctionId={props.quotationAuctionId} />
+                    <InputTimer quotationAuctionId={props.quotationAuctionId} isTimerRunning={state.isTimerRunning} />
                   </div>
                 </div>
               </div>
@@ -318,17 +306,34 @@ function ComparsionAuction(props) {
                                     <td key={index}>
                                       <div className="bid-details-wrapper">
                                         {item.QuotationAuctionVendorBidPriceHistory.map((bid, idx) => {
-                                          return <>
-                                            <span
-                                              key={idx}
-                                              className={`d-flex justify-content-between align-items-center pie-chart-container ${idx === 0 ? '' : 'opacity-down'}`}
-                                            >
-                                              <span className="pie-chart-wrapper pie-chart-wrapper-1">
-                                                {bid.Price}
+                                          if (idx <= 4) {
+                                            return <>
+                                              {(bid.QuotationAuctionVendorBidPriceCounterOfferHistoryResponse && bid.QuotationAuctionVendorBidPriceCounterOfferHistoryResponse.length !== 0) ? <>
+                                                <p>Counter History</p>
+                                                {bid.QuotationAuctionVendorBidPriceCounterOfferHistoryResponse.map(counterOffer => {
+                                                  return <span
+                                                    key={idx}
+                                                    className={`d-flex justify-content-between align-items-center pie-chart-container ${idx === 0 ? '' : 'opacity-down'}`}
+                                                  >
+                                                    <span className="pie-chart-wrapper pie-chart-wrapper-1">
+                                                      {counterOffer.Price}
+                                                    </span>
+                                                    <span>{counterOffer.Status}</span>
+                                                  </span>
+                                                })}
+                                                <hr />
+                                              </> : ''}
+                                              <span
+                                                key={idx}
+                                                className={`d-flex justify-content-between align-items-center pie-chart-container ${idx === 0 ? '' : 'opacity-down'}`}
+                                              >
+                                                <span className="pie-chart-wrapper pie-chart-wrapper-1">
+                                                  {bid.Price}
+                                                </span>
+                                                <span>{bid.Remark}</span>
                                               </span>
-                                              <span>{bid.Remark}</span>
-                                            </span>
-                                          </>
+                                            </>
+                                          }
                                         })}
                                       </div>
                                       <div
@@ -362,14 +367,19 @@ function ComparsionAuction(props) {
                                           </DropdownMenu>
                                         </Dropdown>
                                       </div>
-                                      <label className="custom-checkbox w-auto mb-0">
+                                      <label className="custom-checkbox w-auto mb-0"
+                                        onChange={() => showVendorRank(item, item.IsDisplayRankToVendor)}>
                                         Display Rank to Vendor
                                         <input
                                           type="checkbox"
                                           value={"All"}
                                           id={`checkbox-diplay${index + 1}`}
+                                          checked={item.IsDisplayRankToVendor}
                                         />
-                                        <span className="before-box p-0"></span>
+                                        <span className="before-box p-0"
+                                          onChange={() => showVendorRank(item, item.IsDisplayRankToVendor)}
+                                          checked={item.IsDisplayRankToVendor}
+                                        ></span>
                                       </label>
                                       <br />
                                       <button
@@ -408,20 +418,10 @@ function ComparsionAuction(props) {
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
-                      <button
-                        id="addRFQ_cancel"
-                        type={"button"}
-                        className="reset mr-2 cancel-btn"
-                        onClick={extendTime}
-                      >
-                        <div className={"cancel-icon"}></div>
-                        {"Extend Time"}
-                      </button>
-
                       {
                         <button
                           type="button"
-                          className="submit-button save-btn mr-2"
+                          className="reset mr-2 cancel-btn mr-2"
                           value="save"
                           id="addRFQ_save"
                           onClick={(data, e) =>
@@ -429,10 +429,18 @@ function ComparsionAuction(props) {
                           }
                           disabled={false}
                         >
-                          <div className={"save-icon"}></div>
+                          <div className={"cancel-icon"}></div>
                           {"Close Auction"}
                         </button>
                       }
+                      <button
+                        id="addRFQ_cancel"
+                        type={"button"}
+                        className="submit-button save-btn mr-2"
+                        onClick={extendTime}
+                      >
+                        {"Extend Time"}
+                      </button>
 
                       <button
                         type="button"

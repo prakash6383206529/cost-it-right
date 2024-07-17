@@ -4,12 +4,11 @@ import { useDispatch } from 'react-redux';
 import { debounce } from 'lodash';
 
 const InputTimer = (props) => {
-    const defaultTime = ":10"; // Default time value
+    const defaultTime = ":30"; // Default time value
     const [inputValue, setInputValue] = useState(defaultTime);
     const [timeRemaining, setTimeRemaining] = useState(1);
     const [isCounting, setIsCounting] = useState(false);
     const [isInputDisabled, setIsInputDisabled] = useState(true); // Initially disabled
-    const [isTimeOver, setIsTimeOver] = useState(false);
     const [reloadCount, setReloadCount] = useState(0)
     const [inputStoreValue, setInputStoreValue] = useState(':15')
     const dispatch = useDispatch()
@@ -23,6 +22,11 @@ const InputTimer = (props) => {
     }, [reloadCount]);
 
     useEffect(() => {
+        if (!props.isTimerRunning) {
+            dispatch(auctionBidDetails(props.quotationAuctionId, () => { }))
+        }
+    }, [])
+    useEffect(() => {
         let intervalId;
 
         if (isCounting) {
@@ -31,7 +35,6 @@ const InputTimer = (props) => {
                     if (prevTime <= 0) {
                         clearInterval(intervalId);
                         setIsCounting(false);
-                        setIsTimeOver(true);
                         setIsInputDisabled(true);
                         return 0;
                     }
@@ -70,7 +73,9 @@ const InputTimer = (props) => {
     const handleRefreshClick = debounce(() => {
         setReloadCount(reloadCount + 1)
         setInputValue(inputStoreValue)
-    }, 800);
+        setTimeRemaining(0)
+
+    }, 200);
 
     const formatTime = (ms) => {
         const totalSeconds = Math.max(0, Math.floor(ms / 1000));
