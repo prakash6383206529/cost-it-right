@@ -54,7 +54,7 @@ const Table = (props) => {
                     <th></th>
                     {headerData.map((item, index) => (
 
-                        <th key={index}><div>{item.isChecked && <div className="custom-check1 d-inline-block">
+                        <th key={index}><div>{item.isCheckBox && <div className="custom-check1 d-inline-block">
                             <label
                                 className="custom-checkbox pl-0 mb-0"
                                 onChange={item.onChange}

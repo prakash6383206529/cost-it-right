@@ -12,8 +12,9 @@ const RMCompareTable = (props) => {
     const [sectionData, setSectionData] = useState([])
     const [mainHeadingData, setMainHeadingData] = useState([])
     const [checkBoxCheck, setCheckBoxCheck] = useState({})
-    const [selectedRows, setSelectedRows] = useState([])
-    const [isLoader, setIsLoader] = useState(false)
+    const [selectedItems, setSelectedItems] = useState([])
+    const [selectedIndices, setSelectedIndices] = useState([])
+        const [isLoader, setIsLoader] = useState(false)
     useEffect(() => {
         setIsLoader(true)
         const idArr = props.selectedRows.map(item => item.RawMaterialId)
@@ -60,9 +61,9 @@ const RMCompareTable = (props) => {
                 //mainheader data start
                 const mainHeaderObj = {
                     vendorName: item.VendorName,
-                    onChange: () => checkBoxHanlde(index, item),
+                    onChange: () => checkBoxHandle(item,index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: item.IsShowCheckBoxForApproval
+                    isCheckBox: true
 
                 }
                 mainHeader.push(mainHeaderObj)
@@ -86,15 +87,40 @@ const RMCompareTable = (props) => {
             setMainHeadingData(mainHeader)
         }
     }, [viewRmDetails])
+    const checkBoxHandle = (item, index) => {
+        setCheckBoxCheck(prevState => {
+            const newState = { ...prevState, [index]: !prevState[index] }
+            return newState
+        })
 
-    const checkBoxHanlde = (index, item) => {
-        let selectedData = []
-        selectedData.push(item?.RawMaterialId)
+        setSelectedItems(prevItems => {
+            let newItems
+            if (prevItems.some(i => i.RawMaterialId === item.RawMaterialId)) {
+                newItems = prevItems.filter(i => i.RawMaterialId !== item.RawMaterialId)
+            } else {
+                newItems = [...prevItems, item]
+            }
+            return newItems
+        })
 
-
-        setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
-        props.checkCostingSelected(selectedData, index)
+        setSelectedIndices(prevIndices => {
+            let newIndices
+            if (prevIndices.includes(index)) {
+                newIndices = prevIndices.filter(i => i !== index)
+            } else {
+                newIndices = [...prevIndices, index]
+            }
+            return newIndices
+        })
     }
+    
+    useEffect(() => {
+        props.checkCostingSelected(selectedItems, selectedIndices)
+    }, [selectedItems, selectedIndices])
+    // const checkBoxHanlde = (item , index) => {
+    //     setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
+    //     props.checkCostingSelected(item,index)
+    // }
     return (
         <div>
             <Table headerData={mainHeadingData} sectionData={sectionData}>
