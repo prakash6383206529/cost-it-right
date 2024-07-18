@@ -1228,7 +1228,7 @@ function AddRfq(props) {
             return;
         } if (!updateButtonPartNoTable && rmDataList?.map(item => item?.RawMaterialCode)?.includes(RawMaterialList[0]?.RawMaterialCode)) {
 
-            Toaster.warning('This part is already added.');
+            Toaster.warning('This Raw Material is already added.');
 
         }
         //else if (bopDataList?.map(item => item?.BoughtOutPartChildId)?.includes(bopList[0]?.BoughtOutPartChildId)) {
