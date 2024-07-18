@@ -1727,6 +1727,14 @@ export function SetCommodityIndexAverage(materialTypeId, indexExchangeId, unitOf
     }
 }
 
+export function setRawMaterialCostingData(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_RM_DETAILS,
+            payload: data || {},
+        });
+    }
+};
 export function getViewRawMaterialDetails(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.getViewRawMaterialDetails, data, config())

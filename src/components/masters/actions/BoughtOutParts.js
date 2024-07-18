@@ -502,6 +502,14 @@ export function checkAndGetBopPartNo(obj, callback) {
   };
 }
 
+export function setBopCostingData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_BOP_DETAILS,
+      payload: data || {},
+    });
+  }
+};
 export function getViewBOPDetails(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.getViewBOPDetails, data, config())

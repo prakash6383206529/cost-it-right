@@ -195,7 +195,7 @@ function AddRfq(props) {
     const [isLoader, setIsLoader] = useState(false)
     const [prNumber, setPrNumber] = useState([])
 
-
+    const rowData = selectedOption === "RM" ? rmDataList : (selectedOption === "BOP" ? bopDataList : partList)
 
 
     const handleRadioChange = (e) => {
@@ -3011,7 +3011,7 @@ function AddRfq(props) {
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
+                                                    <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${rowData && rowData.length <= 0 ? "overlay-contain border" : ""} `}>
 
                                                         <div className={`ag-theme-material ${!state ? "custom-min-height-208px" : ''}`}>
                                                             {!showGrid || isLoader ? <LoaderCustom customClass={""} /> :
@@ -3020,7 +3020,7 @@ function AddRfq(props) {
                                                                     floatingFilter={false}
                                                                     domLayout='autoHeight'
                                                                     // columnDefs={c}
-                                                                    rowData={selectedOption === "RM" ? rmDataList : (selectedOption === "BOP" ? bopDataList : partList)}
+                                                                    rowData={rowData}
 
                                                                     //pagination={true}
                                                                     paginationPageSize={10}
