@@ -178,8 +178,30 @@ function RfqListing(props) {
             }
             let uniqueShouldCostId = [];
             res?.data?.DataList && res?.data?.DataList.map(item => {
-                let unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'))
-                uniqueShouldCostId.push(...unique)
+                let unique
+                res?.data?.DataList && res?.data?.DataList.map(item => {
+                    switch (item.PartType) {
+                        case 'RawMaterial':
+                            unique = _.uniq(_.map(item.ShouldRawMaterial, 'RawMaterialId'))
+
+
+                            uniqueShouldCostId.push(...unique)
+                            break;
+                        case 'Component':
+                        case 'Assembly':
+                            unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'))
+
+                            uniqueShouldCostId.push(...unique)
+                            break;
+                        case 'BoughtOutPart':
+                            unique = _.uniq(_.map(item.ShouldBoughtOutPart, 'BoughtOutPartId'))
+                            uniqueShouldCostId.push(...unique)
+                            break;
+                        default:
+                            break;
+                    }
+
+                })
             })
             setUniqueShouldCostingId(uniqueShouldCostId)
 
@@ -1289,8 +1311,8 @@ function RfqListing(props) {
                                             <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName={headerPartType()} cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                             <AgGridColumn field="PartTypes" cellClass={cellClass} headerName="Part Type" width={150} cellRenderer={seperateHyphenFormatter}></AgGridColumn>
                                             {initialConfiguration.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
-                                            {!props.partType === 'BOP' && <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
-                                            {props.partType === 'BOP' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
+                                            {partType !== 'BOP' && <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
+                                            {partType === 'BOP' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
 
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
@@ -1423,10 +1445,14 @@ function RfqListing(props) {
                         )}
                         {viewRMCompare && <RMCompareTable
                             checkCostingSelected={checkCostingSelected}
-                            selectedRows={selectedRows} />}
+                            selectedRows={selectedRows}
+                            uniqueShouldCostingId={uniqueShouldCostingId}
+                        />}
                         {viewBOPCompare && <BOPCompareTable
                             checkCostingSelected={checkCostingSelected}
-                            selectedRows={selectedRows} />}
+                            selectedRows={selectedRows}
+                            uniqueShouldCostingId={uniqueShouldCostingId}
+                        />}
                     </div>
                 }
                 {remarkHistoryDrawer &&
