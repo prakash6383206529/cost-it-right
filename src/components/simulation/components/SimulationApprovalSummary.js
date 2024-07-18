@@ -318,8 +318,6 @@ function SimulationApprovalSummary(props) {
             } else {
                 technologyIdTemp = simulationData?.SimulationTechnologyId
             }
-            console.log('approvalTypeId: ', approvalTypeId);
-            console.log('simulationData: ', simulationData);
             let obj = {
                 DepartmentId: simulationData.DepartmentId,
                 UserId: loggedInUserId(),

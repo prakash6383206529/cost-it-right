@@ -96,7 +96,7 @@ function RfqListing(props) {
         notPagination: true
     }
     useEffect(() => {
-        setloader(true)
+        // setloader(true)
         getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
@@ -140,6 +140,7 @@ function RfqListing(props) {
     */
     const getDataList = () => {
         const Timezone = getTimeZone()
+        setloader(true)
         dispatch(getQuotationList(userDetails()?.DepartmentCode, Timezone, (res) => {
             let temp = []
             res?.data?.DataList && res?.data?.DataList.map((item) => {
@@ -560,7 +561,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
                                                 <AgGridColumn field="TimeZone" width={"150px"} headerName='Time Zone' cellRenderer='timeZoneFormatter'></AgGridColumn>
                                                 <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
-                                                <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
+                                                {/* <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn> */}
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 

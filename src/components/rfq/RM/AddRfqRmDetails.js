@@ -18,57 +18,44 @@ import { DRAFT, PREDRAFT, SENT } from "../../../config/constants";
 
 const AddRfqRmDetails = (props) => {
     const { updateRawMaterialList, resetRmFields, updateButtonPartNoTable, rmSpecificRowData, dataProps, isEditFlag, isViewFlag, setViewQuotationPart, disabledPartUid, technology } = props
-
-
-
-    const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
-        mode: 'onChange',
-        reValidateMode: 'onChange',
-        defaultValues: {
-            radioOption: false, // Initialize default value for the radio button
-        }
-    });
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({ mode: 'onChange', reValidateMode: 'onChange', defaultValues: { radioOption: false, } });
     const [rmName, setRmName] = useState([]);
-
-
     const [rmGrade, setRmGrade] = useState([]);
-
     const [rmSpec, setRmSpec] = useState([]);
-
     const [rmCode, setRmCode] = useState([]);
-
-
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [rmAttchment, setRmAttchment] = useState([])
     const dispatch = useDispatch()
     const [rmRemark, setRmRemark] = useState("");
     const showStatus = dataProps?.rowData?.Status || ""
+    const [isDisabled, setIsDisabled] = useState(false)
 
     // const [viewQuotationPart, setViewQuotationPart] = useState(false)
     const rawMaterialNameSelectList = useSelector((state) => state.material.rawMaterialNameSelectList)
     const gradeSelectList = useSelector((state) => state.material.gradeSelectList)
     const rmSpecificationSelectList = useSelector((state) => state.comman.rmSpecification)
     const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList)
-    useEffect(() => {
 
+    const showAddButton = !disabledPartUid || dataProps?.isAddFlag || (dataProps?.isEditFlag && showStatus === PREDRAFT) || (dataProps?.isViewFlag || dataProps?.isEditFlag ? false : true)
+
+
+
+    useEffect(() => {
         dispatch(getRawMaterialNameChild(() => { }))
         dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
     }, [])
     useEffect(() => {
-
         setRmData()
     }, [rmName, rmGrade, rmSpec, rmCode, rmAttchment, rmRemark])
 
 
     useEffect(() => {
         if (resetRmFields) {
-
             onResetRmFields()
         }
     }, [resetRmFields])
     useEffect(() => {
         if (updateButtonPartNoTable) {
-
             let obj = {
                 RawMaterialChildId: rmSpecificRowData[0]?.RawMaterialChildId,
                 RawMaterialGradeId: rmSpecificRowData[0]?.RawMaterialGradeId,
@@ -95,10 +82,7 @@ const AddRfqRmDetails = (props) => {
         }
     }, [updateButtonPartNoTable, rmSpecificRowData,])
     const setRmData = () => {
-
-
         if (rmName.length !== 0 && rmGrade.length !== 0 && rmSpec.length !== 0) {
-
             let obj = {
                 RawMaterialChildId: rmName.value,
                 RawMaterialGradeId: rmGrade.value,
@@ -112,7 +96,6 @@ const AddRfqRmDetails = (props) => {
                 RawMaterialReamrk: rmRemark,
 
             }
-
 
             updateRawMaterialList(obj)
 
@@ -136,6 +119,7 @@ const AddRfqRmDetails = (props) => {
         setValue('Code', '')
     }
     const DrawerToggle = () => {
+
         // if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
         setDrawerOpen(true)
 
@@ -144,6 +128,7 @@ const AddRfqRmDetails = (props) => {
         setDrawerOpen(false);
 
     }
+
     const renderListing = (label) => {
         const temp = []
         if (label === 'material') {
@@ -247,6 +232,7 @@ const AddRfqRmDetails = (props) => {
 
         if (newValue && newValue !== '') {
             setRmCode(newValue)
+            setIsDisabled(true)
             delete errors.RawMaterialName
             dispatch(getRMSpecificationDataAPI(newValue.value, true, (res) => {
                 if (res.status === 204) {
@@ -270,6 +256,8 @@ const AddRfqRmDetails = (props) => {
             setValue('RmName', '')
             setValue('Grade', '')
             setValue('Specifications', '')
+            setIsDisabled(false)
+
         }
     }
 
@@ -292,7 +280,7 @@ const AddRfqRmDetails = (props) => {
                         handleChange={handleRM}
                         // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
                         className="fullinput-icon"
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT) || isDisabled}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
                         errors={errors.RmName}
                         isClearable={true}
                     />
@@ -309,7 +297,7 @@ const AddRfqRmDetails = (props) => {
                         required={true}
                         mandatory={true}
                         handleChange={handleGrade}
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT) || isDisabled}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
                         // disabled={isEditFlag || isViewFlag || state.isDisabled}
                         errors={errors.Grade}
                     />
@@ -325,7 +313,7 @@ const AddRfqRmDetails = (props) => {
                         options={renderListing("specification")}
                         mandatory={true}
                         handleChange={handleSpecification}
-                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
+                        disabled={isViewFlag || isEditFlag || dataProps?.isViewFlag || Object.keys(technology).length === 0 || (dataProps?.isEditFlag && showStatus !== PREDRAFT) || isDisabled}                        // defaultValue={state.rmGrade.length !== 0 ? state.rmGrade : ""}
                         // defaultValue={state.rmSpec.length !== 0 ? state.rmSpec : ""}
                         // disabled={isEditFlag || isViewFlag || state.isDisabled}
                         errors={errors.Specifications}
@@ -356,11 +344,11 @@ const AddRfqRmDetails = (props) => {
                         variant={'plus-icon-square'}
                         title={'Add'} onClick={DrawerToggle} >
                     </Button> */}
-                    <Button id="addRMSpecificatione" className={"ml-2 mb-2"}
+                    {showAddButton && <Button id="addRMSpecificatione" className={"ml-2 mb-2"}
                         // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
                         variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
 
-                        title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}></Button>
+                        title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}></Button>}
 
                 </Col>
             </Row>

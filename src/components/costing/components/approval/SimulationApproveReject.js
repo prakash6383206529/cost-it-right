@@ -110,7 +110,7 @@ function SimulationApproveReject(props) {
       if (dropzone.current !== null) {
         dropzone.current.files = filesList
 
-      } console.log(SimulationTechnologyId);
+      }
       if (vendorId !== null && (SimulationTechnologyId !== null || String(SimulationTechnologyId) !== RAWMATERIALINDEX) && type === 'Sender' && !isSimulationApprovalListing) {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }

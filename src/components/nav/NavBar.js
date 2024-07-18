@@ -236,8 +236,8 @@ class SideBar extends Component {
         } else {
           break;
         }
-      case "NFR":
-        return this.renderNFR(module, LandingPageURL);
+      case "Auction":
+        return this.renderAuction(module, LandingPageURL);
       default:
         return null
     }
@@ -958,6 +958,43 @@ class SideBar extends Component {
                 </div>
               </Link >
             </li >
+          );
+        }
+        return null
+      })
+    );
+  };
+
+  renderAuction = (module) => {
+    const { topAndLeftMenuData } = this.props
+    return (
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          return (
+            <li>
+              <Link
+                key={i}
+                id={this.getSpecificIdForElement(el)}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''} AUCTION_NavBar`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: el.LandingPageURL,
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "Auction",
+                    PageURL: el.LandingPageURL,
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeRFQ : RFQ}
+                  alt={module + " icon"}
+                />
+                <span className="rfq">{el.ModuleName}</span>
+              </Link>
+            </li>
           );
         }
         return null
