@@ -194,6 +194,32 @@ export function updateShowVendorRank(requestData, callback) {
             });
     };
 }
+export function updateAuctionDuration(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateAuctionDuration}`, requestData, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error)
+            });
+    };
+}
+export function closeAuction(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.closeAuction}`, requestData, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error)
+            });
+    };
+}
 export function getLiveAndScheduledCount(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getLiveAndScheduledCount}?loggedInUserId=${loggedInUserId()}&vendorId=${''}`, config());

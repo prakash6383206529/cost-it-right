@@ -7,7 +7,8 @@ const initialState = {
     AuctionList: [],
     showHideBidWindow: {
         showBidWindow: false,
-        QuotationAuctionId: ''
+        QuotationAuctionId: '',
+        AuctionStatusId: 37
     },
     bidDetails: {},
     auctionHeaderData: {}

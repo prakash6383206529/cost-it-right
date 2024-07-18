@@ -170,7 +170,7 @@ function AuctionIndex(props) {
             </TabContent>}
         </div>
       </div>
-      {showHideBidWindow.showBidWindow && <ComparsionAuction quotationAuctionId={showHideBidWindow.QuotationAuctionId} />}
+      {showHideBidWindow.showBidWindow && <ComparsionAuction quotationAuctionId={showHideBidWindow.QuotationAuctionId} AuctionStatusId={showHideBidWindow.AuctionStatusId} />}
     </>
   );
 }
