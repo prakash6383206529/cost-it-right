@@ -183,7 +183,7 @@ function AddRMFinancialDetails(props) {
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
             let Data = props?.DataToChange
-            console.log('here');
+            
             setValue('UnitOfMeasurement', { label: Data.UnitOfMeasurementName, value: Data.UOM })
             setValue('cutOffPriceSelectedCurrency', Data?.CutOffPrice)
             setValue('cutOffPriceBaseCurrency', states.isImport ? Data?.CutOffPriceInINR : Data?.CutOffPrice)

@@ -27,6 +27,7 @@
 
     function MasterSendForApproval(props) {
         
+        
         const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
         
 
@@ -86,8 +87,7 @@
                     ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
                     ReasonId: reasonId,
                     // PlantId:  approvalObj ? approvalObj?.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID
-                    PlantId: props.isRFQ 
-    ? (plantId?.Plant[0]?.PlantId ?? EMPTY_GUID) 
+                    PlantId: props?.isRFQ  ? ( approvalObj?.length > 1 ? plantId?.Plant[0]?.PlantId ?? EMPTY_GUID : approvalObj[0]?.Plant[0]?.PlantId ?? EMPTY_GUID)
     : (props.masterPlantId ?? (approvalObj?.Plant[0]?.PlantId ?? EMPTY_GUID))
 
                 }
@@ -139,7 +139,7 @@
                         "RawMaterialSpecificationId": approvalObj?.RMSpec,
                         "EffectiveDate": DayTime(approvalObj?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                         // "PlantId": approvalObj?.Plant[0]?.PlantId,
-                        "PlantId": props.isRFQ ? (plantId?.Plant[0]?.PlantId ?? EMPTY_GUID) 
+                        "PlantId": props?.isRFQ  ? ( approvalObj?.length > 1 ? plantId?.Plant[0]?.PlantId ?? EMPTY_GUID : approvalObj[0]?.Plant[0]?.PlantId ?? EMPTY_GUID)
                         : approvalObj?.Plant[0]?.PlantId,
                         "VendorId": approvalObj?.Vendor,
                         "CustomerId": approvalObj?.CostingTypeId === CBCTypeId ? approvalObj?.Customer : null,
@@ -189,9 +189,8 @@
                 ReasonId: '',
                 ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
                 // PlantId: approvalObj?.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID
-                PlantId: props.isRFQ 
-    ? (plantId?.Plant[0]?.PlantId ?? EMPTY_GUID) 
-    : (props.masterPlantId ?? (approvalObj?.Plant[0]?.PlantId ?? EMPTY_GUID))
+                "PlantId": props?.isRFQ  ? ( approvalObj?.length > 1 ? plantId?.Plant[0]?.PlantId ?? EMPTY_GUID : approvalObj[0]?.Plant[0]?.PlantId ?? EMPTY_GUID)
+                : (props.masterPlantId ?? (approvalObj?.Plant[0]?.PlantId ?? EMPTY_GUID))
             }
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
                 const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -479,6 +478,7 @@
                 
             
                 const processApproval = async (item) => {
+                 
                     let obj = {
                         ApprovalProcessSummaryId: item.ApprovalProcessSummaryId,
                         ApprovalProcessId: item.ApprovalProcessId,
@@ -493,7 +493,9 @@
                         ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
                         ApproverLevel: approver && approver.levelName ? approver.levelName : '',
                         Remark: remark,
-                        IsApproved: type === 'Approve',
+                        IsApproved: type === 'Approve' ? true : false,
+                        IsReject : type === 'Reject' ? true : false,
+                        IsReturn : type === 'Return' ? true : false,
                         ApproverDepartmentId: dept && dept.value ? dept.value : '',
                         ApproverDepartmentName: dept && dept.label ? dept.label : '',
                         IsFinalApprovalProcess: false
@@ -501,6 +503,7 @@
             
                     return new Promise((resolve, reject) => {
                         dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
+                            
                             if (res?.data?.Result) {
                                 resolve(res);
                             } else {
@@ -510,7 +513,7 @@
                     });
                 };
             
-                if (props?.isRFQ === true && Array.isArray(approvalDetails) && approvalDetails.length > 0) {
+                if (props?.isRFQ === true && Array.isArray(approvalDetails) && approvalDetails?.length > 0) {
                     reset();
                     setIsLoader(true);
             
@@ -518,12 +521,7 @@
                         .then(() => {
                             setIsDisable(false);
                             setIsLoader(false);
-                            if (IsPushDrawer) {
-                                Toaster.success('All tokens have been processed');
-                            } else {
-                                Toaster.success(!IsFinalLevel ? 'All tokens have been processed' : 'All tokens have been sent to next level for approval');
-                            }
-                            props.closeDrawer('', 'submit');
+                                                      props.closeDrawer('', 'submit');
                         })
                         .catch((error) => {
                             setIsDisable(false);
@@ -547,7 +545,9 @@
                         ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
                         ApproverLevel: approver && approver.levelName ? approver.levelName : '',
                         Remark: remark,
-                        IsApproved: type === 'Approve',
+                        IsApproved: type === 'Approve' ? true : false,
+                        IsReject : type === 'Reject' ? true : false,
+                        IsReturn : type === 'Return' ? true : false,
                         ApproverDepartmentId: dept && dept.value ? dept.value : '',
                         ApproverDepartmentName: dept && dept.label ? dept.label : '',
                         IsFinalApprovalProcess: false
@@ -557,6 +557,7 @@
                         reset();
                         setIsLoader(true);
                         dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
+                            
                             
                             setIsDisable(false)
                             setIsLoader(false)  
@@ -575,6 +576,8 @@
                         setIsLoader(true);
                         
                         dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
+                            
+                            
                             
                             setIsDisable(false)
                             setIsLoader(false)

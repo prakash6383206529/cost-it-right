@@ -54,7 +54,7 @@ function SimulationApproveReject(props) {
   const [disableReleaseStrategy, setDisableReleaseStrategy] = useState(false)
   const [isDisableSubmit, setIsDisableSubmit] = useState(false)
   const [isSaveSimualtionCalled, setIsSavedSimulationCalled] = useState(false)
-  console.log('isSaveSimualtionCalled: ', isSaveSimualtionCalled);
+  
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -124,7 +124,7 @@ function SimulationApproveReject(props) {
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
     if (initialConfiguration?.IsSAPConfigured && type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-      console.log("GOING FROM HERE");
+      
       let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
 
       //THIS CONDITION IS FOR SAVE SIMULATION
@@ -158,7 +158,7 @@ function SimulationApproveReject(props) {
   const checkPermission = (costingTypeId) => {
     let levelDetailsTemp = ''
     levelDetailsTemp = userTechnologyLevelDetails(costingTypeId, technologyLevelsList?.TechnologyLevels ? technologyLevelsList?.TechnologyLevels : [])
-    console.log('levelDetailsTemp: ', levelDetailsTemp);
+    
     if (levelDetailsTemp?.length !== 0) {
       setLevelDetails(levelDetailsTemp)
       getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
@@ -373,7 +373,7 @@ function SimulationApproveReject(props) {
 
   useEffect(() => {
     if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-      console.log("HOW MANY TIME");
+      
       let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
       //THIS CONDITION IS FOR SAVE SIMULATION
       setLoader(true)

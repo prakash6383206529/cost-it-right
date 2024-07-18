@@ -47,12 +47,14 @@ const Table = (props) => {
                 </tr>}
         </>
     }
+    
     return (
         <table className='table table-bordered costing-summary-table'>
             <thead>
                 <tr>
                     <th></th>
                     {headerData.map((item, index) => (
+                        
 
                         <th key={index}><div>{item.isCheckBox && <div className="custom-check1 d-inline-block">
                             <label
