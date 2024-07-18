@@ -20,7 +20,7 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.8.120:1005/api/v1`
+// const BASE_URL = `http://10.10.8.109:8070/api/v1`
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -2266,6 +2266,7 @@ export const ReleaseStrategyB3 = 'RSB3'
 export const ReleaseStrategyB4 = 'RSB4'
 export const ReleaseStrategyB6 = 'RSB6'
 export const VendorNeedForm = 'VNF'
+export const RAWMATERIAL = 'Raw Material'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -3120,10 +3121,12 @@ export const RELEASESTRATEGYTYPEID3 = Number(reactLocalStorage.getObject('Approv
 export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB4])
 export const RELEASESTRATEGYTYPEID6 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB6])
 export const VENDORNEEDFORMID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VendorNeedForm])
-
+export const RAWMATERIALAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[RAWMATERIAL])
+console.log('RAWMATERIALAPPROVALTYPEID: ', RAWMATERIALAPPROVALTYPEID);
 //Supplier approval 
 
 export const CLASSIFICATIONAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CUD])
+
 
 export const LPSAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[LPSUD])
 export const LPSAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[LPSUD])
@@ -3193,7 +3196,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.8";
+export const VERSION = "V3.0.9";
 
 
 

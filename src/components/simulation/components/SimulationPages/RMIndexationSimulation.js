@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT, RAWMATERIALAPPROVALTYPEID } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -68,6 +68,7 @@ function RMIndexationSimulation(props) {
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [scrapRateviewTooltip, setScrapRateViewTooltip] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
+    console.log('isLoader in INDEX: ', isLoader);
     const [isScrapUOMApplyTemp, setIsScrapUOMApplyTemp] = useState(false)
     const [openCommodityDrawer, setOpenCommodityDrawer] = useState(false)
     const [editIndex, setEditIndex] = useState(false)
@@ -81,6 +82,7 @@ function RMIndexationSimulation(props) {
     const [isRunSimulationClicked, setRunSimulationClicked] = useState(false)
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
     const [simulationTechnologyId, setSimulationTechnologyIdState] = useState('')
+    const [simulationHeadId, setSimulationHeadId] = useState('')
     const [tokenNumber, setTokenNumber] = useState('')
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -127,6 +129,7 @@ function RMIndexationSimulation(props) {
     useEffect(() => {
         if ((!props?.isFromApprovalListing && !isApprovalSummary && !isCostingSimulation)) {
             setIsLoader(true)
+            console.log("HERE1");
             let rawMaterialIds = isCostingSimulation ? props?.list && props?.list?.length > 0 && props?.list.map(item => item.NewRawMaterialIndexationDetails.RawMaterialId) : props?.list && props?.list?.length > 0 && props?.list.map(item => item.RawMaterialId)
             let obj = {
 
@@ -135,7 +138,7 @@ function RMIndexationSimulation(props) {
                 "SimulationTechnologyId": selectedMasterForSimulation?.value,
                 "EffectiveDate": null,
                 "LoggedInUserId": loggedInUserId(),
-                "SimulationHeadId": null,
+                "SimulationHeadId": RAWMATERIALAPPROVALTYPEID,
                 "IsSimulationWithOutCosting": true
 
             }
@@ -172,17 +175,20 @@ function RMIndexationSimulation(props) {
                 SimulationId: props?.simulationId
             }
             setIsLoader(true)
+            console.log("HERE 2");
             setSimulationId(props?.simulationId)
 
             dispatch(editRMIndexedSimulationData(obj1, (res) => {
+                console.log('obj1: ', obj1);
 
                 if (res?.data?.Result) {
                     setTimeout(() => {
-
+                        console.log(res?.data?.Data, "res?.data?.Data");
                         setRunSimulationClicked(true)
                         setIsViewFlag(true)
                         setTokenNumber(res?.data?.Data?.TokenNumber)
-                        setSimulationTechnologyIdState(res?.data?.Data?.SimulationtechnologyId)
+                        setSimulationTechnologyIdState(res?.data?.Data?.SimulationTechnologyId)
+                        setSimulationHeadId(res?.data?.Data?.SimulationHeadId)
                         setIsLoader(false)
                         reactLocalStorage.setObject('isSaveSimualtionCalled', '')
                     }, 1000)
@@ -210,8 +216,9 @@ function RMIndexationSimulation(props) {
 
 
     const verifySimulation = debounce((e, type) => {
-        console.log('type: ', type);
+
         setIsDisable(true)
+        console.log("HERE 3");
         setIsLoader(true)
         if (type !== 'verify') {
 
@@ -234,7 +241,8 @@ function RMIndexationSimulation(props) {
                         setRunSimulationClicked(true)
                         setIsViewFlag(true)
                         setTokenNumber(res?.data?.Data?.TokenNumber)
-                        setSimulationTechnologyIdState(res?.data?.Data?.SimulationtechnologyId)
+                        setSimulationTechnologyIdState(res?.data?.Data?.SimulationTechnologyId)
+                        setSimulationHeadId(res?.data?.Data?.SimulationHeadId)
                         setIsLoader(false)
 
                     }))
@@ -258,7 +266,7 @@ function RMIndexationSimulation(props) {
             let tempArr = []
 
             list && list.map(item => {
-                console.log('item: ', item);
+
                 let tempObj = {}
                 tempObj.RawMaterialId = item.OldRawMaterialIndexationDetails.RawMaterialId
                 tempObj.NewRawMaterialId = item.NewRawMaterialIndexationDetails.RawMaterialId
@@ -471,7 +479,7 @@ function RMIndexationSimulation(props) {
 
     const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '') => {
         const selectedRow = indexedRMForSimulation[editIndex]
-
+        console.log("HERE 4");
 
         setIsLoader(true)
         let updatedOtherCostTotal = []
@@ -839,6 +847,7 @@ function RMIndexationSimulation(props) {
     }
 
     const changeList = (value) => {
+        console.log("SETTING FROM HERE");
         setIsLoader(true)
         list && list?.map(item => {
             item.Percentage = value;
@@ -1267,11 +1276,11 @@ function RMIndexationSimulation(props) {
                         closeDrawer={closeApprovalDrawer}
                         isSimulation={true}
                         apiData={indexedRMForSimulation}
-                        costingTypeId={simulationTechnologyId} //CONFIRM FROM ANIKET
+                        costingTypeId={simulationHeadId} //CONFIRM FROM ANIKET
                         releaseStrategyDetails={{}}
                         technologyId={simulationTechnologyId}
                         showApprovalTypeDropdown={true}
-                        approvalTypeIdValue={simulationTechnologyId}//CONFIRM FROM ANIKET
+                        approvalTypeIdValue={simulationHeadId}//CONFIRM FROM ANIKET
                         IsExchangeRateSimulation={false}
                     // isSaveDone={isSaveDone}
                     />

@@ -30,7 +30,7 @@ import { submit } from 'redux-form'
 import SAPApproval from '../../../SAPApproval'
 
 function ApproveRejectUI(props) {
-  console.log('props: ', props);
+
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
   const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId } = props
