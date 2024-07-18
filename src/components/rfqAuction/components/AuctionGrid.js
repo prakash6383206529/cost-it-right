@@ -64,7 +64,7 @@ const AuctionGrid = (props) => {
     };
 
     const viewBid = (QuotationAuctionId) => {
-        dispatch(ShowBidWindow({ showBidWindow: true, QuotationAuctionId: QuotationAuctionId }))
+        dispatch(ShowBidWindow({ showBidWindow: true, QuotationAuctionId: QuotationAuctionId, AuctionStatusId: auctionlistId }))
     }
 
     const buttonFormatter = (props) => {
