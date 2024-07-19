@@ -24,7 +24,7 @@ import { AcceptableRMUOM } from "../../../config/masterData"
 import AddConditionCosting from "../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting"
 import HeaderTitle from "../../common/HeaderTitle"
 import AddOtherCostDrawer from "./AddOtherCostDrawer"
-import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears } from 'date-fns';
+import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears, isLeapYear, isAfter, getMonth, getQuarter, endOfQuarter, getDate, subDays } from 'date-fns';
 import { TestHeadless } from "ag-grid-community"
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
@@ -651,16 +651,27 @@ function AddRMFinancialDetails(props) {
 
         switch (frequencyOfSettlement) {
             case 'Weekly':
-                validToDate = addWeeks(date, 1);
+                // Add 6 days for a week's duration since we start counting from the fromDate
+                validToDate = addDays(date, 6);
                 break;
             case 'Fortnightly':
-                validToDate = addWeeks(date, 2);
+                // Add 13 days for a fortnight's duration
+                validToDate = addDays(date, 13);
                 break;
             case 'Monthly':
-                validToDate = endOfMonth(date);
+                if (getDate(date) === 1) {
+                    validToDate = endOfMonth(date);
+                } else {
+                    // Correctly adding a month and subtracting a day for non-1st start dates
+                    validToDate = subDays(addMonths(date, 1), 1);
+                }
                 break;
             case 'Quarterly':
-                validToDate = addQuarters(date, 1);
+                if (getDate(date) === 1 && [4, 7, 10, 1].includes(getMonth(date) + 1)) {
+                    validToDate = endOfQuarter(date);
+                } else {
+                    validToDate = subDays(addQuarters(date, 1), 1);
+                }
                 break;
             case 'Half Yearly':
                 validToDate = addMonths(date, 6);
@@ -686,6 +697,7 @@ function AddRMFinancialDetails(props) {
 
         setValue('toDate', validToDate);
     };
+
     const handleToEffectiveDateChange = (date) => {
         setState(prevState => ({ ...prevState, toDate: date }));
     };
