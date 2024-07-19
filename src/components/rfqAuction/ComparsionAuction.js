@@ -27,9 +27,10 @@ import { ASSEMBLY, BOP, COMPONENT, RM } from "./AddAuction";
 import DayTime from "../common/DayTimeWrapper";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { TextFieldHookForm } from "../layout/HookFormInputs";
-import { addTime, calculateEndDateTime, calculateTime, checkForNull, loggedInUserId } from "../../helper";
+// import { addTime, calculateEndDateTime, calculateTime, checkForNull, loggedInUserId } from "../../helper";
 import Toaster from "../common/Toaster";
 import { AuctionLiveId } from "../../config/constants";
+import { addTime, calculateEndDateTime, checkForNull, loggedInUserId } from "../../helper";
 
 
 function ComparsionAuction(props) {
@@ -92,7 +93,7 @@ function ComparsionAuction(props) {
     dispatch(ShowBidWindow({ showBidWindow: false, QuotationAuctionId: '' }))
   };
   const extendTime = () => {
-    const getTime = calculateTime(headerDetails.ExtensionTime)
+    const getTime =   (headerDetails.ExtensionTime)
     const totalExtendedDuration = addTime(getTime, headerDetails.TotalAuctionExtensionDuration)
     let obj = {
       QuotationAuctionId: props.quotationAuctionId,

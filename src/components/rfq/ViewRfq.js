@@ -97,6 +97,10 @@ const [approveDrawer, setApproveDrawer] = useState(false)
     const [matchedStatus, setMatchedStatus] = useState([])
     const [masterRejectDrawer, setMasterRejectDrawer] = useState(false)
     const [masterRetrunDrawer ,setMasterRetrunDrawer] = useState(false)
+    
+    const [actionType, setActionType] = useState('');
+    
+
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { viewRmDetails } = useSelector(state => state.material)
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
@@ -454,6 +458,7 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     const approveDetails = (Id, rowData = {}) => {
         if(partType === "BoughtOutPart" || partType === "RawMaterial"){
             setApproveDrawer(true)
+            setActionType('Approve')
         }
         else {
             if (selectedCostingList?.length === 0) {
@@ -501,46 +506,56 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     const rejectDetailsClick = (Id, rowData = {}) => {
         if(partType === "BoughtOutPart" || partType === "RawMaterial"){
             setMasterRejectDrawer(true)
+            setActionType('Reject')
+            return
         }
-        if (selectedCostingList?.length === 0) {
-            Toaster.warning("Select at least one costing to reject")
-            return false
-        }
-        const arrayOfObjects = [...viewCostingData]
-        const matchingItems = selectedCostingList.filter(item =>
-            arrayOfObjects.some(obj => obj.costingId === item)
-        );
-        let arr = []
-        matchingItems.map(item => rowData.filter(el => {
-            if (el.CostingId === item) {
-                arr.push(el)
+        else{
+            if (selectedCostingList?.length === 0) {
+                Toaster.warning("Select at least one costing to reject")
+                return false
             }
-            return null
-        }))
-        setRejectedList(arr)
-        setRejectDrawer(true)
+            const arrayOfObjects = [...viewCostingData]
+            const matchingItems = selectedCostingList.filter(item =>
+                arrayOfObjects.some(obj => obj.costingId === item)
+            );
+            let arr = []
+            matchingItems.map(item => rowData.filter(el => {
+                if (el.CostingId === item) {
+                    arr.push(el)
+                }
+                return null
+            }))
+            setRejectedList(arr)
+            setRejectDrawer(true)
+        }
+       
     }
     const returnDetailsClick = (Id, rowData = {}) => {
         if(partType === "BoughtOutPart" || partType === "RawMaterial"){
             setMasterRejectDrawer(true)
+            setActionType('Return')
+            return
         }
-        if (selectedCostingList?.length === 0) {
-            Toaster.warning("Select at least one costing to return")
-            return false
-        }
-        const arrayOfObjects = [...viewCostingData]
-        const matchingItems = selectedCostingList.filter(item =>
-            arrayOfObjects.some(obj => obj.costingId === item)
-        );
-        let arr = []
-        matchingItems.map(item => rowData.filter(el => {
-            if (el.CostingId === item) {
-                arr.push(el)
+        else {
+            if (selectedCostingList?.length === 0) {
+                Toaster.warning("Select at least one costing to return")
+                return false
             }
-            return null
-        }))
-        setReturnList(arr)
-        setReturnDrawer(true)
+            const arrayOfObjects = [...viewCostingData]
+            const matchingItems = selectedCostingList.filter(item =>
+                arrayOfObjects.some(obj => obj.costingId === item)
+            );
+            let arr = []
+            matchingItems.map(item => rowData.filter(el => {
+                if (el.CostingId === item) {
+                    arr.push(el)
+                }
+                return null
+            }))
+            setReturnList(arr)
+            setReturnDrawer(true)
+        }
+        
     }
 
     /**
@@ -1564,24 +1579,17 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                 { (approveDrawer  ||masterRejectDrawer)&&
                      <MasterSendForApproval
                      isOpen={approveDrawer ? approveDrawer : masterRejectDrawer}
-                     type={approveDrawer ? 'Approve' : 'Reject'}
+                     type={actionType}
                      closeDrawer={closeApprovalDrawer}
                      isEditFlag={false}
                      masterId={partType === "RawMaterial" ? RM_MASTER_ID : BOP_MASTER_ID}
                      isRFQ={true}
                      anchor={"right"}
                      approvalDetails={state.approvalObj}
-                    //  UOM={state.UOM}
                      approvalObj={state.approvalObj}
-                    //  isBulkUpload={false}
-                    //  IsImportEntry={false}
-                     costingTypeId={ZBCTypeId}
+                       costingTypeId={ZBCTypeId}
                      levelDetails={state.levelDetails}
-                    //  currency={{ label: reactLocalStorage.getObject("baseCurrency"), value: reactLocalStorage.getObject("baseCurrency") }}
-                    //  Technology={state.Technology}
-                    //  showScrapKeys={showScrapKeys}
-                    //  toolTipTextObject={state.toolTipTextObject}
-                   />
+                                       />
                 }
 
             </div >

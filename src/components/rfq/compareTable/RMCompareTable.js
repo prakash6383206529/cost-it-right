@@ -11,6 +11,7 @@ import _, { isNumber } from 'lodash';
 const RMCompareTable = (props) => {
     const dispatch = useDispatch()
     const { viewRmDetails } = useSelector(state => state.material)
+    
     const [sectionData, setSectionData] = useState([])
     const [mainHeadingData, setMainHeadingData] = useState([])
     const [checkBoxCheck, setCheckBoxCheck] = useState({})
@@ -91,6 +92,7 @@ const RMCompareTable = (props) => {
                     onChange: () => checkBoxHandle(item,index),
                     checked: checkBoxCheck[index],
                     isCheckBox: item.IsShowCheckBoxForApproval,
+                    // isCheckBox:true,
                     bestCost: item.bestCost,
                     shouldCost: props.uniqueShouldCostingId?.includes(item.RawMaterialId) ? "Should Cost" : ""
 
@@ -218,6 +220,7 @@ const RMCompareTable = (props) => {
     }
     
     useEffect(() => {
+        
         props.checkCostingSelected(selectedItems, selectedIndices)
     }, [selectedItems, selectedIndices])
     // const checkBoxHanlde = (item , index) => {

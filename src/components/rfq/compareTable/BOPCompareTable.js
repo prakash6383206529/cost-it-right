@@ -79,13 +79,15 @@ const BOPCompareTable = (props) => {
 
                 //section Three
                 sectionThree.push([item.Remark])
+                
 
                 //mainheader data start
                 const mainHeaderObj = {
                     vendorName: item.Vendor,
                     onChange: () => checkBoxHandle(item,index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: item.IsShowCheckBoxForApproval,
+                    // isCheckBox: item.IsShowCheckBoxForApproval,
+                    isCheckBox:true,
                     bestCost: item.bestCost,
                     shouldCost: props.uniqueShouldCostingId?.includes(item.RawMaterialId) ? "Should Cost" : ""
 
@@ -212,6 +214,7 @@ const BOPCompareTable = (props) => {
     
 
     useEffect(() => {
+        
         props.checkCostingSelected(selectedItems, selectedIndices)
     }, [selectedItems, selectedIndices])
     // const checkBoxHanlde = (item , index) => {
