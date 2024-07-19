@@ -37,6 +37,7 @@ import SingleDropdownFloationFilter from '../masters/material-master/SingleDropd
 import WarningMessage from '../common/WarningMessage';
 import RMCompareTable from './compareTable/RMCompareTable';
 import BOPCompareTable from './compareTable/BOPCompareTable';
+import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -90,21 +91,24 @@ function RfqListing(props) {
     const [viewRMCompare, setViewRMCompare] = useState(false)
     const [viewBOPCompare, setViewBOPCompare] = useState(false)
     const [partType, setPartType] = useState('')
+    const [quotationId, setQuotationId] = useState('')
 
     const [matchedStatus, setMatchedStatus] = useState([])
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { viewRmDetails } = useSelector(state => state.material)
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
     let arr = []
-
+    const history = useHistory();
+    const location = useLocation();
     useEffect(() => {
         getDataList()
-
+        console.log(location, "location");
     }, [])
 
     useEffect(() => {
         if (rowData[0]?.QuotationId) {
             dispatch(setQuotationIdForRFQ(rowData[0]?.QuotationId))
+            setQuotationId(rowData[0]?.QuotationId)
         }
         if (rowData[0]?.PartType) {
             setPartType(rowData[0]?.PartType)
@@ -1210,7 +1214,12 @@ function RfqListing(props) {
                 break;
         }
     }
-
+    const handleInitiateAuction = () => {
+        history.push({
+            pathname: '/add-auction',
+            state: { source: 'rfq', quotationId: quotationId }
+        });
+    }
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -1473,6 +1482,16 @@ function RfqListing(props) {
             {addComparisonToggle && disableApproveRejectButton && (viewCostingData?.length > 0 || viewRmDetails?.length > 0 || viewBOPDetails?.length > 0) && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 {costingsDifferentStatus && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Actions cannot be performed on costings with different statuses.'} />}
                 <div className="col-sm-12 text-right bluefooter-butn">
+                    <button
+                        type="button"
+                        className="submit-button save-btn mr-2"
+                        id="addRFQ_save"
+                        disabled={false}
+                        onClick={handleInitiateAuction}
+                    >
+                        <div className={"save-icon"}></div>
+                        {"Initiate Auction"}
+                    </button>
                     <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Return'}

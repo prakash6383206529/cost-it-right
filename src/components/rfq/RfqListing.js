@@ -25,6 +25,7 @@ import { agGridStatus, getGridHeight, isResetClick, showQuotationDetails } from 
 import TourWrapper from '../common/Tour/TourWrapper';
 import { Steps } from '../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
+import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
 
@@ -61,6 +62,8 @@ function RfqListing(props) {
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const agGridRef = useRef(null);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const history = useHistory();
+    const location = useLocation();
     const handleFilterChange = () => {
         if (agGridRef.current) {
 
@@ -109,6 +112,28 @@ function RfqListing(props) {
             gridApi?.setQuickFilter(statusColumnData?.data);
         }
     }, [statusColumnData])
+    useEffect(() => {
+        const { source, quotationId } = location.state || {};
+        console.log('source: ', source);
+        if (source === 'auction') {
+            if (rowData && rowData.length !== 0) {
+                const fiterRowData = rowData.find(item => item.QuotationId === quotationId);
+                viewDetails(fiterRowData);
+            }
+        }
+    }, [rowData])
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            history.push({
+                pathname: '/rfq-listing',
+                state: { source: 'rfq' }
+            })
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
     /**
       * @method applyPermission
       * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
