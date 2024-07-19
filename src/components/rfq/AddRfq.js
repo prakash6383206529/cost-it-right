@@ -3577,7 +3577,7 @@ function AddRfq(props) {
 
             {/* </Drawer > */}
             {
-                (showPopup && vendorId) && <PopupMsgWrapper disablePopup={alreadyInDeviation} vendorId={vendorId}
+                (showPopup) && <PopupMsgWrapper disablePopup={alreadyInDeviation} vendorId={vendorId}
                     plantId={plantId} redirectPath={blocked ? "/initiate-unblocking" : ""} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={blocked ? `${popupMessage}` : `${MESSAGES.RFQ_ADD_SUCCESS}`} />
             }
         </div >
