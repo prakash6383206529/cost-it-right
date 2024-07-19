@@ -282,7 +282,7 @@ export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
             commodityMaterialDetailId: "", rate: obj.Rate, currencyCharge: obj.CurrencyCharge, exchangeRate: obj.ExchangeRate,
             rateConversion: obj.RateConversion, exchangeRateSourceName: obj.ExchangeRateSourceName, effectiveDate: obj.EffectiveDate, commodityName: obj.CommodityName,
             indexExchangeName: obj.IndexExchangeName, uom: obj.UOM, currency: obj.Currency,
-            Remark: '', applyPagination: isPagination, skip: skip, take: take
+            Remark: '', applyPagination: false, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getIndexDataList}?${queryParams}`, config())

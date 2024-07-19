@@ -94,6 +94,9 @@ function AddRMMaster(props) {
                             BasicRate: avgRate ? avgRate.RatePerConvertedUOM : null,
                             ExchangeRate: avgRate ? avgRate.ExchangeRate : null,
                             TotalCostPercent: checkForNull(avgRate?.RateConversionPerConvertedUOM) * checkForNull(avgRate?.Percentage) / 100,
+                            ConvertedUOM: avgRate ? avgRate.ConvertedUOM : null,
+                            IndexCurrency: avgRate ? avgRate.FromCurrency : null,
+
                         };
                     });
                     setState(prevState => ({ ...prevState, commodityDetails: updatedCommodityDetails }));

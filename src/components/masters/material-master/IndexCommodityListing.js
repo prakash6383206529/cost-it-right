@@ -273,7 +273,7 @@ const IndexCommodityListing = () => {
 
   const onFilterTextBoxChanged = (e) => {
     gridApi.setQuickFilter(e.target.value);
-}
+  }
 
   const resetState = () => {
     setNoData(false)

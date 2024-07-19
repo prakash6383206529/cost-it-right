@@ -173,126 +173,111 @@ function RemarksAndAttachments(props) {
 
         }
     }
-    const attachmentToggle = () => {
-        setState(prevState => ({ ...prevState, isAttachmentOpen: !state.isAttachmentOpen }));
-    }
 
     return (
         <Row className="mb-3 accordian-container">
-            <Col md="6" className='d-flex align-items-center'>
-                <HeaderTitle
-                    title={'Remarks & Attachments:'}
-                    customClass={'Personal-Details'}
+
+
+            {/* <div className="accordian-content row mx-0 w-100"> */}
+            <Col md="6">
+                <TextAreaHookForm
+                    label={`Remarks`}
+                    name={"Remarks"}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    rowHeight={6}
+                    mandatory={false}
+                    rules={{
+                        validate: { maxLength512, acceptAllExceptSingleSpecialCharacter },
+                        maxLength: {
+                            value: 500,
+                            message: "Remark should be less than 500 words"
+                        },
+                    }}
+                    handleChange={handleMessageChange}
+                    defaultValue={""}
+                    className=""
+                    customClassName={"textAreaWithBorder"}
+                    errors={errors.Remarks}
+                    disabled={isViewFlag}
                 />
             </Col>
-            <Col md="6">
-                <div className={'right-details text-right'}>
-                    <button className="btn btn-small-primary-circle ml-1" onClick={attachmentToggle} type="button">{state.isAttachmentOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
+            <Col md="3">
+                <label>Upload Files <small>(upload up to {getConfigurationKey().MaxMasterFilesToUpload} files, each with a size limit of 2MB)</small></label>
+                <div className={`alert alert-danger mt-2 ${files?.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
+                    Maximum file upload limit reached.
+                </div>
+
+                <div id="AddRMDomestic_uploadFiles" className={`${files?.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                    <Dropzone
+                        ref={dropzone}
+                        onChangeStatus={handleChangeStatus}
+                        PreviewComponent={Preview}
+                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                        initialFiles={state.initialFiles}
+                        maxFiles={getConfigurationKey().MaxMasterFilesToUpload}
+                        maxSizeBytes={2000000}
+                        inputContent={(files, extra) =>
+                            extra.reject ? (
+                                "Image, audio and video files only"
+                            ) : (
+                                <div className="text-center">
+                                    <i className="text-primary fa fa-cloud-upload"></i>
+                                    <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">
+                                            Browse
+                                        </span>
+                                        <br />
+                                        file to upload
+                                    </span>
+                                </div>
+                            )
+                        }
+                        styles={{
+                            dropzoneReject: {
+                                borderColor: "red",
+                                backgroundColor: "#DAA",
+                            },
+                            inputLabel: (files, extra) =>
+                                extra.reject ? { color: "red" } : {},
+                        }}
+                        classNames="draper-drop"
+                        disabled={isViewFlag}
+                    />
                 </div>
             </Col>
-            {
-                state.isAttachmentOpen &&
-                <div className="accordian-content row mx-0 w-100">
-                    <Col md="6">
-                        <TextAreaHookForm
-                            label={`Remarks`}
-                            name={"Remarks"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rowHeight={6}
-                            mandatory={false}
-                            rules={{
-                                validate: { maxLength512, acceptAllExceptSingleSpecialCharacter },
-                                maxLength: {
-                                    value: 500,
-                                    message: "Remark should be less than 500 words"
-                                },
-                            }}
-                            handleChange={handleMessageChange}
-                            defaultValue={""}
-                            className=""
-                            customClassName={"textAreaWithBorder"}
-                            errors={errors.Remarks}
-                            disabled={isViewFlag}
-                        />
-                    </Col>
-                    <Col md="3">
-                        <label>Upload Files <small>(upload up to {getConfigurationKey().MaxMasterFilesToUpload} files, each with a size limit of 2MB)</small></label>
-                        <div className={`alert alert-danger mt-2 ${files?.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
-                            Maximum file upload limit reached.
-                        </div>
-
-                        <div id="AddRMDomestic_uploadFiles" className={`${files?.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
-                            <Dropzone
-                                ref={dropzone}
-                                onChangeStatus={handleChangeStatus}
-                                PreviewComponent={Preview}
-                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
-                                initialFiles={state.initialFiles}
-                                maxFiles={getConfigurationKey().MaxMasterFilesToUpload}
-                                maxSizeBytes={2000000}
-                                inputContent={(files, extra) =>
-                                    extra.reject ? (
-                                        "Image, audio and video files only"
-                                    ) : (
-                                        <div className="text-center">
-                                            <i className="text-primary fa fa-cloud-upload"></i>
-                                            <span className="d-block">
-                                                Drag and Drop or{" "}
-                                                <span className="text-primary">
-                                                    Browse
-                                                </span>
-                                                <br />
-                                                file to upload
-                                            </span>
-                                        </div>
-                                    )
-                                }
-                                styles={{
-                                    dropzoneReject: {
-                                        borderColor: "red",
-                                        backgroundColor: "#DAA",
-                                    },
-                                    inputLabel: (files, extra) =>
-                                        extra.reject ? { color: "red" } : {},
-                                }}
-                                classNames="draper-drop"
-                                disabled={isViewFlag}
-                            />
-                        </div>
-                    </Col>
-                    <Col md="3">
-                        <div className={"attachment-wrapper"}>
-                            {state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                            {files &&
-                                files.map((f) => {
-                                    const withOutTild = f.FileURL.replace(
-                                        "~",
-                                        ""
-                                    );
-                                    const fileURL = `${FILE_URL}${withOutTild}`;
-                                    return (
-                                        <div className={"attachment images"}>
-                                            <a href={fileURL} target="_blank" rel="noreferrer" title={f.OriginalFileName}>
-                                                {f.OriginalFileName}
-                                            </a>
-                                            {!isViewFlag && <img
-                                                className="float-right"
-                                                alt={""}
-                                                onClick={() =>
-                                                    deleteFile(f.FileId, f.FileName)
-                                                }
-                                                src={imgRedcross}
-                                            ></img>}
-                                        </div>
-                                    );
-                                })}
-                        </div>
-                    </Col>
-
+            <Col md="3">
+                <div className={"attachment-wrapper"}>
+                    {state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                    {files &&
+                        files.map((f) => {
+                            const withOutTild = f.FileURL.replace(
+                                "~",
+                                ""
+                            );
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <div className={"attachment images"}>
+                                    <a href={fileURL} target="_blank" rel="noreferrer" title={f.OriginalFileName}>
+                                        {f.OriginalFileName}
+                                    </a>
+                                    {!isViewFlag && <img
+                                        className="float-right"
+                                        alt={""}
+                                        onClick={() =>
+                                            deleteFile(f.FileId, f.FileName)
+                                        }
+                                        src={imgRedcross}
+                                    ></img>}
+                                </div>
+                            );
+                        })}
                 </div>
-            }
+            </Col>
+
+            {/* </div> */}
 
         </Row>
     );

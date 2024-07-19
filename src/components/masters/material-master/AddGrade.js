@@ -108,7 +108,7 @@ class AddGrade extends Component {
       this.props.reset();
       this.props.createCommodityCustomName(obj, (res) => {
         if (res?.data?.Result) {
-          Toaster.success(MESSAGES.COMMODITYNAME_ADD_SUCCESS);
+          Toaster.success(MESSAGES.INDEX_ADD_SUCCESS);
           this.toggleDrawer('', obj, 'submit');
         }
       });
