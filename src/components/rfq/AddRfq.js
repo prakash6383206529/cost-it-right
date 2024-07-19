@@ -3280,7 +3280,9 @@ function AddRfq(props) {
                                                         disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                                     />
                                                 </Col>
-
+                                            </>
+                                            }
+                                            {isConditionalVisible &&
                                                 <Col md="3">
                                                     {visibilityMode?.value === DATE_STRING && <div className="inputbox date-section">
                                                         <div className="form-group">
@@ -3354,7 +3356,7 @@ function AddRfq(props) {
                                                         </div>
                                                     </div>}
                                                 </Col>
-                                            </>}
+                                            }
 
                                         </Row>
 
@@ -3551,12 +3553,12 @@ function AddRfq(props) {
                     </div >
                 </div >
             </div >
-
-            {/* </Drawer > */}
             {
                 showPopup && <PopupMsgWrapper disablePopup={alreadyInDeviation} vendorId={vendorId}
                     plantId={plantId} redirectPath={blocked ? "/initiate-unblocking" : ""} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={blocked ? `${popupMessage}` : `${MESSAGES.RFQ_ADD_SUCCESS}`} />
             }
+
+
         </div >
 
 
