@@ -235,6 +235,7 @@
 
 .refresh-div {
     max-width: 200px;
+    height: 40px;
 }
 
 .cursor-pointer {
@@ -297,4 +298,8 @@
 
 .opacity-down {
     opacity: 0.7;
+}
+
+.comparation-auction {
+    min-height: calc(100vh - 256px);
 }

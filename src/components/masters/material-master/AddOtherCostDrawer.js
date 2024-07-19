@@ -40,12 +40,38 @@ function AddOtherCostDrawer(props) {
         disableCostBaseCurrency: false,
         costDropdown: []
     })
+
     useEffect(() => {
-        const sum = tableData && tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.NetCostConversion), 0);
-        setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration?.NoOfDecimalForPrice))
-        const sumCurrency = tableData && tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.NetCost), 0);
-        setTotalCostCurrency(checkForDecimalAndNull(sumCurrency, initialConfiguration?.NoOfDecimalForPrice))
-    }, [tableData])
+        if (!tableData || tableData.length === 0) {
+            setTotalCostBase(0);
+            setTotalCostCurrency(0);
+            return;
+        }
+
+        // Filter out "Discount Cost" entries
+        const filteredTableData = tableData.filter(obj => obj.CostHeaderName !== "Discount Cost");
+
+        // Calculate the sum for NetCostConversion excluding "Discount Cost"
+        const sumNetCostConversion = filteredTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCostConversion), 0);
+
+        // Calculate the sum for NetCost excluding "Discount Cost"
+        const sumNetCost = tableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCost), 0);
+
+        // Find the first "Discount Cost" entry, if any
+        const discountCostEntry = tableData.find(obj => obj.CostHeaderName === "Discount Cost");
+        const discountNetCostConversion = discountCostEntry ? checkForNull(discountCostEntry.NetCostConversion) : 0;
+
+        // Calculate the final totalCostBase by applying the discount
+        const totalCostBase = sumNetCostConversion - Math.abs(discountNetCostConversion);
+
+        // Check if the tableData contains only "Discount Cost" entries
+        const isOnlyDiscountCost = tableData.every(obj => obj.CostHeaderName === "Discount Cost");
+
+        // Update state
+        setTotalCostBase(isOnlyDiscountCost ? discountNetCostConversion : totalCostBase);
+        setTotalCostCurrency(checkForDecimalAndNull(sumNetCost, initialConfiguration?.NoOfDecimalForPrice));
+
+    }, [tableData]);
     useEffect(() => {
         if (props.rawMaterial === true) {
             setTableData(props.rmTableData)
@@ -325,7 +351,6 @@ function AddOtherCostDrawer(props) {
         const costBaseCurrency = getValues('CostBaseCurrency');
         const applicabilityBaseCost = getValues('ApplicabilityBaseCost');
 
-
         // If 'Type' is not provided, return false
         if (!type || !cost) return false;
         if (type.label === "Percentage") {
@@ -338,6 +363,7 @@ function AddOtherCostDrawer(props) {
             // If 'Type' is 'fixed', check for 'CostCurrency' and 'CostBaseCurrency'
             if (!costBaseCurrency) return false;
         }
+        // Create new data entry
         const newData = {
             MaterialCommodityStandardDetailsId: RowData?.MaterialCommodityStandardDetailsId, // Add MaterialCommodityStandardDetailsId
             RawMaterialCommodityIndexRateAndOtherCostDetailsId: RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null,
@@ -353,6 +379,12 @@ function AddOtherCostDrawer(props) {
             CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '-',
         };
 
+        // If the CostHeaderName is 'Discount Cost', prepend '-' sign
+        if (newData.CostHeaderName === 'Discount Cost') {
+            newData.NetCost = `-${newData.NetCost}`;
+            newData.NetCostConversion = `-${newData.NetCostConversion}`;
+        }
+
         // Assuming 'tableData' is an array of objects and you want to add MaterialCommodityStandardDetailsId separately,
         // you can structure your updated data as follows:
         const updatedData = {
@@ -361,7 +393,7 @@ function AddOtherCostDrawer(props) {
         };
 
         // Check if CostHeaderName already exists in tableData, excluding the current item in edit mode
-        const isCostValueExists = tableData && tableData?.some((item, index) => {
+        const isCostValueExists = tableData && tableData.some((item, index) => {
             if (isEditMode && index === editIndex) {
                 return false; // Skip the current edited item
             }
@@ -399,8 +431,6 @@ function AddOtherCostDrawer(props) {
         setValue('CostDescription', '');
         setState(prevState => ({ ...prevState, disableCostBaseCurrency: false, disableCostCurrency: false }));
     };
-
-
     const resetData = (type = '') => {
         const commonReset = () => {
             setDisableAllFields(true);
@@ -445,7 +475,7 @@ function AddOtherCostDrawer(props) {
                             <Row className="drawer-heading">
                                 <Col className="pl-0">
                                     <div className={'header-wrapper left'}>
-                                        <h3>{'OtherCost:'}</h3>
+                                        <h3>{'Other Cost:'}</h3>
                                     </div>
                                     <div
                                         onClick={cancel}
@@ -728,12 +758,19 @@ function AddOtherCostDrawer(props) {
 
                                                 <tr className='table-footer'>
                                                     <td colSpan={props.rawMaterial ? 6 : 7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
-                                                    {!props.rawMaterial && <td ><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration?.NoOfDecimalForPrice)} </div></td>}
-                                                    <td colSpan={3} className="text-left"> {checkForDecimalAndNull(totalCostBase, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                                    {!props.rawMaterial &&
+                                                        <td>
+                                                            <div className='d-flex justify-content-between'>
+                                                                {checkForDecimalAndNull(totalCostCurrency, initialConfiguration?.NoOfDecimalForPrice)}
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                    <td colSpan={3} className="text-left">
+                                                        {checkForDecimalAndNull(totalCostBase, initialConfiguration?.NoOfDecimalForPrice)}
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </Table>
-
                                     </Col>
 
                                 </div >

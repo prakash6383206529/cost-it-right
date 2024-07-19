@@ -469,7 +469,7 @@ const AddMaterialDetailDrawer = (props) => {
                                     <thead>
                                         <tr>
                                             <th>{`Index`}</th>
-                                            <th>{`Commodity Name (In index)`}</th>
+                                            <th>{`Commodity Name (In Index)`}</th>
                                             <th>{`Commodity Name (In CIR)`}</th>
                                             <th className='text-right'>{`Action`}</th>
                                         </tr>

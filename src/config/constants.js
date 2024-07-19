@@ -1137,6 +1137,8 @@ export const API = {
   sendCounterOffer: `${BASE_URL}/rfq-quotation/create-counter-offer`,
   getLiveAndScheduledCount: `${BASE_URL}/rfq-quotation/get-auction-active-scheduled-and-closed-count`,
   updateShowVendorRank: `${BASE_URL}/rfq-quotation/update-display-rank-to-vendor`,
+  updateAuctionDuration: `${BASE_URL}/rfq-quotation/update-auction-duration-extension`,
+  closeAuction: `${BASE_URL}/rfq-quotation/closed-auction`,
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -3196,7 +3198,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.10";
+export const VERSION = "V3.0.11";
 
 
 
