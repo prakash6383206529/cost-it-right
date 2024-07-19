@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, RETURNED, RECEIVED, NCCTypeId, VBCTypeId, } from '../.././config/constants'
+import { EMPTY_DATA, RETURNED, RECEIVED, NCCTypeId, VBCTypeId, RM_MASTER_ID, BOP_MASTER_ID, EMPTY_GUID, ZBCTypeId, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -16,9 +16,9 @@ import { PaginationWrapper } from '.././common/commonPagination'
 import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setQuotationIdForRFQ, checkExistCosting, getQuotationList } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
-import { getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
+import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
-import { checkForNull, formViewData, getCodeBySplitting, getNameBySplitting, loggedInUserId, userDetails } from '../../helper';
+import { checkForNull, formViewData, getCodeBySplitting, getConfigurationKey, getNameBySplitting, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { Fragment } from 'react';
@@ -37,6 +37,9 @@ import SingleDropdownFloationFilter from '../masters/material-master/SingleDropd
 import WarningMessage from '../common/WarningMessage';
 import RMCompareTable from './compareTable/RMCompareTable';
 import BOPCompareTable from './compareTable/BOPCompareTable';
+import MasterSendForApproval from '../masters/MasterSendForApproval';
+import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
+import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
 export const QuotationId = React.createContext();
 
@@ -91,12 +94,32 @@ function RfqListing(props) {
     const [viewRMCompare, setViewRMCompare] = useState(false)
     const [viewBOPCompare, setViewBOPCompare] = useState(false)
     const [partType, setPartType] = useState('')
+const [approveDrawer, setApproveDrawer] = useState(false)
     const [quotationId, setQuotationId] = useState('')
 
     const [matchedStatus, setMatchedStatus] = useState([])
+    const [masterRejectDrawer, setMasterRejectDrawer] = useState(false)
+    const [masterRetrunDrawer ,setMasterRetrunDrawer] = useState(false)
+    
+    const [actionType, setActionType] = useState('');
+    
+
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { viewRmDetails } = useSelector(state => state.material)
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
+    const [state, setState] = useState({
+        isFinalApprovar: false,
+disableSendForApproval: false,
+CostingTypePermission: false,
+finalApprovalLoader: true,
+approveDrawer: false,
+approvalObj: {},
+levelDetails: {},
+isDateChanged: false,
+costingTypeId : ZBCTypeId
+})
+const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
+
     let arr = []
     const history = useHistory();
     const location = useLocation();
@@ -104,7 +127,18 @@ function RfqListing(props) {
         getDataList()
         console.log(location, "location");
     }, [])
-
+    useEffect(() => {
+        if (partType === 'RawMaterial' || partType === 'BoughtOutPart') {
+            
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), partType === 'RawMaterial' ?RM_MASTER_ID : BOP_MASTER_ID, (res) => {
+                
+                
+                setTimeout(() => {
+                    commonFunction(partType, rowData[0]?.PlantId)
+                }, 100);
+            }))
+        }
+    }, [partType])
     useEffect(() => {
         if (rowData[0]?.QuotationId) {
             dispatch(setQuotationIdForRFQ(rowData[0]?.QuotationId))
@@ -304,6 +338,7 @@ function RfqListing(props) {
             }
         }
     };
+    
     const floatingFilterRFQ = {
         maxValue: 11,
         suppressFilterButton: true,
@@ -333,10 +368,43 @@ function RfqListing(props) {
         return data
     }
 
-    const commonFunction = () => {
-
-
-        const arrayOfObjects = [...viewCostingData]
+    const commonFunction = (type, plantId = EMPTY_GUID) => {
+        
+        const {costingTypeId} = state
+        if (type === 'RawMaterial' || type === 'BoughtOutPart') {
+            
+            let levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, type === 'RawMaterial' ? RM_MASTER_ID : BOP_MASTER_ID, userMasterLevelAPI);
+            setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }));
+    
+            let obj = {
+                DepartmentId: userDetails().DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: type === 'RawMaterial' ? RM_MASTER_ID : BOP_MASTER_ID,
+                Mode: 'master',
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(costingTypeId),
+                plantId: plantId
+            };
+    
+            if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+                dispatch(checkFinalUser(obj, (res) => {
+                    if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+                        setState(prevState => ({
+                            ...prevState,
+                            isFinalApprovar: res?.data?.Data?.IsFinalApprover,
+                            CostingTypePermission: true,
+                            finalApprovalLoader: false
+                        }));
+                    }
+                    if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+                        setState(prevState => ({ ...prevState, disableSendForApproval: true }));
+                    } else {
+                        setState(prevState => ({ ...prevState, disableSendForApproval: false }));
+                    }
+                }));
+            }
+            setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }));
+}
+      else { const arrayOfObjects = [...viewCostingData]
         const matchingItems = selectedCostingList.filter(item =>
             arrayOfObjects.some(obj => obj.costingId === item)
         );
@@ -385,7 +453,7 @@ function RfqListing(props) {
         dispatch(storePartNumber(rowData))
 
         sendForApprovalData(arr)
-        setSendForApproval(true)
+        setSendForApproval(true)}
     }
 
     /**
@@ -393,39 +461,46 @@ function RfqListing(props) {
     * @description approveDetails
     */
     const approveDetails = (Id, rowData = {}) => {
-        if (selectedCostingList?.length === 0) {
-            Toaster.warning("Select at least one costing to send for approval")
-            return false
+        if(partType === "BoughtOutPart" || partType === "RawMaterial"){
+            setApproveDrawer(true)
+            setActionType('Approve')
         }
-
-        if (initialConfiguration.IsReleaseStrategyConfigured) {
-            let dataList = costingIdObj(selectedCostingList)
-            let requestObject = {
-                "RequestFor": "COSTING",
-                "TechnologyId": technologyId,
-                "LoggedInUserId": loggedInUserId(),
-                "ReleaseStrategyApprovalDetails": dataList
+        else {
+            if (selectedCostingList?.length === 0) {
+                Toaster.warning("Select at least one costing to send for approval")
+                return false
             }
-            dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-                setReleaseStrategyDetails(res?.data?.Data)
-                if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover === false) {
-                    commonFunction()
-                } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-                    commonFunction()
-                } else if (res?.data?.Data?.IsFinalApprover === true) {
-                    Toaster.warning('This is final level user')
-                    return false
-                } else if (res?.data?.Result === false) {
-                    Toaster.warning(res?.data?.Message)
-                    return false
-                } else {
-                    Toaster.warning('This user is not in approval cycle')
-                    return false
+    
+            if (initialConfiguration.IsReleaseStrategyConfigured) {
+                let dataList = costingIdObj(selectedCostingList)
+                let requestObject = {
+                    "RequestFor": "COSTING",
+                    "TechnologyId": technologyId,
+                    "LoggedInUserId": loggedInUserId(),
+                    "ReleaseStrategyApprovalDetails": dataList
                 }
-            }))
-        } else {
-            commonFunction()
+                dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+                    setReleaseStrategyDetails(res?.data?.Data)
+                    if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover === false) {
+                        commonFunction()
+                    } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                        commonFunction()
+                    } else if (res?.data?.Data?.IsFinalApprover === true) {
+                        Toaster.warning('This is final level user')
+                        return false
+                    } else if (res?.data?.Result === false) {
+                        Toaster.warning(res?.data?.Message)
+                        return false
+                    } else {
+                        Toaster.warning('This user is not in approval cycle')
+                        return false
+                    }
+                }))
+            } else {
+                commonFunction()
+            }
         }
+        
 
     }
 
@@ -434,42 +509,58 @@ function RfqListing(props) {
     * @description rejectDetailsClick
     */
     const rejectDetailsClick = (Id, rowData = {}) => {
-        if (selectedCostingList?.length === 0) {
-            Toaster.warning("Select at least one costing to reject")
-            return false
+        if(partType === "BoughtOutPart" || partType === "RawMaterial"){
+            setMasterRejectDrawer(true)
+            setActionType('Reject')
+            return
         }
-        const arrayOfObjects = [...viewCostingData]
-        const matchingItems = selectedCostingList.filter(item =>
-            arrayOfObjects.some(obj => obj.costingId === item)
-        );
-        let arr = []
-        matchingItems.map(item => rowData.filter(el => {
-            if (el.CostingId === item) {
-                arr.push(el)
+        else{
+            if (selectedCostingList?.length === 0) {
+                Toaster.warning("Select at least one costing to reject")
+                return false
             }
-            return null
-        }))
-        setRejectedList(arr)
-        setRejectDrawer(true)
+            const arrayOfObjects = [...viewCostingData]
+            const matchingItems = selectedCostingList.filter(item =>
+                arrayOfObjects.some(obj => obj.costingId === item)
+            );
+            let arr = []
+            matchingItems.map(item => rowData.filter(el => {
+                if (el.CostingId === item) {
+                    arr.push(el)
+                }
+                return null
+            }))
+            setRejectedList(arr)
+            setRejectDrawer(true)
+        }
+       
     }
     const returnDetailsClick = (Id, rowData = {}) => {
-        if (selectedCostingList?.length === 0) {
-            Toaster.warning("Select at least one costing to return")
-            return false
+        if(partType === "BoughtOutPart" || partType === "RawMaterial"){
+            setMasterRejectDrawer(true)
+            setActionType('Return')
+            return
         }
-        const arrayOfObjects = [...viewCostingData]
-        const matchingItems = selectedCostingList.filter(item =>
-            arrayOfObjects.some(obj => obj.costingId === item)
-        );
-        let arr = []
-        matchingItems.map(item => rowData.filter(el => {
-            if (el.CostingId === item) {
-                arr.push(el)
+        else {
+            if (selectedCostingList?.length === 0) {
+                Toaster.warning("Select at least one costing to return")
+                return false
             }
-            return null
-        }))
-        setReturnList(arr)
-        setReturnDrawer(true)
+            const arrayOfObjects = [...viewCostingData]
+            const matchingItems = selectedCostingList.filter(item =>
+                arrayOfObjects.some(obj => obj.costingId === item)
+            );
+            let arr = []
+            matchingItems.map(item => rowData.filter(el => {
+                if (el.CostingId === item) {
+                    arr.push(el)
+                }
+                return null
+            }))
+            setReturnList(arr)
+            setReturnDrawer(true)
+        }
+        
     }
 
     /**
@@ -745,6 +836,8 @@ function RfqListing(props) {
     }
 
     const checkCostingSelected = (list, index) => {
+        
+        setState(prevState => ({ ...prevState, approvalObj: list }));  
         setIndex(index);
         setSelectedCostingList(list);
         let arr = [];
@@ -790,6 +883,8 @@ function RfqListing(props) {
                     return matchedItem ? matchedItem.Status : null;
                 });
                 break
+                default:
+                    break
 
         }
 
@@ -1044,7 +1139,7 @@ function RfqListing(props) {
 
     const viewDetails = (UserId) => {
 
-        // this.setState({
+        // setState({
         //     UserId: UserId,
         //     isOpen: true,
         // })
@@ -1074,30 +1169,34 @@ function RfqListing(props) {
         let data
         switch (selectedRows[0]?.PartType) {
             case 'RawMaterial':
-                selectedRows?.map(item => partNumber.push(item.RawMaterial))
-                data = partNumber.map(item => rowData.filter(el => el.RawMaterial === item))             // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
+                selectedRows?.map(item => partNumber?.push(item.RawMaterial))
+                data = partNumber.map(item => rowData?.filter(el => el.RawMaterial === item))   
+                          // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
+                          break;
             case 'BoughtOutPart':
                 selectedRows?.map(item => partNumber.push(item.BoughtOutPart))
-                data = partNumber.map(item => rowData.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+                data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
 
                 break;
-            case 'Component':
-                selectedRows?.map(item => partNumber.push(item.PartNo))
-                data = partNumber.map(item => rowData.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
-
-
+            case 'Component' || 'Assembly':
+                selectedRows?.map(item => partNumber?.push(item.PartNo))
+                data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
                 break;
+                default:
+                    break;
 
 
         }
 
         let newArray = []
 
-        data.map((item) => {
+        data?.map((item) => {
             newArray = [...newArray, ...item]
             return null
         })
 
+        
+        
         if (selectedRows && selectedRows.length > 0 && selectedRows[0]?.IsVisibiltyConditionMet && selectedRows[0].IsShowNetPoPrice) {
             setisVisibiltyConditionMet(true)
         } else {
@@ -1214,6 +1313,17 @@ function RfqListing(props) {
                 break;
         }
     }
+
+           
+    const closeApprovalDrawer = (e = '', type) => {
+        setApproveDrawer(false)
+        setMasterRejectDrawer(false)
+
+        if (type === 'submit') {
+          this.clearForm('submit')
+          this.cancel('submit')
+        }
+      }
     const handleInitiateAuction = () => {
         history.push({
             pathname: '/add-auction',
@@ -1376,7 +1486,7 @@ function RfqListing(props) {
                         isRfqCosting={true}
                     />
                 }
-                {rejectDrawer && (
+                {rejectDrawer && !masterRejectDrawer && (
                     <CostingApproveReject
                         // <ApproveRejectDrawer    //RE
                         type={'Reject'}
@@ -1393,7 +1503,7 @@ function RfqListing(props) {
                     // dataSend={[approvalDetails, partDetail]}
                     />
                 )}
-                {returnDrawer && (
+                {returnDrawer  && !masterRejectDrawer&& (
                     <CostingApproveReject
                         // <ApproveRejectDrawer    //RE
                         type={'Return'}
@@ -1477,12 +1587,29 @@ function RfqListing(props) {
                         closeDrawer={closeRemarkDrawer}
                     />
                 }
+                { (approveDrawer  ||masterRejectDrawer)&&
+                     <MasterSendForApproval
+                     isOpen={approveDrawer ? approveDrawer : masterRejectDrawer}
+                     type={actionType}
+                     closeDrawer={closeApprovalDrawer}
+                     isEditFlag={false}
+                     masterId={partType === "RawMaterial" ? RM_MASTER_ID : BOP_MASTER_ID}
+                     isRFQ={true}
+                     anchor={"right"}
+                     approvalDetails={state.approvalObj}
+                     approvalObj={state.approvalObj}
+                       costingTypeId={ZBCTypeId}
+                     levelDetails={state.levelDetails}
+                                       />
+                }
 
             </div >
             {addComparisonToggle && disableApproveRejectButton && (viewCostingData?.length > 0 || viewRmDetails?.length > 0 || viewBOPDetails?.length > 0) && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 {costingsDifferentStatus && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Actions cannot be performed on costings with different statuses.'} />}
                 <div className="col-sm-12 text-right bluefooter-butn">
-                    <button
+                {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED))&&  ( 
+                     <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
+{(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED))&&  ( <button
                         type="button"
                         className="submit-button save-btn mr-2"
                         id="addRFQ_save"
@@ -1491,16 +1618,17 @@ function RfqListing(props) {
                     >
                         <div className={"save-icon"}></div>
                         {"Initiate Auction"}
-                    </button>
-                    <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
+                    </button>)}
+                    {/* <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} > */}
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Return'}
-                    </button>
+                    </button>)}
+                    {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (
                     <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => rejectDetailsClick("", selectedRows)} >
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Reject'}
-                    </button>
-                    {(matchedStatus?.length === 0 || matchedStatus?.includes(RECEIVED)) && (
+                    </button>)}
+                    {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (
                         <button
                             disabled={costingsDifferentStatus}
                             type="button"
@@ -1511,11 +1639,13 @@ function RfqListing(props) {
                             {'Approve'}
                         </button>
                     )}
+             
 
 
                 </div>
 
-            </Row >}
+            </Row >
+           }
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }
