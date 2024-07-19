@@ -102,7 +102,6 @@ function RfqListing(props) {
     const location = useLocation();
     useEffect(() => {
         getDataList()
-        console.log(location, "location");
     }, [])
 
     useEffect(() => {
