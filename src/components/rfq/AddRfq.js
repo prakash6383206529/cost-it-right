@@ -195,7 +195,7 @@ function AddRfq(props) {
     const [isLoader, setIsLoader] = useState(false)
     const [prNumber, setPrNumber] = useState([])
 
-    const rowData = selectedOption === "RM" ? rmDataList : (selectedOption === "BOP" ? bopDataList : partList)
+
 
 
     const handleRadioChange = (e) => {
@@ -229,8 +229,6 @@ function AddRfq(props) {
                     case 'BoughtOutPart':
                         setSelectedOption('BOP');
                         setQuationType("BOP");
-                        break;
-                    default:
                         break;
                 }
             });
@@ -1228,7 +1226,7 @@ function AddRfq(props) {
             return;
         } if (!updateButtonPartNoTable && rmDataList?.map(item => item?.RawMaterialCode)?.includes(RawMaterialList[0]?.RawMaterialCode)) {
 
-            Toaster.warning('This Raw Material is already added.');
+            Toaster.warning('This part is already added.');
 
         }
         //else if (bopDataList?.map(item => item?.BoughtOutPartChildId)?.includes(bopList[0]?.BoughtOutPartChildId)) {
@@ -3011,16 +3009,16 @@ function AddRfq(props) {
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${rowData && rowData.length <= 0 ? "overlay-contain border" : ""} `}>
+                                                    <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
                                                         <div className={`ag-theme-material ${!state ? "custom-min-height-208px" : ''}`}>
-                                                            {!showGrid || isLoader ? <LoaderCustom customClass={""} /> :
+                                                            {!showGrid || isLoader ? <LoaderCustom customClass={"bg-none"} /> :
                                                                 <AgGridReact
                                                                     defaultColDef={defaultColDef}
                                                                     floatingFilter={false}
                                                                     domLayout='autoHeight'
                                                                     // columnDefs={c}
-                                                                    rowData={rowData}
+                                                                    rowData={selectedOption === "RM" ? rmDataList : (selectedOption === "BOP" ? bopDataList : partList)}
 
                                                                     //pagination={true}
                                                                     paginationPageSize={10}
@@ -3493,16 +3491,16 @@ function AddRfq(props) {
                                                 {"Cancel"}
                                             </button>
 
-
-                                            <button type="button" className="submit-button save-btn mr-2" value="save"
-                                                // {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"     //RE
-                                                id="addRFQ_save"
-                                                onClick={(data, e) => handleSubmitClick(data, e, false)}
-                                                disabled={isViewFlag || showSendButton === PREDRAFT && disabledPartUid}>
-                                                <div className={"save-icon"}></div>
-                                                {"Save"}
-                                            </button>
-
+                                            {
+                                                <button type="button" className="submit-button save-btn mr-2" value="save"
+                                                    // {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"     //RE
+                                                    id="addRFQ_save"
+                                                    onClick={(data, e) => handleSubmitClick(data, e, false)}
+                                                    disabled={isViewFlag || showSendButton === PREDRAFT && disabledPartUid}>
+                                                    <div className={"save-icon"}></div>
+                                                    {"Save"}
+                                                </button>
+                                            }
 
                                             {!isDropdownDisabled && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
@@ -3577,7 +3575,7 @@ function AddRfq(props) {
 
             {/* </Drawer > */}
             {
-                (showPopup) && <PopupMsgWrapper disablePopup={alreadyInDeviation} vendorId={vendorId}
+                showPopup && <PopupMsgWrapper disablePopup={alreadyInDeviation} vendorId={vendorId}
                     plantId={plantId} redirectPath={blocked ? "/initiate-unblocking" : ""} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={blocked ? `${popupMessage}` : `${MESSAGES.RFQ_ADD_SUCCESS}`} />
             }
         </div >
