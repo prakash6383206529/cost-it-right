@@ -185,6 +185,11 @@
     &:is(div) {
         margin-left: 0;
     }
+
+    &:disabled {
+        border: none !important;
+        opacity: 0.5;
+    }
 }
 
 .blurPlus-icon-square {

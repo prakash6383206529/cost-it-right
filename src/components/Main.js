@@ -110,6 +110,7 @@ import {
   APPROVAL_LISTING,
   LPS,
   INDEXATION,
+  ADD_AUCTION,
 } from "../config/constants";
 import ApprovalSummary from "./costing/components/approval/ApprovalSummary";
 import CostingSummaryBulkUpload from "./costing/components/CostingSummaryBulkUpload";
@@ -154,6 +155,7 @@ import VendorMaster from "./masters/supplier-master";
 import VendorClassificationListing from "./vendorManagement/VendorClassificationListing";
 import Indexation from "./masters/indexation";
 import AuctionIndex from "./rfqAuction/AuctionIndex";
+import AddAuction from "./rfqAuction/AddAuction";
 
 const CustomHeader = {
   "Content-Type": "application/x-www-form-urlencoded",
@@ -187,7 +189,7 @@ if (Detail && Object.keys(Detail).length > 0) {
           localStorage.setItem("userDetail", JSON.stringify(userDetail));
         }
       })
-      .catch((error) => {});
+      .catch((error) => { });
   }, (Detail.expires_in - 60) * 1000);
 }
 
@@ -299,22 +301,23 @@ class Main extends Component {
 
     const fullSizeClass =
       location.pathname === COSTING_PATH ||
-      location.pathname === APPROVAL_LISTING_PATH ||
-      location.pathname === APPROVAL_SUMMARY_PATH ||
-      location.pathname === COSTING_BULK_UPLOAD ||
-      location.pathname === COSTING_SUMMARY ||
-      location.pathname === SIMULATION_APPROVAL_SUMMARY_PATH ||
-      location.pathname === DASHBOARD_PATH ||
-      location.pathname === DASHBOARD_PATH_SECOND ||
-      location.pathname === DASHBOARDWITHGRAPH_PATH ||
-      location.pathname === SIMULATION_PATH ||
-      location.pathname === SIMULATION_HISTORY_PATH ||
-      location.pathname === USER_PATH ||
-      location.pathname === RFQ_LISTING ||
-      location.pathname === AUCTION_LISTING ||
-      location.pathname === PRODUCT_ROLLOUT ||
-      location.pathname === SUPPLIER_MANAGEMENT ||
-      location.pathname === NFR_LISTING
+        location.pathname === APPROVAL_LISTING_PATH ||
+        location.pathname === APPROVAL_SUMMARY_PATH ||
+        location.pathname === COSTING_BULK_UPLOAD ||
+        location.pathname === COSTING_SUMMARY ||
+        location.pathname === SIMULATION_APPROVAL_SUMMARY_PATH ||
+        location.pathname === DASHBOARD_PATH ||
+        location.pathname === DASHBOARD_PATH_SECOND ||
+        location.pathname === DASHBOARDWITHGRAPH_PATH ||
+        location.pathname === SIMULATION_PATH ||
+        location.pathname === SIMULATION_HISTORY_PATH ||
+        location.pathname === USER_PATH ||
+        location.pathname === RFQ_LISTING ||
+        location.pathname === AUCTION_LISTING ||
+        location.pathname === PRODUCT_ROLLOUT ||
+        location.pathname === SUPPLIER_MANAGEMENT ||
+        location.pathname === NFR_LISTING ||
+        location.pathname === ADD_AUCTION
         ? "w-100"
         : "";
 
@@ -323,8 +326,8 @@ class Main extends Component {
       location.pathname === DASHBOARDWITHGRAPH_PATH ? "Dashboard-page" : "";
     const DashboardMainPage =
       location.pathname === DASHBOARD_PATH ||
-      location.pathname === DASHBOARD_PATH_SECOND ||
-      location.pathname === PRODUCT_ROLLOUT
+        location.pathname === DASHBOARD_PATH_SECOND ||
+        location.pathname === PRODUCT_ROLLOUT
         ? "Dashboard-page"
         : "";
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
@@ -381,7 +384,8 @@ class Main extends Component {
                 location.pathname !== PRODUCT_ROLLOUT &&
                 location.pathname !== SUPPLIER_MANAGEMENT &&
                 location.pathname !== lOGIN_AUDITS &&
-                location.pathname !== SUPPLIER_APPROVAL_SUMMARY && (
+                location.pathname !== SUPPLIER_APPROVAL_SUMMARY &&
+                location.pathname !== ADD_AUCTION && (
                   <LeftMenu {...this.props} />
                 )}
 
@@ -749,6 +753,7 @@ class Main extends Component {
                       component={AuthMiddleware(Indexation, INDEXATION)}
                     />
                     <Route path="/auction" component={AuctionIndex} />
+                    <Route path="/add-auction" component={AddAuction} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 

@@ -8,13 +8,14 @@ import Button from "../../layout/Button";
 import AddAuction from "../AddAuction";
 import { auctionListByStatus } from "../actions/RfqAuction";
 import AuctionGrid from "./AuctionGrid";
+import { useHistory } from 'react-router-dom';
 
 
 const gridOptions = {};
 
 const AuctionDetails = (props) => {
   const dispatch = useDispatch();
-
+  const history = useHistory();
   const [state, setState] = useState({
     isLoader: false,
   });
@@ -42,11 +43,12 @@ const AuctionDetails = (props) => {
 
 
   const formToggle = () => {
-    props.hide(false);
-    setAddAuction(true);
-    let data = {
-      isAddFlag: true,
-    };
+    // props.hide(false);
+    // setAddAuction(true);
+    history.push({
+      pathname: '/add-auction',
+      state: { source: 'auction' }
+    })
   };
 
   const closeDrawer = (type) => {

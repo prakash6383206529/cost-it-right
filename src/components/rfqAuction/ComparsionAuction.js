@@ -78,6 +78,9 @@ function ComparsionAuction(props) {
     setState(prevState => ({ ...prevState, isLoader: true }))
     dispatch(auctionHeaderDetails(props.quotationAuctionId, (res) => {
       setState(prevState => ({ ...prevState, isLoader: false }))
+      if (!state.live) {
+        dispatch(auctionBidDetails(props.quotationAuctionId, () => { }))
+      }
       if (res && res.data.Result) {
         let data = res.data.Data;
         setState(prevState => ({ ...prevState, PartType: data?.PartType, headerDetails: data }))
@@ -450,7 +453,7 @@ function ComparsionAuction(props) {
             <div className={"cancel-icon"}></div>
             {"Cancel"}
           </button>
-          {
+          {state.live && <>
             <button
               type="button"
               className="reset mr-2 cancel-btn mr-2"
@@ -462,16 +465,16 @@ function ComparsionAuction(props) {
               <div className={"cancel-icon"}></div>
               {"Close Auction"}
             </button>
-          }
-          <button
-            id="addRFQ_cancel"
-            type={"button"}
-            className="submit-button save-btn mr-2"
-            onClick={extendTime}
-          >
-            {"Extend Time"}
-          </button>
-
+            <button
+              id="addRFQ_cancel"
+              type={"button"}
+              className="submit-button save-btn mr-2"
+              onClick={extendTime}
+              disabled={!state.isTimerRunning}
+            >
+              {"Extend Time"}
+            </button>
+          </>}
           <button
             type="button"
             className="submit-button save-btn"
