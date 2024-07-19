@@ -2293,6 +2293,7 @@ export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
 export const AUCTION_LISTING = '/auction'
+export const ADD_AUCTION = '/add-auction'
 export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
 export const RESET_PASSWORD = '/reset-password'
@@ -3198,7 +3199,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.11";
+export const VERSION = "V3.0.12";
 
 
 

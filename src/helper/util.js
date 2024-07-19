@@ -1674,10 +1674,10 @@ export function calculateEndDateTime(startDateTime, duration) {
 }
 export function addTime(time1, time2) {
   // Parse time1
-  const [hours1, mins1] = time1.split(':').map(num => parseInt(num));
+  const [hours1, mins1] = time1.split(':').map(num => num ? parseInt(num) : 0);
   // Parse time2
-  const [hours2, mins2] = time2.split(':').map(num => parseInt(num));
- 
+  const [hours2, mins2] = time2.split(':').map(num => num ? parseInt(num) : 0);
+
   // Calculate total minutes
   let totalMins = mins1 + mins2;
   let totalHours = hours1 + hours2;

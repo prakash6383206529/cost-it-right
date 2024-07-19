@@ -75,8 +75,7 @@ function AddRMFinancialDetails(props) {
         DataToChange: [],
         currency: [],
         oldDate: '',
-        isCostOpen: false,
-        isDateOpen: false,
+        isCostOpen: true,
         isAttachmentOpen: false,
         fromDate: '',
         toDate: '',
@@ -235,6 +234,7 @@ function AddRMFinancialDetails(props) {
                 otherCostTableData: Data?.RawMaterialOtherCostDetails,
                 isShowIndexCheckBox: Data?.IsIndexationDetails,
                 totalOtherCost: Data?.OtherNetCostConversion,
+                minDate: DayTime(Data?.EffectiveDate).$d
             }))
             dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
             dispatch(SetRawMaterialDetails({ states: state }, () => { }))
@@ -691,7 +691,6 @@ function AddRMFinancialDetails(props) {
             ...prevState,
             fromDate: date,
             toDate: validToDate,
-            minDate: date,
             maxDate: validToDate,
         }));
 
@@ -1090,8 +1089,6 @@ function AddRMFinancialDetails(props) {
                                             showMonthDropdown
                                             showYearDropdown
                                             dateFormat="DD/MM/YYYY"
-                                            minDate={state.minDate}
-                                            maxDate={state.maxDate}
                                             placeholder={!state.disableToDate ? "Select date" : ''}
                                             customClassName="withBorder"
                                             className="withBorder"
@@ -1154,10 +1151,10 @@ function AddRMFinancialDetails(props) {
                                 options={renderListing("uom")}
                                 rules={{ required: true }}
                                 defaultValue={state.UOM}
-                                mandatory={true}
+                                mandatory={state.isShowIndexCheckBox === true ? false : true}
                                 handleChange={handleUOM}
                                 customClassName="withBorder"
-                                disabled={state.isIndexationOpen === true ? true : isEditFlag || isViewFlag}
+                                disabled={state.isShowIndexCheckBox ? true : isEditFlag || isViewFlag}
                                 errors={errors.UnitOfMeasurement}
                             />
                         </Col>
@@ -1263,7 +1260,7 @@ function AddRMFinancialDetails(props) {
                                             required: true,
                                             validate: { positiveAndDecimalNumber, maxLength10, decimalLengthsix, number },
                                         }}
-                                        mandatory={true}
+                                        mandatory={state.isShowIndexCheckBox ? false : true}
                                         disabled={states.isImport || state.isShowIndexCheckBox ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                         className=" "
                                         customClassName=" withBorder"
@@ -1668,6 +1665,7 @@ function AddRMFinancialDetails(props) {
                                             className={"right mt-3 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
+                                            disabled={!getValues('BasicRateBaseCurrency')}
                                         />}
                                     </div>
                                 </Col>
@@ -1820,6 +1818,7 @@ function AddRMFinancialDetails(props) {
                                         disabled={false}
                                         mandatory={true}
                                         errors={errors && errors.effectiveDate}
+                                        minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : state.minDate}
                                     />
                                 </div>
                             </Col>

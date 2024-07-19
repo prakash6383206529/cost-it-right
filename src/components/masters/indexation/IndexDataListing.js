@@ -287,53 +287,39 @@ const IndexDataListing = (props) => {
 
 
     const onRowSelect = (event) => {
-
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
-        } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
-
-            let finalData = []
-            if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
-
-                for (let i = 0; i < selectedRowForPagination.length; i++) {
-                    if (selectedRowForPagination[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
-                        continue;
-                    }
-                    finalData.push(selectedRowForPagination[i])
-                }
-
-            } else {
-                finalData = selectedRowForPagination
-            }
-            selectedRows = [...selectedRows, ...finalData]
-
         }
+        // else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
+        //     let finalData = []
+        //     if (event.node?.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-        let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        //         for (let i = 0; i < selectedRowForPagination.length; i++) {
+        //             if (selectedRowForPagination[i].CommodityIndexRateDetailId === event.data.CommodityIndexRateDetailId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+        //                 continue;
+        //             }
+        //             finalData.push(selectedRowForPagination[i])
+        //         }
+
+        //     } else {
+        //         finalData = selectedRowForPagination
+        //     }
+        //     selectedRows = [...selectedRows, ...finalData]
+
+        // }
+        let uniqeArray = _.uniqBy(selectedRows, "CommodityIndexRateDetailId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
         reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
         setDataCount(uniqeArray.length)
-        dispatch(setSelectedRowForPagination(uniqeArray))
-        let finalArr = selectedRows
-        let length = finalArr?.length
-        let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
+        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
 
-        if (props?.benchMark) {
-            let uniqueArrayNew = _.uniqBy(selectedRows, v => [v.TechnologyId, v.RawMaterial].join())
-
-            if (uniqueArrayNew.length > 1) {
-                dispatch(setSelectedRowForPagination([]))
-                gridApi.deselectAll()
-                Toaster.warning("Technology & Raw material should be same")
-            }
-        }
     }
     const checkBoxRenderer = (props) => {
-        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedRowForPagination?.length > 0) {
             selectedRowForPagination.map((item) => {
-                if (item.RawMaterialId === props.node.data.RawMaterialId) {
+                if (item.CommodityIndexRateDetailId === props.node.data.CommodityIndexRateDetailId) {
                     props.node.setSelected(true)
                 }
                 return null
@@ -478,6 +464,50 @@ const IndexDataListing = (props) => {
         setState((prevState) => ({ ...prevState, isBulkUpload: false }));
         resetState()
     };
+    const onExcelDownload = () => {
+        setDisableDownload(true)
+        dispatch(disabledClass(true))
+        //let tempArr = gridApi && gridApi?.getSelectedRows()
+        let tempArr = selectedRowForPagination
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownload(false)
+                dispatch(disabledClass(false))
+                let button = document.getElementById('Excel-Downloads-rm-import')
+                button && button.click()
+            }, 400);
+
+
+        } else {
+
+            getTableListData(0, globalTakes, false)
+        }
+
+    }
+    var filterParams = {
+        date: "", comparator: function (filterLocalDateAtMidnight, cellValue) {
+            var dateAsString = cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
+            if (dateAsString == null) return -1;
+            var dateParts = dateAsString.split("/");
+            var cellDate = new Date(
+                Number(dateParts[2]),
+                Number(dateParts[1]) - 1,
+                Number(dateParts[0])
+            );
+            if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                return 0;
+            }
+            if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+            }
+            if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+            }
+        },
+        browserDatePicker: true,
+        minValidYear: 2000,
+    };
+
     return (
         <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} `}>
 
@@ -501,7 +531,7 @@ const IndexDataListing = (props) => {
                                         filename={"Index Data"}
                                         fileExtension={".xls"}
                                         element={
-                                            <Button id={"Excel-Downloads-Rm MaterialList"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
+                                            <Button onClick={onExcelDownload} id={"Excel-Downloads-Rm MaterialList"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
                                         }
                                     >
                                         {onBtExport()}
@@ -554,12 +584,13 @@ const IndexDataListing = (props) => {
                                 <AgGridColumn field="CommodityName" headerName="Commodity Name" ></AgGridColumn>
                                 <AgGridColumn field="IndexUOM" headerName="Index UOM"></AgGridColumn>
                                 <AgGridColumn field="ConvertedUOM" headerName="UOM"></AgGridColumn>
-                                <AgGridColumn field="Currency" headerName="Currency (From/To)"></AgGridColumn>
+                                <AgGridColumn field="FromCurrency" headerName="From Currency"></AgGridColumn>
+                                <AgGridColumn field="ToCurrency" headerName="To Currency"></AgGridColumn>
+                                <AgGridColumn field="RatePerIndexUOM" headerName="Index Rate (From Currency)/Index UOM" cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Indexed On" cellRenderer='effectiveDateFormatter'></AgGridColumn>
-                                <AgGridColumn field="RatePerIndexUOM" headerName="Index Rate/Index UOM" cellRenderer='priceFormatter'></AgGridColumn>
-                                <AgGridColumn field="RatePerConvertedUOM" headerName="Index Rate/UOM" cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="ExchangeRate" headerName={`Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='priceFormatter'></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" headerName="Indexed On" cellRenderer="effectiveDateFormatter" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                <AgGridColumn field="RatePerConvertedUOM" headerName="Index Rate (From Currency)/ UOM" cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="RateConversionPerIndexUOM" headerName="Conversion Rate/Index UOM" cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="RateConversionPerConvertedUOM" headerName="Conversion Rate/UOM " cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>

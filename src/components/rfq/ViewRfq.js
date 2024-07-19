@@ -40,6 +40,7 @@ import BOPCompareTable from './compareTable/BOPCompareTable';
 import MasterSendForApproval from '../masters/MasterSendForApproval';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
+import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -94,6 +95,8 @@ function RfqListing(props) {
     const [viewBOPCompare, setViewBOPCompare] = useState(false)
     const [partType, setPartType] = useState('')
 const [approveDrawer, setApproveDrawer] = useState(false)
+    const [quotationId, setQuotationId] = useState('')
+
     const [matchedStatus, setMatchedStatus] = useState([])
     const [masterRejectDrawer, setMasterRejectDrawer] = useState(false)
     const [masterRetrunDrawer ,setMasterRetrunDrawer] = useState(false)
@@ -118,10 +121,11 @@ costingTypeId : ZBCTypeId
 const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
 
     let arr = []
-
+    const history = useHistory();
+    const location = useLocation();
     useEffect(() => {
         getDataList()
-
+        console.log(location, "location");
     }, [])
     useEffect(() => {
         if (partType === 'RawMaterial' || partType === 'BoughtOutPart') {
@@ -138,6 +142,7 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     useEffect(() => {
         if (rowData[0]?.QuotationId) {
             dispatch(setQuotationIdForRFQ(rowData[0]?.QuotationId))
+            setQuotationId(rowData[0]?.QuotationId)
         }
         if (rowData[0]?.PartType) {
             setPartType(rowData[0]?.PartType)
@@ -1319,6 +1324,12 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
           this.cancel('submit')
         }
       }
+    const handleInitiateAuction = () => {
+        history.push({
+            pathname: '/add-auction',
+            state: { source: 'rfq', quotationId: quotationId }
+        });
+    }
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -1596,7 +1607,19 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
             {addComparisonToggle && disableApproveRejectButton && (viewCostingData?.length > 0 || viewRmDetails?.length > 0 || viewBOPDetails?.length > 0) && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 {costingsDifferentStatus && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Actions cannot be performed on costings with different statuses.'} />}
                 <div className="col-sm-12 text-right bluefooter-butn">
-                {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED))&&  (  <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
+                {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED))&&  ( 
+                     <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
+{(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED))&&  ( <button
+                        type="button"
+                        className="submit-button save-btn mr-2"
+                        id="addRFQ_save"
+                        disabled={false}
+                        onClick={handleInitiateAuction}
+                    >
+                        <div className={"save-icon"}></div>
+                        {"Initiate Auction"}
+                    </button>)}
+                    {/* <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} > */}
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Return'}
                     </button>)}

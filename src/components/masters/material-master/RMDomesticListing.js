@@ -710,7 +710,7 @@ function RMDomesticListing(props) {
     const onRowSelect = (event) => {
 
         let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
-        
+
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
