@@ -26,6 +26,7 @@ import TourWrapper from '../common/Tour/TourWrapper';
 import { Steps } from '../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import { filterParams } from '../common/DateFilter';
+import CustomCellRenderer from './CommonDropdown';
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
 
@@ -468,6 +469,7 @@ function RfqListing(props) {
         dateTimeFormatter: dateTimeFormatter,
         valuesFloatingFilter: SingleDropdownFloationFilter,
         hyphenFormatter: hyphenFormatter,
+        cellRendererFramework: CustomCellRenderer
     }
 
 
@@ -546,7 +548,7 @@ function RfqListing(props) {
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
                                                 {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
                                                 <AgGridColumn field="PartType" headerName="Part Type" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                                                <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150} cellRendererFramework={CustomCellRenderer} />
                                                 <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                 <AgGridColumn field="NoOfQuotationReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>

@@ -18,7 +18,7 @@ import redcrossImg from '../../assests/images/red-cross.png'
 import { alphaNumeric, checkWhiteSpaces, getFilteredDropdownOptions, required } from '../../helper'
 import Button from '../layout/Button'
 import HeaderTitle from '../common/HeaderTitle'
-import { REMARKMAXLENGTH } from '../../config/masterData'
+import { HAVELLSREMARKMAXLENGTH, REMARKMAXLENGTH } from '../../config/masterData'
 import Dropzone from 'react-dropzone-uploader'
 import LoaderCustom from '../common/LoaderCustom'
 import Toaster from '../common/Toaster'
@@ -91,6 +91,7 @@ function ViewDrawer(props) {
     const [partRemark, setPartRemark] = useState('')
 
     useEffect(() => {
+        console.log('partType: ', partType);
         if (partType === 'component') {
             setValue('AssemblyPartNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
             if (type === Component) {
@@ -986,7 +987,7 @@ function ViewDrawer(props) {
                                             control={control}
                                             rules={{
                                                 required: true,
-                                                maxLength: REMARKMAXLENGTH,
+                                                maxLength: HAVELLSREMARKMAXLENGTH,
                                             }}
                                             mandatory={true}
                                             register={register}

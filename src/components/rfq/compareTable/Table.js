@@ -59,7 +59,7 @@ const Table = (props) => {
                 <tr>
                     <th>Vendor</th>
                     {headerData.map((item, index) => {
-                        return <th key={index}><div>{item.isChecked && <div className="custom-check1 d-inline-block">
+                        return <th key={index}><div>{item.isCheckBox && <div className="custom-check1 d-inline-block">
                             <label
                                 className="custom-checkbox pl-0 mb-0"
                                 onChange={item.onChange}
@@ -79,7 +79,7 @@ const Table = (props) => {
                                     onChange={() => item.onChange(index, item)}
                                 />
                             </label>
-                        </div>} {item.bestCost ? '' : item.vendorName}</div></th>
+                        </div>} {item.bestCost ? '' : item.vendorName}</div>{/* <span>{item.costingType}-{item.vendorCode}</span> */}</th>
                     })}
                 </tr>
             </thead>
