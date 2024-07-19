@@ -363,7 +363,8 @@ function SimulationApprovalSummary(props) {
         setShowMachineRateColumn(keysForDownloadSummary?.IsMachineProcessSimulation === true ? true : false)
         setShowCombinedProcessColumn(keysForDownloadSummary?.IsCombinedProcessSimulation === true ? true : false)
         setTimeout(() => {
-            setLoader(true)
+            console.log("LOADER HERE 11");
+            setLoader(false)
         }, 500);
 
     }
@@ -1165,7 +1166,7 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     <CalculatorWrapper />
-                    {!loader && <LoaderCustom />}
+                    {/* {!loader && <LoaderCustom />} */}
                     <div className={`container-fluid  smh-approval-summary-page ${!loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
                         {getConfigurationKey()?.IsSAPConfigured && costingList[0]?.CostingId && <ErrorMessage isCosting={false} approvalNumber={approvalNumber} />}
                         <h2 className="heading-main">Approval Summary</h2>
@@ -1748,7 +1749,7 @@ function SimulationApprovalSummary(props) {
 
                     </div >
 
-                    {!isApprovalDone && loader &&
+                    {!isApprovalDone &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>

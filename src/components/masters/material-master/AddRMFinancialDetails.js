@@ -183,7 +183,6 @@ function AddRMFinancialDetails(props) {
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
             let Data = props?.DataToChange
-            
             setValue('UnitOfMeasurement', { label: Data.UnitOfMeasurementName, value: Data.UOM })
             setValue('cutOffPriceSelectedCurrency', Data?.CutOffPrice)
             setValue('cutOffPriceBaseCurrency', states.isImport ? Data?.CutOffPriceInINR : Data?.CutOffPrice)
@@ -234,7 +233,8 @@ function AddRMFinancialDetails(props) {
                 currencyValue: Data.CurrencyExchangeRate,
                 calculatedFactor: Data.CalculatedFactor,
                 otherCostTableData: Data?.RawMaterialOtherCostDetails,
-                isShowIndexCheckBox: Data?.IsIndexationDetails
+                isShowIndexCheckBox: Data?.IsIndexationDetails,
+                totalOtherCost: Data?.OtherNetCostConversion,
             }))
             dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
             dispatch(SetRawMaterialDetails({ states: state }, () => { }))

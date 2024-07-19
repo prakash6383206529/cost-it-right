@@ -54,7 +54,6 @@ function SimulationApproveReject(props) {
   const [disableReleaseStrategy, setDisableReleaseStrategy] = useState(false)
   const [isDisableSubmit, setIsDisableSubmit] = useState(false)
   const [isSaveSimualtionCalled, setIsSavedSimulationCalled] = useState(false)
-  
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -124,7 +123,6 @@ function SimulationApproveReject(props) {
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
     if (initialConfiguration?.IsSAPConfigured && type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-      
       let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
 
       //THIS CONDITION IS FOR SAVE SIMULATION
@@ -161,6 +159,7 @@ function SimulationApproveReject(props) {
     
     if (levelDetailsTemp?.length !== 0) {
       setLevelDetails(levelDetailsTemp)
+      console.log("COMIG HERE");
       getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
     } else {
       if (getConfigurationKey().IsReleaseStrategyConfigured && props?.showApprovalTypeDropdown) {
@@ -221,18 +220,25 @@ function SimulationApproveReject(props) {
   }
 
   const getApproversList = (departId, departmentName, levelDetailsTemp, dataInFieldsTemp) => {
+
     let values = []
     let approverDropdownValue = []
     let count = 0
+
     selectedRowData && selectedRowData.map(item => {
+
       if (!(values.includes(item.SimulationTechnologyId))) {
+
         values.push(item.SimulationTechnologyId)
       }
+
       return null
     })
     if (!IsFinalLevel) {
+
       if (values.length > 1) {
         values.map((item, index) => {
+          console.log('item: ', item);
           let obj = {
             LoggedInUserId: userData.LoggedInUserId,
             DepartmentId: departId,
@@ -314,6 +320,7 @@ function SimulationApproveReject(props) {
             technologyIdTemp = EXCHNAGERATE
           }
         } else {
+          console.log(technologyId, "IN ELSE");
           technologyIdTemp = technologyId
         }
 
@@ -373,7 +380,6 @@ function SimulationApproveReject(props) {
 
   useEffect(() => {
     if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-      
       let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
       //THIS CONDITION IS FOR SAVE SIMULATION
       setLoader(true)

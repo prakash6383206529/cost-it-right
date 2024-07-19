@@ -42,7 +42,7 @@ const CountdownTimer = ({ endTime, checkTimerRunning }) => {
         return time.toString().padStart(2, '0');
     };
     return (
-        <div>
+        <div className={`countdown ${timeLeft.hours === 0 && timeLeft.minutes === 0 ? 'last-minute' : ''}`}>
             <span>{formatTime(timeLeft.hours)}:</span>
             <span>{formatTime(timeLeft.minutes)}:</span>
             <span>{formatTime(timeLeft.seconds)}</span>
