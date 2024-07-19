@@ -26,6 +26,8 @@ import PaginationControls from "../../common/Pagination/PaginationControls";
 import BulkUpload from "../../massUpload/BulkUpload";
 import Toaster from "../../common/Toaster";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
+import _ from "lodash";
+import { COMMODITYSTANDARD_DOWNLOAD_EXCEl } from "../../../config/masterData";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -63,10 +65,19 @@ const CommodityStandardListing = (props) => {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [disableFilter, setDisableFilter] = useState(true)
     const [noData, setNoData] = useState(false)
+    const { selectedRowForPagination } = useSelector((state => state.simulation))
     useEffect(() => {
         getTableListData();
     }, []);
+    useEffect(() => {
+        if (commodityStandardDataList?.length > 0) {
+            setTotalRecordCount(commodityStandardDataList[0].TotalRecordCount)
+        }
+        else {
+            setNoData(false)
+        }
 
+    }, [commodityStandardDataList])
     const getTableListData = (skip = 0, take = 10, isPagination = true) => {
         if (isPagination === true || isPagination === null) setIsLoader(true)
         let dataObj = { ...floatingFilterData }
@@ -244,11 +255,49 @@ const CommodityStandardListing = (props) => {
     };
 
 
-    const onRowSelect = () => {
-        const selectedRows = gridApi?.getSelectedRows();
-        setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
+    const onRowSelect = (event) => {
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+        var selectedRows = gridApi && gridApi?.getSelectedRows();
+        if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
+            selectedRows = selectedRowForPagination
+        }
+        // else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
+        //     let finalData = []
+        //     if (event.node?.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-    };
+        //         for (let i = 0; i < selectedRowForPagination.length; i++) {
+        //             if (selectedRowForPagination[i].CommodityIndexRateDetailId === event.data.CommodityIndexRateDetailId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+        //                 continue;
+        //             }
+        //             finalData.push(selectedRowForPagination[i])
+        //         }
+
+        //     } else {
+        //         finalData = selectedRowForPagination
+        //     }
+        //     selectedRows = [...selectedRows, ...finalData]
+
+        // }
+        let uniqeArray = _.uniqBy(selectedRows, "CommodityStandardId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
+        setDataCount(uniqeArray.length)
+        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+
+    }
+    const checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (selectedRowForPagination?.length > 0) {
+            selectedRowForPagination.map((item) => {
+                if (item.CommodityStandardId === props.node.data.CommodityStandardId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+    }
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
@@ -274,6 +323,7 @@ const CommodityStandardListing = (props) => {
         setDataCount(0)
         dispatch(setSelectedRowForPagination([]))
         reactLocalStorage.setObject('selectedRow', {})
+        gridApi.deselectAll()
     }
     const { isOpen, isEditFlag, ID, showExtraData, render, isBulkUpload } = state;
     const onSearch = () => {
@@ -302,6 +352,7 @@ const CommodityStandardListing = (props) => {
         totalValueRenderer: buttonFormatter,
         hyphenFormatter: hyphenFormatter,
         customNoRowsOverlay: NoContentFound,
+        checkBoxRenderer: checkBoxRenderer
     };
 
     const onBtExport = () => {
@@ -313,7 +364,8 @@ const CommodityStandardListing = (props) => {
                 : commodityStandardDataList
                     ? commodityStandardDataList
                     : [];
-        // return returnExcelColumn(COMMODITYSTANDARD_DOWNLOAD_EXCEl, tempArr);
+
+        return returnExcelColumn(COMMODITYSTANDARD_DOWNLOAD_EXCEl, tempArr);
     };
     const closeBulkUploadDrawer = () => {
         setState((prevState) => ({ ...prevState, isBulkUpload: false }));
@@ -346,6 +398,26 @@ const CommodityStandardListing = (props) => {
             </ExcelSheet>
         );
     };
+    const onExcelDownload = () => {
+        setDisableDownload(true)
+        dispatch(disabledClass(true))
+        //let tempArr = gridApi && gridApi?.getSelectedRows()
+        let tempArr = selectedRowForPagination
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownload(false)
+                dispatch(disabledClass(false))
+                let button = document.getElementById('Excel-Downloads-rm-import')
+                button && button.click()
+            }, 400);
+
+
+        } else {
+
+            getTableListData(0, globalTakes, false) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+
+    }
     return (
 
         <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} `}>
@@ -370,7 +442,7 @@ const CommodityStandardListing = (props) => {
                                         filename={"Commodity Name (Standard)"}
                                         fileExtension={".xls"}
                                         element={
-                                            <Button id={"Excel-Downloads-RmDetailList"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
+                                            <Button onClick={onExcelDownload} id={"Excel-Downloads-RmDetailList"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
                                         }
                                     >
                                         {onBtExport()}
@@ -426,7 +498,7 @@ const CommodityStandardListing = (props) => {
                                 onFilterModified={onFloatingFilterChanged}
                                 suppressRowClickSelection={true}
                             >
-                                <AgGridColumn field="CommodityStandardName" headerName="Commodity Name (Standard)"></AgGridColumn>
+                                <AgGridColumn cellClass='has-checkbox' cellRenderer={checkBoxRenderer} field="CommodityStandardName" headerName="Commodity Name (Standard)"></AgGridColumn>
                                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                             </AgGridReact>}
 

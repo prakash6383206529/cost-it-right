@@ -426,7 +426,7 @@ const InitiateUnblocking = (props) => {
                                         <Row>
                                             <Col md="3">
                                                 <div className="approval-section mb-2 mt-2">
-                                                    <div className="left-border"><div className='d-flex'>Approval for <TooltipCustom id="Primary_Contact" customClass="mt2 pl-1 ml-5"
+                                                    <div className="left-border"><div className='d-flex'>Approval For <TooltipCustom id="Primary_Contact" customClass="mt2 pl-1 ml-5"
                                                         tooltipText="Click checkboxes to send deviation for approval. If unavailable for LPS or classification, deviation is under approval or approved."
                                                     /></div></div>
                                                     <div className="approval-checkboxes">

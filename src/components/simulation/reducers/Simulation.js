@@ -43,7 +43,7 @@ import { showBopLabel, updateBOPValues } from '../../../helper';
 const initialState = {
     selectedRowForPagination: [],
     costingSimulationList: [],
-    keysForDownloadSummary: [],
+    keysForDownloadSummary: {},
     indexedRMForSimulation: []
 };
 

@@ -1647,17 +1647,17 @@ export const extenstionTime = (length = 5, timeGap = 1, TimeCategory = 'min') =>
 }
 
 export function calculateEndDateTime(startDateTime, duration) {
-  console.log('duration: ', duration);
-  console.log('startDateTime: ', startDateTime);
+  
+  
   if (!startDateTime || !duration) return null;
 
   // Parse startDateTime
   const startDate = new Date(startDateTime);
-  console.log('startDate: ', startDate);
+  
 
   // Adjust for UTC+05:30 (India Standard Time)
   const adjustedStartDate = new Date(startDate.getTime() + (5.5 * 60 * 60 * 1000));
-  console.log('adjustedStartDate: ', adjustedStartDate);
+  
 
   // Parse duration (HH:MM)
   const [durationHours, durationMinutes] = duration.split(':').map(Number);
@@ -1671,4 +1671,29 @@ export function calculateEndDateTime(startDateTime, duration) {
   const formattedEndDateTime = endDateTime.toISOString().slice(0, 19).replace('T', ' ');
 
   return formattedEndDateTime;
+}
+export function addTime(time1, time2) {
+  // Parse time1
+  const [hours1, mins1] = time1.split(':').map(num => num ? parseInt(num) : 0);
+  // Parse time2
+  const [hours2, mins2] = time2.split(':').map(num => num ? parseInt(num) : 0);
+
+  // Calculate total minutes
+  let totalMins = mins1 + mins2;
+  let totalHours = hours1 + hours2;
+ 
+  // Handle overflow of minutes into hours
+  if (totalMins >= 60) {
+    totalMins -= 60;
+    totalHours += 1;
+  }
+ 
+  // Format hours and minutes to always have 2 digits
+  let hoursStr = totalHours.toString().padStart(2, '0');
+  let minsStr = totalMins.toString().padStart(2, '0');
+ 
+  // Combine hours and minutes in HH:MM format
+  let timeStr = `${hoursStr}:${minsStr}`;
+ 
+  return timeStr;
 }

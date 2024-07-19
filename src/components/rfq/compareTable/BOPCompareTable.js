@@ -4,8 +4,9 @@ import Table from './Table';
 import { useDispatch, useSelector } from 'react-redux';
 import DayTime from '../../common/DayTimeWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getViewBOPDetails } from '../../masters/actions/BoughtOutParts';
-
+import { getViewBOPDetails, setBopCostingData } from '../../masters/actions/BoughtOutParts';
+import { checkForNull } from '../../../helper';
+import _, { isNumber } from 'lodash';
 const BOPCompareTable = (props) => {
 
     const dispatch = useDispatch()
@@ -16,13 +17,32 @@ const BOPCompareTable = (props) => {
     const [sectionData, setSectionData] = useState([])
     const [mainHeadingData, setMainHeadingData] = useState([])
     const [checkBoxCheck, setCheckBoxCheck] = useState({})
-    const [selectedRows, setSelectedRows] = useState([])
+    const [selectedItems, setSelectedItems] = useState([])
+    const [selectedIndices, setSelectedIndices] = useState([])
+
     const [isLoader, setIsLoader] = useState(false)
     useEffect(() => {
         setIsLoader(true)
-        const idArr = props.selectedRows.map(item => item.BoughtOutPartId)
+        let temp = []
+        const uniqueShouldCostingIdArr = props.uniqueShouldCostingId || [];
+        const idArr = props.selectedRows.map(item => item.BoughtOutPartId);
+        const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
 
-        dispatch(getViewBOPDetails(idArr, res => { setIsLoader(false) }))
+        dispatch(getViewBOPDetails(combinedArr, res => {
+            setIsLoader(false)
+            if (res) {
+                res?.data?.DataList?.map((item) => {
+                    temp.push(item)
+                    return null
+                })
+                let dat = [...temp]
+
+                let tempArrToSend = _.uniqBy(dat, 'BoughtOutPartId')
+                let arr = bestCostObjectFunction(tempArrToSend)
+                dispatch(setBopCostingData([...arr]))
+
+            }
+        }))
     }, [])
     useEffect(() => {
         if (viewBOPDetails.length !== 0) {
@@ -35,8 +55,9 @@ const BOPCompareTable = (props) => {
             let mainHeader = []
             viewBOPDetails.map((item, index) => {
                 //section one data start
-                const effectiveDate = <input className='form-control defualt-input-value' disabled={true} value={DayTime(item.EffectiveDate).format('DD/MM/YYYY')} />
-                const formattedDataOne = [
+                const effectiveDate = item.EffectiveDate && !item.EffectiveDate.includes('-') ? (
+                    <input className='form-control defualt-input-value' disabled={true} value={DayTime(item.EffectiveDate).format('DD/MM/YYYY')} />
+                ) : null; const formattedDataOne = [
                     item.BoughtOutPartNumber,
                     item.BoughtOutPartName,
                     item.BoughtOutPartCategory,
@@ -58,13 +79,20 @@ const BOPCompareTable = (props) => {
 
                 //section Three
                 sectionThree.push([item.Remark])
+                
 
                 //mainheader data start
                 const mainHeaderObj = {
                     vendorName: item.Vendor,
-                    onChange: () => checkBoxHanlde(item, index),
+                    onChange: () => checkBoxHandle(item,index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: item.IsShowCheckBoxForApproval
+                    // isCheckBox: item.IsShowCheckBoxForApproval,
+                    isCheckBox:true,
+                    bestCost: item.bestCost,
+                    shouldCost: props.uniqueShouldCostingId?.includes(item.RawMaterialId) ? "Should Cost" : "",
+                    costingType: item.CostingType === "Zero Based" ? "ZBC" : item.costingType === "Vendor Based" ? "VBC" : "",
+                    vendorCode: item.VendorCode,
+
 
                 }
                 mainHeader.push(mainHeaderObj)
@@ -88,15 +116,113 @@ const BOPCompareTable = (props) => {
             setMainHeadingData(mainHeader)
         }
     }, [viewBOPDetails])
+    const bestCostObjectFunction = (arrayList) => {
 
-    const checkBoxHanlde = (index, item) => {
-        let selectedData = []
-        selectedData.push(item?.BoughtOutPartId)
+        // Create a copy of the input array to prevent mutation
+        let finalArrayList = [...arrayList];
 
+        // Check if the input array is empty or null
+        if (!finalArrayList || finalArrayList.length === 0) {
+            // If so, return an empty array
+            return [];
+        } else {
+            // Define an array of keys to check when finding the "best cost"
+            const keysToCheck = ["NetLandedCost", "BasicRate"];
+            const keysToCheckSum = ["NetLandedCost", "BasicRate"];;
+            // const keysToCheck = ["nPOPriceWithCurrency"];
 
-        setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
-        props.checkCostingSelected(selectedData, index)
+            // Create a new object to represent the "best cost" and set it to the first object in the input array
+            let minObject = { ...finalArrayList[0] };
+
+            // Loop through each object in the input array
+            for (let i = 0; i < finalArrayList?.length; i++) {
+                // Get the current object
+                let currentObject = finalArrayList[i];
+
+                // Loop through each key in the current object
+                for (let key in currentObject) {
+                    // Check if the key is in the keysToCheck array
+                    if (keysToCheck?.includes(key)) {
+                        // Check if the current value and the minimum value for this key are both numbers
+                        if (isNumber(currentObject[key]) && isNumber(minObject[key])) {
+                            // If so, check if the current value is smaller than the minimum value
+                            if (checkForNull(currentObject[key]) < checkForNull(minObject[key])) {
+                                // If so, set the current value as the minimum value
+                                minObject[key] = currentObject[key];
+                            }
+                            // If the current value is an array
+                        } else if (Array.isArray(currentObject[key])) {
+                            // Set the minimum value for this key to an empty array
+                            minObject[key] = [];
+                        }
+                    } else {
+                        // If the key is not in the keysToCheck array, set the minimum value for this key to a dash
+                        minObject[key] = "";
+                        // delete minObject[key];
+                    }
+                }
+                // Set the attachment and bestCost properties of the minimum object
+                let sum = 0
+                for (let key in finalArrayList[0]) {
+                    if (keysToCheckSum?.includes(key)) {
+                        if (isNumber(minObject[key])) {
+                            sum = sum + checkForNull(minObject[key]);
+                        } else if (Array.isArray(minObject[key])) {
+                            minObject[key] = [];
+                        }
+                    } else {
+                        minObject[key] = "";
+                    }
+                }
+                minObject.attachment = []
+                minObject.bestCost = true
+                minObject.nPOPrice = sum
+            }
+            // Add the minimum object to the end of the array
+            finalArrayList.push(minObject);
+        }
+
+        // Return the modified array
+        return finalArrayList;
     }
+
+    const checkBoxHandle = (item, index) => {
+        setCheckBoxCheck(prevState => {
+            const newState = { ...prevState, [index]: !prevState[index] }
+            
+            return newState
+        })
+
+        setSelectedItems(prevItems => {
+            let newItems
+            if (prevItems.some(i => i.BoughtOutPartId === item.BoughtOutPartId)) {
+                newItems = prevItems.filter(i => i.BoughtOutPartId !== item.RawMaterialId)
+            } else {
+                newItems = [...prevItems, item]
+            }
+            return newItems
+        })
+
+        setSelectedIndices(prevIndices => {
+            let newIndices
+            if (prevIndices.includes(index)) {
+                newIndices = prevIndices.filter(i => i !== index)
+            } else {
+                newIndices = [...prevIndices, index]
+            }
+            return newIndices
+        })
+    }
+    
+
+    useEffect(() => {
+        
+        props.checkCostingSelected(selectedItems, selectedIndices)
+    }, [selectedItems, selectedIndices])
+    // const checkBoxHanlde = (item , index) => {
+    //     setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
+    //     props.checkCostingSelected(item,index)
+    // }
     return (
         <div>
             <Table headerData={mainHeadingData} sectionData={sectionData}>

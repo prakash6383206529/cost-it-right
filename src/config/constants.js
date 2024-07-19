@@ -19,8 +19,8 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.8.120:1005/api/v1`
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `http://10.10.1.100:10152/api/v1`
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -1137,6 +1137,8 @@ export const API = {
   sendCounterOffer: `${BASE_URL}/rfq-quotation/create-counter-offer`,
   getLiveAndScheduledCount: `${BASE_URL}/rfq-quotation/get-auction-active-scheduled-and-closed-count`,
   updateShowVendorRank: `${BASE_URL}/rfq-quotation/update-display-rank-to-vendor`,
+  updateAuctionDuration: `${BASE_URL}/rfq-quotation/update-auction-duration-extension`,
+  closeAuction: `${BASE_URL}/rfq-quotation/closed-auction`,
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -2266,6 +2268,7 @@ export const ReleaseStrategyB3 = 'RSB3'
 export const ReleaseStrategyB4 = 'RSB4'
 export const ReleaseStrategyB6 = 'RSB6'
 export const VendorNeedForm = 'VNF'
+export const RAWMATERIAL = 'Raw Materials'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -2290,6 +2293,7 @@ export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
 export const AUCTION_LISTING = '/auction'
+export const ADD_AUCTION = '/add-auction'
 export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
 export const RESET_PASSWORD = '/reset-password'
@@ -3120,10 +3124,12 @@ export const RELEASESTRATEGYTYPEID3 = Number(reactLocalStorage.getObject('Approv
 export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB4])
 export const RELEASESTRATEGYTYPEID6 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB6])
 export const VENDORNEEDFORMID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VendorNeedForm])
-
+export const RAWMATERIALAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[RAWMATERIAL])
+console.log('RAWMATERIALAPPROVALTYPEID: ', RAWMATERIALAPPROVALTYPEID);
 //Supplier approval 
 
 export const CLASSIFICATIONAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CUD])
+
 
 export const LPSAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[LPSUD])
 export const LPSAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[LPSUD])
@@ -3193,7 +3199,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.8";
+export const VERSION = "V3.0.12";
 
 
 

@@ -20,6 +20,7 @@ import { getQuotationById } from "./actions/rfq";
 import { auctionRfqSelectList, checkQuatationForAuction, createAuction, saveAuctionDetails } from "./actions/RfqAuction";
 import { EMPTY_GUID, EMPTY_GUID_0 } from "../../config/constants";
 import Toaster from "../common/Toaster";
+import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
 export const RM = 'RawMaterial'
 export const BOP = 'BoughtOutPart'
 export const COMPONENT = 'Component'
@@ -63,7 +64,8 @@ function AddAuction(props) {
     VendorList: [],
     VendorIdList: [],
     PlantList: [],
-    loader: false
+    loader: false,
+    initiateFromRfq: false
   })
   const [calculationState, setCalculationState] = useState({
     BasePrice: '',
@@ -85,9 +87,19 @@ function AddAuction(props) {
 
   // useSelectors
   const { RFQSelectlist } = useSelector(state => state.Auction);
-  const { NoOfDecimalForPrice } = useSelector((state) => state.auth.initialConfiguration)
+  const { NoOfDecimalForPrice } = useSelector((state) => state.auth?.initialConfiguration) || {}
+
+  const history = useHistory();
+  const location = useLocation();
+
   useEffect(() => {
-    dispatch(auctionRfqSelectList(() => { }))
+    const { source, quotationId } = location.state || {};
+    if (source === 'rfq') {
+      getDataByQuatationId(quotationId)
+      setState(prevState => ({ ...prevState, initiateFromRfq: true }))
+    } else {
+      dispatch(auctionRfqSelectList(() => { }))
+    }
   }, [])
 
   const renderListing = (label) => {
@@ -108,16 +120,17 @@ function AddAuction(props) {
    * @method cancel
    * @description used to Reset form
    */
-  const cancel = (isSaveAPICalled = false) => {
-    props?.closeDrawer(isSaveAPICalled);
-  };
-  const closeDrawer = (e, isUpdate) => {
-    // setIsPartDeailUpdate(isUpdate);
-    setState(prevState => ({ ...prevState, drawerOpen: false }));
-  };
-  const formToggle = () => {
-    setState(prevState => ({ ...prevState, comparsionAuction: true }));
-    // props.hide(false);
+  const cancel = () => {
+    if (location.state && location.state.source === 'auction') {
+      history.push('/auction');
+    } else if (location.state && location.state.source === 'rfq') {
+      history.push({
+        pathname: '/rfq-listing',
+        state: { viewRfq: true, source: 'auction', quotationId: location.state.quotationId }
+      });
+    } else {
+      history.push('/');
+    }
   };
   const onSubmit = (value) => {
     let data = {};
@@ -140,7 +153,10 @@ function AddAuction(props) {
     dispatch(createAuction(finalObj, (res) => {
       if (res.data.Result) {
         Toaster.success("Auction has been created successfully")
-        props?.closeDrawer('submit');
+        history.push({
+          pathname: '/auction',
+          state: { source: 'auction' }
+        })
       }
     }))
 
@@ -244,9 +260,8 @@ function AddAuction(props) {
       return null
     })
   }
-  const RFQHandler = (newValue) => {
-    reset(...partLabel, ...rmLabel, ...boplabel)
-    dispatch(getQuotationById(newValue.value, (res) => {
+  const getDataByQuatationId = (id) => {
+    dispatch(getQuotationById(id, (res) => {
       if (res?.data?.Data) {
         let data = res?.data?.Data
         const PlantList = data?.PlantId ? [{ label: data?.PlantName, value: data?.PlantId }] : [];
@@ -260,14 +275,18 @@ function AddAuction(props) {
           VendorIdList.push(item.VendorId)
         })
         setValue('PartType', data?.PartType)
+        setValue('RFQNumber', { label: data?.QuotationNumber, value: data?.QuotationId })
         if (data?.PartType !== BOP) {
           setValue('Technology', data?.Technology)
         }
         setState(prevState => ({ ...prevState, PlantList: PlantList, VendorList: VendorList, VendorIdList: VendorIdList, PartList: PartList, RawMaterialList: RawMaterialList, BoughtOutPartList: BoughtOutPartList, PartType: data?.PartType }))
       }
-
     })
     )
+  }
+  const RFQHandler = (newValue) => {
+    reset(...partLabel, ...rmLabel, ...boplabel)
+    getDataByQuatationId(newValue.value)
   }
 
   const handleChangeDateAndTime = (value) => {
@@ -366,7 +385,7 @@ function AddAuction(props) {
                           mandatory={true}
                           handleChange={(e) => RFQHandler(e)}
                           errors={errors.RFQNumber}
-                          disabled={false}
+                          disabled={state.initiateFromRfq}
                         />
                       </Col>
                       <Col className="col-3">

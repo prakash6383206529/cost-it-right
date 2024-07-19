@@ -195,6 +195,10 @@ function AddRfq(props) {
     const [isLoader, setIsLoader] = useState(false)
     const [prNumber, setPrNumber] = useState([])
 
+    const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ;
+
+
+
 
 
 
@@ -229,8 +233,6 @@ function AddRfq(props) {
                     case 'BoughtOutPart':
                         setSelectedOption('BOP');
                         setQuationType("BOP");
-                        break;
-                    default:
                         break;
                 }
             });
@@ -1216,228 +1218,28 @@ function AddRfq(props) {
         ]);
     }
     const addRowPartNoTable = () => {
-
-        if (selectedOption === "componentAssembly" && (remark === '' || childPartFiles?.length === 0)) {
-            Toaster.warning('Before save the part, please fill Remarks and Attachments!');
-            return;
-        } else if (selectedOption === "RM" && (RawMaterialList[0]?.RawMaterialReamrk === '' || RawMaterialList[0]?.RawMaterialAttachments?.length === 0)) {
-            Toaster.warning('Before save the Raw Material, please fill Remarks and Attachments!');
-            return;
-        } else if (selectedOption === "BOP" && bopList[0]?.BopReamrk === "" || bopList[0]?.BopAttachments?.length === 0) {
-            Toaster.warning('Remarks and Attachments are required!');
-            return;
-        } if (!updateButtonPartNoTable && rmDataList?.map(item => item?.RawMaterialCode)?.includes(RawMaterialList[0]?.RawMaterialCode)) {
-
-            Toaster.warning('This part is already added.');
-
-        }
-        //else if (bopDataList?.map(item => item?.BoughtOutPartChildId)?.includes(bopList[0]?.BoughtOutPartChildId)) {
-        //     Toaster.warning('This BOP is already added.');
-        // } 
-        else {
-
-            if (isNFRFlow) {
-                dispatch(getPartNFRRMList(nfrId.value, getValues('partNumber')?.value, (res) => {
+        if (isNFRFlow) {
+            dispatch(getPartNFRRMList(nfrId.value, getValues('partNumber')?.value, (res) => {
 
 
-                    let list = [...rmAPIList]
-                    let obj = {
-                        partName: getValues('partNumber'),
-                        RmList: res.data.DataList,
-                    }
-                    list.push(obj)
+                let list = [...rmAPIList]
+                let obj = {
+                    partName: getValues('partNumber'),
+                    RmList: res.data.DataList,
+                }
+                list.push(obj)
 
-                    setRMAPIList(list)
-
-                    let objTemp = {};
-                    let arrTemp = [];
-                    let Data = {}
-                    if (nfrId && nfrId.value !== null) {
-                        dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {  //CHECK_NFR
-                            Data = res.data.Data
-                        }));
-                    }
-                    let dataObj = {
-                        "PartIdList": [
-                            getValues('partNumber')?.value
-                        ],
-                        "PlantId": getValues('plant')?.value,
-                        "VendorId": null
-                    };
-
-                    let vendorList = [];
-                    let vendorListFinal = [];
-
-                    dispatch(checkExistCosting(dataObj, (res) => {
-                        if (res?.data?.Result) {
-                            vendorList = [...res?.data?.DataList];
-                            vendorList && vendorList?.map((item) => {
-                                vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`);
-                            });
-                        }
-
-                        let tempArrayparts = [...selectedparts, getValues('partNumber')];
-                        setSelectedParts(tempArrayparts);
-
-                        let partNumber = getValues('partNumber');
-
-                        // sopObjectTemp && sopObjectTemp.map((item, index) => {
-                        //     let newObjTemp = { ...objTemp }; // Create a new object in each iteration
-                        //     newObjTemp.PartNo = partNumber?.label;
-                        //     newObjTemp.PartId = getValues('partNumber')?.value;
-                        //     newObjTemp.UOM = getValues('UOM')?.label
-                        //     newObjTemp.UOMId = getValues('UOM')?.value
-                        //     newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0
-                        //     newObjTemp.TimeLine = requirementDate
-                        //     newObjTemp.PartType = getValues('PartType')?.label
-                        //     newObjTemp.PartTypeId = getValues('PartType')?.value
-
-                        //     newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label
-                        //     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value
-                        //     newObjTemp.Description = getValues('Description')
-
-                        //     if (index === 2) {
-                        //         newObjTemp.PartNumber = partNumber?.label;
-                        //         newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
-
-                        //     }
-                        //     if (nfrId && nfrId.value !== null) {
-                        //         if (index === 0) {
-                        //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
-                        //             newObjTemp.YearName = Data.FirstYear
-                        //         } else if (index === 1) {
-                        //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
-                        //             newObjTemp.YearName = Data.SecondYear
-                        //         } else if (index === 2) {
-                        //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
-                        //             newObjTemp.YearName = Data.ThirdYear
-                        //         } else if (index === 3) {
-                        //             newObjTemp.Quantity = 0;
-                        //             newObjTemp.YearName = parseInt(Data.ThirdYear) + 1
-                        //             newObjTemp.isEdit = true
-                        //         } else if (index === 4) {
-                        //             newObjTemp.Quantity = 0;
-                        //             newObjTemp.YearName = parseInt(Data.ThirdYear) + 2
-                        //             newObjTemp.isEdit = true
-                        //         }
-                        //     } else {
-                        //         newObjTemp.Quantity = 0
-                        //         newObjTemp.YearName = fiveyearList[index]
-                        //         newObjTemp.isEdit = true
-                        //     }
-                        //     arrTemp.push(newObjTemp);
-                        //     return null;
-                        // });
-                        let arrTemp = [];
-
-
-                        let newObjTemp = {};  // Initialize the new object
-
-                        newObjTemp.PartNo = partNumber?.label;
-                        newObjTemp.PartId = getValues('partNumber')?.value;
-                        newObjTemp.UOM = getValues('UOM')?.label;
-                        newObjTemp.UOMId = getValues('UOM')?.value;
-                        newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "-";
-                        newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
-                        newObjTemp.PartType = getValues('PartType')?.label;
-                        newObjTemp.PartTypeId = getValues('PartType')?.value;
-                        newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label;
-                        newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
-                        newObjTemp.Description = getValues('Description') || "";
-
-
-                        arrTemp.push(newObjTemp);  // Push the new object to the array
-
-                        let dataList = [...arrTemp]
-                        list[list.length - 1].RmList && list[list.length - 1].RmList?.map((item, index) => {
-
-                            let obj = arrTemp[index] ?? {}
-                            obj.RMGrade = item.RawMaterialGrade
-                            obj.RawMaterialGradeId = item.RawMaterialGradeId
-                            obj.RMName = item.RawMaterialName
-                            obj.RawMaterialChildId = item.RawMaterialChildId
-                            obj.RMSpecification = item.RawMaterialSpecification
-                            obj.RawMaterialSpecificationId = item.RawMaterialSpecificationId
-
-                            if (index > arrTemp?.length - 1) {
-                                obj.PartId = arrTemp[0].PartId
-                                obj.PartNo = arrTemp[0].PartNo
-                                obj.Quantity = 0
-                                obj.isEdit = true
-                                dataList.push(obj)
-
-                            } else {
-                                Object.assign([...dataList], { index: obj })
-                            }
-                        })
-
-                        let arr = [...partList, ...dataList];
-                        setPartList(arr);
-                        setValue('partNumber', "");
-
-                        setRequirementDate("")
-
-                        setValue('RMName', "");
-                        setValue('RMGrade', "");
-                        setValue('RMSpecification', "");
-                        setUpdateButtonPartNoTable(false);
-                        setRMName('');
-                        setRMGrade('');
-                        setRMSpecification('');
-                        dispatch(clearGradeSelectList([]));
-                        dispatch(clearSpecificationSelectList([]));
-                    }));
-
-
-
-                }));
-
-
-            } else {
+                setRMAPIList(list)
 
                 let objTemp = {};
                 let arrTemp = [];
                 let Data = {}
-                if (selectedOption === "RM") {
-                    const label = RawMaterialList[0]?.RawMaterialName;
-
-                    const isRMGradeMissing = !RawMaterialList[0]?.RawMaterialGrade;
-
-                    const isRMSpecificationMissing = !RawMaterialList[0]?.RawMaterialSpecification;
-
-                    if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
-                        const missingRequirements = [];
-                        if (isRMGradeMissing) {
-                            missingRequirements.push('RM Grade');
-                        }
-                        if (isRMSpecificationMissing) {
-                            missingRequirements.push('RM Specification');
-                        } if (requirementDate === "") {
-                            Toaster.warning("Please select Requirement Date");
-                            return false;
-                        }
-                        const message = `Please select ${missingRequirements.join(' and ')}`;
-                        Toaster.warning(message);
-                    } else if (selectedOption === "componentAssembly")
-                        if (getValues('HavellsDesignPart') === "") {
-                            Toaster.warning("Please select Havells Design part");
-                            return false;
-                        } if (["", "-"].includes(getValues('TargetPrice')) && getValues("HavellsDesignPart")?.label === HAVELLS_DESIGN_PARTS) {
-                            Toaster.warning("ZBC costing approval is required for this plant to raise a quote.");
-                            return false;
-                        } if (requirementDate === "") {
-                            Toaster.warning("Please select Requirement Date");
-                            return false;
-                        }
-                }
-                // else {
-
-                if (nfrId && nfrId.value !== null) {//CHECK_NFR
-                    dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {
+                if (nfrId && nfrId.value !== null) {
+                    dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {  //CHECK_NFR
                         Data = res.data.Data
                     }));
                 }
-                let dataObj = {                 // Part Handle change
+                let dataObj = {
                     "PartIdList": [
                         getValues('partNumber')?.value
                     ],
@@ -1448,7 +1250,7 @@ function AddRfq(props) {
                 let vendorList = [];
                 let vendorListFinal = [];
 
-                dispatch(checkExistCosting(dataObj, (res) => {                 // Part Handle change
+                dispatch(checkExistCosting(dataObj, (res) => {
                     if (res?.data?.Result) {
                         vendorList = [...res?.data?.DataList];
                         vendorList && vendorList?.map((item) => {
@@ -1463,13 +1265,12 @@ function AddRfq(props) {
 
                     // sopObjectTemp && sopObjectTemp.map((item, index) => {
                     //     let newObjTemp = { ...objTemp }; // Create a new object in each iteration
-
                     //     newObjTemp.PartNo = partNumber?.label;
                     //     newObjTemp.PartId = getValues('partNumber')?.value;
                     //     newObjTemp.UOM = getValues('UOM')?.label
                     //     newObjTemp.UOMId = getValues('UOM')?.value
                     //     newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0
-                    //     newObjTemp.TimeLine = requirementDate || ''
+                    //     newObjTemp.TimeLine = requirementDate
                     //     newObjTemp.PartType = getValues('PartType')?.label
                     //     newObjTemp.PartTypeId = getValues('PartType')?.value
 
@@ -1477,19 +1278,12 @@ function AddRfq(props) {
                     //     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value
                     //     newObjTemp.Description = getValues('Description')
 
-
-
                     //     if (index === 2) {
                     //         newObjTemp.PartNumber = partNumber?.label;
                     //         newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
-                    //         newObjTemp.RMName = rmName?.label ?? '-';
-                    //         newObjTemp.RawMaterialChildId = rmName?.value ?? '-';
-                    //         newObjTemp.RMGrade = rmgrade?.label ?? '-';
-                    //         newObjTemp.RawMaterialGradeId = rmgrade?.value ?? '-';
-                    //         newObjTemp.RMSpecification = rmspecification?.label ?? '-';
-                    //         newObjTemp.RawMaterialSpecificationId = rmspecification?.value ?? '-';
+
                     //     }
-                    //     if (nfrId) {
+                    //     if (nfrId && nfrId.value !== null) {
                     //         if (index === 0) {
                     //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
                     //             newObjTemp.YearName = Data.FirstYear
@@ -1511,14 +1305,18 @@ function AddRfq(props) {
                     //     } else {
                     //         newObjTemp.Quantity = 0
                     //         newObjTemp.YearName = fiveyearList[index]
+                    //         newObjTemp.isEdit = true
                     //     }
+                    //     arrTemp.push(newObjTemp);
                     //     return null;
                     // });
                     let arrTemp = [];
 
+
                     let newObjTemp = {};  // Initialize the new object
 
-                    // Common properties
+                    newObjTemp.PartNo = partNumber?.label;
+                    newObjTemp.PartId = getValues('partNumber')?.value;
                     newObjTemp.UOM = getValues('UOM')?.label;
                     newObjTemp.UOMId = getValues('UOM')?.value;
                     newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "-";
@@ -1528,455 +1326,633 @@ function AddRfq(props) {
                     newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label;
                     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
                     newObjTemp.Description = getValues('Description') || "";
-                    newObjTemp.SOPQuantityDetails = sopQuantityList;
 
+
+                    arrTemp.push(newObjTemp);  // Push the new object to the array
+
+                    let dataList = [...arrTemp]
+                    list[list.length - 1].RmList && list[list.length - 1].RmList?.map((item, index) => {
+
+                        let obj = arrTemp[index] ?? {}
+                        obj.RMGrade = item.RawMaterialGrade
+                        obj.RawMaterialGradeId = item.RawMaterialGradeId
+                        obj.RMName = item.RawMaterialName
+                        obj.RawMaterialChildId = item.RawMaterialChildId
+                        obj.RMSpecification = item.RawMaterialSpecification
+                        obj.RawMaterialSpecificationId = item.RawMaterialSpecificationId
+
+                        if (index > arrTemp?.length - 1) {
+                            obj.PartId = arrTemp[0].PartId
+                            obj.PartNo = arrTemp[0].PartNo
+                            obj.Quantity = 0
+                            obj.isEdit = true
+                            dataList.push(obj)
+
+                        } else {
+                            Object.assign([...dataList], { index: obj })
+                        }
+                    })
+
+                    let arr = [...partList, ...dataList];
+                    setPartList(arr);
+                    setValue('partNumber', "");
+
+                    setRequirementDate("")
+
+                    setValue('RMName', "");
+                    setValue('RMGrade', "");
+                    setValue('RMSpecification', "");
+                    setUpdateButtonPartNoTable(false);
+                    setRMName('');
+                    setRMGrade('');
+                    setRMSpecification('');
+                    dispatch(clearGradeSelectList([]));
+                    dispatch(clearSpecificationSelectList([]));
+                }));
+
+
+
+            }));
+
+
+        } else {
+            if (selectedOption === "componentAssembly" && (remark === '' || childPartFiles?.length === 0)) {
+                Toaster.warning('Before save the part, please fill Remarks and Attachments!');
+                return;
+            } else if (selectedOption === "RM" && (RawMaterialList[0]?.RawMaterialReamrk === '' || RawMaterialList[0]?.RawMaterialAttachments?.length === 0)) {
+                Toaster.warning('Before save the Raw Material, please fill Remarks and Attachments!');
+                return;
+            } else if (selectedOption === "BOP" && bopList[0]?.BopReamrk === "" || bopList[0]?.BopAttachments?.length === 0) {
+                Toaster.warning('Remarks and Attachments are required!');
+                return;
+            } if (!updateButtonPartNoTable && rmDataList?.map(item => item?.RawMaterialCode)?.includes(RawMaterialList[0]?.RawMaterialCode)) {
+
+                Toaster.warning('This Raw Material is already added.');
+
+            } else if (!updateButtonPartNoTable && bopDataList?.map(item => item?.BoughtOutPartChildId)?.includes(bopList[0]?.BoughtOutPartChildId)) {
+                Toaster.warning('This BOP is already added.');
+            } else if (updateButtonPartNoTable && partList?.map(item => item?.PartId)?.includes(getValues('partNumber')?.value)) {
+                Toaster.warning('This Part is already added.');
+
+            }
+            let objTemp = {};
+            let arrTemp = [];
+            let Data = {}
+            if (selectedOption === "RM") {
+                const label = RawMaterialList[0]?.RawMaterialName;
+
+                const isRMGradeMissing = !RawMaterialList[0]?.RawMaterialGrade;
+
+                const isRMSpecificationMissing = !RawMaterialList[0]?.RawMaterialSpecification;
+
+                if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
+                    const missingRequirements = [];
+                    if (isRMGradeMissing) {
+                        missingRequirements.push('RM Grade');
+                    }
+                    if (isRMSpecificationMissing) {
+                        missingRequirements.push('RM Specification');
+                    } if (requirementDate === "") {
+                        Toaster.warning("Please select Requirement Date");
+                        return false;
+                    }
+                    const message = `Please select ${missingRequirements.join(' and ')}`;
+                    Toaster.warning(message);
+                }
+            } else if (selectedOption === "componentAssembly") {
+                if (getValues('HavellsDesignPart') === "") {
+                    Toaster.warning("Please select Havells Design part");
+                    return false;
+                } if (["", "-"].includes(getValues('TargetPrice')) && getValues("HavellsDesignPart")?.label === HAVELLS_DESIGN_PARTS) {
+                    Toaster.warning("ZBC costing approval is required for this plant to raise a quote.");
+                    return false;
+                }
+            } if (requirementDate === "") {
+                Toaster.warning("Please select Requirement Date");
+                return false;
+            }
+
+            if (nfrId && nfrId.value !== null) {//CHECK_NFR
+                dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {
+                    Data = res.data.Data
+                }));
+            }
+            let dataObj = {                 // Part Handle change
+                "PartIdList": [
+                    getValues('partNumber')?.value
+                ],
+                "PlantId": getValues('plant')?.value,
+                "VendorId": null
+            };
+
+            let vendorList = [];
+            let vendorListFinal = [];
+
+            dispatch(checkExistCosting(dataObj, (res) => {                 // Part Handle change
+                if (res?.data?.Result) {
+                    vendorList = [...res?.data?.DataList];
+                    vendorList && vendorList?.map((item) => {
+                        vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`);
+                    });
+                }
+
+                let tempArrayparts = [...selectedparts, getValues('partNumber')];
+                setSelectedParts(tempArrayparts);
+
+                let partNumber = getValues('partNumber');
+
+                // sopObjectTemp && sopObjectTemp.map((item, index) => {
+                //     let newObjTemp = { ...objTemp }; // Create a new object in each iteration
+
+                //     newObjTemp.PartNo = partNumber?.label;
+                //     newObjTemp.PartId = getValues('partNumber')?.value;
+                //     newObjTemp.UOM = getValues('UOM')?.label
+                //     newObjTemp.UOMId = getValues('UOM')?.value
+                //     newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0
+                //     newObjTemp.TimeLine = requirementDate || ''
+                //     newObjTemp.PartType = getValues('PartType')?.label
+                //     newObjTemp.PartTypeId = getValues('PartType')?.value
+
+                //     newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label
+                //     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value
+                //     newObjTemp.Description = getValues('Description')
+
+
+
+                //     if (index === 2) {
+                //         newObjTemp.PartNumber = partNumber?.label;
+                //         newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
+                //         newObjTemp.RMName = rmName?.label ?? '-';
+                //         newObjTemp.RawMaterialChildId = rmName?.value ?? '-';
+                //         newObjTemp.RMGrade = rmgrade?.label ?? '-';
+                //         newObjTemp.RawMaterialGradeId = rmgrade?.value ?? '-';
+                //         newObjTemp.RMSpecification = rmspecification?.label ?? '-';
+                //         newObjTemp.RawMaterialSpecificationId = rmspecification?.value ?? '-';
+                //     }
+                //     if (nfrId) {
+                //         if (index === 0) {
+                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                //             newObjTemp.YearName = Data.FirstYear
+                //         } else if (index === 1) {
+                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                //             newObjTemp.YearName = Data.SecondYear
+                //         } else if (index === 2) {
+                //             newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                //             newObjTemp.YearName = Data.ThirdYear
+                //         } else if (index === 3) {
+                //             newObjTemp.Quantity = 0;
+                //             newObjTemp.YearName = parseInt(Data.ThirdYear) + 1
+                //             newObjTemp.isEdit = true
+                //         } else if (index === 4) {
+                //             newObjTemp.Quantity = 0;
+                //             newObjTemp.YearName = parseInt(Data.ThirdYear) + 2
+                //             newObjTemp.isEdit = true
+                //         }
+                //     } else {
+                //         newObjTemp.Quantity = 0
+                //         newObjTemp.YearName = fiveyearList[index]
+                //     }
+                //     return null;
+                // });
+                let arrTemp = [];
+
+                let newObjTemp = {};  // Initialize the new object
+
+                // Common properties
+                newObjTemp.UOM = getValues('UOM')?.label;
+                newObjTemp.UOMId = getValues('UOM')?.value;
+                newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "-";
+                newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
+                newObjTemp.PartType = getValues('PartType')?.label;
+                newObjTemp.PartTypeId = getValues('PartType')?.value;
+                newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label;
+                newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
+                newObjTemp.Description = getValues('Description') || "";
+                newObjTemp.SOPQuantityDetails = sopQuantityList;
+
+                if (selectedOption === "RM") {
+                    // Set properties specific to Raw Material
+                    newObjTemp.RawMaterialGrade = RawMaterialList[0]?.RawMaterialGrade
+                    newObjTemp.RawMaterialName = RawMaterialList[0]?.RawMaterialName
+                    newObjTemp.RawMaterialSpecification = RawMaterialList[0]?.RawMaterialSpecification
+                    newObjTemp.RawMaterialSpecificationId = RawMaterialList[0]?.RawMaterialSpecificationId
+                    newObjTemp.RawMaterialGradeId = RawMaterialList[0]?.RawMaterialGrade
+                    newObjTemp.RawMaterialChildId = RawMaterialList[0]?.RawMaterialChildId
+                    newObjTemp.RawMaterialCode = RawMaterialList[0]?.RawMaterialCode
+                    newObjTemp.RawMaterialCodeId = RawMaterialList[0]?.RawMaterialCodeId
+
+
+                } else if (selectedOption === "componentAssembly") {
+                    // Set properties specific to Component Assembly
+                    newObjTemp.PartNumber = partNumber?.label;
+                    newObjTemp.PartId = getValues('partNumber')?.value;
+                } else if (selectedOption === "BOP") {
+                    newObjTemp.BoughtOutPartName = bopList[0]?.BoughtOutPartName
+                    newObjTemp.BoughtOutPartCategoryName = bopList[0]?.BoughtOutPartCategoryName
+                    newObjTemp.BoughtOutPartCategoryId = bopList[0]?.BoughtOutPartCategoryId
+                    newObjTemp.BoughtOutPartNumber = bopList[0]?.BoughtOutPartNumber
+                    newObjTemp.BoughtOutPartChildId = bopList[0]?.BoughtOutPartChildId
+                }
+
+                arrTemp.push(newObjTemp);
+                let arr
+
+                if (updateButtonPartNoTable) {
                     if (selectedOption === "RM") {
-                        // Set properties specific to Raw Material
-                        newObjTemp.RawMaterialGrade = RawMaterialList[0]?.RawMaterialGrade
-                        newObjTemp.RawMaterialName = RawMaterialList[0]?.RawMaterialName
-                        newObjTemp.RawMaterialSpecification = RawMaterialList[0]?.RawMaterialSpecification
-                        newObjTemp.RawMaterialSpecificationId = RawMaterialList[0]?.RawMaterialSpecificationId
-                        newObjTemp.RawMaterialGradeId = RawMaterialList[0]?.RawMaterialGrade
-                        newObjTemp.RawMaterialChildId = RawMaterialList[0]?.RawMaterialChildId
-                        newObjTemp.RawMaterialCode = RawMaterialList[0]?.RawMaterialCode
-                        newObjTemp.RawMaterialCodeId = RawMaterialList[0]?.RawMaterialCodeId
-
+                        arr = rmDataList.map(item => {
+                            return item.RawMaterialChildId === editRawMaterialId ? { ...item, ...arrTemp[0] } : item;
+                        });
+                    } else if (selectedOption === "componentAssembly") {
+                        arr = partList.map(item => {
+                            // Check PartId for componentAssembly
+                            return item.PartId === getValues('partNumber')?.value ? { ...item, ...arrTemp[0] } : item;
+                        });
+                    } else {
+                        arr = bopDataList.map(item => {
+                            return item.BoughtOutPartChildId === editBopId ? { ...item, ...arrTemp[0] } : item;
+                        });
+                    }
+                } else {
+                    if (selectedOption === "RM") {
+                        arr = [...rmDataList, ...arrTemp];
 
                     } else if (selectedOption === "componentAssembly") {
-                        // Set properties specific to Component Assembly
-                        newObjTemp.PartNumber = partNumber?.label;
-                        newObjTemp.PartId = getValues('partNumber')?.value;
-                    } else if (selectedOption === "BOP") {
-                        newObjTemp.BoughtOutPartName = bopList[0]?.BoughtOutPartName
-                        newObjTemp.BoughtOutPartCategoryName = bopList[0]?.BoughtOutPartCategoryName
-                        newObjTemp.BoughtOutPartCategoryId = bopList[0]?.BoughtOutPartCategoryId
-                        newObjTemp.BoughtOutPartNumber = bopList[0]?.BoughtOutPartNumber
-                        newObjTemp.BoughtOutPartChildId = bopList[0]?.BoughtOutPartChildId
-                    }
-
-                    arrTemp.push(newObjTemp);
-
-
-
-
-                    // Push the new object to the array
-
-
-
-                    //let dataList = [...arrTemp]
-
-                    // let arr = updateButtonPartNoTable
-                    //     ? partList.map(item => item.PartId === getValues('partNumber')?.value ? { ...item, ...arrTemp[0] } : item)
-                    //     : [...partList, ...arrTemp];
-                    // let arr = updateButtonPartNoTable
-                    //     ? partList.map(item => {
-                    //         if (selectedOption === "RM") {
-                    //             // Check RawMaterialChildId for RM
-                    //             return item.RawMaterialChildId === RawMaterialList[0]?.RawMaterialChildId ? { ...item, ...arrTemp[0] } : item;
-                    //         } else {
-                    //             // Check PartId for other options
-                    //             return item.PartId === getValues('partNumber')?.value ? { ...item, ...arrTemp[0] } : item;
-                    //         }
-                    //     })
-                    //     : [...partList, ...arrTemp];
-                    let arr
-
-                    if (updateButtonPartNoTable) {
-                        if (selectedOption === "RM") {
-                            arr = rmDataList.map(item => {
-                                return item.RawMaterialChildId === editRawMaterialId ? { ...item, ...arrTemp[0] } : item;
-                            });
-                        } else if (selectedOption === "componentAssembly") {
-                            arr = partList.map(item => {
-                                // Check PartId for componentAssembly
-                                return item.PartId === getValues('partNumber')?.value ? { ...item, ...arrTemp[0] } : item;
-                            });
-                        } else {
-                            arr = bopDataList.map(item => {
-                                return item.BoughtOutPartChildId === editBopId ? { ...item, ...arrTemp[0] } : item;
-                            });
-                        }
+                        arr = [...partList, ...arrTemp];
                     } else {
-                        if (selectedOption === "RM") {
-                            arr = [...rmDataList, ...arrTemp];
+                        arr = [...bopDataList, ...arrTemp];
 
-                        } else if (selectedOption === "componentAssembly") {
-                            arr = [...partList, ...arrTemp];
-                        } else {
-                            arr = [...bopDataList, ...arrTemp];
+                    }
+                }
 
-                        }
+
+
+                let obj = {}
+
+                let temppartArr = []
+                let tempArr = [...arr]
+                let list = []
+                list = tempArr && tempArr?.map(item => {
+                    if (isNaN(Number(item?.Quantity))) {
+                        item.Quantity = 0
+                    }
+                    return item
+                })
+
+
+                obj.QuotationId = getQuotationIdForRFQ ? getQuotationIdForRFQ : ""
+                obj.TechnologyId = getValues('technology').value
+                obj.PlantId = getValues('plant')?.value
+                obj.LoggedInUserId = loggedInUserId()
+                let partIdList = _.uniq(_.map(list, 'PartId'))
+                let childPartIdList = _.uniq(_.map(tableData, 'PartId'));
+                partIdList && partIdList?.map((item) => {
+                    if (item !== getValues('partNumber')?.value) return false
+                    let temppartObj = {}
+                    let partListArr = []
+                    let partObject = []
+                    temppartObj.PartId = item
+                    let obj = arr && arr?.filter(ele => ele?.PartId === item)
+
+                    let rmList = []
+                    if (isNFRFlow) {
+                        let arrList = rmAPIList && rmAPIList?.filter(element => element?.partName?.value === item)[0]?.RmList
+                        rmList = arrList && arrList?.filter(element => element?.RawMaterialChildId || element?.RawMaterialGradeId || element?.RawMaterialSpecificationId)
+                    } else {
+                        tableData && tableData.map((item2) => {
+
+                            if (item2?.PartId === item) {
+                                rmList = [{
+                                    "RawMaterialChildId": item2?.RawMaterialChildId || null,
+                                    "RawMaterialGradeId": item2?.RawMaterialGradeId || null,
+                                    "RawMaterialSpecificationId": item2?.RawMaterialSpecificationId || null
+                                }]
+                            }
+                        })
                     }
 
 
+                    temppartObj.RMDetails = rmList
+                    temppartObj.SOPQuantityDetails = sopQuantityList
+                    temppartObj.IsChildPart = false
+                    // temppartObj.QuotationPartId = ""
+                    temppartObj.PartType = partType?.label || ''
+                    temppartObj.TargetPrice = getTargetprice?.TargetPrice || "-"
+                    temppartObj.TimeLine = requirementDate || "";
+                    temppartObj.Remarks = remark || null
+                    temppartObj.Attachments = childPartFiles || []
+                    temppartObj.HavellsDesignPart = getValues('HavellsDesignPart')?.label || ''
+                    temppartObj.UnitOfMeasurementId = getValues('UOM')?.value || ''
+                    temppartObj.ExistingVendor = vendorList.join(',') || '';
+                    temppartObj.Description = getValues('Description') || ""
+                    temppartObj.SopDate = sopdate || null
+                    //temppartObj.SOPQuantityDetails = obj[0]?.SOPQuantityDetails
 
-                    let obj = {}
+                    //ExistingVendor
+                    let PartSpecificationList = {};
+                    let PartSpecification = [];
 
-                    let temppartArr = []
-                    let tempArr = [...arr]
-                    let list = []
-                    list = tempArr && tempArr?.map(item => {
-                        if (isNaN(Number(item?.Quantity))) {
-                            item.Quantity = 0
-                        }
-                        return item
-                    })
-
-
-                    obj.QuotationId = getQuotationIdForRFQ ? getQuotationIdForRFQ : ""
-                    obj.TechnologyId = getValues('technology').value
-                    obj.PlantId = getValues('plant')?.value
-                    obj.LoggedInUserId = loggedInUserId()
-                    let partIdList = _.uniq(_.map(list, 'PartId'))
-                    let childPartIdList = _.uniq(_.map(tableData, 'PartId'));
-                    partIdList && partIdList?.map((item) => {
-                        if (item !== getValues('partNumber')?.value) return false
-                        let temppartObj = {}
-                        let partListArr = []
-                        let partObject = []
-                        temppartObj.PartId = item
-                        let obj = arr && arr?.filter(ele => ele?.PartId === item)
-
-                        let rmList = []
-                        if (isNFRFlow) {
-                            let arrList = rmAPIList && rmAPIList?.filter(element => element?.partName?.value === item)[0]?.RmList
-                            rmList = arrList && arrList?.filter(element => element?.RawMaterialChildId || element?.RawMaterialGradeId || element?.RawMaterialSpecificationId)
-                        } else {
-                            tableData && tableData.map((item2) => {
-
-                                if (item2?.PartId === item) {
-                                    rmList = [{
-                                        "RawMaterialChildId": item2?.RawMaterialChildId || null,
-                                        "RawMaterialGradeId": item2?.RawMaterialGradeId || null,
-                                        "RawMaterialSpecificationId": item2?.RawMaterialSpecificationId || null
-                                    }]
-                                }
-                            })
-                        }
-
-
-                        temppartObj.RMDetails = rmList
-                        temppartObj.SOPQuantityDetails = sopQuantityList
-                        temppartObj.IsChildPart = false
-                        // temppartObj.QuotationPartId = ""
-                        temppartObj.PartType = partType?.label || ''
-                        temppartObj.TargetPrice = getTargetprice?.TargetPrice || "-"
-                        temppartObj.TimeLine = requirementDate || "";
-                        temppartObj.Remarks = remark || null
-                        temppartObj.Attachments = childPartFiles || []
-                        temppartObj.HavellsDesignPart = getValues('HavellsDesignPart')?.label || ''
-                        temppartObj.UnitOfMeasurementId = getValues('UOM')?.value || ''
-                        temppartObj.ExistingVendor = vendorList.join(',') || '';
-                        temppartObj.Description = getValues('Description') || ""
-                        temppartObj.SopDate = sopdate || null
-                        //temppartObj.SOPQuantityDetails = obj[0]?.SOPQuantityDetails
-
-                        //ExistingVendor
-                        let PartSpecificationList = {};
-                        let PartSpecification = [];
-
-                        if (specificationList?.length > 0) {
-                            specificationList.forEach((item) => {
-                                let specObj = {
-                                    Specification: item?.Specification,
-                                    Value: item?.Value,
-                                    LoggedInUserId: loggedInUserId()
-                                };
-                                PartSpecification.push(specObj);
-                            });
-                        }
-
-                        // Populate PartSpecificationList object
-                        PartSpecificationList = {
-                            QuotationPartIdRef: temppartObj?.PartId || 0,
-                            PartSpecification: PartSpecification
-                        };
-
-                        // Assuming temppartObj already exists and you're assigning PartSpecificationList to it
-                        temppartObj.PartSpecificationList = PartSpecificationList;
-
-                        temppartArr.push(temppartObj);
-                        // if (updateButtonPartNoTable) {
-                        //     let updatedarr = temppartArr[partIndex];
-                        //     const updatedSopQuantityList = sopQuantityList; // Store sopQuantityList in a constant
-                        //     if (updatedarr) {
-                        //         updatedarr.SOPQuantityDetails = updatedSopQuantityList;
-                        //         temppartArr[partIndex] = updatedarr;
-                        //     }
-                        // }
-
-
-                        // Child Part Details
-                        if (partType?.label === "Assembly") {
-                            childPartIdList && childPartIdList.map((childItem) => {
-                                tableData && tableData.map((item2) => {
-                                    if (item2?.PartId === childItem) {
-                                        let childPartObj = {};
-                                        childPartObj.PartId = item2?.PartId;
-                                        childPartObj.RMDetails = [{
-                                            "RawMaterialChildId": item2?.RawMaterialChildId,
-                                            "RawMaterialGradeId": item2?.RawMaterialGradeId,
-                                            "RawMaterialSpecificationId": item2?.RawMaterialSpecificationId
-                                        }];
-                                        childPartObj.SOPQuantityDetails = [];
-                                        childPartObj.IsChildPart = true;
-                                        childPartObj.PartType = null;
-                                        childPartObj.QuotationPartId = ""
-                                        childPartObj.PartSpecificationList = {
-                                            "QuotationPartIdRef": null,
-                                            "PartSpecification": null
-                                        };
-
-                                        childPartObj.HavellsDesignPart = null
-                                        childPartObj.TargetPrice = null
-                                        childPartObj.TimeLine = null
-                                        childPartObj.UnitOfMeasurementId = null
-                                        childPartObj.SopDate = null
-                                        childPartObj.Remarks = null
-                                        childPartObj.Description = null
-                                        childPartObj.Attachments = []
-                                        temppartArr.push(childPartObj);
-                                    }
-                                    return null;
-                                });
-                            })
-                        }
-
-                        return null
-                    })
-
-                    let updatedPartList = [];
-                    if (updateButtonPartNoTable) {
-                        if (isPartDetailUpdate) {
-                            updatedPartList = temppartArr;
-                        } else if (!isPartDetailUpdate) {
-
-                            updatedPartList = [...storePartsDetail];
-                            updatedPartList[0] = {
-                                ...updatedPartList[0], // Preserve existing properties
-                                UnitOfMeasurementId: getValues('UOM')?.value || '',
-                                HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
-                                TimeLine: requirementDate || ''
+                    if (specificationList?.length > 0) {
+                        specificationList.forEach((item) => {
+                            let specObj = {
+                                Specification: item?.Specification,
+                                Value: item?.Value,
+                                LoggedInUserId: loggedInUserId()
                             };
-                        }
-                    } else {
-
-                        updatedPartList = temppartArr;
+                            PartSpecification.push(specObj);
+                        });
                     }
 
+                    // Populate PartSpecificationList object
+                    PartSpecificationList = {
+                        QuotationPartIdRef: temppartObj?.PartId || 0,
+                        PartSpecification: PartSpecification
+                    };
 
-                    switch (selectedOption) {
-                        case 'componentAssembly':
+                    // Assuming temppartObj already exists and you're assigning PartSpecificationList to it
+                    temppartObj.PartSpecificationList = PartSpecificationList;
 
-                            obj.PartList = updatedPartList;
-                            obj.RawMaterialList = []
-                            obj.BoughtOutPartList = []
-                            break;
-                        case 'RM':
-
-                            let tempRmArr = [];
-                            let rmIdList = _.uniq(_.map(RawMaterialList, 'RawMaterialChildId'));
-                            rmIdList && rmIdList.forEach((rmId) => {
-                                RawMaterialList && RawMaterialList.forEach((item2) => {
-
-
-                                    if (item2?.RawMaterialChildId === rmId) {
-                                        let tempRmObj = {
-                                            RawMaterialChildId: item2.RawMaterialChildId,
-                                            RawMaterialGradeId: item2.RawMaterialGradeId,
-                                            RawMaterialSpecificationId: item2.RawMaterialSpecificationId,
-                                            RawMaterialSpecification: item2?.RawMaterialSpecification,
-                                            RawMaterialGrade: item2?.RawMaterialGrade,
-                                            RawMaterialName: item2?.RawMaterialName,
-                                            PartType: selectedOption || "",
-                                            TargetPrice: getTargetprice?.TargetPrice || "-",
-                                            TimeLine: requirementDate || "",
-                                            Remarks: item2?.RawMaterialReamrk || null,
-                                            Attachments: item2?.RawMaterialAttachments || [],
-                                            HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
-                                            UnitOfMeasurementId: getValues('UOM')?.value || '',
-                                            ExistingVendor: vendorList.join(',') || '',
-                                            QuotationPartId: updateButtonPartNoTable ? arr[0]?.QuotationPartId : "",
-                                        };
-                                        tempRmArr.push(tempRmObj);
-                                    }
-                                });
-                            });
-                            obj.PartList = [];
-                            obj.RawMaterialList = tempRmArr;
-                            obj.BoughtOutPartList = [];
-                            break;
-                        case 'BOP':
-                            let tempBopArr = [];
-                            let bopIdList = _.uniq(_.map(bopList, 'BoughtOutPartChildId'));
-                            bopIdList && bopIdList.forEach((bopId) => {
-                                bopList && bopList.forEach((item2) => {
-
-                                    if (item2?.BoughtOutPartChildId === bopId) {
-                                        let tempBopObj = {
-                                            BoughtOutPartChildId: item2.BoughtOutPartChildId,
-                                            BoughtOutPartCategoryId: item2.BoughtOutPartCategoryId,
-                                            PartType: selectedOption || "",
-                                            TargetPrice: getTargetprice?.TargetPrice || "-",
-                                            TimeLine: requirementDate || "",
-                                            Remarks: item2?.BopReamrk || null,
-                                            Attachments: item2?.BopAttachments || [],
-                                            HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
-                                            UnitOfMeasurementId: getValues('UOM')?.value || '',
-                                            ExistingVendor: vendorList.join(',') || '',
-                                            QuotationPartId: updateButtonPartNoTable ? arr[0]?.QuotationPartId : "",
-                                        };
-                                        let PartSpecificationList = {};
-                                        let PartSpecification = [];
+                    temppartArr.push(temppartObj);
+                    // if (updateButtonPartNoTable) {
+                    //     let updatedarr = temppartArr[partIndex];
+                    //     const updatedSopQuantityList = sopQuantityList; // Store sopQuantityList in a constant
+                    //     if (updatedarr) {
+                    //         updatedarr.SOPQuantityDetails = updatedSopQuantityList;
+                    //         temppartArr[partIndex] = updatedarr;
+                    //     }
+                    // }
 
 
-                                        if (item2?.BopSpecification?.length > 0) {
-                                            item2?.BopSpecification.forEach((item) => {
+                    // Child Part Details
+                    if (partType?.label === "Assembly") {
+                        childPartIdList && childPartIdList.map((childItem) => {
+                            tableData && tableData.map((item2) => {
+                                if (item2?.PartId === childItem) {
+                                    let childPartObj = {};
+                                    childPartObj.PartId = item2?.PartId;
+                                    childPartObj.RMDetails = [{
+                                        "RawMaterialChildId": item2?.RawMaterialChildId,
+                                        "RawMaterialGradeId": item2?.RawMaterialGradeId,
+                                        "RawMaterialSpecificationId": item2?.RawMaterialSpecificationId
+                                    }];
+                                    childPartObj.SOPQuantityDetails = [];
+                                    childPartObj.IsChildPart = true;
+                                    childPartObj.PartType = null;
+                                    childPartObj.QuotationPartId = ""
+                                    childPartObj.PartSpecificationList = {
+                                        "QuotationPartIdRef": null,
+                                        "PartSpecification": null
+                                    };
 
-                                                let specObj = {
-                                                    Specification: item?.Specification,
-                                                    Value: item?.Value,
-                                                    LoggedInUserId: loggedInUserId()
-                                                };
-                                                PartSpecification.push(specObj);
-                                            });
-                                        }
-
-                                        // Populate PartSpecificationList object
-                                        PartSpecificationList = {
-                                            QuotationPartIdRef: tempBopObj?.BoughtOutPartChildId || 0,
-                                            PartSpecification: PartSpecification
-                                        };
-                                        tempBopObj.PartSpecificationList = PartSpecificationList;
-
-                                        tempBopArr.push(tempBopObj);
-                                    }
-                                });
-                            });
-                            obj.PartList = [];
-                            obj.RawMaterialList = [];
-                            obj.BoughtOutPartList = tempBopArr;
-                            break;
-                        case 'tooling':
-
-                            obj.PartList = [];
-                            break;
-                        default:
-
-                            obj.PartList = updatedPartList;
-                            break;
-                    }
-
-                    let updatedArr = []
-                    setIsLoader(true)
-                    dispatch(saveRfqPartDetails(obj, (res) => {
-
-
-                        if (res?.data?.Result) {
-                            setIsLoader(false)
-
-                            if (!updateButtonPartNoTable) {
-                                Toaster.success('Part Details has been added successfully.');
-                            } else {
-                                Toaster.success('Part Details has been updated successfully.');
-                            }
-
-                            setPartIdentity(res?.data?.Identity);
-                            // onResetPartNoTable();
-                            // setTableData([]);
-                            // setSpecificationList([]);
-                            // 
-                            // 
-                            // updatedArr = arr.map(obj => {
-                            //     if (obj.PartId === assemblyPartNumber.value) {
-                            //         // 
-                            //         return { ...obj, QuotationPartId: res?.data?.Identity };
-                            //     }
-                            //     return obj;
-                            // });
-                            let updatedArr = arr.map(obj => {
-                                if (selectedOption === "RM") {
-                                    if (obj.RawMaterialChildId === RawMaterialList[0]?.RawMaterialChildId) {
-                                        return { ...obj, QuotationPartId: res?.data?.Identity };
-                                    }
-                                } else if (selectedOption === "componentAssembly") {
-                                    if (obj.PartId === assemblyPartNumber.value) {
-                                        return { ...obj, QuotationPartId: res?.data?.Identity };
-                                    }
-                                } else {
-                                    if (obj.BoughtOutPartChildId === bopList[0]?.BoughtOutPartChildId) {
-                                        return { ...obj, QuotationPartId: res?.data?.Identity };
-                                    }
+                                    childPartObj.HavellsDesignPart = null
+                                    childPartObj.TargetPrice = null
+                                    childPartObj.TimeLine = null
+                                    childPartObj.UnitOfMeasurementId = null
+                                    childPartObj.SopDate = null
+                                    childPartObj.Remarks = null
+                                    childPartObj.Description = null
+                                    childPartObj.Attachments = []
+                                    temppartArr.push(childPartObj);
                                 }
-                                return obj;
+                                return null;
                             });
+                        })
+                    }
+
+                    return null
+                })
+
+                let updatedPartList = [];
+                if (updateButtonPartNoTable) {
+                    if (isPartDetailUpdate) {
+                        updatedPartList = temppartArr;
+                    } else if (!isPartDetailUpdate) {
+
+                        updatedPartList = [...storePartsDetail];
+                        updatedPartList[0] = {
+                            ...updatedPartList[0], // Preserve existing properties
+                            UnitOfMeasurementId: getValues('UOM')?.value || '',
+                            HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
+                            TimeLine: requirementDate || ''
+                        };
+                    }
+                } else {
+
+                    updatedPartList = temppartArr;
+                }
 
 
-                            // State update should be outside the map function
-                            if (selectedOption === "RM") {
-                                setRmDataList(updatedArr);
-                            } else if (selectedOption === "componentAssembly") {
-                                setPartList(updatedArr);
-                            } else {
-                                setBopDataList(updatedArr);
-                            }
+                switch (selectedOption) {
+                    case 'componentAssembly':
+
+                        obj.PartList = updatedPartList;
+                        obj.RawMaterialList = []
+                        obj.BoughtOutPartList = []
+                        break;
+                    case 'RM':
+
+                        let tempRmArr = [];
+                        let rmIdList = _.uniq(_.map(RawMaterialList, 'RawMaterialChildId'));
+                        rmIdList && rmIdList.forEach((rmId) => {
+                            RawMaterialList && RawMaterialList.forEach((item2) => {
 
 
-                            // 
+                                if (item2?.RawMaterialChildId === rmId) {
+                                    let tempRmObj = {
+                                        RawMaterialChildId: item2.RawMaterialChildId,
+                                        RawMaterialGradeId: item2.RawMaterialGradeId,
+                                        RawMaterialSpecificationId: item2.RawMaterialSpecificationId,
+                                        RawMaterialSpecification: item2?.RawMaterialSpecification,
+                                        RawMaterialGrade: item2?.RawMaterialGrade,
+                                        RawMaterialName: item2?.RawMaterialName,
+                                        PartType: selectedOption || "",
+                                        TargetPrice: getTargetprice?.TargetPrice || "-",
+                                        TimeLine: requirementDate || "",
+                                        Remarks: item2?.RawMaterialReamrk || null,
+                                        Attachments: item2?.RawMaterialAttachments || [],
+                                        HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
+                                        UnitOfMeasurementId: getValues('UOM')?.value || '',
+                                        ExistingVendor: vendorList.join(',') || '',
+                                        QuotationPartId: updateButtonPartNoTable ? arr[0]?.QuotationPartId : "",
+                                    };
+                                    tempRmArr.push(tempRmObj);
+                                }
+                            });
+                        });
+                        obj.PartList = [];
+                        obj.RawMaterialList = tempRmArr;
+                        obj.BoughtOutPartList = [];
+                        break;
+                    case 'BOP':
+                        let tempBopArr = [];
+                        let bopIdList = _.uniq(_.map(bopList, 'BoughtOutPartChildId'));
+                        bopIdList && bopIdList.forEach((bopId) => {
+                            bopList && bopList.forEach((item2) => {
+
+                                if (item2?.BoughtOutPartChildId === bopId) {
+                                    let tempBopObj = {
+                                        BoughtOutPartChildId: item2.BoughtOutPartChildId,
+                                        BoughtOutPartCategoryId: item2.BoughtOutPartCategoryId,
+                                        PartType: selectedOption || "",
+                                        TargetPrice: getTargetprice?.TargetPrice || "-",
+                                        TimeLine: requirementDate || "",
+                                        Remarks: item2?.BopReamrk || null,
+                                        Attachments: item2?.BopAttachments || [],
+                                        HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
+                                        UnitOfMeasurementId: getValues('UOM')?.value || '',
+                                        ExistingVendor: vendorList.join(',') || '',
+                                        QuotationPartId: updateButtonPartNoTable ? arr[0]?.QuotationPartId : "",
+                                    };
+                                    let PartSpecificationList = {};
+                                    let PartSpecification = [];
 
 
-                        }
+                                    if (item2?.BopSpecification?.length > 0) {
+                                        item2?.BopSpecification.forEach((item) => {
+
+                                            let specObj = {
+                                                Specification: item?.Specification,
+                                                Value: item?.Value,
+                                                LoggedInUserId: loggedInUserId()
+                                            };
+                                            PartSpecification.push(specObj);
+                                        });
+                                    }
+
+                                    // Populate PartSpecificationList object
+                                    PartSpecificationList = {
+                                        QuotationPartIdRef: tempBopObj?.BoughtOutPartChildId || 0,
+                                        PartSpecification: PartSpecification
+                                    };
+                                    tempBopObj.PartSpecificationList = PartSpecificationList;
+
+                                    tempBopArr.push(tempBopObj);
+                                }
+                            });
+                        });
+                        obj.PartList = [];
+                        obj.RawMaterialList = [];
+                        obj.BoughtOutPartList = tempBopArr;
+                        break;
+                    case 'tooling':
+
+                        obj.PartList = [];
+                        break;
+                    default:
+
+                        obj.PartList = updatedPartList;
+                        break;
+                }
+
+                let updatedArr = []
+                setIsLoader(true)
+                dispatch(saveRfqPartDetails(obj, (res) => {
+
+
+                    if (res?.data?.Result) {
                         setIsLoader(false)
 
-                        const newIdentityArray = _.uniq(_.map(updatedArr, 'QuotationPartId')); // Convert to number
+                        if (!updateButtonPartNoTable) {
+                            Toaster.success('Part Details has been added successfully.');
+                        } else {
+                            Toaster.success('Part Details has been updated successfully.');
+                        }
+
+                        setPartIdentity(res?.data?.Identity);
+                        // onResetPartNoTable();
+                        // setTableData([]);
+                        // setSpecificationList([]);
                         // 
-                        setUniquePartList(newIdentityArray);
+                        // 
+                        // updatedArr = arr.map(obj => {
+                        //     if (obj.PartId === assemblyPartNumber.value) {
+                        //         // 
+                        //         return { ...obj, QuotationPartId: res?.data?.Identity };
+                        //     }
+                        //     return obj;
+                        // });
+                        let updatedArr = arr.map(obj => {
+                            if (selectedOption === "RM") {
+                                if (obj.RawMaterialChildId === RawMaterialList[0]?.RawMaterialChildId) {
+                                    return { ...obj, QuotationPartId: res?.data?.Identity };
+                                }
+                            } else if (selectedOption === "componentAssembly") {
+                                if (obj.PartId === assemblyPartNumber.value) {
+                                    return { ...obj, QuotationPartId: res?.data?.Identity };
+                                }
+                            } else {
+                                if (obj.BoughtOutPartChildId === bopList[0]?.BoughtOutPartChildId) {
+                                    return { ...obj, QuotationPartId: res?.data?.Identity };
+                                }
+                            }
+                            return obj;
+                        });
 
-                    }))
 
-                    setTimeout(() => {
-                        setValue('partNumber', "");
-                        setRequirementDate("")
-                        setValue('RMName', "");
-                        setValue('RMGrade', "");
-                        setValue('RMSpecification', "");
-                        setValue("PartType", "");
-                        setValue('HavellsDesignPart', "");
-                        setValue("UOM", "")
-                        setValue("Description", "")
-                        setValue("TargetPrice", "")
+                        // State update should be outside the map function
+                        if (selectedOption === "RM") {
+                            setRmDataList(updatedArr);
+                        } else if (selectedOption === "componentAssembly") {
+                            setPartList(updatedArr);
+                        } else {
+                            setBopDataList(updatedArr);
+                        }
 
-                        setUpdateButtonPartNoTable(false);
-                        setEditQuotationPart(false);
-                        setIsPartDeailUpdate(false)
-                        setRMName('');
-                        setRMGrade('');
-                        setRMSpecification('');
-                        // setAssemblyPartNumber("")
-                        setTableData([]);
-                        setSpecificationList([]);
-                        setSopQuantityList([])
-                        setSOPDate('')
-                        setAssemblyPartNumber('')
-                        // setQuotationIdentity('');
-                        setStorePartsDetail([]);
-                        dispatch(clearGradeSelectList([]));
-                        dispatch(clearSpecificationSelectList([]));
-                        dispatch(setRfqPartDetails([]));
-                        setRawMaterialList([])
-                        setResetRmFields(true)
-                        setResetBopFields(true)
-                        setEditRawMaterialId("")
-                        setEditBopId("")
-                        setBopList([])
-                        // setPrNumber([])
-                        //dispatch(setQuotationIdForRfq(""))
-                    }, 200)
 
-                }));
-                // }
-            }
+                        // 
+
+
+                    }
+                    setIsLoader(false)
+
+                    const newIdentityArray = _.uniq(_.map(updatedArr, 'QuotationPartId')); // Convert to number
+                    // 
+                    setUniquePartList(newIdentityArray);
+
+                }))
+
+                setTimeout(() => {
+                    setValue('partNumber', "");
+                    setRequirementDate("")
+                    setValue('RMName', "");
+                    setValue('RMGrade', "");
+                    setValue('RMSpecification', "");
+                    setValue("PartType", "");
+                    setValue('HavellsDesignPart', "");
+                    setValue("UOM", "")
+                    setValue("Description", "")
+                    setValue("TargetPrice", "")
+
+                    setUpdateButtonPartNoTable(false);
+                    setEditQuotationPart(false);
+                    setIsPartDeailUpdate(false)
+                    setRMName('');
+                    setRMGrade('');
+                    setRMSpecification('');
+                    // setAssemblyPartNumber("")
+                    setTableData([]);
+                    setSpecificationList([]);
+                    setSopQuantityList([])
+                    setSOPDate('')
+                    setAssemblyPartNumber('')
+                    // setQuotationIdentity('');
+                    setStorePartsDetail([]);
+                    dispatch(clearGradeSelectList([]));
+                    dispatch(clearSpecificationSelectList([]));
+                    dispatch(setRfqPartDetails([]));
+                    setRawMaterialList([])
+                    setResetRmFields(true)
+                    setResetBopFields(true)
+                    setEditRawMaterialId("")
+                    setEditBopId("")
+                    setBopList([])
+                    // setPrNumber([])
+                    //dispatch(setQuotationIdForRfq(""))
+                }, 200)
+
+            }));
+            // }
         }
+
     };
 
     const onResetPartNoTable = () => {
@@ -2522,7 +2498,6 @@ function AddRfq(props) {
     * @method render
     * @description Renders the component
     */
-
     return (
         <div className="container-fluid">
             <div className="signup-form raise-rfq">
@@ -2531,7 +2506,8 @@ function AddRfq(props) {
                         <div className="shadow-lgg login-formg">
                             <div className="row">
                                 <div className="col-md-6">
-                                    <h3>{isViewFlag ? "View" : props?.isEditFlag ? "Update" : "Add"} RFQ
+                                    <h3>{isViewFlag ? "View" : props?.isEditFlag ? "Update" : "Add"} {showOnlyFirstModule && (showSendButton === PREDRAFT || showSendButton === "") ? "FRI" : "RFQ"}
+
                                         {!isViewFlag && <TourWrapper
                                             buttonSpecificProp={{ id: "Add_Rfq_Form" }}
                                             stepsSpecificProp={{
@@ -2878,7 +2854,7 @@ function AddRfq(props) {
                                                             register={register}
                                                             customClassName="costing-version"
                                                             options={renderListing("UOM")}
-                                                            mandatory={false}
+                                                            mandatory={true}
                                                             handleChange={(newValue) => handleChangeUOM(newValue)}
                                                             errors={errors?.UOM}
                                                             disabled={Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid}
@@ -3014,7 +2990,7 @@ function AddRfq(props) {
                                                     <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
                                                         <div className={`ag-theme-material ${!state ? "custom-min-height-208px" : ''}`}>
-                                                            {!showGrid || isLoader ? <LoaderCustom customClass={""} /> :
+                                                            {!showGrid || isLoader ? <LoaderCustom customClass={"bg-none"} /> :
                                                                 <AgGridReact
                                                                     defaultColDef={defaultColDef}
                                                                     floatingFilter={false}
@@ -3059,6 +3035,7 @@ function AddRfq(props) {
 
 
                                                                     {/* {(quationType === "BOP" || quationType === 'RM' || quationType === 'componentAssembly') && <AgGridColumn width={"190px"} field="UOM" cellClass="ag-grid-action-container" headerName="UOM" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>} */}
+                                                                    {selectedOption === "componentAssembly" && <AgGridColumn width={"230px"} field="HavellsDesignPart" headerName="Havells Design Part" ></AgGridColumn>}
 
                                                                     <AgGridColumn width={"230px"} field="UOM" headerName="UOM" ></AgGridColumn>
 
@@ -3303,7 +3280,9 @@ function AddRfq(props) {
                                                         disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                                     />
                                                 </Col>
-
+                                            </>
+                                            }
+                                            {isConditionalVisible &&
                                                 <Col md="3">
                                                     {visibilityMode?.value === DATE_STRING && <div className="inputbox date-section">
                                                         <div className="form-group">
@@ -3377,7 +3356,7 @@ function AddRfq(props) {
                                                         </div>
                                                     </div>}
                                                 </Col>
-                                            </>}
+                                            }
 
                                         </Row>
 
@@ -3493,16 +3472,16 @@ function AddRfq(props) {
                                                 {"Cancel"}
                                             </button>
 
-
-                                            <button type="button" className="submit-button save-btn mr-2" value="save"
-                                                // {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"     //RE
-                                                id="addRFQ_save"
-                                                onClick={(data, e) => handleSubmitClick(data, e, false)}
-                                                disabled={isViewFlag || showSendButton === PREDRAFT && disabledPartUid}>
-                                                <div className={"save-icon"}></div>
-                                                {"Save"}
-                                            </button>
-
+                                            {
+                                                <button type="button" className="submit-button save-btn mr-2" value="save"
+                                                    // {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"     //RE
+                                                    id="addRFQ_save"
+                                                    onClick={(data, e) => handleSubmitClick(data, e, false)}
+                                                    disabled={isViewFlag || showSendButton === PREDRAFT && disabledPartUid}>
+                                                    <div className={"save-icon"}></div>
+                                                    {"Save"}
+                                                </button>
+                                            }
 
                                             {!isDropdownDisabled && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
@@ -3574,12 +3553,12 @@ function AddRfq(props) {
                     </div >
                 </div >
             </div >
-
-            {/* </Drawer > */}
             {
-                (showPopup && vendorId) && <PopupMsgWrapper disablePopup={alreadyInDeviation} vendorId={vendorId}
+                showPopup && <PopupMsgWrapper disablePopup={alreadyInDeviation} vendorId={vendorId}
                     plantId={plantId} redirectPath={blocked ? "/initiate-unblocking" : ""} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={blocked ? `${popupMessage}` : `${MESSAGES.RFQ_ADD_SUCCESS}`} />
             }
+
+
         </div >
 
 

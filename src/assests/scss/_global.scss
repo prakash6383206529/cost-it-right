@@ -3727,4 +3727,22 @@ input:focus,
   input {
     height: 26px !important;
   }
+
+}
+
+.rfq-part-no-dropdown {
+  margin-left: 15px;
+  font-size: .625rem !important;
+  padding: 1px 5px 0;
+  min-height: inherit !important;
+  height: 21px !important;
+  line-height: 0;
+  border-radius: 50px;
+  font-weight: 500;
+  background-color: #cef2fb;
+  border-color: #7ee5ff;
+  color: #14697e;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+  vertical-align: top !important;
+  white-space: nowrap;
 }

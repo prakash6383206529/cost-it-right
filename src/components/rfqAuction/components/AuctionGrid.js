@@ -7,9 +7,10 @@ import NoContentFound from "../../common/NoContentFound";
 import { AuctionClosedId, AuctionLiveId, defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { useDispatch, useSelector } from "react-redux";
-import { searchNocontentFilter } from "../../../helper";
+import { addTime } from "../../../helper";
 import Button from "../../layout/Button";
 import { ShowBidWindow } from "../actions/RfqAuction";
+import DayTime from "../../common/DayTimeWrapper";
 
 const gridOptions = {};
 const AuctionGrid = (props) => {
@@ -64,7 +65,7 @@ const AuctionGrid = (props) => {
     };
 
     const viewBid = (QuotationAuctionId) => {
-        dispatch(ShowBidWindow({ showBidWindow: true, QuotationAuctionId: QuotationAuctionId }))
+        dispatch(ShowBidWindow({ showBidWindow: true, QuotationAuctionId: QuotationAuctionId, AuctionStatusId: auctionlistId }))
     }
 
     const buttonFormatter = (props) => {
@@ -77,9 +78,25 @@ const AuctionGrid = (props) => {
             title={"View"}
         />
     };
+    const dateAndTimeFormatter = (props, cell, row, enumObject, rowIndex) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY HH:mm') : '-';
+    };
+    const dateFormatter = (props, cell, row, enumObject, rowIndex) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+    };
+    const durationFormatter = (props, cell, row, enumObject, rowIndex) => {
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const totalTime = addTime(rowData.AuctionDuration, rowData.TotalAuctionExtensionDuration)
+        return totalTime ? totalTime : '-';
+    };
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         customNoRowsOverlay: NoContentFound,
+        dateAndTimeFormatter: dateAndTimeFormatter,
+        dateFormatter: dateFormatter,
+        durationFormatter: durationFormatter
     };
 
     return <>
@@ -126,6 +143,10 @@ const AuctionGrid = (props) => {
                         >
                             <AgGridColumn field="AuctionName" headerName="Auction Name" ></AgGridColumn>
                             <AgGridColumn field="RfqNumber" headerName="RFQ No." ></AgGridColumn>
+                            <AgGridColumn field="AuctionStartDateTime" headerName="Auction Start" cellRenderer={"dateAndTimeFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="AuctionEndDateTime" headerName="Auction End" cellRenderer={"dateAndTimeFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="AuctionDuration" headerName="Auction Duration" cellRenderer={"durationFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="AuctionStartDateTime" headerName="Date" cellRenderer={"dateFormatter"}></AgGridColumn>
                             <AgGridColumn field="Technology" headerName="Technology" ></AgGridColumn>
                             <AgGridColumn field="PartType" headerName="Part Type"  ></AgGridColumn>
                             <AgGridColumn field="PartNumber" headerName="Part No." ></AgGridColumn>
@@ -138,17 +159,15 @@ const AuctionGrid = (props) => {
                             <AgGridColumn field="BOPCategory" headerName="Category" ></AgGridColumn>
                             <AgGridColumn field="VendorName" headerName="Vendor Name" ></AgGridColumn>
                             <AgGridColumn field="Plant" headerName="Plant" ></AgGridColumn>
-                            <AgGridColumn field="Date" headerName="Date"></AgGridColumn>
-                            <AgGridColumn field="TotalAuctionExtensionDuration" headerName="Time"></AgGridColumn>
                             <AgGridColumn field="TotalVendor" headerName="Total Vendors" ></AgGridColumn>
                             <AgGridColumn field="ActiveVendors" headerName="Active Vendors" ></AgGridColumn>
                             <AgGridColumn field="BasePrice" headerName="Base Price" ></AgGridColumn>
                             <AgGridColumn field="RankOnePrice" headerName="Level One Price" ></AgGridColumn>
                             <AgGridColumn field="RankOneVendor" headerName="Level One Vendor" ></AgGridColumn>
-                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={180} headerName="Color Codes" marryChildren={true} >
-                                <AgGridColumn width={50} field="GreenCount" headerName="R" ></AgGridColumn>
+                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={180} headerName="Color" marryChildren={true} >
+                                <AgGridColumn width={50} field="GreenCount" headerName="G" ></AgGridColumn>
                                 <AgGridColumn width={50} field="YellowCount" headerName="Y" colId="GreenColor"></AgGridColumn>
-                                <AgGridColumn width={50} field="RedCount" headerName="B" colId="BlueColor"></AgGridColumn>
+                                <AgGridColumn width={50} field="RedCount" headerName="R" colId="BlueColor"></AgGridColumn>
                             </AgGridColumn>
                             {(auctionlistId === AuctionLiveId || auctionlistId === AuctionClosedId) && <AgGridColumn width={'80px'} field="QuotationPartId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>}
                         </AgGridReact>

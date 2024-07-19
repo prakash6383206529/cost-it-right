@@ -1507,7 +1507,7 @@ function Simulation(props) {
             //         return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
             //     }
             case RMDOMESTIC:
-                console.log('tempObject: ', tempObject);
+                
                 if (type?.label === "Indexed") {
                     return <ApplyPermission.Provider value={permissionData}>
                         <RMIndexationSimulation isCostingSimulation={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} />

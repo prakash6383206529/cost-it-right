@@ -24,7 +24,7 @@ import { AcceptableRMUOM } from "../../../config/masterData"
 import AddConditionCosting from "../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting"
 import HeaderTitle from "../../common/HeaderTitle"
 import AddOtherCostDrawer from "./AddOtherCostDrawer"
-import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears } from 'date-fns';
+import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears, isLeapYear, isAfter, getMonth, getQuarter, endOfQuarter, getDate, subDays } from 'date-fns';
 import { TestHeadless } from "ag-grid-community"
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
@@ -75,8 +75,7 @@ function AddRMFinancialDetails(props) {
         DataToChange: [],
         currency: [],
         oldDate: '',
-        isCostOpen: false,
-        isDateOpen: false,
+        isCostOpen: true,
         isAttachmentOpen: false,
         fromDate: '',
         toDate: '',
@@ -183,7 +182,6 @@ function AddRMFinancialDetails(props) {
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
             let Data = props?.DataToChange
-            console.log('here');
             setValue('UnitOfMeasurement', { label: Data.UnitOfMeasurementName, value: Data.UOM })
             setValue('cutOffPriceSelectedCurrency', Data?.CutOffPrice)
             setValue('cutOffPriceBaseCurrency', states.isImport ? Data?.CutOffPriceInINR : Data?.CutOffPrice)
@@ -234,7 +232,9 @@ function AddRMFinancialDetails(props) {
                 currencyValue: Data.CurrencyExchangeRate,
                 calculatedFactor: Data.CalculatedFactor,
                 otherCostTableData: Data?.RawMaterialOtherCostDetails,
-                isShowIndexCheckBox: Data?.IsIndexationDetails
+                isShowIndexCheckBox: Data?.IsIndexationDetails,
+                totalOtherCost: Data?.OtherNetCostConversion,
+                minDate: DayTime(Data?.EffectiveDate).$d
             }))
             dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
             dispatch(SetRawMaterialDetails({ states: state }, () => { }))
@@ -651,16 +651,27 @@ function AddRMFinancialDetails(props) {
 
         switch (frequencyOfSettlement) {
             case 'Weekly':
-                validToDate = addWeeks(date, 1);
+                // Add 6 days for a week's duration since we start counting from the fromDate
+                validToDate = addDays(date, 6);
                 break;
             case 'Fortnightly':
-                validToDate = addWeeks(date, 2);
+                // Add 13 days for a fortnight's duration
+                validToDate = addDays(date, 13);
                 break;
             case 'Monthly':
-                validToDate = endOfMonth(date);
+                if (getDate(date) === 1) {
+                    validToDate = endOfMonth(date);
+                } else {
+                    // Correctly adding a month and subtracting a day for non-1st start dates
+                    validToDate = subDays(addMonths(date, 1), 1);
+                }
                 break;
             case 'Quarterly':
-                validToDate = addQuarters(date, 1);
+                if (getDate(date) === 1 && [4, 7, 10, 1].includes(getMonth(date) + 1)) {
+                    validToDate = endOfQuarter(date);
+                } else {
+                    validToDate = subDays(addQuarters(date, 1), 1);
+                }
                 break;
             case 'Half Yearly':
                 validToDate = addMonths(date, 6);
@@ -680,12 +691,12 @@ function AddRMFinancialDetails(props) {
             ...prevState,
             fromDate: date,
             toDate: validToDate,
-            minDate: date,
             maxDate: validToDate,
         }));
 
         setValue('toDate', validToDate);
     };
+
     const handleToEffectiveDateChange = (date) => {
         setState(prevState => ({ ...prevState, toDate: date }));
     };
@@ -1078,8 +1089,6 @@ function AddRMFinancialDetails(props) {
                                             showMonthDropdown
                                             showYearDropdown
                                             dateFormat="DD/MM/YYYY"
-                                            minDate={state.minDate}
-                                            maxDate={state.maxDate}
                                             placeholder={!state.disableToDate ? "Select date" : ''}
                                             customClassName="withBorder"
                                             className="withBorder"
@@ -1142,10 +1151,10 @@ function AddRMFinancialDetails(props) {
                                 options={renderListing("uom")}
                                 rules={{ required: true }}
                                 defaultValue={state.UOM}
-                                mandatory={true}
+                                mandatory={state.isShowIndexCheckBox === true ? false : true}
                                 handleChange={handleUOM}
                                 customClassName="withBorder"
-                                disabled={state.isIndexationOpen === true ? true : isEditFlag || isViewFlag}
+                                disabled={state.isShowIndexCheckBox ? true : isEditFlag || isViewFlag}
                                 errors={errors.UnitOfMeasurement}
                             />
                         </Col>
@@ -1251,7 +1260,7 @@ function AddRMFinancialDetails(props) {
                                             required: true,
                                             validate: { positiveAndDecimalNumber, maxLength10, decimalLengthsix, number },
                                         }}
-                                        mandatory={true}
+                                        mandatory={state.isShowIndexCheckBox ? false : true}
                                         disabled={states.isImport || state.isShowIndexCheckBox ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                         className=" "
                                         customClassName=" withBorder"
@@ -1656,6 +1665,7 @@ function AddRMFinancialDetails(props) {
                                             className={"right mt-3 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
+                                            disabled={!getValues('BasicRateBaseCurrency')}
                                         />}
                                     </div>
                                 </Col>
@@ -1808,6 +1818,7 @@ function AddRMFinancialDetails(props) {
                                         disabled={false}
                                         mandatory={true}
                                         errors={errors && errors.effectiveDate}
+                                        minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : state.minDate}
                                     />
                                 </div>
                             </Col>
