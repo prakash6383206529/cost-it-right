@@ -7,6 +7,7 @@ import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId, DIECASTING, MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, LOGISTICS, CORRUGATEDBOX, FABRICATION, FERROUSCASTING, WIREFORMING, ELECTRONICSNAME, ELECTRIC, Assembly, ASSEMBLYNAME, PLASTICNAME,
+  RAWMATERIALINDEX,
 } from '../config/constants'
 import { IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
@@ -1142,7 +1143,7 @@ export function CheckApprovalApplicableMaster(number) {
 
 // THIS FUNCTION WILL BE USED IF WE FOR EDITING OF SIMUALTION,WE DON'T NEED ANY FILTER
 export function applyEditCondSimulation(master) {
-  const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE]
+  const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, RAWMATERIALINDEX]
   return ApplyEditCondition.includes(String(master))
 }
 
@@ -1342,7 +1343,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
 
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
-    
+
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
@@ -1634,3 +1635,99 @@ export const changeBOPLabel = (arr, bopReplacement) => {
 export const getFilteredDropdownOptions = (options, selectedValues) => {
   return options.filter(option => !selectedValues.includes(option.value));
 };
+
+export const extenstionTime = (length = 5, timeGap = 1, TimeCategory = 'min') => {
+  let temp = [];
+  for (let i = 1; i <= length; i++) {
+    if (i % timeGap === 0) {
+      temp.push({ label: `${i} (${TimeCategory})` })
+    }
+  }
+  return temp;
+}
+
+export function calculateEndDateTime(startDateTime, duration) {
+  if (!startDateTime || !duration) return null;
+
+  // Parse startDateTime
+  const startDate = new Date(startDateTime);
+
+  // Adjust for UTC+05:30 (India Standard Time)
+  const adjustedStartDate = new Date(startDate.getTime() + (5.5 * 60 * 60 * 1000));
+
+  // Parse duration (HH:MM)
+  const [durationHours, durationMinutes] = duration.split(':').map(Number);
+
+  // Calculate endDateTime
+  const endDateTime = new Date(adjustedStartDate);
+  endDateTime.setHours(adjustedStartDate.getHours() + durationHours);
+  endDateTime.setMinutes(adjustedStartDate.getMinutes() + durationMinutes);
+
+  // Format endDateTime as a string (YYYY-MM-DD HH:mm:ss)
+  const formattedEndDateTime = endDateTime.toISOString().slice(0, 19).replace('T', ' ');
+
+  return formattedEndDateTime;
+}
+export function calculateTime(input) {
+  // Check if input is a string
+  if (typeof input !== 'string') {
+    throw new Error('Input must be a string.');
+  }
+
+  // Extract the numeric value and the unit from the input string
+  const match = input.match(/^(\d+)\s+\(min\)$/);
+  if (match) {
+    // If input matches "<number> (min)"
+    const mins = parseInt(match[1]); // Extract the numeric value as minutes
+
+    // Format minutes to always have 2 digits
+    let minsStr = mins.toString().padStart(2, '0');
+
+    // Return the formatted time string in HH:MM format
+    return `00:${minsStr}`;
+  }
+
+  // Extract the numeric value and the unit from the input string
+  const match2 = input.match(/^(\d+(\.\d+)?)\s+\(hours?\)$/);
+  if (match2) {
+    // If input matches "<number> (hours)" or "<number> (hrs)"
+    const value = parseFloat(match2[1]); // Extract the numeric value
+    const hours = Math.floor(value); // Extract the integer part as hours
+    const mins = Math.round((value - hours) * 60); // Convert decimal part to minutes
+
+    // Format hours and minutes to always have 2 digits
+    let hoursStr = hours.toString().padStart(2, '0');
+    let minsStr = mins.toString().padStart(2, '0');
+
+    // Return the formatted time string in HH:MM format
+    return `${hoursStr}:${minsStr}`;
+  }
+
+  throw new Error('Invalid input format. Use "<number> (min)" or "<number> (hours)" or "<number> (hrs)".');
+}
+
+export function addTime(time1, time2) {
+  // Parse time1
+  const [hours1, mins1] = time1.split(':').map(num => parseInt(num));
+  // Parse time2
+  const [hours2, mins2] = time2.split(':').map(num => parseInt(num));
+
+  // Calculate total minutes
+  let totalMins = mins1 + mins2;
+  let totalHours = hours1 + hours2;
+
+  // Handle overflow of minutes into hours
+  if (totalMins >= 60) {
+    totalMins -= 60;
+    totalHours += 1;
+  }
+
+  // Format hours and minutes to always have 2 digits
+  let hoursStr = totalHours.toString().padStart(2, '0');
+  let minsStr = totalMins.toString().padStart(2, '0');
+
+  // Combine hours and minutes in HH:MM format
+  let timeStr = `${hoursStr}:${minsStr}`;
+
+  return timeStr;
+}

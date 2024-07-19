@@ -24,6 +24,7 @@ import {
   APPROVAL_CYCLE_STATUS_MASTER, BOP, BOP_MASTER_ID, MASTERS, NON_APPROVAL_CYCLE_STATUS_MASTER,
 } from "../../../config/constants";
 import { resetStatePagination } from '../../common/Pagination/paginationAction';
+import BOPManage from "./BOPManage";
 
 
 /* Create context for ApplyPermission */
@@ -234,6 +235,16 @@ const BOPMaster = () => {
                       toggle("3");
                     }}
                   >
+                    Manage Specification
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: state.activeTab === "4" })}
+                    onClick={() => {
+                      toggle("4");
+                    }}
+                  >
                     Manage SOB
                   </NavLink>
                 </NavItem>
@@ -242,10 +253,10 @@ const BOPMaster = () => {
                   <NavItem>
                     <NavLink
                       className={classnames({
-                        active: state.activeTab === "4",
+                        active: state.activeTab === "5",
                       })}
                       onClick={() => {
-                        toggle("4");
+                        toggle("5");
                       }}
                     >
                       Approval Status
@@ -282,6 +293,15 @@ const BOPMaster = () => {
 
                   {Number(state.activeTab) === 3 && (
                     <TabPane tabId="3">
+                      <BOPManage
+                        displayForm={displayImportForm}
+                        getDetails={getImportDetails}
+
+                      />
+                    </TabPane>
+                  )}
+                  {Number(state.activeTab) === 4 && (
+                    <TabPane tabId="4">
                       <SOBListing
                         displayForm={displayImportForm}
                         getDetails={getImportDetails}
@@ -290,8 +310,8 @@ const BOPMaster = () => {
                     </TabPane>
                   )}
 
-                  {Number(state.activeTab) === 4 && (
-                    <TabPane tabId="4">
+                  {Number(state.activeTab) === 5 && (
+                    <TabPane tabId="">
                       <CommonApproval
                         AddAccessibility={state.AddAccessibility}
                         EditAccessibility={state.EditAccessibility}

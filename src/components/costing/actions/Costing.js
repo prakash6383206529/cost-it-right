@@ -71,6 +71,7 @@ import {
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
   SET_RFQ_COSTING_TYPE,
   PARTSPECIFICATIONRFQDATA,
+  GET_SAP_EVALUATIONTYPE,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1113,6 +1114,7 @@ export function getRateByCapacityCriteria(data, callback) {
         callback(response)
       } else if (response?.status === 204) {
         Toaster.warning("There is no data for Freight.")
+        callback(response)
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
@@ -3035,4 +3037,26 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
         // Handle errors
       });
   };
+}
+/**
+ * @method getExternalIntegrationEvaluationType
+ * @description getExternalIntegrationEvaluationType
+ */
+export function getExternalIntegrationEvaluationType(data, callback) {
+
+  return (dispatch) => {
+    const request = axios.post(API.getEvaluationType, data, config())
+    request.then((response) => {
+      if (response.data.Result || response?.status === 204) {
+        dispatch({
+          type: GET_SAP_EVALUATIONTYPE,
+          payload: response?.status === 200 ? response?.data?.SelectList : [],
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
 }

@@ -31,8 +31,11 @@ import {
     SET_SIMULATION_APPLICABILITY,
     SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT,
     SET_SELECTED_CUSTOMER_SIMULATION,
-    GET_SELECTLIST_COSTING_HEADS
-
+    GET_SELECTLIST_COSTING_HEADS,
+    GET_RM_INDEXATION_SIMULATION_LIST,
+    GET_INDEXED_RM_FOR_SIMULATION,
+    GET_SIMULATED_RAW_MATERIAL_SUMMARY,
+    GET_RM_INDEXATION_COSTING_SIMULATION_LIST
 } from '../../../config/constants';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
 import { showBopLabel, updateBOPValues } from '../../../helper';
@@ -40,7 +43,8 @@ import { showBopLabel, updateBOPValues } from '../../../helper';
 const initialState = {
     selectedRowForPagination: [],
     costingSimulationList: [],
-    keysForDownloadSummary: []
+    keysForDownloadSummary: {},
+    indexedRMForSimulation: []
 };
 
 export default function SimulationReducer(state = initialState, action) {
@@ -312,6 +316,30 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 selectListCostingHead: action.payload
+            }
+        case GET_RM_INDEXATION_SIMULATION_LIST:
+            return {
+                ...state,
+                loading: false,
+                rmIndexationSimulationList: action.payload
+            }
+        case GET_INDEXED_RM_FOR_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                indexedRMForSimulation: action.payload
+            }
+        case GET_SIMULATED_RAW_MATERIAL_SUMMARY:
+            return {
+                ...state,
+                loading: false,
+                simulatedRawMaterialSummary: action.payload
+            }
+        case GET_RM_INDEXATION_COSTING_SIMULATION_LIST:
+            return {
+                ...state,
+                loading: false,
+                rmIndexationCostingSimulationList: action.payload
             }
         default:
             return state;

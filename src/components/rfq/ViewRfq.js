@@ -35,6 +35,8 @@ import { useTranslation } from 'react-i18next';
 import { agGridStatus, getGridHeight, isResetClick } from '../../actions/Common';
 import SingleDropdownFloationFilter from '../masters/material-master/SingleDropdownFloationFilter';
 import WarningMessage from '../common/WarningMessage';
+import RMCompareTable from './compareTable/RMCompareTable';
+import BOPCompareTable from './compareTable/BOPCompareTable';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -85,8 +87,14 @@ function RfqListing(props) {
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
     const [costingsDifferentStatus, setCostingsDifferentStatus] = useState(false)
     const agGridRef = useRef(null);
+    const [viewRMCompare, setViewRMCompare] = useState(false)
+    const [viewBOPCompare, setViewBOPCompare] = useState(false)
+    const [partType, setPartType] = useState('')
+
     const [matchedStatus, setMatchedStatus] = useState([])
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const { viewRmDetails } = useSelector(state => state.material)
+    const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
     let arr = []
 
     useEffect(() => {
@@ -97,6 +105,9 @@ function RfqListing(props) {
     useEffect(() => {
         if (rowData[0]?.QuotationId) {
             dispatch(setQuotationIdForRFQ(rowData[0]?.QuotationId))
+        }
+        if (rowData[0]?.PartType) {
+            setPartType(rowData[0]?.PartType)
         }
     }, [rowData[0]?.QuotationId])
 
@@ -114,17 +125,45 @@ function RfqListing(props) {
         }
     }, [statusColumnData])
     useEffect(() => {
-        let filteredArr = _.map(viewCostingData, 'costingId')
-        filteredArr.map(item => selectedRows.filter(el => {
-            if (el.CostingId === item) {
-                arr.push(el)
-            }
-        }))
+
+        let filteredArr = [];
+        let keyName, dataArray;
+
+        // Determine which data array and key to use based on partType
+        switch (partType) {
+            case 'Component':
+            case 'Assembly':
+                keyName = 'CostingId';
+                dataArray = viewCostingData;
+                break;
+            case 'BoughtOutPart':
+                keyName = 'BoughtOutPartId';
+                dataArray = viewBOPDetails;
+                break;
+            case 'RawMaterial':
+                keyName = 'RawMaterialId';
+                dataArray = viewRmDetails;
+                break;
+            default:
+                keyName = null;
+                dataArray = [];
+                break;
+        }
+
+        // Perform filtering and mapping
+        if (keyName && dataArray.length > 0) {
+            filteredArr = _.map(dataArray, keyName);
+            filteredArr.forEach(item => {
+                const matchedRows = selectedRows.filter(el => el[keyName] === item);
+                arr.push(...matchedRows);
+            });
+        }
+
         const isApproval = arr.filter(item => item.ShowApprovalButton)
         const disableApproveButton = isApproval.some(item => String(item.Status) === String(RETURNED));
         setDisableApproveRejectButton(isApproval.length > 0)
 
-    }, [viewCostingData, selectedCostingList, selectedRows])
+    }, [viewCostingData, selectedCostingList, selectedRows, viewBOPDetails, viewRmDetails, partType])
 
     /**
     * @method hideForm
@@ -139,20 +178,59 @@ function RfqListing(props) {
             }
             let uniqueShouldCostId = [];
             res?.data?.DataList && res?.data?.DataList.map(item => {
-                let unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'))
-                uniqueShouldCostId.push(...unique)
+                let unique
+                res?.data?.DataList && res?.data?.DataList.map(item => {
+                    switch (item.PartType) {
+                        case 'RawMaterial':
+                            unique = _.uniq(_.map(item.ShouldRawMaterial, 'RawMaterialId'))
+
+
+                            uniqueShouldCostId.push(...unique)
+                            break;
+                        case 'Component':
+                        case 'Assembly':
+                            unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'))
+
+                            uniqueShouldCostId.push(...unique)
+                            break;
+                        case 'BoughtOutPart':
+                            unique = _.uniq(_.map(item.ShouldBoughtOutPart, 'BoughtOutPartId'))
+                            uniqueShouldCostId.push(...unique)
+                            break;
+                        default:
+                            break;
+                    }
+
+                })
             })
             setUniqueShouldCostingId(uniqueShouldCostId)
 
             let requestObject = {}
             requestObject.PartIdList = _.uniq(_.map(res?.data?.DataList, 'PartId'))
             requestObject.PlantId = res?.data?.DataList[0]?.PlantId
-            let grouped_data = _.groupBy(res?.data?.DataList, 'PartNumber')                                        // GROUPING OF THE ROWS FOR SEPERATE PARTS
+            let partNumberFech;
+
+            // Grouping data based on PartType
+            res?.data?.DataList?.map(item => {
+                if (item.PartType === 'RawMaterial') {
+                    partNumberFech = 'RawMaterial';
+                } else if (item.PartType === 'Component' || item.PartType === 'Assembly') {
+                    partNumberFech = 'PartNumber';
+                } else if (item.PartType === 'BoughtOutPart') {
+                    partNumberFech = 'BoughtOutPart';
+                }
+            })
+            let grouped_data = _.groupBy(res?.data?.DataList, partNumberFech)                                        // GROUPING OF THE ROWS FOR SEPERATE PARTS
+
             let data = []
             for (let x in grouped_data) {
+
                 let seprateData = grouped_data[x]
-                seprateData[Math.round(seprateData.length / 2) - 1].PartNo = x;                                   // SHOWING PART NUMBER IN MIDDLE
+
+                seprateData[Math.round(seprateData.length / 2) - 1].PartNo = x;
                 seprateData[Math.round(seprateData.length / 2) - 1].NfrNo = seprateData[0].NfrNumber;             // SHOWING PART NUMBER IN MIDDLE
+                seprateData[Math.round(seprateData.length / 2) - 1].PartTypes = seprateData[0].PartType;
+                seprateData[Math.round(seprateData.length / 2) - 1].PRNo = seprateData[0].PRNumber;           // SHOWING PART NUMBER IN MIDDLE
                 seprateData[seprateData.length - 1].LastRow = true;                                               // ADDING LASTROW KEY FOR SHOWING SEPERATE BORDER
                 seprateData[Math.round(seprateData.length / 2) - 1].RowMargin = seprateData.length >= 2 && seprateData.length % 2 === 0 && 'margin-top';    // ADDING ROWMARGIN KEY IN THE GRID FOR EVEN ROW AND AS WELL AS PARTS HAVE TWO OR MORE COSTING
                 data.push(seprateData)
@@ -162,7 +240,21 @@ function RfqListing(props) {
             // SET ROW DATA FOR GRID
             data.map((item) => {
                 newArray = [...newArray, ...item]
-                let temp = item.filter(el => el.CostingId !== null)
+
+                let temp
+                switch (item[0].PartType) {
+                    case 'Component':
+                        temp = item.filter(el => el.CostingId !== null);
+                        break;
+                    case 'RawMaterial':
+                        temp = item.filter(el => el.RawMaterialId !== null);
+                        break;
+                    case 'BoughtOutPart':
+                        temp = item.filter(el => el.BoughtOutPartId !== null);
+                        break;
+
+                }
+
                 if (temp.length > 0) {
                     item[Math.round(item.length / 2) - 1].ShowCheckBox = true;                      // SET CHECKBOX FOR CREATED COSTINGS
                 }
@@ -651,18 +743,56 @@ function RfqListing(props) {
     const checkCostingSelected = (list, index) => {
         setIndex(index);
         setSelectedCostingList(list);
-        let filteredArr = _.map(viewCostingData, 'costingId');
         let arr = [];
-        filteredArr.map(item => selectedRows.filter(el => {
-            if (el.CostingId === item) {
-                arr.push(el);
-            }
-        }));
+        let filteredArr = [];
+        let matchedStatus
+        switch (partType) {
+            case 'Component':
+            case 'Assembly':
+                filteredArr = _.map(viewCostingData, 'costingId')
+                filteredArr.map(item => selectedRows.filter(el => {
+                    if (el.CostingId === item) {
+                        arr.push(el)
+                    }
+                }))
+                matchedStatus = list?.map(selectedItem => {
+                    const matchedItem = arr.find(item => item.CostingId === selectedItem);
+                    return matchedItem ? matchedItem.Status : null;
+                });
+                break
+            case 'BoughtOutPart':
+                filteredArr = _.map(viewBOPDetails, 'BoughtOutPartId')
+                filteredArr.map(item => selectedRows.filter(el => {
+                    if (el.BoughtOutPartId === item) {
+                        arr.push(el)
+                    }
+                }))
+                matchedStatus = list?.map(selectedItem => {
+                    const matchedItem = arr.find(item => item.BoughtOutPartId === selectedItem);
+                    return matchedItem ? matchedItem.Status : null;
+                });
+                break
 
-        const matchedStatus = list.map(selectedItem => {
-            const matchedItem = arr.find(item => item.CostingId === selectedItem);
-            return matchedItem ? matchedItem.Status : null;
-        });
+            case 'RawMaterial':
+
+                filteredArr = _.map(viewRmDetails, 'RawMaterialId')
+                filteredArr.map(item => selectedRows.filter(el => {
+                    if (el.RawMaterialId === item) {
+                        arr.push(el)
+                    }
+                }))
+                matchedStatus = list?.map(selectedItem => {
+                    const matchedItem = arr.find(item => item.RawMaterialId === selectedItem);
+                    return matchedItem ? matchedItem.Status : null;
+                });
+                break
+
+        }
+
+
+
+
+
         setMatchedStatus(matchedStatus);
         const uniqueStatuses = new Set(matchedStatus);
         if (uniqueStatuses.size > 1) {
@@ -854,6 +984,7 @@ function RfqListing(props) {
                 arr.push(item?.CostingId)
             }
         })
+
         setCompareButtonPressed(true)
         setCostingListToShow(arr)
         let temp = []
@@ -865,26 +996,48 @@ function RfqListing(props) {
 
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
-
-        setloader(true)
         setSelectedCostingList([])
-        dispatch(getMultipleCostingDetails(costingIdList, (res) => {
-            if (res) {
-                res?.map((item) => {
-                    tempObj = formViewData(item?.data?.Data)
-                    temp.push(tempObj[0])
-                    return null
-                })
-                let dat = [...temp]
-                let tempArrToSend = _.uniqBy(dat, 'costingId')
-                let arr = bestCostObjectFunction(tempArrToSend)
-                setMultipleCostingDetails([...arr])
-                dispatch(setCostingViewData([...arr]))
+        switch (partType) {
+            case 'Component':
+            case 'Assembly':
+                setloader(true)
+                dispatch(getMultipleCostingDetails(costingIdList, (res) => {
+                    if (res) {
+                        res?.map((item) => {
+                            tempObj = formViewData(item?.data?.Data)
+                            temp.push(tempObj[0])
+                            return null
+                        })
+                        let dat = [...temp]
+                        let tempArrToSend = _.uniqBy(dat, 'costingId')
+                        let arr = bestCostObjectFunction(tempArrToSend)
+                        setMultipleCostingDetails([...arr])
+                        dispatch(setCostingViewData([...arr]))
+
+                        setaddComparisonToggle(true)
+                        setloader(false)
+                        setViewRMCompare(false)
+                        setViewBOPCompare(false)
+                    }
+                    setCompareButtonPressed(false)
+                }))
+                break;
+            case 'RawMaterial':
+                setViewRMCompare(true)
                 setaddComparisonToggle(true)
-                setloader(false)
-            }
-            setCompareButtonPressed(false)
-        }))
+                setViewBOPCompare(false)
+                break
+            case 'BoughtOutPart':
+                setViewBOPCompare(true)
+                setViewRMCompare(false)
+
+                setaddComparisonToggle(true)
+                break
+            default:
+                break;
+        }
+
+
     }
 
 
@@ -898,8 +1051,10 @@ function RfqListing(props) {
     }
 
     const onRowSelect = (event) => {
+
         if (event.node.isSelected()) {
             const selectedRowIndex = event.node.rowIndex;
+
 
             setSelectedRowIndex(selectedRowIndex)
         } else {
@@ -910,18 +1065,37 @@ function RfqListing(props) {
 
 
         const selectedRows = gridApi?.getSelectedRows()
+
+
         let partNumber = []
 
-        selectedRows?.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
 
-        let data = partNumber.map(item => rowData.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+        let data
+        switch (selectedRows[0]?.PartType) {
+            case 'RawMaterial':
+                selectedRows?.map(item => partNumber.push(item.RawMaterial))
+                data = partNumber.map(item => rowData.filter(el => el.RawMaterial === item))             // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
+            case 'BoughtOutPart':
+                selectedRows?.map(item => partNumber.push(item.BoughtOutPart))
+                data = partNumber.map(item => rowData.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+
+                break;
+            case 'Component':
+                selectedRows?.map(item => partNumber.push(item.PartNo))
+                data = partNumber.map(item => rowData.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+
+
+                break;
+
+
+        }
+
         let newArray = []
 
         data.map((item) => {
             newArray = [...newArray, ...item]
             return null
         })
-
 
         if (selectedRows && selectedRows.length > 0 && selectedRows[0]?.IsVisibiltyConditionMet && selectedRows[0].IsShowNetPoPrice) {
             setisVisibiltyConditionMet(true)
@@ -930,7 +1104,9 @@ function RfqListing(props) {
         }
 
 
+
         setSelectedRows(newArray)
+
         if (selectedRows.length === 0) {
             setAddComparisonButton(true)
         } else {
@@ -967,6 +1143,9 @@ function RfqListing(props) {
 
     const partNumberFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+
+
         if (props?.rowIndex === selectedRowIndex) {
             props.node.setSelected(true)
         }
@@ -1018,6 +1197,21 @@ function RfqListing(props) {
         setaddComparisonToggle(false)
         setSelectedRowIndex('')
         gridApi.deselectAll()
+    }
+    const headerPartType = () => {
+
+        switch (partType) {
+            case 'RawMaterial':
+                return "RM Name"
+            case 'BoughtOutPart':
+                return "BOP Name"
+            case 'Component':
+            case 'Assembly':
+                return "Part Name"
+
+            default:
+                break;
+        }
     }
 
     return (
@@ -1074,7 +1268,7 @@ function RfqListing(props) {
                                                 id='ViewRfq_compare'
                                                 type="button"
                                                 className={'user-btn comparison-btn ml-1'}
-                                                disabled={addComparisonButton}
+                                                disabled={addComparisonButton || !partType}
                                                 onClick={addComparisonDrawerToggle}
                                             >
                                                 <div className="compare-arrows"></div>Compare</button>
@@ -1116,9 +1310,13 @@ function RfqListing(props) {
                                             onFirstDataRendered={onFirstDataRendered}
                                             enableBrowserTooltips={true}
                                         >
-                                            <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName='Part No' cellRenderer={'partNumberFormatter'}></AgGridColumn>
+
+                                            <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName={headerPartType()} cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="PartTypes" cellClass={cellClass} headerName="Part Type" width={150} cellRenderer={seperateHyphenFormatter}></AgGridColumn>
                                             {initialConfiguration.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
-                                            <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                            {partType !== 'BOP' && <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
+                                            {partType === 'BOP' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
+
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
@@ -1223,31 +1421,41 @@ function RfqListing(props) {
                 }
                 {
                     <div id='rfq-compare-drawer'>
-                        {addComparisonToggle && (
-                        <QuotationId.Provider value={data?.QuotationId}>
+                        {(!viewRMCompare && !viewBOPCompare) && addComparisonToggle && (
+                            <QuotationId.Provider value={data?.QuotationId}>
 
-                            <CostingSummaryTable
-                                viewMode={true}
-                                isRfqCosting={true}
-                                // costingID={approvalDetails.CostingId}
-                                approvalMode={true}
-                                // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
-                                simulationMode={false}
-                                uniqueShouldCostingId={uniqueShouldCostingId}
-                                costingIdExist={true}
-                                bestCostObjectFunction={bestCostObjectFunction}
-                                crossButton={hideSummaryHandler}
-                                costingIdList={costingListToShow}
-                                isFromViewRFQ={true}
-                                checkCostingSelected={checkCostingSelected}
-                                disableApproveRejectButton={disableApproveRejectButton}
-                                compareButtonPressed={compareButtonPressed}
-                                showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
-                                selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
-                                costingsDifferentStatus={costingsDifferentStatus}
-                            />
-                        </QuotationId.Provider>
+                                <CostingSummaryTable
+                                    viewMode={true}
+                                    isRfqCosting={true}
+                                    // costingID={approvalDetails.CostingId}
+                                    approvalMode={true}
+                                    // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
+                                    simulationMode={false}
+                                    uniqueShouldCostingId={uniqueShouldCostingId}
+                                    costingIdExist={true}
+                                    bestCostObjectFunction={bestCostObjectFunction}
+                                    crossButton={hideSummaryHandler}
+                                    costingIdList={costingListToShow}
+                                    isFromViewRFQ={true}
+                                    checkCostingSelected={checkCostingSelected}
+                                    disableApproveRejectButton={disableApproveRejectButton}
+                                    compareButtonPressed={compareButtonPressed}
+                                    showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
+                                    selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
+                                    costingsDifferentStatus={costingsDifferentStatus}
+                                />
+                            </QuotationId.Provider>
                         )}
+                        {viewRMCompare && <RMCompareTable
+                            checkCostingSelected={checkCostingSelected}
+                            selectedRows={selectedRows}
+                            uniqueShouldCostingId={uniqueShouldCostingId}
+                        />}
+                        {viewBOPCompare && <BOPCompareTable
+                            checkCostingSelected={checkCostingSelected}
+                            selectedRows={selectedRows}
+                            uniqueShouldCostingId={uniqueShouldCostingId}
+                        />}
                     </div>
                 }
                 {remarkHistoryDrawer &&
@@ -1265,7 +1473,7 @@ function RfqListing(props) {
                 }
 
             </div >
-            {addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0 && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
+            {addComparisonToggle && disableApproveRejectButton && (viewCostingData?.length > 0 || viewRmDetails?.length > 0 || viewBOPDetails?.length > 0) && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 {costingsDifferentStatus && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Actions cannot be performed on costings with different statuses.'} />}
                 <div className="col-sm-12 text-right bluefooter-butn">
                     <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
@@ -1276,7 +1484,7 @@ function RfqListing(props) {
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Reject'}
                     </button>
-                    {(matchedStatus.length === 0 || matchedStatus.includes(RECEIVED)) && (
+                    {(matchedStatus?.length === 0 || matchedStatus?.includes(RECEIVED)) && (
                         <button
                             disabled={costingsDifferentStatus}
                             type="button"

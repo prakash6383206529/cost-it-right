@@ -207,9 +207,7 @@ const IndexDataListing = (props) => {
     const confirmDelete = (ID) => {
         dispatch(
             deleteIndexDetailData(ID, (res) => {
-                if (res.status === 417 && res.data.Result === false) {
-                    Toaster.error(res.data.Message);
-                } else if (res && res.data && res.data.Result === true) {
+                if (res && res.data && res.data.Result === true) {
                     Toaster.success(MESSAGES.INDEX_DELETE_SUCCESS);
                     setState((prevState) => ({ ...prevState, dataCount: 0 }));
                     // getTableListData();
@@ -238,15 +236,11 @@ const IndexDataListing = (props) => {
 
     const buttonFormatter = (props) => {
         const { showExtraData } = state
-        const cellValue = props?.valueFormatted
-            ? props.valueFormatted
-            : props?.value;
-
         const rowData = props?.data?.CommodityIndexRateDetailId;
         let isEditable = false
         let isDeleteButton = false
         isEditable = permissions?.Edit;
-        isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions?.Delete);
+        isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions?.Delete && !props?.data?.IsAssociated);
 
         return (
             <>
@@ -285,7 +279,7 @@ const IndexDataListing = (props) => {
     const onGridReady = (params) => {
         setGridApi(params.api);
 
-        params.api.sizeColumnsToFit();
+        // params.api.sizeColumnsToFit();
         setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
         params.api.paginationGoToPage(0);
     };
@@ -428,6 +422,7 @@ const IndexDataListing = (props) => {
 * @description Renders buttons
 */
     const effectiveDateFormatter = (props) => {
+
         if (showExtraData && props?.rowIndex === 0) {
             return "Lorem Ipsum";
         } else {
@@ -447,12 +442,8 @@ const IndexDataListing = (props) => {
     const onBtExport = () => {
         let tempArr = [];
         tempArr = gridApi && gridApi?.getSelectedRows();
-        tempArr =
-            tempArr && tempArr.length > 0
-                ? tempArr
-                : rmIndexDataList
-                    ? rmIndexDataList
-                    : [];
+        let orignalCopyArr = _.cloneDeep(rmIndexDataList)
+        tempArr = tempArr && tempArr.length > 0 ? tempArr : orignalCopyArr ? orignalCopyArr : [];
         return returnExcelColumn(RMMATERIALISTING_DOWNLOAD_EXCEl, tempArr);
     };
 
@@ -461,11 +452,8 @@ const IndexDataListing = (props) => {
         temp =
             TempData &&
             TempData.map((item) => {
-                if (item.RMName === "-") {
-                    item.RMName = " ";
-                }
-                if (item.RMGrade === "-") {
-                    item.RMGrade = " ";
+                if (item.EffectiveDate?.includes('T')) {
+                    item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
                 }
                 return item;
             });

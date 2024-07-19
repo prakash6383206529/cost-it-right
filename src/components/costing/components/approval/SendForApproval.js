@@ -30,6 +30,7 @@ import { getApprovalTypeSelectList } from '../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { transformApprovalItem } from '../../../common/CommonFunctions'
 import { checkSAPPoPrice } from '../../../simulation/actions/Simulation'
+import SAPApproval from '../../../SAPApproval'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -346,7 +347,7 @@ const SendForApproval = (props) => {
 
 
   useEffect(() => {
-    if (approvalType.length > 0) {
+    if (approvalType?.length > 0) {
       handleDepartmentChange(getValues('dept'))
     }
   }, [approvalType])
@@ -757,6 +758,10 @@ const SendForApproval = (props) => {
       obj.MaterialGroup = SAPData.MaterialGroup?.label
       obj.DecimalOption = SAPData.DecimalOption?.value
       obj.ApprovalTypeId = approvalType
+      obj.InfoCategeory = data?.infoCategeory?.value ?? ''
+      obj.ValuationType = data?.evaluationType?.label ?? ''
+      obj.PlannedDelTime = data?.leadTime
+
 
       // debounce_fun()
       // 
@@ -1173,6 +1178,21 @@ const SendForApproval = (props) => {
                         />
                       </div>
                     </Row> */}
+                    {getConfigurationKey().IsSAPConfigured && !props.isRfq && <Row className="px-3">
+                      <Col md="12">
+                        <div className="left-border">{"SAP-Push Details"}</div>
+                      </Col>
+                      <div className="w-100">
+                        <SAPApproval
+                          Controller={Controller}
+                          register={register}
+                          errors={errors}
+                          control={control}
+                          plantCode={viewApprovalData[0]?.plantCode ?? EMPTY_GUID}
+                        />
+                      </div>
+                    </Row>}
+
                     <Row className="px-3">
                       <Col md="4">
                         <div className="left-border">{"Approver"}</div>

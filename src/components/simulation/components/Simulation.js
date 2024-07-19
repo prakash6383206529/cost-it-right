@@ -7,9 +7,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability, setCustomerForSimulation, getCostingHeadsList } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID, MACHINE, MASTERS, VBCTypeId, ZBCTypeId, CBCTypeId, ZBC } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID, MACHINE, MASTERS, VBCTypeId, ZBCTypeId, CBCTypeId, ZBC, RAWMATERIALINDEX } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION } from '../../../config/masterData';
+import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, indexationDropdown } from '../../../config/masterData';
 import { COMBINED_PROCESS } from '../../../config/constants';
 import { CombinedProcessSimulation } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
@@ -22,7 +22,7 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { allEqual, applyEditCondSimulation, checkForNull, checkPermission, getFilteredData, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
+import { allEqual, applyEditCondSimulation, checkForNull, checkPermission, getConfigurationKey, getFilteredData, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
 import { ProcessListingSimulation } from './ProcessListingSimulation';
@@ -43,6 +43,8 @@ import TooltipCustom from '../../common/Tooltip';
 import { getClientSelectList } from '../../masters/actions/Client';
 import Toaster from '../../common/Toaster';
 import { simulationContext } from '.';
+import RMIndexationSimulationListing from './SimulationPages/RMIndexationSimulationListing';
+import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -59,6 +61,7 @@ function Simulation(props) {
     const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting, selectListCostingHead } = useSelector(state => state.simulation)
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const [master, setMaster] = useState([])
+
     const [technology, setTechnology] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
     const [showUploadDrawer, setShowDrawer] = useState(false)
@@ -96,6 +99,8 @@ function Simulation(props) {
     const [costingHead, setCostingHead] = useState({});
     const [showDropdown, setShowDropdown] = useState({});
     const [plant, setPlant] = useState('')
+    const [type, setType] = useState('')
+    const [rawMaterialIds, setRawMaterialIds] = useState([])
 
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -227,11 +232,15 @@ function Simulation(props) {
         setValue('Applicability', '')
         setShowCustomer(false)
         setShowCustomer(false)
+        setType('')
+        setValue('Type', '')
         if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value)) && checkForNull(value.value) !== ASSEMBLY_TECHNOLOGY_MASTER && value.value !== COMBINED_PROCESS) {
             setSelectionForListingMasterAPI('Master')
             if (checkForNull(value.value) === Number(EXCHNAGERATE)) {
                 // setShowTokenDropdown(false)
                 setShowApplicabilityDropdown(true)
+            } else if (checkForNull(value.value) === Number(RAWMATERIALINDEX)) {
+                setShowMasterList(false)
             } else {
                 setShowTokenDropdown(true)
                 setShowMasterList(true)
@@ -302,6 +311,13 @@ function Simulation(props) {
             }
         }, 200);
     }
+    const handleType = (value) => {
+        setShowMasterList(false)
+        setTimeout(() => {
+            setShowMasterList(true)
+        }, 100);
+        setType(value)
+    }
 
     const handleTechnologyChange = (value) => {
 
@@ -312,7 +328,7 @@ function Simulation(props) {
         setPlant('')
         setValue('Plant', '')
         setShowDropdown({})
-        if ((IdForMultiTechnology.includes(String(value?.value)) && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS)) {
+        if ((IdForMultiTechnology.includes(String(value?.value)) && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS) || Number(master.value) === Number(RMDOMESTIC)) {
             setTechnology(value)
             setShowMasterList(false)
             dispatch(setTechnologyForSimulation(value))
@@ -695,9 +711,14 @@ function Simulation(props) {
             // return <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} assemblyTechnology={true} technology={technology} closeSimulation={closeSimulation} />
             return <AssemblySimulationListing isOperation={true} cancelRunSimulation={cancelRunSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology} master={master.value} rowCount={rowCount} tokenForMultiSimulation={{}} cancelViewPage={cancelViewPage} showHide={showHide} cancelSimulationListingPage={cancelSimulationListingPage} isCustomer={isCustomer} customer={customer} plant={plant} vendor={vendor} costingHead={costingHead} />
         } else {
+
             switch (value.value) {
                 case RMDOMESTIC:
-                    return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
+                    if (type?.label === "Indexed") {
+                        return (<RMIndexationSimulationListing isCostingSimulation={true} technology={technology.value} master={master.value} rawMaterialIds={rawMaterialIds} isSimulation={true} type={type} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
+                    } else {
+                        return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
+                    }
                 case RMIMPORT:
                     return (<RMImportListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
                 case MACHINERATE:
@@ -714,7 +735,8 @@ function Simulation(props) {
                     return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={SURFACETREATMENT} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' stopAPICall={false} approvalStatus={APPROVED_STATUS} />)
                 case COMBINED_PROCESS:
                     return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} customerId={customer.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
-
+                case RAWMATERIALINDEX:
+                    return (<RMIndexationSimulationListing master={master.value} rawMaterialIds={rawMaterialIds} isSimulation={true} type={type} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
                 // case BOPIMPORT:
                 //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
                 // case BOPIMPORT:
@@ -887,6 +909,15 @@ function Simulation(props) {
 
             return temp
         }
+        if (label === 'type') {
+            let tempList = [...indexationDropdown]
+            tempList && tempList.map((item) => {
+                if (item.value === '0') return false
+                temp.push({ label: item.label, value: item.value })
+                return null
+            })
+            return temp
+        }
     }
 
     const closeSimulation = () => {
@@ -946,6 +977,8 @@ function Simulation(props) {
 
     const editTable = (Data, length) => {
         let uniqeArray = _.uniq(Data)
+        const rawMaterialIds = uniqeArray.map(item => item.RawMaterialId)
+        setRawMaterialIds(rawMaterialIds)
         dispatch(setSelectedRowForPagination(uniqeArray))
         setTableData(uniqeArray)
         // alert('Hello')
@@ -1415,9 +1448,12 @@ function Simulation(props) {
             //     }
             //     break;
             case String(COMBINED_PROCESS):                //RE
+            case String(RAWMATERIALINDEX):
                 if (Data && Data.length === 0) {
+
                     setEditWarning(true)
                 } else {
+
                     setEditWarning(false)
                 }
                 break;
@@ -1433,6 +1469,7 @@ function Simulation(props) {
             Toaster.warning("Please select at least one record.")
             return false
         }
+
         setShowEditTable(true)
         setShowMasterList(false)
     }
@@ -1454,6 +1491,7 @@ function Simulation(props) {
     }
 
     const editMasterPage = (page) => {
+
         // let tempObject = token && token.map((item) => {
         //     let obj = {}
         //     obj.SimulationId = item.value
@@ -1462,10 +1500,23 @@ function Simulation(props) {
         // })
         let tempObject = tokenForSimulation?.length !== 0 ? [{ SimulationId: tokenForSimulation?.value }] : []
         switch (page) {
+            // case RMDOMESTIC:
+            //     if (type?.label === "Indexed") {
+            //         return (<RMIndexationSimulationListing isCostingSimulation={true} technology={technology.value} master={master.value} rawMaterialIds={rawMaterialIds} isSimulation={true} type={type} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
+            //     } else {
+            //         return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
+            //     }
             case RMDOMESTIC:
-                return <ApplyPermission.Provider value={permissionData}>
-                    <RMSimulation isDomestic={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />
-                </ApplyPermission.Provider> //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                console.log('tempObject: ', tempObject);
+                if (type?.label === "Indexed") {
+                    return <ApplyPermission.Provider value={permissionData}>
+                        <RMIndexationSimulation isCostingSimulation={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} />
+                    </ApplyPermission.Provider>
+                } else {
+                    return <ApplyPermission.Provider value={permissionData}>
+                        <RMSimulation isDomestic={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />
+                    </ApplyPermission.Provider> //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                }
             case RMIMPORT:
                 return <RMSimulation isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
@@ -1494,6 +1545,8 @@ function Simulation(props) {
                 } else {
                     return ''
                 }
+            case String(RAWMATERIALINDEX):
+                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} />
             default:
                 break;
         }
@@ -1566,12 +1619,19 @@ function Simulation(props) {
     }
 
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
-    if (props?.isFromApprovalListing === true) {
+    if (props?.isFromApprovalListing === true && String(props?.master) !== RAWMATERIALINDEX) {
         const simulationId = props?.approvalProcessId;
         const masterId = props?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
 
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={props?.isFromApprovalListing} statusForLinkedToken={props?.statusForLinkedToken} />
+    }
+    if (props?.isFromApprovalListing === true && String(props?.master) === RAWMATERIALINDEX) {
+        const simulationId = props?.approvalProcessId;
+        const masterId = props?.master
+        // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
+
+        return <RMIndexationSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={props?.isFromApprovalListing} statusForLinkedToken={props?.statusForLinkedToken} isImpactedMaster={false} />
     }
 
     return (
@@ -1647,6 +1707,7 @@ function Simulation(props) {
                                         </div>
                                     </div>
                                 }
+
                                 {((String(selectedMasterForSimulation?.value) !== BOPDOMESTIC && String(selectedMasterForSimulation?.value) !== BOPIMPORT) ? true :
                                     (association !== '' && association?.value !== NON_ASSOCIATED)) &&
                                     getTechnologyForSimulation.includes(master.value) &&
@@ -1667,6 +1728,28 @@ function Simulation(props) {
                                                 handleChange={handleTechnologyChange}
                                                 errors={errors.Technology}
                                                 disabled={isTechnologyDisable}
+                                            />
+                                        </div>
+                                    </div>
+                                }
+                                {
+                                    ((String(master?.value) === RAWMATERIALINDEX) || ((String(master?.value) === RMDOMESTIC || String(master?.value) === RMIMPORT) && getConfigurationKey()?.IsShowMaterialIndexation)) &&
+                                    <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
+                                        <div className="flex-fills label">Type:</div>
+                                        <div className="flex-fills hide-label pl-0 d-flex mr-3">
+                                            <SearchableSelectHookForm
+                                                label={''}
+                                                name={'Type'}
+                                                placeholder={'Select'}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={type.length !== 0 ? type : ''}
+                                                options={renderListing('type')}
+                                                mandatory={false}
+                                                handleChange={handleType}
+                                                errors={errors.Type}
                                             />
                                         </div>
                                     </div>
@@ -1769,7 +1852,7 @@ function Simulation(props) {
                                     </div>
                                 }
                                 {
-                                    showTokenDropdown &&
+                                    (showTokenDropdown && !(selectedMasterForSimulation?.value === RAWMATERIALINDEX)) &&
                                     <div className="d-inline-flex justify-content-start align-items-center zindex-unset">
                                         <div className="flex-fills label">Token:</div>
                                         <div className="flex-fills hide-label pl-0">
@@ -1819,7 +1902,7 @@ function Simulation(props) {
                                                 {/* {true ? '' : renderColumn(master.label)} */}
                                                 {!editWarning ? renderColumn(master.value) : ''}
                                             </ExcelFile>
-                                            <button type="button" id='simulation-upload' className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
+                                            {!(master?.value === RAWMATERIALINDEX) && <button type="button" id='simulation-upload' className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>}
                                         </>
                                     }
                                     {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}

@@ -133,7 +133,11 @@ class AddBOPImport extends Component {
       toolTipTextNetCost: {},
       toolTipTextBasicPrice: {},
       IsBreakupBoughtOutPart: false,
-      SAPCode: []
+      IsSAPCodeHandle: false,
+      IsSAPCodeUpdated: false,
+      IsSapCodeEditView: true,
+      IsEditBtnClicked: false,
+      SapCode: '',
     }
   }
 
@@ -300,7 +304,7 @@ class AddBOPImport extends Component {
       'BoughtOutPartName',
       'BOPCategory',
       'Specification',
-      "SAPCode",
+      "SAPPartNumber",
       'Plant',
       "UOM",
       "cutOffPrice",
@@ -547,6 +551,8 @@ class AddBOPImport extends Component {
               Technology: { label: Data.TechnologyName, value: Data.TechnologyId },
               currencyValue: Data.CurrencyExchangeRate,
               IsBreakupBoughtOutPart: Data.IsBreakupBoughtOutPart,
+              IsSAPCodeUpdated: Data.IsSAPCodeUpdated,
+              SAPPartNumber: Data.SAPPartNumber !== undefined ? { label: Data.SAPPartNumber, value: Data.SAPPartNumber } : []
             }, () => {
               setTimeout(() => {
                 this.setInStateToolTip()
@@ -983,6 +989,26 @@ class AddBOPImport extends Component {
     }
     this.setState({ effectiveDate: date, dateCount: this.state.dateCount + 1 });
   };
+
+  /**
+      * @method handleChangeSapCode
+      * @description used SapCode handler
+      */
+
+  handleChangeSapCode = (e) => {
+
+    // Check if the input value is not empty
+    const isInputNotEmpty = e.target.value.trim() !== '';
+
+    // Update the state based on whether the input is empty or not
+    this.setState({
+      SapCode: e.target.value,
+      IsSAPCodeHandle: isInputNotEmpty ? true : false
+    }, () => {
+      // Callback function after setState is done
+
+    });
+  }
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -1109,6 +1135,28 @@ class AddBOPImport extends Component {
     this.setState({ showPopup: false })
   }
   /**
+     * @method handleSubmitOfSapCode
+     * @description used to update sapcode 
+     */
+  handleSubmitOfSapCode = (onSubmitSapCode) => {
+
+    if (!this.state.isEditBtnClicked) {
+      this.setState({
+        IsSapCodeEditView: false,
+        isEditBtnClicked: true
+      });
+    } else {
+      if (this.state.isEditFlag) {
+        // Check if IsSAPCodeHandle is true before calling onSubmitSapCode
+        if (this.state.IsSAPCodeHandle) {
+          onSubmitSapCode();
+        }
+      } else {
+        // Handle the else case if needed
+      }
+    }
+  };
+  /**
   * @method onSubmit
   * @description Used to Submit the form
   */
@@ -1116,7 +1164,7 @@ class AddBOPImport extends Component {
     const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate,
       UOM, DataToChange, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible,
       Technology, FinalConditionCostBaseCurrency, FinalConditionCostSelectedCurrency, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, FinalNetCostSelectedCurrency, FinalNetCostBaseCurrency,
-      FinalBasicRateBaseCurrency, FinalBasicRateSelectedCurrency, currencyValue, DropdownChanged } = this.state;
+      FinalBasicRateBaseCurrency, FinalBasicRateSelectedCurrency, currencyValue, DropdownChanged, IsSAPCodeUpdated, IsSAPCodeHandle } = this.state;
     const { fieldsObj, isBOPAssociated } = this.props
 
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
@@ -1143,7 +1191,7 @@ class AddBOPImport extends Component {
     formData.BoughtOutPartName = values?.BoughtOutPartName
     formData.CategoryId = BOPCategory.value
     formData.Specification = values?.Specification
-    formData.SAPCode = values.SAPCode
+    formData.SAPPartNumber = values.SAPPartNumber
     formData.Vendor = vendorName.value
     formData.Source = values?.Source
     formData.SourceLocation = sourceLocation.value
@@ -1166,7 +1214,8 @@ class AddBOPImport extends Component {
     formData.TechnologyName = Technology?.label
     formData.TechnologyId = Technology?.value
     formData.IsBreakupBoughtOutPart = isTechnologyVisible
-
+    formData.IsSAPCodeUpdated = IsSAPCodeUpdated
+    formData.IsSAPCodeHandle = IsSAPCodeHandle ? true : false
     formData.BasicRate = FinalBasicRateSelectedCurrency
     formData.BasicRateConversion = FinalBasicRateBaseCurrency
 
@@ -1198,6 +1247,8 @@ class AddBOPImport extends Component {
 
       if (((files ? JSON.stringify(files) : []) === (DataToChange?.Attachements ? JSON.stringify(DataToChange?.Attachements) : [])) &&
         ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
+        ((DataToChange?.SAPPartNumber ? DataToChange?.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : ''))
+        &&
         ((DataToChange?.Source ? String(DataToChange?.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
         ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
         checkForNull(basicPriceSelectedCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) &&
@@ -1237,7 +1288,18 @@ class AddBOPImport extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-            this.cancel('submit');
+            //this.cancel('submit');
+            if (!this.state.isEditBtnClicked) {
+              this.cancel('submit');
+            }
+            else {
+              //call get api after sap code has updated.
+              this.getDetails();
+              this.setState({
+                IsSapCodeEditView: true,
+                IsSAPCodeHandle: false
+              })
+            }
           }
         })
         this.setState({ updatedObj: formData })
@@ -1329,7 +1391,7 @@ class AddBOPImport extends Component {
 
     const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1639,19 +1701,32 @@ class AddBOPImport extends Component {
                             )
                           }
 
-                          <Col md="3">
-                            <Field
-                              label={`SAP Code`}
-                              name={"SAPCode"}
-                              type="text"
-                              placeholder={isViewMode ? "-" : "Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, hashValidation]}
-                              component={renderText}
-                              disabled={isEditFlag ? true : false}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col>
+                          {getConfigurationKey().IsSAPConfigured &&
+
+                            <Col md="3">
+                              <div className="d-flex align-items-center">
+                                <Field
+                                  label={`SAP Code`}
+                                  name={"SAPPartNumber"}
+                                  id='bop_SAP_Code_form_zero_based'
+                                  type="text"
+                                  placeholder={isViewMode ? "-" : "Enter"}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkSpacesInString, hashValidation]}
+                                  component={renderText}
+                                  disabled={IsSapCodeEditView && isEditFlag}
+                                  value={this.state.SapCode}
+                                  onChange={this.handleChangeSapCode}
+                                  className=" "
+                                  customClassName=" withBorder w-100 mb-0"
+                                />
+                                {!IsSAPCodeUpdated && isEditFlag && (
+                                  <Button className={"Edit ms-2 mt-2"} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} />
+                                )}
+                              </div>
+                              {IsSAPCodeHandle && isEditFlag && (
+                                <WarningMessage dClass={'d-flex justify-content-end'} message={`${MESSAGES.SAP_CODE_WARNING}`} />
+                              )}
+                            </Col>}
                         </Row >
 
                         <Row>
@@ -2211,7 +2286,7 @@ class AddBOPImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate', 'BasicRateSelectedCurrency', 'BoughtOutPartName');
+  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate', 'BasicRateSelectedCurrency', 'BoughtOutPartName', 'SAPPartNumber');
 
   const { bopCategorySelectList, bopData, IncoTermsSelectList, PaymentTermsSelectList } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList,
@@ -2233,6 +2308,7 @@ function mapStateToProps(state) {
       NumberOfPieces: bopData?.NumberOfPieces,
       NetLandedCost: bopData.NetLandedCostSelectedCurrency,
       Remark: bopData.Remark,
+      SAPPartNumber: bopData?.SAPPartNumber
     }
   }
 

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllApprovalUserFilterByDepartment, getReasonSelectList, } from '../../../costing/actions/Approval'
+import { getAllApprovalUserFilterByDepartment, getReasonSelectList, setSAPData } from '../../../costing/actions/Approval'
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { BOPIMPORT, EMPTY_GUID, EXCHNAGERATE, RMIMPORT } from '../../../../config/constants'
+import { BOPIMPORT, EMPTY_GUID, EXCHNAGERATE, RAWMATERIALINDEX, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import { debounce } from 'lodash'
@@ -17,6 +17,7 @@ import { getUsersSimulationTechnologyLevelAPI } from '../../../../actions/auth/A
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import ApproveRejectUI from './ApproveRejectUI'
 import { checkFinalUser } from '../../actions/Costing'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 function SimulationApproveReject(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -51,13 +52,15 @@ function SimulationApproveReject(props) {
   const [finalLevelUser, setFinalLevelUser] = useState(false);
   const [showMessage, setShowMessage] = useState()
   const [disableReleaseStrategy, setDisableReleaseStrategy] = useState(false)
-  const [isDisableSubmit, setIsDisableSubmit] = useState(false)                     //RE
+  const [isDisableSubmit, setIsDisableSubmit] = useState(false)
+  const [isSaveSimualtionCalled, setIsSavedSimulationCalled] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const SAPData = useSelector(state => state.approval.SAPObj)
+
   const [approverIdList, setApproverIdList] = useState([])
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
@@ -107,7 +110,7 @@ function SimulationApproveReject(props) {
         dropzone.current.files = filesList
 
       }
-      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing) {
+      if (vendorId !== null && (SimulationTechnologyId !== null || String(SimulationTechnologyId) !== RAWMATERIALINDEX) && type === 'Sender' && !isSimulationApprovalListing) {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
     }, 300);
@@ -153,8 +156,10 @@ function SimulationApproveReject(props) {
   const checkPermission = (costingTypeId) => {
     let levelDetailsTemp = ''
     levelDetailsTemp = userTechnologyLevelDetails(costingTypeId, technologyLevelsList?.TechnologyLevels ? technologyLevelsList?.TechnologyLevels : [])
+    console.log('levelDetailsTemp: ', levelDetailsTemp);
     if (levelDetailsTemp?.length !== 0) {
       setLevelDetails(levelDetailsTemp)
+      console.log("COMIG HERE");
       getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
     } else {
       if (getConfigurationKey().IsReleaseStrategyConfigured && props?.showApprovalTypeDropdown) {
@@ -215,18 +220,25 @@ function SimulationApproveReject(props) {
   }
 
   const getApproversList = (departId, departmentName, levelDetailsTemp, dataInFieldsTemp) => {
+
     let values = []
     let approverDropdownValue = []
     let count = 0
+
     selectedRowData && selectedRowData.map(item => {
+
       if (!(values.includes(item.SimulationTechnologyId))) {
+
         values.push(item.SimulationTechnologyId)
       }
+
       return null
     })
     if (!IsFinalLevel) {
+
       if (values.length > 1) {
         values.map((item, index) => {
+          console.log('item: ', item);
           let obj = {
             LoggedInUserId: userData.LoggedInUserId,
             DepartmentId: departId,
@@ -235,7 +247,7 @@ function SimulationApproveReject(props) {
             TechnologyId: item,
             ReasonId: 0,
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
-            plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : EMPTY_GUID
+            plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID
           }
           let approverIdListTemp = []
           dispatch(getAllSimulationApprovalList(obj, (res) => {
@@ -308,6 +320,7 @@ function SimulationApproveReject(props) {
             technologyIdTemp = EXCHNAGERATE
           }
         } else {
+          console.log(technologyId, "IN ELSE");
           technologyIdTemp = technologyId
         }
 
@@ -318,7 +331,7 @@ function SimulationApproveReject(props) {
           TechnologyId: technologyIdTemp,
           ReasonId: selectedRowData && selectedRowData[0].ReasonId ? selectedRowData[0].ReasonId : 0,
           ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData && selectedRowData[0]?.ApprovalTypeId ? selectedRowData[0]?.ApprovalTypeId : appTypeId),
-          plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : EMPTY_GUID
+          plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID
         }
         dispatch(getAllSimulationApprovalList(obj, (res) => {
           const Data = res?.data?.DataList[1] ? res?.data?.DataList[1] : []
@@ -369,11 +382,16 @@ function SimulationApproveReject(props) {
     if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
       let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
       //THIS CONDITION IS FOR SAVE SIMULATION
+      setLoader(true)
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res?.data?.Result) {
-          setLoader(true)
+          reactLocalStorage.setObject('isSaveSimualtionCalled', true)
           Toaster.success('Simulation saved successfully.')
-          setLoader(false)
+          setTimeout(() => {
+
+            setLoader(false)
+          }, 500);
+
         }
       }))
     }
@@ -467,7 +485,7 @@ function SimulationApproveReject(props) {
       senderObj.SenderLevel = levelDetails?.Level
       senderObj.SenderId = userLoggedIn
       senderObj.SenderRemark = remark
-      senderObj.EffectiveDate = DayTime(simulationDetail?.EffectiveDate).format('YYYY/MM/DD HH:mm')
+      senderObj.EffectiveDate = simulationDetail?.EffectiveDate ? DayTime(simulationDetail?.EffectiveDate).format('YYYY/MM/DD HH:mm') : null
       senderObj.LoggedInUserId = userLoggedIn
       senderObj.ApprovalTypeId = costingTypeIdToApprovalTypeIdFunction(dataInFields?.ApprovalType?.value)
       let temp = []
@@ -489,13 +507,19 @@ function SimulationApproveReject(props) {
       senderObj.Attachements = updatedFiles
       senderObj.LinkedTokenNumber = linkingTokenDropDown.value
       senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false      // IF WE SEND MULTIPLE TOKENS FOR SIMULATION THEN THIS WILL BE TRUE (requirement)
+      senderObj.InfoCategeory = SAPData?.infoCategory
+      senderObj.ValuationType = SAPData?.evaluationType
+      senderObj.PlannedDelTime = SAPData?.leadTime
+
 
       //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
       dispatch(simulationApprovalRequestBySender(senderObj, res => {
         setIsDisable(false)
         if (res?.data?.Result) {
           Toaster.success('Simulation token has been sent for approval.')
+          reactLocalStorage.setObject('isSaveSimualtionCalled', false)
           props.closeDrawer('', 'submit')
+          dispatch(setSAPData({}))
         }
       }))
     }
@@ -539,7 +563,7 @@ function SimulationApproveReject(props) {
         TechnologyId: technologyId,
         Mode: 'simulation',
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId),
-        plantId: selectedRowData && selectedRowData[0].PlantId ? selectedRowData[0].PlantId : simulationDetail && simulationDetail.AmendmentDetails ? simulationDetail.AmendmentDetails.PlantId : EMPTY_GUID
+        plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID
       }
       dispatch(checkFinalUser(requestObj, res => {
         if (res && res.data && res.data.Result) {
@@ -592,6 +616,7 @@ function SimulationApproveReject(props) {
         fileDataCallback={fileDataCallback}
         isSimulationApprovalListing={props?.isSimulationApprovalListing}
         isDisableSubmit={isDisableSubmit}
+        plantCode={selectedRowData && selectedRowData[0]?.PlantCode ? selectedRowData[0]?.PlantCode : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID}
       />
 
       {

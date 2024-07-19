@@ -741,6 +741,9 @@ const BOPImportListing = (props) => {
     } else {
       tempData = data;
     }
+    if (!getConfigurationKey().IsSAPConfigured) {
+      tempData = hideColumnFromExcel(tempData, 'SAPCode')
+    }
     temp =
       TempData && TempData.map((item) => {
         if (item.Plants === "-") {
@@ -1047,7 +1050,8 @@ const BOPImportListing = (props) => {
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                         <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                         <AgGridColumn field="Specification" headerName="Specification" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                        <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        {getConfigurationKey().IsSAPConfigured
+                          && <AgGridColumn field="SAPPartNumber" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                         <AgGridColumn field="Plants" cellRenderer={"hyphenFormatter"} headerName="Plant (Code)"></AgGridColumn>
                         <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                         {reactLocalStorage.getObject('CostingTypePermission').cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
