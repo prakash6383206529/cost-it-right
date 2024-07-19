@@ -352,7 +352,7 @@ function AddOtherCostDrawer(props) {
         const applicabilityBaseCost = getValues('ApplicabilityBaseCost');
 
         // If 'Type' is not provided, return false
-        if (!type || !cost) return false;
+        if (!type || !cost) { Toaster.warning('Please enter all details to add a row.'); return false };
         if (type.label === "Percentage") {
             // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
             if (!applicability || !applicabilityBaseCost || !percentage || percentage === 0) {
@@ -361,7 +361,7 @@ function AddOtherCostDrawer(props) {
             }
         } else if (type.label === 'Fixed') {
             // If 'Type' is 'fixed', check for 'CostCurrency' and 'CostBaseCurrency'
-            if (!costBaseCurrency) return false;
+            if (!costBaseCurrency) { Toaster.warning('Please enter all details to add a row.'); return false };
         }
         // Create new data entry
         const newData = {
@@ -443,6 +443,8 @@ function AddOtherCostDrawer(props) {
                 Type: '',
                 Percentage: '',
                 CostCurrency: '',
+                CostBaseCurrency: '',
+                CostDescription: '',
             });
         };
         commonReset();

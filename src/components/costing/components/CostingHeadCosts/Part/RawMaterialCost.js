@@ -884,8 +884,8 @@ function RawMaterialCost(props) {
         if (Object.keys(weightData).length > 0) {
             const updatedGridData = weightData.CostingFerrousCalculationRawMaterials.map((calculatedRM, index) => {
                 const existingRM = gridData.find(item => item.RawMaterialId === calculatedRM.RawMaterialId);
-                console.log('gridData: ', gridData);
-                console.log('existingRM: ', existingRM);
+                
+                
     
                 if (existingRM) {
                     return {

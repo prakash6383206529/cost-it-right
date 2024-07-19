@@ -143,10 +143,10 @@ export function updateExchangeRate(requestData, callback) {
 * @method getCurrencySelectList
 * @description CURRENCY SELECTLIST
 */
-export function getCurrencySelectList(callback) {
+export function getCurrencySelectList(all = false, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getCurrencySelectList}`, config());
+        const request = axios.get(`${API.getCurrencySelectList}?all=${all}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

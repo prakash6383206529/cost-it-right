@@ -79,7 +79,7 @@ const FetchDrawer = (props) => {
                             <Row className="pl-3">
                                 <Col md="12">
                                     <SearchableSelectHookForm
-                                        label={"Plant code"}
+                                        label={"Plant Code"}
                                         name={"plantCode"}
                                         placeholder={"Select"}
                                         Controller={Controller}

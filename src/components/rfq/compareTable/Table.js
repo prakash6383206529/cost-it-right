@@ -47,6 +47,7 @@ const Table = (props) => {
                 </tr>}
         </>
     }
+    
     return (
         <table className='table table-bordered costing-summary-table'>
             <thead>

@@ -27,9 +27,10 @@ import { ASSEMBLY, BOP, COMPONENT, RM } from "./AddAuction";
 import DayTime from "../common/DayTimeWrapper";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { TextFieldHookForm } from "../layout/HookFormInputs";
-import { addTime, calculateEndDateTime, calculateTime, checkForNull, loggedInUserId } from "../../helper";
+// import { addTime, calculateEndDateTime, calculateTime, checkForNull, loggedInUserId } from "../../helper";
 import Toaster from "../common/Toaster";
 import { AuctionLiveId } from "../../config/constants";
+import { addTime, calculateEndDateTime, checkForNull, loggedInUserId } from "../../helper";
 
 
 function ComparsionAuction(props) {
@@ -78,6 +79,9 @@ function ComparsionAuction(props) {
     setState(prevState => ({ ...prevState, isLoader: true }))
     dispatch(auctionHeaderDetails(props.quotationAuctionId, (res) => {
       setState(prevState => ({ ...prevState, isLoader: false }))
+      if (!state.live) {
+        dispatch(auctionBidDetails(props.quotationAuctionId, () => { }))
+      }
       if (res && res.data.Result) {
         let data = res.data.Data;
         setState(prevState => ({ ...prevState, PartType: data?.PartType, headerDetails: data }))
@@ -92,7 +96,7 @@ function ComparsionAuction(props) {
     dispatch(ShowBidWindow({ showBidWindow: false, QuotationAuctionId: '' }))
   };
   const extendTime = () => {
-    const getTime = calculateTime(headerDetails.ExtensionTime)
+    const getTime =   (headerDetails.ExtensionTime)
     const totalExtendedDuration = addTime(getTime, headerDetails.TotalAuctionExtensionDuration)
     let obj = {
       QuotationAuctionId: props.quotationAuctionId,
@@ -450,7 +454,7 @@ function ComparsionAuction(props) {
             <div className={"cancel-icon"}></div>
             {"Cancel"}
           </button>
-          {
+          {state.live && <>
             <button
               type="button"
               className="reset mr-2 cancel-btn mr-2"
@@ -462,16 +466,16 @@ function ComparsionAuction(props) {
               <div className={"cancel-icon"}></div>
               {"Close Auction"}
             </button>
-          }
-          <button
-            id="addRFQ_cancel"
-            type={"button"}
-            className="submit-button save-btn mr-2"
-            onClick={extendTime}
-          >
-            {"Extend Time"}
-          </button>
-
+            <button
+              id="addRFQ_cancel"
+              type={"button"}
+              className="submit-button save-btn mr-2"
+              onClick={extendTime}
+              disabled={!state.isTimerRunning}
+            >
+              {"Extend Time"}
+            </button>
+          </>}
           <button
             type="button"
             className="submit-button save-btn"

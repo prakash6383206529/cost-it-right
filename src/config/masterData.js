@@ -5635,7 +5635,8 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor (Code)", value: "vendorWithCode", },
     { label: "Customer (Code)", value: "customerWithCode", },
-    { label: "Currency", value: "Currency", },
+    { label: "From Currency", value: "FromCurrency", },
+    { label: "To Currency", value: "ToCurrency", },
     { label: `Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "CurrencyExchangeRate", },
     { label: `Bank Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "BankRate", },
     { label: "Bank Commission (%)", value: "BankCommissionPercentage", },
@@ -5820,13 +5821,17 @@ export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
 export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
     { label: "Commodity (In Index)", value: "CommodityName", },
 ]
+export const COMMODITYSTANDARD_DOWNLOAD_EXCEl = [
+    { label: "Commodity Name (Standard)", value: "CommodityStandardName", },
+]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
     { label: "Index", value: "IndexExchangeName", },
     { label: "Commodity Name", value: "CommodityName", },
     { label: "Index UOM", value: "IndexUOM", },
     { label: "UOM", value: "UOM", },
-    { label: "Currency", value: "Currency", },
+    { label: "From Currency", value: "FromCurrency", },
+    { label: "To Currency", value: "ToCurrency", },
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: "Index Rate/Index UOM", value: "RatePerIndexUOM", },

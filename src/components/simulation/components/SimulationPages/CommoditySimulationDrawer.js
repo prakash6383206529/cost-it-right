@@ -10,7 +10,7 @@ import { debounce, values } from 'lodash';
 import AddIndexationMaterialListing from "../../../masters/material-master/AddIndexationMaterialListing";
 
 const CommoditySimulationDrawer = (props) => {
-    console.log('props: ', props);
+    
     const { rowData } = props?.rowData
 
     const { isEditFlag, isOpen, anchor } = props;
