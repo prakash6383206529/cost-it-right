@@ -234,11 +234,11 @@ const RaiseRfqBopDetails = (props) => {
                             errors={errors.Category}
                             isClearable={true}
                         />
-                        {showAddButton && <Button id="addBOPSpecificatione" className={"ml-2 mb-2 "}
+                        <Button id="addBOPSpecificatione" className={"ml-2 mb-2 "}
                             variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
                             title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}
                         >
-                        </Button>}
+                        </Button>
 
                     </div>
 
