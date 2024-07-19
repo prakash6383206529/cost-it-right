@@ -80,7 +80,7 @@ const Table = (props) => {
                                     onChange={() => item.onChange(index, item)}
                                 />
                             </label>
-                        </div>} {item.bestCost ? '' : item.vendorName}</div></th>
+                        </div>} {item.bestCost ? '' : item.vendorName}</div>{/* <span>{item.costingType}-{item.vendorCode}</span> */}</th>
                     })}
                 </tr>
             </thead>
