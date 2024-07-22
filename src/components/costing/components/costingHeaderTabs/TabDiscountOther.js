@@ -2284,7 +2284,7 @@ function TabDiscountOther(props) {
                           )}
                         </button>
                       </Col>
-                      {attachmentAcc && <Col md="12">
+                      {attachmentAcc && true && <Col md="12" >
                         <Row className='mx-0 border'>
                           <Col md="12" className='height152-label'>
                             <h6 className="mt-3">Feasibility</h6>
