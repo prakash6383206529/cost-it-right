@@ -94,45 +94,44 @@ function RfqListing(props) {
     const [viewRMCompare, setViewRMCompare] = useState(false)
     const [viewBOPCompare, setViewBOPCompare] = useState(false)
     const [partType, setPartType] = useState('')
-const [approveDrawer, setApproveDrawer] = useState(false)
+    const [approveDrawer, setApproveDrawer] = useState(false)
     const [quotationId, setQuotationId] = useState('')
 
     const [matchedStatus, setMatchedStatus] = useState([])
     const [masterRejectDrawer, setMasterRejectDrawer] = useState(false)
-    const [masterRetrunDrawer ,setMasterRetrunDrawer] = useState(false)
-    
+    const [masterRetrunDrawer, setMasterRetrunDrawer] = useState(false)
+
     const [actionType, setActionType] = useState('');
-    
+
 
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { viewRmDetails } = useSelector(state => state.material)
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
     const [state, setState] = useState({
         isFinalApprovar: false,
-disableSendForApproval: false,
-CostingTypePermission: false,
-finalApprovalLoader: true,
-approveDrawer: false,
-approvalObj: {},
-levelDetails: {},
-isDateChanged: false,
-costingTypeId : ZBCTypeId
-})
-const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
+        disableSendForApproval: false,
+        CostingTypePermission: false,
+        finalApprovalLoader: true,
+        approveDrawer: false,
+        approvalObj: {},
+        levelDetails: {},
+        isDateChanged: false,
+        costingTypeId: ZBCTypeId
+    })
+    const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
 
     let arr = []
     const history = useHistory();
     const location = useLocation();
     useEffect(() => {
         getDataList()
-        console.log(location, "location");
     }, [])
     useEffect(() => {
         if (partType === 'RawMaterial' || partType === 'BoughtOutPart') {
-            
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), partType === 'RawMaterial' ?RM_MASTER_ID : BOP_MASTER_ID, (res) => {
-                
-                
+
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), partType === 'RawMaterial' ? RM_MASTER_ID : BOP_MASTER_ID, (res) => {
+
+
                 setTimeout(() => {
                     commonFunction(partType, rowData[0]?.PlantId)
                 }, 100);
@@ -338,7 +337,7 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
             }
         }
     };
-    
+
     const floatingFilterRFQ = {
         maxValue: 11,
         suppressFilterButton: true,
@@ -369,13 +368,13 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     }
 
     const commonFunction = (type, plantId = EMPTY_GUID) => {
-        
-        const {costingTypeId} = state
+
+        const { costingTypeId } = state
         if (type === 'RawMaterial' || type === 'BoughtOutPart') {
-            
+
             let levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, type === 'RawMaterial' ? RM_MASTER_ID : BOP_MASTER_ID, userMasterLevelAPI);
             setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }));
-    
+
             let obj = {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),
@@ -384,7 +383,7 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(costingTypeId),
                 plantId: plantId
             };
-    
+
             if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
                 dispatch(checkFinalUser(obj, (res) => {
                     if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
@@ -403,57 +402,59 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                 }));
             }
             setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }));
-}
-      else { const arrayOfObjects = [...viewCostingData]
-        const matchingItems = selectedCostingList.filter(item =>
-            arrayOfObjects.some(obj => obj.costingId === item)
-        );
-        let arr = []
-        matchingItems.map(item => rowData.filter(el => {
-            if (el.CostingId === item) {
-                arr.push(el)
-            }
-            return null
-        }))
-
-
-        let data = arrayOfObjects?.filter(element => element?.costingId !== "-")
-        let val = data[0]?.poPrice
-        let costingId = data[0]?.costingId
-        data && data?.map((item, index) => {
-            if (val > item?.poPrice) {
-                val = item?.poPrice
-                costingId = item?.costingId
-            }
-        })
-        let tempArray = _.map(arr, 'NetPOPrice')
-        const firstElement = rowData[0]?.NetPOPrice;
-        let test = tempArray.every(element => element === firstElement);
-        if (arr?.length > 1) {
-            if (test) {
-                setMandatoryRemark(false)
-            } else {
-                setMandatoryRemark(true)
-            }
-        } else {
-            if (selectedCostingList?.includes(costingId)) {
-                setMandatoryRemark(false)
-            } else {
-                setMandatoryRemark(true)
-            }
         }
-        // let data = {
-        //     isEditFlag: true,
-        //     rowData: rowData,
-        //     Id: Id
-        // }
-        // setIsEdit(true)
-        // setAddRfqData(data)
-        // setAddRfq(true)
-        dispatch(storePartNumber(rowData))
+        else {
+            const arrayOfObjects = [...viewCostingData]
+            const matchingItems = selectedCostingList.filter(item =>
+                arrayOfObjects.some(obj => obj.costingId === item)
+            );
+            let arr = []
+            matchingItems.map(item => rowData.filter(el => {
+                if (el.CostingId === item) {
+                    arr.push(el)
+                }
+                return null
+            }))
 
-        sendForApprovalData(arr)
-        setSendForApproval(true)}
+
+            let data = arrayOfObjects?.filter(element => element?.costingId !== "-")
+            let val = data[0]?.poPrice
+            let costingId = data[0]?.costingId
+            data && data?.map((item, index) => {
+                if (val > item?.poPrice) {
+                    val = item?.poPrice
+                    costingId = item?.costingId
+                }
+            })
+            let tempArray = _.map(arr, 'NetPOPrice')
+            const firstElement = rowData[0]?.NetPOPrice;
+            let test = tempArray.every(element => element === firstElement);
+            if (arr?.length > 1) {
+                if (test) {
+                    setMandatoryRemark(false)
+                } else {
+                    setMandatoryRemark(true)
+                }
+            } else {
+                if (selectedCostingList?.includes(costingId)) {
+                    setMandatoryRemark(false)
+                } else {
+                    setMandatoryRemark(true)
+                }
+            }
+            // let data = {
+            //     isEditFlag: true,
+            //     rowData: rowData,
+            //     Id: Id
+            // }
+            // setIsEdit(true)
+            // setAddRfqData(data)
+            // setAddRfq(true)
+            dispatch(storePartNumber(rowData))
+
+            sendForApprovalData(arr)
+            setSendForApproval(true)
+        }
     }
 
     /**
@@ -461,7 +462,7 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     * @description approveDetails
     */
     const approveDetails = (Id, rowData = {}) => {
-        if(partType === "BoughtOutPart" || partType === "RawMaterial"){
+        if (partType === "BoughtOutPart" || partType === "RawMaterial") {
             setApproveDrawer(true)
             setActionType('Approve')
         }
@@ -470,7 +471,7 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                 Toaster.warning("Select at least one costing to send for approval")
                 return false
             }
-    
+
             if (initialConfiguration.IsReleaseStrategyConfigured) {
                 let dataList = costingIdObj(selectedCostingList)
                 let requestObject = {
@@ -500,7 +501,7 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                 commonFunction()
             }
         }
-        
+
 
     }
 
@@ -509,12 +510,12 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     * @description rejectDetailsClick
     */
     const rejectDetailsClick = (Id, rowData = {}) => {
-        if(partType === "BoughtOutPart" || partType === "RawMaterial"){
+        if (partType === "BoughtOutPart" || partType === "RawMaterial") {
             setMasterRejectDrawer(true)
             setActionType('Reject')
             return
         }
-        else{
+        else {
             if (selectedCostingList?.length === 0) {
                 Toaster.warning("Select at least one costing to reject")
                 return false
@@ -533,10 +534,10 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
             setRejectedList(arr)
             setRejectDrawer(true)
         }
-       
+
     }
     const returnDetailsClick = (Id, rowData = {}) => {
-        if(partType === "BoughtOutPart" || partType === "RawMaterial"){
+        if (partType === "BoughtOutPart" || partType === "RawMaterial") {
             setMasterRejectDrawer(true)
             setActionType('Return')
             return
@@ -560,7 +561,7 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
             setReturnList(arr)
             setReturnDrawer(true)
         }
-        
+
     }
 
     /**
@@ -836,8 +837,8 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     }
 
     const checkCostingSelected = (list, index) => {
-        
-        setState(prevState => ({ ...prevState, approvalObj: list }));  
+
+        setState(prevState => ({ ...prevState, approvalObj: list }));
         setIndex(index);
         setSelectedCostingList(list);
         let arr = [];
@@ -883,8 +884,8 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                     return matchedItem ? matchedItem.Status : null;
                 });
                 break
-                default:
-                    break
+            default:
+                break
 
         }
 
@@ -1173,9 +1174,9 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
         switch (selectedRows[0]?.PartType) {
             case 'RawMaterial':
                 selectedRows?.map(item => partNumber?.push(item.RawMaterial))
-                data = partNumber.map(item => rowData?.filter(el => el.RawMaterial === item))   
-                          // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
-                          break;
+                data = partNumber.map(item => rowData?.filter(el => el.RawMaterial === item))
+                // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
+                break;
             case 'BoughtOutPart':
                 selectedRows?.map(item => partNumber.push(item.BoughtOutPart))
                 data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
@@ -1185,8 +1186,8 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                 selectedRows?.map(item => partNumber?.push(item.PartNo))
                 data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
                 break;
-                default:
-                    break;
+            default:
+                break;
 
 
         }
@@ -1198,8 +1199,8 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
             return null
         })
 
-        
-        
+
+
         if (selectedRows && selectedRows.length > 0 && selectedRows[0]?.IsVisibiltyConditionMet && selectedRows[0].IsShowNetPoPrice) {
             setisVisibiltyConditionMet(true)
         } else {
@@ -1317,16 +1318,16 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
         }
     }
 
-           
+
     const closeApprovalDrawer = (e = '', type) => {
         setApproveDrawer(false)
         setMasterRejectDrawer(false)
 
         if (type === 'submit') {
-          this.clearForm('submit')
-          this.cancel('submit')
+            this.clearForm('submit')
+            this.cancel('submit')
         }
-      }
+    }
     const handleInitiateAuction = () => {
         history.push({
             pathname: '/add-auction',
@@ -1506,7 +1507,7 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                     // dataSend={[approvalDetails, partDetail]}
                     />
                 )}
-                {returnDrawer  && !masterRejectDrawer&& (
+                {returnDrawer && !masterRejectDrawer && (
                     <CostingApproveReject
                         // <ApproveRejectDrawer    //RE
                         type={'Return'}
@@ -1590,29 +1591,27 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                         closeDrawer={closeRemarkDrawer}
                     />
                 }
-                { (approveDrawer  ||masterRejectDrawer)&&
-                     <MasterSendForApproval
-                     isOpen={approveDrawer ? approveDrawer : masterRejectDrawer}
-                     type={actionType}
-                     closeDrawer={closeApprovalDrawer}
-                     isEditFlag={false}
-                     masterId={partType === "RawMaterial" ? RM_MASTER_ID : BOP_MASTER_ID}
-                     isRFQ={true}
-                     anchor={"right"}
-                     approvalDetails={state.approvalObj}
-                     approvalObj={state.approvalObj}
-                       costingTypeId={ZBCTypeId}
-                     levelDetails={state.levelDetails}
-                                       />
+                {(approveDrawer || masterRejectDrawer) &&
+                    <MasterSendForApproval
+                        isOpen={approveDrawer ? approveDrawer : masterRejectDrawer}
+                        type={actionType}
+                        closeDrawer={closeApprovalDrawer}
+                        isEditFlag={false}
+                        masterId={partType === "RawMaterial" ? RM_MASTER_ID : BOP_MASTER_ID}
+                        isRFQ={true}
+                        anchor={"right"}
+                        approvalDetails={state.approvalObj}
+                        approvalObj={state.approvalObj}
+                        costingTypeId={ZBCTypeId}
+                        levelDetails={state.levelDetails}
+                    />
                 }
 
             </div >
             {addComparisonToggle && disableApproveRejectButton && (viewCostingData?.length > 0 || viewRmDetails?.length > 0 || viewBOPDetails?.length > 0) && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 {costingsDifferentStatus && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Actions cannot be performed on costings with different statuses.'} />}
                 <div className="col-sm-12 text-right bluefooter-butn">
-                {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED))&&  ( 
-                     <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
-{(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED))&&  ( <button
+                    {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (<button
                         type="button"
                         className="submit-button save-btn mr-2"
                         id="addRFQ_save"
@@ -1622,15 +1621,17 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                         <div className={"save-icon"}></div>
                         {"Initiate Auction"}
                     </button>)}
-                    {/* <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} > */}
-                        <div className={'cancel-icon-white mr5'}></div>
-                        {'Return'}
-                    </button>)}
                     {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (
-                    <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => rejectDetailsClick("", selectedRows)} >
-                        <div className={'cancel-icon-white mr5'}></div>
-                        {'Reject'}
-                    </button>)}
+                        <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
+                            {/* <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} > */}
+                            <div className={'cancel-icon-white mr5'}></div>
+                            {'Return'}
+                        </button>)}
+                    {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (
+                        <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => rejectDetailsClick("", selectedRows)} >
+                            <div className={'cancel-icon-white mr5'}></div>
+                            {'Reject'}
+                        </button>)}
                     {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (
                         <button
                             disabled={costingsDifferentStatus}
@@ -1642,13 +1643,13 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                             {'Approve'}
                         </button>
                     )}
-             
+
 
 
                 </div>
 
             </Row >
-           }
+            }
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }
