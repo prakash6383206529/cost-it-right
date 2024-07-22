@@ -318,6 +318,7 @@ function AddAuction(props) {
     }
     dispatch(checkQuatationForAuction(newValue.QuotationPartId, res => {
       if (res.data) {
+        setValue('BasePrice', res.data?.Data && res.data?.Data?.BasePrice)
         if (PartType === RM) {
           if (newValue) {
             arrIteration(rmLabel)
@@ -329,6 +330,7 @@ function AddAuction(props) {
         }
       } else {
         reset(...partLabel, ...rmLabel, ...boplabel)
+        setValue('BasePrice', '')
       }
     }))
   }
@@ -689,6 +691,7 @@ function AddAuction(props) {
                           className=""
                           customClassName={"withBorder"}
                           errors={errors.BasePrice}
+                          disabled={true}
                           placeholder="Base Price"
                         />
                       </Col>
