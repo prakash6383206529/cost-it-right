@@ -233,7 +233,8 @@ function AssemblyTechnology(props) {
             checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
             checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) +
             checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
-            checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
+            checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) +
+            (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) -
             checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
 
@@ -368,7 +369,7 @@ function AssemblyTechnology(props) {
                 checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
                 checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) +
                 checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
-                checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
+                checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) -
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
             item.TotalOperationCost = item?.CostingPartDetails?.TotalOperationCost

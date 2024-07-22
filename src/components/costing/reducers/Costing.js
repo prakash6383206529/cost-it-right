@@ -23,7 +23,8 @@ import {
   GET_TCO_DATA,
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
   PARTSPECIFICATIONRFQDATA,
-  GET_SAP_EVALUATIONTYPE
+  GET_SAP_EVALUATIONTYPE,
+  SET_RFQ_COSTING_TYPE
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -866,7 +867,12 @@ export default function costingReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
-        viewCostingDetailDataForAssembly: action.payload,
+        viewCostingDetailDataForAssembly: action.payload
+      }
+    case SET_RFQ_COSTING_TYPE:
+      return {
+        ...state,
+        IsRfqCostingType: action.payload
       }
     case PARTSPECIFICATIONRFQDATA:
 

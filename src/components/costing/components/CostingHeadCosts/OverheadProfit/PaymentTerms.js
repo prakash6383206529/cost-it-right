@@ -75,7 +75,17 @@ const PaymentTerms = React.memo((props) => {
         }
     }, [])
 
+    useEffect(() => {
+        if (CostingViewMode) {
 
+            setValue('RepaymentPeriodDays', getCostingPaymentDetails?.PaymentTermDetail.RepaymentPeriod);
+            const interestRate = getCostingPaymentDetails?.PaymentTermDetail.InterestRate !== null ? getCostingPaymentDetails?.PaymentTermDetail.InterestRate : 0;
+            setValue('RepaymentPeriodPercentage', interestRate);
+            setValue('RepaymentPeriodFixed', interestRate);
+            setValue('paymentRemark', getCostingPaymentDetails?.PaymentTermDetail ? getCostingPaymentDetails?.PaymentTermDetail?.Remark : "");
+            setValue('RepaymentPeriodCost', getCostingPaymentDetails?.PaymentTermDetail ? checkForDecimalAndNull(getCostingPaymentDetails?.PaymentTermDetail?.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
+        }
+    }, [IsPaymentTermsApplicable])
     useEffect(() => {
         setTimeout(() => {
             let tempObj = {
@@ -431,7 +441,7 @@ const PaymentTerms = React.memo((props) => {
 
     const onRemarkPopUpClosePayment = () => {
         let button = document.getElementById(`popUpTriggerPayment`)
-        setValue(`paymentRemark`, tempPaymentTermObj.Remark)
+        setValue(`paymentRemark`, tempPaymentTermObj?.Remark)
         if (errors.paymentRemark) {
             delete errors.paymentRemark;
         }

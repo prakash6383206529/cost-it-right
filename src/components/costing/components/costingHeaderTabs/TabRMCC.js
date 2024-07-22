@@ -30,6 +30,7 @@ function TabRMCC(props) {
   const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC, ErrorObjOverheadProfit, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData,
     OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, masterBatchObj, costingData, isBreakupBoughtOutPartCostingFromAPI, CostingDataList, PaymentTermDataDiscountTab } = useSelector(state => state.costing)
 
+
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
@@ -1615,7 +1616,7 @@ function TabRMCC(props) {
       checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
       (checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) +
         checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) +
-        checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ICCCost) /* + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.PaymentTermCost) */) +
+        checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ICCCost)) +
       checkForNull(PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost)) -
       checkForNull(discountAndOtherTabData?.HundiOrDiscountValue)) + checkForNull(discountAndOtherTabData?.AnyOtherCost)
     if (!CostingViewMode) {

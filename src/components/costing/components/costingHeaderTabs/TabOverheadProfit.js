@@ -82,13 +82,14 @@ function TabOverheadProfit(props) {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData[0]?.CostingPartDetails : null;
+      
       let topHeaderData = {
         NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
           checkForNull(TopHeaderValues.ProfitCost) +
           checkForNull(TopHeaderValues.RejectionCost) +
-          checkForNull(TopHeaderValues.ICCCost) +
-          checkForNull(TopHeaderValues.PaymentTermCost))
+          checkForNull(TopHeaderValues.ICCCost))
       }
+      
       props.setHeaderCost(topHeaderData)
     }
   }, [OverheadProfitTabData]);
@@ -472,13 +473,13 @@ function TabOverheadProfit(props) {
 
         if (i.IsAssemblyPart === true) {
 
-          i.CostingPartDetails.PaymentTermCost = PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0;
-          i.CostingPartDetails.CostingInterestRateDetail = {
-            ...i?.CostingPartDetails?.CostingInterestRateDetail,
-            PaymentTermDetail: PaymentTermObj,
-            IsPaymentTerms: PaymentTermObj && PaymentTermObj?.NetCost ? true : false,
-            NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
-          };
+          // i.CostingPartDetails.PaymentTermCost = PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0;
+          // i.CostingPartDetails.CostingInterestRateDetail = {
+          //   ...i?.CostingPartDetails?.CostingInterestRateDetail,
+          //   PaymentTermDetail: PaymentTermObj,
+          //   IsPaymentTerms: PaymentTermObj && PaymentTermObj?.NetCost ? true : false,
+          //   NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
+          // };
           // i?.CostingPartDetails?.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
           //   checkForNull(i?.CostingPartDetails?.ProfitCost) +
           //   checkForNull(i?.CostingPartDetails?.RejectionCost) +
@@ -489,13 +490,13 @@ function TabOverheadProfit(props) {
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
-          i.CostingPartDetails.PaymentTermCost = PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0;
-          i.CostingPartDetails.CostingInterestRateDetail = {
-            ...i?.CostingPartDetails?.CostingInterestRateDetail,
-            PaymentTermDetail: PaymentTermObj,
-            IsPaymentTerms: PaymentTermObj && PaymentTermObj?.NetCost ? true : false,
-            NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
-          };
+          // i.CostingPartDetails.PaymentTermCost = PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0;
+          // i.CostingPartDetails.CostingInterestRateDetail = {
+          //   ...i?.CostingPartDetails?.CostingInterestRateDetail,
+          //   PaymentTermDetail: PaymentTermObj,
+          //   IsPaymentTerms: PaymentTermObj && PaymentTermObj?.NetCost ? true : false,
+          //   NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
+          // };
           // i?.CostingPartDetails?.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
           //   checkForNull(i?.CostingPartDetails?.ProfitCost) +
           //   checkForNull(i?.CostingPartDetails?.RejectionCost) +
@@ -740,7 +741,6 @@ function TabOverheadProfit(props) {
                                   setProfitDetail={setProfitDetail}
                                   setRejectionDetail={setRejectionDetail}
                                   setICCDetail={setICCDetail}
-                                  setPaymentTermsDetail={setPaymentTermsDetail}
                                 />
                               </>
                             )
@@ -763,7 +763,6 @@ function TabOverheadProfit(props) {
                                   setProfitDetail={setProfitDetail}
                                   setRejectionDetail={setRejectionDetail}
                                   setICCDetail={setICCDetail}
-                                  setPaymentTermsDetail={setPaymentTermsDetail}
                                 />
                               </>
                             )

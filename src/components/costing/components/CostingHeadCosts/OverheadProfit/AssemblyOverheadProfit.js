@@ -152,7 +152,8 @@ function AssemblyOverheadProfit(props) {
               checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
               checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost)
               + checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.NetOverheadAndProfitCost) +
-              checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
+              checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) +
+              (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) -
               checkForNull(DiscountCostData?.HundiOrDiscountValue))
 
             let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
@@ -213,7 +214,6 @@ function AssemblyOverheadProfit(props) {
                 setProfitDetail={props.setProfitDetail}
                 setRejectionDetail={props.setRejectionDetail}
                 setICCDetail={props.setICCDetail}
-                setPaymentTermsDetail={props.setPaymentTermsDetail}
                 saveCosting={saveCosting}
               />
             </div>

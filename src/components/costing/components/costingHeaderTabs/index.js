@@ -298,11 +298,11 @@ function CostingHeaderTabs(props) {
       setMultipleRMApplied(true)
     }
   }, [RMCCTabData]);
-  useEffect(() => {
-    if (activeTab && previousTab) {
-      InjectDiscountAPICall();
-    }
-  }, [activeTab]);
+  // useEffect(() => {
+  //   if (activeTab && previousTab) {
+  //     InjectDiscountAPICall();
+  //   }
+  // }, [activeTab]);
 
   const callAssemblyAPi = (tabId) => {
     if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {
@@ -319,7 +319,7 @@ function CostingHeaderTabs(props) {
 
   const InjectDiscountAPICall = () => {
     if (!CostingViewMode && activeTab !== '6') {
-      dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1, BasicRate: DiscountCostData?.BasicRateINR }, res => {
+      dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1, /* BasicRate: DiscountCostData?.BasicRateINR */ }, res => {
         if (Number(previousTab) === 6) {
           dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
         }
