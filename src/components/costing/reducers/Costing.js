@@ -20,9 +20,11 @@ import {
   SET_DISCOUNT_AND_OTHER_TAB_DATA,
   SET_COMPONENT_PAYMENT_TERMS_DATA,
   CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
+  GET_TCO_DATA,
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
   PARTSPECIFICATIONRFQDATA,
-  GET_SAP_EVALUATIONTYPE
+  GET_SAP_EVALUATIONTYPE,
+  SET_RFQ_COSTING_TYPE
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -855,11 +857,22 @@ export default function costingReducer(state = initialState, action) {
         loading: false,
         UpdatePaymentTermCost: action.payload
       }
+    case GET_TCO_DATA:
+      return {
+        ...state,
+        loading: false,
+        getTcoDetails: action.payload
+      }
     case SET_COSTING_VIEW_DATA_FOR_ASSEMBLY:
       return {
         ...state,
         loading: false,
-        viewCostingDetailDataForAssembly: action.payload,
+        viewCostingDetailDataForAssembly: action.payload
+      }
+    case SET_RFQ_COSTING_TYPE:
+      return {
+        ...state,
+        IsRfqCostingType: action.payload
       }
     case PARTSPECIFICATIONRFQDATA:
 

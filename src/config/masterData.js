@@ -6084,8 +6084,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Profit RM Percentage", value: "ProfitRMPercentage", },
     { label: "Profit Fixed Percentage", value: "ProfitFixedPercentage", },
 
-    { label: "Payment Terms On", value: "PaymentTermsOn", },
-    { label: "Payment Term Cost", value: "PaymentTermCost", },
+
     { label: "Packaging Cost Percentage", value: "PackagingCostPercentage", },
     { label: "Packaging Cost", value: "PackagingCost", },
     { label: "Freight Percentage", value: "FreightPercentage", },
@@ -6107,6 +6106,8 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Quantity", value: "NCCPartQuantity", },
     { label: "Is Regularized", value: "IsRegularized", },
     { label: "Basic Price", value: "BasicRate", },
+    { label: "Payment Terms On", value: "PaymentTermsOn", },
+    { label: "Payment Term Cost", value: "PaymentTermCost", },
     { label: "Net Cost Other Currency", value: "NetPOPriceOtherCurrency", },
     { label: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },

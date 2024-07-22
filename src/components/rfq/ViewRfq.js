@@ -1005,7 +1005,7 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     // Function that takes an array of objects as an input and returns the same array with an additional object representing the "best cost"
     const bestCostObjectFunction = (arrayList) => {
         // Create a copy of the input array to prevent mutation
-        let finalArrayList = [...arrayList];
+        let finalArrayList = _.cloneDeep(arrayList);
 
         // Check if the input array is empty or null
         if (!finalArrayList || finalArrayList.length === 0) {
@@ -1013,12 +1013,13 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
             return [];
         } else {
             // Define an array of keys to check when finding the "best cost"
-            const keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency"];
-            const keysToCheckSum = ["netRM", "netBOP", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit"];
+            const keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
+            const keysToCheckSum = ["netRM", "netBOP", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
+            const keysToAvoid = ["TotalTCOCost"];
             // const keysToCheck = ["nPOPriceWithCurrency"];
 
             // Create a new object to represent the "best cost" and set it to the first object in the input array
-            let minObject = { ...finalArrayList[0] };
+            let minObject = _.cloneDeep(finalArrayList[0]);
 
             // Loop through each object in the input array
             for (let i = 0; i < finalArrayList?.length; i++) {
@@ -1051,10 +1052,12 @@ const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
                 let sum = 0
                 for (let key in finalArrayList[0]) {
                     if (keysToCheckSum?.includes(key)) {
-                        if (isNumber(minObject[key])) {
-                            sum = sum + checkForNull(minObject[key]);
-                        } else if (Array.isArray(minObject[key])) {
-                            minObject[key] = [];
+                        if (!keysToAvoid?.includes(key)) {
+                            if (isNumber(minObject[key])) {
+                                sum = sum + checkForNull(minObject[key]);
+                            } else if (Array.isArray(minObject[key])) {
+                                minObject[key] = [];
+                            }
                         }
                     } else {
                         minObject[key] = "-";

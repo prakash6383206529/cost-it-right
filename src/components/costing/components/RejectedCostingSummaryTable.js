@@ -2475,6 +2475,7 @@ const RejectedCostingSummaryTable = (props) => {
           partId={viewCostingData[npvIndex]?.partId}
           vendorId={viewCostingData[npvIndex]?.vendorId}
           isRfqCosting={props?.isRfqCosting}
+          totalCostFromSummary={true}
         />
       }
     </Fragment >

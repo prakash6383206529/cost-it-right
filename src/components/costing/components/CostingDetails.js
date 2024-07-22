@@ -19,7 +19,8 @@ import {
   storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc, setOtherCostData, setCostingEffectiveDate, setSurfaceCostInOverheadProfit, setToolCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, openCloseStatus,
-  setOtherDiscountData
+  setOtherDiscountData,
+  setCostingtype
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -636,7 +637,8 @@ function CostingDetails(props) {
     if (type === ZBCTypeId && newValue !== '') {
       let tempData = zbcPlantGrid[index]
       let selectedOptionObj = tempData.CostingOptions.find((el) => el.CostingId === newValue.value,)
-
+      let isRFQApproved = selectedOptionObj?.IsRFQApproved
+      let isRfqCosting = selectedOptionObj?.IsRfqCosting
       tempData = {
         ...tempData,
         SelectedCostingVersion: newValue,
@@ -647,13 +649,15 @@ function CostingDetails(props) {
       }
       tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
       setZBCPlantGrid(tempArray)
+      dispatch(setCostingtype({ costingType: isRFQApproved, isRfqCosting: isRfqCosting }))
       //setValue(`zbcPlantGridFields[${index}]ShareOfBusinessPercent`, selectedOptionObj.ShareOfBusinessPercent)
     }
 
     if (type === WACTypeId && newValue !== '') {
       let tempData = wacPlantGrid[index]
       let selectedOptionObj = tempData.CostingOptions.find((el) => el.CostingId === newValue.value,)
-
+      let isRFQApproved = selectedOptionObj?.IsRFQApproved
+      let isRfqCosting = selectedOptionObj?.IsRfqCosting
       tempData = {
         ...tempData,
         SelectedCostingVersion: newValue,
@@ -664,11 +668,14 @@ function CostingDetails(props) {
       }
       tempArray = Object.assign([...wacPlantGrid], { [index]: tempData })
       setWACPlantGrid(tempArray)
+      dispatch(setCostingtype({ costingType: isRFQApproved, isRfqCosting: isRfqCosting }))
     }
 
     if (type === VBCTypeId && newValue !== '') {
       let tempData = vbcVendorGrid[index]
       let selectedOptionObj = tempData.CostingOptions.find((el) => el.CostingId === newValue.value,)
+      let isRFQApproved = selectedOptionObj?.IsRFQApproved
+      let isRfqCosting = selectedOptionObj?.IsRfqCosting
 
       tempData = {
         ...tempData,
@@ -679,12 +686,16 @@ function CostingDetails(props) {
         Price: selectedOptionObj.Price,
       }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
+
+      dispatch(setCostingtype({ costingType: isRFQApproved, isRfqCosting: isRfqCosting }))
       setVBCVendorGrid(tempArray)
     }
 
     if (type === NCCTypeId && newValue !== '') {
       let tempData = nccGrid[index]
       let selectedOptionObj = tempData.CostingOptions.find((el) => el.CostingId === newValue.value,)
+      let isRFQApproved = selectedOptionObj?.IsRFQApproved
+      let isRfqCosting = selectedOptionObj?.IsRfqCosting
 
       tempData = {
         ...tempData,
@@ -696,10 +707,15 @@ function CostingDetails(props) {
       }
       tempArray = Object.assign([...nccGrid], { [index]: tempData })
       setNccGrid(tempArray)
+      dispatch(setCostingtype({ costingType: isRFQApproved, isRfqCosting: isRfqCosting }))
+
     }
     if (type === CBCTypeId && newValue !== '') {
       let tempData = cbcGrid[index]
       let selectedOptionObj = tempData.CostingOptions.find((el) => el.CostingId === newValue.value,)
+
+      let isRFQApproved = selectedOptionObj?.IsRFQApproved
+      let isRfqCosting = selectedOptionObj?.IsRfqCosting
 
       tempData = {
         ...tempData,
@@ -711,6 +727,7 @@ function CostingDetails(props) {
       }
       tempArray = Object.assign([...cbcGrid], { [index]: tempData })
       setCBCGrid(tempArray)
+      dispatch(setCostingtype({ costingType: isRFQApproved, isRfqCosting: isRfqCosting }))
     }
   }
 

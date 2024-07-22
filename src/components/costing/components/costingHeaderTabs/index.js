@@ -71,7 +71,7 @@ function CostingHeaderTabs(props) {
 
   const costingApprovalStatus = useContext(CostingStatusContext);
   const { nfrDetailsForDiscount } = useSelector(state => state.costing)
-
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
   useEffect(() => {
     setActiveTab(costingData?.TechnologyId !== LOGISTICS ? '1' : '4')
@@ -159,15 +159,13 @@ function CostingHeaderTabs(props) {
         "NetOverheadAndProfitCost": checkForNull(ComponentItemOverheadData?.CostingPartDetails?.OverheadCost) +
           checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost) +
           checkForNull(ComponentItemOverheadData?.CostingPartDetails?.RejectionCost) +
-          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost) +
-          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.PaymentTermCost),
+          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost),
         "CostingPartDetails": {
           ...ComponentItemOverheadData?.CostingPartDetails,
           NetOverheadAndProfitCost: checkForNull(ComponentItemOverheadData?.CostingPartDetails?.OverheadCost) +
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.RejectionCost) +
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost) +
-            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost) +
-            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.PaymentTermCost),
+            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost)
         },
         "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
@@ -265,7 +263,7 @@ function CostingHeaderTabs(props) {
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
       if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
 
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
@@ -273,7 +271,7 @@ function CostingHeaderTabs(props) {
       const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
       const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
       if (surfaceData !== undefined || surfaceLockedData !== undefined) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate, '', '', isPartType)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
     }
@@ -300,11 +298,11 @@ function CostingHeaderTabs(props) {
       setMultipleRMApplied(true)
     }
   }, [RMCCTabData]);
-  useEffect(() => {
-    if (activeTab && previousTab) {
-      InjectDiscountAPICall();
-    }
-  }, [activeTab]);
+  // useEffect(() => {
+  //   if (activeTab && previousTab) {
+  //     InjectDiscountAPICall();
+  //   }
+  // }, [activeTab]);
 
   const callAssemblyAPi = (tabId) => {
     if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {
@@ -313,7 +311,7 @@ function CostingHeaderTabs(props) {
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
 
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, CostingEffectiveDate, '', '', isPartType)
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
     }
   }
@@ -321,7 +319,7 @@ function CostingHeaderTabs(props) {
 
   const InjectDiscountAPICall = () => {
     if (!CostingViewMode && activeTab !== '6') {
-      dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1, BasicRate: DiscountCostData?.BasicRateINR }, res => {
+      dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1, /* BasicRate: DiscountCostData?.BasicRateINR */ }, res => {
         if (Number(previousTab) === 6) {
           dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
         }
