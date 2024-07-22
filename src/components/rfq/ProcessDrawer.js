@@ -91,7 +91,7 @@ function ViewDrawer(props) {
     const [partRemark, setPartRemark] = useState('')
 
     useEffect(() => {
-        console.log('partType: ', partType);
+
         if (partType === 'component') {
             setValue('AssemblyPartNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
             if (type === Component) {

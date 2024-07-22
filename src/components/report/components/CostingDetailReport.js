@@ -1098,8 +1098,6 @@ function ReportListing(props) {
                             <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn>
                             <AgGridColumn field='ICCInterestRate' headerName='ICC Interest Rate' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetICCCost' headerName='Net ICC Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                            <AgGridColumn field='PaymentTermsOn' headerName='Payment Terms On' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='PaymentTermCost' headerName='Payment Term Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='PackagingCostPercentage' headerName='Packaging Cost Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='PackagingCost' headerName='Packaging Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='FreightPercentage' headerName='Freight Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
@@ -1120,6 +1118,8 @@ function ReportListing(props) {
                             <AgGridColumn field='NCCPartQuantity' headerName='Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='IsRegularized' headerName='Is Regularized' cellRenderer='hyphenFormatter'></AgGridColumn>
                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field='BasicRate' headerName='Basic Price' cellRenderer='decimalPriceFormatter'></AgGridColumn>}
+                            <AgGridColumn field='PaymentTermsOn' headerName='Payment Terms On' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='PaymentTermCost' headerName='Payment Term Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net Cost Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetPOPriceINR' headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
