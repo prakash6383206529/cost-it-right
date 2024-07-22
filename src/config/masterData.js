@@ -4448,6 +4448,7 @@ export const PART_TYPE_ASSEMBLY = 1
 export const STRINGMAXLENGTH = 50
 export const NUMBERMAXLENGTH = 6
 export const REMARKMAXLENGTH = 512
+export const HAVELLSREMARKMAXLENGTH = 1000
 
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
 
@@ -5634,7 +5635,8 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor (Code)", value: "vendorWithCode", },
     { label: "Customer (Code)", value: "customerWithCode", },
-    { label: "Currency", value: "Currency", },
+    { label: "From Currency", value: "FromCurrency", },
+    { label: "To Currency", value: "ToCurrency", },
     { label: `Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "CurrencyExchangeRate", },
     { label: `Bank Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "BankRate", },
     { label: "Bank Commission (%)", value: "BankCommissionPercentage", },
@@ -5819,13 +5821,17 @@ export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
 export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
     { label: "Commodity (In Index)", value: "CommodityName", },
 ]
+export const COMMODITYSTANDARD_DOWNLOAD_EXCEl = [
+    { label: "Commodity Name (Standard)", value: "CommodityStandardName", },
+]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
     { label: "Index", value: "IndexExchangeName", },
     { label: "Commodity Name", value: "CommodityName", },
     { label: "Index UOM", value: "IndexUOM", },
     { label: "UOM", value: "UOM", },
-    { label: "Currency", value: "Currency", },
+    { label: "From Currency", value: "FromCurrency", },
+    { label: "To Currency", value: "ToCurrency", },
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: "Index Rate/Index UOM", value: "RatePerIndexUOM", },

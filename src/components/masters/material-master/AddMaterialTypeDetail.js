@@ -10,9 +10,8 @@ import Toaster from '../../common/Toaster';
 import { getCommodityCustomNameSelectListByType } from "../actions/Indexation";
 
 const AddMaterialTypeDetail = (props) => {
-    const { tableData, tableDataState } = props;
+    const { tableData, tableDataState, isViewFlag } = props;
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration);
-    const [isEdit, setIsEdit] = useState(false);
     const [editIndex, setEditIndex] = useState('');
     const [originalPercentage, setOriginalPercentage] = useState(0);
 
@@ -79,7 +78,6 @@ const AddMaterialTypeDetail = (props) => {
             Toaster.warning("Please enter all details to add a row.");
             return false;
         }
-        if (errors.CommodityStandardName || errors.Percentage) return false;
 
         const newData = {
             CommodityStandardName: getValues('CommodityStandardName') ? getValues('CommodityStandardName').label : '',
@@ -152,9 +150,6 @@ const AddMaterialTypeDetail = (props) => {
     };
 
     const handleAddUpdateButtonClick = () => {
-        if (!getValues('CommodityStandardName') || !getValues('Percentage')) {
-            return;
-        }
         addData();
     };
 
@@ -175,6 +170,7 @@ const AddMaterialTypeDetail = (props) => {
                         mandatory={true}
                         handleChange={(option) => handleInputChange(option, 'CommodityStandardName')}
                         errors={errors.CommodityStandardName}
+                        disabled={isViewFlag}
                     />
                 </Col>
                 <Col md="4">
@@ -198,15 +194,17 @@ const AddMaterialTypeDetail = (props) => {
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.Percentage}
+                        disabled={isViewFlag}
                     />
                 </Col>
                 <Col md="4" className={`${initialConfiguration.IsShowCRMHead ? "mb-3" : "pt-1"} d-flex`}>
-                    {isEdit ? (
+                    {isEditMode ? (
                         <>
                             <button
                                 type="button"
                                 className={"btn btn-primary mt30 pull-left mr5"}
                                 onClick={handleAddUpdateButtonClick}
+                                disabled={isViewFlag}
                             >
                                 Update
                             </button>
@@ -214,6 +212,7 @@ const AddMaterialTypeDetail = (props) => {
                                 type="button"
                                 className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
                                 onClick={() => resetData()}
+                                disabled={isViewFlag}
                             >
                                 <div className={"cancel-icon"}></div>Cancel
                             </button>
@@ -224,6 +223,7 @@ const AddMaterialTypeDetail = (props) => {
                                 type="button"
                                 className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} pull-left`}
                                 onClick={handleAddUpdateButtonClick}
+                                disabled={isViewFlag}
                             >
                                 <div className={"plus"}></div>ADD
                             </button>
@@ -231,6 +231,7 @@ const AddMaterialTypeDetail = (props) => {
                                 type="button"
                                 className={`ml-1 ${initialConfiguration.IsShowCRMHead ? '' : 'mt30'} reset-btn`}
                                 onClick={() => resetData()}
+                                disabled={isViewFlag}
                             >
                                 Reset
                             </button>
@@ -262,12 +263,14 @@ const AddMaterialTypeDetail = (props) => {
                                             title='Edit'
                                             type={"button"}
                                             onClick={() => editData(index, 'edit')}
+                                            disabled={isViewFlag}
                                         />
                                         <button
                                             className="Delete ml-1"
                                             title='Delete'
                                             type={"button"}
                                             onClick={() => editData(index, 'delete')}
+                                            disabled={isViewFlag}
                                         />
                                     </td>
                                 </tr>

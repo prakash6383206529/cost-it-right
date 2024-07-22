@@ -176,7 +176,22 @@ function AddIndexationMaterialListing(props) {
             </>
         )
     }
-
+    const otherCostCurrencyFormatter = (props) => {
+        const cell = props?.data?.TotalCost ? props?.data?.TotalCost : 0;
+        return (
+            <>
+                {cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''}
+            </>
+        )
+    }
+    const otherCostBaseCurrencyFormatter = (props) => {
+        const cell = props?.data?.TotalCostConversion ? props?.data?.TotalCostConversion : 0;
+        return (
+            <>
+                {cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''}
+            </>
+        )
+    }
     const frameworkComponents = {
         // customLoadingOverlay: LoaderCustom,
         commonFormatter: commonFormatter,
@@ -184,7 +199,9 @@ function AddIndexationMaterialListing(props) {
         priceFormatter: priceFormatter,
         buttonFormatter: buttonFormatter,
         totalCostCurrencyFormatter: totalCostCurrencyFormatter,
-        totalFormatter: totalFormatter
+        totalFormatter: totalFormatter,
+        otherCostCurrencyFormatter: otherCostCurrencyFormatter,
+        otherCostBaseCurrencyFormatter: otherCostBaseCurrencyFormatter
     };
 
     return (
@@ -222,11 +239,15 @@ function AddIndexationMaterialListing(props) {
                                                                 stopEditingWhenCellsLoseFocus={true}
                                                             >
                                                                 <AgGridColumn width={200} field="CommodityStandardName" headerName="Commodity Name" editable={false}></AgGridColumn>
+                                                                <AgGridColumn width={115} field="ConvertedUOM" headerName="UOM" editable={false}></AgGridColumn>
                                                                 <AgGridColumn width={115} field="Percentage" headerName="Percentage" editable={false}></AgGridColumn>
-                                                                <AgGridColumn width={150} field="ExchangeRate" headerName="Exchange Rate" editable={false}></AgGridColumn>
+                                                                <AgGridColumn width={115} field="IndexCurrency" headerName="Index Currency" editable={false}></AgGridColumn>
                                                                 <AgGridColumn width={225} field="BasicRate" headerName="Basic Rate (Index Currency)" editable={false} cellRenderer='priceFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={225} field="OtherCostCurrency" headerName="Other Cost (Index Currency)" editable={false} cellRenderer='otherCostCurrencyFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={190} field="BasicRate" headerName="Total Cost (Index Currency)" cellRenderer='totalCostCurrencyFormatter' editable={false} ></AgGridColumn>
+                                                                <AgGridColumn width={150} field="ExchangeRate" headerName={`Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`} editable={false}></AgGridColumn>
                                                                 <AgGridColumn width={150} field="BasicRateConversion" headerName={`Basic Rate (${reactLocalStorage.getObject('baseCurrency')})`} editable={false} cellRenderer='priceFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={190} field="BasicRate" headerName="Total Cost (Currency)" cellRenderer='totalCostCurrencyFormatter' editable={false} ></AgGridColumn>
+                                                                <AgGridColumn width={225} field="OtherCostBaseCurrency" headerName={`Other Cost (${reactLocalStorage.getObject('baseCurrency')})`} editable={false} cellRenderer='otherCostBaseCurrencyFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={180} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')})`} cellRenderer='buttonFormatter' editable={false} ></AgGridColumn>
                                                                 <AgGridColumn width={180} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')}) by %`} cellRenderer='totalFormatter' editable={false} ></AgGridColumn>
                                                             </AgGridReact>

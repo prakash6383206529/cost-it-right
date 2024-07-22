@@ -103,13 +103,13 @@ export const MESSAGES = {
 
   //FERROUSCALCULATOR 
   FERROUSCALCULATOR_RESET_RM: 'Are you sure you want to delete this raw material? Deleting it will also remove all associated calculations.',
-  FERROUSCALCULATOR_UNUSED_RM : 'Rm which are not used will be get deleted from the grid',
+  FERROUSCALCULATOR_UNUSED_RM: 'Rm which are not used will be get deleted from the grid',
   //INDEXATION
-  INDEX_ADD_SUCCESS: 'Index added successfully',
-  INDEX_DELETE_ALERT: 'Are you sure you want to delete this Record?',
+  INDEX_ADD_SUCCESS: 'Record added successfully',
+  INDEX_DELETE_ALERT: 'Are you sure you want to delete this record?',
   INDEX_DELETE_SUCCESS: 'Record deleted successfully',
   INDEX_UPDATE_SUCCESS: 'Record updated successfully',
-  DELETE: 'Are you sure you want to delete this Record?',
+  DELETE: 'Are you sure you want to delete this record?',
 
   //OVERHEAD AND PROFIT
   OVERHEAD_ADDED_SUCCESS: 'Overhead added successfully',

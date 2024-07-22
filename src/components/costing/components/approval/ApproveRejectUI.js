@@ -19,18 +19,13 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import WarningMessage from '../../../common/WarningMessage'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
-import { updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
-import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
-import { MESSAGES } from '../../../../config/message'
-import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
-import PushSection from '../../../common/PushSection'
 import { transformApprovalItem } from '../../../common/CommonFunctions'
 import Button from '../../../layout/Button'
 import { submit } from 'redux-form'
 import SAPApproval from '../../../SAPApproval'
 
 function ApproveRejectUI(props) {
-
+  
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
   const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId } = props

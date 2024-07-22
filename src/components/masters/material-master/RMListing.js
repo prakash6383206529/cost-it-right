@@ -105,22 +105,14 @@ const RMListing = (props) => {
     setState((prevState) => ({ ...prevState, isOpenAssociation: false }));
     getListData();
   };
-  /**
-   * @method editItemDetails
-   * @description edit Raw Material
-   */
-  const editItemDetails = (Id) => {
-    setState((prevState) => ({
-      ...prevState, isEditFlag: true, isOpen: true, ID: Id,
-    }));
-  };
+
   /**
  * @method viewItemDetails
  * @description View Raw Material
  */
-  const viewItemDetails = (Id) => {
+  const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
     setState((prevState) => ({
-      ...prevState, isViewFlag: true, isOpen: true, ID: Id,
+      ...prevState, isViewFlag: isViewMode, isOpen: true, ID: Id, isEditFlag: true
     }));
   };
   /**
@@ -201,7 +193,7 @@ const RMListing = (props) => {
             variant="View"
             id={`addSpecificationList_view${props?.rowIndex}`}
             className="mr-2 Tour_List_View"
-            onClick={() => viewItemDetails(cellValue, rowData)}
+            onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
           />
         )}
         {isEditbale && (
@@ -210,7 +202,7 @@ const RMListing = (props) => {
             variant="Edit"
             id={`addSpecificationList_edit${props?.rowIndex}`}
             className="mr-2 Tour_List_Edit"
-            onClick={() => editItemDetails(cellValue, rowData)}
+            onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
           />
         )}
         {isDeleteButton && (
