@@ -216,7 +216,6 @@ function RMIndexationSimulation(props) {
 
 
     const verifySimulation = debounce((e, type) => {
-
         setIsDisable(true)
         console.log("HERE 3");
         setIsLoader(true)
@@ -266,7 +265,6 @@ function RMIndexationSimulation(props) {
             let tempArr = []
 
             list && list.map(item => {
-
                 let tempObj = {}
                 tempObj.RawMaterialId = item.OldRawMaterialIndexationDetails.RawMaterialId
                 tempObj.NewRawMaterialId = item.NewRawMaterialIndexationDetails.RawMaterialId

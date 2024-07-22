@@ -344,11 +344,11 @@ const AddRfqRmDetails = (props) => {
                         variant={'plus-icon-square'}
                         title={'Add'} onClick={DrawerToggle} >
                     </Button> */}
-                    {showAddButton && <Button id="addRMSpecificatione" className={"ml-2 mb-2"}
+                    <Button id="addRMSpecificatione" className={"ml-2 mb-2"}
                         // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
                         variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
 
-                        title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}></Button>}
+                        title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}></Button>
 
                 </Col>
             </Row>

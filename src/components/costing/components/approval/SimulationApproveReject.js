@@ -156,7 +156,7 @@ function SimulationApproveReject(props) {
   const checkPermission = (costingTypeId) => {
     let levelDetailsTemp = ''
     levelDetailsTemp = userTechnologyLevelDetails(costingTypeId, technologyLevelsList?.TechnologyLevels ? technologyLevelsList?.TechnologyLevels : [])
-    console.log('levelDetailsTemp: ', levelDetailsTemp);
+    
     if (levelDetailsTemp?.length !== 0) {
       setLevelDetails(levelDetailsTemp)
       console.log("COMIG HERE");

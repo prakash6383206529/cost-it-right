@@ -202,6 +202,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
                       validate: { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, hashValidation },
                     }}
                     errors={errors.MaterialType}
+                    disabled={isViewFlag}
                   />
                 </Col>
                 <Col md={RMIndex ? "6" : "12"}>
@@ -221,6 +222,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
                     control={control}
                     errors={errors.CalculatedDensityValue}
                     register={register}
+                    disabled={isViewFlag}
                   />
                 </Col>
               </Row>
@@ -240,7 +242,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
                       <div className={"cancel-icon"}></div>
                       CANCEL
                     </button>
-                    <button
+                    {!isViewFlag && <button
                       id="AddMaterialType_Save"
                       type="submit"
                       className="user-btn save-btn"
@@ -249,7 +251,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
                       {" "}
                       <div className={"save-icon"}></div>
                       {isEditFlag ? "UPDATE" : "SAVE"}
-                    </button>
+                    </button>}
                   </div>
                 </div>
               </Row>

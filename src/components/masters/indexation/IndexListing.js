@@ -33,6 +33,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AddGrade from "../material-master/AddGrade";
+import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -75,10 +76,11 @@ const IndexListing = () => {
     const [gridApi, setGridApi] = useState(null);
     const [dataCount, setDataCount] = useState(0)
     const [gridLoad, setGridLoad] = useState(false);
+    const { selectedRowForPagination } = useSelector((state => state.simulation))
     useEffect(() => {
         getTableListData(0, defaultPageSize, true)
         return () => {
-            ///dispatch(setSelectedRowForPagination([]))
+            dispatch(setSelectedRowForPagination([]))
             dispatch(resetStatePagination());
 
         }
@@ -286,6 +288,7 @@ const IndexListing = () => {
         params.api.sizeColumnsToFit();
         setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
         params.api.paginationGoToPage(0);
+        setGridApi(params.api)
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -320,6 +323,7 @@ const IndexListing = () => {
         dispatch(updateGlobalTake(10))
         setDataCount(0)
         reactLocalStorage.setObject('selectedRow', {})
+        gridApi.deselectAll()
     }
 
     const { isOpen, isEditFlag, ID, showExtraData, render, isBulkUpload } = state;
@@ -396,6 +400,26 @@ const IndexListing = () => {
             getTableListData();
         }
     };
+    const onExcelDownload = () => {
+        setDisableDownload(true)
+        dispatch(disabledClass(true))
+        //let tempArr = gridApi && gridApi?.getSelectedRows()
+        let tempArr = selectedRowForPagination
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownload(false)
+                dispatch(disabledClass(false))
+                let button = document.getElementById('Excel-Downloads-rm-import')
+                button && button.click()
+            }, 400);
+
+
+        } else {
+
+            getTableListData(0, globalTakes, false) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+
+    }
     return (
         <div
             className={`ag-grid-react min-height100vh ${permissions.Download ? "show-table-btn" : ""
@@ -420,7 +444,7 @@ const IndexListing = () => {
                                         filename={"Index"}
                                         fileExtension={".xls"}
                                         element={
-                                            <Button id={"Excel-Downloads-index"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                            <Button onClick={onExcelDownload} id={"Excel-Downloads-index"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                                         }
                                     >
                                         {onBtExport()}
@@ -446,10 +470,7 @@ const IndexListing = () => {
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
                         </div>
-                        <div
-                            className={`ag-theme-material ${state.isLoader && "max-loader-height"
-                                }`}
-                        >
+                        <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
                             {noData && (
                                 <NoContentFound
                                     title={EMPTY_DATA}
@@ -482,11 +503,6 @@ const IndexListing = () => {
                             </AgGridReact>
 
                             {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexCommodity" />}
-
-                            {/* {
-                // <PaginationControls gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="IndexCommodity" />
-
-              } */}
                         </div>
                     </div>
                 </Col>

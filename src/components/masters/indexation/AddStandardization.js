@@ -46,7 +46,7 @@ const AddStandardization = (props) => {
         if (isEditFlag) {
             dispatch(getStandardizedCommodityListAPI(props?.ID, '', '', '', true, (res) => {
                 const data = res.data.DataList[0]
-                
+
                 setValue('IndexExchangeName', { label: data.IndexExchangeName, value: data.IndexExchangeId })
                 setValue('CommodityName', { label: data.CommodityName, value: data.IndexExchangeCommodityLinkingId })
                 setValue('CommodityStandardName', { label: data.CommodityStandardName, value: data.CommodityStandardId })
@@ -110,7 +110,10 @@ const AddStandardization = (props) => {
     };
 
     const onSubmit = debounce((values) => {
-
+        if (gridData?.length === 0) {
+            Toaster.warning("Please add atleast one entry in the table");
+            return false
+        }
         if (!isEditFlag) {
             const formDataToSubmit = gridData.map(item => ({
                 ...item,
@@ -121,7 +124,7 @@ const AddStandardization = (props) => {
                 setState(prevState => ({ ...prevState, setDisable: false }));
 
                 if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.COMMODITYNAME_ADD_SUCCESS);
+                    Toaster.success(MESSAGES.INDEX_ADD_SUCCESS);
                     reset();
                     toggleDrawer('', formDataToSubmit, 'submit');
                 }
@@ -136,7 +139,7 @@ const AddStandardization = (props) => {
             }
 
             dispatch(updateCommodityStandardization(updatedFormData, res => {
-                Toaster.success(MESSAGES.COMMODITYNAME_UPDATE_SUCCESS);
+                Toaster.success(MESSAGES.INDEX_UPDATE_SUCCESS);
                 reset();
                 toggleDrawer('', updatedFormData, 'submit');
             }))
@@ -176,7 +179,8 @@ const AddStandardization = (props) => {
     const closeCommodityDrawer = (e, formData, type) => {
         setState(prevState => ({ ...prevState, isOpenCommodity: false }));
         if (type !== 'cancel')
-            dispatch(getCommodityCustomNameSelectListByType((res) => { }))
+            setValue('CommodityStandardName', { label: formData.CommodityStandardName, value: '' });
+        dispatch(getCommodityCustomNameSelectListByType((res) => { }))
     }
     const addData = () => {
         if (!getValues('IndexExchangeName') || !getValues('CommodityName') || !getValues('CommodityStandardName')) {
