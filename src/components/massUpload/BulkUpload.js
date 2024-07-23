@@ -509,7 +509,7 @@ class BulkUpload extends Component {
                                         el = dateTemp
                                     }
                                 }
-                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'DateOfModification' || fileHeads[i] === 'Indexed On') && typeof el === 'number') {
+                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'DateOfModification' || fileHeads[i] === 'Effective Date') && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
                                     const date = new Date();
                                     const shortDateFormat = date.toLocaleDateString(undefined, { dateStyle: 'short' });
@@ -609,13 +609,13 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'Commodity Name (Standard)' || fileHeads[i] === 'Commodity Name (In CIR)') {
                                     fileHeads[i] = 'CommodityStandardName'
                                 }
-                                if (fileHeads[i] === 'Index Rate (Currency)') {
+                                if (fileHeads[i] === 'Index Rate (From Currency)') {
                                     fileHeads[i] = 'Rate'
                                 }
                                 if (fileHeads[i] === 'Conversion Rate (INR)') {
                                     fileHeads[i] = 'RateConversion'
                                 }
-                                if (fileHeads[i] === 'Indexed On') {
+                                if (fileHeads[i] === 'Effective Date') {
                                     fileHeads[i] = 'EffectiveDate'
                                 }
                                 if (fileHeads[i] === 'From Currency') {
@@ -623,6 +623,9 @@ class BulkUpload extends Component {
                                 }
                                 if (fileHeads[i] === 'To Currency') {
                                     fileHeads[i] = 'ToCurrency'
+                                }
+                                if (fileHeads[i] === 'Index UOM') {
+                                    fileHeads[i] = 'UOM'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;

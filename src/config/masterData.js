@@ -935,11 +935,11 @@ export const RMSpecificationXLTempData = [
 export const IndexDataListing = [
     { label: "Index", value: "IndexExchangeName", },
     { label: "CommodityName", value: "CommodityName", },
-    { label: "UOM", value: "UOM2", },
+    { label: "Index UOM", value: "UOM", },
     { label: "From Currency", value: "FromCurrency", },
     { label: "To Currency", value: "ToCurrency", },
-    { label: "Indexed On", value: "EffectiveDate", },
-    { label: "Index Rate (Currency)", value: "Rate", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Index Rate (From Currency)", value: "Rate", },
     { label: "ExchangeRateSourceName", value: "ExchangeRateSourceName", },
     { label: "Exchangerate", value: "ExchangeRate", },
 ]
@@ -948,7 +948,7 @@ export const IndexDataListingTempData = [
     {
         "IndexExchangeName": "LME",
         "CommodityName": "CU",
-        "UOM2": "kg",
+        "UOM": "kg",
         "FromCurrency": "USD",
         "ToCurrency": "INR",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
