@@ -26,7 +26,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
 import BOMViewer from '../../masters/part-master/BOMViewer';
 import _, { debounce } from 'lodash'
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import ExcelIcon from '../../../assests/images/excel.svg';
 import Logo from '../../../assests/images/logo/company-logo.svg';
 import { DIE_CASTING, IdForMultiTechnology, PLASTIC } from '../../../config/masterData'
@@ -49,6 +49,7 @@ import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from './TourMessages'
 import { useTranslation } from 'react-i18next';
 import ViewTcoDetail from './CostingHeadCosts/AdditionalOtherCost/ViewTcoDetail'
+import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -64,9 +65,9 @@ const CostingSummaryTable = (props) => {
   const { t } = useTranslation("Costing")
   const [totalCost, setTotalCost] = useState(0)
   let history = useHistory();
-  const ExcelFile = ReactExport.ExcelFile;
-  const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-  const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+  // const ExcelFile = ReactExport.ExcelFile;
+  // const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+  // const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
   const dispatch = useDispatch()
   const [addComparisonToggle, setaddComparisonToggle] = useState(false)
@@ -199,6 +200,9 @@ const CostingSummaryTable = (props) => {
   const [openNpvDrawer, setNpvDrawer] = useState(false);
   const [isOpenRejectedCosting, setIsOpenRejectedCosting] = useState(false);
   const [isFinalCommonApproval, setIsFinalCommonApproval] = useState(false);
+  const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
+  const [costingId, setCostingId] = useState("");
+
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
     process: false,
@@ -475,6 +479,7 @@ const CostingSummaryTable = (props) => {
 
   const closeNpvDrawer = () => {
     setNpvDrawer(false)
+    setTcoAndNpvDrawer(false)
   }
 
   /**
@@ -645,6 +650,11 @@ const CostingSummaryTable = (props) => {
     setNpvData(viewCostingData[index]?.CostingPartDetails?.CostingNpvResponse)
 
 
+  }
+  const viewTcoData = (data, index) => {
+    setCostingId(data?.costingId)
+    setTcoAndNpvDrawer(true)
+    //setNpvData(viewCostingData[index]?.CostingPartDetails?.CostingNpvResponse)
   }
 
   const viewAttachmentData = (index) => {
@@ -1669,11 +1679,11 @@ const CostingSummaryTable = (props) => {
       temp = viewCostingData
     }
 
-    return (
-      <ExcelSheet data={temp} name={"Costing Summary"}>
-        {finalData && finalData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-      </ExcelSheet>
-    );
+    // return (
+    //   <ExcelSheet data={temp} name={"Costing Summary"}>
+    //     {finalData && finalData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+    //   </ExcelSheet>
+    // );
   }
 
   //FOR DISPLAY PLANT VENDOR NAME AS A HEADER FOR 
@@ -2059,10 +2069,10 @@ const CostingSummaryTable = (props) => {
               <div className='d-flex justify-content-end'>
                 <div className='d-flex justify-content-end'>
 
-                  {downloadAccessibility && <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} id="costingSummary_excel" title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
+                  {/* {downloadAccessibility && <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} id="costingSummary_excel" title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
 
                     {onBtExport()}
-                  </ExcelFile>}
+                  </ExcelFile>} */}
                   {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                 </div>
                 {!simulationMode && !props.isRfqCosting && !props.isRfqCosting && downloadAccessibility &&
@@ -3341,8 +3351,19 @@ const CostingSummaryTable = (props) => {
                           viewCostingData?.map((data, index) => {
                             return (
                               <td className={tableDataClass(data)}>
-                                {data.CostingPartDetails && data.CostingPartDetails.CostingTCOResponse ? displayValueWithSign(data, "TotalTCOCost") : 0}
+                                {displayValueWithSign(data, "TotalTCOCost")}
                                 {/* {checkForDecimalAndNull(data.TotalTCOCost, initialConfiguration.NoOfDecimalForPrice)} */}
+                                {
+                                  (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
+                                  <button
+                                    id="view_tcoCost"
+                                    type="button"
+                                    title='View'
+                                    className="float-right mb-0 View "
+                                    onClick={() => viewTcoData(data, index)}
+                                  >
+                                  </button>
+                                }
                               </td>
                             )
                           })}
@@ -3648,6 +3669,25 @@ const CostingSummaryTable = (props) => {
           isRfqCosting={props?.isRfqCosting}
           CostingPaymentTermDetails={paymentTermsData}
           npvCostData={npvData}
+
+        />
+      }
+      {
+        tcoAndNpvDrawer && <AddNpvCost
+          npvData={npvData}
+          isOpen={tcoAndNpvDrawer}
+          viewCostingData={viewCostingData}
+          costingSummary={true}
+          tableData={[]}
+          npvIndex={npvIndex}
+          closeDrawer={closeNpvDrawer}
+          anchor={'right'}
+          partId={viewCostingData[npvIndex]?.partId}
+          vendorId={viewCostingData[npvIndex]?.vendorId}
+          isRfqCosting={props?.isRfqCosting}
+          costingId={costingId}
+          totalCostFromSummary={true}
+
 
         />
       }

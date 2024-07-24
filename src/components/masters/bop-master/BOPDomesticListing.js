@@ -12,7 +12,7 @@ import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, updateBOPValues, userDepartmetList } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -37,9 +37,9 @@ import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPDomesticListing = (props) => {
   const permissions = useContext(ApplyPermission);
@@ -666,10 +666,10 @@ const BOPDomesticListing = (props) => {
       return item
     })
 
-    return (
-      <ExcelSheet data={temp} name={BopDomestic}>
-        {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-      </ExcelSheet>);
+    // return (
+    //   <ExcelSheet data={temp} name={BopDomestic}>
+    //     {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+    //   </ExcelSheet>);
   }
 
   const onFilterTextBoxChanged = (e) => {
@@ -836,9 +836,9 @@ const BOPDomesticListing = (props) => {
                   {permissions?.Download && (
                     <>
                       <Button className="mr5 Tour_List_Download" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                      <ExcelFile filename={`${showBopLabel()} Domestic`} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
+                      {/* <ExcelFile filename={`${showBopLabel()} Domestic`} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
                         {onBtExport()}
-                      </ExcelFile>
+                      </ExcelFile> */}
                     </>
                   )}
                 </>

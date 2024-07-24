@@ -29,7 +29,9 @@ function MasterSendForApproval(props) {
     
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
     
-    const RFQPlantId = approvalObj && approvalObj?.length > 1 ? approvalObj[0]?.Plant[0]?.PlantId : ''
+    const RFQPlantId = approvalObj ? approvalObj[0]?.Plant[0]?.PlantId : ''
+    
+    
  
     useEffect(() => {
     if(props.isRFQ){
@@ -88,7 +90,8 @@ function MasterSendForApproval(props) {
                 OnboardingMasterId: OnboardingId,
                 ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
                 ReasonId: reasonId,
-                PlantId:    props?.isRFQ ? RFQPlantId :  (approvalObj ? approvalObj?.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID)
+                PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID)
+                // PlantId: approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID
 
             }
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
@@ -187,6 +190,7 @@ function MasterSendForApproval(props) {
             ReasonId: '',
             ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
             PlantId: props?.isRFQ ?RFQPlantId:  (approvalObj?.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID)
+
         }
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : []

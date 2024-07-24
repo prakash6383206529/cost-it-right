@@ -20,7 +20,7 @@ import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
 import Toaster from '../common/Toaster';
 import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from "../../helper/auth";
-import { ExcelRenderer } from 'react-excel-renderer';
+// import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkInterestRateConfigure, checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import cloudImg from '../../assests/images/uploadcloud.png';
@@ -253,396 +253,396 @@ class BulkUpload extends Component {
             let data = new FormData()
 
             data.append('file', fileObj)
-
-            ExcelRenderer(fileObj, (err, resp) => {
-
-
-                if (err) {
-
-                } else {
-
-                    fileHeads = resp.rows[0];
-
-                    let checkForFileHead
-                    const { fileName } = this.props;
-
-                    switch (String(this.props.fileName)) {
-                        case String(RMMASTER):
-                            if (!this.state.isImport) {
-                                if (this.state.costingTypeId === ZBCTypeId) {
-                                    checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC, ZBCTypeId), fileHeads, true)
-                                }
-                                else if (this.state.costingTypeId === VBCTypeId) {
-                                    checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC, VBCTypeId), fileHeads, true)
-                                }
-                                else if (this.state.costingTypeId === CBCTypeId) {
-                                    checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), fileHeads, true)
-                                }
-                            } else {
-                                if (this.state.costingTypeId === ZBCTypeId) {
-                                    checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMImportZBC), fileHeads, true)
-                                }
-                                else if (this.state.costingTypeId === VBCTypeId) {
-                                    checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC, VBCTypeId), fileHeads, true)
-                                }
-                                else if (this.state.costingTypeId === CBCTypeId) {
-                                    checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportCBC, CBCTypeId), fileHeads, true)
-                                }
-                            }
-                            break;
-                        case String(RMSPECIFICATION):
-                            checkForFileHead = checkForSameFileUpload(RMSpecification, fileHeads)
-                            break;
-                        case String(BOPDOMESTICBULKUPLOAD):
-
-                            //MINDA
-                            // case String(INSERTDOMESTICBULKUPLOAD):
-
-                            if (this.state.costingTypeId === VBCTypeId) {
-                                const { updatedLabels } = updateBOPValues(BOP_VBC_DOMESTIC, [], bopMasterName, 'label')
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
-                            }
-                            else if (this.state.costingTypeId === ZBCTypeId) {
-                                const { updatedLabels } = updateBOPValues(BOP_ZBC_DOMESTIC, [], bopMasterName, 'label')
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
-
-                            }
-                            else if (this.state.costingTypeId === CBCTypeId) {
-                                const { updatedLabels } = updateBOPValues(BOP_CBC_DOMESTIC, [], bopMasterName, 'label')
-
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
-
-                            } else if (this.state.bopType === DETAILED_BOP) {
-                                const { updatedLabels } = updateBOPValues(BOP_DETAILED_DOMESTIC, [], bopMasterName, 'label')
+            //will upgrade
+            // ExcelRenderer(fileObj, (err, resp) => {
 
 
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
-                            }
-                            break;
-                        case String(BOPIMPORTBULKUPLOAD):
-                            if (this.state.costingTypeId === ZBCTypeId) {
-                                const { updatedLabels } = updateBOPValues(BOP_ZBC_IMPORT, [], bopMasterName, 'label')
+            //     if (err) {
 
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
-                            }
-                            else if (this.state.costingTypeId === VBCTypeId) {
-                                const { updatedLabels } = updateBOPValues(BOP_VBC_IMPORT, [], bopMasterName, 'label')
+            //     } else {
 
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
-                            } else if (this.state.bopType === DETAILED_BOP) {
-                                const { updatedLabels } = updateBOPValues(BOP_DETAILED_IMPORT, [], bopMasterName, 'label')
+            //         fileHeads = resp.rows[0];
 
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
-                            } else {
-                                const { updatedLabels } = updateBOPValues(BOP_CBC_IMPORT, [], bopMasterName, 'label')
+            //         let checkForFileHead
+            //         const { fileName } = this.props;
 
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, CBCTypeId), fileHeads, true)
-                            }
-                            break;
-                        case String(PARTCOMPONENTBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(PartComponent), fileHeads)
-                            break;
-                        case String(PRODUCTCOMPONENTBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(ProductComponent, fileHeads)
-                            break;
-                        case String(MACHINEBULKUPLOAD):
-                            if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineZBC, ZBCTypeId), fileHeads)
-                            }
-                            else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineVBC, VBCTypeId), fileHeads)
-                            }
-                            else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineCBC, ZBCTypeId), fileHeads)
-                            }
-                            else {
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(MHRMoreZBC), fileHeads)
-                            }
-                            break;
-                        case String(VENDORBULKUPLOAD):
-                            const { updatedLabels } = updateBOPValues(Vendor, [], bopMasterName, 'label')
+            //         switch (String(this.props.fileName)) {
+            //             case String(RMMASTER):
+            //                 if (!this.state.isImport) {
+            //                     if (this.state.costingTypeId === ZBCTypeId) {
+            //                         checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC, ZBCTypeId), fileHeads, true)
+            //                     }
+            //                     else if (this.state.costingTypeId === VBCTypeId) {
+            //                         checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC, VBCTypeId), fileHeads, true)
+            //                     }
+            //                     else if (this.state.costingTypeId === CBCTypeId) {
+            //                         checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), fileHeads, true)
+            //                     }
+            //                 } else {
+            //                     if (this.state.costingTypeId === ZBCTypeId) {
+            //                         checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMImportZBC), fileHeads, true)
+            //                     }
+            //                     else if (this.state.costingTypeId === VBCTypeId) {
+            //                         checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC, VBCTypeId), fileHeads, true)
+            //                     }
+            //                     else if (this.state.costingTypeId === CBCTypeId) {
+            //                         checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportCBC, CBCTypeId), fileHeads, true)
+            //                     }
+            //                 }
+            //                 break;
+            //             case String(RMSPECIFICATION):
+            //                 checkForFileHead = checkForSameFileUpload(RMSpecification, fileHeads)
+            //                 break;
+            //             case String(BOPDOMESTICBULKUPLOAD):
 
-                            checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, '', '', true), fileHeads)
-                            break;
-                        case String(LABOURBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(Labour, fileHeads)
-                            break;
-                        case String(OPERAIONBULKUPLOAD):
-                            if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(ZBCOperationSmallForm), fileHeads)
-                            }
-                            else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(VBCOperationSmallForm), fileHeads)
-                            }
-                            else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(CBCOperationSmallForm), fileHeads)
-                            }
-                            else if (this.state.costingTypeId === ZBCADDMOREOPERATION) {
-                                checkForFileHead = checkForSameFileUpload(ZBCOperation, fileHeads)
-                            } else if (this.state.costingTypeId === VBCADDMOREOPERATION) {
-                                checkForFileHead = checkForSameFileUpload(VBCOperation, fileHeads)
-                            } else if (this.state.costingTypeId === CBCADDMOREOPERATION) {
-                                checkForFileHead = checkForSameFileUpload(CBCOperation, fileHeads)
-                            }
-                            break;
-                        case String(FUELBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(Fuel, fileHeads)
-                            break;
-                        case String(INTERESTRATEBULKUPLOAD):
-                            if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkInterestRateConfigure(VBCInterestRate), fileHeads)
+            //                 //MINDA
+            //                 // case String(INSERTDOMESTICBULKUPLOAD):
 
-                            }
-                            else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkInterestRateConfigure(CBCInterestRate), fileHeads)
-                            }
-                            break;
-                        case String(ACTUALVOLUMEBULKUPLOAD):
-                            if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(VOLUME_ACTUAL_ZBC, fileHeads)
-                            }
-                            else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_ACTUAL_VBC, VBCTypeId), fileHeads)
-                            }
-                            else {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_ACTUAL_CBC, CBCTypeId), fileHeads)
-                            }
-                            break;
-                        case String(BUDGETEDVOLUMEBULKUPLOAD):
-                            if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(VOLUME_BUDGETED_ZBC, fileHeads)
-                            }
-                            else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_VBC, VBCTypeId), fileHeads)
-                            }
-                            else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_CBC, CBCTypeId), fileHeads)
-                            }
-                            break;
-                        case String(BUDGETBULKUPLOAD):
-                            if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(BUDGET_ZBC, fileHeads)
-                            }
-                            else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BUDGET_VBC, VBCTypeId), fileHeads)
-                            }
-                            else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BUDGET_CBC, CBCTypeId), fileHeads)
-                            }
-                            break;
-                        case String(ADDRFQ):
-                            checkForFileHead = checkForSameFileUpload(AddRFQUpload, fileHeads)
-                            break;
-                        case String(OVERHEADBULKUPLOAD):
-                            if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(OverheadVBC, fileHeads)
-                            }
-                            else if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(Overhead, fileHeads)
-                            }
-                            else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(OverheadCBC, fileHeads)
-                            }
-                            break;
-                        case String(PROFITBULKUPLOAD):
-                            if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(ProfitVBC, fileHeads)
-                            }
-                            else if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(Profit, fileHeads)
-                            }
-                            else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(ProfitCBC, fileHeads)
-                            }
-                            break;
-                        case String(RMMATERIALBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(IndexDataListing, fileHeads)
-                            break;
-                        case String(INDEXCOMMODITYBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(IndexCommodityListing, fileHeads)
-                            break;
-                        case String(COMMODITYININDEXBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(CommodityInIndexListing, fileHeads)
-                            break;
-                        case String(COMMODITYSTANDARDIZATION):
-                            checkForFileHead = checkForSameFileUpload(StandardizedCommodityNameListing, fileHeads)
-                            break;
-                        case String(COMMODITYSTANDARD):
-                            checkForFileHead = checkForSameFileUpload(CommodityStandard, fileHeads)
-                            break;
-                        default:
-                            break;
-                    }
-                    this.setState({ bulkUploadLoader: false })
-                    if (!checkForFileHead) {
-                        Toaster.warning('Please select file of same Master')
-                        return false
-                    }
-                    // fileHeads = ["SerialNumber", "BillNumber"]
+            //                 if (this.state.costingTypeId === VBCTypeId) {
+            //                     const { updatedLabels } = updateBOPValues(BOP_VBC_DOMESTIC, [], bopMasterName, 'label')
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
+            //                 }
+            //                 else if (this.state.costingTypeId === ZBCTypeId) {
+            //                     const { updatedLabels } = updateBOPValues(BOP_ZBC_DOMESTIC, [], bopMasterName, 'label')
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
 
-                    let fileData = [];
-                    resp?.rows?.map((val, index) => {
+            //                 }
+            //                 else if (this.state.costingTypeId === CBCTypeId) {
+            //                     const { updatedLabels } = updateBOPValues(BOP_CBC_DOMESTIC, [], bopMasterName, 'label')
 
-                        if (index > 0 && val?.length > 0) {
-                            // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-                            const i = val.findIndex(e => e === undefined);
-                            if (i !== -1) {
-                                val[i] = '';
-                            }
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
 
-                            if ((fileName === 'Operation' || fileName === 'RM' || fileName === 'RM Domestic' || fileName === 'RM Import') && val.length === 1) {
-                                return null
-                            }
-
-                            let obj = {}
-                            val.map((el, i) => {
+            //                 } else if (this.state.bopType === DETAILED_BOP) {
+            //                     const { updatedLabels } = updateBOPValues(BOP_DETAILED_DOMESTIC, [], bopMasterName, 'label')
 
 
-                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'Indexed On') && typeof el === 'string' && el !== '') {
-                                    if (isDateFormatter(el)) {
-                                        el = el.replaceAll('/', '-')
-                                        let str = el.substring(el.indexOf("-") + 1);
-                                        let month = str.substring(0, str.indexOf('-'));
-                                        let year = str.substring(str.indexOf("-") + 1);
-                                        const day = el.substring(0, str.indexOf('-'));
-                                        let dateTemp = `${year}-${month}-${day} 00:00:00`
-                                        el = dateTemp
-                                    }
-                                }
-                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'DateOfModification' || fileHeads[i] === 'Indexed On') && typeof el === 'number') {
-                                    el = getJsDateFromExcel(el)
-                                    const date = new Date();
-                                    const shortDateFormat = date.toLocaleDateString(undefined, { dateStyle: 'short' });
-                                    if (Number(shortDateFormat.charAt(0)) === Number(date.getMonth() + 1)) {
-                                        el = DayTime(el).format('YYYY-MM-DD 00:00:00')
-                                    }
-                                }
-                                if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
-                                    el = parseInt(checkForNull(el))
-                                }
-                                // if (fileHeads[i] === 'MachineSpecification') {
-                                //     fileHeads[i] = 'Description'
-                                // }
-                                else if (fileHeads[i] === 'Grade') {
-                                    fileHeads[i] = 'RMGrade'
-                                }
-                                else if (fileHeads[i] === 'Spec') {
-                                    fileHeads[i] = 'RMSpec'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'CircleScrapRate') {
-                                    fileHeads[i] = 'JaliScrapCost'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'ScrapRate/JaliScrapRate/ForgingScrapRate') {
-                                    fileHeads[i] = 'ScrapRate'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'ScrapRatePerScrapUOM/JaliScrapRatePerScrapUOM/ForgingScrapRatePerScrapUOM') {
-                                    fileHeads[i] = 'ScrapRatePerScrapUOM'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'PlantCode') {
-                                    // } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import') && fileHeads[i] === 'PlantCode') {
-                                    fileHeads[i] = 'DestinationPlantCode'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'PlantName') {
-                                    fileHeads[i] = 'DestinationPlantName'
-                                } else if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'MinimumOrderQuantity') {
-                                    fileHeads[i] = 'NumberOfPieces'
-                                }
-                                if (fileHeads[i] === 'InsertPartNumber' || fileHeads[i] === 'BOPNumber' || fileHeads[i] === 'InsertNumber') {
-                                    fileHeads[i] = 'BoughtOutPartNumber'
-                                }
-                                if (fileHeads[i] === 'InsertPartName' || fileHeads[i] === 'BOPName' || fileHeads[i] === 'InsertName') {
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
+            //                 }
+            //                 break;
+            //             case String(BOPIMPORTBULKUPLOAD):
+            //                 if (this.state.costingTypeId === ZBCTypeId) {
+            //                     const { updatedLabels } = updateBOPValues(BOP_ZBC_IMPORT, [], bopMasterName, 'label')
 
-                                    fileHeads[i] = 'BoughtOutPartName'
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
+            //                 }
+            //                 else if (this.state.costingTypeId === VBCTypeId) {
+            //                     const { updatedLabels } = updateBOPValues(BOP_VBC_IMPORT, [], bopMasterName, 'label')
 
-                                }
-                                if (fileHeads[i] === 'InsertVendor') {
-                                    fileHeads[i] = 'BOPVendor'
-                                }
-                                if (fileHeads[i] === 'InsertCategory') {
-                                    fileHeads[i] = 'CategoryName'
-                                }
-                                if (fileHeads[i] === 'MinimumOrderQuantity') {
-                                    fileHeads[i] = 'NumberOfPieces'
-                                }
-                                if (fileHeads[i] === 'InsertVendor') {
-                                    fileHeads[i] = 'BOPVendor'
-                                }
-                                if (fileName === 'Product Component' && fileHeads[i] === 'PreferredForImpactCalculation') {
-                                    fileHeads[i] = 'IsConsideredForMBOM'
-                                }
-                                else if (fileHeads[i] === 'Spec') {
-                                    fileHeads[i] = 'RMSpec'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'Code') {
-                                    fileHeads[i] = 'RawMaterialCode'
-                                }
-                                if (fileName === 'Vendor' && fileHeads[i] === 'PlantCode') {
-                                    fileHeads[i] = 'Plants'
-                                }
-                                if (fileName === 'Vendor' && fileHeads[i] === 'Potential Vendor') {
-                                    fileHeads[i] = 'IsCriticalVendor'
-                                }
-                                if (fileHeads[i] === 'BOPNumber') {
-                                    fileHeads[i] = 'BoughtOutPartNumber'
-                                }
-                                if (fileHeads[i] === 'BOPName') {
-                                    fileHeads[i] = 'BoughtOutPartName'
-                                }
-                                if (fileHeads[i] === 'ClientApprovedVendor') {
-                                    fileHeads[i] = 'IsClientVendorBOP'
-                                }
-                                if (fileHeads[i] === 'Efficiency (%)') {
-                                    fileHeads[i] = 'EfficiencyPercentage'
-                                }
-                                if (fileName === 'Operation' && fileHeads[i] === 'OperationType') {
-                                    fileHeads[i] = 'ForType'
-                                }
-                                if (fileName === 'Operation' && fileHeads[i] === 'WeldingMaterialRate/kg') {
-                                    fileHeads[i] = 'OperationBasicRate'
-                                }
-                                if (fileName === 'Operation' && fileHeads[i] === 'Consumption') {
-                                    fileHeads[i] = 'OperationConsumption'
-                                }
-                                if (fileName === 'Operation' && fileHeads[i] === 'LabourRate') {
-                                    fileHeads[i] = 'LabourRatePerUOM'
-                                }
-                                if (fileHeads[i] === 'Index') {
-                                    fileHeads[i] = 'IndexExchangeName'
-                                }
-                                if (fileHeads[i] === 'Commodity (In Index)' || fileHeads[i] === 'Commodity Name (In Index)') {
-                                    fileHeads[i] = 'CommodityName'
-                                }
-                                if (fileHeads[i] === 'Commodity Name (Standard)' || fileHeads[i] === 'Commodity Name (In CIR)') {
-                                    fileHeads[i] = 'CommodityStandardName'
-                                }
-                                if (fileHeads[i] === 'Index Rate (Currency)') {
-                                    fileHeads[i] = 'Rate'
-                                }
-                                if (fileHeads[i] === 'Conversion Rate (INR)') {
-                                    fileHeads[i] = 'RateConversion'
-                                }
-                                if (fileHeads[i] === 'Indexed On') {
-                                    fileHeads[i] = 'EffectiveDate'
-                                }
-                                if (fileHeads[i] === 'From Currency') {
-                                    fileHeads[i] = 'FromCurrency'
-                                }
-                                if (fileHeads[i] === 'To Currency') {
-                                    fileHeads[i] = 'ToCurrency'
-                                }
-                                obj[fileHeads[i]] = el;
-                                return null;
-                            })
-                            if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && this.state.costingTypeId === VBCTypeId && this.state.bopType !== DETAILED_BOP) {
-                                obj.IsBreakupBoughtOutPart = "No"
-                            }
-                            fileData.push(obj)
-                            obj = {}
-                        }
-                        return null;
-                    })
-                    this.setState({
-                        cols: resp.cols,
-                        rows: resp.rows,
-                        fileData: fileData,
-                        uploadfileName: uploadfileName,
-                    });
-                }
-            });
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
+            //                 } else if (this.state.bopType === DETAILED_BOP) {
+            //                     const { updatedLabels } = updateBOPValues(BOP_DETAILED_IMPORT, [], bopMasterName, 'label')
+
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
+            //                 } else {
+            //                     const { updatedLabels } = updateBOPValues(BOP_CBC_IMPORT, [], bopMasterName, 'label')
+
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, CBCTypeId), fileHeads, true)
+            //                 }
+            //                 break;
+            //             case String(PARTCOMPONENTBULKUPLOAD):
+            //                 checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(PartComponent), fileHeads)
+            //                 break;
+            //             case String(PRODUCTCOMPONENTBULKUPLOAD):
+            //                 checkForFileHead = checkForSameFileUpload(ProductComponent, fileHeads)
+            //                 break;
+            //             case String(MACHINEBULKUPLOAD):
+            //                 if (this.state.costingTypeId === ZBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineZBC, ZBCTypeId), fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === VBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineVBC, VBCTypeId), fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === CBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineCBC, ZBCTypeId), fileHeads)
+            //                 }
+            //                 else {
+            //                     checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(MHRMoreZBC), fileHeads)
+            //                 }
+            //                 break;
+            //             case String(VENDORBULKUPLOAD):
+            //                 const { updatedLabels } = updateBOPValues(Vendor, [], bopMasterName, 'label')
+
+            //                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, '', '', true), fileHeads)
+            //                 break;
+            //             case String(LABOURBULKUPLOAD):
+            //                 checkForFileHead = checkForSameFileUpload(Labour, fileHeads)
+            //                 break;
+            //             case String(OPERAIONBULKUPLOAD):
+            //                 if (this.state.costingTypeId === ZBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(ZBCOperationSmallForm), fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === VBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(VBCOperationSmallForm), fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === CBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(CBCOperationSmallForm), fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === ZBCADDMOREOPERATION) {
+            //                     checkForFileHead = checkForSameFileUpload(ZBCOperation, fileHeads)
+            //                 } else if (this.state.costingTypeId === VBCADDMOREOPERATION) {
+            //                     checkForFileHead = checkForSameFileUpload(VBCOperation, fileHeads)
+            //                 } else if (this.state.costingTypeId === CBCADDMOREOPERATION) {
+            //                     checkForFileHead = checkForSameFileUpload(CBCOperation, fileHeads)
+            //                 }
+            //                 break;
+            //             case String(FUELBULKUPLOAD):
+            //                 checkForFileHead = checkForSameFileUpload(Fuel, fileHeads)
+            //                 break;
+            //             case String(INTERESTRATEBULKUPLOAD):
+            //                 if (this.state.costingTypeId === VBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkInterestRateConfigure(VBCInterestRate), fileHeads)
+
+            //                 }
+            //                 else if (this.state.costingTypeId === CBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkInterestRateConfigure(CBCInterestRate), fileHeads)
+            //                 }
+            //                 break;
+            //             case String(ACTUALVOLUMEBULKUPLOAD):
+            //                 if (this.state.costingTypeId === ZBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(VOLUME_ACTUAL_ZBC, fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === VBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_ACTUAL_VBC, VBCTypeId), fileHeads)
+            //                 }
+            //                 else {
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_ACTUAL_CBC, CBCTypeId), fileHeads)
+            //                 }
+            //                 break;
+            //             case String(BUDGETEDVOLUMEBULKUPLOAD):
+            //                 if (this.state.costingTypeId === ZBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(VOLUME_BUDGETED_ZBC, fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === VBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_VBC, VBCTypeId), fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === CBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_CBC, CBCTypeId), fileHeads)
+            //                 }
+            //                 break;
+            //             case String(BUDGETBULKUPLOAD):
+            //                 if (this.state.costingTypeId === ZBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(BUDGET_ZBC, fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === VBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BUDGET_VBC, VBCTypeId), fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === CBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BUDGET_CBC, CBCTypeId), fileHeads)
+            //                 }
+            //                 break;
+            //             case String(ADDRFQ):
+            //                 checkForFileHead = checkForSameFileUpload(AddRFQUpload, fileHeads)
+            //                 break;
+            //             case String(OVERHEADBULKUPLOAD):
+            //                 if (this.state.costingTypeId === VBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(OverheadVBC, fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === ZBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(Overhead, fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === CBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(OverheadCBC, fileHeads)
+            //                 }
+            //                 break;
+            //             case String(PROFITBULKUPLOAD):
+            //                 if (this.state.costingTypeId === VBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(ProfitVBC, fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === ZBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(Profit, fileHeads)
+            //                 }
+            //                 else if (this.state.costingTypeId === CBCTypeId) {
+            //                     checkForFileHead = checkForSameFileUpload(ProfitCBC, fileHeads)
+            //                 }
+            //                 break;
+            //             case String(RMMATERIALBULKUPLOAD):
+            //                 checkForFileHead = checkForSameFileUpload(IndexDataListing, fileHeads)
+            //                 break;
+            //             case String(INDEXCOMMODITYBULKUPLOAD):
+            //                 checkForFileHead = checkForSameFileUpload(IndexCommodityListing, fileHeads)
+            //                 break;
+            //             case String(COMMODITYININDEXBULKUPLOAD):
+            //                 checkForFileHead = checkForSameFileUpload(CommodityInIndexListing, fileHeads)
+            //                 break;
+            //             case String(COMMODITYSTANDARDIZATION):
+            //                 checkForFileHead = checkForSameFileUpload(StandardizedCommodityNameListing, fileHeads)
+            //                 break;
+            //             case String(COMMODITYSTANDARD):
+            //                 checkForFileHead = checkForSameFileUpload(CommodityStandard, fileHeads)
+            //                 break;
+            //             default:
+            //                 break;
+            //         }
+            //         this.setState({ bulkUploadLoader: false })
+            //         if (!checkForFileHead) {
+            //             Toaster.warning('Please select file of same Master')
+            //             return false
+            //         }
+            //         // fileHeads = ["SerialNumber", "BillNumber"]
+
+            //         let fileData = [];
+            //         resp?.rows?.map((val, index) => {
+
+            //             if (index > 0 && val?.length > 0) {
+            //                 // BELOW CODE FOR HANDLE EMPTY CELL VALUE
+            //                 const i = val.findIndex(e => e === undefined);
+            //                 if (i !== -1) {
+            //                     val[i] = '';
+            //                 }
+
+            //                 if ((fileName === 'Operation' || fileName === 'RM' || fileName === 'RM Domestic' || fileName === 'RM Import') && val.length === 1) {
+            //                     return null
+            //                 }
+
+            //                 let obj = {}
+            //                 val.map((el, i) => {
+
+
+            //                     if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'Indexed On') && typeof el === 'string' && el !== '') {
+            //                         if (isDateFormatter(el)) {
+            //                             el = el.replaceAll('/', '-')
+            //                             let str = el.substring(el.indexOf("-") + 1);
+            //                             let month = str.substring(0, str.indexOf('-'));
+            //                             let year = str.substring(str.indexOf("-") + 1);
+            //                             const day = el.substring(0, str.indexOf('-'));
+            //                             let dateTemp = `${year}-${month}-${day} 00:00:00`
+            //                             el = dateTemp
+            //                         }
+            //                     }
+            //                     if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'DateOfModification' || fileHeads[i] === 'Indexed On') && typeof el === 'number') {
+            //                         el = getJsDateFromExcel(el)
+            //                         const date = new Date();
+            //                         const shortDateFormat = date.toLocaleDateString(undefined, { dateStyle: 'short' });
+            //                         if (Number(shortDateFormat.charAt(0)) === Number(date.getMonth() + 1)) {
+            //                             el = DayTime(el).format('YYYY-MM-DD 00:00:00')
+            //                         }
+            //                     }
+            //                     if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
+            //                         el = parseInt(checkForNull(el))
+            //                     }
+            //                     // if (fileHeads[i] === 'MachineSpecification') {
+            //                     //     fileHeads[i] = 'Description'
+            //                     // }
+            //                     else if (fileHeads[i] === 'Grade') {
+            //                         fileHeads[i] = 'RMGrade'
+            //                     }
+            //                     else if (fileHeads[i] === 'Spec') {
+            //                         fileHeads[i] = 'RMSpec'
+            //                     } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'CircleScrapRate') {
+            //                         fileHeads[i] = 'JaliScrapCost'
+            //                     } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'ScrapRate/JaliScrapRate/ForgingScrapRate') {
+            //                         fileHeads[i] = 'ScrapRate'
+            //                     } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'ScrapRatePerScrapUOM/JaliScrapRatePerScrapUOM/ForgingScrapRatePerScrapUOM') {
+            //                         fileHeads[i] = 'ScrapRatePerScrapUOM'
+            //                     } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'PlantCode') {
+            //                         // } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import') && fileHeads[i] === 'PlantCode') {
+            //                         fileHeads[i] = 'DestinationPlantCode'
+            //                     } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'PlantName') {
+            //                         fileHeads[i] = 'DestinationPlantName'
+            //                     } else if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'MinimumOrderQuantity') {
+            //                         fileHeads[i] = 'NumberOfPieces'
+            //                     }
+            //                     if (fileHeads[i] === 'InsertPartNumber' || fileHeads[i] === 'BOPNumber' || fileHeads[i] === 'InsertNumber') {
+            //                         fileHeads[i] = 'BoughtOutPartNumber'
+            //                     }
+            //                     if (fileHeads[i] === 'InsertPartName' || fileHeads[i] === 'BOPName' || fileHeads[i] === 'InsertName') {
+
+            //                         fileHeads[i] = 'BoughtOutPartName'
+
+            //                     }
+            //                     if (fileHeads[i] === 'InsertVendor') {
+            //                         fileHeads[i] = 'BOPVendor'
+            //                     }
+            //                     if (fileHeads[i] === 'InsertCategory') {
+            //                         fileHeads[i] = 'CategoryName'
+            //                     }
+            //                     if (fileHeads[i] === 'MinimumOrderQuantity') {
+            //                         fileHeads[i] = 'NumberOfPieces'
+            //                     }
+            //                     if (fileHeads[i] === 'InsertVendor') {
+            //                         fileHeads[i] = 'BOPVendor'
+            //                     }
+            //                     if (fileName === 'Product Component' && fileHeads[i] === 'PreferredForImpactCalculation') {
+            //                         fileHeads[i] = 'IsConsideredForMBOM'
+            //                     }
+            //                     else if (fileHeads[i] === 'Spec') {
+            //                         fileHeads[i] = 'RMSpec'
+            //                     } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'Code') {
+            //                         fileHeads[i] = 'RawMaterialCode'
+            //                     }
+            //                     if (fileName === 'Vendor' && fileHeads[i] === 'PlantCode') {
+            //                         fileHeads[i] = 'Plants'
+            //                     }
+            //                     if (fileName === 'Vendor' && fileHeads[i] === 'Potential Vendor') {
+            //                         fileHeads[i] = 'IsCriticalVendor'
+            //                     }
+            //                     if (fileHeads[i] === 'BOPNumber') {
+            //                         fileHeads[i] = 'BoughtOutPartNumber'
+            //                     }
+            //                     if (fileHeads[i] === 'BOPName') {
+            //                         fileHeads[i] = 'BoughtOutPartName'
+            //                     }
+            //                     if (fileHeads[i] === 'ClientApprovedVendor') {
+            //                         fileHeads[i] = 'IsClientVendorBOP'
+            //                     }
+            //                     if (fileHeads[i] === 'Efficiency (%)') {
+            //                         fileHeads[i] = 'EfficiencyPercentage'
+            //                     }
+            //                     if (fileName === 'Operation' && fileHeads[i] === 'OperationType') {
+            //                         fileHeads[i] = 'ForType'
+            //                     }
+            //                     if (fileName === 'Operation' && fileHeads[i] === 'WeldingMaterialRate/kg') {
+            //                         fileHeads[i] = 'OperationBasicRate'
+            //                     }
+            //                     if (fileName === 'Operation' && fileHeads[i] === 'Consumption') {
+            //                         fileHeads[i] = 'OperationConsumption'
+            //                     }
+            //                     if (fileName === 'Operation' && fileHeads[i] === 'LabourRate') {
+            //                         fileHeads[i] = 'LabourRatePerUOM'
+            //                     }
+            //                     if (fileHeads[i] === 'Index') {
+            //                         fileHeads[i] = 'IndexExchangeName'
+            //                     }
+            //                     if (fileHeads[i] === 'Commodity (In Index)' || fileHeads[i] === 'Commodity Name (In Index)') {
+            //                         fileHeads[i] = 'CommodityName'
+            //                     }
+            //                     if (fileHeads[i] === 'Commodity Name (Standard)' || fileHeads[i] === 'Commodity Name (In CIR)') {
+            //                         fileHeads[i] = 'CommodityStandardName'
+            //                     }
+            //                     if (fileHeads[i] === 'Index Rate (Currency)') {
+            //                         fileHeads[i] = 'Rate'
+            //                     }
+            //                     if (fileHeads[i] === 'Conversion Rate (INR)') {
+            //                         fileHeads[i] = 'RateConversion'
+            //                     }
+            //                     if (fileHeads[i] === 'Indexed On') {
+            //                         fileHeads[i] = 'EffectiveDate'
+            //                     }
+            //                     if (fileHeads[i] === 'From Currency') {
+            //                         fileHeads[i] = 'FromCurrency'
+            //                     }
+            //                     if (fileHeads[i] === 'To Currency') {
+            //                         fileHeads[i] = 'ToCurrency'
+            //                     }
+            //                     obj[fileHeads[i]] = el;
+            //                     return null;
+            //                 })
+            //                 if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && this.state.costingTypeId === VBCTypeId && this.state.bopType !== DETAILED_BOP) {
+            //                     obj.IsBreakupBoughtOutPart = "No"
+            //                 }
+            //                 fileData.push(obj)
+            //                 obj = {}
+            //             }
+            //             return null;
+            //         })
+            //         this.setState({
+            //             cols: resp.cols,
+            //             rows: resp.rows,
+            //             fileData: fileData,
+            //             uploadfileName: uploadfileName,
+            //         });
+            //     }
+            // });
         }
     }
 

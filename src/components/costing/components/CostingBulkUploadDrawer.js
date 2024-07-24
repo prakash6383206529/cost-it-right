@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { Field } from "redux-form";
 import { Container, Row, Col, Label, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
@@ -14,8 +14,8 @@ import { searchableSelect } from '../../layout/FormInputs';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getConfigurationKey, loggedInUserId } from '../../../helper';
 
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const CostingBulkUploadDrawer = (props) => {
     const dropzone = useRef(null);
@@ -149,9 +149,9 @@ const CostingBulkUploadDrawer = (props) => {
         // }
         const fileName = "Costing"
 
-        return (<ExcelSheet data={TempData} name={fileName}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
-        </ExcelSheet>);
+        // return (<ExcelSheet data={TempData} name={fileName}>
+        //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
+        // </ExcelSheet>);
     }
     const fileHandler = event => {
 

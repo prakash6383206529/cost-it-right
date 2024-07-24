@@ -11,7 +11,7 @@ import { BOP_IMPORT_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import LoaderCustom from "../../common/LoaderCustom";
 import { BopImport, BOP_MASTER_ID } from "../../../config/constants";
 import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, updateBOPValues, userDepartmetList, } from "../../../helper";
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -34,8 +34,8 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPImportListing = (props) => {
   const { t } = useTranslation("common")
@@ -758,19 +758,19 @@ const BOPImportListing = (props) => {
         }
         return item;
       });
-    return (
-      <ExcelSheet data={temp} name={BopImport}>
-        {tempData && tempData.map((ele, index) => (
-          <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
-        ))}
-      </ExcelSheet>
-    );
+    // return (
+    //   <ExcelSheet data={temp} name={BopImport}>
+    //     {tempData && tempData.map((ele, index) => (
+    //       <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+    //     ))}
+    //   </ExcelSheet>
+    // );
   };
   const onFilterTextBoxChanged = (e) => {
     state.gridApi.setQuickFilter(e.target.value);
   };
   const { isBulkUpload, noData, editSelectedList } = state;
-  const ExcelFile = ReactExport.ExcelFile;
+  // const ExcelFile = ReactExport.ExcelFile;
   const headerNames = {
     BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
     BasicPrice: `Basic Price (${reactLocalStorage.getObject("baseCurrency")})`,
@@ -982,9 +982,9 @@ const BOPImportListing = (props) => {
                             <>
                               <Button className={"user-btn mr5 Tour_List_Download"} id={"bopImportingListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
 
-                              <ExcelFile filename={`${showBopLabel()} Import`} fileExtension={".xls"} element={<Button id={"Excel-Downloads-bop-import"} className="p-absolute" />}>
+                              {/* <ExcelFile filename={`${showBopLabel()} Import`} fileExtension={".xls"} element={<Button id={"Excel-Downloads-bop-import"} className="p-absolute" />}>
                                 {onBtExport()}
-                              </ExcelFile>
+                              </ExcelFile> */}
                             </>
                           )}
 

@@ -10,7 +10,7 @@ import AddClientDrawer from "./AddClientDrawer";
 import { checkPermission, searchNocontentFilter, setLoremIpsum } from "../../../helper/util";
 import { CLIENT, Clientmaster, MASTERS } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import { CLIENT_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -24,9 +24,9 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
 const gridOptions = {};
 
 const ClientListing = React.memo(() => {
@@ -266,13 +266,13 @@ const ClientListing = React.memo(() => {
       return item;
     });
 
-    return (
-      <ExcelSheet data={temp} name={"Customer"}>
-        {data && data.map((ele, index) => (
-          <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
-        ))}
-      </ExcelSheet>
-    );
+    // return (
+    //   <ExcelSheet data={temp} name={"Customer"}>
+    //     {data && data.map((ele, index) => (
+    //       <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+    //     ))}
+    //   </ExcelSheet>
+    // );
   };
 
   /**
@@ -344,7 +344,7 @@ const ClientListing = React.memo(() => {
                 {
                   state.DownloadAccessibility &&
                   <>
-                    <>
+                    {/* <>
                       <ExcelFile filename={Clientmaster} fileExtension={'.xls'}
                         element={
                           <Button id={"Excel-Downloads-clientListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
@@ -353,7 +353,7 @@ const ClientListing = React.memo(() => {
                         {onBtExport()
                         }
                       </ExcelFile>
-                    </>
+                    </> */}
 
                   </>
 

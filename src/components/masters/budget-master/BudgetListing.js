@@ -10,7 +10,7 @@ import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS } from '../../../config/constants'
 import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util'
 import LoaderCustom from '../../common/LoaderCustom'
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -34,8 +34,8 @@ import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from '../../common/Tour/TourMessages'
 import { useTranslation } from 'react-i18next'
 
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 function BudgetListing(props) {
@@ -271,10 +271,10 @@ function BudgetListing(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
-        return (
-            <ExcelSheet data={TempData} name={'Budget'}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        // return (
+        //     <ExcelSheet data={TempData} name={'Budget'}>
+        //         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>);
     }
 
     const onRowSelect = (event) => {
@@ -443,7 +443,7 @@ function BudgetListing(props) {
         }
     }
 
-    const ExcelFile = ReactExport.ExcelFile;
+    // const ExcelFile = ReactExport.ExcelFile;
 
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -544,11 +544,11 @@ function BudgetListing(props) {
                                                     icon={"download mr-1"}
                                                     buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                 />
-                                                <ExcelFile filename={'Budget'} fileExtension={'.xls'} element={
+                                                {/* <ExcelFile filename={'Budget'} fileExtension={'.xls'} element={
                                                     <Button id={"Excel-Downloads-volume"} className="p-absolute" />
                                                 }>
                                                     {onBtExport()}
-                                                </ExcelFile>
+                                                </ExcelFile> */}
                                             </>
                                         }
                                         <Button id={"budgetListing_refresh"} className={"Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />

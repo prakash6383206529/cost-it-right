@@ -12,7 +12,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { INTERESTRATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -30,8 +30,8 @@ import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const InterestRateListing = (props) => {
@@ -315,10 +315,10 @@ const InterestRateListing = (props) => {
       if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {
         return null // hide column
       } else {
-        return <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+        // return <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
       }
     }).filter(Boolean) // remove null columns
-    return <ExcelSheet data={temp} name={InterestMaster}>{excelColumns}</ExcelSheet>
+    // return <ExcelSheet data={temp} name={InterestMaster}>{excelColumns}</ExcelSheet>
   }
 
   const onFilterTextBoxChanged = (e) => {
@@ -341,7 +341,7 @@ const InterestRateListing = (props) => {
 
 
   const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, dataCount } = state;
-  const ExcelFile = ReactExport.ExcelFile;
+  // const ExcelFile = ReactExport.ExcelFile;
 
   if (toggleForm) {
     return (<AddInterestRate hideForm={hideForm} data={data} />)
@@ -387,10 +387,10 @@ const InterestRateListing = (props) => {
                     {BulkUploadAccessibility && (<Button id="interestRateListing_bulkUpload" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
                     {DownloadAccessibility &&
                       <>
-                        <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
+                        {/* <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
                           <Button id={"Excel-Downloads-interestRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
                           {onBtExport()}
-                        </ExcelFile>
+                        </ExcelFile> */}
                       </>
 
                     }

@@ -13,12 +13,12 @@ import RenderGraphList from '../../common/RenderGraphList';
 import HeaderTitle from '../../common/HeaderTitle';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getConfigurationKey, getCurrencySymbol, showBopLabel } from '../../../helper';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { BOP_DOMESTIC_TEMPLATE, BOP_IMPORT_TEMPLATE, MACHINE_TEMPLATE, OPERATION_TEMPLATE, RM_DOMESTIC_TEMPLATE, RM_IMPORT_TEMPLATE } from '../../report/ExcelTemplate';
 import { reactLocalStorage } from 'reactjs-localstorage';
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function AnalyticsDrawer(props) {
@@ -237,9 +237,9 @@ function AnalyticsDrawer(props) {
             }
             return item
         })
-        return (<ExcelSheet data={temp} name={MASTER_MOVEMENT_REPORT}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
-        </ExcelSheet>);
+        // return (<ExcelSheet data={temp} name={MASTER_MOVEMENT_REPORT}>
+        //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        // </ExcelSheet>);
     }
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState();
@@ -276,9 +276,9 @@ function AnalyticsDrawer(props) {
                                         title={ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `${showBopLabel()} No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}
                                     />
                                     <div className='d-flex align-items-center'>
-                                        {showList && <ExcelFile filename={MASTER_MOVEMENT_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                                        {/* {showList && <ExcelFile filename={MASTER_MOVEMENT_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
                                             {renderColumn()}
-                                        </ExcelFile>}
+                                        </ExcelFile>} */}
                                         {showList && <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>}

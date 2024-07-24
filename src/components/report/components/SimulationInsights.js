@@ -4,7 +4,7 @@ import NoContentFound from '../../common/NoContentFound'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { ReportMaster, EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { useDispatch } from 'react-redux';
@@ -18,9 +18,9 @@ import { useTranslation } from "react-i18next"
 
 
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationInsights(props) {
   const { t } = useTranslation("common")
@@ -306,11 +306,11 @@ function SimulationInsights(props) {
 
   const returnExcelColumn = (data = [], TempData) => {
 
-    return (
+    // return (
 
-      <ExcelSheet data={TempData} name={'Simulation Insights'}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-      </ExcelSheet>);
+    //   <ExcelSheet data={TempData} name={'Simulation Insights'}>
+    //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+    //   </ExcelSheet>);
   }
 
 
@@ -427,9 +427,9 @@ function SimulationInsights(props) {
             <button type="button" className="user-btn mr5 Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
               <div className="refresh mr-0"></div>
             </button>
-            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn Tour_List_Download'}><div className="download"></div>DOWNLOAD</button>}>
+            {/* <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn Tour_List_Download'}><div className="download"></div>DOWNLOAD</button>}>
               {onBtExport()}
-            </ExcelFile>
+            </ExcelFile> */}
           </div>
         </Col>
       </Row>

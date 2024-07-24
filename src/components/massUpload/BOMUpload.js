@@ -6,7 +6,7 @@ import { getJsDateFromExcel } from "../../helper/validation";
 import { BOMUploadPart } from '../masters/actions/Part';
 import Toaster from '../common/Toaster';
 import { loggedInUserId } from "../../helper/auth";
-import { ExcelRenderer } from 'react-excel-renderer';
+// import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import DownloadUploadBOMxls, { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
 import cloudImg from '../../assests/images/uploadcloud.png';
@@ -79,64 +79,64 @@ class BOMUploadDrawer extends Component {
 
       let data = new FormData()
       data.append('file', fileObj)
+      //will upgrade
+      // ExcelRenderer(fileObj, (err, resp) => {
+      //   if (err) {
 
-      ExcelRenderer(fileObj, (err, resp) => {
-        if (err) {
+      //   } else {
 
-        } else {
+      //     fileHeads = resp.rows[0];
+      //     // fileHeads = ["SerialNumber", "BillNumber"]
+      //     let checkForFileHead
+      //     let fileData = [];
+      //     switch (String(this.props.fileName)) {
+      //       case String(BOMBULKUPLOAD):
+      //         checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(BOMUpload), fileHeads)
+      //         break;
+      //       default:
+      //         break;
+      //     }
+      //     this.setState({ bomUploadLoader: false })
+      //     if (!checkForFileHead) {
+      //       Toaster.warning('Please select file of same Master')
+      //       return false
+      //     }
+      //     resp.rows.map((val, index) => {
+      //       if (val === []) return false
+      //       if (index > 0 && val?.length > 0) {
 
-          fileHeads = resp.rows[0];
-          // fileHeads = ["SerialNumber", "BillNumber"]
-          let checkForFileHead
-          let fileData = [];
-          switch (String(this.props.fileName)) {
-            case String(BOMBULKUPLOAD):
-              checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(BOMUpload), fileHeads)
-              break;
-            default:
-              break;
-          }
-          this.setState({ bomUploadLoader: false })
-          if (!checkForFileHead) {
-            Toaster.warning('Please select file of same Master')
-            return false
-          }
-          resp.rows.map((val, index) => {
-            if (val === []) return false
-            if (index > 0 && val?.length > 0) {
+      //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
+      //         const i = val.findIndex(e => e === undefined);
+      //         if (i !== -1) {
+      //           val[i] = '';
+      //         }
 
-              // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-              const i = val.findIndex(e => e === undefined);
-              if (i !== -1) {
-                val[i] = '';
-              }
+      //         let obj = {}
+      //         val.map((el, i) => {
+      //           if ((fileHeads[i] === 'EffectiveDate') && typeof el === 'string') {
+      //             el = (DayTime(Date(el))).format('YYYY-MM-DD 00:00:00')
+      //           }
+      //           if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
+      //             el = getJsDateFromExcel(el)
+      //           }
+      //           obj[fileHeads[i]] = el;
+      //           return null;
+      //         })
+      //         fileData.push(obj)
+      //         obj = {}
+      //       }
+      //       return null;
+      //     })
 
-              let obj = {}
-              val.map((el, i) => {
-                if ((fileHeads[i] === 'EffectiveDate') && typeof el === 'string') {
-                  el = (DayTime(Date(el))).format('YYYY-MM-DD 00:00:00')
-                }
-                if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
-                  el = getJsDateFromExcel(el)
-                }
-                obj[fileHeads[i]] = el;
-                return null;
-              })
-              fileData.push(obj)
-              obj = {}
-            }
-            return null;
-          })
+      //     this.setState({
+      //       cols: resp.cols,
+      //       rows: resp.rows,
+      //       fileData: fileData,
+      //       uploadfileName: uploadfileName,
+      //     });
 
-          this.setState({
-            cols: resp.cols,
-            rows: resp.rows,
-            fileData: fileData,
-            uploadfileName: uploadfileName,
-          });
-
-        }
-      });
+      //   }
+      // });
     }
   }
 

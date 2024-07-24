@@ -94,9 +94,10 @@ function AddRMMaster(props) {
                             BasicRate: avgRate ? avgRate.RatePerConvertedUOM : null,
                             ExchangeRate: avgRate ? avgRate.ExchangeRate : null,
                             TotalCostPercent: checkForNull(avgRate?.RateConversionPerConvertedUOM) * checkForNull(avgRate?.Percentage) / 100,
-                            ConvertedUOM: avgRate ? avgRate.ConvertedUOM : null,
+                            IndexUOM: avgRate ? avgRate.ConvertedUOM : null,
+                            IndexUnitOfMeasurementId: avgRate ? avgRate.ConvertedUOMId : null,
                             IndexCurrency: avgRate ? avgRate.FromCurrency : null,
-
+                            IndexCurrencyId: avgRate ? avgRate.FromCurrencyId : null
                         };
                     });
                     setState(prevState => ({ ...prevState, commodityDetails: updatedCommodityDetails }));
@@ -130,6 +131,7 @@ function AddRMMaster(props) {
     useEffect(() => {
         getDetails(data)
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
+        dispatch(setCommodityDetails([]))
         return () => {
             dispatch(SetRawMaterialDetails({ states: {}, Technology: {}, ShowScrapKeys: {}, isShowIndexCheckBox: false }, () => { }))
             dispatch(setCommodityDetails([]))

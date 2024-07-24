@@ -16,7 +16,7 @@ import { ApplyPermission } from ".";
 import { useTranslation } from "react-i18next";
 import { RMDETAILLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import { disabledClass } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
@@ -28,9 +28,9 @@ import Toaster from "../../common/Toaster";
 import PaginationControls from "../../common/Pagination/PaginationControls";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import _ from "lodash";
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const StandardizationListing = (props) => {
@@ -412,19 +412,19 @@ const StandardizationListing = (props) => {
                 }
                 return item;
             });
-        return (
-            <ExcelSheet data={temp} name={RmMaterial}>
-                {data &&
-                    data.map((ele, index) => (
-                        <ExcelColumn
-                            key={index}
-                            label={ele.label}
-                            value={ele.value}
-                            style={ele.style}
-                        />
-                    ))}
-            </ExcelSheet>
-        );
+        // return (
+        //     <ExcelSheet data={temp} name={RmMaterial}>
+        //         {data &&
+        //             data.map((ele, index) => (
+        //                 <ExcelColumn
+        //                     key={index}
+        //                     label={ele.label}
+        //                     value={ele.value}
+        //                     style={ele.style}
+        //                 />
+        //             ))}
+        //     </ExcelSheet>
+        // );
     };
     const onExcelDownload = () => {
         setDisableDownload(true)
@@ -466,7 +466,7 @@ const StandardizationListing = (props) => {
                         )}
                         {permissions.Download && (
                             <>
-                                <>
+                                {/* <>
                                     <ExcelFile
                                         filename={"Commodity Standardization"}
                                         fileExtension={".xls"}
@@ -476,7 +476,7 @@ const StandardizationListing = (props) => {
                                     >
                                         {onBtExport()}
                                     </ExcelFile>
-                                </>
+                                </> */}
                             </>
                         )}
                         <Button id={"rmDetail_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
