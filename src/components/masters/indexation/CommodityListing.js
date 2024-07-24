@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 import { COMMODITYININDEXlISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
 import WarningMessage from '../../common/WarningMessage';
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import BulkUpload from "../../massUpload/BulkUpload";
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
 import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
@@ -30,9 +30,9 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import PaginationControls from "../../common/Pagination/PaginationControls";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import _ from "lodash";
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const CommodityInIndexListing = (props) => {
@@ -397,19 +397,19 @@ const CommodityInIndexListing = (props) => {
                 }
                 return item;
             });
-        return (
-            <ExcelSheet data={temp} name={RmMaterial}>
-                {data &&
-                    data.map((ele, index) => (
-                        <ExcelColumn
-                            key={index}
-                            label={ele.label}
-                            value={ele.value}
-                            style={ele.style}
-                        />
-                    ))}
-            </ExcelSheet>
-        );
+        // return (
+        //     <ExcelSheet data={temp} name={RmMaterial}>
+        //         {data &&
+        //             data.map((ele, index) => (
+        //                 <ExcelColumn
+        //                     key={index}
+        //                     label={ele.label}
+        //                     value={ele.value}
+        //                     style={ele.style}
+        //                 />
+        //             ))}
+        //     </ExcelSheet>
+        // );
     };
     const closeBulkUploadDrawer = () => {
         setState((prevState) => ({ ...prevState, isBulkUpload: false }));
@@ -453,7 +453,7 @@ const CommodityInIndexListing = (props) => {
                         {permissions.Download && (
                             <>
                                 <>
-                                    <ExcelFile
+                                    {/* <ExcelFile
                                         filename={"Index Commodity"}
                                         fileExtension={".xls"}
                                         element={
@@ -461,7 +461,7 @@ const CommodityInIndexListing = (props) => {
                                         }
                                     >
                                         {onBtExport()}
-                                    </ExcelFile>
+                                    </ExcelFile> */}
                                 </>
                             </>
                         )}

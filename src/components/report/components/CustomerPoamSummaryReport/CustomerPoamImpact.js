@@ -8,12 +8,12 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import { getPoamImpactReport } from '../../actions/ReportListing';
 import NoContentFound from '../../../common/NoContentFound';
 import LoaderCustom from '../../../common/LoaderCustom';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { CUSTOMER_POAM_IMPACT_EXCEL_TEMPLATE } from '../../ExcelTemplate';
 import { reactLocalStorage } from 'reactjs-localstorage';
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function CustomerPoamImpact(props) {
     const { apiObject } = props
 
@@ -168,18 +168,18 @@ function CustomerPoamImpact(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
-        return (<ExcelSheet data={TempData} name={CUSTOMER_POAM_IMPACT}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
-        </ExcelSheet>);
+        // return (<ExcelSheet data={TempData} name={CUSTOMER_POAM_IMPACT}>
+        //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        // </ExcelSheet>);
     }
     return (
         <>
             <div className={"container-fluid"}>
                 <form noValidate className="form">
                     <div className='analytics-drawer justify-content-end'>
-                        <ExcelFile filename={CUSTOMER_POAM_IMPACT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                        {/* <ExcelFile filename={CUSTOMER_POAM_IMPACT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
                             {renderColumn()}
-                        </ExcelFile>
+                        </ExcelFile> */}
                         <button type="button" className={"apply mr-2"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
 
                     </div>

@@ -10,7 +10,7 @@ import BulkUpload from "../../massUpload/BulkUpload";
 import LoaderCustom from "../../common/LoaderCustom";
 import { RmSpecification } from "../../../config/constants";
 import { SPECIFICATIONLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -29,9 +29,9 @@ import { useTranslation } from "react-i18next";
 import { TourStartAction } from "../../../actions/Common";
 
 const gridOptions = {};
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const SpecificationListing = (props) => {
   const dispatch = useDispatch();
@@ -283,19 +283,19 @@ const SpecificationListing = (props) => {
         }
         return item;
       });
-    return (
-      <ExcelSheet data={temp} name={RmSpecification}>
-        {data &&
-          data.map((ele, index) => (
-            <ExcelColumn
-              key={index}
-              label={ele.label}
-              value={ele.value}
-              style={ele.style}
-            />
-          ))}
-      </ExcelSheet>
-    );
+    // return (
+    //   <ExcelSheet data={temp} name={RmSpecification}>
+    //     {data &&
+    //       data.map((ele, index) => (
+    //         <ExcelColumn
+    //           key={index}
+    //           label={ele.label}
+    //           value={ele.value}
+    //           style={ele.style}
+    //         />
+    //       ))}
+    //   </ExcelSheet>
+    // );
   };
   /**
           * @method toggleExtraData
@@ -380,7 +380,7 @@ const SpecificationListing = (props) => {
             {permissions.Download && (
               <>
                 <>
-                  <ExcelFile
+                  {/* <ExcelFile
                     filename={"RM Specification"}
                     fileExtension={".xls"}
                     element={
@@ -388,7 +388,7 @@ const SpecificationListing = (props) => {
                     }
                   >
                     {onBtExport()}
-                  </ExcelFile>
+                  </ExcelFile> */}
                 </>
               </>
             )}

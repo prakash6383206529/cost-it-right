@@ -9,7 +9,7 @@ import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
 import { Sob } from '../../../config/constants';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -25,9 +25,9 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const BOPManage = (props) => {
@@ -202,11 +202,11 @@ const BOPManage = (props) => {
             }
             return item
         })
-        return (
+        // return (
 
-            <ExcelSheet data={temp} name={Sob}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        //     <ExcelSheet data={temp} name={Sob}>
+        //         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>);
     }
     /**
                 * @method toggleExtraData
@@ -316,12 +316,12 @@ const BOPManage = (props) => {
                             {
                                 permissions.Download &&
                                 <>
-                                    <ExcelFile filename={Sob} fileExtension={'.xls'}
+                                    {/* <ExcelFile filename={Sob} fileExtension={'.xls'}
                                         element={
                                             <Button id={"Excel-Downloads-sobListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                                         }>
                                         {onBtExport()}
-                                    </ExcelFile>
+                                    </ExcelFile> */}
                                 </>
                             }
                             <Button

@@ -21,7 +21,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { BOP_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '..';
@@ -31,9 +31,9 @@ const gridOptions = {
 
 };
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function BDNonAssociatedSimulation(props) {
     const { showEditMaster, handleEditMasterPage, showCompressedColumns, render } = useContext(simulationContext) || {};
@@ -507,10 +507,10 @@ function BDNonAssociatedSimulation(props) {
             temp.push(item)
         })
 
-        return (
-            <ExcelSheet data={temp} name={`${showBopLabel()} Data`}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        // return (
+        //     <ExcelSheet data={temp} name={`${showBopLabel()} Data`}>
+        //         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>);
     }
 
     return (
@@ -529,10 +529,10 @@ function BDNonAssociatedSimulation(props) {
                                             <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
-                                            <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                            {/* <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
                                                 <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                 {onBtExport()}
-                                            </ExcelFile>
+                                            </ExcelFile> */}
                                         </div>
                                         <div className='d-flex justify-content-end bulk-upload-row pr-0 zindex-2'>
                                             {

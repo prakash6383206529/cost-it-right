@@ -2996,7 +2996,7 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
       .catch((error) => {
         dispatch({ type: API_FAILURE });
         // Handle errors
-        console.error(error);
+
       });
   };
 }

@@ -233,11 +233,12 @@ function AssemblyTechnology(props) {
             checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
             checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) +
             checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
-            checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
+            checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) +
+            (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) -
             checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
 
-        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
         dispatch(gridDataAdded(true))
     }
@@ -368,11 +369,11 @@ function AssemblyTechnology(props) {
                 checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
                 checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) +
                 checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
-                checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
+                checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) + (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) -
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
             item.TotalOperationCost = item?.CostingPartDetails?.TotalOperationCost
-            let request = formatMultiTechnologyUpdate(item, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+            let request = formatMultiTechnologyUpdate(item, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
             dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
             }))
 

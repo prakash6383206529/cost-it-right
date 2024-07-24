@@ -222,7 +222,7 @@ function AddAssemblyOperation(props) {
     }
     if (isAssemblyTechnology) {
       item.TotalOperationCost = operationCostAssemblyTechnology
-      let request = formatMultiTechnologyUpdate(item, netPOPrice, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+      let request = formatMultiTechnologyUpdate(item, netPOPrice, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
       dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
       }))
       dispatch(gridDataAdded(true))
@@ -234,7 +234,7 @@ function AddAssemblyOperation(props) {
     } else {
       dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
         if (!CostingViewMode) {
-          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
 
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }

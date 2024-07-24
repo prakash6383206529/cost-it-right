@@ -10,7 +10,7 @@ import NoContentFound from "../../common/NoContentFound";
 import BulkUpload from "../../massUpload/BulkUpload";
 import LoaderCustom from "../../common/LoaderCustom";
 import { ComponentPart } from "../../../config/constants";
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import { INDIVIDUALPART_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -32,8 +32,8 @@ import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { showTitleForActiveToggle } from '../../../../src/helper/util';
 import Switch from "react-switch";
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const IndivisualPartListing = (props) => {
@@ -591,26 +591,26 @@ const IndivisualPartListing = (props) => {
       return item;
     });
 
-    return (
+    // return (
 
-      <ExcelSheet data={temp} name={ComponentPart}>
-        {excelData &&
-          excelData.map((ele, index) => (
+    //   <ExcelSheet data={temp} name={ComponentPart}>
+    //     {excelData &&
+    //       excelData.map((ele, index) => (
 
-            <ExcelColumn
-              key={index}
-              label={ele.label}
-              value={ele.value}
-              style={ele.style}
-            />
-          ))}
-      </ExcelSheet>
-    );
+    //         <ExcelColumn
+    //           key={index}
+    //           label={ele.label}
+    //           value={ele.value}
+    //           style={ele.style}
+    //         />
+    //       ))}
+    //   </ExcelSheet>
+    // );
   };
   const onFilterTextBoxChanged = (e) => {
     setSearchText(state.gridApi.setQuickFilter(e.target.value));
   }
-  const ExcelFile = ReactExport.ExcelFile;
+  // const ExcelFile = ReactExport.ExcelFile;
 
   var filterParams = {
     date: "",
@@ -761,9 +761,9 @@ const IndivisualPartListing = (props) => {
                   <>
                     <Button className="mr5 Tour_List_Download" id={"individualPartListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                     />
-                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-component-part"} className="p-absolute" />}>
+                    {/* <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-component-part"} className="p-absolute" />}>
                       {onBtExport()}
-                    </ExcelFile>
+                    </ExcelFile> */}
                   </>
 
                 )}

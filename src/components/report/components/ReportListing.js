@@ -12,7 +12,7 @@ import { getReportListing } from '../report/actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import WarningMessage from '../common/WarningMessage'
@@ -22,9 +22,9 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 
 
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -409,20 +409,20 @@ function ReportListing(props) {
 
 
     const returnExcelColumn = (data = [], TempData) => {
-        return (
-            <ExcelSheet data={TempData} name={ReportMaster}>
-                {data &&
-                    data.map((ele, index) => (
-                        <ExcelColumn
-                            key={index}
-                            label={(ele.label === "Department Code") ? `${handleDepartmentHeader()} Code` :
-                                (ele.label === "Department Name") ? `${handleDepartmentHeader()} Name` :
-                                    ele.label}
-                            value={ele.value}
-                        />
-                    ))}
-            </ExcelSheet>
-        );
+        // return (
+        //     <ExcelSheet data={TempData} name={ReportMaster}>
+        //         {data &&
+        //             data.map((ele, index) => (
+        //                 <ExcelColumn
+        //                     key={index}
+        //                     label={(ele.label === "Department Code") ? `${handleDepartmentHeader()} Code` :
+        //                         (ele.label === "Department Name") ? `${handleDepartmentHeader()} Name` :
+        //                             ele.label}
+        //                     value={ele.value}
+        //                 />
+        //             ))}
+        //     </ExcelSheet>
+        // );
     };
 
     /**
@@ -452,9 +452,9 @@ function ReportListing(props) {
                     <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100">
                             <div>
-                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                {/* <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
-                                </ExcelFile>
+                                </ExcelFile> */}
 
                             </div>
                         </div>
@@ -541,7 +541,6 @@ function ReportListing(props) {
                         <AgGridColumn field="RejectionCost" headerName="Rejection Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ICCOn" headerName="ICC On" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ICCCost" headerName="ICC Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="PaymentTermCost" headerName="Payment Terms"></AgGridColumn>
                         {/* <AgGridColumn field="PaymentTermCost" headerName="Payment Terms"></AgGridColumn> */}
                         <AgGridColumn field="NetOverheadAndProfitCost" headerName="Net Overhead & Profits"></AgGridColumn>
                         <AgGridColumn field="PackagingCost" headerName="Packaging Cost"></AgGridColumn>
@@ -554,10 +553,11 @@ function ReportListing(props) {
                         <AgGridColumn field="TotalCost" headerName="Total Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetDiscountsCost" headerName="Hundi/Other Discount" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="AnyOtherCost" headerName="Any Other Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="PaymentTermCost" headerName="Payment Terms"></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName={`Net PO Price (${reactLocalStorage.getObject("baseCurrency")})`}></AgGridColumn>
                         <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                         <AgGridColumn field="NetPOPriceInCurrency" headerName="Net PO Price Currency"></AgGridColumn>
-                        <AgGridColumn field="Remark" headerName="Remark" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="Remark" headerName="Remark123" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedBy" headerName="CreatedBy" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                         <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>

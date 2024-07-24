@@ -23,7 +23,7 @@ import {
     CostingSimulationDownloadBOP, CostingSimulationDownloadMR, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
     , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, IdForMultiTechnology, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, STGridForToken, SimulationDownloadBOP, COMBINEDPROCESSSIMULATION
 } from '../../../config/masterData'
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -42,9 +42,9 @@ import { simulationContext } from '.';
 
 const gridOptions = {};
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
@@ -1269,25 +1269,25 @@ function CostingSimulation(props) {
         }
         let temp = []
         temp = SimulationUtils(TempData)    // common function 
-        return (
-            <ExcelSheet data={temp} name={'Costing'}>
-                {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>
-        );
+        // return (
+        //     <ExcelSheet data={temp} name={'Costing'}>
+        //         {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>
+        // );
     }
 
     const returnExcelColumnSecond = (data = []) => {
-        return (
-            <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
-                {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        // return (
+        //     <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
+        //         {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>);
     }
 
     const returnExcelColumnImpactedMaster = () => {
         let multiDataSet = impactmasterDownload(impactedMasterData)
-        return (
-            <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
-        );
+        // return (
+        //     <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
+        // );
     }
 
     const renderColumn = () => {
@@ -1616,7 +1616,7 @@ function CostingSimulation(props) {
                                     <Col md="3" lg="3" className="search-user-block mb-3">
                                         <div className="d-flex justify-content-end bd-highlight w100">
 
-                                            {(showRMColumn || showBOPColumn || showOperationColumn ||
+                                            {/* {(showRMColumn || showBOPColumn || showOperationColumn ||
                                                 showMachineRateColumn || showExchangeRateColumn || showSurfaceTreatmentColumn)
                                                 ?
                                                 <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
@@ -1632,7 +1632,7 @@ function CostingSimulation(props) {
                                                     {returnExcelColumnSecond()}
                                                 </ExcelFile>
 
-                                            }
+                                            } */}
                                             <button type="button" className="user-btn" id={'other_simulation_reset_grid'} title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>

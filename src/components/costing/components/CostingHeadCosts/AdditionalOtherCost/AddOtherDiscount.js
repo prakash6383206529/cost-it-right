@@ -37,7 +37,8 @@ function AddOtherDiscount(props) {
     const costData = useContext(costingInfoContext);
     const [applicabilityCost, setApplicabilityCost] = useState('')
     const dispatch = useDispatch()
-    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData } = useSelector(state => state.costing)
+    const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData } = useSelector(state => state.costing)
+    
     const fieldValuesForPercent = useWatch({
         control,
         name: ['PercentageOtherCost', 'OtherCostApplicability'],

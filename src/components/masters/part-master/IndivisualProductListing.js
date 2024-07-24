@@ -15,7 +15,7 @@ import BulkUpload from "../../massUpload/BulkUpload";
 import LoaderCustom from "../../common/LoaderCustom";
 import Toaster from "../../common/Toaster";
 import { ComponentPart } from "../../../config/constants";
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import { INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -30,9 +30,9 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { useTranslation } from "react-i18next";
 import { Steps } from "../../common/Tour/TourMessages";
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -250,19 +250,19 @@ const IndivisualProductListing = (props) => {
         }
         return item;
       });
-    return (
-      <ExcelSheet data={temp} name={ComponentPart}>
-        {data &&
-          data.map((ele, index) => (
-            <ExcelColumn
-              key={index}
-              label={ele.label}
-              value={ele.value}
-              style={ele.style}
-            />
-          ))}
-      </ExcelSheet>
-    );
+    // return (
+    //   <ExcelSheet data={temp} name={ComponentPart}>
+    //     {data &&
+    //       data.map((ele, index) => (
+    //         <ExcelColumn
+    //           key={index}
+    //           label={ele.label}
+    //           value={ele.value}
+    //           style={ele.style}
+    //         />
+    //       ))}
+    //   </ExcelSheet>
+    // );
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -345,7 +345,7 @@ const IndivisualProductListing = (props) => {
 
               {permissions.Download && (
                 <>
-                  <ExcelFile
+                  {/* <ExcelFile
                     filename={"Product"}
                     fileExtension={".xls"}
                     element={
@@ -361,7 +361,7 @@ const IndivisualProductListing = (props) => {
                     }
                   >
                     {onBtExport()}
-                  </ExcelFile>
+                  </ExcelFile> */}
                 </>
               )}
               <button

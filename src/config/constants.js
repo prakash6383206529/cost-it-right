@@ -19,8 +19,8 @@ export const config = () => {
 
 
 // DEVELOPMENT
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-const BASE_URL = `http://10.10.1.100:10152/api/v1`
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -600,6 +600,7 @@ export const API = {
   getCostingCondition: `${BASE_URL}/costing/get-costing-condition-master-data`,
   getCostingPaymentTermDetail: `${BASE_URL}/costing/get-costing-payment-term-detail`,
   saveCostingPaymentTermDetail: `${BASE_URL}/costing/save-costing-payment-term-detail`,
+  getCostingTcoDetails: `${BASE_URL}/costing/get-costing-tco-details`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1695,7 +1696,8 @@ export const COSTING_ACC_OPEN_CLOSE_STATUS = 'COSTING_ACC_OPEN_CLOSE_STATUS'
 export const SET_TOOL_COST_ICC = 'SET_TOOL_COST_ICC'
 
 export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
-
+export const GET_TCO_DATA = 'GET_TCO_DATA'
+export const SET_RFQ_COSTING_TYPE = 'SET_RFQ_COSTING_TYPE'
 //WEIGHT CALCULATION COSTING
 
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';
@@ -2372,10 +2374,6 @@ export const VIEW_COSTING_DATA = {
   iccPercent: 'ICC %',
   iccApplicablityValue: 'ICC Value',
   ICCRemark: 'Icc Remark',
-  paymentApplicablity: 'Payment Applicability',
-  paymentPercent: 'Payment %',
-  paymentcApplicablityValue: 'Payment Value',
-  PaymentTermRemark: 'Payment Remark',
   nOverheadProfit: 'Net Overhead Profits',
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
@@ -2399,6 +2397,10 @@ export const VIEW_COSTING_DATA = {
   BasicRate: 'Basic Price',
   npvCost: 'Net NPV Cost',
   conditionCost: 'Net Costing Condition',
+  paymentApplicablity: 'Payment Applicability',
+  paymentPercent: 'Payment %',
+  paymentcApplicablityValue: 'Payment Value',
+  PaymentTermRemark: 'Payment Remark',
   nPOPrice: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   currencyTitle: 'Currency',
   // currencyRate: 'Currency Rate',
@@ -2613,22 +2615,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     label: 'ICC Remark',
     value: 'ICCRemark'
   },
-  {
-    label: 'Payment Applicability',
-    value: 'paymentApplicablity'
-  },
-  {
-    label: 'Payment %',
-    value: 'paymentPercent'
-  },
-  {
-    label: 'Payment Value',
-    value: 'paymentcApplicablityValue'
-  },
-  {
-    label: 'Payment Remark',
-    value: 'PaymentTermRemark'
-  },
+
   {
     label: 'Net Overhead Profits',
     value: 'nOverheadProfit'
@@ -2697,6 +2684,22 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
   {
     label: 'Costing Condition',
     value: 'conditionCost'
+  },
+  {
+    label: 'Payment Applicability',
+    value: 'paymentApplicablity'
+  },
+  {
+    label: 'Payment %',
+    value: 'paymentPercent'
+  },
+  {
+    label: 'Payment Value',
+    value: 'paymentcApplicablityValue'
+  },
+  {
+    label: 'Payment Remark',
+    value: 'PaymentTermRemark'
   },
   {
     label: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
@@ -3199,7 +3202,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.12";
+export const VERSION = "V3.0.14";
 
 
 

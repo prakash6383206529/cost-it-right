@@ -15,7 +15,7 @@ import { RM_MASTER_ID, APPROVAL_ID, RmDomestic } from '../../../../config/consta
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from '../../../../helper';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import { editRMIndexedSimulationData, getListingForSimulationCombined, getRMIndexationCostingSimulationListing, getRMIndexationSimulationListing, setSelectedRowForPagination } from '../../../simulation/actions/Simulation';
@@ -36,9 +36,9 @@ import { RMDOMESTIC } from '../../../../config/constants';
 import { deleteRawMaterialAPI, getAllrmIndexationSimulationList } from '../../../masters/actions/Material';
 import AnalyticsDrawer from '../../../masters/material-master/AnalyticsDrawer';
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function RMIndexationSimulationListing(props) {
@@ -658,11 +658,11 @@ function RMIndexationSimulationListing(props) {
             return item
         })
 
-        return (
+        // return (
 
-            <ExcelSheet data={temp} name={RmDomestic}>
-                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        //     <ExcelSheet data={temp} name={RmDomestic}>
+        //         {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>);
     }
 
 
@@ -938,12 +938,12 @@ function RMIndexationSimulationListing(props) {
                                                             icon={"download mr-1"}
                                                             buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                         />
-                                                        <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                        {/* <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
                                                             <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />
 
                                                         }>
                                                             {onBtExport()}
-                                                        </ExcelFile>
+                                                        </ExcelFile> */}
                                                     </>
                                                 }
 

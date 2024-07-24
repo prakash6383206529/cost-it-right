@@ -23,7 +23,7 @@ import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import { APPLICABILITY_RM_SIMULATION, FORGING, RM_IMPACT_DOWNLOAD_EXCEl, RM_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -38,9 +38,9 @@ const gridOptions = {
 
 };
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function RMIndexationSimulation(props) {
 
@@ -68,7 +68,6 @@ function RMIndexationSimulation(props) {
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [scrapRateviewTooltip, setScrapRateViewTooltip] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
-    console.log('isLoader in INDEX: ', isLoader);
     const [isScrapUOMApplyTemp, setIsScrapUOMApplyTemp] = useState(false)
     const [openCommodityDrawer, setOpenCommodityDrawer] = useState(false)
     const [editIndex, setEditIndex] = useState(false)
@@ -129,7 +128,6 @@ function RMIndexationSimulation(props) {
     useEffect(() => {
         if ((!props?.isFromApprovalListing && !isApprovalSummary && !isCostingSimulation)) {
             setIsLoader(true)
-            console.log("HERE1");
             let rawMaterialIds = isCostingSimulation ? props?.list && props?.list?.length > 0 && props?.list.map(item => item.NewRawMaterialIndexationDetails.RawMaterialId) : props?.list && props?.list?.length > 0 && props?.list.map(item => item.RawMaterialId)
             let obj = {
 
@@ -175,15 +173,12 @@ function RMIndexationSimulation(props) {
                 SimulationId: props?.simulationId
             }
             setIsLoader(true)
-            console.log("HERE 2");
             setSimulationId(props?.simulationId)
 
             dispatch(editRMIndexedSimulationData(obj1, (res) => {
-                console.log('obj1: ', obj1);
 
                 if (res?.data?.Result) {
                     setTimeout(() => {
-                        console.log(res?.data?.Data, "res?.data?.Data");
                         setRunSimulationClicked(true)
                         setIsViewFlag(true)
                         setTokenNumber(res?.data?.Data?.TokenNumber)
@@ -217,7 +212,6 @@ function RMIndexationSimulation(props) {
 
     const verifySimulation = debounce((e, type) => {
         setIsDisable(true)
-        console.log("HERE 3");
         setIsLoader(true)
         if (type !== 'verify') {
 
@@ -477,7 +471,6 @@ function RMIndexationSimulation(props) {
 
     const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '') => {
         const selectedRow = indexedRMForSimulation[editIndex]
-        console.log("HERE 4");
 
         setIsLoader(true)
         let updatedOtherCostTotal = []
@@ -845,7 +838,6 @@ function RMIndexationSimulation(props) {
     }
 
     const changeList = (value) => {
-        console.log("SETTING FROM HERE");
         setIsLoader(true)
         list && list?.map(item => {
             item.Percentage = value;
@@ -980,10 +972,10 @@ function RMIndexationSimulation(props) {
             item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
             temp.push(item)
         })
-        return (
-            <ExcelSheet data={temp} name={'RM Data'}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        // return (
+        //     <ExcelSheet data={temp} name={'RM Data'}>
+        //         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>);
     }
 
     const sendForApproval = () => {
@@ -1093,18 +1085,18 @@ function RMIndexationSimulation(props) {
                                                 <AgGridColumn width={columnWidths.NewFromDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.FromDate' : "NewFromDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New From Date"} ></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.OldToDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.ToDate' : "OldToDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old To Date"} ></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.NewToDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.ToDate' : "NewToDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New To Date"} ></AgGridColumn>
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
                                                     (Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) ||
                                                         Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) ||
                                                         String(props?.masterId) === String(RMIMPORT))
                                                         ? "Basic Rate (Currency)"
                                                         : `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
                                                 } marryChildren={true} >
-                                                    <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.BasicRate' : "OldBasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "OldBasicRatePerUOM"}></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable='false' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.BasicRate' : "NewBasicRatePerUOM"} headerName="Revised" colId='NewBasicRatePerUOM' ></AgGridColumn>
+                                                    <AgGridColumn width={150} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.BasicRate' : "OldBasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "OldBasicRatePerUOM"}></AgGridColumn>
+                                                    <AgGridColumn width={150} cellRenderer='newBasicRateFormatter' editable='false' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.BasicRate' : "NewBasicRatePerUOM"} headerName="Revised" colId='NewBasicRatePerUOM' ></AgGridColumn>
                                                 </AgGridColumn>
 
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} marryChildren={true} headerName={
                                                     (Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) ||
                                                         Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) ||
                                                         String(props?.masterId) === String(RMIMPORT)
@@ -1115,18 +1107,18 @@ function RMIndexationSimulation(props) {
 
                                                     {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.ScrapRatePerScrapUOM} field={isImpactedMaster ? "OldScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} editable='false' cellRenderer='oldScrapRateFormatterPerScrapUOM' headerName="Existing (In Scrap UOM)" colId={isImpactedMaster ? "ScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} ></AgGridColumn>}
                                                     {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.NewScrapRatePerScrapUOM} cellRenderer='newScrapRateUOMFormatter' field='NewScrapRatePerScrapUOM' headerName="Revised (In Scrap UOM)" colId={"NewScrapRatePerScrapUOM"} editable={(isRunSimulationClicked || isApprovalSummary) ? false : EditableCallbackForNewScrapRate}></AgGridColumn>}
-                                                    <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.ScrapRate' : "OldScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "OldScrapRate"} ></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.ScrapRate' : "NewScrapRate"} headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} headerComponent={'revisedScrapRateHeader'} editable={(isRunSimulationClicked || isApprovalSummary || isCostingSimulation) ? false : EditableCallbackForNewScrapRate} ></AgGridColumn>
+                                                    <AgGridColumn width={150} field={isImpactedMaster ? "OldScrapRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.ScrapRate' : "OldScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "OldScrapRate"} ></AgGridColumn>
+                                                    <AgGridColumn width={150} cellRenderer={'newScrapRateFormatter'} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.ScrapRate' : "NewScrapRate"} headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} headerComponent={'revisedScrapRateHeader'} editable={(isRunSimulationClicked || isApprovalSummary || isCostingSimulation) ? false : EditableCallbackForNewScrapRate} ></AgGridColumn>
                                                 </AgGridColumn>
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
                                                     (Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) ||
                                                         Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) ||
                                                         String(props?.masterId) === String(RMIMPORT))
                                                         ? "Other Cost (Currency)"
                                                         : `Other Cost (${reactLocalStorage.getObject("baseCurrency")})`
                                                 } marryChildren={true} >
-                                                    <AgGridColumn width={120} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OldOtherNetCost" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.OtherNetCost' : "OldOtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldOtherNetCost" : "OldOtherNetCost"} ></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                    <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OldOtherNetCost" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.OtherNetCost' : "OldOtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldOtherNetCost" : "OldOtherNetCost"} ></AgGridColumn>
+                                                    <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
                                                     (Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) ||

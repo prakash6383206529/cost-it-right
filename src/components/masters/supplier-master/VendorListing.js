@@ -11,7 +11,7 @@ import { checkPermission, searchNocontentFilter, setLoremIpsum, showTitleForActi
 import { MASTERS, VENDOR, VendorMaster } from "../../../config/constants";
 import { getConfigurationKey, loggedInUserId, showBopLabel } from "../../../helper";
 import LoaderCustom from "../../common/LoaderCustom";
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import { VENDOR_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -35,8 +35,8 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const VendorListing = (props) => {
   const dispatch = useDispatch();
@@ -664,14 +664,14 @@ const VendorListing = (props) => {
       }
       return item;
     });
-    return (
-      <ExcelSheet data={temp} name={VendorMaster}>
-        {excelData &&
-          excelData.map((ele, index) => (
-            <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
-          ))}
-      </ExcelSheet>
-    );
+    // return (
+    //   <ExcelSheet data={temp} name={VendorMaster}>
+    //     {excelData &&
+    //       excelData.map((ele, index) => (
+    //         <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+    //       ))}
+    //   </ExcelSheet>
+    // );
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -680,7 +680,7 @@ const VendorListing = (props) => {
 
   const {
     isOpenVendor, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, } = state;
-  const ExcelFile = ReactExport.ExcelFile;
+  // const ExcelFile = ReactExport.ExcelFile;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -747,9 +747,9 @@ const VendorListing = (props) => {
                 <Button className="mr5 Tour_List_Download" id={"vendorListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                 />
 
-                <ExcelFile filename={"Vendor"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-vendor"} className="p-absolute" />}>
+                {/* <ExcelFile filename={"Vendor"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-vendor"} className="p-absolute" />}>
                   {onBtExport()}
-                </ExcelFile>
+                </ExcelFile> */}
               </>
               )}
               <Button id={"vendorListing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
