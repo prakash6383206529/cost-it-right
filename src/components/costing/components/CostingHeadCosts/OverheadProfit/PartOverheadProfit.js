@@ -73,6 +73,7 @@ function PartOverheadProfit(props) {
       let basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+      console.log('basicRate11111: ', basicRate);
       let reqData = {
         "CostingId": item.CostingId,
         "LoggedInUserId": loggedInUserId(),
@@ -93,6 +94,8 @@ function PartOverheadProfit(props) {
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
       }
+      console.log("11111111111111");
+      console.log('reqData:11111111 ', reqData);
       dispatch(saveComponentOverheadProfitTab(reqData, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);

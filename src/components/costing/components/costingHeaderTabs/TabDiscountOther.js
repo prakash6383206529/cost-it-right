@@ -346,12 +346,12 @@ function TabDiscountOther(props) {
     }
   }, [])
 
-  useEffect(() => {
-    setDiscountObj({
-      ...discountObj,
-      paymentTermCost: UpdatePaymentTermCost?.NetCost
-    })
-  }, [UpdatePaymentTermCost])
+  // useEffect(() => {
+  //   setDiscountObj({
+  //     ...discountObj,
+  //     paymentTermCost: UpdatePaymentTermCost?.NetCost
+  //   })
+  // }, [UpdatePaymentTermCost])
   useEffect(() => {
     if (RMCCTabData && RMCCTabData[0]?.CostingId && props?.activeTab === '6') {
       let npvSum = 0
@@ -408,20 +408,25 @@ function TabDiscountOther(props) {
   useEffect(() => {
     if (CostingDataList && CostingDataList.length > 0) {
       let dataList = CostingDataList[0]
+      console.log('dataList: ', dataList);
+      console.log('dataList.NetOverheadAndProfitCost: ', dataList.NetOverheadAndProfitCost);
       const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
       setTotalCost(total)
       const discountValues = {
         ...DiscountCostData,
+        BasicRateINR: dataList?.BasicRate,
+        NetPOPriceINR: dataList?.TotalCost,
         totalCost: total,
         paymentTermCost: UpdatePaymentTermCost?.NetCost
 
       }
+      console.log('discountValues:333333333333 222', discountValues);
 
       dispatch(setDiscountCost(discountValues, () => { }))
       //dispatch(setDiscountCost({ ...discountObj, totalCost: total }, () => { }));
     }
 
-  }, [])
+  }, [CostingDataList, UpdatePaymentTermCost?.NetCost])
 
   //USED TO SET ITEM DATA THAT WILL CALL WHEN CLICK ON OTHER TAB
   useEffect(() => {
@@ -626,6 +631,8 @@ function TabDiscountOther(props) {
               totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
               totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
+            console.log('discountValues:useEffect1111111111111 333', discountValues);
+
             dispatch(setDiscountCost(discountValues, () => { }))
 
             // setTimeout(() => {           // IF ANY ISSUE COME IN DISCOUNT TAB UNCOMMENT THE SETTIMEOUT ON FIRST PRIORITY AND TEST 
@@ -643,6 +650,7 @@ function TabDiscountOther(props) {
               totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
               totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
+            console.log('topHeaderData: ', topHeaderData);
             setDiscountObj(topHeaderData)
             props.setHeaderCost(topHeaderData, headerCosts, costData)
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -677,6 +685,7 @@ function TabDiscountOther(props) {
       totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
       totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
     }
+    console.log('discountValues:useEffect222222 444', discountValues);
     dispatch(setDiscountCost(discountValues, () => { }))
 
     setTimeout(() => {
