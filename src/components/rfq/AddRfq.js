@@ -194,6 +194,7 @@ function AddRfq(props) {
     const [editBopId, setEditBopId] = useState("")
     const [isLoader, setIsLoader] = useState(false)
     const [prNumber, setPrNumber] = useState([])
+    const [isDisabled, setIsDisabled] = useState(false)
 
     const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ;
 
@@ -202,12 +203,10 @@ function AddRfq(props) {
 
 
 
-    const handleRadioChange = (e) => {
-        const value = e.target.value;
-        setSelectedOption(e.target.value);
+    const handleRadioChange = (type) => () => {
+        setSelectedOption(type);
         // Update state based on radio button selection
-        setQuationType(value);
-
+        setQuationType(type);
     };
 
     useEffect(() => {
@@ -661,7 +660,9 @@ function AddRfq(props) {
 
 
         dispatch(deleteQuotationPartDetail(rowData?.QuotationPartId, (res) => {
-            Toaster.success('Part has been deleted successfully')
+            const type = selectedOption === 'RM' ? 'RM' : selectedOption === 'BOP' ? 'BOP' : 'Part';
+            Toaster.success(`${type} has been deleted successfully.`);
+
         }))
         if (selectedOption === "componentAssembly") {
             let arr = final && final.filter(item => item.PartId !== rowData?.PartId)
@@ -1218,6 +1219,8 @@ function AddRfq(props) {
         ]);
     }
     const addRowPartNoTable = () => {
+        setResetRmFields(false)
+        setResetBopFields(false)
         if (isNFRFlow) {
             dispatch(getPartNFRRMList(nfrId.value, getValues('partNumber')?.value, (res) => {
 
@@ -1376,49 +1379,50 @@ function AddRfq(props) {
 
 
         } else {
-            if (selectedOption === "componentAssembly" && (remark === '' || childPartFiles?.length === 0)) {
-                Toaster.warning('Before save the part, please fill Remarks and Attachments!');
-                return;
-            } else if (selectedOption === "RM" && (RawMaterialList[0]?.RawMaterialReamrk === '' || RawMaterialList[0]?.RawMaterialAttachments?.length === 0)) {
-                Toaster.warning('Before save the Raw Material, please fill Remarks and Attachments!');
-                return;
-            } else if (selectedOption === "BOP" && bopList[0]?.BopReamrk === "" || bopList[0]?.BopAttachments?.length === 0) {
-                Toaster.warning('Remarks and Attachments are required!');
-                return;
-            } if (!updateButtonPartNoTable && rmDataList?.map(item => item?.RawMaterialCode)?.includes(RawMaterialList[0]?.RawMaterialCode)) {
 
+            if (!updateButtonPartNoTable && rmDataList?.map(item => item?.RawMaterialCode)?.includes(RawMaterialList[0]?.RawMaterialCode)) {
                 Toaster.warning('This Raw Material is already added.');
+                return false
 
             } else if (!updateButtonPartNoTable && bopDataList?.map(item => item?.BoughtOutPartChildId)?.includes(bopList[0]?.BoughtOutPartChildId)) {
                 Toaster.warning('This BOP is already added.');
-            } else if (updateButtonPartNoTable && partList?.map(item => item?.PartId)?.includes(getValues('partNumber')?.value)) {
+                return false
+            } else if (!updateButtonPartNoTable && partList?.map(item => item?.PartId)?.includes(getValues('partNumber')?.value)) {
                 Toaster.warning('This Part is already added.');
+                return false
+
 
             }
             let objTemp = {};
             let arrTemp = [];
             let Data = {}
             if (selectedOption === "RM") {
-                const label = RawMaterialList[0]?.RawMaterialName;
 
-                const isRMGradeMissing = !RawMaterialList[0]?.RawMaterialGrade;
+                if (RawMaterialList.length === 0) {
 
-                const isRMSpecificationMissing = !RawMaterialList[0]?.RawMaterialSpecification;
-
-                if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
-                    const missingRequirements = [];
-                    if (isRMGradeMissing) {
-                        missingRequirements.push('RM Grade');
-                    }
-                    if (isRMSpecificationMissing) {
-                        missingRequirements.push('RM Specification');
-                    } if (requirementDate === "") {
-                        Toaster.warning("Please select Requirement Date");
-                        return false;
-                    }
-                    const message = `Please select ${missingRequirements.join(' and ')}`;
-                    Toaster.warning(message);
+                    Toaster.warning("Please select all the mandatory fields");
+                    return false
+                } else if (selectedOption === "RM" && (RawMaterialList[0]?.RawMaterialReamrk === '' || RawMaterialList[0]?.RawMaterialAttachments?.length === 0)) {
+                    Toaster.warning('Before save the Raw Material, please fill Remarks and Attachments!');
+                    return;
                 }
+                // const label = RawMaterialList[0]?.RawMaterialName;
+                // const isRMGradeMissing = !RawMaterialList[0]?.RawMaterialGrade;
+                // const isRMSpecificationMissing = !RawMaterialList[0]?.RawMaterialSpecification;
+                // if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
+                //     const missingRequirements = [];
+                //     if (isRMGradeMissing) {
+                //         missingRequirements.push('RM Grade');
+                //     }
+                //     if (isRMSpecificationMissing) {
+                //         missingRequirements.push('RM Specification');
+                //     } if (requirementDate === "") {
+                //         Toaster.warning("Please select Requirement Date");
+                //         return false;
+                //     }
+                //     const message = `Please select ${missingRequirements.join(' and ')}`;
+                //     Toaster.warning(message);
+                // }
             } else if (selectedOption === "componentAssembly") {
                 if (getValues('HavellsDesignPart') === "") {
                     Toaster.warning("Please select Havells Design part");
@@ -1426,12 +1430,31 @@ function AddRfq(props) {
                 } if (["", "-"].includes(getValues('TargetPrice')) && getValues("HavellsDesignPart")?.label === HAVELLS_DESIGN_PARTS) {
                     Toaster.warning("ZBC costing approval is required for this plant to raise a quote.");
                     return false;
+                } if ((remark === '' || childPartFiles?.length === 0)) {
+                    Toaster.warning('Before save the part, please fill Remarks and Attachments!');
+                    return;
+                }
+            } else if (selectedOption === "BOP") {
+
+                if (bopList.length === 0) {
+
+
+                    Toaster.warning("Please select all the mandatory fields");
+                    return false
+                } else if (selectedOption === "BOP" && bopList[0]?.BopReamrk === "" || bopList[0]?.BopAttachments?.length === 0) {
+                    Toaster.warning('Remarks and Attachments are required!');
+                    return;
                 }
             } if (requirementDate === "") {
                 Toaster.warning("Please select Requirement Date");
                 return false;
-            }
+            } if (getValues('UOM')?.value === "" || getValues('UOM')?.value === undefined) {
 
+                Toaster.warning("Please select UOM");
+                return false;
+            } if (!showVendorSection && (getValues('remark')?.value === "" || getValues('remark')?.value === undefined)) {
+                Toaster.warning("Notes field is mandatory.");
+            }
             if (nfrId && nfrId.value !== null) {//CHECK_NFR
                 dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {
                     Data = res.data.Data
@@ -1846,17 +1869,11 @@ function AddRfq(props) {
                 let updatedArr = []
                 setIsLoader(true)
                 dispatch(saveRfqPartDetails(obj, (res) => {
-
-
                     if (res?.data?.Result) {
                         setIsLoader(false)
-
-                        if (!updateButtonPartNoTable) {
-                            Toaster.success('Part Details has been added successfully.');
-                        } else {
-                            Toaster.success('Part Details has been updated successfully.');
-                        }
-
+                        const type = selectedOption === 'RM' ? 'RM' : selectedOption === 'BOP' ? 'BOP' : 'Part';
+                        const action = updateButtonPartNoTable ? 'updated' : 'added';
+                        Toaster.success(`${type} Details have been ${action} successfully.`);
                         setPartIdentity(res?.data?.Identity);
                         // onResetPartNoTable();
                         // setTableData([]);
@@ -1945,6 +1962,7 @@ function AddRfq(props) {
                     setEditRawMaterialId("")
                     setEditBopId("")
                     setBopList([])
+                    setIsDisabled(false)
                     // setPrNumber([])
                     //dispatch(setQuotationIdForRfq(""))
                 }, 200)
@@ -1981,6 +1999,7 @@ function AddRfq(props) {
         setSopQuantityList([])
         setSOPDate('')
         setStorePartsDetail([]);
+        setIsDisabled(false)
 
         // setValue('technology', "")
     }
@@ -2415,6 +2434,10 @@ function AddRfq(props) {
     const handleRMSpecification = (newValue) => {
         setRMSpecification({ label: newValue?.label, value: newValue?.value })
     }
+    const setDisabled = (state) => {
+        setIsDisabled(state);
+    };
+
     const handleChangeUOM = (newValue) => {
         setSelectedUOM(newValue)
         if (updateButtonPartNoTable) {
@@ -2519,67 +2542,65 @@ function AddRfq(props) {
                             <div>
                                 <div className='raise-rfq-radio-wrap mt-3'>
                                     <Form>
-                                        <FormGroup className="d-flex" tag="fieldset">
-                                            <FormGroup check>
-                                                <Label check>
-                                                    <Input
-                                                        name="radioGroup"
-                                                        type="radio"
-                                                        value="componentAssembly"
-                                                        checked={selectedOption === 'componentAssembly'}
-                                                        onChange={handleRadioChange}
-                                                        disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
-                                                    />
-                                                    {' '}
-                                                    Component/Assembly
-                                                </Label>
-                                            </FormGroup>
-                                            <FormGroup check>
-                                                <Label check>
-                                                    <Input
-                                                        name="radioGroup"
-                                                        type="radio"
-                                                        value="RM"
-                                                        checked={selectedOption === 'RM'}
-                                                        onChange={handleRadioChange}
-                                                        disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                        <Label id="rfq_componentAssembly" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                            <input
+                                                type="radio"
+                                                name="radioGroup"
+                                                className=''
+                                                id='componentAssembly'
+                                                checked={selectedOption === 'componentAssembly' ? true : false}
+                                                onClick={handleRadioChange("componentAssembly")}
+                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                            />{" "}
+                                            <span> Component/Assembly</span>
+                                        </Label>
+                                        <Label id="rfq_rawMaterial" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                            <input
+                                                type="radio"
+                                                name="radioGroup"
+                                                className=''
+                                                id='rawMaterial'
+                                                checked={
+                                                    selectedOption === 'RM' ? true : false
+                                                }
+                                                onClick={handleRadioChange("RM")
+                                                }
+                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                            />{" "}
+                                            <span> RM</span>
+                                        </Label>
 
-                                                    />
-                                                    {' '}
-                                                    RM
-                                                </Label>
-                                            </FormGroup>
-                                            <FormGroup check>
-                                                <Label check>
-                                                    <Input
-                                                        name="radioGroup"
-                                                        type="radio"
-                                                        value="BOP"
-                                                        checked={selectedOption === 'BOP'}
-                                                        onChange={handleRadioChange}
-                                                        disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                        <Label id="rfq_boughtOutPart" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                            <input
+                                                type="radio"
+                                                name="radioGroup"
+                                                className=''
+                                                id='bougthOutPart'
+                                                checked={
+                                                    selectedOption === 'BOP' ? true : false
+                                                }
+                                                onClick={handleRadioChange("BOP")
+                                                }
+                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                            />{" "}
+                                            <span> BOP</span>
+                                        </Label>
 
-                                                    />
-                                                    {' '}
-                                                    BOP
-                                                </Label>
-                                            </FormGroup>
-                                            <FormGroup check>
-                                                <Label check>
-                                                    <Input
-                                                        name="radioGroup"
-                                                        type="radio"
-                                                        value="tooling"
-                                                        checked={selectedOption === 'tooling'}
-                                                        onChange={handleRadioChange}
-                                                        disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
-
-                                                    />
-                                                    {' '}
-                                                    Tooling
-                                                </Label>
-                                            </FormGroup>
-                                        </FormGroup>
+                                        <Label id=" rfq_tooling" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                            <input
+                                                type="radio"
+                                                name="radioGroup"
+                                                className=''
+                                                id='tooling'
+                                                checked={
+                                                    selectedOption === 'tooling' ? true : false
+                                                }
+                                                onClick={handleRadioChange("tooling")
+                                                }
+                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                            />{" "}
+                                            <span>Tooling</span>
+                                        </Label>
                                     </Form>
 
                                 </div>
@@ -2643,7 +2664,7 @@ function AddRfq(props) {
                                                 errors={errors.plant}
                                                 // disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
                                                 //     || (partList?.length !== 0 || vendorList?.length !== 0)}
-                                                disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
+                                                disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) || showSendButton === PREDRAFT /* || showSendButton === DRAFT */ || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
                                             />
                                         </Col>
                                         <Col md="3">
@@ -2768,7 +2789,7 @@ function AddRfq(props) {
                                         </Row>
                                     </>}
                                     {loader && <LoaderCustom customClass="Rfq-Loader" />}
-                                    {quationType === 'RM' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} />}
+                                    {quationType === 'RM' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} />}
                                     <Row>
 
                                         {quationType === 'BOP' && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} />}

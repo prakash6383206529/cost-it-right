@@ -15,8 +15,10 @@ const CustomCellRenderer = (props) => {
 
     return (
         <div className="custom-cell-renderer d-flex ">
-            {categoryCount > 0 && (
+            {categoryCount > 0 ? (
                 <span className='pr-3'>{categories[0]}</span>
+            ) : (
+                <span className='pr-3'>-</span>
             )}
             {categoryCount > 1 && (
 
