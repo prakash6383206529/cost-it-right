@@ -96,15 +96,11 @@ function RfqListing(props) {
     const [partType, setPartType] = useState('')
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [quotationId, setQuotationId] = useState('')
-
     const [matchedStatus, setMatchedStatus] = useState([])
     const [masterRejectDrawer, setMasterRejectDrawer] = useState(false)
-    const [masterRetrunDrawer, setMasterRetrunDrawer] = useState(false)
+        const [actionType, setActionType] = useState('');
+        const statusColumnData = useSelector((state) => state.comman.statusColumnData);
 
-    const [actionType, setActionType] = useState('');
-
-
-    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { viewRmDetails } = useSelector(state => state.material)
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
     const [state, setState] = useState({
@@ -125,6 +121,7 @@ function RfqListing(props) {
     const location = useLocation();
     useEffect(() => {
         getDataList()
+        
     }, [])
     useEffect(() => {
         if (partType === 'RawMaterial' || partType === 'BoughtOutPart') {

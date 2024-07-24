@@ -434,6 +434,9 @@ function AddRMFinancialDetails(props) {
 
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
         let netLandedCostBaseCurrency = RMIndex ? checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp) + state.totalOtherCost : checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
+        
+        
+        
 
         setValue('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
         setValue('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))

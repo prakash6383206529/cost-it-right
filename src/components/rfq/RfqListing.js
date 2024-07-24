@@ -116,6 +116,7 @@ function RfqListing(props) {
     }, [statusColumnData])
     useEffect(() => {
         const { source, quotationId } = location.state || {};
+
         if (source === 'auction') {
             if (rowData && rowData.length !== 0) {
                 const fiterRowData = rowData.find(item => item.QuotationId === quotationId);
