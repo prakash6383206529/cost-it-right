@@ -11,7 +11,7 @@ import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormI
 import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId, EMPTY_GUID, NCCTypeId, ZBC_COSTING, VBC_COSTING, NCC_COSTING, CBC_COSTING, COSTING } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
 import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
-import { checkForDecimalAndNull, checkForNull } from '../../../helper'
+import { TotalTCOCostCal, checkForDecimalAndNull, checkForNull } from '../../../helper'
 import DayTime from '../../common/DayTimeWrapper'
 
 function AddToComparisonDrawer(props) {
@@ -491,7 +491,7 @@ function AddToComparisonDrawer(props) {
             ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark : '-',
           }
 
-          const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail;
+          const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail;
 
           obj.paymentTerms = {
             paymentTitle: paymentTermDetail?.PaymentTermApplicability || '-',
@@ -525,6 +525,7 @@ function AddToComparisonDrawer(props) {
             toolValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
           }
 
+          obj.TotalTCOCost = dataFromAPI?.CostingPartDetails?.CostingTCOResponse ? TotalTCOCostCal((dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails) ? dataFromAPI?.CostingPartDetails?.CostingTCOResponse : {}, dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails ?? {}) + checkForNull(dataFromAPI?.NetPOPrice) + checkForNull(dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetNpvCost) : 0
 
           obj.toolAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost : 0
           obj.totalToolCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolCost : 0
@@ -633,8 +634,8 @@ function AddToComparisonDrawer(props) {
           obj.rejectionApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0
           obj.iccApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-'
           obj.iccApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0
-          obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.PaymentTermApplicability : '-'
-          obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail?.PaymentTermDetail?.NetCost : 0
+          obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability : '-'
+          obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.NetCost ? dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.NetCost : 0
           obj.toolMaintenanceCostApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0
           obj.toolMaintenanceCostApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0
           obj.otherDiscountType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType : 0

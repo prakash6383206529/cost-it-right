@@ -13,7 +13,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import { EXCHANGERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -25,9 +25,9 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import { loggedInUserId } from '../../../helper';
 import Button from '../../layout/Button';
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -296,10 +296,10 @@ const ExchangeRateListing = (props) => {
             temp.push(obj)
             return item
         })
-        return (
-            <ExcelSheet data={temp} name={ExchangeMaster}>
-                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        // return (
+        //     <ExcelSheet data={temp} name={ExchangeMaster}>
+        //         {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>);
     }
 
     const onFilterTextBoxChanged = (e) => {
@@ -369,10 +369,10 @@ const ExchangeRateListing = (props) => {
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-exchangeRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                                {/* <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-exchangeRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                                                 }>
                                                     {onBtExport()}
-                                                </ExcelFile>
+                                                </ExcelFile> */}
                                             </>
 
                                         }
@@ -409,7 +409,8 @@ const ExchangeRateListing = (props) => {
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" ></AgGridColumn>
                                 <AgGridColumn field="vendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
                                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
-                                <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
+                                <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>
+                                <AgGridColumn field="ToCurrency" headerName="To Currency" minWidth={135}></AgGridColumn>
                                 <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" minWidth={135}></AgGridColumn>
                                 <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName={`Exchange Rate (${reactLocalStorage.getObject("baseCurrency")}) `} minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="BankRate" headerName={`Bank Rate (${reactLocalStorage.getObject("baseCurrency")})`} minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>

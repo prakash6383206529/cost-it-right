@@ -67,7 +67,9 @@ import {
   SET_COMPONENT_PAYMENT_TERMS_DATA,
   SET_PAYMENT_TERM_COST,
   CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
+  GET_TCO_DATA,
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
+  SET_RFQ_COSTING_TYPE,
   PARTSPECIFICATIONRFQDATA,
   GET_SAP_EVALUATIONTYPE,
 } from '../../../config/constants'
@@ -2926,13 +2928,14 @@ export function getCostingPaymentTermDetail(costingId, callback) {
     request.then((response) => {
       if (response.data?.Data || response?.status === 204) {
         const netCost = response.data?.Data?.PaymentTermDetail?.NetCost;
+        //const applicabilityCost = response.data?.Data?.ApplicabilityCost;
         dispatch({
           type: GET_COSTING_PAYMENT_TERM_DETAIL,
           payload: response?.data?.Data || {},
         });
         dispatch({
           type: SET_PAYMENT_TERM_COST,
-          payload: { NetCost: netCost } || {},
+          payload: { NetCost: netCost/* , ApplicabilityCost: applicabilityCost  */ } || {},
         });
       } else {
         Toaster.error(MESSAGES.SOME_ERROR);
@@ -2960,6 +2963,26 @@ export function saveCostingPaymentTermDetail(data, callback) {
     })
   }
 }
+export function getCostingTcoDetails(costingId, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getCostingTcoDetails}?costingId=${costingId}`, config());
+    request.then((response) => {
+      if (response.data?.Data || response?.status === 204) {
+        dispatch({
+          type: GET_TCO_DATA,
+          payload: response?.data?.Data || {},
+        });
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+
+    });
+  };
+}
 
 export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
   let temp = []
@@ -2970,6 +2993,16 @@ export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
     type: SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
     payload: temp,
   })
+}
+export function setCostingtype(costingType) {
+
+  return (dispatch) => {
+    dispatch({
+      type: SET_RFQ_COSTING_TYPE,
+      payload: costingType || {},
+    });
+    // callback();
+  }
 }
 
 // export const getSpecificationDetailTco = () => {

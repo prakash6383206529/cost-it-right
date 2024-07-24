@@ -10,7 +10,7 @@ import { getSingleCostingDetails, setCostingViewData } from '../../costing/actio
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { ReportMaster, ReportSAPMaster, EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
@@ -29,9 +29,9 @@ import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from '../../common/Tour/TourMessages'
 import { useTranslation } from 'react-i18next'
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function ReportListing(props) {
@@ -898,11 +898,11 @@ function ReportListing(props) {
         } else {
             tempData = data
         }
-        return (<ExcelSheet data={temp} name={ReportMaster}>
-            {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Department Code") ? `${handleDepartmentHeader()} Code` :
-                (ele.label === "Department Name") ? `${handleDepartmentHeader()} Name` :
-                    ele.label} value={ele.value} />)}
-        </ExcelSheet>);
+        // return (<ExcelSheet data={temp} name={ReportMaster}>
+        //     {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Department Code") ? `${handleDepartmentHeader()} Code` :
+        //         (ele.label === "Department Name") ? `${handleDepartmentHeader()} Name` :
+        //             ele.label} value={ele.value} />)}
+        // </ExcelSheet>);
     }
 
     //MINDA
@@ -970,11 +970,11 @@ function ReportListing(props) {
                                 {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                             </button>
 
-                            <ExcelFile filename={'Costing Breakup Details'} fileExtension={'.xls'} element={
+                            {/* <ExcelFile filename={'Costing Breakup Details'} fileExtension={'.xls'} element={
                                 <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
                                 </button>}>
                                 {renderColumn(ReportMaster)}
-                            </ExcelFile>
+                            </ExcelFile> */}
                             {/* //MINDA */}
                             {/* {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
                             </button></div> :
@@ -1098,8 +1098,6 @@ function ReportListing(props) {
                             <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter' floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterIcc}></AgGridColumn>
                             <AgGridColumn field='ICCInterestRate' headerName='ICC Interest Rate' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetICCCost' headerName='Net ICC Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                            <AgGridColumn field='PaymentTermsOn' headerName='Payment Terms On' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='PaymentTermCost' headerName='Payment Term Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='PackagingCostPercentage' headerName='Packaging Cost Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='PackagingCost' headerName='Packaging Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='FreightPercentage' headerName='Freight Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
@@ -1120,6 +1118,8 @@ function ReportListing(props) {
                             <AgGridColumn field='NCCPartQuantity' headerName='Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='IsRegularized' headerName='Is Regularized' cellRenderer='hyphenFormatter'></AgGridColumn>
                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field='BasicRate' headerName='Basic Price' cellRenderer='decimalPriceFormatter'></AgGridColumn>}
+                            <AgGridColumn field='PaymentTermsOn' headerName='Payment Terms On' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='PaymentTermCost' headerName='Payment Term Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net Cost Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetPOPriceINR' headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>

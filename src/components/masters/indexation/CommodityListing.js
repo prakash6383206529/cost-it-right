@@ -21,22 +21,26 @@ import { useTranslation } from "react-i18next";
 import { COMMODITYININDEXlISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
 import WarningMessage from '../../common/WarningMessage';
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import BulkUpload from "../../massUpload/BulkUpload";
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
 import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import PaginationControls from "../../common/Pagination/PaginationControls";
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
+import _ from "lodash";
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const CommodityInIndexListing = (props) => {
     const dispatch = useDispatch();
     const searchRef = useRef(null);
     const { commodityInIndexDataList } = useSelector((state) => state.indexation);
+    const { selectedRowForPagination } = useSelector((state => state.simulation))
+
     const permissions = useContext(ApplyPermission);
     const { t } = useTranslation("common")
 
@@ -134,7 +138,7 @@ const CommodityInIndexListing = (props) => {
                 if (res.data.Result === false) {
                     Toaster.error(res.data.Message);
                 } else if (res && res.data && res.data.Result === true) {
-                    Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
+                    Toaster.success(MESSAGES.INDEX_DELETE_SUCCESS);
                     setState((prevState) => ({ ...prevState, dataCount: 0 }));
                     getTableListData();
                 }
@@ -212,10 +216,50 @@ const CommodityInIndexListing = (props) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
-    const onRowSelect = () => {
-        const selectedRows = gridApi?.getSelectedRows();
-        setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
-    };
+    const onRowSelect = (event) => {
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+        var selectedRows = gridApi && gridApi?.getSelectedRows();
+        if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
+            selectedRows = selectedRowForPagination
+        }
+        // else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
+        //     let finalData = []
+        //     if (event.node?.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+        //         for (let i = 0; i < selectedRowForPagination.length; i++) {
+        //             if (selectedRowForPagination[i].IndexExchangeCommodityLinkingId === event.data.IndexExchangeCommodityLinkingId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+        //                 continue;
+        //             }
+        //             finalData.push(selectedRowForPagination[i])
+        //         }
+
+        //     } else {
+        //         finalData = selectedRowForPagination
+        //     }
+        //     selectedRows = [...selectedRows, ...finalData]
+
+        // }
+        let uniqeArray = _.uniqBy(selectedRows, "IndexExchangeCommodityLinkingId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
+        setDataCount(uniqeArray.length)
+        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+
+    }
+    const checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (selectedRowForPagination?.length > 0) {
+            selectedRowForPagination.map((item) => {
+                if (item.IndexExchangeCommodityLinkingId === props.node.data.IndexExchangeCommodityLinkingId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+    }
+
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
@@ -248,6 +292,8 @@ const CommodityInIndexListing = (props) => {
         dispatch(updateGlobalTake(10))
         setDataCount(0)
         reactLocalStorage.setObject('selectedRow', {})
+        dispatch(setSelectedRowForPagination([]))
+        gridApi.deselectAll()
     }
 
     const { isOpen, isEditFlag, ID, showExtraData, render, isBulkUpload } = state;
@@ -311,6 +357,7 @@ const CommodityInIndexListing = (props) => {
         totalValueRenderer: buttonFormatter,
         hyphenFormatter: hyphenFormatter,
         customNoRowsOverlay: NoContentFound,
+        checkBoxRenderer: checkBoxRenderer
     };
 
     const onBtExport = () => {
@@ -350,25 +397,44 @@ const CommodityInIndexListing = (props) => {
                 }
                 return item;
             });
-        return (
-            <ExcelSheet data={temp} name={RmMaterial}>
-                {data &&
-                    data.map((ele, index) => (
-                        <ExcelColumn
-                            key={index}
-                            label={ele.label}
-                            value={ele.value}
-                            style={ele.style}
-                        />
-                    ))}
-            </ExcelSheet>
-        );
+        // return (
+        //     <ExcelSheet data={temp} name={RmMaterial}>
+        //         {data &&
+        //             data.map((ele, index) => (
+        //                 <ExcelColumn
+        //                     key={index}
+        //                     label={ele.label}
+        //                     value={ele.value}
+        //                     style={ele.style}
+        //                 />
+        //             ))}
+        //     </ExcelSheet>
+        // );
     };
     const closeBulkUploadDrawer = () => {
         setState((prevState) => ({ ...prevState, isBulkUpload: false }));
-        getTableListData("", "");
+        getTableListData(0, defaultPageSize, true)
     };
+    const onExcelDownload = () => {
+        setDisableDownload(true)
+        dispatch(disabledClass(true))
+        //let tempArr = gridApi && gridApi?.getSelectedRows()
+        let tempArr = selectedRowForPagination
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownload(false)
+                dispatch(disabledClass(false))
+                let button = document.getElementById('Excel-Downloads-rm-import')
+                button && button.click()
+            }, 400);
 
+
+        } else {
+
+            getTableListData(0, globalTakes, false)// FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+
+    }
     return (
 
         <div className={`ag-grid-react {permissions.Download ? "show-table-btn" : ""
@@ -387,15 +453,15 @@ const CommodityInIndexListing = (props) => {
                         {permissions.Download && (
                             <>
                                 <>
-                                    <ExcelFile
+                                    {/* <ExcelFile
                                         filename={"Index Commodity"}
                                         fileExtension={".xls"}
                                         element={
-                                            <Button id={"Excel-Downloads-Rm Material"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
+                                            <Button onClick={onExcelDownload} id={"Excel-Downloads-Rm Material"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
                                         }
                                     >
                                         {onBtExport()}
-                                    </ExcelFile>
+                                    </ExcelFile> */}
                                 </>
                             </>
                         )}
@@ -453,7 +519,7 @@ const CommodityInIndexListing = (props) => {
                                 onFilterModified={onFloatingFilterChanged}
                                 suppressRowClickSelection={true}
                             >
-                                <AgGridColumn field="IndexExchangeName" headerName="Index"></AgGridColumn>
+                                <AgGridColumn cellClass='has-checkbox' field="IndexExchangeName" cellRenderer={checkBoxRenderer} headerName="Index"></AgGridColumn>
                                 <AgGridColumn field="CommodityName" headerName="Commodity name"></AgGridColumn>
                                 <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                             </AgGridReact>}

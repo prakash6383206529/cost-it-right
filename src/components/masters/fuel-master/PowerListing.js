@@ -10,7 +10,7 @@ import Toaster from "../../common/Toaster";
 import DayTime from "../../common/DayTimeWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
 import { PowerMaster } from "../../../config/constants";
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import { POWERLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -23,8 +23,8 @@ import { ApplyPermission } from ".";
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import { useRef } from 'react';
 import Button from "../../layout/Button";
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -202,11 +202,11 @@ const PowerListing = (props) => {
       return item;
     });
 
-    return (
-      <ExcelSheet data={temp} name={`${PowerMaster}`}>
-        {data && data.map((ele, index) => (<ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />))}
-      </ExcelSheet>
-    );
+    // return (
+    //   <ExcelSheet data={temp} name={`${PowerMaster}`}>
+    //     {data && data.map((ele, index) => (<ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />))}
+    //   </ExcelSheet>
+    // );
   };
 
   const onGridReady = (params) => {
@@ -247,7 +247,7 @@ const PowerListing = (props) => {
 
   };
 
-  const ExcelFile = ReactExport.ExcelFile;
+  // const ExcelFile = ReactExport.ExcelFile;
   var filterParams = {
     date: "", comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
@@ -307,9 +307,9 @@ const PowerListing = (props) => {
                   )}
                   {permissions.Download && (
                     <>
-                      <ExcelFile filename={"Power"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-powerListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}                      >
+                      {/* <ExcelFile filename={"Power"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-powerListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}                      >
                         {onBtExport()}
-                      </ExcelFile>
+                      </ExcelFile> */}
                     </>
                   )}
                   <Button id={"powerListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />

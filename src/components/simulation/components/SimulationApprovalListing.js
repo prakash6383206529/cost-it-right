@@ -72,6 +72,7 @@ function SimulationApprovalListing(props) {
     const [noData, setNoData] = useState(false)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
+    const [simulationId, setSimulationId] = useState(null);
 
     const { handleSubmit } = useForm({
         mode: 'onBlur',
@@ -469,7 +470,7 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         dispatch(setIsMasterAssociatedWithCosting(!rowObj?.IsSimulationWithOutCosting))
-        setApprovalData({ approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId })
+        setApprovalData({ simulationId: rowObj?.SimulationId, approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId })
         dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
         // dispatch(setTechnologyForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))                //RE
         if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
@@ -737,7 +738,8 @@ function SimulationApprovalListing(props) {
                 state: {
                     approvalNumber: approvalData.approvalNumber,
                     approvalId: approvalData.approvalProcessId,
-                    SimulationTechnologyId: approvalData.SimulationTechnologyId
+                    SimulationTechnologyId: approvalData.SimulationTechnologyId,
+                    simulationId: approvalData.simulationId
                 }
             }}
         />

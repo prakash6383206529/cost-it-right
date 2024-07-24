@@ -12,7 +12,7 @@ import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
 import Association from "./Association";
 import { RmMaterial } from "../../../config/constants";
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import { RMLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -27,9 +27,9 @@ import { useRef } from "react";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const RMListing = (props) => {
   const dispatch = useDispatch();
@@ -105,22 +105,14 @@ const RMListing = (props) => {
     setState((prevState) => ({ ...prevState, isOpenAssociation: false }));
     getListData();
   };
-  /**
-   * @method editItemDetails
-   * @description edit Raw Material
-   */
-  const editItemDetails = (Id) => {
-    setState((prevState) => ({
-      ...prevState, isEditFlag: true, isOpen: true, ID: Id,
-    }));
-  };
+
   /**
  * @method viewItemDetails
  * @description View Raw Material
  */
-  const viewItemDetails = (Id) => {
+  const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
     setState((prevState) => ({
-      ...prevState, isViewFlag: true, isOpen: true, ID: Id,
+      ...prevState, isViewFlag: isViewMode, isOpen: true, ID: Id, isEditFlag: true
     }));
   };
   /**
@@ -201,7 +193,7 @@ const RMListing = (props) => {
             variant="View"
             id={`addSpecificationList_view${props?.rowIndex}`}
             className="mr-2 Tour_List_View"
-            onClick={() => viewItemDetails(cellValue, rowData)}
+            onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
           />
         )}
         {isEditbale && (
@@ -210,7 +202,7 @@ const RMListing = (props) => {
             variant="Edit"
             id={`addSpecificationList_edit${props?.rowIndex}`}
             className="mr-2 Tour_List_Edit"
-            onClick={() => editItemDetails(cellValue, rowData)}
+            onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
           />
         )}
         {isDeleteButton && (
@@ -278,19 +270,19 @@ const RMListing = (props) => {
         }
         return item;
       });
-    return (
-      <ExcelSheet data={temp} name={RmMaterial}>
-        {data &&
-          data.map((ele, index) => (
-            <ExcelColumn
-              key={index}
-              label={ele.label}
-              value={ele.value}
-              style={ele.style}
-            />
-          ))}
-      </ExcelSheet>
-    );
+    // return (
+    //   <ExcelSheet data={temp} name={RmMaterial}>
+    //     {data &&
+    //       data.map((ele, index) => (
+    //         <ExcelColumn
+    //           key={index}
+    //           label={ele.label}
+    //           value={ele.value}
+    //           style={ele.style}
+    //         />
+    //       ))}
+    //   </ExcelSheet>
+    // );
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -349,7 +341,7 @@ const RMListing = (props) => {
           {permissions.Download && (
             <>
               <>
-                <ExcelFile
+                {/* <ExcelFile
                   filename={"Rm Material"}
                   fileExtension={".xls"}
                   element={
@@ -357,7 +349,7 @@ const RMListing = (props) => {
                   }
                 >
                   {onBtExport()}
-                </ExcelFile>
+                </ExcelFile> */}
               </>
             </>
           )}

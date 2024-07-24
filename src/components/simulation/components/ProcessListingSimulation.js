@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import NoContentFound from '../../common/NoContentFound';
 import moment from 'moment'
 import { ProcessMaster, EMPTY_DATA, COMBINED_PROCESS } from '../../../config/constants'
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -15,9 +15,9 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const gridOptions = {};
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 export function ProcessListingSimulation(props) {
 
@@ -113,10 +113,10 @@ export function ProcessListingSimulation(props) {
             }
             return item
         })
-        return (<ExcelSheet data={temp} name={`${ProcessMaster}`}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-            }
-        </ExcelSheet>);
+        // return (<ExcelSheet data={temp} name={`${ProcessMaster}`}>
+        //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+        //     }
+        // </ExcelSheet>);
     }
 
     const onGridReady = (params) => {
@@ -219,9 +219,9 @@ export function ProcessListingSimulation(props) {
                                     {
                                         props.DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                            {/* <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
                                                 {onBtExport()}
-                                            </ExcelFile>
+                                            </ExcelFile> */}
                                         </>
                                     }
 

@@ -66,7 +66,7 @@ function AddRMDetails(props) {
         isRmOpen: true,
         isCommodityOpen: false,
         isOpenAssociation: false,
-        isVendorAccOpen: false,
+        isVendorAccOpen: true,
         commodityDetails: [],
     });
 

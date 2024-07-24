@@ -94,6 +94,10 @@ function AddRMMaster(props) {
                             BasicRate: avgRate ? avgRate.RatePerConvertedUOM : null,
                             ExchangeRate: avgRate ? avgRate.ExchangeRate : null,
                             TotalCostPercent: checkForNull(avgRate?.RateConversionPerConvertedUOM) * checkForNull(avgRate?.Percentage) / 100,
+                            IndexUOM: avgRate ? avgRate.ConvertedUOM : null,
+                            IndexUnitOfMeasurementId: avgRate ? avgRate.ConvertedUOMId : null,
+                            IndexCurrency: avgRate ? avgRate.FromCurrency : null,
+                            IndexCurrencyId: avgRate ? avgRate.FromCurrencyId : null
                         };
                     });
                     setState(prevState => ({ ...prevState, commodityDetails: updatedCommodityDetails }));
@@ -127,6 +131,7 @@ function AddRMMaster(props) {
     useEffect(() => {
         getDetails(data)
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
+        dispatch(setCommodityDetails([]))
         return () => {
             dispatch(SetRawMaterialDetails({ states: {}, Technology: {}, ShowScrapKeys: {}, isShowIndexCheckBox: false }, () => { }))
             dispatch(setCommodityDetails([]))
@@ -182,11 +187,11 @@ function AddRMMaster(props) {
         if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
             dispatch(checkFinalUser(obj, (res) => {
                 if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
-                    console.log(res?.data?.Data?.IsFinalApprover, "res?.data?.Data?.IsFinalApprover");
+
                     setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
                 }
                 else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
-                    console.log("COMING IN ANOT");
+
                     setState(prevState => ({ ...prevState, disableSendForApproval: true }))
                 } else {
                     setState(prevState => ({ ...prevState, disableSendForApproval: false }))

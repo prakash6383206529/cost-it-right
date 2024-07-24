@@ -14,7 +14,7 @@ import { MachineRate } from '../../../config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination'
 import { loggedInUserId, getConfigurationKey, userDepartmetList, searchNocontentFilter, setLoremIpsum } from '../../../helper'
@@ -38,9 +38,9 @@ import { Steps } from '../../common/Tour/TourMessages';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { useTranslation } from 'react-i18next';
 import { TourStartAction } from '../../../actions/Common';
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const MachineRateListing = (props) => {
@@ -499,9 +499,9 @@ const MachineRateListing = (props) => {
       return item
     })
 
-    return (<ExcelSheet data={temp} name={`${MachineRate}`}>
-      {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-    </ExcelSheet>);
+    // return (<ExcelSheet data={temp} name={`${MachineRate}`}>
+    //   {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+    // </ExcelSheet>);
   }
 
   const onGridReady = (params) => {
@@ -727,11 +727,11 @@ const MachineRateListing = (props) => {
                   {permissions?.BulkUpload && (<button type="button" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title="Bulk Upload"><div className={"upload mr-0"}></div>{/* Bulk Upload */} </button>)}
                   {permissions?.Download && <>  <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} </button>
 
-                    <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
+                    {/* <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
                       <button id={'Excel-Downloads-machine'} className="p-absolute " type="button" >
                       </button>}>
                       {onBtExport()}
-                    </ExcelFile>
+                    </ExcelFile> */}
                   </>
                   }
 

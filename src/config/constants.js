@@ -20,7 +20,7 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-//const BASE_URL = `http://10.10.1.100:10152/api/v1`
+
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -109,6 +109,17 @@ export const API = {
   getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
   getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
   getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
+
+  // INDEXATION SIMULATION
+  getRMIndexationSimulationListing: `${BASE_URL}/simulation/get-raw-material-records-for-simulation`,
+  editRMIndexedSimulationData: `${BASE_URL}/simulation/get-all-simulated-raw-material`,
+  draftSimulationForRMMaster: `${BASE_URL}/simulation/draft-simulation-raw-material-master`,
+  updateSimulationRawMaterial: `${BASE_URL}/simulation/update-simulation-raw-material`,
+  runSimulationOnRawMaterial: `${BASE_URL}/simulation/run-simulation-on-raw-material-master`,
+  getAllSimulatedRawMaterial: `${BASE_URL}/simulation/get-all-simulated-raw-material`,
+  getApprovalSimulatedRawMaterialSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-raw-material-summary`,
+  getRMIndexationCostingSimulationListing: `${BASE_URL}/simulation/get-impacted-raw-material-details`,
+
 
   //MATERIAL TYPE
   createMaterialType: `${BASE_URL}/masters-material/create-material-type`,
@@ -288,6 +299,8 @@ export const API = {
   bulkUploadRMSpecification: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-spec-json`,
   getRawMaterialChildById: `${BASE_URL}/masters-raw-material/get-raw-material-child-by-id`,
   updateRawMaterialChildName: `${BASE_URL}/masters-raw-material/update-raw-material-name`,
+  getViewRawMaterialDetails: `${BASE_URL}/masters-raw-material/get-view-raw-material`,
+  getViewBOPDetails: `${BASE_URL}/masters-bought-out-part/get-view-bought-out-part`,
 
   //PLANT MASTER
   //createPlantAPI: `${BASE_URL}/plant/create`,
@@ -332,6 +345,8 @@ export const API = {
   updateBOPSOBVendors: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-vendor-share-of-business`,
   getIncoTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-inco-terms`,
   getPaymentTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-payment-terms`,
+  getViewBoughtOutPart: `${BASE_URL}/masters-bought-out-part/get-all-manage-bought-out-part`,
+
 
   //BOP APPROVAL API'S
 
@@ -585,6 +600,7 @@ export const API = {
   getCostingCondition: `${BASE_URL}/costing/get-costing-condition-master-data`,
   getCostingPaymentTermDetail: `${BASE_URL}/costing/get-costing-payment-term-detail`,
   saveCostingPaymentTermDetail: `${BASE_URL}/costing/save-costing-payment-term-detail`,
+  getCostingTcoDetails: `${BASE_URL}/costing/get-costing-tco-details`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1106,8 +1122,24 @@ export const API = {
   getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
   deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
   checkRegisteredVendor: `${BASE_URL}/rfq-quotation/check-registered-vendor`,
+  getPurchaseRequisitionSelectList: `${BASE_URL}/rfq-quotation/select-list-pr-number`,
+  getRfqBopNumberSelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-child`,
+  getRfqBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
+  createQuotationPrParts: `${BASE_URL}/rfq-quotation/create-quotation-pr-parts`,
   // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
 
+  //Auction
+  auctionRfqSelectList: `${BASE_URL}/rfq-quotation/select-list-rfq-number`,
+  checkQuatationForAuction: `${BASE_URL}/rfq-quotation/check-quotation-auction-part-details`,
+  createAuction: `${BASE_URL}/rfq-quotation/create-auction`,
+  auctionListByStatus: `${BASE_URL}/rfq-quotation/get-quotation-auction-list`,
+  auctionBidDetails: `${BASE_URL}/rfq-quotation/get-quotation-auction-vendor-bid-price-details`,
+  auctionHeaderDetails: `${BASE_URL}/rfq-quotation/get-quotation-auction-by-id`,
+  sendCounterOffer: `${BASE_URL}/rfq-quotation/create-counter-offer`,
+  getLiveAndScheduledCount: `${BASE_URL}/rfq-quotation/get-auction-active-scheduled-and-closed-count`,
+  updateShowVendorRank: `${BASE_URL}/rfq-quotation/update-display-rank-to-vendor`,
+  updateAuctionDuration: `${BASE_URL}/rfq-quotation/update-auction-duration-extension`,
+  closeAuction: `${BASE_URL}/rfq-quotation/closed-auction`,
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -1259,6 +1291,11 @@ export const GET_OTHER_COST_APPLICABILITY_SELECTLIST = 'GET_OTHER_COST_APPLICABI
 export const SET_COMMODITY_DETAILS = 'SET_COMMODITY_DETAILS'
 export const SET_OTHER_COST_DETAILS = 'SET_OTHER_COST_DETAILS'
 export const GET_LAST_REVISION_RAW_MATERIAL_DETAILS = 'GET_LAST_REVISION_RAW_MATERIAL_DETAILS'
+
+//INDEXATION SIMULATION
+export const GET_RM_INDEXATION_SIMULATION_LIST = 'GET_RM_INDEXATION_SIMULATION_LIST'
+export const GET_SIMULATED_RAW_MATERIAL_SUMMARY = 'GET_SIMULATED_RAW_MATERIAL_SUMMARY'
+export const GET_RM_INDEXATION_COSTING_SIMULATION_LIST = 'GET_RM_INDEXATION_COSTING_SIMULATION_LIST'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
@@ -1447,6 +1484,7 @@ export const GET_SOB_LISTING = 'GET_SOB_LISTING'
 export const GET_BOP_APPROVAL_LIST = 'GET_BOP_APPROVAL_LIST'
 export const GET_INCO_SELECTLIST_SUCCESS = 'GET_INCO_SELECTLIST_SUCCESS'
 export const GET_PAYMENT_SELECTLIST_SUCCESS = 'GET_PAYMENT_SELECTLIST_SUCCESS'
+export const GET_VIEW_BOUGHT_OUT_PART_SUCCESS = 'GET_VIEW_BOUGHT_OUT_PART_SUCCESS'
 
 //PROCESS MASTER
 export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS'
@@ -1658,7 +1696,8 @@ export const COSTING_ACC_OPEN_CLOSE_STATUS = 'COSTING_ACC_OPEN_CLOSE_STATUS'
 export const SET_TOOL_COST_ICC = 'SET_TOOL_COST_ICC'
 
 export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
-
+export const GET_TCO_DATA = 'GET_TCO_DATA'
+export const SET_RFQ_COSTING_TYPE = 'SET_RFQ_COSTING_TYPE'
 //WEIGHT CALCULATION COSTING
 
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';
@@ -1742,6 +1781,8 @@ export const SET_CALL_ST_API = 'SET_CALL_ST_API';
 export const GET_COSTING_PAYMENT_TERM_DETAIL = "GET_COSTING_PAYMENT_TERM_DETAIL"
 export const SET_PAYMENT_TERM_COST = "SET_PAYMENT_TERM_COST"
 export const SET_COSTING_VIEW_DATA_FOR_ASSEMBLY = 'SET_COSTING_VIEW_DATA_FOR_ASSEMBLY';
+export const GET_RM_DETAILS = 'GET_RM_DETAILS';
+export const GET_BOP_DETAILS = 'GET_BOP_DETAILS';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
@@ -1988,10 +2029,32 @@ export const GET_PART_IDENTITY = "GET_PART_IDENTITY"
 export const GET_QUOTATION_ID_FOR_RFQ = "GET_QUOTATION_ID_FOR_RFQ"
 export const HAVELLS_DESIGN_PARTS = "Havells Design part"
 export const GET_SAP_EVALUATIONTYPE = "GET_SAP_EVALUATIONTYPE"
+export const SET_RM_SPECIFIC_ROW_DATA = "SET_RM_SPECIFIC_ROW_DATA"
+export const SELECT_BOP_NUMBER = "SELECT_BOP_NUMBER"
+export const SELECT_BOP_CATEGORY = "SELECT_BOP_CATEGORY"
+export const SET_BOP_SPECIFIC_ROW_DATA = "SET_BOP_SPECIFIC_ROW_DATA"
+export const GET_BOP_PR_QUOTATION_DETAILS = "GET_BOP_PR_QUOTATION_DETAILS"
+export const SET_BOP_PR_QUOTATION_IDENTITY = "SET_BOP_PR_QUOTATION_IDENTITY"
 
+//AUCTION 
+export const SET_AUCTION_DATA = 'SET_AUCTION_DATA'
+export const SET_AUCTION_DATA_BY_RFQ = 'SET_AUCTION_DATA_BY_RFQ'
+export const SELECT_AUCTION_RFQ_LIST = 'SELECT_AUCTION_RFQ_LIST'
+export const AUCTION_LIST_BY_STATUS = 'AUCTION_LIST_BY_STATUS'
+export const SHOW_HIDE_BID_WINDOW = 'SHOW_HIDE_BID_WINDOW'
+export const GET_BID_DETAIL_BY_QUATATION = 'GET_BID_DETAIL_BY_QUATATION'
+export const GET_HEADER_DETAIL_BY_QUATATION = 'GET_HEADER_DETAIL_BY_QUATATION'
+
+export const AuctionScheduledId = 35
+export const AuctionClosedId = 37
+export const AuctionLiveId = 38
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
 export const SET_OPEN_ALL_TABS = 'SET_OPEN_ALL_TABS'
+export const SELECT_PURCHASE_REQUISITION = 'SELECT_PURCHASE_REQUISITION'
+
+//SIMULATION FOR INDEXED RM
+export const GET_INDEXED_RM_FOR_SIMULATION = 'GET_INDEXED_RM_FOR_SIMULATION'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
@@ -2207,6 +2270,7 @@ export const ReleaseStrategyB3 = 'RSB3'
 export const ReleaseStrategyB4 = 'RSB4'
 export const ReleaseStrategyB6 = 'RSB6'
 export const VendorNeedForm = 'VNF'
+export const RAWMATERIAL = 'Raw Materials'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -2231,6 +2295,7 @@ export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
 export const AUCTION_LISTING = '/auction'
+export const ADD_AUCTION = '/add-auction'
 export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
 export const RESET_PASSWORD = '/reset-password'
@@ -2309,10 +2374,6 @@ export const VIEW_COSTING_DATA = {
   iccPercent: 'ICC %',
   iccApplicablityValue: 'ICC Value',
   ICCRemark: 'Icc Remark',
-  paymentApplicablity: 'Payment Applicability',
-  paymentPercent: 'Payment %',
-  paymentcApplicablityValue: 'Payment Value',
-  PaymentTermRemark: 'Payment Remark',
   nOverheadProfit: 'Net Overhead Profits',
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
@@ -2336,6 +2397,10 @@ export const VIEW_COSTING_DATA = {
   BasicRate: 'Basic Price',
   npvCost: 'Net NPV Cost',
   conditionCost: 'Net Costing Condition',
+  paymentApplicablity: 'Payment Applicability',
+  paymentPercent: 'Payment %',
+  paymentcApplicablityValue: 'Payment Value',
+  PaymentTermRemark: 'Payment Remark',
   nPOPrice: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   currencyTitle: 'Currency',
   // currencyRate: 'Currency Rate',
@@ -2550,22 +2615,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     label: 'ICC Remark',
     value: 'ICCRemark'
   },
-  {
-    label: 'Payment Applicability',
-    value: 'paymentApplicablity'
-  },
-  {
-    label: 'Payment %',
-    value: 'paymentPercent'
-  },
-  {
-    label: 'Payment Value',
-    value: 'paymentcApplicablityValue'
-  },
-  {
-    label: 'Payment Remark',
-    value: 'PaymentTermRemark'
-  },
+
   {
     label: 'Net Overhead Profits',
     value: 'nOverheadProfit'
@@ -2634,6 +2684,22 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
   {
     label: 'Costing Condition',
     value: 'conditionCost'
+  },
+  {
+    label: 'Payment Applicability',
+    value: 'paymentApplicablity'
+  },
+  {
+    label: 'Payment %',
+    value: 'paymentPercent'
+  },
+  {
+    label: 'Payment Value',
+    value: 'paymentcApplicablityValue'
+  },
+  {
+    label: 'Payment Remark',
+    value: 'PaymentTermRemark'
   },
   {
     label: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
@@ -2907,6 +2973,8 @@ export const OVERHEADBULKUPLOAD = 'Overhead'
 export const PROFITBULKUPLOAD = 'Profit'
 
 
+
+
 //STATUS FILTER DROPDOWN OPTIONS
 export const statusOptionsMasters = _.sortBy([
   { label: "Rejected", value: "4" },
@@ -3059,10 +3127,11 @@ export const RELEASESTRATEGYTYPEID3 = Number(reactLocalStorage.getObject('Approv
 export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB4])
 export const RELEASESTRATEGYTYPEID6 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB6])
 export const VENDORNEEDFORMID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VendorNeedForm])
-
+export const RAWMATERIALAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[RAWMATERIAL])
 //Supplier approval 
 
 export const CLASSIFICATIONAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CUD])
+
 
 export const LPSAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[LPSUD])
 export const LPSAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[LPSUD])
@@ -3132,7 +3201,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.7";
+export const VERSION = "V3.0.15";
 
 
 

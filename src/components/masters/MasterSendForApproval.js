@@ -26,8 +26,18 @@ import HeaderTitle from '../common/HeaderTitle';
 import NoContentFound from '../common/NoContentFound';
 
 function MasterSendForApproval(props) {
+    
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
-
+    
+    const RFQPlantId = approvalObj ? approvalObj[0]?.Plant[0]?.PlantId : ''
+    
+    
+ 
+    useEffect(() => {
+    if(props.isRFQ){
+        
+    }
+}, [props.isRFQ])
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -66,11 +76,12 @@ function MasterSendForApproval(props) {
         setValue('ScrapRateUOM', { label: approvalObj?.ScrapUnitOfMeasurement, value: approvalObj?.ScrapUnitOfMeasurementId })
         dispatch(getAllMasterApprovalDepartment((res) => {
             const Data = res?.data?.SelectList
-            const departObj = Data && Data.filter(item => item.Value === userDetails().DepartmentId)
+            const departObj = Data && Data.filter(item => item?.Value === userDetails().DepartmentId)
             setTimeout(() => {
                 setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
 
             }, 100);
+            
             let approverIdListTemp = []
             let obj = {
                 LoggedInUserId: loggedInUserId(),
@@ -79,7 +90,8 @@ function MasterSendForApproval(props) {
                 OnboardingMasterId: OnboardingId,
                 ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
                 ReasonId: reasonId,
-                PlantId: approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID
+                PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID)
+                // PlantId: approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID
 
             }
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
@@ -94,14 +106,14 @@ function MasterSendForApproval(props) {
                     let tempDropdownList = []
                     res.data.DataList &&
                         res.data.DataList.map((item) => {
-                            if (item.Value === '0') return false;
+                            if (item?.Value === '0') return false;
                             tempDropdownList.push({
-                                label: item.Text,
-                                value: item.Value,
-                                levelId: item.LevelId,
-                                levelName: item.LevelName
+                                label: item?.Text,
+                                value: item?.Value,
+                                levelId: item?.LevelId,
+                                levelName: item?.LevelName
                             })
-                            approverIdListTemp.push(item.Value)
+                            approverIdListTemp.push(item?.Value)
                             return null
                         })
                     setTimeout(() => {
@@ -117,7 +129,7 @@ function MasterSendForApproval(props) {
 
     const getLastRevisionData = () => {
 
-        if (approvalObj && Object.keys(approvalObj).length > 0 && getConfigurationKey()?.IsShowMaterialIndexation && Number(masterId) === 1) {
+        if (approvalObj && Object.keys(approvalObj)?.length > 0 && getConfigurationKey()?.IsShowMaterialIndexation && Number(masterId) === 1) {
             setAgGridLoader(true)
             let data = {
                 OldMasterRecordIds: [],
@@ -128,8 +140,8 @@ function MasterSendForApproval(props) {
                     "RawMaterialChildId": approvalObj?.RawMaterial,
                     "RawMaterialGradeId": approvalObj?.RMGrade,
                     "RawMaterialSpecificationId": approvalObj?.RMSpec,
-                    "EffectiveDate": DayTime(approvalObj.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-                    "PlantId": approvalObj?.Plant[0]?.PlantId,
+                    "EffectiveDate": DayTime(approvalObj?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+                    "PlantId": props?.isRFQ? RFQPlantId :(approvalObj?.Plant[0]?.PlantId),
                     "VendorId": approvalObj?.Vendor,
                     "CustomerId": approvalObj?.CostingTypeId === CBCTypeId ? approvalObj?.Customer : null,
                     "RawMaterialId": null
@@ -150,16 +162,16 @@ function MasterSendForApproval(props) {
         if (label === 'Dept') {
             deptList &&
                 deptList.map((item) => {
-                    if (item.Value === '0') return false
-                    tempDropdownList?.push({ label: item.Text, value: item.Value })
+                    if (item?.Value === '0') return false
+                    tempDropdownList?.push({ label: item?.Text, value: item?.Value })
                     return null
                 })
             return tempDropdownList
         }
         if (label === 'reasons') {
             reasonsList && reasonsList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList?.push({ label: item.Text, value: item.Value })
+                if (item?.Value === '0') return false
+                tempDropdownList?.push({ label: item?.Text, value: item?.Value })
                 return null
             })
             return tempDropdownList
@@ -177,7 +189,8 @@ function MasterSendForApproval(props) {
             OnboardingMasterId: OnboardingId,
             ReasonId: '',
             ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
-            PlantId: approvalObj.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID
+            PlantId: props?.isRFQ ?RFQPlantId:  (approvalObj?.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID)
+
         }
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -186,14 +199,14 @@ function MasterSendForApproval(props) {
                 setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
                 res.data.DataList &&
                     res.data.DataList.map((item) => {
-                        if (item.Value === '0') return false;
+                        if (item?.Value === '0') return false;
                         tempDropdownList.push({
-                            label: item.Text,
-                            value: item.Value,
-                            levelId: item.LevelId,
-                            levelName: item.LevelName
+                            label: item?.Text,
+                            value: item?.Value,
+                            levelId: item?.LevelId,
+                            levelName: item?.LevelName
                         })
-                        approverIdListTemp.push(item.Value)
+                        approverIdListTemp.push(item?.Value)
                         return null
                     })
                 setTimeout(() => {
@@ -224,7 +237,7 @@ function MasterSendForApproval(props) {
 
                 let bulkuploadIdsArray = []
                 approvalData && approvalData.map(item => {
-                    bulkuploadIdsArray.push({ OldRawMaterialId: masterId === 1 ? item?.OldRawMaterialId ?? null : null, MasterRecordId: masterId === 1 ? item?.RawMaterialId : masterId === 2 ? item?.BoughtOutPartId : masterId === 3 ? item?.OperationId : masterId === 4 ? item.MachineId : null })
+                    bulkuploadIdsArray.push({ OldRawMaterialId: masterId === 1 ? item?.OldRawMaterialId ?? null : null, MasterRecordId: masterId === 1 ? item?.RawMaterialId : masterId === 2 ? item?.BoughtOutPartId : masterId === 3 ? item?.OperationId : masterId === 4 ? item?.MachineId : null })
                 })
 
             }
@@ -247,8 +260,8 @@ function MasterSendForApproval(props) {
             senderObj.SenderLevel = levelDetails?.Level
             senderObj.SenderRemark = remark
             senderObj.LoggedInUserId = loggedInUserId()
-            senderObj.IsVendor = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.IsVendor : false
-            senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : DayTime(new Date()).format('YYYY-MM-DD HH:mm:ss')
+            senderObj.IsVendor = approvalObj && Object.keys(approvalObj)?.length > 0 ? approvalObj?.IsVendor : false
+            senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj)?.length > 0 ? approvalObj?.EffectiveDate : DayTime(new Date()).format('YYYY-MM-DD HH:mm:ss')
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
             senderObj.CostingTypeId = props?.costingTypeId
@@ -352,7 +365,7 @@ function MasterSendForApproval(props) {
 
                     // if (isBulkUpload) {
                     //     approvalData && approvalData.map(item => {
-                    //         tempArray.push({ MachineId: item.MachineId, IsImportEntry: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {}, CostingTypeId: item.CostingTypeId })
+                    //         tempArray.push({ MachineId: item?.MachineId, IsImportEntry: item?.EnteryType === 'Domestic' ? false : true, MachineRequest: {}, CostingTypeId: item?.CostingTypeId })
                     //         return null
                     //     })
                     // } else {
@@ -409,23 +422,23 @@ function MasterSendForApproval(props) {
 
                         LoggedInUserId: loggedInUserId(),
                         BudgetingId: 0,
-                        FinancialYear: approvalObj.FinancialYear,
-                        NetPoPrice: approvalObj.NetPoPrice,
-                        BudgetedPoPrice: approvalObj.BudgetedPoPrice,
-                        CostingHeadId: approvalObj.CostingHeadId,
-                        PartId: approvalObj.PartId,
-                        RevisionNumber: approvalObj.RevisionNumber,
-                        PlantId: approvalObj.PlantId,
-                        VendorId: approvalObj.VendorId,
-                        CustomerId: approvalObj.CustomerId,
+                        FinancialYear: approvalObj?.FinancialYear,
+                        NetPoPrice: approvalObj?.NetPoPrice,
+                        BudgetedPoPrice: approvalObj?.BudgetedPoPrice,
+                        CostingHeadId: approvalObj?.CostingHeadId,
+                        PartId: approvalObj?.PartId,
+                        RevisionNumber: approvalObj?.RevisionNumber,
+                        PlantId: approvalObj?.PlantId,
+                        VendorId: approvalObj?.VendorId,
+                        CustomerId: approvalObj?.CustomerId,
                         TotalRecordCount: 0,
-                        CurrencyId: approvalObj.CurrencyId,
-                        BudgetedPoPriceInCurrency: approvalObj.BudgetedPoPriceInCurrency,
+                        CurrencyId: approvalObj?.CurrencyId,
+                        BudgetedPoPriceInCurrency: approvalObj?.BudgetedPoPriceInCurrency,
                         IsSendForApproval: true,
                         IsRecordInsertedBySimulation: false,
                         IsFinancialDataChanged: true,
-                        BudgetingPartCostingDetails: approvalObj.BudgetingPartCostingDetails,
-                        ConditionsData: approvalObj.conditionTableData,
+                        BudgetingPartCostingDetails: approvalObj?.BudgetingPartCostingDetails,
+                        ConditionsData: approvalObj?.conditionTableData,
                         SenderLevelId: levelDetails?.LevelId,
                         SenderId: loggedInUserId(),
                         SenderLevel: levelDetails?.Level
@@ -461,54 +474,87 @@ function MasterSendForApproval(props) {
 
         }
         else {
-            let obj = {}
-            obj.ApprovalProcessSummaryId = approvalDetails.MasterApprovalProcessSummaryId
-            obj.ApprovalProcessId = approvalDetails.ApprovalProcessId
-            obj.ApprovalToken = approvalDetails.Token
-            obj.LoggedInUserId = loggedInUserId()
-            obj.SenderLevelId = levelDetails.LevelId
-            obj.SenderId = loggedInUserId()
-            obj.SenderLevel = levelDetails.Level
-            obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
-            obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
-            // obj.ApproverId = approver && approver.value ? approver.value : ''
-            obj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
-            obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
-            obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
-            obj.Remark = remark
-            obj.IsApproved = type === 'Approve' ? true : false
-            obj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
-            obj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
-            obj.IsFinalApprovalProcess = false
-            if (type === 'Approve') {
-                reset()
-                setIsLoader(true)
-                dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
-                    setIsDisable(false)
-                    setIsLoader(false)
-                    if (res?.data?.Result) {
-                        if (IsPushDrawer) {
-                            Toaster.success('The token has been approved')
-
+            // let obj = {}
+            // obj.ApprovalProcessSummaryId = approvalDetails.MasterApprovalProcessSummaryId
+            // obj.ApprovalProcessId = approvalDetails.ApprovalProcessId
+            // obj.ApprovalToken = approvalDetails.Token
+            // obj.LoggedInUserId = loggedInUserId()
+            // obj.SenderLevelId = levelDetails.LevelId
+            // obj.SenderId = loggedInUserId()
+            // obj.SenderLevel = levelDetails.Level
+            // obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
+            // obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
+            // // obj.ApproverId = approver && approver.value ? approver.value : ''
+            // obj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
+            // obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
+            // obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
+            // obj.Remark = remark
+            // obj.IsApproved = type === 'Approve' ? true : false
+            // obj.IsReject = type === 'Reject' ? true : false
+            // obj.IsReturn = type === 'Return' ? true : false
+            // obj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
+            // obj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
+            // obj.IsFinalApprovalProcess = false
+            // obj.IsRFQCostingSendForApproval = props.isRFQ ? true : false
+            const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
+            const processedApprovalObjects  = approvalObjects.map(item => ({
+                ApprovalProcessSummaryId: item?.ApprovalProcessSummaryId !== null ? item?.ApprovalProcessSummaryId : 0,
+                ApprovalProcessId: item?.ApprovalProcessId !== null ? item?.ApprovalProcessId : 0,
+                ApprovalToken: item?.Token !== null ? item?.Token : 0,
+                LoggedInUserId: loggedInUserId(),
+                SenderLevelId: levelDetails.LevelId,
+                SenderId: loggedInUserId(),
+                SenderLevel: levelDetails.Level,
+                SenderDepartmentId: dept && dept.value ? dept.value : '',
+                SenderDepartmentName: dept && dept.label ? dept.label : '',
+                ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
+                ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
+                ApproverLevel: approver && approver.levelName ? approver.levelName : '',
+                Remark: remark,
+                IsApproved: type === 'Approve',
+                IsReject: type === 'Reject',
+                IsReturn: type === 'Return',
+                ApproverDepartmentId: dept && dept.value ? dept.value : '',
+                ApproverDepartmentName: dept && dept.label ? dept.label : '',
+                IsFinalApprovalProcess: false,
+                IsRFQCostingSendForApproval: props.isRFQ ? true : false,
+                // Add any other necessary fields from the item
+            }));
+            setIsLoader(true);
+            const processApproval = (objects) => {
+                
+                return new Promise((resolve, reject) => {
+                    dispatch(approvalOrRejectRequestByMasterApprove(objects, res => {
+                        if (res?.data?.Result) {
+                            resolve(res);
                         } else {
-                            Toaster.success(!IsFinalLevel ? 'The token has been approved' : 'The token has been sent to next level for approval')
-                            props.closeDrawer('', 'submit')
+                            reject(res);
                         }
+                    }));
+                });
+            };
+            processApproval(processedApprovalObjects)
+            .then(() => {
+                setIsDisable(false);
+                setIsLoader(false);
+                if (type === 'Approve') {
+                    if (IsPushDrawer) {
+                        Toaster.success('The token has been approved');
+                    } else {
+                        Toaster.success(!IsFinalLevel ? 'The token has been approved' : 'The token has been sent to next level for approval');
                     }
-                }))
-            } else {
-                // REJECT CONDITION
-                setIsLoader(true)
-                dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
-                    setIsDisable(false)
-                    setIsLoader(false)
-                    if (res?.data?.Result) {
-                        Toaster.success('Token Rejected')
-                        props.closeDrawer('', 'submit')
-                    }
-                }))
-            }
-        }
+                } else {
+                    Toaster.success(`Token ${type === 'Reject' ? 'Rejected' : "Returned"}`);
+                }
+                props.closeDrawer('', 'submit');
+            })
+            .catch((error) => {
+                setIsDisable(false);
+                setIsLoader(false);
+                // Toaster.error('An error occurred while processing tokens');
+                
+            });
+    }
 
     }), 500)
 
@@ -680,7 +726,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
+                                                            selected={DayTime(approvalObj?.EffectiveDate).isValid() ? new Date(approvalObj?.EffectiveDate) : ''}
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dropdownMode="select"
@@ -699,7 +745,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
+                                                            selected={DayTime(approvalObj?.EffectiveDate).isValid() ? new Date(approvalObj?.EffectiveDate) : ''}
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dropdownMode="select"
@@ -726,7 +772,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.NetLandedCost}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                                        // defaultValue={Object?.keys(approvalObj)?.length > 0 ? checkForDecimalAndNull(approvalObj?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                     />
                                                 </Col>
@@ -743,7 +789,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.NetLandedCostConversion}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj)?.length > 0 ? checkForDecimalAndNull(approvalObj?.NetLandedCostConversion, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                     />
                                                 </Col>}
@@ -768,7 +814,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.basicRate}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.Rate, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj)?.length > 0 ? checkForDecimalAndNull(approvalObj?.Rate, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                         placeholder={'-'}
                                                     />
@@ -787,7 +833,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
+                                                            selected={DayTime(approvalObj?.EffectiveDate).isValid() ? new Date(approvalObj?.EffectiveDate) : ''}
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dropdownMode="select"
@@ -803,7 +849,7 @@ function MasterSendForApproval(props) {
                                                 </div>
                                                 <div className="input-group form-group col-md-12">
 
-                                                    {approvalObj.MachineProcessRates && approvalObj.MachineProcessRates.map((item, index) => {
+                                                    {approvalObj?.MachineProcessRates && approvalObj?.MachineProcessRates.map((item, index) => {
 
                                                         return (
                                                             <TextFieldHookForm
@@ -816,7 +862,7 @@ function MasterSendForApproval(props) {
                                                                 className=""
                                                                 customClassName={'withBorder'}
                                                                 errors={errors.basicRate}
-                                                                defaultValue={checkForDecimalAndNull(item.MachineRate, initialConfiguration?.NoOfDecimalForPrice)}
+                                                                defaultValue={checkForDecimalAndNull(item?.MachineRate, initialConfiguration?.NoOfDecimalForPrice)}
                                                                 disabled={true}
 
                                                             />
@@ -974,7 +1020,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.totalSum}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPrice, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj)?.length > 0 ? checkForDecimalAndNull(approvalObj?.BudgetedPoPrice, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                         placeholder={'-'}
                                                     />
@@ -983,7 +1029,7 @@ function MasterSendForApproval(props) {
 
                                                 <div className="input-group form-group col-md-12">
                                                     <TextFieldHookForm
-                                                        label={approvalObj.Currency ? `Total Sum (${approvalObj.Currency})` : `Total Sum (Currency)`}
+                                                        label={approvalObj?.Currency ? `Total Sum (${approvalObj?.Currency})` : `Total Sum (Currency)`}
                                                         name={'totalSumCurrency'}
                                                         Controller={Controller}
                                                         control={control}
@@ -991,7 +1037,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.totalSum}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPriceInCurrency, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj)?.length > 0 ? checkForDecimalAndNull(approvalObj?.BudgetedPoPriceInCurrency, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                         placeholder={'-'}
                                                     />

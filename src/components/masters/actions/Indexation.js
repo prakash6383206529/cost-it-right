@@ -282,7 +282,7 @@ export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
             commodityMaterialDetailId: "", rate: obj.Rate, currencyCharge: obj.CurrencyCharge, exchangeRate: obj.ExchangeRate,
             rateConversion: obj.RateConversion, exchangeRateSourceName: obj.ExchangeRateSourceName, effectiveDate: obj.EffectiveDate, commodityName: obj.CommodityName,
             indexExchangeName: obj.IndexExchangeName, uom: obj.UOM, currency: obj.Currency,
-            Remark: '', applyPagination: isPagination, skip: skip, take: take
+            Remark: '', applyPagination: false, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getIndexDataList}?${queryParams}`, config())
@@ -711,29 +711,6 @@ export function setOtherCostDetails(data) {
         })
     }
 }
-// /**
-//  * @method getLastRevisionRawMaterialDetails
-//  * @description get Last Revision Raw Material
-//  */
-// export function getLastRevisionRawMaterialDetails(rawMaterialEntryType, costingHeadId, technologyId, rawMaterialChildId, rawMaterialGradeId, rawMaterialSpecificationId, effectiveDate, plantId, vendorId, customerId, rawMaterialId, callback) {
-
-//     return (dispatch) => {
-//         dispatch({ type: API_REQUEST });
-//         const request = axios.get(`${API.getLastRevisionRawMaterialDetails}?rawMaterialEntryType=${rawMaterialEntryType}&costingHeadId=${costingHeadId}&technologyId=${technologyId}&rawMaterialChildId=${rawMaterialChildId}&rawMaterialGradeId=${rawMaterialGradeId}&rawMaterialSpecificationId=${rawMaterialSpecificationId}&effectiveDate=${effectiveDate}&plantId=${plantId}&vendorId=${vendorId}&customerId=${customerId}&rawMaterialId=${rawMaterialId}`, config());
-//         request.then((response) => {
-//             if (response.data.Result) {
-//                 dispatch({
-//                     type: GET_LAST_REVISION_RAW_MATERIAL_DETAILS,
-//                     payload: response.data.Data,
-//                 });
-//                 callback(response);
-//             }
-//         }).catch((error) => {
-//             dispatch({ type: API_FAILURE, });
-//             apiErrors(error);
-//         });
-//     };
-// }
 
 /**
  * @method getLastRevisionRawMaterialDetails

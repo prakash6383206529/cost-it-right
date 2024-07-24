@@ -935,11 +935,11 @@ export const RMSpecificationXLTempData = [
 export const IndexDataListing = [
     { label: "Index", value: "IndexExchangeName", },
     { label: "CommodityName", value: "CommodityName", },
-    { label: "UOM", value: "UOM2", },
+    { label: "Index UOM", value: "UOM", },
     { label: "From Currency", value: "FromCurrency", },
     { label: "To Currency", value: "ToCurrency", },
-    { label: "Indexed On", value: "EffectiveDate", },
-    { label: "Index Rate (Currency)", value: "Rate", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Index Rate (From Currency)", value: "Rate", },
     { label: "ExchangeRateSourceName", value: "ExchangeRateSourceName", },
     { label: "Exchangerate", value: "ExchangeRate", },
 ]
@@ -948,7 +948,7 @@ export const IndexDataListingTempData = [
     {
         "IndexExchangeName": "LME",
         "CommodityName": "CU",
-        "UOM2": "kg",
+        "UOM": "kg",
         "FromCurrency": "USD",
         "ToCurrency": "INR",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -4449,6 +4449,7 @@ export const PART_TYPE_ASSEMBLY = 1
 export const STRINGMAXLENGTH = 50
 export const NUMBERMAXLENGTH = 6
 export const REMARKMAXLENGTH = 512
+export const HAVELLSREMARKMAXLENGTH = 1000
 
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
 
@@ -5635,7 +5636,8 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor (Code)", value: "vendorWithCode", },
     { label: "Customer (Code)", value: "customerWithCode", },
-    { label: "Currency", value: "Currency", },
+    { label: "From Currency", value: "FromCurrency", },
+    { label: "To Currency", value: "ToCurrency", },
     { label: `Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "CurrencyExchangeRate", },
     { label: `Bank Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "BankRate", },
     { label: "Bank Commission (%)", value: "BankCommissionPercentage", },
@@ -5820,13 +5822,17 @@ export const INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl = [
 export const COMMODITYININDEXlISTING_DOWNLOAD_EXCEl = [
     { label: "Commodity (In Index)", value: "CommodityName", },
 ]
+export const COMMODITYSTANDARD_DOWNLOAD_EXCEl = [
+    { label: "Commodity Name (Standard)", value: "CommodityStandardName", },
+]
 
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
     { label: "Index", value: "IndexExchangeName", },
     { label: "Commodity Name", value: "CommodityName", },
     { label: "Index UOM", value: "IndexUOM", },
     { label: "UOM", value: "UOM", },
-    { label: "Currency", value: "Currency", },
+    { label: "From Currency", value: "FromCurrency", },
+    { label: "To Currency", value: "ToCurrency", },
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: "Index Rate/Index UOM", value: "RatePerIndexUOM", },
@@ -6079,8 +6085,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Profit RM Percentage", value: "ProfitRMPercentage", },
     { label: "Profit Fixed Percentage", value: "ProfitFixedPercentage", },
 
-    { label: "Payment Terms On", value: "PaymentTermsOn", },
-    { label: "Payment Term Cost", value: "PaymentTermCost", },
+
     { label: "Packaging Cost Percentage", value: "PackagingCostPercentage", },
     { label: "Packaging Cost", value: "PackagingCost", },
     { label: "Freight Percentage", value: "FreightPercentage", },
@@ -6102,6 +6107,8 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Quantity", value: "NCCPartQuantity", },
     { label: "Is Regularized", value: "IsRegularized", },
     { label: "Basic Price", value: "BasicRate", },
+    { label: "Payment Terms On", value: "PaymentTermsOn", },
+    { label: "Payment Term Cost", value: "PaymentTermCost", },
     { label: "Net Cost Other Currency", value: "NetPOPriceOtherCurrency", },
     { label: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
@@ -8295,4 +8302,9 @@ export const PACK_AND_FREIGHT_PER_KG = 'Per kg'
 export const FREIGHT_LOAD_OPTIONS = [
     { label: "Full Truck Load", value: 3 },
     { label: "Part Truck Load", value: 4 },
+]
+
+export const indexationDropdown = [
+    { label: 'Indexed', value: 'Indexed' },
+    { label: 'Non Indexed', value: 'Non Indexed' },
 ]

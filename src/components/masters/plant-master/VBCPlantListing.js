@@ -12,7 +12,7 @@ import { loggedInUserId } from '../../../helper/auth';
 import AddVBCPlant from './AddVBCPlant';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PlantVbc } from '../../../config/constants';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { VBCPLANT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -22,9 +22,9 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { showTitleForActiveToggle } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -341,13 +341,13 @@ const VBCPlantListing = ({ ...props }) => {
       return newItem;
     });
 
-    return (
-      <ExcelSheet data={temp} name={PlantVbc}>
-        {data && data.map((ele, index) => (
-          <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
-        ))}
-      </ExcelSheet>
-    );
+    // return (
+    //   <ExcelSheet data={temp} name={PlantVbc}>
+    //     {data && data.map((ele, index) => (
+    //       <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+    //     ))}
+    //   </ExcelSheet>
+    // );
   };
 
 
@@ -403,9 +403,9 @@ const VBCPlantListing = ({ ...props }) => {
                 {
                   DownloadAccessibility &&
                   <>
-                    <ExcelFile filename={PlantVbc} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                    {/* <ExcelFile filename={PlantVbc} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
                       {onBtExport()}
-                    </ExcelFile>
+                    </ExcelFile> */}
                   </>
                 }
 

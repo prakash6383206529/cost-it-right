@@ -23,7 +23,7 @@ import {
     CostingSimulationDownloadBOP, CostingSimulationDownloadMR, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
     , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, IdForMultiTechnology, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, STGridForToken, SimulationDownloadBOP, COMBINEDPROCESSSIMULATION
 } from '../../../config/masterData'
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -42,9 +42,9 @@ import { simulationContext } from '.';
 
 const gridOptions = {};
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
@@ -170,7 +170,7 @@ function CostingSimulation(props) {
     }, [])
 
     useEffect(() => {
-        if (SimulationTechnologyIdState && count === 0 && amendmentDetails.SimulationHeadId) {
+        if (SimulationTechnologyIdState && count === 0 && amendmentDetails?.SimulationHeadId) {
             if (getConfigurationKey().IsReleaseStrategyConfigured) {
                 let data = []
                 selectedRowData && selectedRowData?.map(item => {
@@ -200,7 +200,7 @@ function CostingSimulation(props) {
                             UserId: loggedInUserId(),
                             TechnologyId: SimulationTechnologyIdState,
                             Mode: 'simulation',
-                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
+                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId)
                         }
                         dispatch(checkFinalUser(obj, res => {
                             if (res && res.data && res.data.Result) {
@@ -234,7 +234,7 @@ function CostingSimulation(props) {
                     UserId: loggedInUserId(),
                     TechnologyId: technologyId,
                     Mode: 'simulation',
-                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId),
+                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId),
                     plantId: plantId
                 }
                 if (initialConfiguration.IsMultipleUserAllowForApproval ? plantId : true) {
@@ -261,7 +261,7 @@ function CostingSimulation(props) {
             //     UserId: loggedInUserId(),
             //     TechnologyId: SimulationTechnologyIdState,
             //     Mode: 'simulation',
-            //     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
+            //     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId)
             // }
             // dispatch(checkFinalUser(obj, res => {
             //     if (res && res.data && res.data.Result) {
@@ -274,7 +274,7 @@ function CostingSimulation(props) {
             //     }
             // }))
         }
-    }, [SimulationTechnologyIdState, amendmentDetails.SimulationHeadId, plantId])
+    }, [SimulationTechnologyIdState, amendmentDetails?.SimulationHeadId, plantId])
     useEffect(() => {
 
         if (props?.isFromApprovalListing === true) {
@@ -1261,7 +1261,7 @@ function CostingSimulation(props) {
         if (!reactLocalStorage.getObject('CostingTypePermission').cbc) {
             tempData = hideColumnFromExcel(tempData, 'CustomerName')
         } else {
-            if (amendmentDetails.SimulationHeadId === CBCTypeId) {
+            if (amendmentDetails?.SimulationHeadId === CBCTypeId) {
                 tempData = hideColumnFromExcel(tempData, 'VendorName')
             } else {
                 tempData = hideColumnFromExcel(tempData, 'CustomerName')
@@ -1269,25 +1269,25 @@ function CostingSimulation(props) {
         }
         let temp = []
         temp = SimulationUtils(TempData)    // common function 
-        return (
-            <ExcelSheet data={temp} name={'Costing'}>
-                {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>
-        );
+        // return (
+        //     <ExcelSheet data={temp} name={'Costing'}>
+        //         {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>
+        // );
     }
 
     const returnExcelColumnSecond = (data = []) => {
-        return (
-            <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
-                {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        // return (
+        //     <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
+        //         {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>);
     }
 
     const returnExcelColumnImpactedMaster = () => {
         let multiDataSet = impactmasterDownload(impactedMasterData)
-        return (
-            <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
-        );
+        // return (
+        //     <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
+        // );
     }
 
     const renderColumn = () => {
@@ -1616,7 +1616,7 @@ function CostingSimulation(props) {
                                     <Col md="3" lg="3" className="search-user-block mb-3">
                                         <div className="d-flex justify-content-end bd-highlight w100">
 
-                                            {(showRMColumn || showBOPColumn || showOperationColumn ||
+                                            {/* {(showRMColumn || showBOPColumn || showOperationColumn ||
                                                 showMachineRateColumn || showExchangeRateColumn || showSurfaceTreatmentColumn)
                                                 ?
                                                 <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
@@ -1632,7 +1632,7 @@ function CostingSimulation(props) {
                                                     {returnExcelColumnSecond()}
                                                 </ExcelFile>
 
-                                            }
+                                            } */}
                                             <button type="button" className="user-btn" id={'other_simulation_reset_grid'} title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
@@ -1647,7 +1647,7 @@ function CostingSimulation(props) {
                                             </div>
                                             <div className="ag-theme-material p-relative" >
                                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                                {amendmentDetails.SimulationHeadId && <AgGridReact
+                                                {<AgGridReact
                                                     defaultColDef={defaultColDef}
                                                     floatingFilter={true}
                                                     ref={gridRef}
@@ -1694,8 +1694,8 @@ function CostingSimulation(props) {
                                                     {/* //MINDA */}
                                                     {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" tooltipField='ProcessName' headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
                                                     {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" tooltipField='ProcessCode' headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}
-                                                    {amendmentDetails.SimulationHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName='Vendor (Code)'></AgGridColumn>}
-                                                    {amendmentDetails.SimulationHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName='Customer (Code)'></AgGridColumn>}
+                                                    {amendmentDetails?.SimulationHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName='Vendor (Code)'></AgGridColumn>}
+                                                    {amendmentDetails?.SimulationHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName='Customer (Code)'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="PlantName" tooltipField='PlantName' cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={140} field="BudgetedPrice" tooltipField='BudgetedPrice' headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
@@ -1823,7 +1823,7 @@ function CostingSimulation(props) {
                                                     {isSimulationWithCosting && <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>}
                                                 </AgGridReact >}
                                                 {storeTechnology === FORGINGNAME && <WarningMessage dClass="float-right" textClass="mt2" message="If RMC is calculated through RM weight calculator then change in scrap rate won't affect the RMC." />}
-                                                {amendmentDetails.SimulationHeadId && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                                {amendmentDetails?.SimulationHeadId && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                             </div >
                                         </div >
                                     </Col >
@@ -1909,7 +1909,7 @@ function CostingSimulation(props) {
                                 amendmentDetails={amendmentDetails}
                                 dataForAssemblyImpactInVerifyImpact={tableData}
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
-                                CostingTypeId={amendmentDetails.SimulationHeadId}
+                                CostingTypeId={amendmentDetails?.SimulationHeadId}
                                 isSimulationWithCosting={isSimulationWithCosting}
                                 costingIdArray={costingIdArray}
                             />
