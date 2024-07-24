@@ -1593,15 +1593,16 @@ function RfqListing(props) {
                                 />
                             </QuotationId.Provider>
                         )}
-                        {(viewRMCompare && addComparisonToggle) && < RMCompareTable
+                        {(viewRMCompare && addComparisonToggle) && <RMCompareTable
                             checkCostingSelected={checkCostingSelected}
                             selectedRows={selectedRows}
                             uniqueShouldCostingId={uniqueShouldCostingId}
                         />}
-                        {(viewBOPCompare && addComparisonToggle) && < BOPCompareTable
+                        {(viewBOPCompare && addComparisonToggle) && <BOPCompareTable
                             checkCostingSelected={checkCostingSelected}
                             selectedRows={selectedRows}
                             uniqueShouldCostingId={uniqueShouldCostingId}
+                            quotationId={data?.QuotationId}
                         />}
                     </div>
                 }
