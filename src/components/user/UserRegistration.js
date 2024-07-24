@@ -13,7 +13,7 @@ import {
 } from "../../actions/auth/AuthActions";
 import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList, getApprovalTypeSelectListUserModule } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
-import { IsSendMailToPrimaryContact, getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
+import { IsSendMailToPrimaryContact, IsSendQuotationToPointOfContact, getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
 import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, ONBOARDINGID, ONBOARDINGNAME, VBC_VENDOR_TYPE, VENDORNEEDFOR, ZBC, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
@@ -2601,7 +2601,7 @@ function UserRegistration(props) {
                         />
                       </label>
                     </Col>}
-                    {!props?.RFQUser ? <div className="col-md-3">
+                    {!props?.RFQUser && <div className="col-md-3">
                       <div className="row form-group">
                         <div className="Phone phoneNumber col-md-8">
                           <TextFieldHookForm
@@ -2642,14 +2642,14 @@ function UserRegistration(props) {
                           />
                         </div>
                       </div>
-                    </div>
-                      :
+                    </div>}
+                    {props?.RFQUser &&
                       <>
-                        <Col md="12" className="mt-4">
+                        {true && <Col md="12" className="mt-4">
                           <HeaderTitle
                             title={'Additional Details:'}
                             customClass={'Personal-Details'} />
-                        </Col>
+                        </Col>}
                         <Col md="3">
                           <div className="Phone phoneNumber">
                             <AsyncSearchableSelectHookForm
@@ -2675,31 +2675,33 @@ function UserRegistration(props) {
                             />
                           </div>
                         </Col>
-                        <Col md="3">
-                          <div className="phoneNumber pl-0">
-                            <SearchableSelectHookForm
-                              name="Reporter"
-                              type="text"
-                              label={`Vendor's Point of Contact`}
+                        {IsSendQuotationToPointOfContact() &&
+                          <Col md="3">
+                            <div className="phoneNumber pl-0">
+                              <SearchableSelectHookForm
+                                name="Reporter"
+                                type="text"
+                                label={`Vendor's Point of Contact`}
 
-                              errors={errors.Reporter}
-                              Controller={Controller}
-                              control={control}
-                              register={register}
-                              mandatory={true}
-                              rules={{
-                                required: true,
-                              }}
-                              placeholder={'Select Reporter'}
-                              options={searchableSelectType('reporter')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(department == null || department.length === 0) ? [required] : []}
-                              required={true}
-                              handleChange={handleReporterChange}
-                            //valueDescription={department}
-                            />
-                          </div>
-                        </Col>
+                                errors={errors.Reporter}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={true}
+                                rules={{
+                                  required: true,
+                                }}
+                                placeholder={'Select Reporter'}
+                                options={searchableSelectType('reporter')}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                //validate={(department == null || department.length === 0) ? [required] : []}
+                                required={true}
+                                handleChange={handleReporterChange}
+                              //valueDescription={department}
+                              />
+                            </div>
+                          </Col>
+                        }
                       </>
                     }
 

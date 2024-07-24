@@ -20,6 +20,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import { ApplyPermission } from '.';
 import Button from '../../layout/Button';
+import DayTime from '../../common/DayTimeWrapper';
 const gridOptions = {};
 const FreightListing = (props) => {
   const dispatch = useDispatch();
@@ -134,7 +135,7 @@ const FreightListing = (props) => {
       <>
         {permissions.View && <Button id={`freightListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true, false)} title={"View"} />}
         {permissions.Edit && <Button id={`freightListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false, true)} title={"Edit"} />}
-        {permissions.Delete && <Button id={`freightListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+        {permissions.Delete && !rowData?.IsFreightAssociated && <Button id={`freightListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
   };
@@ -162,6 +163,12 @@ const FreightListing = (props) => {
     const cellValue = props?.value;
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
+
+  const effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+  }
+
   const returnExcelColumn = (data = [], TempData) => {
     // const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     // const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -237,7 +244,8 @@ const FreightListing = (props) => {
     costingHeadRenderer: costingHeadFormatter,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
-    hyphenFormatter: hyphenFormatter
+    hyphenFormatter: hyphenFormatter,
+    effectiveDateFormatter: effectiveDateFormatter
   };
 
   return (
@@ -289,7 +297,9 @@ const FreightListing = (props) => {
                 <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                 {/* <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                 <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn> */}
                 <AgGridColumn width='200px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
