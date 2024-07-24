@@ -231,7 +231,13 @@ function AddFreight(props) {
   }
 
   const callFreightAPI = (capacityValue, criteriaValue) => {
-    if (Object.keys(capacityValue)?.length > 0 && Object.keys(criteriaValue)?.length > 0) {
+    let callAPI = false
+    if (freightType === FullTruckLoad) {
+      callAPI = Object.keys(capacityValue)?.length > 0 && Object.keys(criteriaValue)?.length > 0
+    } else if (freightType === PartTruckLoad) {
+      callAPI = Object.keys(criteriaValue)?.length > 0
+    }
+    if (callAPI) {
       const data = {
         Capacity: capacityValue?.value ? capacityValue?.value : null,
         Criteria: criteriaValue?.value ? criteriaValue?.value : null,
