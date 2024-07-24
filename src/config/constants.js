@@ -3128,7 +3128,6 @@ export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('Approv
 export const RELEASESTRATEGYTYPEID6 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB6])
 export const VENDORNEEDFORMID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VendorNeedForm])
 export const RAWMATERIALAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[RAWMATERIAL])
-console.log('RAWMATERIALAPPROVALTYPEID: ', RAWMATERIALAPPROVALTYPEID);
 //Supplier approval 
 
 export const CLASSIFICATIONAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CUD])
@@ -3202,7 +3201,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.14";
+export const VERSION = "V3.0.15";
 
 
 

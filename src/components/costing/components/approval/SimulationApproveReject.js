@@ -156,10 +156,9 @@ function SimulationApproveReject(props) {
   const checkPermission = (costingTypeId) => {
     let levelDetailsTemp = ''
     levelDetailsTemp = userTechnologyLevelDetails(costingTypeId, technologyLevelsList?.TechnologyLevels ? technologyLevelsList?.TechnologyLevels : [])
-    
+
     if (levelDetailsTemp?.length !== 0) {
       setLevelDetails(levelDetailsTemp)
-      console.log("COMIG HERE");
       getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
     } else {
       if (getConfigurationKey().IsReleaseStrategyConfigured && props?.showApprovalTypeDropdown) {
@@ -238,7 +237,6 @@ function SimulationApproveReject(props) {
 
       if (values.length > 1) {
         values.map((item, index) => {
-          console.log('item: ', item);
           let obj = {
             LoggedInUserId: userData.LoggedInUserId,
             DepartmentId: departId,
@@ -320,7 +318,6 @@ function SimulationApproveReject(props) {
             technologyIdTemp = EXCHNAGERATE
           }
         } else {
-          console.log(technologyId, "IN ELSE");
           technologyIdTemp = technologyId
         }
 
@@ -386,7 +383,7 @@ function SimulationApproveReject(props) {
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res?.data?.Result) {
           reactLocalStorage.setObject('isSaveSimualtionCalled', true)
-          Toaster.success('Simulation saved successfully.')
+          // Toaster.success('Simulation saved successfully.')
           setTimeout(() => {
 
             setLoader(false)

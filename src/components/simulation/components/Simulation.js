@@ -45,6 +45,7 @@ import Toaster from '../../common/Toaster';
 import { simulationContext } from '.';
 import RMIndexationSimulationListing from './SimulationPages/RMIndexationSimulationListing';
 import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
+import { setCommodityDetails } from '../../masters/actions/Indexation';
 
 // const ExcelFile = ReactExport.ExcelFile;
 // const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
