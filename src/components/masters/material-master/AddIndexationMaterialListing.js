@@ -47,7 +47,7 @@ function AddIndexationMaterialListing(props) {
     useEffect(() => {
         // Calculate totalBasicRate whenever commodityDetailsState changes
         const totalRate = state.commodityDetailsState && state.commodityDetailsState?.reduce((sum, row) => {
-            const baseCurrency = row.TotalCostConversion ? row.TotalCostConversion + row.BasicRateConversion : row.BasicRateConversion || 0;
+            const baseCurrency = row.OtherCostConversion ? row.OtherCostConversion + row.BasicRateConversion : row.BasicRateConversion || 0;
             const baseCurrencyBypercentage = baseCurrency * row.Percentage / 100 || 0;
             return sum + baseCurrencyBypercentage;
         }, 0);

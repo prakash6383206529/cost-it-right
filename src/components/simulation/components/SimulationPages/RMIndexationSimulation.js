@@ -265,8 +265,8 @@ function RMIndexationSimulation(props) {
                 tempObj.CostingHead = item.CostingHead
                 tempObj.RawMaterialName = item.RawMaterialName
                 tempObj.MaterialType = item.MaterialType
-                tempObj.RawMaterialGrade = item.RawMaterialGradeName
-                tempObj.RawMaterialSpecification = item.RawMaterialSpecificationName
+                tempObj.RawMaterialGrade = item.RawMaterialGrade
+                tempObj.RawMaterialSpecification = item.RawMaterialSpecs
                 tempObj.RawMaterialCategory = item.Category
                 tempObj.UOM = item.UOM
                 tempObj.OldBasicRate = item.OldRawMaterialIndexationDetails.BasicRate
@@ -308,6 +308,19 @@ function RMIndexationSimulation(props) {
 
     }, 600)
 
+    const setCommodityDetailsData = (commoditiDetails) => {
+        setCommodityDetailForRow(commoditiDetails)
+        const updatedCommodityDetails = commoditiDetails.map(detail => {
+
+            return {
+                ...detail,
+                ExchangeRate: detail ? detail.ExchangeRate : null,
+                TotalCostPercent: checkForNull(detail?.TotalCostConversion) * checkForNull(detail?.Percentage) / 100,
+            };
+        });
+        setCommodityDetailForRow(commoditiDetails)
+        dispatch(setCommodityDetails(updatedCommodityDetails))
+    }
 
     const cancelVerifyPage = () => {
 
@@ -378,7 +391,7 @@ function RMIndexationSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewBasicRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control-disabled' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate ? 'disabled' : ''} basicRate_revised`} title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : row.Percentage ? PercentageCalc : isbulkUpload ? checkForNull(cell) : checkForNull(row.BasicRatePerUOM)} </span>
+                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control-disabled' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate ? 'disabled' : ''} basicRate_revised`} title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : row.Percentage ? PercentageCalc : isbulkUpload ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)} </span>
                 }
                 {!isCostingSimulation && <button
                     type="button"
@@ -395,36 +408,20 @@ function RMIndexationSimulation(props) {
         setRowData(row)
 
         if (type === 'Old') {
-            setCommodityDetailForRow(row?.OldMaterialCommodityIndexRateDetails)
-            const updatedCommodityDetails = row?.OldMaterialCommodityIndexRateDetails.map(detail => {
 
-                return {
-                    ...detail,
-                    ExchangeRate: detail ? detail.ExchangeRate : null,
-                    TotalCostPercent: checkForNull(detail?.TotalCostConversion) * checkForNull(detail?.Percentage) / 100,
-                };
-            });
+            setCommodityDetailsData(row?.OldMaterialCommodityIndexRateDetails)
+            setOtherCostDetailForRow(row?.OldRawMaterialOtherCostDetails)
+
             setIsViewFlag(true)
-            dispatch(setCommodityDetails(updatedCommodityDetails))
 
             setEditIndex(index)
         } else {
-            setCommodityDetailForRow(row?.NewMaterialCommodityIndexRateDetails)
-            const updatedCommodityDetails = row?.NewMaterialCommodityIndexRateDetails.map(detail => {
-
-                return {
-                    ...detail,
-                    ExchangeRate: detail ? detail.ExchangeRate : null,
-                    TotalCostPercent: checkForNull(detail?.TotalCostConversion) * checkForNull(detail?.Percentage) / 100,
-                };
-
-            });
-            setIsViewFlag(isRunSimulationClicked || isApprovalSummary ? true : false)
-            dispatch(setCommodityDetails(updatedCommodityDetails))
-            setEditIndex(index)
+            setCommodityDetailsData(row?.NewMaterialCommodityIndexRateDetails)
             setOtherCostDetailForRow(row?.NewRawMaterialOtherCostDetails)
+
+            setIsViewFlag(isRunSimulationClicked || isApprovalSummary ? true : false)
+            setEditIndex(index)
         }
-        ;
 
         setOpenCommodityDrawer(true)
 
@@ -443,6 +440,7 @@ function RMIndexationSimulation(props) {
         setRowData(row)
         if (type === 'Old') {
             const basicRate = checkForNull(row?.OldBasicRatePerUOM)
+            setCommodityDetailsData(row?.OldMaterialCommodityIndexRateDetails)
 
             setTotalBasicRate(basicRate)
             setOtherCostDetailForRow(row?.OldRawMaterialOtherCostDetails)
@@ -450,6 +448,7 @@ function RMIndexationSimulation(props) {
             setEditIndex(index)
         } else {
             const basicRate = checkForNull(row?.NewBasicRatePerUOM)
+            setCommodityDetailsData(row?.NewMaterialCommodityIndexRateDetails)
 
             setTotalBasicRate(basicRate)
             setOtherCostDetailForRow(row?.NewRawMaterialOtherCostDetails)
@@ -581,7 +580,7 @@ function RMIndexationSimulation(props) {
                 }
                 {!isCostingSimulation && <button
                     type="button"
-                    className={`${isRunSimulationClicked || isApprovalSummary ? 'View small' : 'add-out-sourcing'} `}
+                    className={'View small'}
                     onClick={() => CommodityDetailDrawer(value, row, props.rowIndex, 'Old')}
                     title="Add"
                 >
@@ -664,9 +663,9 @@ function RMIndexationSimulation(props) {
     }
 
     /**
-  * @method beforeSaveCell
-  * @description CHECK FOR ENTER NUMBER IN CELL
-  */
+    * @method beforeSaveCell
+    * @description CHECK FOR ENTER NUMBER IN CELL
+    */
     const beforeSaveCell = (cell, props, type) => {
         const cellValue = cell
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -686,7 +685,7 @@ function RMIndexationSimulation(props) {
                 return false
             }
             return true
-        } else if (cellValue && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+        } else if (type !== 'otherCost' && cellValue && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
             Toaster.warning('Please enter a valid positive numbers.')
             if (type === "Percentage") {
                 row.Percentage = 0
@@ -750,9 +749,9 @@ function RMIndexationSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        setTimeout(() => {
-            setShowTooltip(true)
-        }, 100);
+        // setTimeout(() => {
+        //     setShowTooltip(true)
+        // }, 200);
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -866,7 +865,7 @@ function RMIndexationSimulation(props) {
     const existingOtherCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
+        const value = beforeSaveCell(cell, props, 'otherCost')
         return (
             <>
                 {
@@ -877,7 +876,7 @@ function RMIndexationSimulation(props) {
                 }
                 {!isCostingSimulation && <button
                     type="button"
-                    className={`${isRunSimulationClicked || isApprovalSummary ? 'View small' : ' add-out-sourcing'} `}
+                    className={'View small'}
                     onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'Old')}
                     title="Add"
                 >
@@ -889,13 +888,14 @@ function RMIndexationSimulation(props) {
     const revisedOtherCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
+        const value = beforeSaveCell(cell, props, 'otherCost')
+        const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row.BasicRatePerUOM), getConfigurationKey().NoOfDecimalForPrice)
         return (
             <>
                 {
                     isImpactedMaster ?
                         row.OldBasicRate :
-                        <span title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : Number(row.BasicRatePerUOM)} </span>
+                        <span title={showValue}>{showValue} </span>
 
                 }
                 {!isCostingSimulation && <button
@@ -1018,12 +1018,12 @@ function RMIndexationSimulation(props) {
                                                     <label>Token No: </label>
                                                     <p className='technology ml-1' title={tokenNumber}>{tokenNumber}</p>
                                                 </div>
+                                                {
+                                                    !props?.isFromApprovalListing && !isApprovalSummary &&
+                                                    <button type="button" className={"apply ml-2 back_simulationPage"} id="simulation-back" onClick={props?.backToSimulation} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
+                                                }
                                             </div>}
                                         </div>
-                                        {
-                                            !props?.isFromApprovalListing && !isApprovalSummary &&
-                                            <button type="button" className={"apply ml-2 back_simulationPage"} id="simulation-back" onClick={props?.backToSimulation} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
-                                        }
 
 
                                     </div>

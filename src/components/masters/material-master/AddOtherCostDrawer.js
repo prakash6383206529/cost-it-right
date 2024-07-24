@@ -122,7 +122,7 @@ function AddOtherCostDrawer(props) {
         let selectedData = tableData[indexValue];
         setValue('Cost', {
             label: selectedData.CostHeaderName,
-            value: selectedData.CostHeaderName
+            value: selectedData.CostingConditionMasterId
         });
         setValue('Type', {
             label: selectedData.Type,
@@ -455,6 +455,10 @@ function AddOtherCostDrawer(props) {
             setType(type);
             setValue('CostCurrency', '')
             setValue('CostBaseCurrency', '')
+            setValue('Percentage', '')
+            setValue('Applicability', '')
+            setValue('ApplicabilityCostCurrency', '')
+            setValue('ApplicabilityBaseCost', '')
             if (type?.label === "Percentage") {
                 setState(prevState => ({ ...prevState, disableApplicability: false }));
             } else {
@@ -506,7 +510,7 @@ function AddOtherCostDrawer(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Condition}
-                                                disabled={props.ViewMode}
+                                                disabled={props.ViewMode || isEditMode}
                                             />
                                         </Col>
                                         <Col md="3" className='px-2'>

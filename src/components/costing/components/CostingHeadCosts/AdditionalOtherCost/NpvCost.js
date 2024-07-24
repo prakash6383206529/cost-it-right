@@ -24,8 +24,7 @@ function NpvCost(props) {
         <Fragment>
             <Row>
                 <Col md={props.hideAction ? 12 : 12}>
-                    <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
-
+                    <Table className="table cr-brdr-main mb-4 forging-cal-table" size="sm">
                         <tbody>
                             <tr className='thead'>
                                 <th>{`Type of Investment`}</th>

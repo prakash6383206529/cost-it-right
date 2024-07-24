@@ -349,7 +349,7 @@ function ApproveRejectDrawer(props) {
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res?.data?.Result) {
           setLoader(true)
-          Toaster.success('Simulation saved successfully.')
+          // Toaster.success('Simulation saved successfully.')
           setLoader(false)
         }
       }))

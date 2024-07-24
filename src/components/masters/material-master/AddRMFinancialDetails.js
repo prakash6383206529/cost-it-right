@@ -1071,7 +1071,7 @@ function AddRMFinancialDetails(props) {
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
-                                            disabled={false}
+                                            disabled={isEditFlag || isViewFlag}
                                             mandatory={true}
                                             errors={errors && errors.fromDate}
                                         />
@@ -1641,7 +1641,7 @@ function AddRMFinancialDetails(props) {
                                             className={"right mt-3 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : true ? "plus-icon-square" : "blurPlus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
-                                            disabled={false}
+                                            disabled={isViewFlag}
                                         />}
                                     </div>
                                 </Col>}
@@ -1732,7 +1732,7 @@ function AddRMFinancialDetails(props) {
                                             className={"right mt-0 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : true ? "plus-icon-square" : "blurPlus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
-                                            disabled={false}
+                                            disabled={isViewFlag}
                                         />}
                                     </div>
                                 </Col>}
@@ -1818,7 +1818,7 @@ function AddRMFinancialDetails(props) {
                                         autoComplete={"off"}
                                         disabledKeyboardNavigation
                                         onChangeRaw={(e) => e.preventDefault()}
-                                        disabled={false}
+                                        disabled={isViewFlag}
                                         mandatory={true}
                                         errors={errors && errors.effectiveDate}
                                         minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : state.minDate}
