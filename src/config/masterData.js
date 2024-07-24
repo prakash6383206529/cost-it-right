@@ -4440,6 +4440,7 @@ export const ASSEMBLY_TECHNOLOGY_MASTER = 10
 export const LOGISTICS = 24
 export const WIREFORMING = 25
 export const ELECTRICAL_STAMPING = 26
+export const INSULATION = 28
 
 // PART TYPE
 export const PART_TYPE_ASSEMBLY = 1
@@ -5096,7 +5097,7 @@ export const ENDMILL = 'End Mill'
 export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
-export const getTechnology = [1, 8, 2, 4, 20, 23, 14, 25, 26]
+export const getTechnology = [1, 8, 2, 4, 20, 23, 14, 25, 26, 28]
 export const technologyForDensity = [1, 2, 14, 25]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['0', '1', '2', '3', '4', '5', '6', '7', '9', '10']

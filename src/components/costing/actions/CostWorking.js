@@ -1499,3 +1499,58 @@ export function getSimulationCorrugatedAndMonoCartonCalculation(simulationId, co
     });
   };
 }
+
+let rawMaterialCalculationData = null;
+
+/**
+ * @method saveRawMaterialCalculationForInsulation
+ * @description Save raw material calculator data for Insulation
+ */
+export function saveRawMaterialCalculationForInsulation(data, callback) {
+  return (dispatch) => {
+
+    rawMaterialCalculationData = data;
+
+    const dummyResponse = {
+      data: {
+        Result: true,
+        Identity: "dummyIdentity"
+      }
+    };
+
+    setTimeout(() => {
+      callback(dummyResponse);
+    }, 500);
+  };
+}
+
+/**
+ * @method getRawMaterialCalculationForInsulation
+ * @description Get raw material calculator data for Insulation
+ */
+export function getRawMaterialCalculationForInsulation(costingId, rawMaterialId, weightCalculationId, callback) {
+
+
+  return (dispatch) => {
+    if (rawMaterialCalculationData &&
+      rawMaterialCalculationData.BaseCostingIdRef === costingId &&
+      rawMaterialCalculationData.RawMaterialIdRef === rawMaterialId) {
+      const response = {
+        data: {
+          Result: true,
+          Data: rawMaterialCalculationData
+        }
+      };
+
+      callback(response);
+
+    } else {
+      // Simulate an error if no matching data is found
+      const error = {
+        message: 'No data found'
+      };
+      callback(error, null);
+      Toaster.error('No data found');
+    }
+  };
+}

@@ -2,9 +2,10 @@ import React from 'react'
 import { Row, Col, Container, } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
+import InsulationCalculator from './Insulation/Insulation'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
-import { SHEETMETAL, RUBBER, PLASTIC, FORGING, DIE_CASTING, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, ELECTRICAL_STAMPING } from '../../../../config/masterData'
+import { SHEETMETAL, RUBBER, PLASTIC, FORGING, DIE_CASTING, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, ELECTRICAL_STAMPING, INSULATION } from '../../../../config/masterData'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
 import NonFerrousCalculator from './dieCasting'
 import Ferrous from './Ferrous'
@@ -87,6 +88,17 @@ function OpenWeightCalculator(props) {
       case SHEETMETAL:
         return (
           <WeightCalculator
+            rmRowData={props.rmRowData}
+            isEditFlag={props.isEditFlag}
+            toggleDrawer={toggleDrawer}
+            item={item}
+            CostingViewMode={CostingViewMode ? CostingViewMode : false}
+          />
+        )
+      //insulation code
+      case INSULATION:
+        return (
+          <InsulationCalculator
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             toggleDrawer={toggleDrawer}
@@ -220,6 +232,9 @@ function OpenWeightCalculator(props) {
       case Ferrous_Casting:
         return 'ferrous'
 
+      case INSULATION:
+        return 'insulation'
+
       default:
         break;
     }
@@ -251,7 +266,7 @@ function OpenWeightCalculator(props) {
                 <Col md="12 d-flex weight-calculator-headings">
                   <div className="d-inline-block overflow"><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowData.RMName}>{`${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</span></div>
                   <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''}`}</span></div>
-                  {(Number(technology) === Number(SHEETMETAL) || Number(technology) === Number(FORGING) || Number(technology) === Number(MACHINING)) && <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}:</span><span className="text-dark-blue">{`${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</span></div>}
+                  {(Number(technology) === Number(SHEETMETAL) || Number(technology) === Number(FORGING) || Number(technology) === Number(MACHINING) || Number(technology) === Number(INSULATION)) && <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}:</span><span className="text-dark-blue">{`${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</span></div>}
                   <div className="d-inline-block "><span className="grey-text d-block">RM Rate ({reactLocalStorage.getObject("baseCurrency")}):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? checkForDecimalAndNull(rmRowData.RMRate, getConfigurationKey().NoOfDecimalForPrice) : ''}`}</span></div>
                   {appyMasterBatch && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? checkForDecimalAndNull(totalRM, getConfigurationKey().NoOfDecimalForPrice) : ''}`}</span></div>}
                   {Number(technology) === Number(MACHINING) && <div className="d-inline-block "><span className="grey-text d-block">{`Scrap Rate Per Scrap UOM(${reactLocalStorage.getObject("baseCurrency")}/${rmRowData.ScrapUnitOfMeasurement}):`}</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? Number(technology) === Number(MACHINING) ? (rmRowData.ScrapRatePerScrapUOMConversion ? checkForDecimalAndNull(rmRowData.ScrapRatePerScrapUOMConversion, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(rmRowData.ScrapRatePerScrapUOM, getConfigurationKey().NoOfDecimalForPrice)) : checkForDecimalAndNull(rmRowData.ScrapRate, getConfigurationKey().NoOfDecimalForPrice) : ''}`}</span></div>}
