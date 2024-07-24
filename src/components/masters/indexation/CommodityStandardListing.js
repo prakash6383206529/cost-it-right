@@ -16,7 +16,7 @@ import { ApplyPermission } from ".";
 import { useTranslation } from "react-i18next";
 // import { COMMODITYSTANDARD_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import { disabledClass } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
@@ -28,9 +28,9 @@ import Toaster from "../../common/Toaster";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import _ from "lodash";
 import { COMMODITYSTANDARD_DOWNLOAD_EXCEl } from "../../../config/masterData";
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const CommodityStandardListing = (props) => {
@@ -384,19 +384,19 @@ const CommodityStandardListing = (props) => {
                 }
                 return item;
             });
-        return (
-            <ExcelSheet data={temp} name={RmMaterial}>
-                {data &&
-                    data.map((ele, index) => (
-                        <ExcelColumn
-                            key={index}
-                            label={ele.label}
-                            value={ele.value}
-                            style={ele.style}
-                        />
-                    ))}
-            </ExcelSheet>
-        );
+        // return (
+        //     <ExcelSheet data={temp} name={RmMaterial}>
+        //         {data &&
+        //             data.map((ele, index) => (
+        //                 <ExcelColumn
+        //                     key={index}
+        //                     label={ele.label}
+        //                     value={ele.value}
+        //                     style={ele.style}
+        //                 />
+        //             ))}
+        //     </ExcelSheet>
+        // );
     };
     const onExcelDownload = () => {
         setDisableDownload(true)
@@ -438,7 +438,7 @@ const CommodityStandardListing = (props) => {
                         {permissions.Download && (
                             <>
                                 <>
-                                    <ExcelFile
+                                    {/* <ExcelFile
                                         filename={"Commodity Name (Standard)"}
                                         fileExtension={".xls"}
                                         element={
@@ -446,7 +446,7 @@ const CommodityStandardListing = (props) => {
                                         }
                                     >
                                         {onBtExport()}
-                                    </ExcelFile>
+                                    </ExcelFile> */}
                                 </>
                             </>
                         )}

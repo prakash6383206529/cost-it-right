@@ -11,7 +11,7 @@ import { ADDITIONAL_MASTERS } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import LoaderCustom from '../../common/LoaderCustom';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -32,9 +32,9 @@ import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGl
 import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import PaginationControls from '../../common/Pagination/PaginationControls';
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -377,10 +377,10 @@ const OutsourcingListing = (props) => {
         return returnExcelColumn(OUTSOURCING_EXCEL_DOWNLOAD, tempArr)
     };
     const returnExcelColumn = (data = [], TempData) => {
-        return (
-            <ExcelSheet data={TempData} name={OUTSOURCING}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        // return (
+        //     <ExcelSheet data={TempData} name={OUTSOURCING}>
+        //         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>);
     }
 
     const onFilterTextBoxChanged = (e) => {
@@ -467,12 +467,12 @@ const OutsourcingListing = (props) => {
                                     {DownloadAccessibility &&
                                         <>
                                             <Button className="mr5" id={"outsourceListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
-                                            <ExcelFile filename={'Outsourcing'} fileExtension={'.xls'} element={
+                                            {/* <ExcelFile filename={'Outsourcing'} fileExtension={'.xls'} element={
                                                 <Button id={"Excel-Downloads-outsourcing"} className="p-absolute" />
 
                                             }>
                                                 {onBtExport()}
-                                            </ExcelFile>
+                                            </ExcelFile> */}
                                         </>
                                     }
                                     <Button id={"outsourceListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />

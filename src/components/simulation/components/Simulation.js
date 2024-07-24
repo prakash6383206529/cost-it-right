@@ -8,7 +8,7 @@ import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowFor
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID, MACHINE, MASTERS, VBCTypeId, ZBCTypeId, CBCTypeId, ZBC, RAWMATERIALINDEX } from '../../../config/constants';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, indexationDropdown } from '../../../config/masterData';
 import { COMBINED_PROCESS } from '../../../config/constants';
 import { CombinedProcessSimulation } from '../../../config/masterData';
@@ -46,9 +46,9 @@ import { simulationContext } from '.';
 import RMIndexationSimulationListing from './SimulationPages/RMIndexationSimulationListing';
 import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 export const ApplyPermission = React.createContext();
 function Simulation(props) {
     const { handleEditMasterPage, showTour } = useContext(simulationContext) || {};
@@ -630,9 +630,9 @@ function Simulation(props) {
                 break;
         }
 
-        return (<ExcelSheet data={temp} name={master.label}>
-            {templateArray && templateArray.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        </ExcelSheet>);
+        // return (<ExcelSheet data={temp} name={master.label}>
+        //     {templateArray && templateArray.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        // </ExcelSheet>);
     }
 
     const changeSetLoader = (value) => {
@@ -1507,7 +1507,7 @@ function Simulation(props) {
             //         return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
             //     }
             case RMDOMESTIC:
-                
+
                 if (type?.label === "Indexed") {
                     return <ApplyPermission.Provider value={permissionData}>
                         <RMIndexationSimulation isCostingSimulation={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} />
@@ -1898,10 +1898,9 @@ function Simulation(props) {
                                     {
                                         !isUploadSimulation(master.value) &&
                                         <>
-                                            <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button id={"simulation-download"} type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                                {/* {true ? '' : renderColumn(master.label)} */}
+                                            {/* <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button id={"simulation-download"} type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                                 {!editWarning ? renderColumn(master.value) : ''}
-                                            </ExcelFile>
+                                            </ExcelFile> */}
                                             {!(master?.value === RAWMATERIALINDEX) && <button type="button" id='simulation-upload' className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>}
                                         </>
                                     }

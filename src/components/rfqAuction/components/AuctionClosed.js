@@ -3,12 +3,12 @@ import { useDispatch } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { AuctionClosedId } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
-import ReactExport from "react-export-excel";
+// import ReactExport from "react-export-excel";
 import AuctionGrid from "./AuctionGrid";
 import { auctionListByStatus } from "../actions/RfqAuction";
 
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 

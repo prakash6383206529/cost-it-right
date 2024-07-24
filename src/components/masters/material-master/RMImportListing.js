@@ -13,7 +13,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import LoaderCustom from '../../common/LoaderCustom';
 import { INR, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -39,9 +39,9 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -666,11 +666,11 @@ function RMImportListing(props) {
       }
       return item
     })
-    return (
+    // return (
 
-      <ExcelSheet data={temp} name={'RM Import'}>
-        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-      </ExcelSheet>);
+    //   <ExcelSheet data={temp} name={'RM Import'}>
+    //     {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+    //   </ExcelSheet>);
   }
 
 
@@ -966,10 +966,10 @@ function RMImportListing(props) {
                             icon={"download mr-1"}
                             buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                           />
-                          <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                          {/* <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
                             <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />}>
                             {onBtExport()}
-                          </ExcelFile>
+                          </ExcelFile> */}
                         </>
                       }
                     </>

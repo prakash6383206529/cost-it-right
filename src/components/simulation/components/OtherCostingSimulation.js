@@ -14,7 +14,7 @@ import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, BOPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken } from '../../../config/masterData'
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -26,9 +26,9 @@ import { PaginationWrapper } from '../../common/commonPagination';
 
 const gridOptions = {};
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
@@ -453,27 +453,27 @@ function OtherCostingSimulation(props) {
         let temp = []
         temp = SimulationUtils(TempData)
 
-        return (<ExcelSheet data={temp} name={'Costing'}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        </ExcelSheet>);
+        // return (<ExcelSheet data={temp} name={'Costing'}>
+        //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        // </ExcelSheet>);
     }
 
     const returnExcelColumnImpactedMaster = () => {
         let multiDataSet = impactmasterDownload(impactedMasterData)
 
-        return (
+        // return (
 
-            <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
-        );
+        //     <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
+        // );
     }
 
     const returnExcelColumnSecond = (data = []) => {
 
-        return (
+        // return (
 
-            <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
-                {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        //     <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
+        //         {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        //     </ExcelSheet>);
     }
 
     const renderColumn = () => {
@@ -641,7 +641,7 @@ function OtherCostingSimulation(props) {
                                     <Col md="3" lg="3" className="search-user-block mb-3">
                                         <div className="d-flex justify-content-end bd-highlight w100">
 
-                                            {(showRMColumn || showBOPColumn || showOperationColumn ||
+                                            {/* {(showRMColumn || showBOPColumn || showOperationColumn ||
                                                 showMachineRateColumn || showExchangeRateColumn)
                                                 ?
                                                 <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
@@ -657,7 +657,7 @@ function OtherCostingSimulation(props) {
                                                     {returnExcelColumnSecond()}
                                                 </ExcelFile>
 
-                                            }
+                                            } */}
                                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>

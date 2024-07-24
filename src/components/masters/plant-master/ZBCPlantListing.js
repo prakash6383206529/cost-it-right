@@ -15,16 +15,16 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { ZBCPLANT_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { searchNocontentFilter, setLoremIpsum } from '../../../helper';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -289,18 +289,18 @@ const ZBCPlantListing = (props) => {
     };
 
     const returnExcelColumn = (data = [], TempData) => {
-        return (
-            <ExcelSheet data={TempData} name={PlantZbc}>
-                {data && data.map((ele, index) => (
-                    <ExcelColumn
-                        key={index}
-                        label={(ele.label === "Company Name") ? `${handleDepartmentHeader()} Name` : ele.label}
-                        value={ele.value}
-                        style={ele.style}
-                    />
-                ))}
-            </ExcelSheet>
-        );
+        // return (
+        //     <ExcelSheet data={TempData} name={PlantZbc}>
+        //         {data && data.map((ele, index) => (
+        //             <ExcelColumn
+        //                 key={index}
+        //                 label={(ele.label === "Company Name") ? `${handleDepartmentHeader()} Name` : ele.label}
+        //                 value={ele.value}
+        //                 style={ele.style}
+        //             />
+        //         ))}
+        //     </ExcelSheet>
+        // );
     };
 
     const onFilterTextBoxChanged = (event) => {
@@ -369,10 +369,10 @@ const ZBCPlantListing = (props) => {
                                 {
                                     DownloadAccessibility &&
                                     <>
-                                        <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} ><div className="download mr-1"></div>
+                                        {/* <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} ><div className="download mr-1"></div>
                                             {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}</button>}>
                                             {onBtExport()}
-                                        </ExcelFile>
+                                        </ExcelFile> */}
                                     </>
                                     //   <button type="button" className={"user-btn mr5"} onClick={onBtExport}><div className={"download"} ></div>Download</button>
                                 }

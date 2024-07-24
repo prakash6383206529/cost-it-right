@@ -12,7 +12,7 @@ import { getReportListing } from '../report/actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import WarningMessage from '../common/WarningMessage'
@@ -22,9 +22,9 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 
 
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -409,20 +409,20 @@ function ReportListing(props) {
 
 
     const returnExcelColumn = (data = [], TempData) => {
-        return (
-            <ExcelSheet data={TempData} name={ReportMaster}>
-                {data &&
-                    data.map((ele, index) => (
-                        <ExcelColumn
-                            key={index}
-                            label={(ele.label === "Department Code") ? `${handleDepartmentHeader()} Code` :
-                                (ele.label === "Department Name") ? `${handleDepartmentHeader()} Name` :
-                                    ele.label}
-                            value={ele.value}
-                        />
-                    ))}
-            </ExcelSheet>
-        );
+        // return (
+        //     <ExcelSheet data={TempData} name={ReportMaster}>
+        //         {data &&
+        //             data.map((ele, index) => (
+        //                 <ExcelColumn
+        //                     key={index}
+        //                     label={(ele.label === "Department Code") ? `${handleDepartmentHeader()} Code` :
+        //                         (ele.label === "Department Name") ? `${handleDepartmentHeader()} Name` :
+        //                             ele.label}
+        //                     value={ele.value}
+        //                 />
+        //             ))}
+        //     </ExcelSheet>
+        // );
     };
 
     /**
@@ -452,9 +452,9 @@ function ReportListing(props) {
                     <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100">
                             <div>
-                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                {/* <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
-                                </ExcelFile>
+                                </ExcelFile> */}
 
                             </div>
                         </div>

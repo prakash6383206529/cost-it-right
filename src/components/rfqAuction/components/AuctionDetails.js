@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { AuctionLiveId } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
-import ReactExport from "react-export-excel";
 import Button from "../../layout/Button";
 import AddAuction from "../AddAuction";
 import { auctionListByStatus } from "../actions/RfqAuction";

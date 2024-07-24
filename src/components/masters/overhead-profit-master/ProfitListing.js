@@ -14,7 +14,7 @@ import { PROFIT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import { ProfitMaster } from '../../../config/constants';
-import ReactExport from 'react-export-excel';
+// import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -35,9 +35,9 @@ import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -585,10 +585,10 @@ function ProfitListing(props) {
             if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {
                 return null // hide column
             } else {
-                return <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+                // return <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
             }
         }).filter(Boolean) // remove null columns
-        return <ExcelSheet data={temp} name={ProfitMaster}>{excelColumns}</ExcelSheet>
+        // return <ExcelSheet data={temp} name={ProfitMaster}>{excelColumns}</ExcelSheet>
     }
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
@@ -683,11 +683,11 @@ function ProfitListing(props) {
                                                     {/* DOWNLOAD */}
                                                     {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                 </button>
-                                                <ExcelFile filename={'Profit'} fileExtension={'.xls'} element={
+                                                {/* <ExcelFile filename={'Profit'} fileExtension={'.xls'} element={
                                                     <button id={'Excel-Downloads-profit'} className="p-absolute" type="button" >
                                                     </button>}>
                                                     {onBtExport()}
-                                                </ExcelFile>
+                                                </ExcelFile> */}
                                             </>
                                         }
 
