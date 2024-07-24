@@ -36,6 +36,8 @@ function AddNpvCost(props) {
     const { ToolTabData, IsRfqCostingType } = useSelector(state => state.costing)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const isRfqCostingTypeDefined = IsRfqCostingType && (IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting);
+    const label = props?.totalCostFromSummary ? 'TCO Cost' : !(isRfqCostingTypeDefined) ? 'Add NPV:' : 'View TCO:';
 
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -283,9 +285,11 @@ function AddNpvCost(props) {
 
                                 <Row className="drawer-heading">
                                     <Col className='pl-0'>
-                                        {!costingSummary && <div className={'header-wrapper left'}>
-                                            <h3>{!(IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) ? 'Add NPV:' : "View TCO:"}</h3>
-                                        </div>}
+                                        {/* !costingSummary && */
+                                            <div className={'header-wrapper left'}>
+
+                                                <h3>{label}</h3>
+                                            </div>}
                                         <div
                                             onClick={cancel}
                                             className={'close-button right'}>
@@ -403,7 +407,7 @@ function AddNpvCost(props) {
                                             </button>
                                         </Col>
                                     </Row>}
-
+                                    {/* 
                                     {initialConfiguration?.IsShowNpvCost && costingSummary &&
                                         <>
                                             <Col md="12">
@@ -413,7 +417,7 @@ function AddNpvCost(props) {
                                                 />
                                             </Col>
                                         </>
-                                    }
+                                    } */}
                                     {initialConfiguration?.IsShowNpvCost && !props?.totalCostFromSummary && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
                                     {(props?.totalCostFromSummary || (initialConfiguration?.IsShowTCO && (IsRfqCostingType?.isRfqCosting || IsRfqCostingType?.costingType))) ? (
                                         <Tco costingId={props?.costingId} />
