@@ -55,7 +55,6 @@ function RMIndexationSimulationListing(props) {
     const { globalTakes } = useSelector((state) => state.pagination);
     const rmIndexationSimulationList = useSelector((state) => state.simulation.rmIndexationSimulationList);
     const rmIndexationCostingSimulationList = useSelector((state) => state.simulation.rmIndexationCostingSimulationList);
-
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
@@ -242,7 +241,7 @@ function RMIndexationSimulationListing(props) {
             // material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : materialId,
             // grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : gradeId,
             // vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : vendorId,
-            Technology: props.isCostingSimulation ? Number(props.technology) : '',
+            technology_id: props.isCostingSimulation ? Number(props.technology) : '',
             // net_landed_min_range: value.min,
             // net_landed_max_range: value.max,
             // departmentCode: isSimulation ? userDepartmetList() : "",

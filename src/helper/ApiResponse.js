@@ -117,7 +117,7 @@ export function formatGetPlanResult(result) {
 }
 
 
-export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr) {
+export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr, isRMIndexationSimulation = false) {
     if (simulationDetail && selectedRowData && costingArr) {
         let temp = []
         let tempFinal = []
@@ -164,7 +164,7 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
             Remark: "",
             LoggedInUserId: userDetails().LoggedInUserId,
             IsPartialSaved: selectedRowData.length === costingArr.length ? false : true,
-            SelectedCostings: uniqueArr,
+            SelectedCostings: isRMIndexationSimulation ? apiArray : uniqueArr,
         };
         return simulationObj;
     }

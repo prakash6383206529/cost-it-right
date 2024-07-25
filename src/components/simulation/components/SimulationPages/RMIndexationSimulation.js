@@ -1286,6 +1286,7 @@ function RMIndexationSimulation(props) {
                         showApprovalTypeDropdown={true}
                         approvalTypeIdValue={simulationHeadId}//CONFIRM FROM ANIKET
                         IsExchangeRateSimulation={false}
+                        isRMIndexationSimulation={true}
                     // isSaveDone={isSaveDone}
                     />
                 }
