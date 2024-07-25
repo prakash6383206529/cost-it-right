@@ -1500,7 +1500,6 @@ export function getSimulationCorrugatedAndMonoCartonCalculation(simulationId, co
   };
 }
 
-let rawMaterialCalculationData = null;
 
 /**
  * @method saveRawMaterialCalculationForInsulation
@@ -1508,19 +1507,16 @@ let rawMaterialCalculationData = null;
  */
 export function saveRawMaterialCalculationForInsulation(data, callback) {
   return (dispatch) => {
-
-    rawMaterialCalculationData = data;
-
-    const dummyResponse = {
-      data: {
-        Result: true,
-        Identity: "dummyIdentity"
+    const request = axios.post(API.saveRawMaterialCalculationForInsulation, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
       }
-    };
-
-    setTimeout(() => {
-      callback(dummyResponse);
-    }, 500);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
   };
 }
 
@@ -1530,27 +1526,19 @@ export function saveRawMaterialCalculationForInsulation(data, callback) {
  */
 export function getRawMaterialCalculationForInsulation(costingId, rawMaterialId, weightCalculationId, callback) {
 
-
   return (dispatch) => {
-    if (rawMaterialCalculationData &&
-      rawMaterialCalculationData.BaseCostingIdRef === costingId &&
-      rawMaterialCalculationData.RawMaterialIdRef === rawMaterialId) {
-      const response = {
-        data: {
-          Result: true,
-          Data: rawMaterialCalculationData
-        }
-      };
-
-      callback(response);
-
-    } else {
-      // Simulate an error if no matching data is found
-      const error = {
-        message: 'No data found'
-      };
-      callback(error, null);
-      Toaster.error('No data found');
-    }
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForInsulation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
   };
 }

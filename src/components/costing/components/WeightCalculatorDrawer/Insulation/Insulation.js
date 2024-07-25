@@ -22,13 +22,13 @@ function InsulationCalculator(props) {
 
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
     const [defaultValues, setDefaultValues] = useState({
-        thickness: '',
-        width: '',
-        length: '',
-        noOfGumLayers: '',
-        area: '',
-        RawMtlSqmtr: rmRowData?.RMRate ? rmRowData?.RMRate : '-',
-        Rmcost: ''
+        Thickness: '',
+        Width: '',
+        Length: '',
+        NoOfGumLayers: '',
+        Area: '',
+        RawMaterialRate: rmRowData?.RMRate ? rmRowData?.RMRate : '-',
+        NetRMCost: ''
     });
     const {
         register,
@@ -43,21 +43,16 @@ function InsulationCalculator(props) {
         defaultValues
     });
 
-
-
-
-
-
     useEffect(() => {
         if (WeightCalculatorRequest && rmRowData) {
             const newDefaultValues = {
-                thickness: WeightCalculatorRequest.Thickness !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
-                width: WeightCalculatorRequest.Width !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Width, localStorage.NoOfDecimalForInputOutput) : '',
-                length: WeightCalculatorRequest.Length !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Length, localStorage.NoOfDecimalForInputOutput) : '',
-                noOfGumLayers: WeightCalculatorRequest.NoOfGumLayers !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfGumLayers, localStorage.NoOfDecimalForInputOutput) : '',
-                area: WeightCalculatorRequest.Area !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Area, localStorage.NoOfDecimalForInputOutput) : '',
-                RawMtlSqmtr: rmRowData.RMRate ? rmRowData.RMRate : '-',
-                Rmcost: WeightCalculatorRequest.RawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, localStorage.NoOfDecimalForInputOutput) : '',
+                Thickness: WeightCalculatorRequest.Thickness !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, localStorage.NoOfDecimalForInputOutput) : '',
+                Width: WeightCalculatorRequest.Width !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Width, localStorage.NoOfDecimalForInputOutput) : '',
+                Length: WeightCalculatorRequest.Length !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Length, localStorage.NoOfDecimalForInputOutput) : '',
+                NoOfGumLayers: WeightCalculatorRequest.NoOfGumLayers !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NoOfGumLayers, localStorage.NoOfDecimalForInputOutput) : '',
+                Area: WeightCalculatorRequest.Area !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Area, localStorage.NoOfDecimalForInputOutput) : '',
+                RawMaterialRate: rmRowData?.RMRate ? rmRowData?.RMRate : '-',
+                NetRMCost: WeightCalculatorRequest.NetRMCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetRMCost, localStorage.NoOfDecimalForPrice) : '',
             };
 
             setDefaultValues(newDefaultValues);
@@ -75,7 +70,7 @@ function InsulationCalculator(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['length', 'width', 'RawMtlSqmtr']
+        name: ['Length', 'Width', 'RawMaterialRate']
     });
 
     function calculateWeight(length, width) {
@@ -96,22 +91,22 @@ function InsulationCalculator(props) {
     }, [area, fieldValues[2]]); // Watching area and RawMtlSqmtr changes
 
     const setCalculatedArea = () => {
-        const length = checkForNull(getValues('length'));
-        const width = checkForNull(getValues('width'));
+        const length = checkForNull(getValues('Length'));
+        const width = checkForNull(getValues('Width'));
 
         const calculatedArea = calculateWeight(length, width);
         setArea(calculatedArea);
         // setValue('area', calculatedArea);
-        setValue('area', checkForDecimalAndNull(calculatedArea, localStorage.NoOfDecimalForPrice));
+        setValue('Area', checkForDecimalAndNull(calculatedArea, localStorage.NoOfDecimalForInputOutput));
 
     };
 
     const setCalculatedRMCost = () => {
-        const rawMtlSqmtr = parseFloat(checkForNull(getValues('RawMtlSqmtr')));
+        const rawMtlSqmtr = parseFloat(checkForNull(getValues('RawMaterialRate')));
         const calculatedRmCost = area * (isNaN(rawMtlSqmtr) ? 0 : rawMtlSqmtr);
         setRmCost(calculatedRmCost);
         // setValue('Rmcost', calculatedRmCost);
-        setValue('Rmcost', checkForDecimalAndNull(calculatedRmCost, localStorage.NoOfDecimalForPrice));
+        setValue('NetRMCost', checkForDecimalAndNull(calculatedRmCost, localStorage.NoOfDecimalForPrice));
     };
 
     /**
@@ -137,35 +132,28 @@ function InsulationCalculator(props) {
 
         let data = {
 
-            LayoutType: 'Insulation',
-            SheetMetalCalculationId: "0", // Dummy ID
-            //IsChangeApplied: false, // Dummy value
             BaseCostingIdRef: item.CostingId,
-            //CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
+            CostingRawMaterialDetailsIdRef: rmRowData.RawMaterialDetailId,
             RawMaterialIdRef: rmRowData.RawMaterialId,
             LoggedInUserId: loggedInUserId(),
-            Thickness: values.thickness,
-            Width: values.width,
-            Length: values.length,
-            NoOfGumLayers: values.noOfGumLayers,
+            Thickness: values.Thickness,
+            Width: values.Width,
+            Length: values.Length,
+            NoOfGumLayers: values.NoOfGumLayers,
             Area: area,
-            RawMtlSqmtr: values.RawMtlSqmtr,
-            RawMaterialCost: RmCost
+            RawMaterialRate: values.RawMaterialRate,
+            NetRMCost: RmCost
         };
 
 
         dispatch(saveRawMaterialCalculationForInsulation(data, (res) => {
-
-
-            setIsDisable(false);
-
-            if (res && res.data && res.data.Result) {
-
-                Toaster.success("Calculation saved successfully");
-
-
-                props.toggleDrawer('', data);
+            setIsDisable(false)
+            if (res.data.Result) {
+                data.WeightCalculationId = res.data.Identity
+                Toaster.success("Calculation saved successfully")
+                props.toggleDrawer('', data)
             }
+
         }));
     }), 500);
 
@@ -179,7 +167,7 @@ function InsulationCalculator(props) {
                             <Col md="3">
                                 <TextFieldHookForm
                                     label="Length (mm)"
-                                    name="length"
+                                    name="Length"
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -194,14 +182,14 @@ function InsulationCalculator(props) {
 
                                     className=""
                                     customClassName="withBorder"
-                                    errors={errors.length}
+                                    errors={errors.Length}
                                     disabled={CostingViewMode}
                                 />
                             </Col>
                             <Col md="3">
                                 <TextFieldHookForm
                                     label="Width (mm)"
-                                    name="width"
+                                    name="Width"
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -215,7 +203,7 @@ function InsulationCalculator(props) {
                                     defaultValue={defaultValues.width} // Ensure defaultValue is set
                                     className=""
                                     customClassName="withBorder"
-                                    errors={errors.width}
+                                    errors={errors.Width}
                                     disabled={CostingViewMode}
 
                                 />
@@ -223,7 +211,7 @@ function InsulationCalculator(props) {
                             <Col md="3">
                                 <TextFieldHookForm
                                     label="Thickness (mm)"
-                                    name="thickness"
+                                    name="Thickness"
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -236,14 +224,14 @@ function InsulationCalculator(props) {
                                     defaultValue=""
                                     className=""
                                     customClassName="withBorder"
-                                    errors={errors.thickness}
+                                    errors={errors.Thickness}
                                     disabled={CostingViewMode}
                                 />
                             </Col>
                             <Col md="3">
                                 <TextFieldHookForm
                                     label="No.of Gum layers"
-                                    name="noOfGumLayers"
+                                    name="NoOfGumLayers"
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -256,7 +244,7 @@ function InsulationCalculator(props) {
                                     defaultValue=""
                                     className=""
                                     customClassName="withBorder"
-                                    errors={errors.gumLayers}
+                                    errors={errors.NoOfGumLayers}
                                     disabled={CostingViewMode}
                                 />
                             </Col>
@@ -264,7 +252,7 @@ function InsulationCalculator(props) {
                                 <TooltipCustom tooltipClass="weight-of-sheet" disabledIcon={true} id="area-insulation" tooltipText="Area =  (Length * Width) / 1000000" />
                                 <TextFieldHookForm
                                     label="Area"
-                                    name="area"
+                                    name="Area"
                                     id="area-insulation"
                                     Controller={Controller}
                                     control={control}
@@ -280,7 +268,7 @@ function InsulationCalculator(props) {
                             <Col md="3">
                                 <TextFieldHookForm
                                     label="Raw mtl Sqmtr"
-                                    name="RawMtlSqmtr"
+                                    name="RawMaterialRate"
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -293,7 +281,7 @@ function InsulationCalculator(props) {
                                     defaultValue={rmRowData?.RMRate ? rmRowData?.RMRate : '-'}
                                     className=""
                                     customClassName="withBorder"
-                                    errors={errors.RawMtlSqmtr}
+                                    errors={errors.RawMaterialRate}
                                     disabled={true}
                                 />
                             </Col>
@@ -301,7 +289,7 @@ function InsulationCalculator(props) {
                                 <TooltipCustom tooltipClass="weight-of-sheet" disabledIcon={true} id="coil-gross-weight" tooltipText=" RM Cost = Raw mtl Sqmtr * Area" />
                                 <TextFieldHookForm
                                     label="RM Cost (Rs./pc)"
-                                    name="Rmcost"
+                                    name="NetRMCost"
                                     id="coil-gross-weight"
                                     Controller={Controller}
                                     control={control}
@@ -311,7 +299,7 @@ function InsulationCalculator(props) {
                                     defaultValue=""
                                     className=""
                                     customClassName="withBorder"
-                                    errors={errors.GrossWeight}
+                                    errors={errors.NetRMCost}
                                     disabled={true}
                                 />
                             </Col>

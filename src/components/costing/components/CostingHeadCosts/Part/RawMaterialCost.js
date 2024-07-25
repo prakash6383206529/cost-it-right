@@ -844,7 +844,11 @@ function RawMaterialCost(props) {
         netLandedCost = weightData?.RawMaterialCost / 1000000
         ScrapWeight = weightData?.ScrapWeight / 1000000
 
-      } else {
+      }
+      else if ((costData?.TechnologyId === INSULATION)) {
+        netLandedCost = weightData?.NetRMCost
+      }
+      else {
         grossWeight = weightData?.GrossWeight
         finishWeight = weightData?.FinishWeight
         netLandedCost = weightData?.RawMaterialCost
@@ -1609,7 +1613,9 @@ function RawMaterialCost(props) {
                             <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied && item?.ScrapRecoveryPercentage ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div> </td>
                             <td>
                               <div className='d-flex'>
-                                <div className='w-fit' id={`net-rm-cost${index}`}>{<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(Number(costData?.TechnologyId) === MACHINING && item?.UOM === 'Meter') ? 'Net RM Cost = RM/Pc - ScrapCost' : 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)'} />}{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                <div className='w-fit' id={`net-rm-cost${index}`}>
+                                  {(Number(costData?.TechnologyId) !== INSULATION) &&
+                                    <TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(Number(costData?.TechnologyId) === MACHINING && item?.UOM === 'Meter') ? 'Net RM Cost = RM/Pc - ScrapCost' : 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)'} />}{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                                 </div>
                                 {forgingInfoIcon[index] && costData?.TechnologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}
                                 {index === 0 && (item.RawMaterialCalculatorId !== '' && item?.RawMaterialCalculatorId > 0) && costData?.TechnologyId === Ferrous_Casting && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`This is RMC of all RM present in alloy.`} />}

@@ -629,6 +629,9 @@ export const API = {
   getSimulationRmMachiningCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-machining-calculation-details`,
   getSimulationCorrugatedAndMonoCartonCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-and-mono-carton-box-calculation-details`,
 
+  //Insulation calculator
+  saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
+  getRawMaterialCalculationForInsulation: `${BASE_URL}/costing/get-raw-material-insulation-calculation-details`,
   // YOY
   getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
   saveYOYCostList: `${BASE_URL}/rfq-costing/rfq-save-yoy-details`,
