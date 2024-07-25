@@ -5,7 +5,7 @@ import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMP
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
-import { editRMIndexedSimulationData, getCommodityDetailForSimulation, draftSimulationForRMMaster, runVerifySimulation, updateSimulationRawMaterial, runSimulationOnRawMaterial, getAllSimulatedRawMaterial } from '../../actions/Simulation';
+import { editRMIndexedSimulationData, getCommodityDetailForSimulation, draftSimulationForRMMaster, runVerifySimulation, updateSimulationRawMaterial, runSimulationOnRawMaterial } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import DatePicker from "react-datepicker";
@@ -23,7 +23,7 @@ import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import { APPLICABILITY_RM_SIMULATION, FORGING, RM_IMPACT_DOWNLOAD_EXCEl, RM_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -38,9 +38,9 @@ const gridOptions = {
 
 };
 
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function RMIndexationSimulation(props) {
 
@@ -60,7 +60,8 @@ function RMIndexationSimulation(props) {
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [titleObj, setTitleObj] = useState({})
-    const [showPopup, setShowPopup] = useState(false)
+    const [disableSendForApproval, setDisableSendForApproval] = useState(false)
+    const [sendForApprovalMessage, setSendForApprovalMessage] = useState('')
     const [popupMessage, setPopupMessage] = useState('There is no changes in scrap rate Do you want to continue')
     const gridRef = useRef();
     const [noData, setNoData] = useState(false);
@@ -230,7 +231,20 @@ function RMIndexationSimulation(props) {
                     }
 
                     dispatch(editRMIndexedSimulationData(obj1, (res) => {
+                        let Data = res?.data?.Data.SimulationRawMaterialDetailsResponse
+                        let shouldDisable = false;
+                        let approvalMessage = '';
 
+                        for (const item of Data) {
+                            if (item.IsLockedBySimulation) {
+                                shouldDisable = true;
+                            }
+                            if (item.ApprovalLockedMessage) {
+                                approvalMessage = item.ApprovalLockedMessage;
+                            }
+                        }
+                        setDisableSendForApproval(shouldDisable);
+                        setSendForApprovalMessage(approvalMessage);
                         setRunSimulationClicked(true)
                         setIsViewFlag(true)
                         setTokenNumber(res?.data?.Data?.TokenNumber)
@@ -972,10 +986,10 @@ function RMIndexationSimulation(props) {
             item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
             temp.push(item)
         })
-        // return (
-        //     <ExcelSheet data={temp} name={'RM Data'}>
-        //         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        //     </ExcelSheet>);
+        return (
+            <ExcelSheet data={temp} name={'RM Data'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
     const sendForApproval = () => {
@@ -1189,7 +1203,7 @@ function RMIndexationSimulation(props) {
                                     {
                                         isRunSimulationClicked &&
                                         <>
-
+                                            {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={sendForApprovalMessage} />}
                                             <button
                                                 type="button"
                                                 className="user-btn mr5 save-btn"
@@ -1202,7 +1216,7 @@ function RMIndexationSimulation(props) {
                                             <button
                                                 onClick={() => sendForApproval()}
                                                 type="submit"
-                                                disabled={userDetails()?.Role === 'SuperAdmin'}
+                                                disabled={userDetails()?.Role === 'SuperAdmin' || disableSendForApproval}
                                                 id={'other_simulation_send_for_approval'}
                                                 title="Send For Approval"
                                                 class="user-btn approval-btn mr5">

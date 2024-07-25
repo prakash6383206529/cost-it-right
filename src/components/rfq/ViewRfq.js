@@ -98,8 +98,8 @@ function RfqListing(props) {
     const [quotationId, setQuotationId] = useState('')
     const [matchedStatus, setMatchedStatus] = useState([])
     const [masterRejectDrawer, setMasterRejectDrawer] = useState(false)
-        const [actionType, setActionType] = useState('');
-        const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const [actionType, setActionType] = useState('');
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
 
     const { viewRmDetails } = useSelector(state => state.material)
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
@@ -121,7 +121,7 @@ function RfqListing(props) {
     const location = useLocation();
     useEffect(() => {
         getDataList()
-        
+
     }, [])
     useEffect(() => {
         if (partType === 'RawMaterial' || partType === 'BoughtOutPart') {
@@ -161,39 +161,50 @@ function RfqListing(props) {
     useEffect(() => {
 
         let filteredArr = [];
-        let keyName, dataArray;
+        let arr = []
+        const partTypes = partType.split(',');
+        partTypes.forEach(type => {
 
-        // Determine which data array and key to use based on partType
-        switch (partType) {
-            case 'Component':
-            case 'Assembly':
-                keyName = 'CostingId';
-                dataArray = viewCostingData;
-                break;
-            case 'BoughtOutPart':
-                keyName = 'BoughtOutPartId';
-                dataArray = viewBOPDetails;
-                break;
-            case 'RawMaterial':
-                keyName = 'RawMaterialId';
-                dataArray = viewRmDetails;
-                break;
-            default:
-                keyName = null;
-                dataArray = [];
-                break;
-        }
-
-        // Perform filtering and mapping
-        if (keyName && dataArray.length > 0) {
-            filteredArr = _.map(dataArray, keyName);
-            filteredArr.forEach(item => {
-                const matchedRows = selectedRows.filter(el => el[keyName] === item);
-                arr.push(...matchedRows);
-            });
-        }
+            switch (type.trim()) {
+                case 'Component':
+                case 'Assembly':
+                    filteredArr = _.map(viewCostingData, 'costingId');
+                    filteredArr.forEach(item => {
+                        selectedRows.filter(el => {
+                            if (el.CostingId === item) {
+                                arr.push(el);
+                            }
+                        });
+                    });
+                    break;
+                case 'BoughtOutPart':
+                    filteredArr = _.map(viewBOPDetails, 'BoughtOutPartId');
+                    filteredArr.forEach(item => {
+                        selectedRows.filter(el => {
+                            if (el.BoughtOutPartId === item) {
+                                arr.push(el);
+                            }
+                        });
+                    });
+                    break;
+                case 'RawMaterial':
+                    filteredArr = _.map(viewRmDetails, 'RawMaterialId');
+                    filteredArr.forEach(item => {
+                        selectedRows.filter(el => {
+                            if (el.RawMaterialId === item) {
+                                arr.push(el);
+                            }
+                        });
+                    });
+                    break;
+                default:
+                    break;
+            }
+        });
 
         const isApproval = arr.filter(item => item.ShowApprovalButton)
+
+
         const disableApproveButton = isApproval.some(item => String(item.Status) === String(RETURNED));
         setDisableApproveRejectButton(isApproval.length > 0)
 
@@ -214,26 +225,28 @@ function RfqListing(props) {
             res?.data?.DataList && res?.data?.DataList.map(item => {
                 let unique
                 res?.data?.DataList && res?.data?.DataList.map(item => {
-                    switch (item.PartType) {
-                        case 'RawMaterial':
-                            unique = _.uniq(_.map(item.ShouldRawMaterial, 'RawMaterialId'))
+                    const partTypes = item.PartType.split(',');
 
+                    partTypes.forEach(type => {
+                        switch (type.trim()) {
+                            case 'RawMaterial':
+                                unique = _.uniq(_.map(item.ShouldRawMaterial, 'RawMaterialId'));
+                                uniqueShouldCostId.push(...unique);
+                                break;
+                            case 'Component':
+                            case 'Assembly':
+                                unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'));
+                                uniqueShouldCostId.push(...unique);
+                                break;
+                            case 'BoughtOutPart':
+                                unique = _.uniq(_.map(item.ShouldBoughtOutPart, 'BoughtOutPartId'));
+                                uniqueShouldCostId.push(...unique);
+                                break;
+                            default:
+                                break;
+                        }
+                    });
 
-                            uniqueShouldCostId.push(...unique)
-                            break;
-                        case 'Component':
-                        case 'Assembly':
-                            unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'))
-
-                            uniqueShouldCostId.push(...unique)
-                            break;
-                        case 'BoughtOutPart':
-                            unique = _.uniq(_.map(item.ShouldBoughtOutPart, 'BoughtOutPartId'))
-                            uniqueShouldCostId.push(...unique)
-                            break;
-                        default:
-                            break;
-                    }
 
                 })
             })
@@ -274,20 +287,25 @@ function RfqListing(props) {
             // SET ROW DATA FOR GRID
             data.map((item) => {
                 newArray = [...newArray, ...item]
-
+                const partTypes = item[0].PartType.split(',');
                 let temp
-                switch (item[0].PartType) {
-                    case 'Component':
-                        temp = item.filter(el => el.CostingId !== null);
-                        break;
-                    case 'RawMaterial':
-                        temp = item.filter(el => el.RawMaterialId !== null);
-                        break;
-                    case 'BoughtOutPart':
-                        temp = item.filter(el => el.BoughtOutPartId !== null);
-                        break;
+                partTypes.forEach(type => {
+                    switch (type.trim()) {
+                        case 'Component':
+                            temp = item.filter(el => el.CostingId !== null);
+                            break;
+                        case 'RawMaterial':
+                            temp = item.filter(el => el.RawMaterialId !== null);
+                            break;
+                        case 'BoughtOutPart':
+                            temp = item.filter(el => el.BoughtOutPartId !== null);
+                            break;
+                        default:
+                            break;
 
-                }
+                    }
+                });
+
 
                 if (temp.length > 0) {
                     item[Math.round(item.length / 2) - 1].ShowCheckBox = true;                      // SET CHECKBOX FOR CREATED COSTINGS
@@ -838,54 +856,57 @@ function RfqListing(props) {
         setState(prevState => ({ ...prevState, approvalObj: list }));
         setIndex(index);
         setSelectedCostingList(list);
+        const partTypes = partType.split(',');
+
         let arr = [];
         let filteredArr = [];
         let matchedStatus
-        switch (partType) {
-            case 'Component':
-            case 'Assembly':
-                filteredArr = _.map(viewCostingData, 'costingId')
-                filteredArr.map(item => selectedRows.filter(el => {
-                    if (el.CostingId === item) {
-                        arr.push(el)
-                    }
-                }))
-                matchedStatus = list?.map(selectedItem => {
-                    const matchedItem = arr.find(item => item.CostingId === selectedItem);
-                    return matchedItem ? matchedItem.Status : null;
-                });
-                break
-            case 'BoughtOutPart':
-                filteredArr = _.map(viewBOPDetails, 'BoughtOutPartId')
-                filteredArr.map(item => selectedRows.filter(el => {
-                    if (el.BoughtOutPartId === item) {
-                        arr.push(el)
-                    }
-                }))
-                matchedStatus = list?.map(selectedItem => {
-                    const matchedItem = arr.find(item => item.BoughtOutPartId === selectedItem);
-                    return matchedItem ? matchedItem.Status : null;
-                });
-                break
+        partTypes.forEach(type => {
+            switch (type.trim()) {
+                case 'Component':
+                case 'Assembly':
+                    filteredArr = _.map(viewCostingData, 'costingId')
+                    filteredArr.map(item => selectedRows.filter(el => {
+                        if (el.CostingId === item) {
+                            arr.push(el)
+                        }
+                    }))
+                    matchedStatus = list?.map(selectedItem => {
+                        const matchedItem = arr.find(item => item.CostingId === selectedItem);
+                        return matchedItem ? matchedItem.Status : null;
+                    });
+                    break
+                case 'BoughtOutPart':
+                    filteredArr = _.map(viewBOPDetails, 'BoughtOutPartId')
+                    filteredArr.map(item => selectedRows.filter(el => {
+                        if (el.BoughtOutPartId === item) {
+                            arr.push(el)
+                        }
+                    }))
+                    matchedStatus = list?.map(selectedItem => {
+                        const matchedItem = arr.find(item => item.BoughtOutPartId === selectedItem);
+                        return matchedItem ? matchedItem.Status : null;
+                    });
+                    break
 
-            case 'RawMaterial':
+                case 'RawMaterial':
 
-                filteredArr = _.map(viewRmDetails, 'RawMaterialId')
-                filteredArr.map(item => selectedRows.filter(el => {
-                    if (el.RawMaterialId === item) {
-                        arr.push(el)
-                    }
-                }))
-                matchedStatus = list?.map(selectedItem => {
-                    const matchedItem = arr.find(item => item.RawMaterialId === selectedItem);
-                    return matchedItem ? matchedItem.Status : null;
-                });
-                break
-            default:
-                break
+                    filteredArr = _.map(viewRmDetails, 'RawMaterialId')
+                    filteredArr.map(item => selectedRows.filter(el => {
+                        if (el.RawMaterialId === item) {
+                            arr.push(el)
+                        }
+                    }))
+                    matchedStatus = list?.map(selectedItem => {
+                        const matchedItem = arr.find(item => item.RawMaterialId === selectedItem);
+                        return matchedItem ? matchedItem.Status : null;
+                    });
+                    break
+                default:
+                    break
 
-        }
-
+            }
+        })
 
 
 
@@ -1094,46 +1115,48 @@ function RfqListing(props) {
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
         setSelectedCostingList([])
-        switch (partType) {
-            case 'Component':
-            case 'Assembly':
-                setloader(true)
-                dispatch(getMultipleCostingDetails(costingIdList, (res) => {
-                    if (res) {
-                        res?.map((item) => {
-                            tempObj = formViewData(item?.data?.Data)
-                            temp.push(tempObj[0])
-                            return null
-                        })
-                        let dat = [...temp]
-                        let tempArrToSend = _.uniqBy(dat, 'costingId')
-                        let arr = bestCostObjectFunction(tempArrToSend)
-                        setMultipleCostingDetails([...arr])
-                        dispatch(setCostingViewData([...arr]))
+        const partTypes = partType.split(',');
+        partTypes.forEach(type => {
+            switch (type.trim()) {
+                case 'Component':
+                case 'Assembly':
+                    setloader(true)
+                    dispatch(getMultipleCostingDetails(costingIdList, (res) => {
+                        if (res) {
+                            res?.map((item) => {
+                                tempObj = formViewData(item?.data?.Data)
+                                temp.push(tempObj[0])
+                                return null
+                            })
+                            let dat = [...temp]
+                            let tempArrToSend = _.uniqBy(dat, 'costingId')
+                            let arr = bestCostObjectFunction(tempArrToSend)
+                            setMultipleCostingDetails([...arr])
+                            dispatch(setCostingViewData([...arr]))
 
-                        setaddComparisonToggle(true)
-                        setloader(false)
-                        setViewRMCompare(false)
-                        setViewBOPCompare(false)
-                    }
-                    setCompareButtonPressed(false)
-                }))
-                break;
-            case 'RawMaterial':
-                setViewRMCompare(true)
-                setaddComparisonToggle(true)
-                setViewBOPCompare(false)
-                break
-            case 'BoughtOutPart':
-                setViewBOPCompare(true)
-                setViewRMCompare(false)
+                            setaddComparisonToggle(true)
+                            setloader(false)
+                            setViewRMCompare(false)
+                            setViewBOPCompare(false)
+                        }
+                        setCompareButtonPressed(false)
+                    }))
+                    break;
+                case 'RawMaterial':
+                    setViewRMCompare(true)
+                    setaddComparisonToggle(true)
+                    setViewBOPCompare(false)
+                    break
+                case 'BoughtOutPart':
+                    setViewBOPCompare(true)
+                    setViewRMCompare(false)
 
-                setaddComparisonToggle(true)
-                break
-            default:
-                break;
-        }
-
+                    setaddComparisonToggle(true)
+                    break
+                default:
+                    break;
+            }
+        })
 
     }
 
@@ -1168,26 +1191,31 @@ function RfqListing(props) {
 
 
         let data
-        switch (selectedRows[0]?.PartType) {
-            case 'RawMaterial':
-                selectedRows?.map(item => partNumber?.push(item.RawMaterial))
-                data = partNumber.map(item => rowData?.filter(el => el.RawMaterial === item))
-                // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
-                break;
-            case 'BoughtOutPart':
-                selectedRows?.map(item => partNumber.push(item.BoughtOutPart))
-                data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+        const partTypes = selectedRows[0]?.PartType.split(',');
+        partTypes.forEach(type => {
+            switch (type.trim()) {
+                case 'RawMaterial':
+                    selectedRows?.map(item => partNumber?.push(item.RawMaterial))
+                    data = partNumber.map(item => rowData?.filter(el => el.RawMaterial === item))
+                    // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
+                    break;
+                case 'BoughtOutPart':
+                    selectedRows?.map(item => partNumber.push(item.BoughtOutPart))
+                    data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
 
-                break;
-            case 'Component' || 'Assembly':
-                selectedRows?.map(item => partNumber?.push(item.PartNo))
-                data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
-                break;
-            default:
-                break;
+                    break;
+                case 'Component' || 'Assembly':
+                    selectedRows?.map(item => partNumber?.push(item.PartNo))
+                    data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+                    break;
+                default:
+                    break;
 
 
-        }
+
+            }
+
+        })
 
         let newArray = []
 
@@ -1300,21 +1328,23 @@ function RfqListing(props) {
         gridApi.deselectAll()
     }
     const headerPartType = () => {
+        const partTypes = partType.split(',');
+        partTypes.forEach(type => {
+            switch (type.trim()) {
+                case 'RawMaterial':
+                    return "RM Name"
+                case 'BoughtOutPart':
+                    return "BOP Name"
+                case 'Component':
+                case 'Assembly':
+                    return "Part Name"
 
-        switch (partType) {
-            case 'RawMaterial':
-                return "RM Name"
-            case 'BoughtOutPart':
-                return "BOP Name"
-            case 'Component':
-            case 'Assembly':
-                return "Part Name"
+                default:
+                    break;
+            }
 
-            default:
-                break;
-        }
+        })
     }
-
 
     const closeApprovalDrawer = (e = '', type) => {
         setApproveDrawer(false)
@@ -1563,15 +1593,16 @@ function RfqListing(props) {
                                 />
                             </QuotationId.Provider>
                         )}
-                        {(viewRMCompare && addComparisonToggle) && < RMCompareTable
+                        {(viewRMCompare && addComparisonToggle) && <RMCompareTable
                             checkCostingSelected={checkCostingSelected}
                             selectedRows={selectedRows}
                             uniqueShouldCostingId={uniqueShouldCostingId}
                         />}
-                        {(viewBOPCompare && addComparisonToggle) && < BOPCompareTable
+                        {(viewBOPCompare && addComparisonToggle) && <BOPCompareTable
                             checkCostingSelected={checkCostingSelected}
                             selectedRows={selectedRows}
                             uniqueShouldCostingId={uniqueShouldCostingId}
+                            quotationId={data?.QuotationId}
                         />}
                     </div>
                 }

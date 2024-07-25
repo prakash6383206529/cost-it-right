@@ -3038,6 +3038,31 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
       });
   };
 }
+
+export function getSpecificationDetailBpo(quotationId, bopId, callback) {
+  return (dispatch) => {
+    const url = `${API.getSpecificationDetailBop}`;
+    const requestData = {
+      QuotationId: quotationId,
+      BoughtOutPartIdList: bopId
+    };
+
+    axios.post(url, requestData, config())
+      .then((response) => {
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: PARTSPECIFICATIONRFQDATA,
+            payload: response.status === 204 ? [] : response.data.Data
+          });
+          callback(response);
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE });
+        // Handle errors
+      });
+  };
+}
 /**
  * @method getExternalIntegrationEvaluationType
  * @description getExternalIntegrationEvaluationType

@@ -9,7 +9,7 @@ import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { UOM_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -20,9 +20,9 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { displayUOM } from '../../../helper/util';
 import Button from '../../layout/Button';
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -181,10 +181,10 @@ const UOMMaster = (props) => {
   };
 
   const returnExcelColumn = (data = [], TempData) => {
-    // return (
-    //   <ExcelSheet data={TempData} name={UomMaster}>
-    //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-    //   </ExcelSheet>);
+    return (
+      <ExcelSheet data={TempData} name={UomMaster}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
   }
 
   const onFilterTextBoxChanged = (e) => {
@@ -253,10 +253,10 @@ const UOMMaster = (props) => {
             {
               DownloadAccessibility &&
               <>
-                {/* <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-uomListing"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
+                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-uomListing"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
                 }>
                   {onBtExport()}
-                </ExcelFile> */}
+                </ExcelFile>
               </>
               //   <button type="button" className={"user-btn mr5"} onClick={onBtExport}><div className={"download"} ></div>Download</button>
             }

@@ -19,15 +19,15 @@ import { useTranslation } from "react-i18next";
 import { COMMODITYININDEXlISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
 import WarningMessage from '../../common/WarningMessage';
-// import ReactExport from "react-export-excel";
+import ReactExport from "react-export-excel";
 import BulkUpload from "../../massUpload/BulkUpload";
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
 import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const CommodityInIndexListing = () => {
@@ -349,19 +349,19 @@ const CommodityInIndexListing = () => {
         }
         return item;
       });
-    // return (
-    //   <ExcelSheet data={temp} name={RmMaterial}>
-    //     {data &&
-    //       data.map((ele, index) => (
-    //         <ExcelColumn
-    //           key={index}
-    //           label={ele.label}
-    //           value={ele.value}
-    //           style={ele.style}
-    //         />
-    //       ))}
-    //   </ExcelSheet>
-    // );
+    return (
+      <ExcelSheet data={temp} name={RmMaterial}>
+        {data &&
+          data.map((ele, index) => (
+            <ExcelColumn
+              key={index}
+              label={ele.label}
+              value={ele.value}
+              style={ele.style}
+            />
+          ))}
+      </ExcelSheet>
+    );
   };
   const closeBulkUploadDrawer = () => {
     setState(
@@ -395,7 +395,7 @@ const CommodityInIndexListing = () => {
             {permissions.Download && (
               <>
                 <>
-                  {/* <ExcelFile
+                  <ExcelFile
                     filename={"Commodity (In Index)"}
                     fileExtension={".xls"}
                     element={
@@ -403,7 +403,7 @@ const CommodityInIndexListing = () => {
                     }
                   >
                     {onBtExport()}
-                  </ExcelFile> */}
+                  </ExcelFile>
                 </>
               </>
             )}

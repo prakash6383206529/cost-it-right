@@ -10,7 +10,7 @@ import BulkUpload from "../../massUpload/BulkUpload";
 import LoaderCustom from "../../common/LoaderCustom";
 import { RmSpecification } from "../../../config/constants";
 import { RMINDEXATION, SPECIFICATIONLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
-// import ReactExport from "react-export-excel";
+import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -30,9 +30,9 @@ import { TourStartAction } from "../../../actions/Common";
 import AddRMIndexation from "./AddRMIndexation";
 
 const gridOptions = {};
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const RMIndexationListing = (props) => {
     const dispatch = useDispatch();
@@ -282,19 +282,19 @@ const RMIndexationListing = (props) => {
                 }
                 return item;
             });
-        // return (
-        //     <ExcelSheet data={temp} name={RmSpecification}>
-        //         {data &&
-        //             data.map((ele, index) => (
-        //                 <ExcelColumn
-        //                     key={index}
-        //                     label={ele.label}
-        //                     value={ele.value}
-        //                     style={ele.style}
-        //                 />
-        //             ))}
-        //     </ExcelSheet>
-        // );
+        return (
+            <ExcelSheet data={temp} name={RmSpecification}>
+                {data &&
+                    data.map((ele, index) => (
+                        <ExcelColumn
+                            key={index}
+                            label={ele.label}
+                            value={ele.value}
+                            style={ele.style}
+                        />
+                    ))}
+            </ExcelSheet>
+        );
     };
     /**
             * @method toggleExtraData
@@ -379,7 +379,7 @@ const RMIndexationListing = (props) => {
                             {permissions.Download && (
                                 <>
                                     <>
-                                        {/* <ExcelFile
+                                        <ExcelFile
                                             filename={"RM Indexation"}
                                             fileExtension={".xls"}
                                             element={
@@ -387,7 +387,7 @@ const RMIndexationListing = (props) => {
                                             }
                                         >
                                             {onBtExport()}
-                                        </ExcelFile> */}
+                                        </ExcelFile>
                                     </>
                                 </>
                             )}

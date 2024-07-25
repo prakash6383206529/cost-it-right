@@ -15,16 +15,16 @@ import { MESSAGES } from '../../config/message';
 import WarningMessage from '../common/WarningMessage';
 import { disabledClass } from '../../actions/Common';
 import { AUDIT_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import Button from '../layout/Button';
 import DatePicker from 'react-datepicker'
 import { Steps } from './TourMessages';
 import TourWrapper from "../common/Tour/TourWrapper"
 import { useTranslation } from 'react-i18next';
 
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function LoginAudit(props) {
@@ -527,11 +527,11 @@ function LoginAudit(props) {
         }));
 
         // Now export formattedData instead of tempData
-        // return (
-        //     <ExcelSheet data={formattedData} name={AuditLisitng}>
-        //         {data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        //     </ExcelSheet>
-        // );
+        return (
+            <ExcelSheet data={formattedData} name={AuditLisitng}>
+                {data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>
+        );
     };
 
     const hyphenFormatter = (props) => {
@@ -680,11 +680,11 @@ function LoginAudit(props) {
                                                         {/* DOWNLOAD */}
                                                         {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                                     </button>
-                                                    {/* <ExcelFile filename={'LoginAudit'} fileExtension={'.xls'} element={
+                                                    <ExcelFile filename={'LoginAudit'} fileExtension={'.xls'} element={
                                                         <button id={'Excel-Downloads-LoginAudit-DownloadExcel'} className="p-absolute" type="button" >
                                                         </button>}>
                                                         {onBtExport()}
-                                                    </ExcelFile> */}
+                                                    </ExcelFile>
                                                 </>
                                             }
                                             <button type="button" id="Audit_List_Reset" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>  <div className="refresh mr-0"></div> </button>

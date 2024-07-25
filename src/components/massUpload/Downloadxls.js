@@ -1,5 +1,5 @@
 import React from "react";
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from "../../config/constants";
 import {
     Fuel, FuelTempData,
@@ -28,9 +28,9 @@ import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, update
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
 import { IsShowFreightAndShearingCostFields } from "../../helper";
 
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const bopMasterName = showBopLabel();
 
 export const checkRM_Process_OperationConfigurable = (excelData) => {
@@ -389,10 +389,10 @@ class Downloadxls extends React.Component {
             }
         }
 
-        // return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
+        return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
 
-        //     {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        // </ExcelSheet>);
+            {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        </ExcelSheet>);
     }
 
     render() {
@@ -403,87 +403,86 @@ class Downloadxls extends React.Component {
         // DOWNLOAD FILE:- CALLED WHEN ZBC FILE FAILED   hideElement={true}
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
         if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
-            // return (
-            //     <ExcelFile hideElement={true} filename={`${downloadFileName} ZBC`} fileExtension={'.xls'} >
-            //         {isMachineMoreTemplate || costingTypeId === ZBCADDMOREOPERATION ? this.renderZBCSwitch(costingTypeId) : this.renderZBCSwitch(fileName)}
-            //     </ExcelFile>
-            // );
+            return (
+                <ExcelFile hideElement={true} filename={`${downloadFileName} ZBC`} fileExtension={'.xls'} >
+                    {isMachineMoreTemplate || costingTypeId === ZBCADDMOREOPERATION ? this.renderZBCSwitch(costingTypeId) : this.renderZBCSwitch(fileName)}
+                </ExcelFile>
+            );
         }
         if (isFailedFlag && (costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) && (fileName === 'Machine')) {
 
-            // return (
-            //     <ExcelFile hideElement={true} filename={"Add more details"} fileExtension={'.xls'} >
-            //         {isMachineMoreTemplate || (costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) ? this.renderZBCSwitch(costingTypeId) : ""}
-            //     </ExcelFile>
-            // );
+            return (
+                <ExcelFile hideElement={true} filename={"Add more details"} fileExtension={'.xls'} >
+                    {isMachineMoreTemplate || (costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) ? this.renderZBCSwitch(costingTypeId) : ""}
+                </ExcelFile>
+            );
         }
 
         // DOWNLOAD FILE:- CALLED WHEN VBC FILE FAILED
         if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION || bopType === DETAILED_BOP) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
 
-            // return (
-            //     <ExcelFile hideElement={true} filename={`${downloadFileName}VBC`} fileExtension={'.xls'} >
-            //         {costingTypeId === VBCADDMOREOPERATION ? this.renderVBCSwitch(costingTypeId) : this.renderVBCSwitch(fileName, bopType)}
-            //     </ExcelFile>
-            // );
+            return (
+                <ExcelFile hideElement={true} filename={`${downloadFileName}VBC`} fileExtension={'.xls'} >
+                    {costingTypeId === VBCADDMOREOPERATION ? this.renderVBCSwitch(costingTypeId) : this.renderVBCSwitch(fileName, bopType)}
+                </ExcelFile>
+            );
         }
         // DOWNLOAD FILE:- CALLED WHEN CBC FILE FAILED
         if (isFailedFlag && (costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) && (fileName === 'RM' || fileName === 'Operation' || fileName === 'Machine' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
 
-            // return (
-            //     <ExcelFile hideElement={true} filename={`${downloadFileName} CBC`} fileExtension={'.xls'} >
-            //         {costingTypeId === CBCADDMOREOPERATION ? this.renderCBCSwitch(costingTypeId) : this.renderCBCSwitch(fileName)}
-            //     </ExcelFile>
-            // );
+            return (
+                <ExcelFile hideElement={true} filename={`${downloadFileName} CBC`} fileExtension={'.xls'} >
+                    {costingTypeId === CBCADDMOREOPERATION ? this.renderCBCSwitch(costingTypeId) : this.renderCBCSwitch(fileName)}
+                </ExcelFile>
+            );
         }
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
         if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === 'ADD RFQ' || fileName === 'Index' || fileName === 'Index Data' || fileName === 'Commodity (In Index)' || fileName === 'Commodity Standard' || fileName === 'Commodity Standardization')) {
 
-            // return (
-            //     <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
-            //         {this.renderSwitch(fileName)}
-            //     </ExcelFile>
-            // );
+            return (
+                <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
+                    {this.renderSwitch(fileName)}
+                </ExcelFile>
+            );
         }
 
         // DISPLAY RADIO BUTTON ZBC AND VBC, WITH FILE DOWNLOAD BUTTON
         if (isZBCVBCTemplate) {
             return (
-                // <>
-                //     {(costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) &&
-                //         <ExcelFile filename={costingTypeId === ZBCADDMOREOPERATION ? 'ZBC More Details' : `${downloadFileName} ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download ZBC</button>}>
-                //             {costingTypeId !== ZBCADDMOREOPERATION ? this.renderZBCSwitch(fileName) : this.renderZBCSwitch(costingTypeId)}
-                //         </ExcelFile>}
+                <>
+                    {(costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) &&
+                        <ExcelFile filename={costingTypeId === ZBCADDMOREOPERATION ? 'ZBC More Details' : `${downloadFileName} ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download ZBC</button>}>
+                            {costingTypeId !== ZBCADDMOREOPERATION ? this.renderZBCSwitch(fileName) : this.renderZBCSwitch(costingTypeId)}
+                        </ExcelFile>}
 
-                //     {(costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION) &&
-                //         <ExcelFile filename={costingTypeId === VBCADDMOREOPERATION ? 'VBC More Details' : `${downloadFileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC</button>}>
+                    {(costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION) &&
+                        <ExcelFile filename={costingTypeId === VBCADDMOREOPERATION ? 'VBC More Details' : `${downloadFileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC</button>}>
 
-                //             {(costingTypeId === VBCADDMOREOPERATION ? this.renderVBCSwitch(Number(costingTypeId)) : this.renderVBCSwitch(fileName))}
-                //         </ExcelFile>}
-                //     {(costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) &&
-                //         <ExcelFile filename={costingTypeId === CBCADDMOREOPERATION ? 'CBC More Details' : `${downloadFileName} CBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download CBC</button>}>
-                //             {costingTypeId !== CBCADDMOREOPERATION ? this.renderCBCSwitch(fileName) : this.renderCBCSwitch(costingTypeId)}
-                //         </ExcelFile>}
-                //     {bopType === DETAILED_BOP &&
-                //         <ExcelFile filename={`${fileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC Detailed {showBopLabel()}</button>}>
-                //             {fileName ? this.renderVBCSwitch(fileName, bopType) : ''}
-                //         </ExcelFile>}
-                //     {/* ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER */}
-                //     {(costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) &&
-                //         <ExcelFile filename={"Add more details"} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download More DETAIL</button>}>
-                //             {fileName ? this.renderZBCSwitch(costingTypeId) : ''}
-                //         </ExcelFile >}
-                // </>
-                <></>
+                            {(costingTypeId === VBCADDMOREOPERATION ? this.renderVBCSwitch(Number(costingTypeId)) : this.renderVBCSwitch(fileName))}
+                        </ExcelFile>}
+                    {(costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) &&
+                        <ExcelFile filename={costingTypeId === CBCADDMOREOPERATION ? 'CBC More Details' : `${downloadFileName} CBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download CBC</button>}>
+                            {costingTypeId !== CBCADDMOREOPERATION ? this.renderCBCSwitch(fileName) : this.renderCBCSwitch(costingTypeId)}
+                        </ExcelFile>}
+                    {bopType === DETAILED_BOP &&
+                        <ExcelFile filename={`${fileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC Detailed {showBopLabel()}</button>}>
+                            {fileName ? this.renderVBCSwitch(fileName, bopType) : ''}
+                        </ExcelFile>}
+                    {/* ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER */}
+                    {(costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) &&
+                        <ExcelFile filename={"Add more details"} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download More DETAIL</button>}>
+                            {fileName ? this.renderZBCSwitch(costingTypeId) : ''}
+                        </ExcelFile >}
+                </>
             );
         }
 
         // DISPLAY DOWNLOAD FILE BUTTON EXCEPT ZBC AND VBC TEMPLATES
-        // return (
-        //     <ExcelFile filename={fileName} fileExtension={'.xls'} element={< button type="button" className={'btn btn-primary pull-right w-100'} > <div class="download"></div> Download File</button>}>
-        //         {fileName ? this.renderSwitch(fileName) : ''}
-        //     </ExcelFile >
-        // );
+        return (
+            <ExcelFile filename={fileName} fileExtension={'.xls'} element={< button type="button" className={'btn btn-primary pull-right w-100'} > <div class="download"></div> Download File</button>}>
+                {fileName ? this.renderSwitch(fileName) : ''}
+            </ExcelFile >
+        );
     }
 }
 

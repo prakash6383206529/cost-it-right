@@ -13,7 +13,7 @@ import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import { LABOUR_DOWNLOAD_EXCEl } from '../../../config/masterData';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -25,9 +25,9 @@ import { loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import Button from '../../layout/Button';
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -286,11 +286,11 @@ function LabourListing(props) {
       }
       return item
     })
-    // return (
+    return (
 
-    //   <ExcelSheet data={temp} name={LabourMaster}>
-    //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-    //   </ExcelSheet>);
+      <ExcelSheet data={temp} name={LabourMaster}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
   }
 
   const onFilterTextBoxChanged = (e) => {
@@ -309,7 +309,7 @@ function LabourListing(props) {
   }
 
   const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, } = state
-  // const ExcelFile = ReactExport.ExcelFile;
+  const ExcelFile = ReactExport.ExcelFile;
 
   if (toggleForm) {
     return <AddLabour hideForm={hideForm} data={data} />
@@ -369,11 +369,11 @@ function LabourListing(props) {
                     DownloadAccessibility &&
                     <>
 
-                      {/* <ExcelFile filename={'Labour'} fileExtension={'.xls'} element={
+                      <ExcelFile filename={'Labour'} fileExtension={'.xls'} element={
                         <Button id={"Excel-Downloads-labourListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                       }>
                         {onBtExport()}
-                      </ExcelFile> */}
+                      </ExcelFile>
                     </>
                   }
                   <Button id={"labourListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />

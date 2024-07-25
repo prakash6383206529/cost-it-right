@@ -9,7 +9,7 @@ import Toaster from '../../common/Toaster';
 import { FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { FreightMaster } from '../../../config/constants';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -20,6 +20,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import { ApplyPermission } from '.';
 import Button from '../../layout/Button';
+import DayTime from '../../common/DayTimeWrapper';
 const gridOptions = {};
 const FreightListing = (props) => {
   const dispatch = useDispatch();
@@ -134,7 +135,7 @@ const FreightListing = (props) => {
       <>
         {permissions.View && <Button id={`freightListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true, false)} title={"View"} />}
         {permissions.Edit && <Button id={`freightListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false, true)} title={"Edit"} />}
-        {permissions.Delete && <Button id={`freightListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+        {permissions.Delete && !rowData?.IsFreightAssociated && <Button id={`freightListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
   };
@@ -162,9 +163,15 @@ const FreightListing = (props) => {
     const cellValue = props?.value;
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
+
+  const effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+  }
+
   const returnExcelColumn = (data = [], TempData) => {
-    // const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-    // const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
     temp = TempData && TempData.map((item) => {
       if (item.VendorName === '-') {
@@ -173,9 +180,9 @@ const FreightListing = (props) => {
       return item
     })
 
-    // return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
-    //   {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-    // </ExcelSheet>);
+    return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+    </ExcelSheet>);
   }
 
   const onGridReady = (params) => {
@@ -216,7 +223,7 @@ const FreightListing = (props) => {
   }
 
 
-  // const ExcelFile = ReactExport.ExcelFile;
+  const ExcelFile = ReactExport.ExcelFile;
   const { noData } = state;
 
   const isFirstColumn = (params) => {
@@ -237,7 +244,8 @@ const FreightListing = (props) => {
     costingHeadRenderer: costingHeadFormatter,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
-    hyphenFormatter: hyphenFormatter
+    hyphenFormatter: hyphenFormatter,
+    effectiveDateFormatter: effectiveDateFormatter
   };
 
   return (
@@ -249,12 +257,13 @@ const FreightListing = (props) => {
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
                 {permissions.Add && (<Button id="freightListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
-                {/* {
+                {
                   permissions.Download && <>  <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-freightListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
                     {onBtExport()}
                   </ExcelFile>
                   </>
-                } */}
+
+                }
                 <Button id={"freightListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
               </div>
             </div>
@@ -289,7 +298,9 @@ const FreightListing = (props) => {
                 <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                 {/* <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                 <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn> */}
                 <AgGridColumn width='200px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>

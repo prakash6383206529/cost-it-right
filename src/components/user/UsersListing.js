@@ -9,7 +9,7 @@ import { defaultPageSize, EMPTY_DATA, RFQUSER } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
-import { handleDepartmentHeader, loggedInUserId } from '../../helper/auth';
+import { IsSendQuotationToPointOfContact, handleDepartmentHeader, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
 import { checkPermission, searchNocontentFilter, setLoremIpsum, showTitleForActiveToggle } from '../../helper/util';
 import LoaderCustom from '../common/LoaderCustom';
@@ -17,7 +17,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { UserListing } from '../../config/constants';
 import { PaginationWrapper } from '../common/commonPagination';
@@ -28,9 +28,9 @@ import TourWrapper from '../common/Tour/TourWrapper';
 import { Steps } from '../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next'
 import { hideMultipleColumnFromExcel } from '../../components/common/CommonFunctions';
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -216,10 +216,10 @@ const UsersListing = (props) => {
 		}
 
 
-		// return (
-		// 	<ExcelSheet data={TempData} name={UserListing}>
-		// 		{filteredData && filteredData.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Department") ? `${handleDepartmentHeader()}` : ele.label} value={ele.value} style={ele.style} />)}
-		// 	</ExcelSheet>);
+		return (
+			<ExcelSheet data={TempData} name={UserListing}>
+				{filteredData && filteredData.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Department") ? `${handleDepartmentHeader()}` : ele.label} value={ele.value} style={ele.style} />)}
+			</ExcelSheet>);
 	}
 	/**
 		* @method editItemDetails
@@ -403,10 +403,10 @@ const UsersListing = (props) => {
 							<div className="d-flex justify-content-end bd-highlight w100">
 								{AddAccessibility && (
 									<div>
-										{/* <ExcelFile filename={`${props.RFQUser ? 'RFQ User Listing' : 'User Listing'}`} fileExtension={'.xls'} element={
+										<ExcelFile filename={`${props.RFQUser ? 'RFQ User Listing' : 'User Listing'}`} fileExtension={'.xls'} element={
 											<Button id={"Excel-Downloads-userListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
 											{onBtExport()}
-										</ExcelFile> */}
+										</ExcelFile>
 										<Button id="userListing_add" className={"mr5 Tour_List_Add "} onClick={formToggle} title={"Add"} icon={"plus"} />
 									</div>
 								)}
@@ -463,7 +463,9 @@ const UsersListing = (props) => {
 								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn sort={true} field="DepartmentName" headerName="Company"></AgGridColumn>} */}
 							<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName={`${handleDepartmentHeader()}`}></AgGridColumn>
 							{/* //RE    */}
-							{props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Point of Contact"></AgGridColumn>}
+
+							{IsSendQuotationToPointOfContact() && props?.RFQUser && (<AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Point of Contact" />
+							)}
 							<AgGridColumn field="CreatedBy" headerName="Created By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
 							<AgGridColumn field="CreatedDate" width={props?.RFQUser ? 220 : ''} headerName="Created Date (Created Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 							<AgGridColumn field="ModifiedDate" width={props?.RFQUser ? 220 : ''} headerName="Modified Date (Modified Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

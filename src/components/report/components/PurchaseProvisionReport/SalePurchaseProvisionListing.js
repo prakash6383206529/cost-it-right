@@ -9,13 +9,13 @@ import { getSalePurchaseProvisionReport } from '../../actions/ReportListing';
 import { getConfigurationKey, getCurrencySymbol } from '../../../../helper';
 import NoContentFound from '../../../common/NoContentFound';
 import LoaderCustom from '../../../common/LoaderCustom';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { SALES_PROVISION_EXCEL_TEMPLATE } from '../../ExcelTemplate';
 import { hideColumnFromExcel } from '../../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 function SalePurchaseProvisionListing(props) {
 
@@ -197,9 +197,10 @@ function SalePurchaseProvisionListing(props) {
         } else {
             tempData = hideColumnFromExcel(tempData, 'CustomerName')
         }
-        // return (<ExcelSheet data={TempData} name={SALES_PROVISION_FILE_NAME}>
-        //     {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
-        // </ExcelSheet>);
+        return (<ExcelSheet data={TempData} name={SALES_PROVISION_FILE_NAME}>
+            {/* return (<ExcelSheet data={TempData} name={SALES_PROVISION_REPORT}>        //RE */}
+            {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
     }
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState();
@@ -220,9 +221,10 @@ function SalePurchaseProvisionListing(props) {
                         </div>
 
                         <div>
-                            {/* <ExcelFile filename={props.isSaleProvision ? SALES_PROVISION_FILE_NAME : PURCHASE_PROVISION_FILE_NAME} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                            <ExcelFile filename={props.isSaleProvision ? SALES_PROVISION_FILE_NAME : PURCHASE_PROVISION_FILE_NAME} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                                {/* <ExcelFile filename={props.isSaleProvision ? SALES_PROVISION_REPORT : PURCHASE_PROVISION_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>        //RE */}
                                 {renderColumn()}
-                            </ExcelFile> */}
+                            </ExcelFile>
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                                 <div className="refresh mr-0"></div>
                             </button>

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
-import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour, number } from "../../../helper/validation";
+import { required, checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces } from "../../../helper/validation";
 import { renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { fetchSupplierCityDataAPI, getCityByCountry, getAllCity, getVendorNameByVendorSelectList, getPlantSelectListByType } from "../../../actions/Common";
 import {
@@ -164,11 +164,14 @@ class AddFreight extends Component {
   */
   handleLoad = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+      const { errorObj } = this.state
+      let obj = { ...errorObj }
+      obj.load = false
       this.setState({
         FullTruckCapacity: [],
         RateCriteria: [],
       }, () => this.props.change("Rate", ''));
-      this.setState({ Load: newValue });
+      this.setState({ Load: newValue, errorObj: obj });
     } else {
       this.setState({ Load: [] })
     }
@@ -397,6 +400,18 @@ class AddFreight extends Component {
     this.setState({ HandleChanged: false })
   };
 
+  rateChange = (newValue) => {
+    const { errorObj } = this.state
+    let obj = { ...errorObj }
+    if (decimalNumberLimit6(newValue?.target?.value) !== undefined || checkWhiteSpaces(newValue?.target?.value) !== undefined || number(newValue?.target?.value) !== undefined) {
+      obj.rate = true;
+    } else {
+      obj.rate = false;
+    }
+    this.setState({ errorObj: obj });
+
+  }
+
   /**
    * @method handleChange
    * @description Handle Effective Date
@@ -405,13 +420,8 @@ class AddFreight extends Component {
     this.setState({ effectiveDate: date, showEffectiveDateError: false });
   };
 
-  gridHandler = () => {
-    const {
-      FullTruckCapacity,
-      RateCriteria,
-      gridTable,
-      Load
-    } = this.state;
+  checkValidation = () => {
+    const { FullTruckCapacity, RateCriteria, Load } = this.state;
     const { fieldsObj } = this.props;
 
     let count = 0;
@@ -439,7 +449,22 @@ class AddFreight extends Component {
 
     if (count > 0) {
       this.setState({ errorObj });
-      return false;
+    }
+    if (count > 0) return true;
+    return false;
+  }
+
+  gridHandler = () => {
+    const {
+      FullTruckCapacity,
+      RateCriteria,
+      gridTable,
+      Load
+    } = this.state;
+    const { fieldsObj } = this.props;
+
+    if (this.checkValidation()) {
+      return false
     }
 
     // CONDITION TO CHECK DUPLICATE ENTRY IN GRID
@@ -500,6 +525,11 @@ class AddFreight extends Component {
       this.setState({ errorObj: { rate: true } })
       return false
     }
+
+    if (this.checkValidation()) {
+      return false
+    }
+
     //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
     const isExist = skipEditedItem.findIndex(
       (el) =>
@@ -548,7 +578,13 @@ class AddFreight extends Component {
         RateCriteria: [],
         gridEditIndex: "",
         isEditIndex: false,
-        Load: []
+        Load: [],
+        errorObj: {
+          capacity: false,
+          criteria: false,
+          rate: false,
+          load: false
+        }
       },
       () => this.props.change("Rate", '')
     );
@@ -634,6 +670,10 @@ class AddFreight extends Component {
       this.setState({ showEffectiveDateError: true })
       return false
     }
+    if (checkForNull(this.state?.gridTable?.length) === 0) {
+      Toaster.warning("Please add at least one data in Load Section.")
+      return false
+    }
     if (costingTypeId === VBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -696,7 +736,7 @@ class AddFreight extends Component {
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        EffectiveDate: this.state.effectiveDate,
+        EffectiveDate: DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         PlantId: this.state.Plant?.value,
       };
       this.props.createFreight(formData, (res) => {
@@ -1090,7 +1130,7 @@ class AddFreight extends Component {
                               </div>
                             </div>
                           </Col>
-                          {this.state.Load?.value === FullTruckLoad && <Col md="3">
+                          {this.state.Load?.value === FullTruckLoad && <Col md="2">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1112,7 +1152,7 @@ class AddFreight extends Component {
                               </div>
                             </div>
                           </Col>}
-                          <Col md="3">
+                          <Col md="2">
                             <Field
                               name="RateCriteria"
                               type="text"
@@ -1135,8 +1175,9 @@ class AddFreight extends Component {
                               name={"Rate"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, number]}
+                              validate={[decimalNumberLimit6, maxLength10, number]}
                               component={renderTextInputField}
+                              onChange={this.rateChange}
                               required={true}
                               disabled={isViewMode}
                               className=" "

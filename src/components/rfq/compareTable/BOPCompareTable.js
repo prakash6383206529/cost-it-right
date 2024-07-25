@@ -7,12 +7,16 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { getViewBOPDetails, setBopCostingData } from '../../masters/actions/BoughtOutParts';
 import { checkForNull } from '../../../helper';
 import _, { isNumber } from 'lodash';
+import ProcessDrawer from '../ProcessDrawer';
+import PartSpecificationDrawer from '../../costing/components/PartSpecificationDrawer';
 const BOPCompareTable = (props) => {
+      
 
     const dispatch = useDispatch()
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
-
-
+    
+const [ openSpecification, setOpenSpecification ] = useState(false)
+const [ selectedBopId, setSelectedBopId ] = useState(null) // [setSelectedBopId, setSelectedBopId]
 
     const [sectionData, setSectionData] = useState([])
     const [mainHeadingData, setMainHeadingData] = useState([])
@@ -29,6 +33,7 @@ const BOPCompareTable = (props) => {
         const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
 
         dispatch(getViewBOPDetails(combinedArr, res => {
+            
             setIsLoader(false)
             if (res) {
                 res?.data?.DataList?.map((item) => {
@@ -50,8 +55,15 @@ const BOPCompareTable = (props) => {
             let sectionTwo = [];
             let sectionThree = []
             let sectionOneHeader = ["BOP No.", "BOP Name", "Category", "UOM", /* "Specification", */ 'Plant (Code)', "vendor (Code)", 'Effective Date', 'Basic Rate']
-            let sectionTwoHeader = ['Minimum Order Quantity', 'BOP Net Cost']
-            let sectionThreeHeader = ['Remark']
+            let sectionTwoHeader = ['Minimum Order Quantity', 'BOP Net Cost' ]
+            let sectionThreeHeader = [
+                <span className="d-block small-grey-text p-relative">
+                    BOP Specification
+                    <button className="Balance mb-0 button-stick" type="button" onClick={handleOpenSpecificationDrawerMultiple}>
+                    </button>
+                </span>,
+                'Remark'
+            ];
             let mainHeader = []
             viewBOPDetails.map((item, index) => {
                 //section one data start
@@ -78,8 +90,15 @@ const BOPCompareTable = (props) => {
                 sectionTwo.push(formattedDataTwo)
 
                 //section Three
-                sectionThree.push([item.Remark])
-                
+                // sectionThree.push([item.Remark])
+                sectionThree = viewBOPDetails.map(item => [
+                    item.bestCost === true ? ' ' : (
+                        <div onClick={() => handleOpenSpecificationDrawerSingle(item.BoughtOutPartId)} className={'link'}>
+                            View Specifications
+                        </div>
+                    ),
+                    item.Remark
+                ]);
 
                 //mainheader data start
                 const mainHeaderObj = {
@@ -116,6 +135,23 @@ const BOPCompareTable = (props) => {
             setMainHeadingData(mainHeader)
         }
     }, [viewBOPDetails])
+    const closeSpecificationDrawer = () => {
+        setOpenSpecification(false);
+    };
+
+    const handleOpenSpecificationDrawerMultiple = () => {
+        let ids = viewBOPDetails
+            .map(item => item.BoughtOutPartId)
+            .filter(id => id !== null && id !== undefined && id !== '-');
+            setSelectedBopId(ids);
+        setOpenSpecification(true);
+    };
+
+    const handleOpenSpecificationDrawerSingle = (id) => {
+        setSelectedBopId([id]);
+        setOpenSpecification(true);
+    };
+   
     const bestCostObjectFunction = (arrayList) => {
 
         // Create a copy of the input array to prevent mutation
@@ -228,6 +264,15 @@ const BOPCompareTable = (props) => {
             <Table headerData={mainHeadingData} sectionData={sectionData}>
                 {isLoader && <LoaderCustom customClass="" />}
             </Table>
+            {openSpecification && <PartSpecificationDrawer
+                isOpen={openSpecification}
+                closeDrawer={closeSpecificationDrawer}
+                anchor={'right'}
+                bopId={selectedBopId}
+                bopQuotationId={props?.quotationId}
+                type={'BOP'}
+            />
+            }
         </div>
     );
 };

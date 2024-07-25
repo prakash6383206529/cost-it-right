@@ -97,8 +97,7 @@ const RaiseRfqBopDetails = (props) => {
 
     }
     const setBopData = () => {
-        if (bopName.length !== 0 && bopCategory.length !== 0 && bopNumber.length !== 0) {
-
+        if (bopCategory.length !== 0 && bopNumber.length !== 0 && bopName.length !== 0) {
             let obj = {
                 BoughtOutPartChildId: bopNumber.value,
                 BoughtOutPartCategoryId: bopCategory.value,
@@ -107,7 +106,6 @@ const RaiseRfqBopDetails = (props) => {
                 BopSpecification: bopSpecificationList,
                 BoughtOutPartName: bopName,
                 BoughtOutPartCategoryName: bopCategory?.label,
-                BoughtOutPartCategoryId: bopCategory?.value,
                 BoughtOutPartNumber: bopNumber?.label,
 
 
