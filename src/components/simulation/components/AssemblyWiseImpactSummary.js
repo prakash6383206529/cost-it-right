@@ -12,7 +12,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { checkForDecimalAndNull, formViewData, searchNocontentFilter } from '../../../helper';
 import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AssemblyWiseImpactt } from '../../../config/constants'
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { PaginationWrapper } from '../../common/commonPagination';
 import WarningMessage from '../../common/WarningMessage';
 import { getComparisionSimulationData, setTechnologyForSimulation } from '../actions/Simulation';
@@ -21,9 +21,9 @@ import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer';
 import { Link } from 'react-scroll';
 
 const gridOptions = {};
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function AssemblyWiseImpactSummary(props) {
     const { impactType, isImpactDrawer, DisplayCompareCosting } = props;
@@ -85,10 +85,10 @@ function AssemblyWiseImpactSummary(props) {
 
 
     const returnExcelColumn = (data = [], TempData) => {
-        // return (
-        // <ExcelSheet data={TempData} name={AssemblyWiseImpactt}>
-        //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        // </ExcelSheet>);
+        return (
+            <ExcelSheet data={TempData} name={AssemblyWiseImpactt}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
     const closeAssemblyDrawer = () => {
@@ -160,11 +160,12 @@ function AssemblyWiseImpactSummary(props) {
                         <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
                         </button>
-                        {/* <ExcelFile filename={'AssemblyWise Impact'} fileExtension={'.xls'} element={
+                        <ExcelFile filename={'AssemblyWise Impact'} fileExtension={'.xls'} element={
                             <button type="button" className={'user-btn'}><div className="download mr-0" title="Download"></div>
+                                {/* DOWNLOAD */}
                             </button>}>
                             {onBtExport()}
-                        </ExcelFile> */}
+                        </ExcelFile>
                         <WarningMessage dClass="mt-2" message={"Some of the parts are present at different BOM levels (child part, sub-assemblies)."} />
                     </div>
 

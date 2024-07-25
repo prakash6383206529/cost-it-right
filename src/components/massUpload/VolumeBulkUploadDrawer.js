@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import LoaderCustom from '../common/LoaderCustom';
 import Toaster from '../common/Toaster';
 import { bulkUploadVolume } from '../masters/actions/Volume';
 import { checkForSameFileUpload, loggedInUserId } from '../../helper';
-// import ExcelFile from 'react-export-excel/dist/ExcelPlugin/components/ExcelFile';
+import ExcelFile from 'react-export-excel/dist/ExcelPlugin/components/ExcelFile';
 import { Volume, VolumeTempData } from '../../config/masterData';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import WarningMessage from '../common/WarningMessage';
-// import { ExcelRenderer } from 'react-excel-renderer';
+import { ExcelRenderer } from 'react-excel-renderer';
 import cloudImg from '../../assests/images/uploadcloud.png';
 
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 class VolumeBulkUploadDrawer extends Component {
     constructor(props) {
@@ -73,9 +73,9 @@ class VolumeBulkUploadDrawer extends Component {
     */
     returnExcelColumn = (data = []) => {
         const fileName = "Volume"
-        // return (<ExcelSheet data={VolumeTempData} name={fileName}>
-        //     {Volume && Volume.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        // </ExcelSheet>);
+        return (<ExcelSheet data={VolumeTempData} name={fileName}>
+            {Volume && Volume.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        </ExcelSheet>);
     }
     fileHandler = event => {
         this.setState({ bomUploadLoader: true })
@@ -92,30 +92,29 @@ class VolumeBulkUploadDrawer extends Component {
             let data = new FormData()
             data.append('file', fileObj)
 
-            //will upgrade
-            // ExcelRenderer(fileObj, (err, resp) => {
-            //     if (err) {
+            ExcelRenderer(fileObj, (err, resp) => {
+                if (err) {
 
-            //     }
-            //     else {
-            //         fileHeads = resp.rows[0];
-            //         const { fileName } = this.props;
-            //         switch (String(fileName)) {
-            //             case 'Volume':
-            //                 checkForFileHead = checkForSameFileUpload(Volume, fileHeads)
-            //                 break;
-            //             default:
-            //                 break;
-            //         }
-            //     }
-            //     this.setState({ bomUploadLoader: false })
-            //     if (!checkForFileHead) {
-            //         Toaster.warning('Please select file of same Master')
-            //         return false
-            //     }
-            //     this.setState({ fileData: fileObj, uploadfileName: uploadfileName })
+                }
+                else {
+                    fileHeads = resp.rows[0];
+                    const { fileName } = this.props;
+                    switch (String(fileName)) {
+                        case 'Volume':
+                            checkForFileHead = checkForSameFileUpload(Volume, fileHeads)
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                this.setState({ bomUploadLoader: false })
+                if (!checkForFileHead) {
+                    Toaster.warning('Please select file of same Master')
+                    return false
+                }
+                this.setState({ fileData: fileObj, uploadfileName: uploadfileName })
 
-            // });
+            });
         }
     }
     responseHandler = (res) => {
@@ -164,12 +163,12 @@ class VolumeBulkUploadDrawer extends Component {
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                     <Col md="12" className='px-3'>
                         <div>
-                            {/* <ExcelFile filename={'Volume'} fileExtension={'.xls'} element={
+                            <ExcelFile filename={'Volume'} fileExtension={'.xls'} element={
                                 <button type="button" className={'btn btn-primary pull-right w-100 mb-3'}><div className="download mr-1" ></div>
                                     {"Download Volume"}
                                 </button>}>
                                 {this.onBtExport()}
-                            </ExcelFile> */}
+                            </ExcelFile>
                         </div>
                         {this.state.fileName !== "" ? (
                             <div class="alert alert-danger" role="alert">

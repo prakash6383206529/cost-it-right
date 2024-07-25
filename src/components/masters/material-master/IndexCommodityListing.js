@@ -21,15 +21,15 @@ import { useTranslation } from "react-i18next";
 import { resetStatePagination, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
 import { INDEXCOMMODITYlISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
-// import ReactExport from "react-export-excel";
+import ReactExport from "react-export-excel";
 import BulkUpload from "../../massUpload/BulkUpload";
 import { PaginationWrappers } from "../../common/Pagination/PaginationWrappers";
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const IndexCommodityListing = () => {
@@ -341,19 +341,19 @@ const IndexCommodityListing = () => {
         }
         return item;
       });
-    // return (
-    //   <ExcelSheet data={temp} name={RmMaterial}>
-    //     {data &&
-    //       data.map((ele, index) => (
-    //         <ExcelColumn
-    //           key={index}
-    //           label={ele.label}
-    //           value={ele.value}
-    //           style={ele.style}
-    //         />
-    //       ))}
-    //   </ExcelSheet>
-    // );
+    return (
+      <ExcelSheet data={temp} name={RmMaterial}>
+        {data &&
+          data.map((ele, index) => (
+            <ExcelColumn
+              key={index}
+              label={ele.label}
+              value={ele.value}
+              style={ele.style}
+            />
+          ))}
+      </ExcelSheet>
+    );
   };
   const closeBulkUploadDrawer = () => {
     setState(
@@ -387,7 +387,7 @@ const IndexCommodityListing = () => {
             {permissions.Download && (
               <>
                 <>
-                  {/* <ExcelFile
+                  <ExcelFile
                     filename={"Index"}
                     fileExtension={".xls"}
                     element={
@@ -395,7 +395,7 @@ const IndexCommodityListing = () => {
                     }
                   >
                     {onBtExport()}
-                  </ExcelFile> */}
+                  </ExcelFile>
                 </>
               </>
             )}

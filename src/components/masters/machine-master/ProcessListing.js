@@ -9,7 +9,7 @@ import Toaster from "../../common/Toaster";
 import AddProcessDrawer from "./AddProcessDrawer";
 import LoaderCustom from "../../common/LoaderCustom";
 import { ProcessMaster } from "../../../config/constants";
-// import ReactExport from "react-export-excel";
+import ReactExport from "react-export-excel";
 import { PROCESSLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -22,8 +22,8 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -189,19 +189,19 @@ const ProcessListing = (props) => {
     let temp = [];
     temp = TempData;
 
-    // return (
-    //   <ExcelSheet data={temp} name={`${ProcessMaster}`}>
-    //     {data &&
-    //       data.map((ele, index) => (
-    //         <ExcelColumn
-    //           key={index}
-    //           label={ele.label}
-    //           value={ele.value}
-    //           style={ele.style}
-    //         />
-    //       ))}
-    //   </ExcelSheet>
-    // );
+    return (
+      <ExcelSheet data={temp} name={`${ProcessMaster}`}>
+        {data &&
+          data.map((ele, index) => (
+            <ExcelColumn
+              key={index}
+              label={ele.label}
+              value={ele.value}
+              style={ele.style}
+            />
+          ))}
+      </ExcelSheet>
+    );
   };
   const onGridReady = (params) => {
     setState((prevState) => ({
@@ -258,7 +258,7 @@ const ProcessListing = (props) => {
   };
 
   const { isOpenProcessDrawer, isEditFlag, noData } = state;
-  // const ExcelFile = ReactExport.ExcelFile;
+  const ExcelFile = ReactExport.ExcelFile;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -313,7 +313,7 @@ const ProcessListing = (props) => {
                 )}
                 {permissions.Download && (
                   <>
-                    {/* <ExcelFile
+                    <ExcelFile
                       filename={ProcessMaster}
                       fileExtension={".xls"}
                       element={
@@ -334,7 +334,7 @@ const ProcessListing = (props) => {
                       }
                     >
                       {onBtExport()}
-                    </ExcelFile> */}
+                    </ExcelFile>
                   </>
                 )}
                 <button

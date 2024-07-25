@@ -18,6 +18,7 @@
     "chart.js": "^3.3.2",
     "classnames": "^2.3.1",
     "crypto-js": "^4.1.1",
+    "css-what": "^5.0.1",
     "date-fns": "^2.30.0",
     "dayjs": "^1.10.7",
     "dotenv": "^8.2.0",
@@ -64,9 +65,10 @@
     "redux": "^4.0.4",
     "redux-form": "^8.2.6",
     "redux-thunk": "^2.3.0",
-    "webpack": "^4.44.2",
     "yarn": "^1.22.10",
-    "yup": "^0.29.3"
+    "yup": "^0.29.3",
+    "react-excel-renderer": "https://github.com/mahakrawat1206/react-excel-renderer.git#master",
+    "react-export-excel": "https://github.com/mahakrawat1206/react-export-excel.git#master"
   },
   "scripts": {
     "start": "react-scripts start",

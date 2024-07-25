@@ -24,13 +24,13 @@ import WarningMessage from '../../../common/WarningMessage';
 import DatePicker from "react-datepicker";
 import { useRef } from 'react';
 import { getMaxDate } from '../../SimulationUtils';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { MACHINE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
 
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {
 
@@ -401,10 +401,10 @@ function MRSimulation(props) {
             temp.push(item)
         })
 
-        // return (
-        //     <ExcelSheet data={temp} name={'Machine Data'}>
-        //         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        //     </ExcelSheet>);
+        return (
+            <ExcelSheet data={temp} name={'Machine Data'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
     return (
@@ -424,10 +424,10 @@ function MRSimulation(props) {
                                                 <button type="button" className="user-btn float-right mr-2 Tour_List_Reset Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
-                                                {/* <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
+                                                <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                     {onBtExport()}
-                                                </ExcelFile> */}
+                                                </ExcelFile>
                                             </div>
 
                                             <div className='d-flex justify-content-end bulk-upload-row'>

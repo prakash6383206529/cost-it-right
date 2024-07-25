@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { defaultPageSize, EMPTY_DATA, REJECTED } from '../../../config/constants';
 import { getCostingBulkUploadList, sendForApprovalFromBulkUpload, getErrorFile, generateReport } from '../actions/CostWorking';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -15,8 +15,8 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../common/commonPagination';
 
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 class CostingSummaryBulkUpload extends Component {
@@ -121,9 +121,9 @@ class CostingSummaryBulkUpload extends Component {
         }
         const name = "Costing"
         this.props.getCostingBulkUploadList(() => { })
-        // return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={name}>
-        //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
-        // </ExcelSheet>);
+        return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={name}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
+        </ExcelSheet>);
     }
 
     /**

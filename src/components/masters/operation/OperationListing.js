@@ -15,7 +15,7 @@ import { userDepartmetList, getConfigurationKey } from '../../../helper'
 import { OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -35,8 +35,8 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -635,12 +635,12 @@ const OperationListing = (props) => {
             }
             return item
         })
-        // return (
+        return (
 
-        //     <ExcelSheet data={temp} name={OperationMaster}>
+            <ExcelSheet data={temp} name={OperationMaster}>
 
-        //         {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        //     </ExcelSheet>);
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
     const onFilterTextBoxChanged = (e) => {
@@ -654,7 +654,7 @@ const OperationListing = (props) => {
 
     const { isSimulation } = props;
     const { toggleForm, data, isBulkUpload, noData } = state;
-    // const ExcelFile = ReactExport.ExcelFile;
+    const ExcelFile = ReactExport.ExcelFile;
 
 
     var filterParams = {
@@ -838,11 +838,11 @@ const OperationListing = (props) => {
                                                 buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                             />
 
-                                            {/* <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
+                                            <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
                                                 <Button id={"Excel-Downloads-operation"} className="p-absolute" />}>
 
                                                 {onBtExport()}
-                                            </ExcelFile> */}
+                                            </ExcelFile>
                                         </>
                                     }
                                 </>

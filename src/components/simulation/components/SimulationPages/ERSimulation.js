@@ -16,7 +16,7 @@ import Simulation from '../Simulation';
 import VerifySimulation from '../VerifySimulation';
 import _, { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { getCurrencySelectList } from '../../../../actions/Common';
 import RMImportListing from '../../../masters/material-master/RMImportListing';
@@ -30,9 +30,9 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '..';
 import LoaderCustom from '../../../common/LoaderCustom';
 
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {
 
@@ -360,10 +360,10 @@ function ERSimulation(props) {
             return null
         })
 
-        // return (
-        //     <ExcelSheet data={temp} name={'Exchange Rate Data'}>
-        //         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        //     </ExcelSheet>);
+        return (
+            <ExcelSheet data={temp} name={'Exchange Rate Data'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
     const handleEffectiveDateChange = (date) => {
@@ -390,10 +390,10 @@ function ERSimulation(props) {
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right mr-1 Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div></button>
-                                            {/* {isImpactedMaster && <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                            {isImpactedMaster && <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
                                                 <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                 {onBtExport()}
-                                            </ExcelFile>} */}
+                                            </ExcelFile>}
                                         </div>
                                         {!isImpactedMaster && <button type="button" id="simulation-back" className={"apply back_simulationPage"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
                                     </div>
