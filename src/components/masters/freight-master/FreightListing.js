@@ -9,7 +9,7 @@ import Toaster from '../../common/Toaster';
 import { FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { FreightMaster } from '../../../config/constants';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -170,8 +170,8 @@ const FreightListing = (props) => {
   }
 
   const returnExcelColumn = (data = [], TempData) => {
-    // const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-    // const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
     temp = TempData && TempData.map((item) => {
       if (item.VendorName === '-') {
@@ -180,9 +180,9 @@ const FreightListing = (props) => {
       return item
     })
 
-    // return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
-    //   {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-    // </ExcelSheet>);
+    return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+    </ExcelSheet>);
   }
 
   const onGridReady = (params) => {
@@ -223,7 +223,7 @@ const FreightListing = (props) => {
   }
 
 
-  // const ExcelFile = ReactExport.ExcelFile;
+  const ExcelFile = ReactExport.ExcelFile;
   const { noData } = state;
 
   const isFirstColumn = (params) => {
@@ -257,12 +257,13 @@ const FreightListing = (props) => {
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
                 {permissions.Add && (<Button id="freightListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
-                {/* {
+                {
                   permissions.Download && <>  <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-freightListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
                     {onBtExport()}
                   </ExcelFile>
                   </>
-                } */}
+
+                }
                 <Button id={"freightListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
               </div>
             </div>

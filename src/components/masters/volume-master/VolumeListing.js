@@ -12,7 +12,7 @@ import BulkUpload from "../../massUpload/BulkUpload";
 import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster, } from "../../../config/constants";
 import { checkPermission, searchNocontentFilter, setLoremIpsum } from "../../../helper/util";
 import LoaderCustom from "../../common/LoaderCustom";
-// import ReactExport from "react-export-excel";
+import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -35,8 +35,8 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -375,10 +375,10 @@ function VolumeListing(props) {
   };
   const returnExcelColumn = (data = [], TempData) => {
     let excelData = hideCustomerFromExcel(data, "CustomerName")
-    // return (
-    //   <ExcelSheet data={TempData} name={VolumeMaster}>
-    //     {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-    //   </ExcelSheet>);
+    return (
+      <ExcelSheet data={TempData} name={VolumeMaster}>
+        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
   }
 
 
@@ -573,7 +573,7 @@ function VolumeListing(props) {
     setLimit(false);
   };
 
-  // const ExcelFile = ReactExport.ExcelFile;
+  const ExcelFile = ReactExport.ExcelFile;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -661,9 +661,9 @@ function VolumeListing(props) {
                       icon={"download mr-1"}
                       buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                     />
-                      {/* <ExcelFile filename={"Volume"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-volume"} className="p-absolute" />}                      >
+                      <ExcelFile filename={"Volume"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-volume"} className="p-absolute" />}                      >
                         {onBtExport()}
-                      </ExcelFile> */}
+                      </ExcelFile>
                     </>
                     )}
 

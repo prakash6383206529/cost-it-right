@@ -8,9 +8,9 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { getPlantWiseGotAndGivenDetails } from '../../actions/ReportListing';
 import LoaderCustom from '../../../common/LoaderCustom';
-// import ReactExport from 'react-export-excel';
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+import ReactExport from 'react-export-excel';
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const mainHeaders = ["Month", "Plant(Code)", "Plant Address", "Net Sales", "Effective Date"]
 const headers = ['Performance  Parameters', 'Amount Rs in Crore', 'Percentage(%)']
 function PlantWiseGotGivenListing(props) {
@@ -165,17 +165,17 @@ function PlantWiseGotGivenListing(props) {
 
     const returnExcelColumn = () => {
         let multiDataSet = renderexcel()
-        // return (
-        //     <ExcelSheet dataSet={multiDataSet} name={'ImpactMaster'} />
-        // );
+        return (
+            <ExcelSheet dataSet={multiDataSet} name={'ImpactMaster'} />
+        );
     }
 
     return <>
         {isLoader && <LoaderCustom />}
         <div className='d-flex justify-content-end'>
-            {/* <ExcelFile filename={PLANT_HEAD_WISE} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+            <ExcelFile filename={PLANT_HEAD_WISE} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
                 {returnExcelColumn()}
-            </ExcelFile> */}
+            </ExcelFile>
             <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
         </div >
         <div>

@@ -318,7 +318,7 @@ function AddAuction(props) {
     }
     dispatch(checkQuatationForAuction(newValue.QuotationPartId, res => {
       if (res.data) {
-        setValue('BasePrice', checkForDecimalAndNull(res.data?.Data?.BasePrice))
+        setValue('BasePrice', res.data?.Data && res.data?.Data?.BasePrice)
         if (PartType === RM) {
           if (newValue) {
             arrIteration(rmLabel)
@@ -681,9 +681,9 @@ function AddAuction(props) {
                           Controller={Controller}
                           control={control}
                           register={register}
-                          mandatory={false}
+                          mandatory={true}
                           rules={{
-                            required: false,
+                            required: true,
                             validate: { number, checkWhiteSpaces, decimalNumberLimit },
                           }}
                           handleChange={(e) => basePriceHandle(e)}

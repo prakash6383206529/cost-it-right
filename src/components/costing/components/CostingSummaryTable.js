@@ -26,7 +26,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
 import BOMViewer from '../../masters/part-master/BOMViewer';
 import _, { debounce } from 'lodash'
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import ExcelIcon from '../../../assests/images/excel.svg';
 import Logo from '../../../assests/images/logo/company-logo.svg';
 import { DIE_CASTING, IdForMultiTechnology, PLASTIC } from '../../../config/masterData'
@@ -65,9 +65,9 @@ const CostingSummaryTable = (props) => {
   const { t } = useTranslation("Costing")
   const [totalCost, setTotalCost] = useState(0)
   let history = useHistory();
-  // const ExcelFile = ReactExport.ExcelFile;
-  // const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-  // const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+  const ExcelFile = ReactExport.ExcelFile;
+  const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+  const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
   const dispatch = useDispatch()
   const [addComparisonToggle, setaddComparisonToggle] = useState(false)
@@ -1679,11 +1679,11 @@ const CostingSummaryTable = (props) => {
       temp = viewCostingData
     }
 
-    // return (
-    //   <ExcelSheet data={temp} name={"Costing Summary"}>
-    //     {finalData && finalData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-    //   </ExcelSheet>
-    // );
+    return (
+      <ExcelSheet data={temp} name={"Costing Summary"}>
+        {finalData && finalData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>
+    );
   }
 
   //FOR DISPLAY PLANT VENDOR NAME AS A HEADER FOR 
@@ -2069,10 +2069,10 @@ const CostingSummaryTable = (props) => {
               <div className='d-flex justify-content-end'>
                 <div className='d-flex justify-content-end'>
 
-                  {/* {downloadAccessibility && <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} id="costingSummary_excel" title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
+                  {downloadAccessibility && <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} id="costingSummary_excel" title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
 
                     {onBtExport()}
-                  </ExcelFile>} */}
+                  </ExcelFile>}
                   {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                 </div>
                 {!simulationMode && !props.isRfqCosting && !props.isRfqCosting && downloadAccessibility &&
