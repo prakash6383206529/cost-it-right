@@ -116,7 +116,6 @@ export const API = {
   draftSimulationForRMMaster: `${BASE_URL}/simulation/draft-simulation-raw-material-master`,
   updateSimulationRawMaterial: `${BASE_URL}/simulation/update-simulation-raw-material`,
   runSimulationOnRawMaterial: `${BASE_URL}/simulation/run-simulation-on-raw-material-master`,
-  getAllSimulatedRawMaterial: `${BASE_URL}/simulation/get-all-simulated-raw-material`,
   getApprovalSimulatedRawMaterialSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-raw-material-summary`,
   getRMIndexationCostingSimulationListing: `${BASE_URL}/simulation/get-impacted-raw-material-details`,
 

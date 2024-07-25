@@ -59,6 +59,7 @@ function AddRMMaster(props) {
         avgBasicRate: [],
         totalBasicRate: 0,
         materialCommodityIndexRateDetails: [],
+        callAvgApi: false,
     })
     const isViewFlag = data?.isViewFlag ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
@@ -75,7 +76,7 @@ function AddRMMaster(props) {
     })
 
     useEffect(() => {
-        if (getValues('Material')?.value !== null && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate')) {
+        if (!isViewFlag && state.callAvgApi === true && getValues('Material')?.value !== null && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate')) {
             dispatch(getCommodityIndexRateAverage(
                 getValues('Material')?.value,
                 getValues('Index').value,
@@ -109,22 +110,26 @@ function AddRMMaster(props) {
                 }
             ));
         }
-    }, [avgValues])
+    }, [avgValues, state.callAvgApi])
 
     useEffect(() => {
-
-        if (getValues('RawMaterialGrade')) {
-            const commodityVal = getValues('RawMaterialGrade').value;
-            dispatch(getMaterialTypeDataAPI('', commodityVal, (res) => {
-                if (res) {
-                    let Data = res.data.Data
-                    setValue('Material', { label: Data.MaterialType, value: Data.MaterialTypeId })
-                    dispatch(getMaterialTypeDataAPI(Data.MaterialTypeId, '', (res) => {
+        if (!isViewFlag) {
+            if (getValues('RawMaterialGrade')) {
+                const commodityVal = getValues('RawMaterialGrade').value;
+                dispatch(getMaterialTypeDataAPI('', commodityVal, (res) => {
+                    if (res) {
                         let Data = res.data.Data
-                        setState(prevState => ({ ...prevState, commodityDetails: Data.MaterialCommodityStandardDetails }))
-                    }))
-                }
-            }))
+                        setValue('Material', { label: Data.MaterialType, value: Data.MaterialTypeId })
+                        dispatch(getMaterialTypeDataAPI(Data.MaterialTypeId, '', (res) => {
+                            let Data = res.data.Data
+                            if (Data.MaterialCommodityStandardDetails.length > 0) {
+                                setState(prevState => ({ ...prevState, callAvgApi: true }))
+                            }
+                            setState(prevState => ({ ...prevState, commodityDetails: Data.MaterialCommodityStandardDetails }))
+                        }))
+                    }
+                }))
+            }
         }
     }, [fieldValueGrade])
 
