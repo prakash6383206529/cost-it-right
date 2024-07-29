@@ -739,7 +739,7 @@ export function getRawMaterialDataBySourceVendor(data, callback) {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getRawMaterialDataBySourceVendor}?costingHeadId=${ZBCTypeId}&technologyId=${data.technologyId}&rawMaterialSpecificationId=${data.rawMaterialSpecificationId}&isIndexationDetails=${data.isIndexationDetails}&sourceVendorId=${data.sourceVendorId}`, config());
         request.then((response) => {
-            if (response.data.Result) {
+            if (response) {
                 callback(response);
             }
         }).catch((error) => {

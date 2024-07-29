@@ -467,7 +467,7 @@ function RMDomesticListing(props) {
         if (showExtraData && props.rowIndex === 0) {
             isDeleteButton = true
         } else {
-            if (DeleteAccessibility && !rowData.IsRMAssociated) {
+            if (DeleteAccessibility && !rowData?.IsRMAssociated === false) {
                 isDeleteButton = true
             }
         }
