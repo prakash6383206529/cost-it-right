@@ -59,9 +59,10 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFl
           });
         }
       }));
-    };
-
-    fetchData();
+    }
+    if (isEditFlag) {
+      fetchData();
+    }
   }, [isEditFlag, isViewFlag, ID, dispatch, setValue]);
 
   const cancel = (type) => {

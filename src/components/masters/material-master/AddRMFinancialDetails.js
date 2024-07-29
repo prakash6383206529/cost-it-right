@@ -208,7 +208,7 @@ function AddRMFinancialDetails(props) {
             setValue('FinalConditionCostBaseCurrency', states.isImport ? Data?.NetConditionCostConversion : Data?.NetConditionCost)
             setValue('ScrapRateUOM', { label: Data?.ScrapUnitOfMeasurement, value: Data?.ScrapUnitOfMeasurementId })
             setValue('CalculatedFactor', Data?.CalculatedFactor)
-            setValue('effectiveDate', DayTime(Data?.EffectiveDate).$d)
+            setValue('effectiveDate', Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '')
             setValue('CircleScrapCostSelectedCurrency', Data?.JaliScrapCost)
             setValue('CircleScrapCostBaseCurrency', states.isImport ? Data?.JaliScrapCostConversion : Data?.JaliScrapCost)
             setValue('currency', { label: Data?.Currency, value: Data?.CurrencyId })
@@ -224,7 +224,7 @@ function AddRMFinancialDetails(props) {
             setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
             setState(prevState => ({
                 ...prevState,
-                effectiveDate: DayTime(Data?.EffectiveDate).$d,
+                effectiveDate: Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '',
                 sourceLocation: Data?.SourceSupplierLocationName !== undefined ? { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation } : [],
                 UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UOM },
                 IsApplyHasDifferentUOM: Data?.IsScrapUOMApply,
