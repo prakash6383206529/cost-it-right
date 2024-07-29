@@ -28,7 +28,7 @@ import MasterSendForApproval from "../MasterSendForApproval";
 import WarningMessage from "../../common/WarningMessage";
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import HeaderTitle from "../../common/HeaderTitle";
-import { setCommodityDetails, setOtherCostDetails } from "../actions/Indexation";
+import { getRawMaterialDataBySourceVendor, setCommodityDetails, setOtherCostDetails } from "../actions/Indexation";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
@@ -60,9 +60,15 @@ function AddRMMaster(props) {
         totalBasicRate: 0,
         materialCommodityIndexRateDetails: [],
         callAvgApi: false,
+        disableAll: false,
+        isSourceVendorApiCalled: false,
+        sourceVendorRawMaterialId: null,
+        isSourceVendor: false,
     })
-    const isViewFlag = data?.isViewFlag ? true : false
+
+    const isViewFlag = data?.isViewFlag === true ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
+
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { otherCostDetailsArray } = useSelector((state) => state.indexation)
 
@@ -70,13 +76,57 @@ function AddRMMaster(props) {
         control,
         name: ['Material', 'Index', 'ExchangeSource', 'fromDate', 'toDate']
     })
+    const soruceVendorValues = useWatch({
+        control,
+        name: ['RawMaterialSpecification', 'Technology', 'sourceVendorName']
+    })
     const fieldValueGrade = useWatch({
         control,
         name: ['RawMaterialGrade']
     })
 
     useEffect(() => {
-        if (!isViewFlag && state.callAvgApi === true && getValues('Material')?.value !== null && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate')) {
+
+        console.log('state.sourceVendorRawMaterialId: ', state.sourceVendorRawMaterialId);
+        if (!isViewFlag && !state.sourceVendorRawMaterialId && rawMaterailDetails?.SourceVendor?.value && getValues('RawMaterialSpecification') && getValues('Technology')) {
+
+            let data = {
+                rawMaterialSpecificationId: getValues('RawMaterialSpecification')?.value,
+                sourceVendorId: rawMaterailDetails?.SourceVendor?.value,
+                technologyId: getValues('Technology')?.value,
+                isIndexationDetails: rawMaterailDetails?.isShowIndexCheckBox,
+                costingHeadId: state.costingTypeId
+            }
+            dispatch(getRawMaterialDataBySourceVendor(data, (res) => {
+
+                let Data = res?.data?.Data
+
+                if (res?.status === 200) {
+                    setState(prevState => ({
+                        ...prevState,
+                        isSourceVendorApiCalled: true,
+                        sourceVendorRawMaterialId: Data?.RawMaterialId,
+                        DataToChange: Data,
+                        disableAll: true,
+                        isLoader: false,
+                        commodityDetails: Data?.MaterialCommodityIndexRateDetails
+                    }))
+                    dispatch(setOtherCostDetails(Data?.RawMaterialOtherCostDetails))
+                    dispatch(setCommodityDetails(Data?.MaterialCommodityIndexRateDetails))
+                } else {
+
+                    setState(prevState => ({
+                        ...prevState, isSourceVendorApiCalled: true, sourceVendorRawMaterialId: null, DataToChange: {}, disableAll: false, isLoader: false, commodityDetails: []
+                    }))
+                    dispatch(setOtherCostDetails([]))
+                    dispatch(setCommodityDetails([]))
+                }
+            }))
+        }
+    }, [soruceVendorValues, rawMaterailDetails?.SourceVendor, rawMaterailDetails?.isShowIndexCheckBox, state.costingTypeId])
+
+    useEffect(() => {
+        if (!isViewFlag && state.callAvgApi === true && getValues('Material')?.value !== null && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate') && !state?.isSourceVendorApiCalled) {
             dispatch(getCommodityIndexRateAverage(
                 getValues('Material')?.value,
                 getValues('Index').value,
@@ -136,9 +186,9 @@ function AddRMMaster(props) {
     useEffect(() => {
         getDetails(data)
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
-        dispatch(setCommodityDetails([]))
+
         return () => {
-            dispatch(SetRawMaterialDetails({ states: {}, Technology: {}, ShowScrapKeys: {}, isShowIndexCheckBox: false }, () => { }))
+            dispatch(SetRawMaterialDetails({ states: {}, SourceVendor: {}, Technology: {}, ShowScrapKeys: {}, isShowIndexCheckBox: false }, () => { }))
             dispatch(setCommodityDetails([]))
             dispatch(setOtherCostDetails([]))
         }
@@ -206,9 +256,9 @@ function AddRMMaster(props) {
         setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
     }
     /**
- * @method getDetails
- * @description Used to get Details
- */
+    * @method getDetails
+    * @description Used to get Details
+    */
     const getDetails = (data) => {
 
         if (data && data.isEditFlag) {
@@ -221,7 +271,7 @@ function AddRMMaster(props) {
                     const Data = res?.data?.Data
                     if (Data && Object.keys(Data).length > 0) {
                         setState(prevState => ({
-                            ...prevState, DataToChange: Data, isImport: Data.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? true : false, isLoader: false, costingTypeId: Data.CostingTypeId, commodityDetails: Data?.MaterialCommodityIndexRateDetails
+                            ...prevState, sourceVendorRawMaterialId: Data?.SourceVendorRawMaterialId, DataToChange: Data, isImport: Data.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? true : false, isLoader: false, costingTypeId: Data.CostingTypeId, commodityDetails: Data?.MaterialCommodityIndexRateDetails, isSourceVendor: Data?.IsSourceVendor, disableAll: Data?.IsSourceVendor ? true : false
                         }))
                         dispatch(setOtherCostDetails(Data?.RawMaterialOtherCostDetails))
                         dispatch(setCommodityDetails(Data?.MaterialCommodityIndexRateDetails))
@@ -252,9 +302,9 @@ function AddRMMaster(props) {
         }
     }
     /**
-* @method onRmToggle
-* @description RM TOGGLE
-*/
+    * @method onRmToggle
+    * @description RM TOGGLE
+    */
     const onRmToggle = () => {
         setState(prevState => ({ ...prevState, isImport: !prevState.isImport }))
     }
@@ -394,7 +444,9 @@ function AddRMMaster(props) {
             "OtherNetCost": values.OtherCostBaseCurrency,
             "OtherNetCostConversion": values.OtherCostBaseCurrency,
             "RawMaterialOtherCostDetails": otherCostDetailsArray,
-            "IsIndexationDetails": rawMaterailDetails?.isShowIndexCheckBox === true ? true : false
+            "IsIndexationDetails": rawMaterailDetails?.isShowIndexCheckBox === true ? true : false,
+            "SourceVendorRawMaterialId": state?.sourceVendorRawMaterialId ?? null,
+            "SourceVendorId": rawMaterailDetails?.SourceVendor?.value ?? null
         }
 
 
@@ -420,14 +472,17 @@ function AddRMMaster(props) {
                         Toaster.warning('Please change data to send RM for approval')
                         return false
                     }
-                } else if ((!financialDataNotChanged) && DayTime(values?.effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+                } else if (!state?.isSourceVendor && (!financialDataNotChanged) && DayTime(values?.effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
                     Toaster.warning('Please update the effective date')
                     setState(prevState => ({ ...prevState, isDateChanged: true }))
                     return false
                 }
+                formData.IsFinancialDataChanged = false
+            } else {
+                formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
             }
 
-            formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
+
         }
 
         //  IF: APPROVAL FLOW
@@ -559,7 +614,10 @@ function AddRMMaster(props) {
                             data={data}
                             commonFunction={commonFunction}
                             AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
-                            EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE} />
+                            EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
+                            disableAll={state.disableAll}
+                            isSourceVendorApiCalled={state?.isSourceVendorApiCalled}
+                        />
                         <AddRMFinancialDetails states={state}
                             Controller={Controller}
                             control={control}
@@ -572,6 +630,7 @@ function AddRMMaster(props) {
                             data={data}
                             totalBasicRate={state.totalBasicRate}
                             commodityDetails={state.commodityDetails}
+                            disableAll={state.disableAll}
                         />
                         <RemarksAndAttachments Controller={Controller}
                             control={control}
@@ -581,7 +640,8 @@ function AddRMMaster(props) {
                             errors={errors}
                             useWatch={useWatch}
                             DataToChange={state.DataToChange}
-                            data={data} />
+                            data={data}
+                            disableAll={state.disableAll} />
                     </div>
                     <Row className="sf-btn-footer no-gutters justify-content-between sticky-btn-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">

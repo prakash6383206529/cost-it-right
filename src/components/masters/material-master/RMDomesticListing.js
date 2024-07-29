@@ -467,7 +467,7 @@ function RMDomesticListing(props) {
         if (showExtraData && props.rowIndex === 0) {
             isDeleteButton = true
         } else {
-            if (DeleteAccessibility && !rowData.IsRMAssociated) {
+            if (DeleteAccessibility && !rowData?.IsRMAssociated) {
                 isDeleteButton = true
             }
         }
@@ -999,6 +999,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                        {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName="Source Vendor Name" cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
 
                                         <AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
