@@ -1001,6 +1001,7 @@ function RMIndexationSimulationListing(props) {
                                         <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                         <AgGridColumn field="Category"></AgGridColumn>
                                         <AgGridColumn field="MaterialType"></AgGridColumn>
+                                        {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName='Source Vendor Name' cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field={props.isCostingSimulation ? 'PlantCode' : "DestinationPlantName"} headerName="Plant (Code)"></AgGridColumn>
                                         <AgGridColumn field={props.isCostingSimulation ? 'VendorCode' : "VendorName"} headerName="Vendor (Code)"></AgGridColumn>
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
