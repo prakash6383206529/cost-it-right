@@ -38,6 +38,8 @@ function AddRMFinancialDetails(props) {
     //         ScrapRatePerScrapUOM: ''
     //     },
     // });
+    const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
+
     const [state, setState] = useState({
         inputLoader: false,
         showErrorOnFocus: false,
@@ -101,7 +103,6 @@ function AddRMFinancialDetails(props) {
     })
     const dispatch = useDispatch()
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
-    const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const frequncySettlementList = useSelector((state) => state.comman.frequencyOfSettlement)
     const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList);
@@ -157,7 +158,9 @@ function AddRMFinancialDetails(props) {
             checkTechnology()
         }
     }, [rawMaterailDetails?.Technology])
-
+    useEffect(() => {
+        setState(prevState => ({ ...prevState, isShowIndexCheckBox: rawMaterailDetails?.isShowIndexCheckBox }))
+    }, [rawMaterailDetails?.isShowIndexCheckBox])
     useEffect(() => {
         handleVendor()
     }, [rawMaterailDetails?.Vendor])
@@ -180,9 +183,9 @@ function AddRMFinancialDetails(props) {
         }
     }, [fieldValuesDomestic, state.totalOtherCost])
     useEffect(() => {
-        if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
+        if (props?.DataToChange) {
             let Data = props?.DataToChange
-            setValue('UnitOfMeasurement', { label: Data.UnitOfMeasurementName, value: Data.UOM })
+            setValue('UnitOfMeasurement', { label: Data?.UnitOfMeasurementName, value: Data?.UOM })
             setValue('cutOffPriceSelectedCurrency', Data?.CutOffPrice)
             setValue('cutOffPriceBaseCurrency', states.isImport ? Data?.CutOffPriceInINR : Data?.CutOffPrice)
             setValue('BasicRateSelectedCurrency', Data?.BasicRatePerUOM)
@@ -203,8 +206,8 @@ function AddRMFinancialDetails(props) {
             setValue('NetLandedCostBaseCurrency', states.isImport ? Data?.NetLandedCostConversion : Data?.NetLandedCost)
             setValue('FinalConditionCostSelectedCurrency', Data?.NetConditionCost)
             setValue('FinalConditionCostBaseCurrency', states.isImport ? Data?.NetConditionCostConversion : Data?.NetConditionCost)
-            setValue('ScrapRateUOM', { label: Data.ScrapUnitOfMeasurement, value: Data.ScrapUnitOfMeasurementId })
-            setValue('CalculatedFactor', Data.CalculatedFactor)
+            setValue('ScrapRateUOM', { label: Data?.ScrapUnitOfMeasurement, value: Data?.ScrapUnitOfMeasurementId })
+            setValue('CalculatedFactor', Data?.CalculatedFactor)
             setValue('effectiveDate', DayTime(Data?.EffectiveDate).$d)
             setValue('CircleScrapCostSelectedCurrency', Data?.JaliScrapCost)
             setValue('CircleScrapCostBaseCurrency', states.isImport ? Data?.JaliScrapCostConversion : Data?.JaliScrapCost)
@@ -213,26 +216,26 @@ function AddRMFinancialDetails(props) {
             setValue('MachiningScrapBaseCurrency', states.isImport ? Data?.MachiningScrapRateInINR : Data?.MachiningScrapRate)
             setValue('JaliScrapCostBaseCurrency', Data?.ScrapRate)
             setValue('ForgingScrapBaseCurrency', Data?.ScrapRate)
-            setValue('frequencyOfSettlement', { label: Data.FrequencyOfSettlement, value: Data.FrequencyOfSettlementId })
+            setValue('frequencyOfSettlement', { label: Data?.FrequencyOfSettlement, value: Data?.FrequencyOfSettlementId })
             setValue('fromDate', DayTime(Data?.FromDate).$d)
             setValue('toDate', DayTime(Data?.ToDate).$d)
             setValue('OtherCostBaseCurrency', Data?.OtherNetCostConversion)
-            setValue('Index', { label: Data.IndexExchangeName, value: Data.IndexExchangeId })
-            setValue('ExchangeSource', { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName })
+            setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
+            setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
             setState(prevState => ({
                 ...prevState,
                 effectiveDate: DayTime(Data?.EffectiveDate).$d,
-                sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
-                UOM: { label: Data.UnitOfMeasurementName, value: Data.UOM },
-                IsApplyHasDifferentUOM: Data.IsScrapUOMApply,
-                ScrapRateUOM: { label: Data.ScrapUnitOfMeasurement, value: Data.ScrapUnitOfMeasurementId },
+                sourceLocation: Data?.SourceSupplierLocationName !== undefined ? { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation } : [],
+                UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UOM },
+                IsApplyHasDifferentUOM: Data?.IsScrapUOMApply,
+                ScrapRateUOM: { label: Data?.ScrapUnitOfMeasurement, value: Data?.ScrapUnitOfMeasurementId },
                 FinalConditionCostSelectedCurrency: Data?.NetConditionCost,
                 FinalConditionCostBaseCurrency: states.isImport ? Data?.NetConditionCostConversion : Data?.NetConditionCost,
                 conditionTableData: Data?.RawMaterialConditionsDetails,
-                currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
+                currency: Data?.Currency !== undefined ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
                 showCurrency: true,
-                currencyValue: Data.CurrencyExchangeRate,
-                calculatedFactor: Data.CalculatedFactor,
+                currencyValue: Data?.CurrencyExchangeRate,
+                calculatedFactor: Data?.CalculatedFactor,
                 otherCostTableData: Data?.RawMaterialOtherCostDetails,
                 isShowIndexCheckBox: Data?.IsIndexationDetails,
                 totalOtherCost: Data?.OtherNetCostConversion,
@@ -942,7 +945,7 @@ function AddRMFinancialDetails(props) {
 
     return (
         <Fragment>
-            <Row >
+            {/* <Row >
                 <Col md="6" className='d-flex align-items-center mb-3'>
                     {getConfigurationKey().IsShowMaterialIndexation && (
                         <label id="AddRMDomestic_HasDifferentSource"
@@ -963,7 +966,7 @@ function AddRMFinancialDetails(props) {
                         </label>
                     )}
                 </Col>
-            </Row>
+            </Row> */}
             {state.isShowIndexCheckBox && <>
 
                 {RMIndex && <Row className="mb-3 accordian-container">
@@ -1127,6 +1130,7 @@ function AddRMFinancialDetails(props) {
                         commodityDetails={props.commodityDetails}
                         isViewFlag={isViewFlag}
                         setTotalBasicRate={setTotalBasicRate}
+                        disableAll={disableAll}
                     />
                 </Row>}
             </>
@@ -1643,7 +1647,7 @@ function AddRMFinancialDetails(props) {
                                             className={"right mt-3 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : true ? "plus-icon-square" : "blurPlus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
-                                            disabled={disableAll || isViewFlag}
+                                            disabled={isViewFlag}
                                         />}
                                     </div>
                                 </Col>}
@@ -1670,7 +1674,7 @@ function AddRMFinancialDetails(props) {
                                             className={"right mt-3 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
-                                            disabled={disableAll || !getValues('BasicRateBaseCurrency')}
+                                            disabled={!getValues('BasicRateBaseCurrency')}
                                         />}
                                     </div>
                                 </Col>

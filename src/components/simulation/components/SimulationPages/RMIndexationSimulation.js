@@ -885,8 +885,8 @@ function RMIndexationSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.OldBasicRate :
-                        <span title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : Number(row.BasicRatePerUOM)} </span>
+                        checkForDecimalAndNull(Number(row.BasicRatePerUOM), getConfigurationKey().NoOfDecimalForPrice) :
+                        <span title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row.BasicRatePerUOM), getConfigurationKey().NoOfDecimalForPrice)} </span>
 
                 }
                 {!isCostingSimulation && <button

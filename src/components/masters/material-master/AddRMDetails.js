@@ -71,6 +71,7 @@ function AddRMDetails(props) {
         isOpenAssociation: false,
         isVendorAccOpen: true,
         commodityDetails: [],
+        isShowIndexCheckBox: false
     });
 
     const dispatch = useDispatch()
@@ -110,47 +111,48 @@ function AddRMDetails(props) {
         }
     }, [states.costingTypeId])
     useEffect(() => {
-        console.log(props?.DataToChange, "props?.DataToChange");
-        if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
-            let plantArray = [];
-            let Data = props?.DataToChange
-            Data && Data?.Plant.map((item) => {
-                plantArray.push({ label: item?.PlantName, value: item?.PlantId })
-                return plantArray;
-            })
-            setValue('Technology', { label: Data.TechnologyName, value: Data.TechnologyId })
-            setValue('Plants', plantArray)
-            setValue('RawMaterialName', { label: Data.RawMaterialName, value: Data.RawMaterialId })
-            setValue('RawMaterialGrade', { label: Data.RawMaterialGradeName, value: Data.RMGrade })
-            setValue('RawMaterialSpecification', { label: Data.RawMaterialSpecificationName, value: Data.RMSpec })
-            setValue('RawMaterialCategory', { label: Data.RawMaterialCategoryName, value: Data.Category })
-            setValue('RawMaterialCode', { label: Data.RawMaterialCode, value: Data.RMSpec })
-            setValue('Vendor', { label: Data.VendorName, value: Data.Vendor })
-            setValue('Source', Data.Source)
-            setValue('SourceLocation', { label: Data.SourceSupplierLocationName, value: Data.SourceLocation })
-            setValue('clientName', { label: Data.CustomerName, value: Data.CustomerId })
-            setValue('Index', { label: Data.IndexExchangeName, value: Data.IndexExchangeId })
-            setValue('ExchangeSource', { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName })
-            setValue('Material', { label: Data.MaterialType, value: Data.MaterialId })
-            console.log(Data.SourceVendorName, "Data.SourceVendorName");
-            setValue('sourceVendorName', Data?.IsSourceVendor ? { label: Data.SourceVendorName, value: Data.SourceVendorId } : [])
-            dispatch(SetRawMaterialDetails({ Technology: { label: Data.TechnologyName, value: Data.TechnologyId }, SourceVendor: Data?.IsSourceVendor ? { label: Data.SourceVendorName, value: Data.SourceVendorId } : [] }, () => { }))
-            setState(prevState => ({
-                ...prevState,
-                technology: { label: Data.TechnologyName, value: Data.TechnologyId },
-                plants: plantArray,
-                rmName: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialId } : [],
-                rmGrade: Data.RawMaterialGradeName !== undefined ? { label: Data.RawMaterialGradeName, value: Data.RMGrade } : [],
-                rmSpec: Data.RawMaterialSpecificationName !== undefined ? { label: Data.RawMaterialSpecificationName, value: Data.RMSpec } : [],
-                rmCategory: Data.RawMaterialCategoryName !== undefined ? { label: Data.RawMaterialCategoryName, value: Data.Category } : [],
-                rmCode: Data.RMCode !== undefined ? { label: Data.RawMaterialCode, value: Data.RMSpec } : [],
-                vendor: { label: Data.VendorName, value: Data.Vendor },
-                HasDifferentSource: Data.HasDifferentSource,
-                source: Data.Source,
-                sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
-                customer: { label: Data.CustomerName, value: Data.CustomerId },
-                sourceVendor: Data?.IsSourceVendor ? { label: Data.SourceVendorName, value: Data.SourceVendorId } : []
-            }))
+        if (!isEditFlag && !isViewFlag) {
+            if (props?.DataToChange) {
+                let plantArray = [];
+                let Data = props?.DataToChange
+                Data && Data?.Plant?.map((item) => {
+                    plantArray.push({ label: item?.PlantName, value: item?.PlantId })
+                    return plantArray;
+                })
+                setValue('Technology', { label: Data?.TechnologyName, value: Data?.TechnologyId })
+                setValue('Plants', plantArray)
+                setValue('RawMaterialName', { label: Data?.RawMaterialName, value: Data?.RawMaterialId })
+                setValue('RawMaterialGrade', { label: Data?.RawMaterialGradeName, value: Data?.RMGrade })
+                setValue('RawMaterialSpecification', { label: Data?.RawMaterialSpecificationName, value: Data?.RMSpec })
+                setValue('RawMaterialCategory', { label: Data?.RawMaterialCategoryName, value: Data?.Category })
+                setValue('RawMaterialCode', { label: Data?.RawMaterialCode, value: Data?.RMSpec })
+                setValue('Vendor', { label: Data?.VendorName, value: Data?.Vendor })
+                setValue('Source', Data?.Source)
+                setValue('SourceLocation', { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation })
+                setValue('clientName', { label: Data?.CustomerName, value: Data?.CustomerId })
+                setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
+                setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
+                setValue('Material', { label: Data?.MaterialType, value: Data?.MaterialId })
+                console.log(Data.SourceVendorName, "Data.SourceVendorName");
+                setValue('sourceVendorName', Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [])
+                dispatch(SetRawMaterialDetails({ Technology: { label: Data?.TechnologyName, value: Data?.TechnologyId }, SourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [] }, () => { }))
+                setState(prevState => ({
+                    ...prevState,
+                    technology: { label: Data?.TechnologyName, value: Data?.TechnologyId },
+                    plants: plantArray,
+                    rmName: Data?.RawMaterialName !== undefined ? { label: Data?.RawMaterialName, value: Data?.RawMaterialId } : [],
+                    rmGrade: Data?.RawMaterialGradeName !== undefined ? { label: Data?.RawMaterialGradeName, value: Data?.RMGrade } : [],
+                    rmSpec: Data?.RawMaterialSpecificationName !== undefined ? { label: Data?.RawMaterialSpecificationName, value: Data?.RMSpec } : [],
+                    rmCategory: Data?.RawMaterialCategoryName !== undefined ? { label: Data?.RawMaterialCategoryName, value: Data?.Category } : [],
+                    rmCode: Data?.RMCode !== undefined ? { label: Data?.RawMaterialCode, value: Data?.RMSpec } : [],
+                    vendor: { label: Data?.VendorName, value: Data?.Vendor },
+                    HasDifferentSource: Data?.HasDifferentSource,
+                    source: Data?.Source,
+                    sourceLocation: Data?.SourceSupplierLocationName !== undefined ? { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation } : [],
+                    customer: { label: Data?.CustomerName, value: Data?.CustomerId },
+                    sourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : []
+                }))
+            }
         }
     }, [])
     useEffect(() => {
@@ -616,6 +618,10 @@ function AddRMDetails(props) {
     const openVendorAcc = () => {
         setState(prevState => ({ ...prevState, isVendorAccOpen: !state.isVendorAccOpen }))
     }
+    const isShowIndexCheckBox = () => {
+        setState(prevState => ({ ...prevState, isShowIndexCheckBox: !state.isShowIndexCheckBox }))
+        dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: !state.isShowIndexCheckBox }, () => { }))
+    }
     return (
         <Fragment>
             {/* <Row> */}
@@ -777,6 +783,30 @@ function AddRMDetails(props) {
                             </Col>
                         </>)
                         )}
+                        {/* <Row > */}
+                        <Col md="3" className="mt-4 pt-2">
+                            <div className=" flex-fills d-flex justify-content-between align-items-center">
+                                {getConfigurationKey().IsShowMaterialIndexation && (
+                                    <label id="AddRMDomestic_HasDifferentSource"
+                                        className={`custom-checkbox w-auto mb-0 `}
+                                        onChange={isShowIndexCheckBox}
+                                    >
+                                        RM Indexation
+                                        <input
+                                            type="checkbox"
+                                            checked={state.isShowIndexCheckBox}
+                                            disabled={isViewFlag}
+                                        />
+                                        <span
+                                            className=" before-box p-0"
+                                            checked={state.isShowIndexCheckBox}
+                                            onChange={isShowIndexCheckBox}
+                                        />
+                                    </label>
+                                )}
+                            </div>
+                        </Col>
+                        {/* </Row> */}
                         {states.costingTypeId === CBCTypeId && (
                             <>
                                 <Col className="col-md-15">
@@ -850,7 +880,7 @@ function AddRMDetails(props) {
                         <Col md="3" className="mt-4 pt-2">
                             <div className=" flex-fills d-flex justify-content-between align-items-center">
                                 {/* <h5>{"Vendor:"}</h5> */}
-                                {states.costingTypeId !== VBCTypeId && (
+                                {!getConfigurationKey().IsShowSourceVendorInRawMaterial && (
                                     <label id="AddRMDomestic_HasDifferentSource"
                                         className={`custom-checkbox w-auto mb-0 ${(states.costingTypeId === VBCTypeId) ? "disabled" : ""
                                             }`}
@@ -873,10 +903,10 @@ function AddRMDetails(props) {
                         </Col>
                     </>
                     )}
-                    {((state.HasDifferentSource || states.costingTypeId === VBCTypeId)) && (
+                    {states.costingTypeId === VBCTypeId && (
                         <>
                             {getConfigurationKey().IsShowSourceVendorInRawMaterial && <Col md="3">
-                                <label>{"Source Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                                <label>{"Source Vendor (Code)"}</label>
                                 <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                     <div className="fullinput-icon p-relative">
                                         {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -894,7 +924,7 @@ function AddRMDetails(props) {
                                         />
                                     </div>
                                 </div>
-                                {((state.showErrorOnFocus && state.vendor?.length === 0)) && <div className='text-help mt-1'>This field is required.</div>}
+                                {/* {((state.showErrorOnFocus && state.vendor?.length === 0)) && <div className='text-help mt-1'>This field is required.</div>} */}
                             </Col>}
                             {!getConfigurationKey().IsShowSourceVendorInRawMaterial && <>
                                 <Col md="3">
