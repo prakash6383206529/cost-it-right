@@ -433,7 +433,7 @@ function RMIndexationSimulation(props) {
             setCommodityDetailsData(row?.NewMaterialCommodityIndexRateDetails)
             setOtherCostDetailForRow(row?.NewRawMaterialOtherCostDetails)
 
-            setIsViewFlag(isRunSimulationClicked || isApprovalSummary ? true : false)
+            setIsViewFlag((row?.IsSourceVendor === true || isRunSimulationClicked || isApprovalSummary) ? true : false)
             setEditIndex(index)
         }
 
@@ -466,7 +466,7 @@ function RMIndexationSimulation(props) {
 
             setTotalBasicRate(basicRate)
             setOtherCostDetailForRow(row?.NewRawMaterialOtherCostDetails)
-            setIsViewFlag(isRunSimulationClicked || isApprovalSummary ? true : false)
+            setIsViewFlag((row?.IsSourceVendor === true || isRunSimulationClicked || isApprovalSummary) ? true : false)
             setEditIndex(index)
         }
         setOpenOtherCostDrawer(true)
