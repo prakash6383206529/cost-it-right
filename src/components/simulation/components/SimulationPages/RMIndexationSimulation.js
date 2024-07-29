@@ -467,7 +467,7 @@ function RMIndexationSimulation(props) {
 
             setTotalBasicRate(basicRate)
             setOtherCostDetailForRow(row?.NewRawMaterialOtherCostDetails)
-            setIsViewFlag((row?.IsSourceVendor === true || isRunSimulationClicked || isApprovalSummary) ? true : false)
+            setIsViewFlag((isRunSimulationClicked || isApprovalSummary) ? true : false)
             setEditIndex(index)
         }
         setOpenOtherCostDrawer(true)
