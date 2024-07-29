@@ -183,7 +183,7 @@ function AddRMFinancialDetails(props) {
         }
     }, [fieldValuesDomestic, state.totalOtherCost])
     useEffect(() => {
-        if (props?.DataToChange) {
+        if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
             let Data = props?.DataToChange
             setValue('UnitOfMeasurement', { label: Data?.UnitOfMeasurementName, value: Data?.UOM })
             setValue('cutOffPriceSelectedCurrency', Data?.CutOffPrice)
@@ -220,6 +220,7 @@ function AddRMFinancialDetails(props) {
             setValue('fromDate', DayTime(Data?.FromDate).$d)
             setValue('toDate', DayTime(Data?.ToDate).$d)
             setValue('OtherCostBaseCurrency', Data?.OtherNetCostConversion)
+            console.log('Data?.OtherNetCostConversion: ', Data?.OtherNetCostConversion);
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
             setState(prevState => ({

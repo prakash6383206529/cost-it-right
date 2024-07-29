@@ -65,8 +65,10 @@ function AddRMMaster(props) {
         sourceVendorRawMaterialId: null,
         isSourceVendor: false,
     })
+
     const isViewFlag = data?.isViewFlag === true ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
+
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { otherCostDetailsArray } = useSelector((state) => state.indexation)
 
@@ -82,8 +84,12 @@ function AddRMMaster(props) {
         control,
         name: ['RawMaterialGrade']
     })
+
     useEffect(() => {
-        if (!state.isSourceVendor && !isViewFlag && rawMaterailDetails?.SourceVendor?.value && getValues('RawMaterialSpecification') && getValues('Technology')) {
+
+        console.log('state.sourceVendorRawMaterialId: ', state.sourceVendorRawMaterialId);
+        if (!isViewFlag && !state.sourceVendorRawMaterialId && rawMaterailDetails?.SourceVendor?.value && getValues('RawMaterialSpecification') && getValues('Technology')) {
+
             let data = {
                 rawMaterialSpecificationId: getValues('RawMaterialSpecification')?.value,
                 sourceVendorId: rawMaterailDetails?.SourceVendor?.value,
@@ -92,14 +98,23 @@ function AddRMMaster(props) {
                 costingHeadId: state.costingTypeId
             }
             dispatch(getRawMaterialDataBySourceVendor(data, (res) => {
+
                 let Data = res?.data?.Data
+
                 if (res?.status === 200) {
                     setState(prevState => ({
-                        ...prevState, isSourceVendorApiCalled: true, sourceVendorRawMaterialId: Data?.RawMaterialId, DataToChange: Data, disableAll: true, isLoader: false, commodityDetails: Data?.MaterialCommodityIndexRateDetails
+                        ...prevState,
+                        isSourceVendorApiCalled: true,
+                        sourceVendorRawMaterialId: Data?.RawMaterialId,
+                        DataToChange: Data,
+                        disableAll: true,
+                        isLoader: false,
+                        commodityDetails: Data?.MaterialCommodityIndexRateDetails
                     }))
                     dispatch(setOtherCostDetails(Data?.RawMaterialOtherCostDetails))
                     dispatch(setCommodityDetails(Data?.MaterialCommodityIndexRateDetails))
                 } else {
+
                     setState(prevState => ({
                         ...prevState, isSourceVendorApiCalled: true, sourceVendorRawMaterialId: null, DataToChange: {}, disableAll: false, isLoader: false, commodityDetails: []
                     }))
@@ -108,7 +123,7 @@ function AddRMMaster(props) {
                 }
             }))
         }
-    }, [soruceVendorValues, rawMaterailDetails?.SourceVendor, rawMaterailDetails?.isShowIndexCheckBox, state.costingTypeId, state.isSourceVendor])
+    }, [soruceVendorValues, rawMaterailDetails?.SourceVendor, rawMaterailDetails?.isShowIndexCheckBox, state.costingTypeId])
 
     useEffect(() => {
         if (!isViewFlag && state.callAvgApi === true && getValues('Material')?.value !== null && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate') && !state?.isSourceVendorApiCalled) {
@@ -171,10 +186,7 @@ function AddRMMaster(props) {
     useEffect(() => {
         getDetails(data)
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
-        dispatch(setCommodityDetails([]))
-        setState(prevState => ({
-            ...prevState, isSourceVendorApiCalled: true, sourceVendorRawMaterialId: null, DataToChange: {}, disableAll: false, isLoader: false, commodityDetails: []
-        }))
+
         return () => {
             dispatch(SetRawMaterialDetails({ states: {}, SourceVendor: {}, Technology: {}, ShowScrapKeys: {}, isShowIndexCheckBox: false }, () => { }))
             dispatch(setCommodityDetails([]))
@@ -259,7 +271,7 @@ function AddRMMaster(props) {
                     const Data = res?.data?.Data
                     if (Data && Object.keys(Data).length > 0) {
                         setState(prevState => ({
-                            ...prevState, DataToChange: Data, isImport: Data.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? true : false, isLoader: false, costingTypeId: Data.CostingTypeId, commodityDetails: Data?.MaterialCommodityIndexRateDetails, isSourceVendor: Data?.IsSourceVendor, disableAll: Data?.IsSourceVendor ? true : false
+                            ...prevState, sourceVendorRawMaterialId: Data?.SourceVendorRawMaterialId, DataToChange: Data, isImport: Data.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? true : false, isLoader: false, costingTypeId: Data.CostingTypeId, commodityDetails: Data?.MaterialCommodityIndexRateDetails, isSourceVendor: Data?.IsSourceVendor, disableAll: Data?.IsSourceVendor ? true : false
                         }))
                         dispatch(setOtherCostDetails(Data?.RawMaterialOtherCostDetails))
                         dispatch(setCommodityDetails(Data?.MaterialCommodityIndexRateDetails))
@@ -433,7 +445,7 @@ function AddRMMaster(props) {
             "OtherNetCostConversion": values.OtherCostBaseCurrency,
             "RawMaterialOtherCostDetails": otherCostDetailsArray,
             "IsIndexationDetails": rawMaterailDetails?.isShowIndexCheckBox === true ? true : false,
-            "SourceVendorRawMaterialId": state?.isSourceVendorApiCalled ? state?.sourceVendorRawMaterialId : null,
+            "SourceVendorRawMaterialId": state?.sourceVendorRawMaterialId ?? null,
             "SourceVendorId": rawMaterailDetails?.SourceVendor?.value ?? null
         }
 
@@ -603,7 +615,9 @@ function AddRMMaster(props) {
                             commonFunction={commonFunction}
                             AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
                             EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
-                            disableAll={state.disableAll} />
+                            disableAll={state.disableAll}
+                            isSourceVendorApiCalled={state?.isSourceVendorApiCalled}
+                        />
                         <AddRMFinancialDetails states={state}
                             Controller={Controller}
                             control={control}

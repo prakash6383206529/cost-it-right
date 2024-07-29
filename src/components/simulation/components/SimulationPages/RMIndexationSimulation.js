@@ -915,7 +915,7 @@ function RMIndexationSimulation(props) {
                 }
                 {!isCostingSimulation && <button
                     type="button"
-                    className={`${(isRunSimulationClicked || isApprovalSummary || row?.IsSourceVendor === true) ? 'View small' : ' add-out-sourcing'} `}
+                    className={`${(isRunSimulationClicked || isApprovalSummary) ? 'View small' : ' add-out-sourcing'} `}
                     onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'New')}
                     title="Add"
                 >

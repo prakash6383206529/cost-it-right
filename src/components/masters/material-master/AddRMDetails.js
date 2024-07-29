@@ -111,14 +111,24 @@ function AddRMDetails(props) {
         }
     }, [states.costingTypeId])
     useEffect(() => {
-        if (!isEditFlag && !isViewFlag) {
-            if (props?.DataToChange) {
-                let plantArray = [];
-                let Data = props?.DataToChange
-                Data && Data?.Plant?.map((item) => {
-                    plantArray.push({ label: item?.PlantName, value: item?.PlantId })
-                    return plantArray;
-                })
+        if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
+            let plantArray = [];
+            let Data = props?.DataToChange
+            Data && Data?.Plant?.map((item) => {
+                plantArray.push({ label: item?.PlantName, value: item?.PlantId })
+                return plantArray;
+            })
+
+
+            setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
+            setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
+            setValue('Material', { label: Data?.MaterialType, value: Data?.MaterialId })
+
+            if (!props?.isSourceVendorApiCalled) {
+
+                setValue('Source', Data?.Source)
+                setValue('SourceLocation', { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation })
+                setValue('clientName', { label: Data?.CustomerName, value: Data?.CustomerId })
                 setValue('Technology', { label: Data?.TechnologyName, value: Data?.TechnologyId })
                 setValue('Plants', plantArray)
                 setValue('RawMaterialName', { label: Data?.RawMaterialName, value: Data?.RawMaterialId })
@@ -127,15 +137,9 @@ function AddRMDetails(props) {
                 setValue('RawMaterialCategory', { label: Data?.RawMaterialCategoryName, value: Data?.Category })
                 setValue('RawMaterialCode', { label: Data?.RawMaterialCode, value: Data?.RMSpec })
                 setValue('Vendor', { label: Data?.VendorName, value: Data?.Vendor })
-                setValue('Source', Data?.Source)
-                setValue('SourceLocation', { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation })
-                setValue('clientName', { label: Data?.CustomerName, value: Data?.CustomerId })
-                setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
-                setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
-                setValue('Material', { label: Data?.MaterialType, value: Data?.MaterialId })
-                console.log(Data.SourceVendorName, "Data.SourceVendorName");
                 setValue('sourceVendorName', Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [])
-                dispatch(SetRawMaterialDetails({ Technology: { label: Data?.TechnologyName, value: Data?.TechnologyId }, SourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [] }, () => { }))
+                dispatch(SetRawMaterialDetails({ SourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [], isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
+                dispatch(SetRawMaterialDetails({ Technology: { label: Data?.TechnologyName, value: Data?.TechnologyId }, }, () => { }))
                 setState(prevState => ({
                     ...prevState,
                     technology: { label: Data?.TechnologyName, value: Data?.TechnologyId },
@@ -150,11 +154,12 @@ function AddRMDetails(props) {
                     source: Data?.Source,
                     sourceLocation: Data?.SourceSupplierLocationName !== undefined ? { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation } : [],
                     customer: { label: Data?.CustomerName, value: Data?.CustomerId },
-                    sourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : []
+                    sourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [],
+                    isShowIndexCheckBox: Data?.IsIndexationDetails
                 }))
             }
         }
-    }, [])
+    }, [props?.DataToChange])
     useEffect(() => {
         dispatch(SetRawMaterialDetails({ HasDifferentSource: state.HasDifferentSource }, () => { }))
     }, [state.HasDifferentSource])
@@ -322,10 +327,11 @@ function AddRMDetails(props) {
         if (newValue && newValue !== '') {
             if (newValue.value === state?.vendor?.value) {
                 Toaster.warning('Vendor and Source Vendor cannot be the same');
-                setValue("sourceVendorName", { label: newValue?.label, value: newValue?.value })
+
                 setState(prevState => ({ ...prevState, sourceVendor: [] }));
             } else {
                 setState(prevState => ({ ...prevState, sourceVendor: newValue }));
+                setValue("sourceVendorName", { label: newValue?.label, value: newValue?.value })
                 dispatch(SetRawMaterialDetails({ SourceVendor: newValue }, () => { }));
             }
         } else {
