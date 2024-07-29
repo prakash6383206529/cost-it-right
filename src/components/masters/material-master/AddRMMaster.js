@@ -172,6 +172,9 @@ function AddRMMaster(props) {
         getDetails(data)
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
         dispatch(setCommodityDetails([]))
+        setState(prevState => ({
+            ...prevState, isSourceVendorApiCalled: true, sourceVendorRawMaterialId: null, DataToChange: {}, disableAll: false, isLoader: false, commodityDetails: []
+        }))
         return () => {
             dispatch(SetRawMaterialDetails({ states: {}, SourceVendor: {}, Technology: {}, ShowScrapKeys: {}, isShowIndexCheckBox: false }, () => { }))
             dispatch(setCommodityDetails([]))
