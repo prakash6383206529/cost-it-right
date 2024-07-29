@@ -463,7 +463,8 @@ function AddRMMaster(props) {
             "OtherNetCostConversion": values.OtherCostBaseCurrency,
             "RawMaterialOtherCostDetails": otherCostDetailsArray,
             "IsIndexationDetails": rawMaterailDetails?.isShowIndexCheckBox === true ? true : false,
-            "SourceVendorRawMaterialId": state?.isSourceVendorApiCalled ? state?.sourceVendorRawMaterialId : null
+            "SourceVendorRawMaterialId": state?.isSourceVendorApiCalled ? state?.sourceVendorRawMaterialId : null,
+            "SourceVendorId": rawMaterailDetails?.SourceVendor?.value ?? null
         }
 
 
