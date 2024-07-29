@@ -31,6 +31,7 @@ import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import HeaderTitle from "../../common/HeaderTitle"
 import Association from "./Association"
 import { getAssociatedMaterial, getAssociatedMaterialDetails, getIndexSelectList } from "../actions/Indexation"
+
 function AddRMDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -131,7 +132,9 @@ function AddRMDetails(props) {
             setValue('Index', { label: Data.IndexExchangeName, value: Data.IndexExchangeId })
             setValue('ExchangeSource', { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName })
             setValue('Material', { label: Data.MaterialType, value: Data.MaterialId })
-            dispatch(SetRawMaterialDetails({ Technology: { label: Data.TechnologyName, value: Data.TechnologyId } }, () => { }))
+            console.log(Data.SourceVendorName, "Data.SourceVendorName");
+            setValue('sourceVendorName', Data?.IsSourceVendor ? { label: Data.SourceVendorName, value: Data.SourceVendorId } : [])
+            dispatch(SetRawMaterialDetails({ Technology: { label: Data.TechnologyName, value: Data.TechnologyId }, SourceVendor: Data?.IsSourceVendor ? { label: Data.SourceVendorName, value: Data.SourceVendorId } : [] }, () => { }))
             setState(prevState => ({
                 ...prevState,
                 technology: { label: Data.TechnologyName, value: Data.TechnologyId },
@@ -146,6 +149,7 @@ function AddRMDetails(props) {
                 source: Data.Source,
                 sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
                 customer: { label: Data.CustomerName, value: Data.CustomerId },
+                sourceVendor: Data?.IsSourceVendor ? { label: Data.SourceVendorName, value: Data.SourceVendorId } : []
             }))
         }
     }, [])
@@ -316,6 +320,7 @@ function AddRMDetails(props) {
         if (newValue && newValue !== '') {
             if (newValue.value === state?.vendor?.value) {
                 Toaster.warning('Vendor and Source Vendor cannot be the same');
+                setValue("sourceVendorName", { label: newValue?.label, value: newValue?.value })
                 setState(prevState => ({ ...prevState, sourceVendor: [] }));
             } else {
                 setState(prevState => ({ ...prevState, sourceVendor: newValue }));
