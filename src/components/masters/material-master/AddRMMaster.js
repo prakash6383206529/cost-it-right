@@ -28,7 +28,7 @@ import MasterSendForApproval from "../MasterSendForApproval";
 import WarningMessage from "../../common/WarningMessage";
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import HeaderTitle from "../../common/HeaderTitle";
-import { setCommodityDetails, setOtherCostDetails } from "../actions/Indexation";
+import { getRawMaterialDataBySourceVendor, setCommodityDetails, setOtherCostDetails } from "../actions/Indexation";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
@@ -60,6 +60,9 @@ function AddRMMaster(props) {
         totalBasicRate: 0,
         materialCommodityIndexRateDetails: [],
         callAvgApi: false,
+        disableAll: false,
+        isSourceVendorApiCalled: false,
+        sourceVendorRawMaterialId: null
     })
     const isViewFlag = data?.isViewFlag ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
@@ -70,13 +73,78 @@ function AddRMMaster(props) {
         control,
         name: ['Material', 'Index', 'ExchangeSource', 'fromDate', 'toDate']
     })
+    const soruceVendorValues = useWatch({
+        control,
+        name: ['RawMaterialSpecification', 'Technology', 'sourceVendorName']
+    })
     const fieldValueGrade = useWatch({
         control,
         name: ['RawMaterialGrade']
     })
+    useEffect(() => {
+        if (!isViewFlag && rawMaterailDetails?.SourceVendor?.value && getValues('RawMaterialSpecification') && getValues('Technology')) {
+            let data = {
+                rawMaterialSpecificationId: getValues('RawMaterialSpecification')?.value,
+                sourceVendorId: rawMaterailDetails?.SourceVendor?.value,
+                technologyId: getValues('Technology')?.value,
+                isIndexationDetails: rawMaterailDetails?.isShowIndexCheckBox,
+                costingHeadId: state.costingTypeId
+            }
+            dispatch(getRawMaterialDataBySourceVendor(data, (res) => {
+                let Data = res?.data?.Data
+                console.log('Data: ', Data);
+                setState(prevState => ({
+                    ...prevState, isSourceVendorApiCalled: true, sourceVendorRawMaterialId: Data?.RawMaterialId, DataToChange: Data, disableAll: true, isLoader: false, commodityDetails: Data?.MaterialCommodityIndexRateDetails
+                }))
+                dispatch(setOtherCostDetails(Data?.RawMaterialOtherCostDetails))
+                dispatch(setCommodityDetails(Data?.MaterialCommodityIndexRateDetails))
+                // setValue('UnitOfMeasurement', { label: Data.UnitOfMeasurementName, value: Data.UOM })
+                // setValue('cutOffPriceSelectedCurrency', Data?.CutOffPrice)
+                // setValue('cutOffPriceBaseCurrency', state.isImport ? Data?.CutOffPriceInINR : Data?.CutOffPrice)
+                // setValue('BasicRateSelectedCurrency', Data?.BasicRatePerUOM)
+                // setValue('BasicRateBaseCurrency', state.isImport ? Data?.BasicRatePerUOMConversion : Data?.BasicRatePerUOM)
+                // setValue('ScrapRatePerScrapUOM', Data?.ScrapRatePerScrapUOM)
+                // setValue('ScrapRatePerScrapUOMBaseCurrency', state.isImport ? Data?.ScrapRatePerScrapUOMConversion : Data?.ScrapRatePerScrapUOM)
+                // setValue('ScrapRateSelectedCurrency', Data?.ScrapRate)
+                // setValue('ScrapRateBaseCurrency', state.isImport ? Data?.ScrapRateInINR : Data?.ScrapRate)
+                // setValue('ShearingCostSelectedCurrency', Data?.RMShearingCost)
+                // setValue('ShearingCostBaseCurrency', state.isImport ? Data?.RawMaterialShearingCostConversion : Data?.RMShearingCost)
+                // setValue('FreightChargeSelectedCurrency', Data?.RMFreightCost)
+                // setValue('FreightChargeBaseCurrency', state.isImport ? Data?.RawMaterialFreightCostConversion : Data?.RMFreightCost)
+                // setValue('ConversionRatio', Data?.UOMToScrapUOMRatio)
+                // setValue('UOMToScrapUOMRatio', Data?.UOMToScrapUOMRatio)
+                // setValue('BasicPriceSelectedCurrency', Data?.NetCostWithoutConditionCost)
+                // setValue('BasicPriceBaseCurrency', state.isImport ? Data?.NetCostWithoutConditionCostConversion : Data?.NetCostWithoutConditionCost)
+                // setValue('NetLandedCostSelectedCurrency', Data?.NetLandedCost)
+                // setValue('NetLandedCostBaseCurrency', state.isImport ? Data?.NetLandedCostConversion : Data?.NetLandedCost)
+                // setValue('FinalConditionCostSelectedCurrency', Data?.NetConditionCost)
+                // setValue('FinalConditionCostBaseCurrency', state.isImport ? Data?.NetConditionCostConversion : Data?.NetConditionCost)
+                // setValue('ScrapRateUOM', { label: Data.ScrapUnitOfMeasurement, value: Data.ScrapUnitOfMeasurementId })
+                // setValue('CalculatedFactor', Data.CalculatedFactor)
+                // setValue('effectiveDate', DayTime(Data?.EffectiveDate).$d)
+                // setValue('CircleScrapCostSelectedCurrency', Data?.JaliScrapCost)
+                // setValue('CircleScrapCostBaseCurrency', state.isImport ? Data?.JaliScrapCostConversion : Data?.JaliScrapCost)
+                // setValue('currency', { label: Data?.Currency, value: Data?.CurrencyId })
+                // setValue('MachiningScrapSelectedCurrency', Data?.MachiningScrapRate)
+                // setValue('MachiningScrapBaseCurrency', state.isImport ? Data?.MachiningScrapRateInINR : Data?.MachiningScrapRate)
+                // setValue('JaliScrapCostBaseCurrency', Data?.ScrapRate)
+                // setValue('ForgingScrapBaseCurrency', Data?.ScrapRate)
+                // setValue('frequencyOfSettlement', { label: Data.FrequencyOfSettlement, value: Data.FrequencyOfSettlementId })
+                // setValue('fromDate', DayTime(Data?.FromDate).$d)
+                // setValue('toDate', DayTime(Data?.ToDate).$d)
+                // setValue('OtherCostBaseCurrency', Data?.OtherNetCostConversion)
+                // setValue('Index', { label: Data.IndexExchangeName, value: Data.IndexExchangeId })
+                // setValue('ExchangeSource', { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName })
+                // setValue('Material', { label: Data.MaterialType, value: Data.MaterialId })
+                // dispatch(SetRawMaterialDetails({ Technology: { label: Data.TechnologyName, value: Data.TechnologyId } }, () => { }))
+                // setState(prevState => ({ ...prevState, disableAll: true, commodityDetails: Data.MaterialCommodityIndexRateDetails }));
+                // dispatch(setCommodityDetails(Data.MaterialCommodityIndexRateDetails))
+            }))
+        }
+    }, [soruceVendorValues, rawMaterailDetails?.SourceVendor, rawMaterailDetails?.isShowIndexCheckBox, state.costingTypeId])
 
     useEffect(() => {
-        if (!isViewFlag && state.callAvgApi === true && getValues('Material')?.value !== null && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate')) {
+        if (!isViewFlag && state.callAvgApi === true && getValues('Material')?.value !== null && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate') && !state?.isSourceVendorApiCalled) {
             dispatch(getCommodityIndexRateAverage(
                 getValues('Material')?.value,
                 getValues('Index').value,
@@ -138,7 +206,7 @@ function AddRMMaster(props) {
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
         dispatch(setCommodityDetails([]))
         return () => {
-            dispatch(SetRawMaterialDetails({ states: {}, Technology: {}, ShowScrapKeys: {}, isShowIndexCheckBox: false }, () => { }))
+            dispatch(SetRawMaterialDetails({ states: {}, SourceVendor: {}, Technology: {}, ShowScrapKeys: {}, isShowIndexCheckBox: false }, () => { }))
             dispatch(setCommodityDetails([]))
             dispatch(setOtherCostDetails([]))
         }
@@ -206,9 +274,9 @@ function AddRMMaster(props) {
         setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
     }
     /**
- * @method getDetails
- * @description Used to get Details
- */
+    * @method getDetails
+    * @description Used to get Details
+    */
     const getDetails = (data) => {
 
         if (data && data.isEditFlag) {
@@ -252,9 +320,9 @@ function AddRMMaster(props) {
         }
     }
     /**
-* @method onRmToggle
-* @description RM TOGGLE
-*/
+    * @method onRmToggle
+    * @description RM TOGGLE
+    */
     const onRmToggle = () => {
         setState(prevState => ({ ...prevState, isImport: !prevState.isImport }))
     }
@@ -394,7 +462,8 @@ function AddRMMaster(props) {
             "OtherNetCost": values.OtherCostBaseCurrency,
             "OtherNetCostConversion": values.OtherCostBaseCurrency,
             "RawMaterialOtherCostDetails": otherCostDetailsArray,
-            "IsIndexationDetails": rawMaterailDetails?.isShowIndexCheckBox === true ? true : false
+            "IsIndexationDetails": rawMaterailDetails?.isShowIndexCheckBox === true ? true : false,
+            "SourceVendorRawMaterialId": state?.isSourceVendorApiCalled ? state?.sourceVendorRawMaterialId : null
         }
 
 
@@ -559,7 +628,8 @@ function AddRMMaster(props) {
                             data={data}
                             commonFunction={commonFunction}
                             AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
-                            EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE} />
+                            EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
+                            disableAll={state.disableAll} />
                         <AddRMFinancialDetails states={state}
                             Controller={Controller}
                             control={control}
@@ -572,6 +642,7 @@ function AddRMMaster(props) {
                             data={data}
                             totalBasicRate={state.totalBasicRate}
                             commodityDetails={state.commodityDetails}
+                            disableAll={state.disableAll}
                         />
                         <RemarksAndAttachments Controller={Controller}
                             control={control}
@@ -581,7 +652,8 @@ function AddRMMaster(props) {
                             errors={errors}
                             useWatch={useWatch}
                             DataToChange={state.DataToChange}
-                            data={data} />
+                            data={data}
+                            disableAll={state.disableAll} />
                     </div>
                     <Row className="sf-btn-footer no-gutters justify-content-between sticky-btn-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">

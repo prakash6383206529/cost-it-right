@@ -109,6 +109,7 @@ export const API = {
   getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
   getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
   getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
+  getRawMaterialDataBySourceVendor: `${BASE_URL}/masters-raw-material/get-source-vendor-raw-material-by-id`,
 
   // INDEXATION SIMULATION
   getRMIndexationSimulationListing: `${BASE_URL}/simulation/get-raw-material-records-for-simulation`,
@@ -3200,7 +3201,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.15";
+export const VERSION = "V3.0.16";
 
 
 
