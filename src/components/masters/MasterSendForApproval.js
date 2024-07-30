@@ -28,8 +28,9 @@ import NoContentFound from '../common/NoContentFound';
 function MasterSendForApproval(props) {
     
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
-    
-    const RFQPlantId = approvalObj ? approvalObj[0]?.Plant[0]?.PlantId : ''
+        const RFQPlantId = props.partType === 'RawMaterial' ? (approvalObj && approvalObj[0]?.Plant && approvalObj[0]?.Plant[0]?.PlantId)  : approvalObj[0]?.PlantId
+
+    // const RFQPlantId = approvalObj ? approvalObj[0]?.Plant[0]?.PlantId : ''
     
     
  

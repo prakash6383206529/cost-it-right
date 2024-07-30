@@ -1124,6 +1124,7 @@ export const API = {
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
   getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
   getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
+  getSpecificationDetailBop : `${BASE_URL}/rfq-quotation/get-bought-out-part-specification`,
   deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
   checkRegisteredVendor: `${BASE_URL}/rfq-quotation/check-registered-vendor`,
   getPurchaseRequisitionSelectList: `${BASE_URL}/rfq-quotation/select-list-pr-number`,
