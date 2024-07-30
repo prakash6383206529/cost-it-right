@@ -358,14 +358,14 @@ class PermissionsTabIndex extends Component {
                                             </NavLink>
                                         </NavItem>
                                     }
-                                    {
+                                    {/* {
                                         this.state.supplierManagement?.length > 0 &&
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '12' })} onClick={() => { this.toggle('12'); }}>
                                                 Auction
                                             </NavLink>
                                         </NavItem>
-                                    }
+                                    } */}
                                 </Nav>
                                 <TabContent className="pr-tab-content" activeTab={this.state.activeTab}>
 
@@ -465,14 +465,14 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
-                                    <TabPane tabId="12">
+                                    {/* <TabPane tabId="12">
                                         <AuctionTab
                                             data={this.state.supplierManagement}
                                             actionData={this.state.actionData}
                                             actionSelectList={this.props.actionSelectList}
                                             permissions={this.permissionHandler}
                                         />
-                                    </TabPane>
+                                    </TabPane> */}
 
                                 </TabContent>
                             </div>
