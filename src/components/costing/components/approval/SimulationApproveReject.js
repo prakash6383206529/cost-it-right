@@ -23,7 +23,7 @@ function SimulationApproveReject(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, technologyId, approvalTypeIdValue, approvalData, IsFinalLevel, IsPushDrawer, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails, IsExchangeRateSimulation } = props
+  const { type, technologyId, approvalTypeIdValue, approvalData, IsFinalLevel, IsPushDrawer, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails, IsExchangeRateSimulation, isRMIndexationSimulation } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -123,7 +123,7 @@ function SimulationApproveReject(props) {
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
     if (initialConfiguration?.IsSAPConfigured && type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
+      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation)
 
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
@@ -377,7 +377,7 @@ function SimulationApproveReject(props) {
 
   useEffect(() => {
     if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
+      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation)
       //THIS CONDITION IS FOR SAVE SIMULATION
       setLoader(true)
       dispatch(saveSimulationForRawMaterial(simObj, res => {
