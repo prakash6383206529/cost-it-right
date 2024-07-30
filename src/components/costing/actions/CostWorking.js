@@ -1552,14 +1552,12 @@ export function InsulationBulkUploadCosting(data, callback) {
     const request = axios.post(API.uploadInsulationCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
-        console.log('200: ');
 
         callback(response);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       if (error?.response?.status === 400) {
-        console.log('400: ');
         callback(error.response)
       }
       apiErrors(error);
