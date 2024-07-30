@@ -121,7 +121,6 @@ function RfqListing(props) {
     const location = useLocation();
     useEffect(() => {
         getDataList()
-
     }, [])
     useEffect(() => {
         if (partType === 'RawMaterial' || partType === 'BoughtOutPart') {
@@ -307,14 +306,14 @@ function RfqListing(props) {
                 });
 
 
-                if (temp.length > 0) {
+                if (temp?.length > 0) {
                     item[Math.round(item.length / 2) - 1].ShowCheckBox = true;                      // SET CHECKBOX FOR CREATED COSTINGS
                 }
             })
 
             setRowData(newArray)
 
-            setTechnologyId(res?.data?.DataList[0].TechnologyId)
+            setTechnologyId(res?.data?.DataList[0]?.TechnologyId)
             setloader(false);
         }))
 
@@ -1185,11 +1184,7 @@ function RfqListing(props) {
 
 
         const selectedRows = gridApi?.getSelectedRows()
-
-
         let partNumber = []
-
-
         let data
         const partTypes = selectedRows[0]?.PartType.split(',');
         partTypes.forEach(type => {
@@ -1329,22 +1324,28 @@ function RfqListing(props) {
     }
     const headerPartType = () => {
         const partTypes = partType.split(',');
+        let headerName = "";
+
         partTypes.forEach(type => {
             switch (type.trim()) {
                 case 'RawMaterial':
-                    return "RM Name"
+                    headerName = "RM Name";
+                    break;
                 case 'BoughtOutPart':
-                    return "BOP Name"
+                    headerName = "BOP Name";
+                    break;
                 case 'Component':
                 case 'Assembly':
-                    return "Part Name"
-
+                    headerName = "Part Name";
+                    break;
                 default:
                     break;
             }
+        });
 
-        })
+        return headerName;
     }
+
 
     const closeApprovalDrawer = (e = '', type) => {
         setApproveDrawer(false)
@@ -1458,11 +1459,11 @@ function RfqListing(props) {
                                             enableBrowserTooltips={true}
                                         >
 
-                                            <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName={headerPartType()} cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                            <AgGridColumn cellClass={cellClass} field="PartNo" headerName={headerPartType()} cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                             <AgGridColumn field="PartTypes" cellClass={cellClass} headerName="Part Type" width={150} cellRenderer={seperateHyphenFormatter}></AgGridColumn>
                                             {initialConfiguration.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
-                                            {partType !== 'BOP' && <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
-                                            {partType === 'BOP' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
+                                            {partType !== 'BoughtOutPart' && <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
+                                            {partType === 'BoughtOutPart' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
 
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>

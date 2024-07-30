@@ -7,17 +7,19 @@ import DayTime from '../../common/DayTimeWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForNull } from '../../../helper';
 import _, { isNumber } from 'lodash';
+import WarningMessage from '../../common/WarningMessage';
 
 const RMCompareTable = (props) => {
     const dispatch = useDispatch()
     const { viewRmDetails } = useSelector(state => state.material)
-    
+
     const [sectionData, setSectionData] = useState([])
     const [mainHeadingData, setMainHeadingData] = useState([])
     const [checkBoxCheck, setCheckBoxCheck] = useState({})
     const [selectedItems, setSelectedItems] = useState([])
     const [selectedIndices, setSelectedIndices] = useState([])
-        const [isLoader, setIsLoader] = useState(false)
+    const [isLoader, setIsLoader] = useState(false)
+    const showCheckbox = viewRmDetails && viewRmDetails?.some(item => item.IsShowCheckBoxForApproval === true);
     useEffect(() => {
         setIsLoader(true)
         let temp = []
@@ -55,9 +57,7 @@ const RMCompareTable = (props) => {
             viewRmDetails.map((item, index) => {
                 //section one data start
                 const RMNameGrade = `${item.RawMaterialName}-${item.RawMaterialGradeName}`;
-                const effectiveDate = item.EffectiveDate && !item.EffectiveDate.includes('-') ? (
-                    <input className='form-control defualt-input-value' disabled={true} value={DayTime(item.EffectiveDate).format('DD/MM/YYYY')} />
-                ) : null;
+                const effectiveDate = item.EffectiveDate ? (item.EffectiveDate !== "-" ? DayTime(item.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
                 const formattedDataOne = [
                     item.TechnologyName,
                     item.DestinationPlantName,
@@ -89,9 +89,9 @@ const RMCompareTable = (props) => {
                 //mainheader data start
                 const mainHeaderObj = {
                     vendorName: item.VendorName,
-                    onChange: () => checkBoxHandle(item,index),
+                    onChange: () => checkBoxHandle(item, index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: item.IsShowCheckBoxForApproval,
+                    isCheckBox: item.bestCost ? false : item.IsShowCheckBoxForApproval,
                     // isCheckBox:true,
                     bestCost: item.bestCost,
                     shouldCost: props.uniqueShouldCostingId?.includes(item.RawMaterialId) ? "Should Cost" : "",
@@ -138,8 +138,7 @@ const RMCompareTable = (props) => {
         } else {
             // Define an array of keys to check when finding the "best cost"
             const keysToCheck = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
-            const keysToCheckSum = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];;
-            // const keysToCheck = ["nPOPriceWithCurrency"];
+            const keysToCheckSum = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
 
             // Create a new object to represent the "best cost" and set it to the first object in the input array
             let minObject = { ...finalArrayList[0] };
@@ -160,34 +159,46 @@ const RMCompareTable = (props) => {
                                 // If so, set the current value as the minimum value
                                 minObject[key] = currentObject[key];
                             }
-                            // If the current value is an array
                         } else if (Array.isArray(currentObject[key])) {
                             // Set the minimum value for this key to an empty array
                             minObject[key] = [];
                         }
-                    } else {
-                        // If the key is not in the keysToCheck array, set the minimum value for this key to a dash
-                        minObject[key] = "";
-                        // delete minObject[key];
                     }
                 }
-                // Set the attachment and bestCost properties of the minimum object
-                let sum = 0
-                for (let key in finalArrayList[0]) {
-                    if (keysToCheckSum?.includes(key)) {
-                        if (isNumber(minObject[key])) {
-                            sum = sum + checkForNull(minObject[key]);
-                        } else if (Array.isArray(minObject[key])) {
-                            minObject[key] = [];
-                        }
-                    } else {
-                        minObject[key] = "";
-                    }
-                }
-                minObject.attachment = []
-                minObject.bestCost = true
-                minObject.nPOPrice = sum
             }
+
+            // Ensure keysToCheck have default value of 0 if they are null or undefined
+            for (let key of keysToCheck) {
+                if (minObject[key] == null) {
+                    minObject[key] = 0;
+                }
+            }
+
+            // Set all other keys to an empty string
+            for (let key in minObject) {
+                if (!keysToCheck.includes(key)) {
+                    minObject[key] = "";
+                }
+            }
+
+            // Set the attachment and bestCost properties of the minimum object
+            let sum = 0;
+            for (let key in finalArrayList[0]) {
+                if (keysToCheckSum?.includes(key)) {
+                    if (isNumber(minObject[key])) {
+                        sum = sum + checkForNull(minObject[key]);
+                    } else if (Array.isArray(minObject[key])) {
+                        minObject[key] = [];
+                    }
+                } else {
+                    minObject[key] = minObject[key] || "";
+                }
+            }
+
+            minObject.attachment = [];
+            minObject.bestCost = true;
+            minObject.nPOPrice = sum;
+
             // Add the minimum object to the end of the array
             finalArrayList.push(minObject);
         }
@@ -221,9 +232,9 @@ const RMCompareTable = (props) => {
             return newIndices
         })
     }
-    
+
     useEffect(() => {
-        
+
         props.checkCostingSelected(selectedItems, selectedIndices)
     }, [selectedItems, selectedIndices])
     // const checkBoxHanlde = (item , index) => {
@@ -232,6 +243,7 @@ const RMCompareTable = (props) => {
     // }
     return (
         <div>
+            {showCheckbox && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
             <Table headerData={mainHeadingData} sectionData={sectionData} uniqueShouldCostingId={props.uniqueShouldCostingId}>
                 {isLoader && <LoaderCustom customClass="" />}
             </Table>

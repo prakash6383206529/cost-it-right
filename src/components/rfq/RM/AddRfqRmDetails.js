@@ -265,7 +265,8 @@ const AddRfqRmDetails = (props) => {
     return (
 
         <>
-            <HeaderTitle title={'RM:'} />
+            {/* <HeaderTitle title={'RM:'} /> */}
+            {props.heading()}
             <Row className="part-detail-wrapper">
                 <Col md="3">
                     <SearchableSelectHookForm
