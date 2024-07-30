@@ -11,7 +11,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
 import ScrollToTop from '../../../common/ScrollToTop';
 import { PaginationWrapper } from '../../../common/commonPagination';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { NFR_INSIGHT_REPORT } from '../../../../config/masterData';
 import NFRInsightStatusDetailsDrawer from './NFRInsightStatusDetailsDrawer';
 import { agGridStatus, isResetClick } from '../../../../actions/Common';
@@ -19,9 +19,9 @@ import TourWrapper from '../../../common/Tour/TourWrapper';
 import { Steps } from '../../../common/Tour/TourMessages';
 import { useTranslation } from "react-i18next"
 
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function NFRInsightsReport(props) {
@@ -168,11 +168,11 @@ function NFRInsightsReport(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let excelData = data
-        // return (
+        return (
 
-        //     <ExcelSheet data={TempData} name={'NFR Insight Report'}>
-        //         {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Company") ? `${handleDepartmentHeader()}` : ele.label} value={ele.value} style={ele.style} />)}
-        //     </ExcelSheet>);
+            <ExcelSheet data={TempData} name={'NFR Insight Report'}>
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Company") ? `${handleDepartmentHeader()}` : ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
     const onBtExport = () => {
@@ -198,11 +198,11 @@ function NFRInsightsReport(props) {
                                 <button type="button" className="user-btn Tour_List_Reset" title="Reset Grid" onClick={() => resetState()}>
                                     <div className="refresh mr-0"></div>
                                 </button>
-                                {/* <ExcelFile filename={'NFR Insight Report'} fileExtension={'.xls'} element={
+                                <ExcelFile filename={'NFR Insight Report'} fileExtension={'.xls'} element={
                                     <button id={'Excel-Downloads-nfr'} className=" ml-1 user-btn Tour_List_Download" type="button"><div className="download mr-1" ></div>
                                     </button>}>
                                     {onBtExport()}
-                                </ExcelFile> */}
+                                </ExcelFile>
                             </div>
                         </div>
                     </Col>

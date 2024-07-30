@@ -10,11 +10,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getGotAndGivenDetails } from '../../actions/ReportListing';
 import { checkForDecimalAndNull } from '../../../../helper';
 import GotGivenListing from './GotGivenListing';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { GOT_GIVEN_EXCEL_TEMPLATE_SUMMARY } from '../../ExcelTemplate';
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function GotGivenSummary(props) {
 
@@ -144,9 +144,9 @@ function GotGivenSummary(props) {
             tempArray.push(obj)
         })
 
-        // return (<ExcelSheet data={tempArray} name={GOT_GIVEN_REPORT}>
-        //     {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
-        // </ExcelSheet>);
+        return (<ExcelSheet data={tempArray} name={GOT_GIVEN_REPORT}>
+            {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
     }
 
     return (
@@ -155,9 +155,9 @@ function GotGivenSummary(props) {
                 <Row className="pt-4 blue-before ">
                     <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100">
-                            {/* <ExcelFile filename={'Got Given Report'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                            <ExcelFile filename={'Got Given Report'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
                                 {renderColumn()}
-                            </ExcelFile> */}
+                            </ExcelFile>
                             <div className="mb-3"><button type="button" className={"apply"} onClick={exitReport}> <div className={'back-icon'}></div>Back</button></div>
 
                         </div>

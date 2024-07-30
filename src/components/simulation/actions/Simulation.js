@@ -1977,7 +1977,7 @@ export function getRMIndexationCostingSimulationListing(data, skip, take, isPagi
             GradeId: data.GradeId ? data.GradeId : null,
             CustomerId: data.CustomerId ? data.CustomerId : null,
             RawMaterialEntryType: data.RawMaterialEntryType,
-            // Technology: data.Technology,
+            technology_id: data.technology_id,
         });
         const request = axios.get(`${API.getRMIndexationCostingSimulationListing}?${queryParams}`, config());
         request.then((response) => {

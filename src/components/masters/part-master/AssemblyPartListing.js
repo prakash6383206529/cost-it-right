@@ -11,7 +11,7 @@ import BOMViewer from "./BOMViewer";
 import BOMUploadDrawer from "../../massUpload/BOMUpload";
 import LoaderCustom from "../../common/LoaderCustom";
 import { AssemblyPart } from "../../../config/constants";
-// import ReactExport from "react-export-excel";
+import ReactExport from "react-export-excel";
 import { ASSEMBLYPART_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -27,9 +27,9 @@ import { useTranslation } from "react-i18next";
 import { TourStartAction } from "../../../actions/Common";
 import { showTitleForActiveToggle } from '../../../../src/helper/util';
 import Switch from "react-switch";
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const AssemblyPartListing = React.memo((props) => {
@@ -408,18 +408,18 @@ const AssemblyPartListing = React.memo((props) => {
         }
         return item;
       });
-    // return (
-    //   <ExcelSheet data={temp} name={AssemblyPart}>
-    //     {data && data.map((ele, index) => (
-    //       <ExcelColumn
-    //         key={index} // index as key is generally an anti-pattern, use unique identifiers from `ele` if available
-    //         label={ele.label}
-    //         value={ele.value}
-    //         style={ele.style}
-    //       />
-    //     ))}
-    //   </ExcelSheet>
-    // );
+    return (
+      <ExcelSheet data={temp} name={AssemblyPart}>
+        {data && data.map((ele, index) => (
+          <ExcelColumn
+            key={index} // index as key is generally an anti-pattern, use unique identifiers from `ele` if available
+            label={ele.label}
+            value={ele.value}
+            style={ele.style}
+          />
+        ))}
+      </ExcelSheet>
+    );
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -489,7 +489,7 @@ const AssemblyPartListing = React.memo((props) => {
               )}
               {permissions.Download && (
                 <>
-                  {/* <ExcelFile
+                  <ExcelFile
                     filename={"BOM"}
                     fileExtension={".xls"}
                     element={
@@ -511,7 +511,7 @@ const AssemblyPartListing = React.memo((props) => {
                     }
                   >
                     {onBtExport()}
-                  </ExcelFile> */}
+                  </ExcelFile>
                 </>
               )}
               <button

@@ -109,6 +109,7 @@ export const API = {
   getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
   getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
   getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
+  getRawMaterialDataBySourceVendor: `${BASE_URL}/masters-raw-material/get-source-vendor-raw-material-by-id`,
 
   // INDEXATION SIMULATION
   getRMIndexationSimulationListing: `${BASE_URL}/simulation/get-raw-material-records-for-simulation`,
@@ -116,7 +117,6 @@ export const API = {
   draftSimulationForRMMaster: `${BASE_URL}/simulation/draft-simulation-raw-material-master`,
   updateSimulationRawMaterial: `${BASE_URL}/simulation/update-simulation-raw-material`,
   runSimulationOnRawMaterial: `${BASE_URL}/simulation/run-simulation-on-raw-material-master`,
-  getAllSimulatedRawMaterial: `${BASE_URL}/simulation/get-all-simulated-raw-material`,
   getApprovalSimulatedRawMaterialSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-raw-material-summary`,
   getRMIndexationCostingSimulationListing: `${BASE_URL}/simulation/get-impacted-raw-material-details`,
 
@@ -630,6 +630,9 @@ export const API = {
   getSimulationRmMachiningCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-machining-calculation-details`,
   getSimulationCorrugatedAndMonoCartonCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-and-mono-carton-box-calculation-details`,
 
+  //Insulation calculator
+  saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
+  getRawMaterialCalculationForInsulation: `${BASE_URL}/costing/get-raw-material-insulation-calculation-details`,
   // YOY
   getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
   saveYOYCostList: `${BASE_URL}/rfq-costing/rfq-save-yoy-details`,
@@ -684,7 +687,8 @@ export const API = {
   getAssemblyChildPartbyAsmCostingId: `${BASE_URL}/costing/get-assembly-child-parts-by-asmCostingId`,
   getProcessAndOperationbyCostingId: `${BASE_URL}/costing/get-process-and-operation-by-asmCostingId-or-childCostingId`,
   getSettledSimulationCostingDetails: `${BASE_URL}/simulation/get-settled-simulation-costing-details`,
-
+  uploadInsulationCosting: `${BASE_URL}/bulk-costing/save-costing-insulation`,
+  uploadElectricalStampingCosting: `${BASE_URL}/bulk-costing/save-costing-electrical-stamping`,
 
   //COST SUMMARY
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -2822,6 +2826,8 @@ export const SHEETMETAL = 8
 
 export const REASON_ID = 2
 export const TOFIXEDVALUE = 10
+export const INSULATION = 11
+export const ELECTRICAL_STAMPING = 12
 
 // MASTER PAGES NAME
 export const RmDomestic = "Raw-material-domestic"
@@ -3202,7 +3208,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.15";
+export const VERSION = "V3.0.17";
 
 
 

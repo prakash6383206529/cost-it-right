@@ -18,7 +18,7 @@ import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { RMMATERIALISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { RmMaterial } from "../../../config/constants";
-// import ReactExport from "react-export-excel";
+import ReactExport from "react-export-excel";
 import BulkUpload from "../../massUpload/BulkUpload";
 import { resetStatePagination, updatePageSize, updatePageNumber, updateCurrentRowIndex, updateGlobalTake } from '../../common/Pagination/paginationAction';
 import WarningMessage from '../../common/WarningMessage';
@@ -32,9 +32,9 @@ import DayTime from "../../common/DayTimeWrapper";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import _ from "lodash";
 
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const IndexDataListing = (props) => {
@@ -443,19 +443,19 @@ const IndexDataListing = (props) => {
                 }
                 return item;
             });
-        // return (
-        //     <ExcelSheet data={temp} name={RmMaterial}>
-        //         {data &&
-        //             data.map((ele, index) => (
-        //                 <ExcelColumn
-        //                     key={index}
-        //                     label={ele.label}
-        //                     value={ele.value}
-        //                     style={ele.style}
-        //                 />
-        //             ))}
-        //     </ExcelSheet>
-        // );
+        return (
+            <ExcelSheet data={temp} name={RmMaterial}>
+                {data &&
+                    data.map((ele, index) => (
+                        <ExcelColumn
+                            key={index}
+                            label={ele.label}
+                            value={ele.value}
+                            style={ele.style}
+                        />
+                    ))}
+            </ExcelSheet>
+        );
     };
     const bulkToggle = () => {
         setState((prevState) => ({ ...prevState, isBulkUpload: true }));
@@ -526,7 +526,7 @@ const IndexDataListing = (props) => {
 
                         {permissions?.Download && (
                             <>
-                                {/* <>
+                                <>
                                     <ExcelFile
                                         filename={"Index Data"}
                                         fileExtension={".xls"}
@@ -535,8 +535,8 @@ const IndexDataListing = (props) => {
                                         }
                                     >
                                         {onBtExport()}
-                                    </ExcelFile> 
-                                </>*/}
+                                    </ExcelFile>
+                                </>
                             </>
                         )}
                         <Button id={"rmMaterialListing_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />

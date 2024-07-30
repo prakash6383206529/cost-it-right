@@ -12,7 +12,7 @@ import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
 import Association from "./Association";
 import { RmMaterial } from "../../../config/constants";
-// import ReactExport from "react-export-excel";
+import ReactExport from "react-export-excel";
 import { RMLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -27,9 +27,9 @@ import { useRef } from "react";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const RMListing = (props) => {
   const dispatch = useDispatch();
@@ -161,7 +161,7 @@ const RMListing = (props) => {
 
   const openModel = () => {
     setState((prevState) => ({
-      ...prevState, isOpen: true, isEditFlag: false,
+      ...prevState, isOpen: true, isEditFlag: false, isViewFlag: false
     }));
   };
 
@@ -270,19 +270,19 @@ const RMListing = (props) => {
         }
         return item;
       });
-    // return (
-    //   <ExcelSheet data={temp} name={RmMaterial}>
-    //     {data &&
-    //       data.map((ele, index) => (
-    //         <ExcelColumn
-    //           key={index}
-    //           label={ele.label}
-    //           value={ele.value}
-    //           style={ele.style}
-    //         />
-    //       ))}
-    //   </ExcelSheet>
-    // );
+    return (
+      <ExcelSheet data={temp} name={RmMaterial}>
+        {data &&
+          data.map((ele, index) => (
+            <ExcelColumn
+              key={index}
+              label={ele.label}
+              value={ele.value}
+              style={ele.style}
+            />
+          ))}
+      </ExcelSheet>
+    );
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -341,7 +341,7 @@ const RMListing = (props) => {
           {permissions.Download && (
             <>
               <>
-                {/* <ExcelFile
+                <ExcelFile
                   filename={"Rm Material"}
                   fileExtension={".xls"}
                   element={
@@ -349,7 +349,7 @@ const RMListing = (props) => {
                   }
                 >
                   {onBtExport()}
-                </ExcelFile> */}
+                </ExcelFile>
               </>
             </>
           )}

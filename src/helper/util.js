@@ -1640,20 +1640,24 @@ export const extenstionTime = (length = 5, timeGap = 1, TimeCategory = 'min') =>
   let temp = [];
   for (let i = 1; i <= length; i++) {
     if (i % timeGap === 0) {
-      temp.push({ label: `${i} (${TimeCategory})` })
+      temp.push({ label: `${i} (${TimeCategory})`, value: i });
     }
   }
   return temp;
 }
 
 export function calculateEndDateTime(startDateTime, duration) {
+
+
   if (!startDateTime || !duration) return null;
 
   // Parse startDateTime
   const startDate = new Date(startDateTime);
 
+
   // Adjust for UTC+05:30 (India Standard Time)
   const adjustedStartDate = new Date(startDate.getTime() + (5.5 * 60 * 60 * 1000));
+
 
   // Parse duration (HH:MM)
   const [durationHours, durationMinutes] = duration.split(':').map(Number);
@@ -1705,6 +1709,7 @@ export function calculateTime(input) {
 
   throw new Error('Invalid input format. Use "<number> (min)" or "<number> (hours)" or "<number> (hrs)".');
 }
+
 
 export function addTime(time1, time2) {
   // Parse time1

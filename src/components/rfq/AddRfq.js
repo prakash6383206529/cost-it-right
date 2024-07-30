@@ -3282,7 +3282,7 @@ function AddRfq(props) {
                                                     </label>
                                                 </div>
                                             </Col>
-                                            {isConditionalVisible && <>
+                                            {(isConditionalVisible && dataProps) &&
                                                 <Col md="3">
                                                     <SearchableSelectHookForm
                                                         label={"Visibility Mode"}
@@ -3301,7 +3301,7 @@ function AddRfq(props) {
                                                         disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                                     />
                                                 </Col>
-                                            </>
+
                                             }
                                             {isConditionalVisible &&
                                                 <Col md="3">

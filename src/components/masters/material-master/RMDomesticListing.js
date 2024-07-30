@@ -16,7 +16,7 @@ import { RM_MASTER_ID, APPROVAL_ID, RmDomestic } from '../../../config/constants
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
@@ -36,9 +36,9 @@ import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import BulkUpload from '../../massUpload/BulkUpload';
 
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const MyLazyComponent = lazy(() => import('../../massUpload/BulkUpload'));
 
@@ -467,7 +467,7 @@ function RMDomesticListing(props) {
         if (showExtraData && props.rowIndex === 0) {
             isDeleteButton = true
         } else {
-            if (DeleteAccessibility && !rowData.IsRMAssociated) {
+            if (DeleteAccessibility && !rowData?.IsRMAssociated) {
                 isDeleteButton = true
             }
         }
@@ -651,11 +651,11 @@ function RMDomesticListing(props) {
             return item
         })
 
-        // return (
+        return (
 
-        //     <ExcelSheet data={temp} name={RmDomestic}>
-        //         {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        //     </ExcelSheet>);
+            <ExcelSheet data={temp} name={RmDomestic}>
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
 
@@ -931,12 +931,12 @@ function RMDomesticListing(props) {
                                                             icon={"download mr-1"}
                                                             buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                         />
-                                                        {/* <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                        <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
                                                             <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />
 
                                                         }>
                                                             {onBtExport()}
-                                                        </ExcelFile> */}
+                                                        </ExcelFile>
                                                     </>
                                                 }
 
@@ -999,6 +999,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                        {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName="Source Vendor Name" cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
 
                                         <AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>

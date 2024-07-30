@@ -17,7 +17,8 @@ import {
     GET_COMMODITY_STANDARD_FOR_DOWNLOAD, GET_COMMODITY_STANDARD_DATALIST_SUCCESS,
     GET_OTHER_COST_SELECTLIST, GET_OTHER_COST_APPLICABILITY_SELECTLIST,
     SET_COMMODITY_DETAILS, SET_OTHER_COST_DETAILS,
-    GET_LAST_REVISION_RAW_MATERIAL_DETAILS
+    GET_LAST_REVISION_RAW_MATERIAL_DETAILS,
+    ZBCTypeId
 }
     from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
@@ -282,7 +283,7 @@ export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
             commodityMaterialDetailId: "", rate: obj.Rate, currencyCharge: obj.CurrencyCharge, exchangeRate: obj.ExchangeRate,
             rateConversion: obj.RateConversion, exchangeRateSourceName: obj.ExchangeRateSourceName, effectiveDate: obj.EffectiveDate, commodityName: obj.CommodityName,
             indexExchangeName: obj.IndexExchangeName, uom: obj.UOM, currency: obj.Currency,
-            Remark: '', applyPagination: false, skip: skip, take: take
+            Remark: '', applyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getIndexDataList}?${queryParams}`, config())
@@ -725,6 +726,24 @@ export function getLastRevisionRawMaterialDetails(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+/**
+ * @method getRawMaterialDataBySourceVendor
+ * @description get Raw Material Data By Source Vendor
+ */
+export function getRawMaterialDataBySourceVendor(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRawMaterialDataBySourceVendor}?costingHeadId=${ZBCTypeId}&technologyId=${data.technologyId}&rawMaterialSpecificationId=${data.rawMaterialSpecificationId}&isIndexationDetails=${data.isIndexationDetails}&sourceVendorId=${data.sourceVendorId}`, config());
+        request.then((response) => {
+            if (response) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
             apiErrors(error);
         });
     };

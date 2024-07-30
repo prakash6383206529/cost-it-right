@@ -12,7 +12,7 @@ import LoaderCustom from "../../common/LoaderCustom";
 import { getConfigurationKey, loggedInUserId, searchNocontentFilter } from "../../../helper";
 import { FuelMaster } from "../../../config/constants";
 import { FUELLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
-// import ReactExport from "react-export-excel";
+import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -24,8 +24,8 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { ApplyPermission } from ".";
 import Button from "../../layout/Button";
 import { checkMasterCreateByCostingPermission } from "../../common/CommonFunctions";
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -171,13 +171,13 @@ const FuelListing = (props) => {
         return item;
       });
 
-    // return (
-    //   <ExcelSheet data={temp} name={`${FuelMaster}`}>
-    //     {data && data.map((ele, index) => (
-    //       <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
-    //     ))}
-    //   </ExcelSheet>
-    // );
+    return (
+      <ExcelSheet data={temp} name={`${FuelMaster}`}>
+        {data && data.map((ele, index) => (
+          <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+        ))}
+      </ExcelSheet>
+    );
   };
 
   const onGridReady = (params) => {
@@ -222,7 +222,7 @@ const FuelListing = (props) => {
     return cell != null ? cell : "-";
   };
 
-  // const ExcelFile = ReactExport.ExcelFile;
+  const ExcelFile = ReactExport.ExcelFile;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -252,13 +252,13 @@ const FuelListing = (props) => {
                 {permissions.BulkUpload && (<Button id="fuelListing_bulkUpload" className={"user-btn mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />)}
                 {permissions.Download && (
                   <>
-                    {/* <ExcelFile
+                    <ExcelFile
                       filename={"Fuel"}
                       fileExtension={".xls"}
                       element={<Button id={"Excel-Downloads-fuelListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}
                     >
                       {onBtExport()}
-                    </ExcelFile> */}
+                    </ExcelFile>
                   </>
                 )}
                 <Button id={"fuelListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />

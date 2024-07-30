@@ -2601,7 +2601,7 @@ function UserRegistration(props) {
                         />
                       </label>
                     </Col>}
-                    {!props?.RFQUser ? <div className="col-md-3">
+                    {!props?.RFQUser && <div className="col-md-3">
                       <div className="row form-group">
                         <div className="Phone phoneNumber col-md-8">
                           <TextFieldHookForm
@@ -2642,14 +2642,14 @@ function UserRegistration(props) {
                           />
                         </div>
                       </div>
-                    </div>
-                      :
+                    </div>}
+                    {props?.RFQUser &&
                       <>
-                        <Col md="12" className="mt-4">
+                        {true && <Col md="12" className="mt-4">
                           <HeaderTitle
                             title={'Additional Details:'}
                             customClass={'Personal-Details'} />
-                        </Col>
+                        </Col>}
                         <Col md="3">
                           <div className="Phone phoneNumber">
                             <AsyncSearchableSelectHookForm
@@ -2675,7 +2675,7 @@ function UserRegistration(props) {
                             />
                           </div>
                         </Col>
-                        {IsSendQuotationToPointOfContact() && (
+                        {IsSendQuotationToPointOfContact() &&
                           <Col md="3">
                             <div className="phoneNumber pl-0">
                               <SearchableSelectHookForm
@@ -2701,7 +2701,7 @@ function UserRegistration(props) {
                               />
                             </div>
                           </Col>
-                        )}
+                        }
                       </>
                     }
 

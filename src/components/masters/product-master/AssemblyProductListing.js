@@ -16,7 +16,7 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { checkForDecimalAndNull } from '../../../helper';
 import { AssemblyPart } from '../../../config/constants';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { ASSEMBLYPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -24,9 +24,9 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import BOMViewerProduct from './BOMViewerProduct';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -318,11 +318,11 @@ class AssemblyProductListing extends Component {
 
             return item
         })
-        // return (
+        return (
 
-        //     <ExcelSheet data={temp} name={AssemblyPart}>
-        //         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        //     </ExcelSheet>);
+            <ExcelSheet data={temp} name={AssemblyPart}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
     onFilterTextBoxChanged(e) {
@@ -406,12 +406,13 @@ class AssemblyProductListing extends Component {
                                     DownloadAccessibility &&
                                     <>
 
-                                        {/* <ExcelFile filename={'Assembly Part'} fileExtension={'.xls'} element={
+                                        <ExcelFile filename={'Assembly Part'} fileExtension={'.xls'} element={
                                             <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                {/* DOWNLOAD */}
                                             </button>}>
 
                                             {this.onBtExport()}
-                                        </ExcelFile> */}
+                                        </ExcelFile>
 
                                     </>
 

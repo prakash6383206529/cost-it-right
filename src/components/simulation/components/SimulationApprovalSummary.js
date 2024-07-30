@@ -30,7 +30,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 // import PushButtonDrawer from '../../costing/components/approval/PushButtonDrawer';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import redcrossImg from '../../../assests/images/red-cross.png'
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
@@ -49,9 +49,9 @@ import SimulationApproveReject from '../../costing/components/approval/Simulatio
 import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
 
 const gridOptions = {};
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
     const { isbulkUpload } = props;
@@ -509,19 +509,19 @@ function SimulationApprovalSummary(props) {
 
     const returnExcelColumnSecond = () => {
 
-        // return (
+        return (
 
-        //     <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
-        //         {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        //     </ExcelSheet>);
+            <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
+                {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
     const returnExcelColumnImpactedMaster = () => {
         let multiDataSet = impactmasterDownload(impactedMasterData)
-        // return (
+        return (
 
-        //     <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
-        // );
+            <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
+        );
     }
 
     const renderColumn = () => {
@@ -642,9 +642,9 @@ function SimulationApprovalSummary(props) {
         temp = SimulationUtils(TempData)    // common function 
 
 
-        // return (<ExcelSheet data={temp} name={'Costing Summary'}>
-        //     {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        // </ExcelSheet>);
+        return (<ExcelSheet data={temp} name={'Costing Summary'}>
+            {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        </ExcelSheet>);
     }
 
     const verifyImpactDrawer = (e = '', type) => {
@@ -1367,7 +1367,7 @@ function SimulationApprovalSummary(props) {
                                                             <button type="button" className="user-btn float-right mr5" title="Reset Grid" onClick={() => resetState()}>
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
-                                                            {/* {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
+                                                            {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
                                                                 keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsMachineProcessSimulation || keysForDownloadSummary?.IsExchangeRateSimulation
                                                                 // || keysForDownloadSummary?.IsCombinedProcessSimulation               //RE
                                                             )
@@ -1385,7 +1385,7 @@ function SimulationApprovalSummary(props) {
                                                                     {returnExcelColumnSecond()}
                                                                 </ExcelFile>
 
-                                                            } */}
+                                                            }
                                                         </div>
                                                         <div className="ag-theme-material" >
                                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}

@@ -13,7 +13,7 @@ import { ADDITIONAL_MASTERS, REASON, Reasonmaster } from '../../../config/consta
 import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import LoaderCustom from '../../common/LoaderCustom';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { REASON_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -22,9 +22,9 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 import Button from '../../layout/Button';
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -281,11 +281,11 @@ const ReasonListing = (props) => {
       }
       return item
     })
-    // return (
+    return (
 
-    //   <ExcelSheet data={temp} name={Reasonmaster}>
-    //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-    //   </ExcelSheet>);
+      <ExcelSheet data={temp} name={Reasonmaster}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
   }
 
   const onFilterTextBoxChanged = (e) => {
@@ -345,13 +345,14 @@ const ReasonListing = (props) => {
                   DownloadAccessibility &&
                   <>
 
-                    {/* <ExcelFile filename={'Reason'} fileExtension={'.xls'} element={
+                    <ExcelFile filename={'Reason'} fileExtension={'.xls'} element={
                       <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
+                        {/* DOWNLOAD */}
                         {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                       </button>}>
 
                       {onBtExport()}
-                    </ExcelFile> */}
+                    </ExcelFile>
 
                   </>
 

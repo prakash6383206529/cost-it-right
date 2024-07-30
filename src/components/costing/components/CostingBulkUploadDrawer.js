@@ -1,21 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-// import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel';
 import { Field } from "redux-form";
 import { Container, Row, Col, Label, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
-import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting, wiringHarnessBulkUploadCosting, diecastingBulkUploadCosting } from '../actions/CostWorking'
+import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting, wiringHarnessBulkUploadCosting, diecastingBulkUploadCosting, InsulationBulkUploadCosting, ElectricalStampingCostingBulkImport } from '../actions/CostWorking'
 import { CostingBulkUploadTechnologyDropdown, TechnologyDropdownBulkUpload, TechnologyDropdownBulkUploadV4 } from '../../../config/masterData'
-import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS, SHEET_METAL, SHEETMETAL, DIE_CASTING } from '../../../config/constants';
+import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS, SHEET_METAL, SHEETMETAL, DIE_CASTING, INSULATION, ELECTRICAL_STAMPING } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getConfigurationKey, loggedInUserId } from '../../../helper';
 
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const CostingBulkUploadDrawer = (props) => {
     const dropzone = useRef(null);
@@ -149,9 +149,9 @@ const CostingBulkUploadDrawer = (props) => {
         // }
         const fileName = "Costing"
 
-        // return (<ExcelSheet data={TempData} name={fileName}>
-        //     {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
-        // </ExcelSheet>);
+        return (<ExcelSheet data={TempData} name={fileName}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
+        </ExcelSheet>);
     }
     const fileHandler = event => {
 
@@ -224,6 +224,14 @@ const CostingBulkUploadDrawer = (props) => {
                 cancel()
                 break;
 
+            case INSULATION:
+                dispatch(InsulationBulkUploadCosting(data, handleApiResponse))
+                cancel()
+                break;
+            case ELECTRICAL_STAMPING:
+                dispatch(ElectricalStampingCostingBulkImport(data, handleApiResponse))
+                cancel()
+                break;
             default:
                 break;
         }

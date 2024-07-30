@@ -8,10 +8,10 @@ import _ from 'lodash'
 import { useDispatch } from 'react-redux';
 import { getBOPCostMovement, getMachineProcessMovement, getOperationMovement, getRMCostMovement } from '../../actions/ReportListing';
 import { PaginationWrapper } from '../../../common/commonPagination';
-// import ReactExport from 'react-export-excel';
-// const ExcelFile = ReactExport.ExcelFile;
-// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+import ReactExport from 'react-export-excel';
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function CostMovementByMasterReportListing(props) {
@@ -20,7 +20,7 @@ function CostMovementByMasterReportListing(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);;
     const [rowData, setRowData] = useState([]);
     const [columnDefs, setColumnDefs] = useState([])
-
+    
     const [isData, setIsData] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
     const [headersState, setHeadersState] = useState([]);
@@ -248,13 +248,13 @@ function CostMovementByMasterReportListing(props) {
             return obj;
         });
 
-        // return (
-        //     <ExcelSheet data={data} name={MASTER_MOVEMENT_REPORT}>
-        //         {headers.map((header, index) => (
-        //             <ExcelColumn key={index} label={header.headerName} value={header.headerName} />
-        //         ))}
-        //     </ExcelSheet>
-        // );
+        return (
+            <ExcelSheet data={data} name={MASTER_MOVEMENT_REPORT}>
+                {headers.map((header, index) => (
+                    <ExcelColumn key={index} label={header.headerName} value={header.headerName} />
+                ))}
+            </ExcelSheet>
+        );
     };
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState();
@@ -262,9 +262,9 @@ function CostMovementByMasterReportListing(props) {
     }
     return <div className='p-relative'>
         <div className='w-100 mb-2 d-flex justify-content-end'>
-            {/* <ExcelFile filename={MASTER_MOVEMENT_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+            <ExcelFile filename={MASTER_MOVEMENT_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
                 {renderColumn()}
-            </ExcelFile> */}
+            </ExcelFile>
             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                 <div className="refresh mr-0"></div>
             </button>

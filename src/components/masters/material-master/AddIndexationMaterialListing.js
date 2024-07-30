@@ -19,7 +19,7 @@ import { setCommodityDetails } from '../actions/Indexation'
 const gridOptions = {};
 function AddIndexationMaterialListing(props) {
 
-    const { isViewFlag } = props
+    const { isViewFlag, disableAll } = props
     const { setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -148,7 +148,7 @@ function AddIndexationMaterialListing(props) {
                 <div className="d-flex justify-content-between">{checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice)}
                     {<button
                         type="button"
-                        className={`mr5 mt-2 ${isViewFlag ? 'View small' : 'add-out-sourcing'} `}
+                        className={`mr5 mt-2 ${isViewFlag || disableAll ? 'View small' : 'add-out-sourcing'} `}
                         onClick={() => AddTotalCost(cellValue, rowData, props.rowIndex)}
                         title="Add"
                     >
@@ -267,7 +267,7 @@ function AddIndexationMaterialListing(props) {
                                         //tableData={state.conditionTableData}
                                         closeDrawer={closeOtherCostToggle}
                                         anchor={'right'}
-                                        ViewMode={isViewFlag}
+                                        ViewMode={isViewFlag || disableAll}
                                         isFromMaster={true}
                                         RowData={state.commodityDetailsState[state?.rowIndex]}
                                         tableData={state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest ? state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest : []} //commodityDetailsState[state?.rowIndex]?.data}

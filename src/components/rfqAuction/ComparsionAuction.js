@@ -77,13 +77,17 @@ function ComparsionAuction(props) {
   useEffect(() => {
     setState(prevState => ({ ...prevState, isLoader: true }))
     dispatch(auctionHeaderDetails(props.quotationAuctionId, (res) => {
-      setState(prevState => ({ ...prevState, isLoader: false }))
       if (!state.live) {
         dispatch(auctionBidDetails(props.quotationAuctionId, () => { }))
       }
       if (res && res.data.Result) {
         let data = res.data.Data;
         setState(prevState => ({ ...prevState, PartType: data?.PartType, headerDetails: data }))
+        setTimeout(() => {
+          setState(prevState => ({ ...prevState, isLoader: false }))
+        }, 500);
+      } else {
+        setState(prevState => ({ ...prevState, isLoader: false }))
       }
     }))
   }, [])
@@ -109,9 +113,9 @@ function ComparsionAuction(props) {
         if (res && res.data.Result) {
           let data = res.data.Data;
           setState(prevState => ({ ...prevState, headerDetails: data }))
-
         }
       }))
+      dispatch(auctionBidDetails(props.quotationAuctionId, () => { }))
     }))
   }
   const onSubmit = () => {
@@ -207,7 +211,7 @@ function ComparsionAuction(props) {
           <div className="col-md-6 d-flex justify-content-end">
             <div className="mr-3">
               <p>Remaining Time</p>
-              <CountdownTimer endTime={headerDetails.AuctionEndDateTime} checkTimerRunning={checkTimerShop} />
+              <CountdownTimer endTime={state.bidData.AuctionEndDateTime} checkTimerRunning={checkTimerShop} />
             </div>
             <div className="d-flex flex-wrap refresh-div">
               <label className="mb-0 pr-4">Refresh In:</label>
@@ -346,15 +350,16 @@ function ComparsionAuction(props) {
                                         {bid.QuotationAuctionVendorBidPriceCounterOfferHistoryResponse.map(counterOffer => {
                                           return <span
                                             key={idx}
-                                            className={`d-flex justify-content-between align-items-center pie-chart-container ${idx === 0 ? '' : 'opacity-down'}`}
+                                            className={`d-flex justify-content-between align-items-center pie-chart-container`}
                                           >
                                             <span className="pie-chart-wrapper pie-chart-wrapper-1">
                                               {counterOffer.Price}
                                             </span>
-                                            <span>{counterOffer.Status}</span>
+                                            <span className={`counter-offer ${counterOffer.Status}`}>{counterOffer.Status}</span>
                                           </span>
                                         })}
                                         <hr />
+                                        <p>Bid History</p>
                                       </> : ''}
                                       <span
                                         key={idx}
