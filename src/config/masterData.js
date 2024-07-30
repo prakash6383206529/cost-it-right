@@ -4440,6 +4440,7 @@ export const ASSEMBLY_TECHNOLOGY_MASTER = 10
 export const LOGISTICS = 24
 export const WIREFORMING = 25
 export const ELECTRICAL_STAMPING = 26
+export const INSULATION = 28
 
 // PART TYPE
 export const PART_TYPE_ASSEMBLY = 1
@@ -5097,7 +5098,7 @@ export const ENDMILL = 'End Mill'
 export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
-export const getTechnology = [1, 8, 2, 4, 20, 23, 14, 25, 26]
+export const getTechnology = [1, 8, 2, 4, 20, 23, 14, 25, 26, 28]
 export const technologyForDensity = [1, 2, 14, 25]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['0', '1', '2', '3', '4', '5', '6', '7', '9', '10']
@@ -6731,14 +6732,15 @@ export const TechnologyDropdownBulkUpload = [
     { label: 'Wiring Harness', value: '6' }
 ]
 export const TechnologyDropdownBulkUploadV4 = [
-    { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Rivet', value: '1' },
+    { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Rivet, Wire Forming , Sintered Proprietary , Electronics', value: '1' },
     { label: 'Rubber, Plastic', value: '2' },
     { label: 'Forging, Machining, Springs', value: '3' },
     { label: 'Corrugated Box', value: '4' },
-    { label: 'Assembly', value: '5' },
+    { label: 'Assembly , Electrical Proprietary', value: '5' },
     { label: 'Wiring Harness', value: '6' },
-    { label: 'Die Casting', value: '7' }
-
+    { label: 'Die Casting', value: '7' },
+    { label: 'Electrical Stamping', value: '12' },
+    { label: 'Insulation', value: '11' }
 ]
 
 
