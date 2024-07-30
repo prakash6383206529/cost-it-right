@@ -11,6 +11,7 @@ import _, { isNumber } from 'lodash';
 const RMCompareTable = (props) => {
     const dispatch = useDispatch()
     const { viewRmDetails } = useSelector(state => state.material)
+    console.log('viewRmDetails: ', viewRmDetails);
     
     const [sectionData, setSectionData] = useState([])
     const [mainHeadingData, setMainHeadingData] = useState([])
