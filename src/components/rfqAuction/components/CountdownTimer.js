@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { checkForNull } from '../../../helper';
 
 const CountdownTimer = ({ endTime, checkTimerRunning }) => {
     const calculateTimeLeft = () => {
@@ -28,9 +29,11 @@ const CountdownTimer = ({ endTime, checkTimerRunning }) => {
                 const newTimeLeft = calculateTimeLeft();
                 setTimeLeft(newTimeLeft);
 
-                if (newTimeLeft.hours === 0 && newTimeLeft.minutes === 0 && newTimeLeft.seconds === 0) {
+                if (checkForNull(newTimeLeft.hours) === 0 && checkForNull(newTimeLeft.minutes) === 0 && checkForNull(newTimeLeft.seconds) === 0) {
                     clearInterval(timer);
                     setIsTimerRunning(false);
+                } else {
+                    setIsTimerRunning(true);
                 }
             }, 1000);
 

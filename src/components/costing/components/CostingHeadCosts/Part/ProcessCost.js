@@ -62,7 +62,7 @@ function ProcessCost(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC } = useSelector(state => state.costing)
-  const { rmFinishWeight } = props
+  const { rmFinishWeight, rmGrossWeight } = props
   const [openMachineForm, setOpenMachineForm] = useState(false)
 
   let dragEnd;
@@ -821,7 +821,13 @@ function ProcessCost(props) {
   }
 
   const handleQuantityChange = (event, index) => {
-
+    if (processGroupGrid && processGroupGrid[index]?.UOMType === MASS && event?.target?.value > rmGrossWeight) {
+      Toaster.warning("Enter value less than gross weight.")
+      setTimeout(() => {
+        setValue(`${ProcessGridFields}.${index}.Quantity`, '')
+      }, 50);
+      return false
+    }
     let tempArr = []
     let tempData = processGroupGrid[index]
 
@@ -1633,6 +1639,7 @@ function ProcessCost(props) {
                 item={props.item}
                 IsAssemblyCalculation={false}
                 rmFinishWeight={rmFinishWeight}
+                rmGrossWeight={rmGrossWeight}
               />
 
               <OperationCostExcludedOverhead
@@ -1641,6 +1648,7 @@ function ProcessCost(props) {
                 item={props.item}
                 IsAssemblyCalculation={false}
                 rmFinishWeight={rmFinishWeight}
+                rmGrossWeight={rmGrossWeight}
               />
             </>
           }

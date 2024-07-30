@@ -87,7 +87,6 @@ function AddRMMaster(props) {
 
     useEffect(() => {
 
-        console.log('state.sourceVendorRawMaterialId: ', state.sourceVendorRawMaterialId);
         if (!isViewFlag && !state.sourceVendorRawMaterialId && rawMaterailDetails?.SourceVendor?.value && getValues('RawMaterialSpecification') && getValues('Technology')) {
 
             let data = {
@@ -372,7 +371,7 @@ function AddRMMaster(props) {
             "CostingTypeId": state?.costingTypeId,
             "RawMaterialCode": values?.RawMaterialCode?.value,
             "CutOffPrice": state?.isImport ? values?.cutOffPriceSelectedCurrency : values?.cutOffPriceBaseCurrency,
-            "IsCutOffApplicable": (values?.cutOffPriceBaseCurrency < values?.NetLandedCostBaseCurrency && values.cutOffPriceBaseCurrency !== 0 && values.cutOffPriceBaseCurrency !== '') ? true : false,
+            "IsCutOffApplicable": (values?.cutOffPriceBaseCurrency < values?.NetLandedCostBaseCurrency && checkForNull(values.cutOffPriceBaseCurrency) !== 0 && values.cutOffPriceBaseCurrency !== '') ? true : false,
             "TechnologyId": values?.Technology?.value,
             "TechnologyName": values?.Technology?.label,
             "RawMaterialEntryType": state.isImport ? checkForNull(ENTRY_TYPE_IMPORT) : checkForNull(ENTRY_TYPE_DOMESTIC),

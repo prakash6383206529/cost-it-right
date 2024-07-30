@@ -35,6 +35,7 @@ import { disabledClass } from '../../../../actions/Common';
 import { RMDOMESTIC } from '../../../../config/constants';
 import { deleteRawMaterialAPI, getAllrmIndexationSimulationList } from '../../../masters/actions/Material';
 import AnalyticsDrawer from '../../../masters/material-master/AnalyticsDrawer';
+import CustomCellRenderer from '../../../rfq/CommonDropdown';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -1001,7 +1002,8 @@ function RMIndexationSimulationListing(props) {
                                         <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                         <AgGridColumn field="Category"></AgGridColumn>
                                         <AgGridColumn field="MaterialType"></AgGridColumn>
-                                        {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorAssociatedAsRawMaterialVendors" headerName='Source Vendor Name' cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                        {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && !props.isCostingSimulation && <AgGridColumn field="SourceVendorAssociatedAsRawMaterialVendors" width={250} headerName='Raw Material Code (Source Vendor Code)' cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
+                                        {props.isCostingSimulation && <AgGridColumn field="SourceVendorName" width={250} headerName='Source Vendor (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field={props.isCostingSimulation ? 'PlantCode' : "DestinationPlantName"} headerName="Plant (Code)"></AgGridColumn>
                                         <AgGridColumn field={props.isCostingSimulation ? 'VendorCode' : "VendorName"} headerName="Vendor (Code)"></AgGridColumn>
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}

@@ -61,6 +61,7 @@ function AddPackaging(props) {
   const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
   const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
   const [errorMessage, setErrorMessage] = useState('')
+  const [removeApplicability, setRemoveApplicability] = useState([])
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
@@ -100,6 +101,8 @@ function AddPackaging(props) {
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : ''
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    const removeApplicabilityList = _.map(gridData, 'Applicability')
+    setRemoveApplicability(removeApplicabilityList)
   }, [])
 
   // useEffect(() => {
@@ -131,7 +134,9 @@ function AddPackaging(props) {
 
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
+        if (removeApplicability?.includes(item.Text)) return false;
         if (item.Value === '0') return false;
+
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -142,7 +147,9 @@ function AddPackaging(props) {
       } else {
         tempList = [...temp]
       }
-      tempList.push({ label: PACK_AND_FREIGHT_PER_KG, value: PACK_AND_FREIGHT_PER_KG })
+      if (!removeApplicability?.includes(PACK_AND_FREIGHT_PER_KG)) {
+        tempList.push({ label: PACK_AND_FREIGHT_PER_KG, value: PACK_AND_FREIGHT_PER_KG })
+      }
       return tempList;
     }
     if (label === 'FrieghtType') {

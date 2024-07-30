@@ -12,7 +12,6 @@ import WarningMessage from '../../common/WarningMessage';
 const RMCompareTable = (props) => {
     const dispatch = useDispatch()
     const { viewRmDetails } = useSelector(state => state.material)
-
     const [sectionData, setSectionData] = useState([])
     const [mainHeadingData, setMainHeadingData] = useState([])
     const [checkBoxCheck, setCheckBoxCheck] = useState({})
