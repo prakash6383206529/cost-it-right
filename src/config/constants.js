@@ -686,7 +686,8 @@ export const API = {
   getAssemblyChildPartbyAsmCostingId: `${BASE_URL}/costing/get-assembly-child-parts-by-asmCostingId`,
   getProcessAndOperationbyCostingId: `${BASE_URL}/costing/get-process-and-operation-by-asmCostingId-or-childCostingId`,
   getSettledSimulationCostingDetails: `${BASE_URL}/simulation/get-settled-simulation-costing-details`,
-
+  uploadInsulationCosting: `${BASE_URL}/bulk-costing/save-costing-insulation`,
+  uploadElectricalStampingCosting: `${BASE_URL}/bulk-costing/save-costing-electrical-stamping`,
 
   //COST SUMMARY
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -2823,6 +2824,8 @@ export const SHEETMETAL = 8
 
 export const REASON_ID = 2
 export const TOFIXEDVALUE = 10
+export const INSULATION = 11
+export const ELECTRICAL_STAMPING = 12
 
 // MASTER PAGES NAME
 export const RmDomestic = "Raw-material-domestic"

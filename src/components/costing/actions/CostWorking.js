@@ -1542,3 +1542,48 @@ export function getRawMaterialCalculationForInsulation(costingId, rawMaterialId,
     });
   };
 }
+
+/**
+ * @method InsulationBulkUploadCosting
+ * @description Insulation bulk upload
+ */
+export function InsulationBulkUploadCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.uploadInsulationCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        console.log('200: ');
+
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        console.log('400: ');
+        callback(error.response)
+      }
+      apiErrors(error);
+    });
+  }
+}
+
+/**
+ * @method ElectricalStampingCostingBulkImport
+ * @description Electronic stamping bulk upload.
+ */
+export function ElectricalStampingCostingBulkImport(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.uploadElectricalStampingCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
+      apiErrors(error);
+    });
+  }
+}

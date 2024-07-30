@@ -6732,14 +6732,15 @@ export const TechnologyDropdownBulkUpload = [
     { label: 'Wiring Harness', value: '6' }
 ]
 export const TechnologyDropdownBulkUploadV4 = [
-    { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Rivet', value: '1' },
+    { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Rivet, Wire Forming , Sintered Proprietary , Electronics', value: '1' },
     { label: 'Rubber, Plastic', value: '2' },
     { label: 'Forging, Machining, Springs', value: '3' },
     { label: 'Corrugated Box', value: '4' },
-    { label: 'Assembly', value: '5' },
+    { label: 'Assembly , Electrical Proprietary', value: '5' },
     { label: 'Wiring Harness', value: '6' },
-    { label: 'Die Casting', value: '7' }
-
+    { label: 'Die Casting', value: '7' },
+    { label: 'Electrical Stamping', value: '12' },
+    { label: 'Insulation', value: '11' }
 ]
 
 

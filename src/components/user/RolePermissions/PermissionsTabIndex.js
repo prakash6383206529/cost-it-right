@@ -19,6 +19,7 @@ import ReportsTab from "./ReportsTab";
 import AuditTab from "./AuditTab";
 import LoaderCustom from "../../common/LoaderCustom";
 import RfqTab from "./RfqTab";
+import AuctionTab from "./Auction";
 import { getConfigurationKey, scrollReset } from "../../../helper";
 import NfrTab from "./NfrTab";
 import TourWrapper from "../../common/Tour/TourWrapper";
@@ -87,7 +88,7 @@ class PermissionsTabIndex extends Component {
         if (isEditFlag === false && isNewRole) {
             this.setState({ isLoader: true });
             this.props.getModuleActionInitNew((res) => {
-                
+
 
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.DataList;
@@ -357,6 +358,14 @@ class PermissionsTabIndex extends Component {
                                             </NavLink>
                                         </NavItem>
                                     }
+                                    {
+                                        this.state.supplierManagement?.length > 0 &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '12' })} onClick={() => { this.toggle('12'); }}>
+                                                Auction
+                                            </NavLink>
+                                        </NavItem>
+                                    }
                                 </Nav>
                                 <TabContent className="pr-tab-content" activeTab={this.state.activeTab}>
 
@@ -456,8 +465,14 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
-
-
+                                    <TabPane tabId="12">
+                                        <AuctionTab
+                                            data={this.state.supplierManagement}
+                                            actionData={this.state.actionData}
+                                            actionSelectList={this.props.actionSelectList}
+                                            permissions={this.permissionHandler}
+                                        />
+                                    </TabPane>
 
                                 </TabContent>
                             </div>
