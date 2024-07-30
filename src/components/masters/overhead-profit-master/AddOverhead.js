@@ -825,7 +825,7 @@ class AddOverhead extends Component {
         ModelType: ModelType.label,
         IsCombinedEntry: !isOverheadPercent ? true : false,
         OverheadPercentage: values.OverheadPercentage,
-        OverheadCCPercentage: values.OverheadCCPercentage,
+        OverheadMachiningCCPercentage: values.OverheadCCPercentage,
         OverheadBOPPercentage: values.OverheadBOPPercentage,
         OverheadRMPercentage: values.OverheadRMPercentage,
         Remark: remarks,
@@ -868,7 +868,7 @@ class AddOverhead extends Component {
         CostingTypeId: costingTypeId,
         IsCombinedEntry: !isOverheadPercent ? true : false,
         OverheadPercentage: !isOverheadPercent ? values.OverheadPercentage : '',
-        OverheadCCPercentage: !isCC ? values.OverheadCCPercentage : '',
+        OverheadMachiningCCPercentage: !isCC ? values.OverheadCCPercentage : '',
         OverheadBOPPercentage: !isBOP ? values.OverheadBOPPercentage : '',
         OverheadRMPercentage: !isRM ? values.OverheadRMPercentage : '',
         Remark: remarks,
@@ -1473,7 +1473,7 @@ function mapStateToProps(state) {
     initialValues = {
       OverheadPercentage: overheadProfitData.OverheadPercentage !== null ? overheadProfitData.OverheadPercentage : '',
       OverheadRMPercentage: overheadProfitData.OverheadRMPercentage !== null ? overheadProfitData.OverheadRMPercentage : '',
-      OverheadCCPercentage: overheadProfitData.OverheadCCPercentage !== null ? overheadProfitData.OverheadCCPercentage : '',
+      OverheadCCPercentage: overheadProfitData.OverheadMachiningCCPercentage !== null ? overheadProfitData.OverheadMachiningCCPercentage : '',
       OverheadBOPPercentage: overheadProfitData.OverheadBOPPercentage !== null ? overheadProfitData.OverheadBOPPercentage : '',
       Remark: overheadProfitData.Remark,
     }
