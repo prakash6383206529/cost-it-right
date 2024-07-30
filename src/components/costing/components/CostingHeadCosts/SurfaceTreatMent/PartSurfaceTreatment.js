@@ -9,7 +9,7 @@ import { EMPTY_GUID } from '../../../../../config/constants';
 
 function PartSurfaceTreatment(props) {
 
-  const { item } = props;
+  const { item, index } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
@@ -133,6 +133,7 @@ function PartSurfaceTreatment(props) {
         setAssemblySurfaceCost={props.setAssemblySurfaceCost}
         setAssemblyTransportationCost={props.setAssemblyTransportationCost}
         setSurfaceTreatmentCostAssemblyTechnology={props.setSurfaceTreatmentCostAssemblyTechnology}
+        index={index}
       />}
 
     </ >

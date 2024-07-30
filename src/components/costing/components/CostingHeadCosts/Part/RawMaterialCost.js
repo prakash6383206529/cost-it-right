@@ -268,6 +268,7 @@ function RawMaterialCost(props) {
         let rowArray = rowData && rowData.map(el => {
           return {
             RMName: `${el.RawMaterial} - ${el.RMGrade}`,
+            RawMaterialCode: el.RawMaterialCode,
             RMRate: (el.EntryType === 'Domestic') ? el.NetLandedCost : el.NetLandedCostConversion,
             MaterialType: el.MaterialType,
             RMGrade: el.RMGrade,
@@ -298,6 +299,7 @@ function RawMaterialCost(props) {
       } else {
         let tempObj = {
           RMName: `${rowData.RawMaterial} - ${rowData.RMGrade}`,
+          RawMaterialCode: rowData.RawMaterialCode,
           RMRate: (rowData.EntryType === 'Domestic') ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
           MaterialType: rowData.MaterialType,
           RMGrade: rowData.RMGrade,
@@ -1473,6 +1475,7 @@ function RawMaterialCost(props) {
                   <thead className={`${headerPinned ? 'sticky-headers' : ''} rm-table-header`}>
                     <tr>
                       <th className='rm-name-head'>{`RM Name`}</th>
+                      <th className='rm-name-head'>{`RM Code`}</th>
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
                       <th>{`UOM`}</th>
@@ -1496,6 +1499,7 @@ function RawMaterialCost(props) {
                         return (
                           <tr key={index} className=''>
                             <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
+                            <td className='text-overflow'><span title={item.RawMaterialCode}>{item.RawMaterialCode}</span></td>
                             <td>{checkForDecimalAndNull(item.RMRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
                             <td>{checkForDecimalAndNull(item.ScrapRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
                             <td>{item.UOM}</td>

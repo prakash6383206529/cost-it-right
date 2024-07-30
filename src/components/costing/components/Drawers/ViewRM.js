@@ -230,6 +230,7 @@ function ViewRM(props) {
             <tr>
               {isAssemblyCosting && <th>{`Part No`}</th>}
               <th>{`RM Name -Grade`}</th>
+              <th>{`RM Code`}</th>
               <th>{`RM Rate`}</th>
               <th>{`Scrap Rate`}</th>
               {isScrapRecoveryApplied && <th>{`Scrap Recovery (%)`}</th>}
@@ -254,6 +255,7 @@ function ViewRM(props) {
                 <tr key={index}>
                   {isAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}> <span title={item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}>{item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}</span></td>}
                   <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.RMName}>{item?.RMName}</span></td>
+                  <td>{item?.RMCode ? item?.RMCode : '-'}</td>
                   <td>{checkForDecimalAndNull(item?.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   {isScrapRecoveryApplied && <td>{checkForDecimalAndNull(item?.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>}
