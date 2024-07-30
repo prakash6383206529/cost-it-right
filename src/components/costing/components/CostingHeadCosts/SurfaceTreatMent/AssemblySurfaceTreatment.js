@@ -219,6 +219,7 @@ function AssemblySurfaceTreatment(props) {
         setAssemblyTransportationCost={props.setAssemblyTransportationCost}
         IsAssemblyCalculation={true}
         activeTab={props.activeTab}
+        index={index}
       />}
 
     </ >

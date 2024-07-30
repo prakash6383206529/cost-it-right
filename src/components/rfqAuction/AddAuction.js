@@ -318,7 +318,8 @@ function AddAuction(props) {
     }
     dispatch(checkQuatationForAuction(newValue.QuotationPartId, res => {
       if (res.data) {
-        setValue('BasePrice', res.data?.Data && res.data?.Data?.BasePrice)
+        setValue('BasePrice', checkForDecimalAndNull(res.data?.Data?.BasePrice, NoOfDecimalForPrice))
+        setCalculationState(prevState => ({ ...prevState, BasePrice: res.data?.Data?.BasePrice }))
         if (PartType === RM) {
           if (newValue) {
             arrIteration(rmLabel)
@@ -331,6 +332,7 @@ function AddAuction(props) {
       } else {
         reset(...partLabel, ...rmLabel, ...boplabel)
         setValue('BasePrice', '')
+        setCalculationState(prevState => ({ ...prevState, BasePrice: 0 }))
       }
     }))
   }

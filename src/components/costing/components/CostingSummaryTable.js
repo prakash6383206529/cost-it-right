@@ -141,6 +141,7 @@ const CostingSummaryTable = (props) => {
   const [otherCostDetailsProcess, setOtherCostDetailsProcess] = useState([])
 
   const { viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly } = useSelector((state) => state.costing)
+  const showCheckbox = viewCostingData && viewCostingData.some(item => item.IsShowCheckBoxForApproval === true);
 
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
@@ -2066,8 +2067,9 @@ const CostingSummaryTable = (props) => {
             )}
 
             {<Col md={simulationMode || props.isRfqCosting || isApproval ? "12" : "8"} className="text-right">
-              <div className='d-flex justify-content-end'>
-                <div className='d-flex justify-content-end'>
+              <div className='d-flex justify-content-end mb-2'>
+                <div className='d-flex justify-content-end align-items-center'>
+                  {props.isRfqCosting && !isApproval && showCheckbox && <WarningMessage dClass={"justify-content-end mr-2"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
 
                   {downloadAccessibility && <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} id="costingSummary_excel" title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
 

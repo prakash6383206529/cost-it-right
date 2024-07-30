@@ -476,7 +476,7 @@ class AddFreight extends Component {
     );
 
     if (isExist !== -1) {
-      Toaster.warning("Already added, Please check the values.");
+      Toaster.warning("This freight entry already exists.");
       return false;
     }
 
@@ -538,7 +538,7 @@ class AddFreight extends Component {
         el.EFreightLoadType === Load?.value
     );
     if (isExist !== -1) {
-      Toaster.warning("Already added, Please check the values.");
+      Toaster.warning("This freight entry already exists.");
       return false;
     }
     let tempArray = [];
@@ -562,7 +562,7 @@ class AddFreight extends Component {
         isEditIndex: false,
         Load: []
       },
-      () => this.props.change("Rate", 0)
+      () => this.props.change("Rate", '')
     );
 
     this.setState({ AddUpdate: false, errorObj: { rate: false } })
