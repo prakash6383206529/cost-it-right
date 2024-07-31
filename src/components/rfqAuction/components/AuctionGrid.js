@@ -11,6 +11,7 @@ import { addTime } from "../../../helper";
 import Button from "../../layout/Button";
 import { ShowBidWindow } from "../actions/RfqAuction";
 import DayTime from "../../common/DayTimeWrapper";
+import { hyphenFormatter } from "../../masters/masterUtil";
 
 const gridOptions = {};
 const AuctionGrid = (props) => {
@@ -91,29 +92,59 @@ const AuctionGrid = (props) => {
         const totalTime = addTime(rowData.AuctionDuration, rowData.TotalAuctionExtensionDuration)
         return totalTime ? totalTime : '-';
     };
+
+
+    const resetState = () => {
+        const searchBox = document.getElementById("filter-text-box");
+        if (searchBox) {
+            searchBox.value = ""; // Reset the input field's value
+        }
+        state.gridApi.setQuickFilter(null);
+        state.gridApi.deselectAll();
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+    }
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         customNoRowsOverlay: NoContentFound,
         dateAndTimeFormatter: dateAndTimeFormatter,
         dateFormatter: dateFormatter,
-        durationFormatter: durationFormatter
+        durationFormatter: durationFormatter,
+        hyphenFormatter: hyphenFormatter,
+
     };
 
     return <>
         <Row className={`ag-grid-react`}>
             <Col>
-                <div
-                    className={`ag-grid-wrapper height-width-wrapper ${AuctionList.length === 0 ? "overlay-contain" : ""}`}>
-                    <div className="ag-grid-header">
-                        <input
-                            type="text"
-                            className="form-control table-search"
-                            id="filter-text-box"
-                            placeholder="Search"
-                            autoComplete={"off"}
-                            onChange={(e) => onFilterTextBoxChanged(e)}
-                        />
-                    </div>
+                <Row className="my-2">
+                    <Col md="6"> <input
+                        type="text"
+                        className="form-control table-search"
+                        id="filter-text-box"
+                        placeholder="Search"
+                        autoComplete={"off"}
+                        onChange={(e) => onFilterTextBoxChanged(e)}
+                    /></Col>
+                    <Col md="6"><div className="d-flex justify-content-end">
+                        {auctionlistId === AuctionLiveId && <Button
+                            id="rmDomesticListing_add"
+                            className={"mr5 Tour_List_Add"}
+                            onClick={props.formToggle}
+                            title={"Add"}
+                            icon={"plus"}
+                        />}
+                        <button
+                            type="button"
+                            className="user-btn Tour_List_Reset "
+                            title="Reset Grid"
+                            onClick={resetState}
+                        >
+                            <div className="refresh mr-0"></div>
+                        </button>
+                    </div></Col>
+                </Row>
+                <div className={`ag-grid-wrapper height-width-wrapper ${AuctionList.length === 0 ? "overlay-contain" : ""}`}>
                     <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
                         {state.noData && (
                             <NoContentFound
@@ -136,6 +167,7 @@ const AuctionGrid = (props) => {
                             noRowsOverlayComponent={"customNoRowsOverlay"}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,
+                                imagClass: 'auction-NoContent'
                             }}
                             frameworkComponents={frameworkComponents}
                             onFilterModified={onFloatingFilterChanged}
@@ -147,23 +179,23 @@ const AuctionGrid = (props) => {
                             <AgGridColumn field="AuctionEndDateTime" headerName="Auction End" cellRenderer={"dateAndTimeFormatter"} ></AgGridColumn>
                             <AgGridColumn field="AuctionDuration" headerName="Auction Duration" cellRenderer={"durationFormatter"} ></AgGridColumn>
                             <AgGridColumn field="AuctionStartDateTime" headerName="Date" cellRenderer={"dateFormatter"}></AgGridColumn>
-                            <AgGridColumn field="Technology" headerName="Technology" ></AgGridColumn>
-                            <AgGridColumn field="PartType" headerName="Part Type"  ></AgGridColumn>
-                            <AgGridColumn field="PartNumber" headerName="Part No." ></AgGridColumn>
-                            <AgGridColumn field="RawMaterial" headerName="RM Name" ></AgGridColumn>
-                            <AgGridColumn field="RawMaterialCode" headerName="RM Grade" ></AgGridColumn>
-                            <AgGridColumn field="RMSpecification" headerName="RM Specification" ></AgGridColumn>
-                            <AgGridColumn field="RMCode" headerName="RM Code" ></AgGridColumn>
-                            <AgGridColumn field="BOPNumber" headerName="BOP No." ></AgGridColumn>
-                            <AgGridColumn field="BOPName" headerName="BOP Name" ></AgGridColumn>
-                            <AgGridColumn field="BOPCategory" headerName="Category" ></AgGridColumn>
-                            <AgGridColumn field="VendorName" headerName="Vendor Name" ></AgGridColumn>
-                            <AgGridColumn field="Plant" headerName="Plant" ></AgGridColumn>
-                            <AgGridColumn field="TotalVendor" headerName="Total Vendors" ></AgGridColumn>
-                            <AgGridColumn field="ActiveVendors" headerName="Active Vendors" ></AgGridColumn>
-                            <AgGridColumn field="BasePrice" headerName="Base Price" ></AgGridColumn>
-                            <AgGridColumn field="RankOnePrice" headerName="Level One Price" ></AgGridColumn>
-                            <AgGridColumn field="RankOneVendor" headerName="Level One Vendor" ></AgGridColumn>
+                            <AgGridColumn field="Technology" headerName="Technology" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="PartNumber" headerName="Part No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="RawMaterial" headerName="RM Name" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="RawMaterialCode" headerName="RM Grade" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="RMSpecification" headerName="RM Specification" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="RMCode" headerName="RM Code" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="BOPNumber" headerName="BOP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="BOPName" headerName="BOP Name" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="BOPCategory" headerName="Category" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="Plant" headerName="Plant" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="TotalVendor" headerName="Total Vendors" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="ActiveVendors" headerName="Active Vendors" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="BasePrice" headerName="Base Price" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="RankOnePrice" headerName="Level One Price" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="RankOneVendor" headerName="Level One Vendor" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={180} headerName="Color" marryChildren={true} >
                                 <AgGridColumn width={50} field="GreenCount" headerName="G" ></AgGridColumn>
                                 <AgGridColumn width={50} field="YellowCount" headerName="Y" colId="GreenColor"></AgGridColumn>

@@ -630,6 +630,9 @@ export const API = {
   getSimulationRmMachiningCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-machining-calculation-details`,
   getSimulationCorrugatedAndMonoCartonCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-and-mono-carton-box-calculation-details`,
 
+  //Insulation calculator
+  saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
+  getRawMaterialCalculationForInsulation: `${BASE_URL}/costing/get-raw-material-insulation-calculation-details`,
   // YOY
   getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
   saveYOYCostList: `${BASE_URL}/rfq-costing/rfq-save-yoy-details`,
@@ -684,7 +687,8 @@ export const API = {
   getAssemblyChildPartbyAsmCostingId: `${BASE_URL}/costing/get-assembly-child-parts-by-asmCostingId`,
   getProcessAndOperationbyCostingId: `${BASE_URL}/costing/get-process-and-operation-by-asmCostingId-or-childCostingId`,
   getSettledSimulationCostingDetails: `${BASE_URL}/simulation/get-settled-simulation-costing-details`,
-
+  uploadInsulationCosting: `${BASE_URL}/bulk-costing/save-costing-insulation`,
+  uploadElectricalStampingCosting: `${BASE_URL}/bulk-costing/save-costing-electrical-stamping`,
 
   //COST SUMMARY
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -1120,6 +1124,7 @@ export const API = {
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
   getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
   getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
+  getSpecificationDetailBop : `${BASE_URL}/rfq-quotation/get-bought-out-part-specification`,
   deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
   checkRegisteredVendor: `${BASE_URL}/rfq-quotation/check-registered-vendor`,
   getPurchaseRequisitionSelectList: `${BASE_URL}/rfq-quotation/select-list-pr-number`,
@@ -2821,6 +2826,8 @@ export const SHEETMETAL = 8
 
 export const REASON_ID = 2
 export const TOFIXEDVALUE = 10
+export const INSULATION = 11
+export const ELECTRICAL_STAMPING = 12
 
 // MASTER PAGES NAME
 export const RmDomestic = "Raw-material-domestic"

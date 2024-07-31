@@ -158,6 +158,14 @@ function RfqListing(props) {
         }
     }, [statusColumnData])
     useEffect(() => {
+        setTimeout(() => {
+
+            headerPartType()
+        }, 100);
+
+    }, [partType])
+
+    useEffect(() => {
 
         let filteredArr = [];
         let arr = []
@@ -851,6 +859,7 @@ function RfqListing(props) {
     }
 
     const checkCostingSelected = (list, index) => {
+        console.log('list, index: ', list, index);
 
         setState(prevState => ({ ...prevState, approvalObj: list }));
         setIndex(index);
@@ -1362,6 +1371,7 @@ function RfqListing(props) {
             state: { source: 'rfq', quotationId: quotationId }
         });
     }
+
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -1633,6 +1643,7 @@ function RfqListing(props) {
                         approvalObj={state.approvalObj}
                         costingTypeId={ZBCTypeId}
                         levelDetails={state.levelDetails}
+                        partType = {partType}
                     />
                 }
 
