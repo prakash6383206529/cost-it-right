@@ -831,6 +831,10 @@ a:hover {
                 overflow: hidden;
                 text-overflow: ellipsis;
                 margin-bottom: 4px;
+
+                &.with-button {
+                  max-width: fit-content
+                }
               }
 
               .attachment.images {

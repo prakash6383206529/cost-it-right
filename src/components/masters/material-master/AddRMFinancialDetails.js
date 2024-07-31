@@ -1375,7 +1375,7 @@ function AddRMFinancialDetails(props) {
                                         className=""
                                         customClassName=" withBorder"
                                         handleChange={(e) => { handleScrapRateImport(e.target.value) }}
-                                        disabled={disableAll || isViewFlag || (isEditFlag && isRMAssociated)}
+                                        disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                         errors={errors.ScrapRatePerScrapUOM}
                                     />
                                 </Col>}
@@ -1397,7 +1397,7 @@ function AddRMFinancialDetails(props) {
                                         className=""
                                         customClassName=" withBorder"
                                         handleChange={(e) => { handleScrapRateDomestic(e.target.value) }}
-                                        disabled={disableAll || states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                        disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                     />
                                 </Col></>}
 
@@ -1422,7 +1422,7 @@ function AddRMFinancialDetails(props) {
                                             className=""
                                             customClassName=" withBorder"
                                             handleChange={() => { }}
-                                            disabled={disableAll || true}
+                                            disabled={true}
                                             errors={errors.ScrapRateSelectedCurrency}
                                         />
                                     </Col >}
@@ -1445,7 +1445,7 @@ function AddRMFinancialDetails(props) {
                                             maxLength="15"
                                             customClassName=" withBorder"
                                             handleChange={() => { }}
-                                            disabled={disableAll || states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
+                                            disabled={states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                             errors={errors.ScrapRateBaseCurrency}
                                         />
                                     </Col></>}
@@ -1468,7 +1468,7 @@ function AddRMFinancialDetails(props) {
                                         className=""
                                         customClassName=" withBorder"
                                         handleChange={() => { }}
-                                        disabled={disableAll || isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
+                                        disabled={isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                         errors={errors.ForgingScrapSelectedCurrency}
                                     />
 
@@ -1492,7 +1492,7 @@ function AddRMFinancialDetails(props) {
                                             customClassName=" withBorder"
                                             maxLength="15"
                                             handleChange={() => { }}
-                                            disabled={disableAll || states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
+                                            disabled={states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                             errors={errors.ForgingScrapBaseCurrency}
                                         />
                                     </Col>
@@ -1512,7 +1512,7 @@ function AddRMFinancialDetails(props) {
                                             className=""
                                             customClassName=" withBorder"
                                             handleChange={() => { }}
-                                            disabled={disableAll || isViewFlag || (isEditFlag && isRMAssociated)}
+                                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                         />
                                     </Col>
                                     }
@@ -1534,7 +1534,7 @@ function AddRMFinancialDetails(props) {
                                             customClassName=" withBorder"
                                             maxLength="15"
                                             handleChange={() => { }}
-                                            disabled={disableAll || states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                             errors={errors.MachiningScrapBaseCurrency}
                                         />
                                     </Col>
@@ -1552,7 +1552,7 @@ function AddRMFinancialDetails(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            disabled={disableAll || state.IsApplyHasDifferentUOM ? true : false}
+                                            disabled={state.IsApplyHasDifferentUOM ? true : false}
                                             handleChange={() => { }}
                                             className=" "
                                             customClassName=" withBorder"
@@ -1572,7 +1572,7 @@ function AddRMFinancialDetails(props) {
                                                 required: true,
                                                 validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
                                             }}
-                                            disabled={disableAll || states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
+                                            disabled={states.isImport ? true : isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                             className=" "
                                             handleChange={() => { }}
                                             customClassName=" withBorder"
@@ -1592,7 +1592,7 @@ function AddRMFinancialDetails(props) {
                                                 required: false,
                                                 validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
                                             }}
-                                            disabled={disableAll || isViewFlag || (isEditFlag && isRMAssociated)}
+                                            disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                             handleChange={() => { }}
                                             className=" "
                                             customClassName=" withBorder"
@@ -1613,7 +1613,7 @@ function AddRMFinancialDetails(props) {
                                                 required: false,
                                                 validate: { positiveAndDecimalNumber, maxLength15, decimalLengthsix, number },
                                             }}
-                                            disabled={disableAll || states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                            disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                             className=" "
                                             customClassName=" withBorder"
                                             handleChange={() => { }}
